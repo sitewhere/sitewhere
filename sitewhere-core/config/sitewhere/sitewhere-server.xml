@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd"
+>
+
+	<!-- #################################### -->
+	<!-- # SERVICE PROVIDER IMPLEMENTATIONS # -->
+	<!-- #################################### -->
+
+	<!-- Leave uncommented to use MondoDB datastore -->
+	<import resource="sitewhere-mongodb.xml"/>
+
+	<!-- Uncomment to use MongoDB datastore with Solr indexing -->
+	<!-- <import resource="sitewhere-mongodb-solr.xml"/> -->
+
+	<!-- Uncomment to use HBase datastore -->
+	<!-- <import resource="sitewhere-hbase.xml"/> -->
+
+	<!-- Uncomment to use HBase datastore with Solr indexing -->
+	<!-- <import resource="sitewhere-hbase-solr.xml"/> -->
+
+	<!-- ##################### -->
+	<!-- # DATA INITIALIZERS # -->
+	<!-- ##################### -->
+
+	<!-- Default file system hardware asset module -->
+	<bean id="userModelInitializer" class="com.sitewhere.server.user.DefaultUserModelInitializer">
+		<property name="initializeIfNoConsole" value="Yes"/>
+	</bean>
+
+	<!-- Default file system hardware asset module -->
+	<bean id="deviceModelInitializer" class="com.sitewhere.server.device.DefaultDeviceModelInitializer">
+		<property name="initializeIfNoConsole" value="Yes"/>
+	</bean>
+
+	<!-- ################################ -->
+	<!-- # ASSET MODULE IMPLEMENTATIONS # -->
+	<!-- ################################ -->
+
+	<!-- Default file system hardware asset module -->
+	<bean id="fileHardwareModule"
+		class="com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule"/>
+
+	<!-- Default file system person asset module -->
+	<bean id="filePersonModule"
+		class="com.sitewhere.server.asset.filesystem.FileSystemPersonAssetModule"/>
+
+	<!-- Magento module configuration -->
+	<!-- <bean id="magentoModule" class="com.sitewhere.assetmodule.magento.MagentoAssetModule"> 
+		<property name="magentoUrl" value="http://magento1.com/magento/index.php/api/v2_soap?wsdl" 
+		/> <property name="magentoUsername" value="sitewhere" /> <property name="magentoPassword" 
+		value="sitewhere" /> <property name="debugSoap" value="false" /> </bean> -->
+
+	<!-- SSL configuration for WSO2 Identity Server -->
+	<!-- Add disableCNCheck="true" if server hostname not same as on certificate -->
+	<!-- <http:conduit name="https://wso2serverUrl:9443.*"> <http:client ConnectionTimeout="3000000" 
+		ReceiveTimeout="3000000" /> <http:tlsClientParameters disableCNCheck="true"> 
+		<sec:keyManagers keyPassword="wso2carbon"> <sec:keyStore file="/localpathforkeystores/wso2carbon.jks" 
+		password="wso2carbon" type="JKS" /> </sec:keyManagers> <sec:trustManagers> 
+		<sec:keyStore file="/localpathforkeystores/client-truststore.jks" password="wso2carbon" 
+		type="JKS" /> </sec:trustManagers> </http:tlsClientParameters> </http:conduit> -->
+
+	<!-- WSO2 Identity Server module configuration -->
+	<!-- <bean id="wso2Module" class="com.sitewhere.server.asset.scim.Wso2ScimAssetModule"> 
+		<property name="userUrl" value="https://wso2serverUrl:9443/wso2/scim/Users" 
+		/> </bean> -->
+
+	<!-- Asset module manager configuration -->
+	<bean id="assetModuleManager" class="com.sitewhere.server.asset.AssetModuleManager">
+		<property name="modules">
+			<list>
+				<ref bean="fileHardwareModule"/>
+				<ref bean="filePersonModule"/>
+			</list>
+		</property>
+	</bean>
+
+</beans>

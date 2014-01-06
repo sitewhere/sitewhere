@@ -1,0 +1,10 @@
+/bin
+/sitewhere-client/target
+/sitewhere-core/target
+/sitewhere-hbase/target
+/sitewhere-magento/target
+/sitewhere-mongodb/target
+/sitewhere-mule/target
+/sitewhere-solr/target
+/sitewhere-web/target
+/deploy

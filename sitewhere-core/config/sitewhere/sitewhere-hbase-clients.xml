@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd"
+>
+
+	<!-- ############################### -->
+	<!-- # HBASE CLIENT CONFIGURATIONS # -->
+	<!-- ############################### -->
+
+	<!-- HBase client for standard HBase distributions -->
+	<bean id="hbase" class="com.sitewhere.hbase.DefaultHBaseClient">
+		<property name="quorum" value="192.168.32.129"/>
+	</bean>
+	
+	<!-- HBase client for Intel IDH 2.5.1 distribution -->
+	<!--
+	<bean id="hbase" class="com.sitewhere.hbase.vendor.intel.IntelIDH251HBaseClient">
+		<property name="quorum" value="192.168.32.128"/>
+	</bean>
+	-->
+
+</beans>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Derek A Adams (Derek Adams Consulting Inc.) -->
+<xs:schema targetNamespace="http://www.reveal-tech.com/sitewhere/config" xmlns="http://www.reveal-tech.com/sitewhere/config" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="sitewhere-configuration">
+		<xs:annotation>
+			<xs:documentation>Root SiteWhere config element.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="configuration-name" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Configuration name</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="configuration-description" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Configuration description</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="uuid" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

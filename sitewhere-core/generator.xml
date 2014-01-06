@@ -1,0 +1,20 @@
+<project name="Generate Version Files" default="generate-versions" basedir=".">
+
+	<description>
+		Generates version files that allow version information to be used in code.
+	</description>
+
+	<target name="generate-versions">
+		<property name="generated.src.dir" location="${basedir}/target/generated-sources" />
+		<copy file="${basedir}/template/Version.java" 
+			toFile="${generated.src.dir}/com/sitewhere/Version.java" />
+		<tstamp>
+			<format property="build.timestamp" pattern="yyyyMMddHHmmss" />
+		</tstamp>
+		<replace file="${generated.src.dir}/com/sitewhere/Version.java">
+			<replacefilter token="@version.identifier@" value="${project.version}" />
+			<replacefilter token="@build.timestamp@" value="${build.timestamp}" />
+		</replace>
+	</target>
+
+</project>
