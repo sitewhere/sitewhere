@@ -25,6 +25,8 @@ Navigate to the newly created directory and execute:
 
     mvn clean install
 
+After the build completes, a file named **sitewhere.war** should have been created in the **deploy** folder. This archive can be copied to the sitewhere server **webapps** directory to execute the updated code.
+
 * * * *
 
 Copyright (c) 2014, [Reveal Technologies](http://www.reveal-tech.com), LLC. All rights reserved.
