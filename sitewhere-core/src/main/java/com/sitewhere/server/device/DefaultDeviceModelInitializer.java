@@ -20,11 +20,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.sitewhere.geo.GeoUtils;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.DeviceEventBatch;
+import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.server.SiteWhereServer;
@@ -36,6 +38,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceLocation;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceMeasurements;
+import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.ISiteMapMetadata;
 import com.sitewhere.spi.device.IZone;
@@ -105,13 +108,21 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final String SITE_IMAGE_URL =
 			"https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg";
 
+	/** Information for available device specifications */
+	public static final SpecificationDetails[] SPECIFICATION_INFO = {
+			new SpecificationDetails("174", "MeiTrack MT88 Profile"),
+			new SpecificationDetails("175", "MeiTrack MT90 Profile") };
+
+	/** Available device specifications */
+	protected IDeviceSpecification[] deviceSpecifications;
+
 	/** Available choices for devices/assignments that track location */
 	protected static AssignmentChoice[] LOCATION_TRACKERS = {
-			new AssignmentChoice("175", "Equipment Tracker", DeviceAssignmentType.Hardware, "300"),
-			new AssignmentChoice("175", "Equipment Tracker", DeviceAssignmentType.Hardware, "301"),
-			new AssignmentChoice("175", "Equipment Tracker", DeviceAssignmentType.Hardware, "302"),
-			new AssignmentChoice("174", "Equipment Tracker", DeviceAssignmentType.Hardware, "303"),
-			new AssignmentChoice("174", "Equipment Tracker", DeviceAssignmentType.Hardware, "304") };
+			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "300"),
+			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "301"),
+			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "302"),
+			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "303"),
+			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "304") };
 
 	/** Locations that determine zone edges */
 	protected List<Location> zoneLocations;
@@ -148,6 +159,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		zoneLocations.add(new Location(34.10606246444614, -84.23700034618376));
 		zoneLocations.add(new Location(34.107691680235604, -84.23690915107727));
 
+		// Create device specifications.
+		this.deviceSpecifications = createDeviceSpecifications();
+
 		List<ISite> sites = createSites();
 		for (ISite site : sites) {
 			List<IDeviceAssignment> assignments = createAssignments(site);
@@ -170,6 +184,36 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 	public void setInitializeIfNoConsole(boolean initializeIfNoConsole) {
 		this.initializeIfNoConsole = initializeIfNoConsole;
+	}
+
+	/**
+	 * Create device specifications.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceSpecification[] createDeviceSpecifications() throws SiteWhereException {
+		IDeviceSpecification[] results = new DeviceSpecification[SPECIFICATION_INFO.length];
+		int index = 0;
+		for (SpecificationDetails details : SPECIFICATION_INFO) {
+			DeviceSpecificationCreateRequest request = new DeviceSpecificationCreateRequest();
+			request.setAssetId(details.getAssetId());
+			request.setName(details.getName());
+			IDeviceSpecification spec = getDeviceManagement().createDeviceSpecification(request);
+			results[index] = spec;
+			index++;
+		}
+		return results;
+	}
+
+	/**
+	 * Get a random device specification from the list.
+	 * 
+	 * @return
+	 */
+	public IDeviceSpecification getRandomDeviceSpecification() {
+		int index = (int) Math.floor(Math.random() * SPECIFICATION_INFO.length);
+		return deviceSpecifications[index];
 	}
 
 	/**
@@ -237,8 +281,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			// Create device.
 			DeviceCreateRequest request = new DeviceCreateRequest();
 			request.setHardwareId(UUID.randomUUID().toString());
+			request.setSpecificationToken(getRandomDeviceSpecification().getToken());
 			request.setComments(assnChoice.getDeviceDescriptionBase() + " " + (x + 1) + ".");
-			request.setAssetId(assnChoice.getDeviceAssetId());
 			IDevice device = getDeviceManagement().createDevice(request);
 			LOGGER.info(PREFIX_CREATE_DEVICE + " " + device.getHardwareId());
 
@@ -433,27 +477,45 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	}
 
 	/**
+	 * Internal class for creating a device specification.
+	 * 
+	 * @author Derek
+	 */
+	private static class SpecificationDetails {
+
+		private String assetId;
+
+		private String name;
+
+		public SpecificationDetails(String assetId, String name) {
+			this.assetId = assetId;
+			this.name = name;
+		}
+
+		public String getAssetId() {
+			return assetId;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
+
+	/**
 	 * Internal class for choosing device/asset assignments that make sense.
 	 * 
 	 * @author Derek
 	 */
 	private static class AssignmentChoice {
 
-		private String devAssetId;
 		private String devDescBase;
 		private DeviceAssignmentType assnType;
 		private String assnAssetId;
 
-		public AssignmentChoice(String devAssetId, String devDescBase, DeviceAssignmentType assnType,
-				String assnAssetId) {
-			this.devAssetId = devAssetId;
+		public AssignmentChoice(String devDescBase, DeviceAssignmentType assnType, String assnAssetId) {
 			this.devDescBase = devDescBase;
 			this.assnType = assnType;
 			this.assnAssetId = assnAssetId;
-		}
-
-		protected String getDeviceAssetId() {
-			return devAssetId;
 		}
 
 		protected String getDeviceDescriptionBase() {

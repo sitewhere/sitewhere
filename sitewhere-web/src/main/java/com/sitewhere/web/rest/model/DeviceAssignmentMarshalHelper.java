@@ -120,6 +120,7 @@ public class DeviceAssignmentMarshalHelper {
 			deviceHelper = new DeviceMarshalHelper();
 			deviceHelper.setIncludeAsset(false);
 			deviceHelper.setIncludeAssignment(false);
+			deviceHelper.setIncludeSpecification(false);
 		}
 		return deviceHelper;
 	}

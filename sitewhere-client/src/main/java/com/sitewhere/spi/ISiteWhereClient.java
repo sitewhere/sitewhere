@@ -17,12 +17,14 @@ import com.sitewhere.rest.model.device.DeviceEventBatch;
 import com.sitewhere.rest.model.device.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.DeviceLocation;
 import com.sitewhere.rest.model.device.DeviceMeasurements;
+import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
@@ -47,6 +49,25 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public Site createSite(SiteCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Create a new device specification.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Get a device specification by token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
 
 	/**
 	 * Create a new device.

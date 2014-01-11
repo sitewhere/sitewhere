@@ -34,6 +34,8 @@
 
 <%@ include file="../includes/templateDeviceEntry.inc"%>
 
+<%@ include file="../includes/templateSpecificationEntrySmall.inc"%>
+
 <%@ include file="../includes/assetTemplates.inc"%>
 
 <%@ include file="../includes/commonFunctions.inc"%>
@@ -113,7 +115,7 @@
 		devicesDS = new kendo.data.DataSource({
 			transport : {
 				read : {
-					url : "${pageContext.request.contextPath}/api/devices?includeAssignment=true",
+					url : "${pageContext.request.contextPath}/api/devices?includeSpecification=true&includeAssignment=true",
 					dataType : "json",
 				}
 			},

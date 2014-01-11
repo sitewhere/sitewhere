@@ -28,8 +28,8 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	/** Property for hardware id */
 	public static final String PROP_HARDWARE_ID = "hardwareId";
 
-	/** Property for asset id */
-	public static final String PROP_ASSET_ID = "assetId";
+	/** Property for specification token */
+	public static final String PROP_SPECIFICATION_TOKEN = "specificationToken";
 
 	/** Property for comments */
 	public static final String PROP_COMMENTS = "comments";
@@ -63,7 +63,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	 */
 	public static void toDBObject(IDevice source, BasicDBObject target) {
 		target.append(PROP_HARDWARE_ID, source.getHardwareId());
-		target.append(PROP_ASSET_ID, source.getAssetId());
+		target.append(PROP_SPECIFICATION_TOKEN, source.getSpecificationToken());
 		target.append(PROP_COMMENTS, source.getComments());
 		target.append(PROP_ASSIGNMENT_TOKEN, source.getAssignmentToken());
 		MongoSiteWhereEntity.toDBObject(source, target);
@@ -78,12 +78,12 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	 */
 	public static void fromDBObject(DBObject source, Device target) {
 		String hardwareId = (String) source.get(PROP_HARDWARE_ID);
-		String assetId = (String) source.get(PROP_ASSET_ID);
+		String specificationToken = (String) source.get(PROP_SPECIFICATION_TOKEN);
 		String comments = (String) source.get(PROP_COMMENTS);
 		String assignmentToken = (String) source.get(PROP_ASSIGNMENT_TOKEN);
 
 		target.setHardwareId(hardwareId);
-		target.setAssetId(assetId);
+		target.setSpecificationToken(specificationToken);
 		target.setComments(comments);
 		target.setAssignmentToken(assignmentToken);
 		MongoSiteWhereEntity.fromDBObject(source, target);

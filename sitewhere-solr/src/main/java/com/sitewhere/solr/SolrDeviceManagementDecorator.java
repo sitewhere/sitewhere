@@ -20,7 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.rest.model.device.DeviceEventBatchResponse;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.DeviceManagementAdapter;
+import com.sitewhere.spi.device.DeviceManagementDecorator;
 import com.sitewhere.spi.device.IDeviceAlert;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceEventBatch;
@@ -37,7 +37,7 @@ import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
  * 
  * @author Derek
  */
-public class SolrDeviceManagementDecorator extends DeviceManagementAdapter implements InitializingBean {
+public class SolrDeviceManagementDecorator extends DeviceManagementDecorator implements InitializingBean {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SolrDeviceManagementDecorator.class);

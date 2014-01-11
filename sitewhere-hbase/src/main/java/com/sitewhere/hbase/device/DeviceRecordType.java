@@ -1,5 +1,5 @@
 /*
- * SiteRecordType.java 
+ * DeviceRecordType.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -10,23 +10,20 @@
 package com.sitewhere.hbase.device;
 
 /**
- * Indicates site record type.
+ * Indicates device record type.
  * 
  * @author Derek
  */
-public enum SiteRecordType {
+public enum DeviceRecordType {
 
-	/** Primary site record */
-	Primary((byte) 0x00),
+	/** Device record */
+	Device((byte) 0x00),
 
-	/** Zone record */
-	Zone((byte) 0x01),
-
-	/** Assignment record */
-	Assignment((byte) 0x02),
+	/** Device specification record */
+	DeviceSpecification((byte) 0x01),
 
 	/** End marker for scan ranges */
-	End((byte) 0x03);
+	End((byte) 0x02);
 
 	/** Type indicator */
 	private byte type;
@@ -36,7 +33,7 @@ public enum SiteRecordType {
 	 * 
 	 * @param value
 	 */
-	private SiteRecordType(byte type) {
+	private DeviceRecordType(byte type) {
 		this.type = type;
 	}
 

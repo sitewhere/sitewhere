@@ -34,7 +34,6 @@ import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.uid.IdManager;
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -82,15 +81,8 @@ public class HBaseDevice {
 		Long inverse = Long.MAX_VALUE - value;
 		IdManager.getInstance().getDeviceKeys().create(request.getHardwareId(), inverse);
 
-		Device newDevice = new Device();
-		newDevice.setAssetId(request.getAssetId());
-		newDevice.setHardwareId(request.getHardwareId());
-		newDevice.setComments(request.getComments());
-
-		MetadataProvider.copy(request, newDevice);
-		SiteWherePersistence.initializeEntityMetadata(newDevice);
-
-		return putDeviceJson(hbase, newDevice);
+		Device device = SiteWherePersistence.deviceCreateLogic(request);
+		return putDeviceJson(hbase, device);
 	}
 
 	/**
@@ -104,28 +96,12 @@ public class HBaseDevice {
 	 */
 	public static IDevice updateDevice(ISiteWhereHBaseClient hbase, String hardwareId,
 			IDeviceCreateRequest request) throws SiteWhereException {
-
-		// Can not update the hardware id on a device.
-		if ((request.getHardwareId() != null) && (!request.getHardwareId().equals(hardwareId))) {
-			throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR,
-					HttpServletResponse.SC_BAD_REQUEST);
+		Device updated = getDeviceByHardwareId(hbase, hardwareId);
+		if (updated == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
-
-		// Copy any non-null fields.
-		Device updatedDevice = getDeviceByHardwareId(hbase, hardwareId);
-		if (request.getAssetId() != null) {
-			updatedDevice.setAssetId(request.getAssetId());
-		}
-		if (request.getComments() != null) {
-			updatedDevice.setComments(request.getComments());
-		}
-		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
-			updatedDevice.getMetadata().clear();
-			MetadataProvider.copy(request, updatedDevice);
-		}
-		SiteWherePersistence.setUpdatedEntityMetadata(updatedDevice);
-
-		return putDeviceJson(hbase, updatedDevice);
+		SiteWherePersistence.deviceUpdateLogic(request, updated);
+		return putDeviceJson(hbase, updated);
 	}
 
 	/**
@@ -182,6 +158,8 @@ public class HBaseDevice {
 		try {
 			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Scan scan = new Scan();
+			scan.setStartRow(new byte[] { DeviceRecordType.Device.getType() });
+			scan.setStopRow(new byte[] { DeviceRecordType.DeviceSpecification.getType() });
 			scanner = devices.getScanner(scan);
 
 			Pager<byte[]> pager = new Pager<byte[]>(criteria);
@@ -228,7 +206,7 @@ public class HBaseDevice {
 		if (value == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
-		byte[] primary = getPrimaryRowkey(value);
+		byte[] primary = getDeviceRowKey(value);
 		byte[] json = MarshalUtils.marshalJson(device);
 
 		HTableInterface devices = null;
@@ -262,7 +240,7 @@ public class HBaseDevice {
 		}
 
 		// Find row key based on value associated with hardware id.
-		byte[] primary = getPrimaryRowkey(deviceId);
+		byte[] primary = getDeviceRowKey(deviceId);
 
 		HTableInterface devices = null;
 		try {
@@ -301,7 +279,7 @@ public class HBaseDevice {
 		}
 		Device existing = getDeviceByHardwareId(hbase, hardwareId);
 		existing.setDeleted(true);
-		byte[] primary = getPrimaryRowkey(deviceId);
+		byte[] primary = getDeviceRowKey(deviceId);
 		if (force) {
 			IdManager.getInstance().getDeviceKeys().delete(hardwareId);
 			HTableInterface devices = null;
@@ -349,7 +327,7 @@ public class HBaseDevice {
 		if (deviceId == null) {
 			return null;
 		}
-		byte[] primary = getPrimaryRowkey(deviceId);
+		byte[] primary = getDeviceRowKey(deviceId);
 
 		HTableInterface devices = null;
 		try {
@@ -396,7 +374,7 @@ public class HBaseDevice {
 		if (deviceId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
-		byte[] primary = getPrimaryRowkey(deviceId);
+		byte[] primary = getDeviceRowKey(deviceId);
 		byte[] assnHistory = getNextDeviceAssignmentHistoryKey();
 
 		HTableInterface devices = null;
@@ -427,7 +405,7 @@ public class HBaseDevice {
 		if (deviceId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
-		byte[] primary = getPrimaryRowkey(deviceId);
+		byte[] primary = getDeviceRowKey(deviceId);
 
 		Device updated = getDeviceByHardwareId(hbase, hardwareId);
 		updated.setAssignmentToken(null);
@@ -463,7 +441,7 @@ public class HBaseDevice {
 		if (deviceId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
-		byte[] primary = getPrimaryRowkey(deviceId);
+		byte[] primary = getDeviceRowKey(deviceId);
 
 		HTableInterface devices = null;
 		try {
@@ -499,7 +477,7 @@ public class HBaseDevice {
 	 * @param value
 	 * @return
 	 */
-	public static byte[] getDeviceIdentifier(Long value) {
+	public static byte[] getTruncatedIdentifier(Long value) {
 		byte[] bytes = Bytes.toBytes(value);
 		byte[] result = new byte[DEVICE_IDENTIFIER_LENGTH];
 		System.arraycopy(bytes, bytes.length - DEVICE_IDENTIFIER_LENGTH, result, 0, DEVICE_IDENTIFIER_LENGTH);
@@ -507,14 +485,16 @@ public class HBaseDevice {
 	}
 
 	/**
-	 * Get primary row key for a given site.
+	 * Get row key for a device with the given id.
 	 * 
-	 * @param siteId
+	 * @param deviceId
 	 * @return
 	 */
-	public static byte[] getPrimaryRowkey(Long deviceId) {
-		byte[] did = getDeviceIdentifier(deviceId);
-		return did;
+	public static byte[] getDeviceRowKey(Long deviceId) {
+		ByteBuffer buffer = ByteBuffer.allocate(DEVICE_IDENTIFIER_LENGTH + 1);
+		buffer.put(DeviceRecordType.Device.getType());
+		buffer.put(getTruncatedIdentifier(deviceId));
+		return buffer.array();
 	}
 
 	/**

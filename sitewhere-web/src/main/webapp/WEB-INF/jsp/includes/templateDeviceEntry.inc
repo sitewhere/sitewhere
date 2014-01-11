@@ -79,7 +79,7 @@
 <script type="text/x-kendo-tmpl" id="tpl-device-entry">
 	<div class="sw-device-list-entry gradient-bg">
 		<div class="sw-device-list-entry-logowrapper"
-			style="background-image: url(#:assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
+			style="background-image: url(#:specification.asset.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-device-list-entry-logo-tag">Device</span>
 		</div>
 		<div class="sw-device-list-entry-actions">
@@ -109,7 +109,7 @@
 			<p class="sw-device-list-entry-heading ellipsis"><span title="#:assignment.assetName#">#:assignment.assetName#</span></p>
 # } else { #
 			<div class="sw-device-list-entry-logowrapper">
-				<img class="sw-device-list-entry-logo" src="#:assetImageUrl#"/>
+				<img class="sw-device-list-entry-logo" src="#:specification.asset.imageUrl#"/>
 				<span class="label label-info sw-device-list-entry-logo-tag">Unassociated</span>
 			</div>
 			<p class="sw-device-list-entry-heading ellipsis">Unassociated Device</p>
@@ -155,9 +155,9 @@
 		</div>
 # } #
 		<div>
-			<p class="sw-device-list-entry-heading ellipsis"><span title="#:assetName#">#:assetName#</span></p>
+			<p class="sw-device-list-entry-heading ellipsis"><span title="#:specification.asset.name#">#:specification.asset.name#</span></p>
 			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">Id:</span><span title="#:hardwareId#">#:hardwareId#</span></p>
-			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">Info:</span><span title="#:comments#">#:comments#</span></p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">Spec:</span><span title="#:specification.name#">#:specification.name#</span></p>
 		</div>
 	</div>
 </script>

@@ -12,8 +12,8 @@ package com.sitewhere.rest.model.device;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDevice;
 
 /**
@@ -24,35 +24,119 @@ import com.sitewhere.spi.device.IDevice;
 @JsonInclude(Include.NON_NULL)
 public class Device extends MetadataProviderEntity implements IDevice {
 
-	/** Asset id of device hardware */
-	private String assetId;
-
-	/** Asset name */
-	private String assetName;
-	
-	/** Asset image url */
-	private String assetImageUrl;
-
 	/** Unique hardware id for device */
 	private String hardwareId;
+
+	/** Specification token */
+	private String specificationToken;
 
 	/** Comments */
 	private String comments;
 
-	/** Asset representing device hardware */
-	private HardwareAsset deviceAsset;
-
-	/** Current device assignment */
-	private DeviceAssignment assignment;
+	/** Status indicator */
+	private DeviceStatus status;
 
 	/** Token for current assignment */
 	private String assignmentToken;
 
+	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+
+	/** Device specification */
+	private DeviceSpecification specification;
+
+	/** Current device assignment */
+	private DeviceAssignment assignment;
+
+	/** Asset id from device specification (only for marshaling) */
+	private String assetId;
+
+	/** Asset name from device specification (only for marshaling) */
+	private String assetName;
+
+	/** Asset image url from device specification (only for marshaling) */
+	private String assetImageUrl;
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDevice#getAssetId()
+	 * @see com.sitewhere.spi.device.IDevice#getHardwareId()
 	 */
+	public String getHardwareId() {
+		return hardwareId;
+	}
+
+	public void setHardwareId(String hardwareId) {
+		this.hardwareId = hardwareId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDevice#getSpecificationToken()
+	 */
+	public String getSpecificationToken() {
+		return specificationToken;
+	}
+
+	public void setSpecificationToken(String specificationToken) {
+		this.specificationToken = specificationToken;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDevice#getComments()
+	 */
+	public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDevice#getStatus()
+	 */
+	public DeviceStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(DeviceStatus status) {
+		this.status = status;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDevice#getAssignmentToken()
+	 */
+	public String getAssignmentToken() {
+		return assignmentToken;
+	}
+
+	public void setAssignmentToken(String assignmentToken) {
+		this.assignmentToken = assignmentToken;
+	}
+
+	public DeviceSpecification getSpecification() {
+		return specification;
+	}
+
+	public void setSpecification(DeviceSpecification specification) {
+		this.specification = specification;
+	}
+
+	public DeviceAssignment getAssignment() {
+		return assignment;
+	}
+
+	public void setAssignment(DeviceAssignment assignment) {
+		this.assignment = assignment;
+	}
+
 	public String getAssetId() {
 		return assetId;
 	}
@@ -75,60 +159,5 @@ public class Device extends MetadataProviderEntity implements IDevice {
 
 	public void setAssetImageUrl(String assetImageUrl) {
 		this.assetImageUrl = assetImageUrl;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDevice#getHardwareId()
-	 */
-	public String getHardwareId() {
-		return hardwareId;
-	}
-
-	public void setHardwareId(String hardwareId) {
-		this.hardwareId = hardwareId;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDevice#getComments()
-	 */
-	public String getComments() {
-		return comments;
-	}
-
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
-
-	public HardwareAsset getDeviceAsset() {
-		return deviceAsset;
-	}
-
-	public void setDeviceAsset(HardwareAsset deviceAsset) {
-		this.deviceAsset = deviceAsset;
-	}
-
-	public DeviceAssignment getAssignment() {
-		return assignment;
-	}
-
-	public void setAssignment(DeviceAssignment assignment) {
-		this.assignment = assignment;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDevice#getAssignmentToken()
-	 */
-	public String getAssignmentToken() {
-		return assignmentToken;
-	}
-
-	public void setAssignmentToken(String assignmentToken) {
-		this.assignmentToken = assignmentToken;
 	}
 }

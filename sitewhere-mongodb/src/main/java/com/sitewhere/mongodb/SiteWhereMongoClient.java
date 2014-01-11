@@ -52,11 +52,16 @@ public class SiteWhereMongoClient implements InitializingBean {
 	/** Database that holds sitewhere collections */
 	private String databaseName = DEFAULT_DATABASE_NAME;
 
+	/** Injected name used for device specifications collection */
+	private String deviceSpecificationsCollectionName =
+			IMongoCollectionNames.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
+
 	/** Injected name used for devices collection */
 	private String devicesCollectionName = IMongoCollectionNames.DEFAULT_DEVICES_COLLECTION_NAME;
 
 	/** Injected name used for device assignments collection */
-	private String deviceAssignmentsCollectionName = IMongoCollectionNames.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
+	private String deviceAssignmentsCollectionName =
+			IMongoCollectionNames.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
 
 	/** Injected name used for sites collection */
 	private String sitesCollectionName = IMongoCollectionNames.DEFAULT_SITES_COLLECTION_NAME;
@@ -92,6 +97,7 @@ public class SiteWhereMongoClient implements InitializingBean {
 		messages.add("Port: " + port);
 		messages.add("Database Name: " + databaseName);
 		messages.add("");
+		messages.add("Device specifications collection name: " + getDeviceSpecificationsCollectionName());
 		messages.add("Devices collection name: " + getDevicesCollectionName());
 		messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
 		messages.add("Sites collection name: " + getSitesCollectionName());
@@ -116,6 +122,10 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public DB getSiteWhereDatabase() {
 		return client.getDB(getDatabaseName());
+	}
+
+	public DBCollection getDeviceSpecificationsCollection() {
+		return getSiteWhereDatabase().getCollection(getDeviceSpecificationsCollectionName());
 	}
 
 	public DBCollection getDevicesCollection() {
@@ -176,6 +186,14 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
+	}
+
+	public String getDeviceSpecificationsCollectionName() {
+		return deviceSpecificationsCollectionName;
+	}
+
+	public void setDeviceSpecificationsCollectionName(String deviceSpecificationsCollectionName) {
+		this.deviceSpecificationsCollectionName = deviceSpecificationsCollectionName;
 	}
 
 	public String getDevicesCollectionName() {

@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -30,6 +31,58 @@ import com.sitewhere.spi.search.ISearchResults;
  * @author Derek
  */
 public interface IDeviceManagement extends ISiteWhereLifecycle {
+
+	/**
+	 * Create a new device specification.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Get a device specification by unique token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
+
+	/**
+	 * Update an existing device specification.
+	 * 
+	 * @param token
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceSpecification updateDeviceSpecification(String token,
+			IDeviceSpecificationCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * List device specifications that match the search criteria.
+	 * 
+	 * @param includeDeleted
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Delete an existing device specification.
+	 * 
+	 * @param token
+	 * @param force
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
+			throws SiteWhereException;
 
 	/**
 	 * Create a new device.

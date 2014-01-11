@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * IDeviceSpecification.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,50 +7,35 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package com.sitewhere.spi.device;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * Interface for a device that provides location information.
+ * Specifies details about a given type of device.
  * 
  * @author Derek
  */
-public interface IDevice extends IMetadataProviderEntity {
+public interface IDeviceSpecification extends IMetadataProviderEntity {
 
 	/**
-	 * Get the unique hardware id of the device.
+	 * Get unique device specification token.
 	 * 
 	 * @return
 	 */
-	public String getHardwareId();
+	public String getToken();
 
 	/**
-	 * Get token for device specification.
+	 * Get name that describes specification.
 	 * 
 	 * @return
 	 */
-	public String getSpecificationToken();
+	public String getName();
 
 	/**
-	 * Get device comments.
+	 * Get id for specification asset type.
 	 * 
 	 * @return
 	 */
-	public String getComments();
-
-	/**
-	 * Get most recent device status.
-	 * 
-	 * @return
-	 */
-	public DeviceStatus getStatus();
-
-	/**
-	 * Get the current device assignment token if assigned.
-	 * 
-	 * @return
-	 */
-	public String getAssignmentToken();
+	public String getAssetId();
 }

@@ -300,7 +300,12 @@ public class HBaseDeviceAssignment {
 		}
 		DeviceAssignment existing = getDeviceAssignment(hbase, token);
 		existing.setDeleted(true);
-		HBaseDevice.removeDeviceAssignment(hbase, existing.getDeviceHardwareId());
+		try {
+			HBaseDevice.removeDeviceAssignment(hbase, existing.getDeviceHardwareId());
+		} catch (SiteWhereSystemException e) {
+			// Ignore missing reference to handle case where device was deleted underneath
+			// assignment.
+		}
 		if (force) {
 			IdManager.getInstance().getAssignmentKeys().delete(token);
 			HTableInterface sites = null;

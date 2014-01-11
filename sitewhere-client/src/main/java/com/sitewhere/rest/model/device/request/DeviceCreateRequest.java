@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.request;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 
 /**
@@ -20,11 +21,14 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 	/** Hardware id for new device */
 	private String hardwareId;
 
-	/** Hardware asset id */
-	private String assetId;
+	/** Device specification token */
+	private String specificationToken;
 
 	/** Comments */
 	private String comments;
+
+	/** Device status indicator */
+	private DeviceStatus status;
 
 	/*
 	 * (non-Javadoc)
@@ -42,14 +46,14 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getAssetId()
+	 * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getSpecificationToken()
 	 */
-	public String getAssetId() {
-		return assetId;
+	public String getSpecificationToken() {
+		return specificationToken;
 	}
 
-	public void setAssetId(String assetId) {
-		this.assetId = assetId;
+	public void setSpecificationToken(String specificationToken) {
+		this.specificationToken = specificationToken;
 	}
 
 	/*
@@ -63,5 +67,18 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 
 	public void setComments(String comments) {
 		this.comments = comments;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getStatus()
+	 */
+	public DeviceStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(DeviceStatus status) {
+		this.status = status;
 	}
 }

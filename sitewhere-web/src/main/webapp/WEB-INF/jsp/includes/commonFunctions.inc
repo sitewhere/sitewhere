@@ -2,6 +2,30 @@
 	/** Common callback function for async functions */
 	var swSuccessCallback;
 
+	/** Delete a specification based on its token */
+	function swSpecificationDelete(token, successCallback) {
+		swSuccessCallback = successCallback;
+		swConfirm("Delete Specification", "Are you sure that you want to delete device specification with " +
+			"token '" + token + "'?", function(result) {
+			if (result) {
+				$.deleteJSON("${pageContext.request.contextPath}/api/specifications/"
+					+ token + "?force=true", swSpecificationDeleteSuccess, swSpecificationDeleteFail);
+			}
+		});
+	}
+
+	/** Handle successful specification delete */
+	function swSpecificationDeleteSuccess() {
+		if (swSuccessCallback != null) {
+			swSuccessCallback();
+		}
+	}
+
+	/** Handle failed specification delete */
+	function swSpecificationDeleteFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete specification.");
+	}
+
 	/** Delete a device based on its hardware id */
 	function swDeviceDelete(hardwareId, successCallback) {
 		swSuccessCallback = successCallback;

@@ -1,5 +1,5 @@
 /*
- * IDeviceCreateRequest.java 
+ * IDeviceSpecificationCreateRequest.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -10,40 +10,25 @@
 package com.sitewhere.spi.device.request;
 
 import com.sitewhere.spi.common.IMetadataProvider;
-import com.sitewhere.spi.device.DeviceStatus;
 
 /**
- * Interface for arguments needed to create a device.
+ * Interface for arguments needed to create a device specification.
  * 
  * @author Derek
  */
-public interface IDeviceCreateRequest extends IMetadataProvider {
+public interface IDeviceSpecificationCreateRequest extends IMetadataProvider {
 
 	/**
-	 * Get the unique device hardware id.
+	 * Get name that describes specification.
 	 * 
 	 * @return
 	 */
-	public String getHardwareId();
+	public String getName();
 
 	/**
-	 * Get the device specification token.
+	 * Get id for specification asset type.
 	 * 
 	 * @return
 	 */
-	public String getSpecificationToken();
-
-	/**
-	 * Get comments associated with device.
-	 * 
-	 * @return
-	 */
-	public String getComments();
-
-	/**
-	 * Get device status indicator.
-	 * 
-	 * @return
-	 */
-	public DeviceStatus getStatus();
+	public String getAssetId();
 }

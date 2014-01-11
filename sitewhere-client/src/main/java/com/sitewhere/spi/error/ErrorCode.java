@@ -55,14 +55,11 @@ public enum ErrorCode {
 	/** Invalid asset reference id */
 	InvalidAssetReferenceId(502, "Asset reference not found."),
 
+	/** Invalid device specification token */
+	InvalidDeviceSpecificationToken(503, "Device specification token not found."),
+
 	/** Invalid site token */
 	InvalidSiteToken(504, "Site not found."),
-
-	/** Invalid manufacturer id */
-	InvalidDeviceManufacturerId(505, "Device manufacturer not found."),
-
-	/** Invalid device model id */
-	InvalidDeviceModelId(506, "Device model not found."),
 
 	/** Invalid site assignment id */
 	InvalidDeviceAssignmentId(520, "Device assignment not found."),
@@ -111,6 +108,9 @@ public enum ErrorCode {
 
 	/** Generic delete failure message */
 	GenericDeleteFailed(1000, "Delete unsuccessful."),
+
+	/** Some required data was missing */
+	IncompleteData(1010, "Not all required data was provided."),
 
 	/*********
 	 * OTHER *

@@ -15,7 +15,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.DeviceManagementAdapter;
+import com.sitewhere.spi.device.DeviceManagementDecorator;
 import com.sitewhere.spi.device.IDeviceAlert;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceEventBatch;
@@ -36,7 +36,7 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class DeviceManagementMetricsFacade extends DeviceManagementAdapter {
+public class DeviceManagementMetricsFacade extends DeviceManagementDecorator {
 
 	/** Times invocations of addDeviceEventBatch() */
 	private final Timer addDeviceEventBatchTimer = getMetrics().timer(

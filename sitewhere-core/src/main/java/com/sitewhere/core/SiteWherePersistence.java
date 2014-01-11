@@ -13,11 +13,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAlert;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
@@ -25,6 +28,7 @@ import com.sitewhere.rest.model.device.DeviceEvent;
 import com.sitewhere.rest.model.device.DeviceLocation;
 import com.sitewhere.rest.model.device.DeviceMeasurement;
 import com.sitewhere.rest.model.device.DeviceMeasurements;
+import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
@@ -32,10 +36,12 @@ import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.AlertLevel;
 import com.sitewhere.spi.device.AlertSource;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceAlert;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
@@ -43,11 +49,15 @@ import com.sitewhere.spi.device.IDeviceEventBatch;
 import com.sitewhere.spi.device.IDeviceMeasurement;
 import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
@@ -82,6 +92,112 @@ public class SiteWherePersistence {
 	public static void setUpdatedEntityMetadata(MetadataProviderEntity entity) throws SiteWhereException {
 		entity.setUpdatedDate(new Date());
 		entity.setUpdatedBy(LoginManager.getCurrentlyLoggedInUser().getUsername());
+	}
+
+	/**
+	 * Common logic for creating new device specification and populating it from request.
+	 * 
+	 * @param request
+	 * @param uuid
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceSpecification deviceSpecificationCreateLogic(
+			IDeviceSpecificationCreateRequest request, String uuid) throws SiteWhereException {
+		DeviceSpecification spec = new DeviceSpecification();
+
+		// Unique token is required.
+		if (uuid == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		spec.setToken(uuid);
+
+		// Name is required.
+		if (request.getName() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		spec.setName(request.getName());
+
+		// Asset id is required.
+		if (request.getAssetId() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		spec.setAssetId(request.getAssetId());
+
+		MetadataProvider.copy(request, spec);
+		SiteWherePersistence.initializeEntityMetadata(spec);
+		return spec;
+	}
+
+	/**
+	 * Common logic for updating a device specification from request.
+	 * 
+	 * @param request
+	 * @param target
+	 * @throws SiteWhereException
+	 */
+	public static void deviceSpecificationUpdateLogic(IDeviceSpecificationCreateRequest request,
+			DeviceSpecification target) throws SiteWhereException {
+		if (request.getName() != null) {
+			target.setName(request.getName());
+		}
+		if (request.getAssetId() != null) {
+			target.setAssetId(request.getAssetId());
+		}
+		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request, target);
+		}
+		SiteWherePersistence.setUpdatedEntityMetadata(target);
+	}
+
+	/**
+	 * Common logic for creating new device object and populating it from request.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static Device deviceCreateLogic(IDeviceCreateRequest request) throws SiteWhereException {
+		Device device = new Device();
+		device.setHardwareId(request.getHardwareId());
+		device.setSpecificationToken(request.getSpecificationToken());
+		device.setComments(request.getComments());
+		device.setStatus(DeviceStatus.Ok);
+
+		MetadataProvider.copy(request, device);
+		SiteWherePersistence.initializeEntityMetadata(device);
+		return device;
+	}
+
+	/**
+	 * Common logic for updating a device object from request.
+	 * 
+	 * @param request
+	 * @param target
+	 * @throws SiteWhereException
+	 */
+	public static void deviceUpdateLogic(IDeviceCreateRequest request, Device target)
+			throws SiteWhereException {
+		// Can not update the hardware id on a device.
+		if ((request.getHardwareId() != null) && (!request.getHardwareId().equals(target.getHardwareId()))) {
+			throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR,
+					HttpServletResponse.SC_BAD_REQUEST);
+		}
+		if (request.getSpecificationToken() != null) {
+			target.setSpecificationToken(request.getSpecificationToken());
+		}
+		if (request.getComments() != null) {
+			target.setComments(request.getComments());
+		}
+		if (request.getStatus() != null) {
+			target.setStatus(request.getStatus());
+		}
+		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request, target);
+		}
+		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
 
 	/**

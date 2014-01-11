@@ -156,6 +156,22 @@ public class SiteWhereController {
 	}
 
 	/**
+	 * Display the "list device specifications" page.
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/specifications/list")
+	public ModelAndView listSpecifications() {
+		try {
+			Map<String, Object> data = createBaseData();
+			return new ModelAndView("specifications/list", data);
+		} catch (SiteWhereException e) {
+			LOGGER.error(e);
+			return showError(e.getMessage());
+		}
+	}
+
+	/**
 	 * Display the "list devices" page.
 	 * 
 	 * @return

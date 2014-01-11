@@ -8,7 +8,7 @@
 		<div id="dc-tabs">
 			<ul>
 				<li class="k-state-active">Device Details</li>
-				<li>Hardware</li>
+				<li>Specification</li>
 				<li>Metadata</li>
 			</ul>
 			<div>
@@ -28,16 +28,12 @@
 				</form>
 			</div>
 			<div>
-				<form id="dc-hardware-form" class="form-horizontal form-search" style="padding-top: 20px;">
+				<form id="dc-specification-form" class="form-horizontal form-search" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="dc-hardware-search">Choose Hardware Type</label>
+						<label class="control-label" for="dc-specification-search">Choose Specification</label>
 						<div class="controls">
-							<div class="input-append">
-	    						<input class="input-xlarge" id="dc-hardware-search" type="text">
-								<span class="add-on"><i class="icon-search"></i></span>
-	    					</div>
-							<div id="dc-hardware-matches" class="sw-form-search-results"></div>
-							<input type="hidden" id="dc-chosen-asset-id" title="Hardware type"/>
+							<div id="dc-specifications" class="sw-form-search-results"></div>
+							<input type="hidden" id="dc-chosen-specification-token" title="Specification"/>
 	    				</div>
 	    			</div>
 	    		</form>		
@@ -64,15 +60,11 @@
 	/** Metadata datasource */
 	var dcMetadataDS;
 	
-	/** Datasource for hardware assets */
-	var dcHardwareDS;
+	/** Datasource for specifications */
+	var dcSpecificationsDS;
 	
-	/** Hardware matches list */
-	var dcHardwareMatches;
-	
-	/** Used for delayed submit on search */
-	var dcTimeout;
-	var dcLastSearch;
+	/** Specifications list */
+	var dcSpecifications;
 
 	$(document).ready(function() {
 		
@@ -87,11 +79,11 @@
 		/** Grid for metadata */
         $("#dc-metadata").kendoGrid(swMetadataGridOptions(dcMetadataDS));
 		
-		/** Create AJAX datasource for hardware search */
-		dcHardwareDS = new kendo.data.DataSource({
+		/** Create AJAX datasource for specifications list */
+		dcSpecificationsDS = new kendo.data.DataSource({
 			transport : {
 				read : {
-					url : "${pageContext.request.contextPath}/api/assets/devices",
+					url : "${pageContext.request.contextPath}/api/specifications",
 					dataType : "json",
 				}
 			},
@@ -102,18 +94,12 @@
 		});
 		
 		/** Create the hardware match list */
-		dcHardwareMatches = $("#dc-hardware-matches").kendoListView({
-			dataSource : dcHardwareDS,
+		dcSpecifications = $("#dc-specifications").kendoListView({
+			dataSource : dcSpecificationsDS,
 			selectable : "single",
-			template : kendo.template($("#hardware-asset-entry").html()),
-			change: dcHardwareAssetChosen
+			template : kendo.template($("#specification-entry-small").html()),
+			change: dcSpecificationChosen
 		}).data("kendoListView");
-		
-		/** Update hardware search datasource based on entered criteria */
-		$("#dc-hardware-search").bind("change paste keyup", function() {
-		    window.clearTimeout(dcTimeout);
-		    dcTimeout = window.setTimeout(dcHardwareSearchCriteriaUpdated, 300); 
-		});
 		
         /** Handle create dialog submit */
 		$('#dc-dialog-submit').click(function(event) {
@@ -124,7 +110,7 @@
 			var deviceData = {
 				"hardwareId": $('#dc-hardware-id').val(), 
 				"comments": $('#dc-comments').val(), 
-				"assetId": $('#dc-chosen-asset-id').val(), 
+				"specificationToken": $('#dc-chosen-specification-token').val(), 
 				"metadata": swMetadataAsLookup(dcMetadataDS.data()),
 			}
 			$.postJSON("${pageContext.request.contextPath}/api/devices", 
@@ -153,36 +139,25 @@
         /** Validate main form */
 		$("#dc-hardware-id").require();
 
-        /** Verify that an asset was chosen */
-		$("#dc-chosen-asset-id").require();
+        /** Verify that a specification was chosen */
+		$("#dc-chosen-specification-token").require();
       
 		var result = $.validity.end();
 		return result.valid;
 	}
 	
-	/** Called when hardware search criteria has changed */
-	function dcHardwareSearchCriteriaUpdated() {
-		var criteria = $('#dc-hardware-search').val();
-		if (criteria != dcLastSearch) {
-			var url = "${pageContext.request.contextPath}/api/assets/devices?criteria=" + criteria;
-			dcHardwareDS.transport.options.read.url = url;
-			dcHardwareDS.read();
-		}
-		dcLastSearch = criteria;
-	}
-	
-	/** Called when a hardware asset is chosen from the list */
-	function dcHardwareAssetChosen() {
-		var listView = dcHardwareDS.view();
+	/** Called when a specification is chosen from the list */
+	function dcSpecificationChosen() {
+		var listView = dcSpecificationsDS.view();
 		var selected = $.map(this.select(), function(item) {
 			return listView[$(item).index()];
 		});
 
 		if (selected.length > 0) {
-			$('#dc-chosen-asset-id').val(selected[0].id);
+			$('#dc-chosen-specification-token').val(selected[0].token);
 		} else {
-			$('#dc-chosen-asset-id').val("");
-		}				
+			$('#dc-chosen-specification-token').val("");
+		}	
 	}
 	
 	/** Open the dialog */
@@ -195,10 +170,7 @@
 		dcMetadataDS.data(new Array());
 		
 		// Reset hardware search.
-    	$('#dc-hardware-search').val("");
     	$('#dc-chosen-asset-id').val("");
-    	dcHardwareSearchCriteriaUpdated();
-    	dcHardwareMatches.clearSelection();
     	
     	// Select first tab.
 		dcTabs.select(0);

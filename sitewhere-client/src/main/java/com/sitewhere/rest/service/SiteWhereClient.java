@@ -33,12 +33,14 @@ import com.sitewhere.rest.model.device.DeviceEventBatch;
 import com.sitewhere.rest.model.device.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.DeviceLocation;
 import com.sitewhere.rest.model.device.DeviceMeasurements;
+import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
@@ -120,6 +122,35 @@ public class SiteWhereClient implements ISiteWhereClient {
 	public Site createSite(SiteCreateRequest request) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		return sendRest(getBaseUrl() + "sites", HttpMethod.POST, request, Site.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.ISiteWhereClient#createDeviceSpecification(com.sitewhere.rest
+	 * .model.device.request.DeviceSpecificationCreateRequest)
+	 */
+	@Override
+	public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
+			throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "specifications", HttpMethod.POST, request, DeviceSpecification.class,
+				vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.ISiteWhereClient#getDeviceSpecificationByToken(java.lang.String)
+	 */
+	@Override
+	public DeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", token);
+		return sendRest(getBaseUrl() + "specifications/{token}", HttpMethod.GET, null,
+				DeviceSpecification.class, vars);
 	}
 
 	/*

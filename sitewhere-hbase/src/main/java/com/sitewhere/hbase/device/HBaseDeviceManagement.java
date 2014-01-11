@@ -31,6 +31,7 @@ import com.sitewhere.spi.device.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.IDeviceLocation;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceMeasurements;
+import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
@@ -38,10 +39,12 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * HBase implementation of SiteWhere device management.
@@ -92,6 +95,69 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public void stop() throws SiteWhereException {
 		LOGGER.info("HBase device management stopped.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceSpecification(com.sitewhere
+	 * .spi.device.request.IDeviceSpecificationCreateRequest)
+	 */
+	@Override
+	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
+			throws SiteWhereException {
+		return HBaseDeviceSpecification.createDeviceSpecification(client, request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceSpecificationByToken(java.lang
+	 * .String)
+	 */
+	@Override
+	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
+		return HBaseDeviceSpecification.getDeviceSpecificationByToken(client, token);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateDeviceSpecification(java.lang.
+	 * String, com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest)
+	 */
+	@Override
+	public IDeviceSpecification updateDeviceSpecification(String token,
+			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
+		return HBaseDeviceSpecification.updateDeviceSpecification(client, token, request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceSpecifications(boolean,
+	 * com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return HBaseDeviceSpecification.listDeviceSpecifications(client, includeDeleted, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceSpecification(java.lang.
+	 * String, boolean)
+	 */
+	@Override
+	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
+			throws SiteWhereException {
+		return HBaseDeviceSpecification.deleteDeviceSpecification(client, token, force);
 	}
 
 	/*

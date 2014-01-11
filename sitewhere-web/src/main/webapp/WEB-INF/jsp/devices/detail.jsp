@@ -185,7 +185,7 @@
 	
 	/** Loads information for the selected device */
 	function loadDevice() {
-		$.getJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId + "?includeAsset=false", 
+		$.getJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId, 
 			loadGetSuccess, loadGetFailed);
 	}
     

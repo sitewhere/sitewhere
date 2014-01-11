@@ -24,6 +24,7 @@ import com.sitewhere.rest.model.device.DeviceAlert;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceLocation;
 import com.sitewhere.rest.model.device.DeviceMeasurements;
+import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.request.DeviceAlertCreateRequest;
@@ -31,6 +32,7 @@ import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.service.SiteWhereClient;
@@ -73,8 +75,9 @@ public class LargeDataset {
 	@Test
 	public void createData() throws SiteWhereException {
 		List<Site> sites = createSites();
+		DeviceSpecification spec = createDeviceSpecification();
 		for (Site site : sites) {
-			List<Device> devices = createDevices();
+			List<Device> devices = createDevices(spec);
 			for (Device device : devices) {
 				DeviceAssignment assignment = createDeviceAssignment(device, site);
 				Calendar cal = Calendar.getInstance();
@@ -108,18 +111,30 @@ public class LargeDataset {
 	}
 
 	/**
+	 * Create a device specification.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSpecification createDeviceSpecification() throws SiteWhereException {
+		DeviceSpecificationCreateRequest request = new DeviceSpecificationCreateRequest();
+		request.setAssetId("200");
+		return client.createDeviceSpecification(request);
+	}
+
+	/**
 	 * Create devices.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<Device> createDevices() throws SiteWhereException {
+	public List<Device> createDevices(DeviceSpecification spec) throws SiteWhereException {
 		List<Device> results = new ArrayList<Device>();
 		for (int x = 0; x < ASSIGNMENTS_PER_SITE; x++) {
 			DeviceCreateRequest request = new DeviceCreateRequest();
 			request.setHardwareId(UUID.randomUUID().toString());
+			request.setSpecificationToken(spec.getToken());
 			request.setComments("Test device " + x + ".");
-			request.setAssetId("200");
 			results.add(client.createDevice(request));
 		}
 		return results;

@@ -28,6 +28,9 @@ public class IdManager {
 	/** Manager for device ids */
 	private UnqiueIdCounterMap deviceKeys;
 
+	/** Manager for device specification ids */
+	private UnqiueIdCounterMap specificationKeys;
+
 	/** Manager for zone ids */
 	private UuidRowKeyMap zoneKeys;
 
@@ -53,10 +56,16 @@ public class IdManager {
 	public void load(ISiteWhereHBaseClient hbase) throws SiteWhereException {
 		siteKeys = new UnqiueIdCounterMap(hbase, UniqueIdType.SiteKey, UniqueIdType.SiteValue);
 		siteKeys.refresh();
+
 		deviceKeys = new UnqiueIdCounterMap(hbase, UniqueIdType.DeviceKey, UniqueIdType.DeviceValue);
 		deviceKeys.refresh();
+
+		specificationKeys = new UnqiueIdCounterMap(hbase, UniqueIdType.DeviceKey, UniqueIdType.DeviceValue);
+		specificationKeys.refresh();
+
 		zoneKeys = new UuidRowKeyMap(hbase, UniqueIdType.ZoneKey, UniqueIdType.ZoneValue);
 		zoneKeys.refresh();
+
 		assignmentKeys =
 				new UuidRowKeyMap(hbase, UniqueIdType.DeviceAssignmentKey, UniqueIdType.DeviceAssignmentValue);
 		assignmentKeys.refresh();
@@ -74,8 +83,16 @@ public class IdManager {
 		return deviceKeys;
 	}
 
-	public void setDeviceKeys(UnqiueIdCounterMap deviceKeys) {
+	protected void setDeviceKeys(UnqiueIdCounterMap deviceKeys) {
 		this.deviceKeys = deviceKeys;
+	}
+
+	public UnqiueIdCounterMap getSpecificationKeys() {
+		return specificationKeys;
+	}
+
+	protected void setSpecificationKeys(UnqiueIdCounterMap specificationKeys) {
+		this.specificationKeys = specificationKeys;
 	}
 
 	public UuidRowKeyMap getZoneKeys() {
@@ -90,7 +107,7 @@ public class IdManager {
 		return assignmentKeys;
 	}
 
-	public void setAssignmentKeys(UuidRowKeyMap assignmentKeys) {
+	protected void setAssignmentKeys(UuidRowKeyMap assignmentKeys) {
 		this.assignmentKeys = assignmentKeys;
 	}
 }

@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -30,7 +31,7 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class DeviceManagementAdapter implements IDeviceManagement {
+public class DeviceManagementDecorator implements IDeviceManagement {
 
 	/** Delegate instance */
 	private IDeviceManagement delegate;
@@ -43,6 +44,35 @@ public class DeviceManagementAdapter implements IDeviceManagement {
 	@Override
 	public void stop() throws SiteWhereException {
 		delegate.stop();
+	}
+
+	@Override
+	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
+			throws SiteWhereException {
+		return delegate.createDeviceSpecification(request);
+	}
+
+	@Override
+	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
+		return delegate.getDeviceSpecificationByToken(token);
+	}
+
+	@Override
+	public IDeviceSpecification updateDeviceSpecification(String token,
+			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
+		return delegate.updateDeviceSpecification(token, request);
+	}
+
+	@Override
+	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceSpecifications(includeDeleted, criteria);
+	}
+
+	@Override
+	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
+			throws SiteWhereException {
+		return delegate.deleteDeviceSpecification(token, force);
 	}
 
 	@Override

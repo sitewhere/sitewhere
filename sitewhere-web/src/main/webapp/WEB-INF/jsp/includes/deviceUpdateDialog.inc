@@ -20,7 +20,7 @@
 .sw-device-update-label {
 	font-size: 10pt;
 	font-weight: bold;
-	min-width: 100px;
+	min-width: 95px;
 	display: inline-block;
 }
 </style>
@@ -49,7 +49,7 @@
 						</div>
 					</div>
 					<input type="hidden" id="du-hardware-id"/>
-					<input type="hidden" id="du-asset-id"/>
+					<input type="hidden" id="du-specification-token"/>
 				</form>
 			</div>
 			<div>
@@ -66,10 +66,10 @@
 <!-- Static content in top of update dialog -->
 <script type="text/x-kendo-tmpl" id="du-static-block">
 	<div class="sw-device-update-imgwrapper">
-		<img class="sw-device-update-img" src="#:deviceAsset.imageUrl#"/>
+		<img class="sw-device-update-img" src="#:specification.asset.imageUrl#"/>
 	</div>
 	<p class="ellipsis"><span class="sw-device-update-label">Hardware Id:</span> #:hardwareId#</p>
-	<p class="ellipsis"><span class="sw-device-update-label">Hardware Type:</span> #:deviceAsset.name#</p>
+	<p class="ellipsis"><span class="sw-device-update-label">Specification:</span> #:specification.name#</p>
 	<p class="ellipsis"><span class="sw-device-update-label">Created:</span> #= formattedDate(kendo.parseDate(createdDate)) #</p>
 	<p class="ellipsis"><span class="sw-device-update-label">Updated:</span> #= formattedDate(kendo.parseDate(updatedDate)) #</p>
 </script>
@@ -105,8 +105,8 @@
 			var hardwareId = $('#du-hardware-id').val();
 			var deviceData = {
 				"hardwareId": hardwareId, 
+				"specificationToken": $('#du-specification-token').val(), 
 				"comments": $('#du-comments').val(), 
-				"assetId": $('#du-asset-id').val(), 
 				"metadata": swMetadataAsLookup(duMetadataDS.data()),
 			}
 			$.putJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId, 
@@ -134,7 +134,7 @@
 
         /** Validate hidden fields */
 		$("#du-hardware-id").require();
-		$("#du-asset-id").require();
+		$("#du-specification-token").require();
      
 		var result = $.validity.end();
 		return result.valid;
@@ -157,8 +157,8 @@
 		var template = kendo.template($("#du-static-block").html());
 		$('#du-static-header').html(template(data));
 		$('#du-hardware-id').val(data.hardwareId);
+		$('#du-specification-token').val(data.specification.token);
 		$('#du-comments').val(data.comments);
-		$('#du-asset-id').val(data.deviceAsset.id);
 		duMetadataDS.data(swLookupAsMetadata(data.metadata));
 		
 		duTabs.select(0);
