@@ -22,14 +22,17 @@ public class IdManager {
 	/** Singleton instance */
 	private static IdManager SINGLETON;
 
-	/** Manager for site ids */
+	/** Manager for site tokens */
 	private UnqiueIdCounterMap siteKeys;
 
 	/** Manager for device ids */
 	private UnqiueIdCounterMap deviceKeys;
 
-	/** Manager for device specification ids */
+	/** Manager for device specification tokens */
 	private UnqiueIdCounterMap specificationKeys;
+
+	/** Manager for command tokens */
+	private UuidRowKeyMap commandKeys;
 
 	/** Manager for zone ids */
 	private UuidRowKeyMap zoneKeys;
@@ -60,8 +63,12 @@ public class IdManager {
 		deviceKeys = new UnqiueIdCounterMap(hbase, UniqueIdType.DeviceKey, UniqueIdType.DeviceValue);
 		deviceKeys.refresh();
 
-		specificationKeys = new UnqiueIdCounterMap(hbase, UniqueIdType.DeviceKey, UniqueIdType.DeviceValue);
+		specificationKeys =
+				new UnqiueIdCounterMap(hbase, UniqueIdType.SpecificationKey, UniqueIdType.SpecificationValue);
 		specificationKeys.refresh();
+
+		commandKeys = new UuidRowKeyMap(hbase, UniqueIdType.CommandKey, UniqueIdType.CommandValue);
+		commandKeys.refresh();
 
 		zoneKeys = new UuidRowKeyMap(hbase, UniqueIdType.ZoneKey, UniqueIdType.ZoneValue);
 		zoneKeys.refresh();
@@ -93,6 +100,14 @@ public class IdManager {
 
 	protected void setSpecificationKeys(UnqiueIdCounterMap specificationKeys) {
 		this.specificationKeys = specificationKeys;
+	}
+
+	public UuidRowKeyMap getCommandKeys() {
+		return commandKeys;
+	}
+
+	public void setCommandKeys(UuidRowKeyMap commandKeys) {
+		this.commandKeys = commandKeys;
 	}
 
 	public UuidRowKeyMap getZoneKeys() {

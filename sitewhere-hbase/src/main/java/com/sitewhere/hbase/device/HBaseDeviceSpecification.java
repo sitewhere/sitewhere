@@ -18,6 +18,7 @@ import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Increment;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -51,6 +52,12 @@ public class HBaseDeviceSpecification {
 	/** Length of device identifier (subset of 8 byte long) */
 	public static final int SPEC_IDENTIFIER_LENGTH = 4;
 
+	/** Length of command identifier (subset of 8 byte long) */
+	public static final int COMMAND_IDENTIFIER_LENGTH = 4;
+
+	/** Column qualifier for command counter */
+	public static final byte[] COMMAND_COUNTER = Bytes.toBytes("commandctr");
+
 	/**
 	 * Create a device specification.
 	 * 
@@ -64,8 +71,31 @@ public class HBaseDeviceSpecification {
 		String uuid = IdManager.getInstance().getSpecificationKeys().createUniqueId();
 
 		// Use common logic so all backend implementations work the same.
-		DeviceSpecification spec = SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
-		return putDeviceSpecificationJson(hbase, spec);
+		DeviceSpecification specification =
+				SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
+
+		Long value = IdManager.getInstance().getSpecificationKeys().getValue(specification.getToken());
+		if (value == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
+		}
+		byte[] primary = getPrimaryRowKey(value);
+		byte[] json = MarshalUtils.marshalJson(specification);
+
+		byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
+		HTableInterface devices = null;
+		try {
+			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			Put put = new Put(primary);
+			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			put.add(ISiteWhereHBase.FAMILY_ID, COMMAND_COUNTER, maxLong);
+			devices.put(put);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to put device specification data.", e);
+		} finally {
+			HBaseUtils.closeCleanly(devices);
+		}
+
+		return specification;
 	}
 
 	/**
@@ -82,7 +112,7 @@ public class HBaseDeviceSpecification {
 		if (specId == null) {
 			return null;
 		}
-		byte[] key = getDeviceSpecificationRowKey(specId);
+		byte[] key = getPrimaryRowKey(specId);
 
 		HTableInterface devices = null;
 		try {
@@ -159,6 +189,14 @@ public class HBaseDeviceSpecification {
 
 			Pager<byte[]> pager = new Pager<byte[]>(criteria);
 			for (Result result : scanner) {
+				byte[] row = result.getRow();
+
+				// Only match specification rows.
+				if ((row[0] != DeviceRecordType.DeviceSpecification.getType())
+						|| (row[SPEC_IDENTIFIER_LENGTH + 1] != DeviceSpecificationRecordType.DeviceSpecification.getType())) {
+					continue;
+				}
+
 				boolean shouldAdd = true;
 				byte[] json = null;
 				for (KeyValue column : result.raw()) {
@@ -200,7 +238,7 @@ public class HBaseDeviceSpecification {
 		existing.setDeleted(true);
 
 		Long specId = IdManager.getInstance().getSpecificationKeys().getValue(token);
-		byte[] key = getDeviceSpecificationRowKey(specId);
+		byte[] key = getPrimaryRowKey(specId);
 		if (force) {
 			IdManager.getInstance().getSpecificationKeys().delete(token);
 			HTableInterface devices = null;
@@ -265,7 +303,7 @@ public class HBaseDeviceSpecification {
 		if (value == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 		}
-		byte[] primary = getDeviceSpecificationRowKey(value);
+		byte[] primary = getPrimaryRowKey(value);
 		byte[] json = MarshalUtils.marshalJson(specification);
 
 		HTableInterface devices = null;
@@ -298,15 +336,101 @@ public class HBaseDeviceSpecification {
 	}
 
 	/**
+	 * Allocate the next command id and return the new value. (Each id is less than the
+	 * last)
+	 * 
+	 * @param hbase
+	 * @param specId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static Long allocateNextCommandId(ISiteWhereHBaseClient hbase, Long specId)
+			throws SiteWhereException {
+		byte[] primary = getPrimaryRowKey(specId);
+		HTableInterface devices = null;
+		try {
+			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			Increment increment = new Increment(primary);
+			increment.addColumn(ISiteWhereHBase.FAMILY_ID, COMMAND_COUNTER, -1);
+			Result result = devices.increment(increment);
+			return Bytes.toLong(result.value());
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to allocate next command id.", e);
+		} finally {
+			HBaseUtils.closeCleanly(devices);
+		}
+	}
+
+	/**
 	 * Get row key for a device specification with the given id.
 	 * 
 	 * @param specificationId
 	 * @return
 	 */
-	public static byte[] getDeviceSpecificationRowKey(Long specificationId) {
-		ByteBuffer buffer = ByteBuffer.allocate(SPEC_IDENTIFIER_LENGTH + 1);
+	public static byte[] getPrimaryRowKey(Long specificationId) {
+		ByteBuffer buffer = ByteBuffer.allocate(SPEC_IDENTIFIER_LENGTH + 2);
 		buffer.put(DeviceRecordType.DeviceSpecification.getType());
 		buffer.put(getTruncatedIdentifier(specificationId));
+		buffer.put(DeviceSpecificationRecordType.DeviceSpecification.getType());
+		return buffer.array();
+	}
+
+	/**
+	 * Get the unique command identifier based on the long value associated with the
+	 * command UUID. This will be a subset of the full 8-bit long value.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static byte[] getCommandIdentifier(Long value) {
+		byte[] bytes = Bytes.toBytes(value);
+		byte[] result = new byte[COMMAND_IDENTIFIER_LENGTH];
+		System.arraycopy(bytes, bytes.length - COMMAND_IDENTIFIER_LENGTH, result, 0,
+				COMMAND_IDENTIFIER_LENGTH);
+		return result;
+	}
+
+	/**
+	 * Get prefix for a device command row for the given specification.
+	 * 
+	 * @param specificationId
+	 * @return
+	 */
+	public static byte[] getDeviceCommandRowPrefix(Long specificationId) {
+		ByteBuffer buffer = ByteBuffer.allocate(1 + SPEC_IDENTIFIER_LENGTH + 1);
+		buffer.put(DeviceRecordType.DeviceSpecification.getType());
+		buffer.put(getTruncatedIdentifier(specificationId));
+		buffer.put(DeviceSpecificationRecordType.DeviceCommand.getType());
+		return buffer.array();
+	}
+
+	/**
+	 * Get prefix after the last defined specification record type.
+	 * 
+	 * @param specificationId
+	 * @return
+	 */
+	public static byte[] getEndRowPrefix(Long specificationId) {
+		ByteBuffer buffer = ByteBuffer.allocate(1 + SPEC_IDENTIFIER_LENGTH + 1);
+		buffer.put(DeviceRecordType.DeviceSpecification.getType());
+		buffer.put(getTruncatedIdentifier(specificationId));
+		buffer.put(DeviceSpecificationRecordType.End.getType());
+		return buffer.array();
+	}
+
+	/**
+	 * Get row key for a device command based on spec and unique id.
+	 * 
+	 * @param specId
+	 * @param value
+	 * @return
+	 */
+	public static byte[] getDeviceCommandRowKey(Long specId, Long value) {
+		byte[] prefix = getDeviceCommandRowPrefix(specId);
+		byte[] uid = getCommandIdentifier(value);
+		ByteBuffer buffer = ByteBuffer.allocate(prefix.length + uid.length);
+		buffer.put(prefix);
+		buffer.put(uid);
 		return buffer.array();
 	}
 }

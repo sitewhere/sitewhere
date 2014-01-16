@@ -1,5 +1,5 @@
 /*
- * CommandActor.java 
+ * IDeviceCommandNamespace.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,18 +7,28 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device;
+package com.sitewhere.spi.device.command;
+
+import java.util.List;
 
 /**
- * Enumerates types of actors that may participate in commands.
+ * Used for grouping device commands by namespace.
  * 
  * @author Derek
  */
-public enum CommandActor {
+public interface IDeviceCommandNamespace {
 
-	/** Actor is a physical device */
-	Device,
+	/**
+	 * Namespace value.
+	 * 
+	 * @return
+	 */
+	public String getValue();
 
-	/** Actor is the system */
-	System;
+	/**
+	 * List of commands in namespace.
+	 * 
+	 * @return
+	 */
+	public List<IDeviceCommand> getCommands();
 }

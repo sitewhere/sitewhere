@@ -73,7 +73,7 @@
 					href="javascript:void(0)" onclick="onSpecificationDeleteClicked(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
 				<a class="btn btn-small btn-success" title="View Specification" 
-					href="javascript:void(0)" onclick="onSiteOpenClicked(event, '#:token#')">
+					href="javascript:void(0)" onclick="onSpecificationOpenClicked(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>
 # } #

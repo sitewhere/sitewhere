@@ -56,10 +56,13 @@ public enum ErrorCode {
 	InvalidAssetReferenceId(502, "Asset reference not found."),
 
 	/** Invalid device specification token */
-	InvalidDeviceSpecificationToken(503, "Device specification token not found."),
+	InvalidDeviceSpecificationToken(503, "Device specification not found."),
 
 	/** Invalid site token */
-	InvalidSiteToken(504, "Site not found."),
+	InvalidDeviceCommandToken(505, "Device command not found."),
+
+	/** Invalid site token */
+	InvalidSiteToken(510, "Site not found."),
 
 	/** Invalid site assignment id */
 	InvalidDeviceAssignmentId(520, "Device assignment not found."),
@@ -78,6 +81,13 @@ public enum ErrorCode {
 
 	/** Invalid device alert id */
 	InvalidDeviceAlertId(525, "Device alert not found for id."),
+
+	/******************
+	 * DEVICE COMMAND *
+	 ******************/
+
+	/** Attempting to create a new command that duplicates an existing command */
+	DeviceCommandExists(550, "Device command with same namespace and name already exists for specification."),
 
 	/**********
 	 * DEVICE *

@@ -107,6 +107,30 @@ public class MongoPersistence {
 	}
 
 	/**
+	 * List all items in the collection that match the qiven query.
+	 * 
+	 * @param api
+	 * @param collection
+	 * @param query
+	 * @param sort
+	 * @return
+	 */
+	public static <T> List<T> list(Class<T> api, DBCollection collection, DBObject query, DBObject sort) {
+		DBCursor cursor = collection.find(query);
+		List<T> matches = new ArrayList<T>();
+		MongoConverter<T> converter = MongoConverters.getConverterFor(api);
+		try {
+			while (cursor.hasNext()) {
+				DBObject match = cursor.next();
+				matches.add(converter.convert(match));
+			}
+		} finally {
+			cursor.close();
+		}
+		return matches;
+	}
+
+	/**
 	 * Appends filter criteria onto exiting query based on the given date range.
 	 * 
 	 * @param query

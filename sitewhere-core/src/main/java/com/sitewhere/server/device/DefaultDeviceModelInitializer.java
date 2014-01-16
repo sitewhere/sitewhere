@@ -21,8 +21,10 @@ import com.sitewhere.geo.GeoUtils;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.DeviceEventBatch;
 import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest;
@@ -42,6 +44,7 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.ISiteMapMetadata;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -107,6 +110,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Image URL assocaited with sites */
 	public static final String SITE_IMAGE_URL =
 			"https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg";
+
+	/** Namespace for common core commands */
+	public static final String CORE_HWCORE_NAMESPACE = "common://hardware/core";
 
 	/** Information for available device specifications */
 	public static final SpecificationDetails[] SPECIFICATION_INFO = {
@@ -200,10 +206,47 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setAssetId(details.getAssetId());
 			request.setName(details.getName());
 			IDeviceSpecification spec = getDeviceManagement().createDeviceSpecification(request);
+			createDeviceCommands(spec);
 			results[index] = spec;
 			index++;
 		}
 		return results;
+	}
+
+	/**
+	 * Create device commands that may be added to specifications.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void createDeviceCommands(IDeviceSpecification spec) throws SiteWhereException {
+		DeviceCommandCreateRequest cmdDefault = new DeviceCommandCreateRequest();
+		cmdDefault.setNamespace(null);
+		cmdDefault.setName("ping");
+		getDeviceManagement().createDeviceCommand(spec, cmdDefault);
+
+		DeviceCommandCreateRequest version = new DeviceCommandCreateRequest();
+		version.setNamespace(null);
+		version.setName("version");
+		getDeviceManagement().createDeviceCommand(spec, version);
+
+		DeviceCommandCreateRequest powerUp = new DeviceCommandCreateRequest();
+		powerUp.setNamespace(CORE_HWCORE_NAMESPACE);
+		powerUp.setName("powerUp");
+		powerUp.getParameters().add(new CommandParameter("delayInMs", ParameterType.Integer, false));
+		getDeviceManagement().createDeviceCommand(spec, powerUp);
+
+		DeviceCommandCreateRequest firmware = new DeviceCommandCreateRequest();
+		firmware.setNamespace(CORE_HWCORE_NAMESPACE);
+		firmware.setName("updateFirmware");
+		firmware.getParameters().add(new CommandParameter("url", ParameterType.String, true));
+		firmware.getParameters().add(new CommandParameter("createRestorePoint", ParameterType.Boolean, true));
+		getDeviceManagement().createDeviceCommand(spec, firmware);
+
+		DeviceCommandCreateRequest powerDown = new DeviceCommandCreateRequest();
+		powerDown.setNamespace(CORE_HWCORE_NAMESPACE);
+		powerDown.setName("powerDown");
+		powerDown.getParameters().add(new CommandParameter("delayInMs", ParameterType.Integer, false));
+		getDeviceManagement().createDeviceCommand(spec, powerDown);
 	}
 
 	/**

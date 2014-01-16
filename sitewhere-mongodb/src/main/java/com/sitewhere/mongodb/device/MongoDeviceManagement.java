@@ -36,6 +36,7 @@ import com.sitewhere.rest.model.device.DeviceMeasurements;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -52,8 +53,10 @@ import com.sitewhere.spi.device.IDeviceMeasurements;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
@@ -252,6 +255,145 @@ public class MongoDeviceManagement implements IDeviceManagement {
 		DBObject match = getDeviceSpecificationDBObjectByToken(token);
 		if (match == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
+		}
+		return match;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(com.sitewhere.spi
+	 * .device.IDeviceSpecification,
+	 * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+	 */
+	@Override
+	public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+			throws SiteWhereException {
+		// Note: This allows duplicates if duplicate was marked deleted.
+		List<IDeviceCommand> existing = listDeviceCommands(spec.getToken(), false);
+
+		// Use common logic so all backend implementations work the same.
+		DeviceCommand command =
+				SiteWherePersistence.deviceCommandCreateLogic(spec, request, UUID.randomUUID().toString(),
+						existing);
+
+		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
+		DBObject created = MongoDeviceCommand.toDBObject(command);
+		MongoPersistence.insert(commands, created);
+		return MongoDeviceCommand.fromDBObject(created);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.lang.String
+	 * )
+	 */
+	@Override
+	public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
+		DBObject result = getDeviceCommandDBObjectByToken(token);
+		if (result != null) {
+			return MongoDeviceCommand.fromDBObject(result);
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateDeviceCommand(java.lang.String,
+	 * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+	 */
+	@Override
+	public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
+			throws SiteWhereException {
+		DBObject match = assertDeviceCommand(token);
+		DeviceCommand command = MongoDeviceCommand.fromDBObject(match);
+
+		// Note: This allows duplicates if duplicate was marked deleted.
+		List<IDeviceCommand> existing = listDeviceCommands(token, false);
+
+		// Use common update logic so that backend implemetations act the same way.
+		SiteWherePersistence.deviceCommandUpdateLogic(request, command, existing);
+		DBObject updated = MongoDeviceCommand.toDBObject(command);
+
+		BasicDBObject query = new BasicDBObject(MongoDeviceCommand.PROP_TOKEN, token);
+		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
+		MongoPersistence.update(commands, query, updated);
+		return MongoDeviceCommand.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted)
+			throws SiteWhereException {
+		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
+		DBObject dbCriteria = new BasicDBObject();
+		dbCriteria.put(MongoDeviceCommand.PROP_SPEC_TOKEN, token);
+		if (!includeDeleted) {
+			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
+		}
+		BasicDBObject sort = new BasicDBObject(MongoDeviceCommand.PROP_NAME, 1);
+		return MongoPersistence.list(IDeviceCommand.class, commands, dbCriteria, sort);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceCommand(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
+		DBObject existing = assertDeviceCommand(token);
+		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
+		if (force) {
+			MongoPersistence.delete(commands, existing);
+			return MongoDeviceCommand.fromDBObject(existing);
+		} else {
+			MongoSiteWhereEntity.setDeleted(existing, true);
+			BasicDBObject query = new BasicDBObject(MongoDeviceCommand.PROP_TOKEN, token);
+			MongoPersistence.update(commands, query, existing);
+			return MongoDeviceCommand.fromDBObject(existing);
+		}
+	}
+
+	/**
+	 * Return the {@link DBObject} for the device command with the given token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject getDeviceCommandDBObjectByToken(String token) throws SiteWhereException {
+		DBCollection specs = getMongoClient().getDeviceCommandsCollection();
+		BasicDBObject query = new BasicDBObject(MongoDeviceCommand.PROP_TOKEN, token);
+		DBObject result = specs.findOne(query);
+		return result;
+	}
+
+	/**
+	 * Return the {@link DBObject} for the device command with the given token. Throws an
+	 * exception if the token is not valid.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject assertDeviceCommand(String token) throws SiteWhereException {
+		DBObject match = getDeviceCommandDBObjectByToken(token);
+		if (match == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 		}
 		return match;
 	}

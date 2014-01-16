@@ -15,6 +15,7 @@ import java.util.Map;
 import com.sitewhere.mongodb.device.MongoDevice;
 import com.sitewhere.mongodb.device.MongoDeviceAlert;
 import com.sitewhere.mongodb.device.MongoDeviceAssignment;
+import com.sitewhere.mongodb.device.MongoDeviceCommand;
 import com.sitewhere.mongodb.device.MongoDeviceLocation;
 import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
 import com.sitewhere.mongodb.device.MongoDeviceSpecification;
@@ -28,6 +29,7 @@ import com.sitewhere.spi.device.IDeviceMeasurements;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
@@ -42,6 +44,7 @@ public class MongoConverters {
 	/** Create a list of converters for various types */
 	static {
 		CONVERTERS.put(IDeviceSpecification.class, new MongoDeviceSpecification());
+		CONVERTERS.put(IDeviceCommand.class, new MongoDeviceCommand());
 		CONVERTERS.put(IDevice.class, new MongoDevice());
 		CONVERTERS.put(IDeviceAssignment.class, new MongoDeviceAssignment());
 		CONVERTERS.put(IDeviceMeasurements.class, new MongoDeviceMeasurements());

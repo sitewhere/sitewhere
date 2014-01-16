@@ -11,6 +11,7 @@ package com.sitewhere.core;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +33,7 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
@@ -47,8 +49,11 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceEventBatch;
 import com.sitewhere.spi.device.IDeviceMeasurement;
+import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
@@ -98,19 +103,19 @@ public class SiteWherePersistence {
 	 * Common logic for creating new device specification and populating it from request.
 	 * 
 	 * @param request
-	 * @param uuid
+	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static DeviceSpecification deviceSpecificationCreateLogic(
-			IDeviceSpecificationCreateRequest request, String uuid) throws SiteWhereException {
+			IDeviceSpecificationCreateRequest request, String token) throws SiteWhereException {
 		DeviceSpecification spec = new DeviceSpecification();
 
 		// Unique token is required.
-		if (uuid == null) {
+		if (token == null) {
 			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
 		}
-		spec.setToken(uuid);
+		spec.setToken(token);
 
 		// Name is required.
 		if (request.getName() == null) {
@@ -143,6 +148,100 @@ public class SiteWherePersistence {
 		}
 		if (request.getAssetId() != null) {
 			target.setAssetId(request.getAssetId());
+		}
+		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request, target);
+		}
+		SiteWherePersistence.setUpdatedEntityMetadata(target);
+	}
+
+	/**
+	 * Common logic for creating new device command and populating it from request.
+	 * 
+	 * @param request
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceCommand deviceCommandCreateLogic(IDeviceSpecification spec,
+			IDeviceCommandCreateRequest request, String token, List<IDeviceCommand> existing)
+			throws SiteWhereException {
+		DeviceCommand command = new DeviceCommand();
+
+		// Token is required.
+		if (token == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		command.setToken(token);
+
+		// Name is required.
+		if (request.getName() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		command.setName(request.getName());
+
+		command.setSpecificationToken(spec.getToken());
+		command.setNamespace(request.getNamespace());
+		command.getParameters().addAll(request.getParameters());
+
+		checkDuplicateCommand(command, existing);
+
+		MetadataProvider.copy(request, command);
+		SiteWherePersistence.initializeEntityMetadata(command);
+		return command;
+	}
+
+	/**
+	 * Checks whether a command is already in the given list (same name and namespace).
+	 * 
+	 * @param command
+	 * @param existing
+	 * @throws SiteWhereException
+	 */
+	protected static void checkDuplicateCommand(DeviceCommand command, List<IDeviceCommand> existing)
+			throws SiteWhereException {
+		boolean duplicate = false;
+		for (IDeviceCommand current : existing) {
+			if (current.getName().equals(command.getName())) {
+				if (current.getNamespace() == null) {
+					if (command.getNamespace() == null) {
+						duplicate = true;
+						break;
+					}
+				} else if (current.getNamespace().equals(command.getNamespace())) {
+					duplicate = true;
+					break;
+				}
+			}
+		}
+		if (duplicate) {
+			throw new SiteWhereSystemException(ErrorCode.DeviceCommandExists, ErrorLevel.ERROR);
+		}
+	}
+
+	/**
+	 * Common logic for updating a device command from request.
+	 * 
+	 * @param request
+	 * @param target
+	 * @param existing
+	 * @throws SiteWhereException
+	 */
+	public static void deviceCommandUpdateLogic(IDeviceCommandCreateRequest request, DeviceCommand target,
+			List<IDeviceCommand> existing) throws SiteWhereException {
+		if (request.getName() != null) {
+			target.setName(request.getName());
+		}
+		if (request.getNamespace() != null) {
+			target.setNamespace(request.getNamespace());
+		}
+
+		// Make sure the update will not result in a duplicate.
+		checkDuplicateCommand(target, existing);
+
+		if (request.getParameters() != null) {
+			target.getParameters().addAll(request.getParameters());
 		}
 		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
 			target.getMetadata().clear();

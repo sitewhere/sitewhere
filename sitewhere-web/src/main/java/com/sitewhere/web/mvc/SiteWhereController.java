@@ -22,6 +22,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.version.VersionHelper;
 
@@ -169,6 +170,32 @@ public class SiteWhereController {
 			LOGGER.error(e);
 			return showError(e.getMessage());
 		}
+	}
+
+	/**
+	 * Display the "specification detail" page.
+	 * 
+	 * @param siteToken
+	 * @return
+	 */
+	@RequestMapping("/specifications/detail")
+	public ModelAndView specificationDetail(@RequestParam("token") String token) {
+		if (token != null) {
+			try {
+				Map<String, Object> data = createBaseData();
+				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+				IDeviceSpecification spec = management.getDeviceSpecificationByToken(token);
+				if (spec != null) {
+					data.put("specification", spec);
+					return new ModelAndView("specifications/detail", data);
+				}
+				return showError("Specification for token '" + token + "' not found.");
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		}
+		return showError("No specification token passed.");
 	}
 
 	/**

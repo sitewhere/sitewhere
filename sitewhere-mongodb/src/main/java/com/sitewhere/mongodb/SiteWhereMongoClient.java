@@ -56,6 +56,10 @@ public class SiteWhereMongoClient implements InitializingBean {
 	private String deviceSpecificationsCollectionName =
 			IMongoCollectionNames.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
 
+	/** Injected name used for device commands collection */
+	private String deviceCommandsCollectionName =
+			IMongoCollectionNames.DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME;
+
 	/** Injected name used for devices collection */
 	private String devicesCollectionName = IMongoCollectionNames.DEFAULT_DEVICES_COLLECTION_NAME;
 
@@ -98,6 +102,7 @@ public class SiteWhereMongoClient implements InitializingBean {
 		messages.add("Database Name: " + databaseName);
 		messages.add("");
 		messages.add("Device specifications collection name: " + getDeviceSpecificationsCollectionName());
+		messages.add("Device commands collection name: " + getDeviceCommandsCollectionName());
 		messages.add("Devices collection name: " + getDevicesCollectionName());
 		messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
 		messages.add("Sites collection name: " + getSitesCollectionName());
@@ -126,6 +131,10 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public DBCollection getDeviceSpecificationsCollection() {
 		return getSiteWhereDatabase().getCollection(getDeviceSpecificationsCollectionName());
+	}
+
+	public DBCollection getDeviceCommandsCollection() {
+		return getSiteWhereDatabase().getCollection(getDeviceCommandsCollectionName());
 	}
 
 	public DBCollection getDevicesCollection() {
@@ -194,6 +203,14 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public void setDeviceSpecificationsCollectionName(String deviceSpecificationsCollectionName) {
 		this.deviceSpecificationsCollectionName = deviceSpecificationsCollectionName;
+	}
+
+	public String getDeviceCommandsCollectionName() {
+		return deviceCommandsCollectionName;
+	}
+
+	public void setDeviceCommandsCollectionName(String deviceCommandsCollectionName) {
+		this.deviceCommandsCollectionName = deviceCommandsCollectionName;
 	}
 
 	public String getDevicesCollectionName() {

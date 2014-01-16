@@ -36,7 +36,9 @@ import com.sitewhere.rest.model.device.DeviceMeasurements;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest;
@@ -151,6 +153,21 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("token", token);
 		return sendRest(getBaseUrl() + "specifications/{token}", HttpMethod.GET, null,
 				DeviceSpecification.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#createDeviceCommand(java.lang.String,
+	 * com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest)
+	 */
+	@Override
+	public DeviceCommand createDeviceCommand(String specToken, DeviceCommandCreateRequest request)
+			throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", specToken);
+		return sendRest(getBaseUrl() + "specifications/{token}/commands", HttpMethod.POST, request,
+				DeviceCommand.class, vars);
 	}
 
 	/*

@@ -23,8 +23,11 @@ public interface IMongoCollectionNames {
 	/** Default collection name for SiteWhere zones */
 	public static final String DEFAULT_ZONES_COLLECTION_NAME = "zones";
 
-	/** Default collection name for SiteWhere device specification */
+	/** Default collection name for SiteWhere device specifications */
 	public static final String DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME = "specifications";
+
+	/** Default collection name for SiteWhere device commands */
+	public static final String DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME = "commands";
 
 	/** Default collection name for SiteWhere devices */
 	public static final String DEFAULT_DEVICES_COLLECTION_NAME = "devices";

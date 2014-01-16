@@ -20,7 +20,9 @@ import com.sitewhere.rest.model.device.DeviceMeasurements;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest;
@@ -58,6 +60,17 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Create a new device command for a specification.
+	 * 
+	 * @param specToken
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceCommand createDeviceCommand(String specToken, DeviceCommandCreateRequest request)
 			throws SiteWhereException;
 
 	/**

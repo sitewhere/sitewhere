@@ -262,6 +262,7 @@ tr.sw-list-entry td {
 	font-size: 14px;
 	display: inline-block;
 	cursor: pointer;
+	vertical-align: middle;
 }
 
 .sw-list-entry:hover .sw-action-glyph {

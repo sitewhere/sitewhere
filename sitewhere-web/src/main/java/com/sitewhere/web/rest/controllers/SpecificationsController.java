@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
+import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -33,6 +35,8 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -173,6 +177,92 @@ public class SpecificationsController extends SiteWhereController {
 		DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
 		helper.setIncludeAsset(true);
 		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+	}
+
+	/**
+	 * Create a device specification.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/{token}/commands", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Create a new device command for a specification.")
+	public IDeviceCommand createDeviceCommand(
+			@ApiParam(value = "Token", required = true) @PathVariable String token,
+			@RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
+		IDeviceSpecification spec = assertDeviceSpecificationByToken(token);
+		IDeviceCommand result =
+				SiteWhereServer.getInstance().getDeviceManagement().createDeviceCommand(spec, request);
+		return result;
+	}
+
+	@RequestMapping(value = "/{token}/commands", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List device commands for a specification")
+	public ISearchResults<IDeviceCommand> listDeviceCommands(
+			@ApiParam(value = "Token", required = true) @PathVariable String token,
+			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted)
+			throws SiteWhereException {
+		List<IDeviceCommand> results =
+				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommands(token, includeDeleted);
+		Collections.sort(results, new Comparator<IDeviceCommand>() {
+			public int compare(IDeviceCommand o1, IDeviceCommand o2) {
+				if (o1.getName().equals(o2.getName())) {
+					return o1.getNamespace().compareTo(o2.getNamespace());
+				}
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		return new SearchResults<IDeviceCommand>(results);
+	}
+
+	/**
+	 * List commands grouped by namespace.
+	 * 
+	 * @param token
+	 * @param includeDeleted
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/namespaces", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List device command namespaces for a specification")
+	public ISearchResults<IDeviceCommandNamespace> listDeviceCommandsByNamespace(
+			@ApiParam(value = "Token", required = true) @PathVariable String token,
+			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted)
+			throws SiteWhereException {
+		List<IDeviceCommand> results =
+				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommands(token, includeDeleted);
+		Collections.sort(results, new Comparator<IDeviceCommand>() {
+			public int compare(IDeviceCommand o1, IDeviceCommand o2) {
+				if ((o1.getNamespace() == null) && (o2.getNamespace() != null)) {
+					return -1;
+				}
+				if ((o1.getNamespace() != null) && (o2.getNamespace() == null)) {
+					return 1;
+				}
+				if ((o1.getNamespace() == null) && (o2.getNamespace() == null)) {
+					return o1.getName().compareTo(o2.getName());
+				}
+				if (!o1.getNamespace().equals(o2.getNamespace())) {
+					return o1.getNamespace().compareTo(o2.getNamespace());
+				}
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		List<IDeviceCommandNamespace> namespaces = new ArrayList<IDeviceCommandNamespace>();
+		DeviceCommandNamespace current = null;
+		for (IDeviceCommand command : results) {
+			if ((current == null) || ((current.getValue() == null) && (command.getNamespace() != null))
+					|| ((current.getValue() != null) && (!current.getValue().equals(command.getNamespace())))) {
+				current = new DeviceCommandNamespace();
+				current.setValue(command.getNamespace());
+				namespaces.add(current);
+			}
+			current.getCommands().add(command);
+		}
+		return new SearchResults<IDeviceCommandNamespace>(namespaces);
 	}
 
 	/**

@@ -34,8 +34,10 @@ import com.sitewhere.spi.device.IDeviceMeasurements;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
@@ -158,6 +160,70 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
 			throws SiteWhereException {
 		return HBaseDeviceSpecification.deleteDeviceSpecification(client, token, force);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceCommand(com.sitewhere.spi
+	 * .device.IDeviceSpecification,
+	 * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+	 */
+	@Override
+	public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+			throws SiteWhereException {
+		return HBaseDeviceCommand.createDeviceCommand(client, spec, request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandByToken(java.lang.String
+	 * )
+	 */
+	@Override
+	public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
+		return HBaseDeviceCommand.getDeviceCommandByToken(client, token);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateDeviceCommand(java.lang.String,
+	 * com.sitewhere.spi.device.request.IDeviceCommandCreateRequest)
+	 */
+	@Override
+	public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
+			throws SiteWhereException {
+		return HBaseDeviceCommand.updateDeviceCommand(client, token, request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommands(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public List<IDeviceCommand> listDeviceCommands(String specToken, boolean includeDeleted)
+			throws SiteWhereException {
+		return HBaseDeviceCommand.listDeviceCommands(client, specToken, includeDeleted);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceCommand(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
+		return HBaseDeviceCommand.deleteDeviceCommand(client, token, force);
 	}
 
 	/*

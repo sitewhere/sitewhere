@@ -7,14 +7,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device;
+package com.sitewhere.spi.device.command;
+
+import com.sitewhere.spi.device.IDeviceEvent;
 
 /**
- * Represents a command to or from a device.
+ * Captures information about the invocation of a command.
  * 
  * @author Derek
  */
-public interface IDeviceCommand extends IDeviceEvent {
+public interface IDeviceCommandInvocation extends IDeviceEvent {
 
 	/**
 	 * Get actor type that originated the command.
@@ -50,13 +52,6 @@ public interface IDeviceCommand extends IDeviceEvent {
 	 * @return
 	 */
 	public byte[] getCommand();
-
-	/**
-	 * Get command response (if any).
-	 * 
-	 * @return
-	 */
-	public byte[] getResponse();
 
 	/**
 	 * Get status of command.

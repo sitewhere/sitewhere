@@ -13,8 +13,10 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
@@ -73,6 +75,34 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
 			throws SiteWhereException {
 		return delegate.deleteDeviceSpecification(token, force);
+	}
+
+	@Override
+	public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+			throws SiteWhereException {
+		return delegate.createDeviceCommand(spec, request);
+	}
+
+	@Override
+	public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
+		return delegate.getDeviceCommandByToken(token);
+	}
+
+	@Override
+	public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
+			throws SiteWhereException {
+		return delegate.updateDeviceCommand(token, request);
+	}
+
+	@Override
+	public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted)
+			throws SiteWhereException {
+		return delegate.listDeviceCommands(token, includeDeleted);
+	}
+
+	@Override
+	public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
+		return delegate.deleteDeviceCommand(token, force);
 	}
 
 	@Override

@@ -13,8 +13,10 @@ import java.util.List;
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
@@ -83,6 +85,58 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 */
 	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
 			throws SiteWhereException;
+
+	/**
+	 * Creates a device command associated with an existing device specification.
+	 * 
+	 * @param spec
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Get a device command by unique token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException;
+
+	/**
+	 * Update an existing device command.
+	 * 
+	 * @param token
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * List device command objects associated with a device specification.
+	 * 
+	 * @param specToken
+	 * @param includeDeleted
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public List<IDeviceCommand> listDeviceCommands(String specToken, boolean includeDeleted)
+			throws SiteWhereException;
+
+	/**
+	 * Delete an existing device command.
+	 * 
+	 * @param token
+	 * @param force
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException;
 
 	/**
 	 * Create a new device.

@@ -25,7 +25,7 @@
 <%@ include file="../includes/specificationCreateDialog.inc"%>
 
 <form id="view-spec-detail" method="get" action="detail.html">
-	<input id="detail-spec-token" name="specToken" type="hidden"/>
+	<input id="detail-spec-token" name="token" type="hidden"/>
 </form>
 
 <%@ include file="../includes/templateSpecificationEntry.inc"%>
@@ -65,6 +65,14 @@
 	/** Called when a specification has been successfully created */
 	function onSpecificationCreated() {
 		specsDS.read();
+	}
+	
+	/** Called when 'open' button on the list entry is pressed */
+	function onSpecificationOpenClicked(e, token) {
+		var event = e || window.event;
+		event.stopPropagation();
+		$('#detail-spec-token').val(token);
+		$('#view-spec-detail').submit();
 	}
 	
     $(document).ready(function() {
