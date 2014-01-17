@@ -219,32 +219,37 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @throws SiteWhereException
 	 */
 	public void createDeviceCommands(IDeviceSpecification spec) throws SiteWhereException {
-		DeviceCommandCreateRequest cmdDefault = new DeviceCommandCreateRequest();
-		cmdDefault.setNamespace(null);
-		cmdDefault.setName("ping");
-		getDeviceManagement().createDeviceCommand(spec, cmdDefault);
+		DeviceCommandCreateRequest cmdPing = new DeviceCommandCreateRequest();
+		cmdPing.setNamespace(null);
+		cmdPing.setName("ping");
+		cmdPing.setDescription("Send a 'ping' request to the device to verify it can be reached.");
+		getDeviceManagement().createDeviceCommand(spec, cmdPing);
 
-		DeviceCommandCreateRequest version = new DeviceCommandCreateRequest();
-		version.setNamespace(null);
-		version.setName("version");
-		getDeviceManagement().createDeviceCommand(spec, version);
+		DeviceCommandCreateRequest cmdVersion = new DeviceCommandCreateRequest();
+		cmdVersion.setNamespace(null);
+		cmdVersion.setName("version");
+		cmdVersion.setDescription("Request a version identifier response from the device.");
+		getDeviceManagement().createDeviceCommand(spec, cmdVersion);
 
 		DeviceCommandCreateRequest powerUp = new DeviceCommandCreateRequest();
 		powerUp.setNamespace(CORE_HWCORE_NAMESPACE);
 		powerUp.setName("powerUp");
+		powerUp.setDescription("Request that the device enter 'powered on' mode.");
 		powerUp.getParameters().add(new CommandParameter("delayInMs", ParameterType.Integer, false));
 		getDeviceManagement().createDeviceCommand(spec, powerUp);
 
 		DeviceCommandCreateRequest firmware = new DeviceCommandCreateRequest();
 		firmware.setNamespace(CORE_HWCORE_NAMESPACE);
 		firmware.setName("updateFirmware");
+		firmware.setDescription("Ask the device to download a new firmware version from the given URL.");
 		firmware.getParameters().add(new CommandParameter("url", ParameterType.String, true));
-		firmware.getParameters().add(new CommandParameter("createRestorePoint", ParameterType.Boolean, true));
+		firmware.getParameters().add(new CommandParameter("createRestorePoint", ParameterType.Boolean, false));
 		getDeviceManagement().createDeviceCommand(spec, firmware);
 
 		DeviceCommandCreateRequest powerDown = new DeviceCommandCreateRequest();
 		powerDown.setNamespace(CORE_HWCORE_NAMESPACE);
 		powerDown.setName("powerDown");
+		powerDown.setDescription("Request that the device enter 'powered down' mode.");
 		powerDown.getParameters().add(new CommandParameter("delayInMs", ParameterType.Integer, false));
 		getDeviceManagement().createDeviceCommand(spec, powerDown);
 	}

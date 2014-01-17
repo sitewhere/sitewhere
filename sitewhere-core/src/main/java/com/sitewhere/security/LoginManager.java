@@ -41,7 +41,8 @@ public class LoginManager {
 		}
 		if (!(auth instanceof SitewhereAuthentication)) {
 			throw new SiteWhereException("Authentication was not of expected type: "
-					+ SitewhereAuthentication.class.getName());
+					+ SitewhereAuthentication.class.getName() + " found " + auth.getClass().getName()
+					+ " instead.");
 		}
 		return (IUser) ((SitewhereAuthentication) auth).getPrincipal();
 	}

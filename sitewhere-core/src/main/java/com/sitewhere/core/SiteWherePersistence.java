@@ -183,6 +183,7 @@ public class SiteWherePersistence {
 
 		command.setSpecificationToken(spec.getToken());
 		command.setNamespace(request.getNamespace());
+		command.setDescription(request.getDescription());
 		command.getParameters().addAll(request.getParameters());
 
 		checkDuplicateCommand(command, existing);
@@ -240,7 +241,11 @@ public class SiteWherePersistence {
 		// Make sure the update will not result in a duplicate.
 		checkDuplicateCommand(target, existing);
 
+		if (request.getDescription() != null) {
+			target.setDescription(request.getDescription());
+		}
 		if (request.getParameters() != null) {
+			target.getParameters().clear();
 			target.getParameters().addAll(request.getParameters());
 		}
 		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {

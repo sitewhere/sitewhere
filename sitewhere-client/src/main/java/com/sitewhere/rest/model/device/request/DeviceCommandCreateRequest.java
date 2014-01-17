@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 
@@ -29,14 +30,18 @@ public class DeviceCommandCreateRequest extends MetadataProvider implements IDev
 	/** Command name */
 	private String name;
 
+	/** Command description */
+	private String description;
+
 	/** Command parameters */
-	private List<ICommandParameter> parameters = new ArrayList<ICommandParameter>();
+	private List<CommandParameter> parameters = new ArrayList<CommandParameter>();
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getNamespace()
 	 */
+	@Override
 	public String getNamespace() {
 		return namespace;
 	}
@@ -50,6 +55,7 @@ public class DeviceCommandCreateRequest extends MetadataProvider implements IDev
 	 * 
 	 * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getName()
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -61,13 +67,29 @@ public class DeviceCommandCreateRequest extends MetadataProvider implements IDev
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getParameters()
+	 * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getDescription()
 	 */
-	public List<ICommandParameter> getParameters() {
-		return parameters;
+	@Override
+	public String getDescription() {
+		return description;
 	}
 
-	public void setParameters(List<ICommandParameter> parameters) {
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getParameters()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ICommandParameter> getParameters() {
+		return (List<ICommandParameter>) (List<? extends ICommandParameter>) parameters;
+	}
+
+	public void setParameters(List<CommandParameter> parameters) {
 		this.parameters = parameters;
 	}
 }

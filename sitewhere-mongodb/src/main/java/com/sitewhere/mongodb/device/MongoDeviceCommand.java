@@ -42,6 +42,9 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 	/** Property for command name */
 	public static final String PROP_NAME = "name";
 
+	/** Property for command description */
+	public static final String PROP_DESCRIPTION = "description";
+
 	/** Property for command parameters list */
 	public static final String PROP_PARAMETERS = "parameters";
 
@@ -85,6 +88,7 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 		target.append(PROP_SPEC_TOKEN, source.getSpecificationToken());
 		target.append(PROP_NAMESPACE, source.getNamespace());
 		target.append(PROP_NAME, source.getName());
+		target.append(PROP_DESCRIPTION, source.getDescription());
 
 		// Create parameters list.
 		List<DBObject> params = new ArrayList<DBObject>();
@@ -113,11 +117,13 @@ public class MongoDeviceCommand implements MongoConverter<IDeviceCommand> {
 		String specToken = (String) source.get(PROP_SPEC_TOKEN);
 		String namespace = (String) source.get(PROP_NAMESPACE);
 		String name = (String) source.get(PROP_NAME);
+		String desc = (String) source.get(PROP_DESCRIPTION);
 
 		target.setToken(token);
 		target.setSpecificationToken(specToken);
 		target.setNamespace(namespace);
 		target.setName(name);
+		target.setDescription(desc);
 
 		List<DBObject> params = (List<DBObject>) source.get(PROP_PARAMETERS);
 		if (params != null) {

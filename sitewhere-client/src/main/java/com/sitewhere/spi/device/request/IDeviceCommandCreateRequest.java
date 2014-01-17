@@ -36,6 +36,13 @@ public interface IDeviceCommandCreateRequest extends IMetadataProvider {
 	public String getName();
 
 	/**
+	 * Get command description.
+	 * 
+	 * @return
+	 */
+	public String getDescription();
+
+	/**
 	 * Get list of parameters.
 	 * 
 	 * @return

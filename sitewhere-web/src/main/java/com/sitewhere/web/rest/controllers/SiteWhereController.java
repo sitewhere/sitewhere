@@ -129,6 +129,7 @@ public class SiteWhereController {
 	@ExceptionHandler
 	protected void handleMissingContent(HttpMessageNotReadableException e, HttpServletResponse response) {
 		try {
+			LOGGER.error("Error handling REST request..", e);
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No body content passed for POST request.");
 		} catch (IOException e1) {
 			e1.printStackTrace();

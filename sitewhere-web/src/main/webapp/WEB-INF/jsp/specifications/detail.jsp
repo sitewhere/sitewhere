@@ -21,6 +21,12 @@
 	font-family: courier;
 	padding: 10px 15px;
 	position: relative;
+	border-bottom: 1px solid #eee;
+}
+.sw-spec-command-desc {
+	color: #060;
+	font-style: italic;
+	max-width: 90%;
 }
 .sw-spec-command-name {
 	color: #060;
@@ -62,9 +68,9 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title">Device Commands</div>
 			<div>
-				<a id="btn-refresh-assignments" class="btn" href="javascript:void(0)">
+				<a id="btn-refresh-commands" class="btn" href="javascript:void(0)">
 					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
-				<a id="btn-refresh-assignments" class="btn" href="javascript:void(0)">
+				<a id="btn-add-command" class="btn" href="javascript:void(0)">
 					<i class="icon-plus sw-button-icon"></i> Add New Command</a>
 			</div>
 		</div>
@@ -72,9 +78,13 @@
 	</div>
 </div>
 
+<%@ include file="../includes/commandCreateDialog.inc"%>
+
 <%@ include file="../includes/templateSpecificationEntry.inc"%>
 
 <%@ include file="../includes/templateCommandEntry.inc"%>
+
+<%@ include file="../includes/templateCommandParamEntry.inc"%>
 
 <%@ include file="../includes/commonFunctions.inc"%>
 
@@ -88,9 +98,30 @@
 			animation: false
 		}).data("kendoTabStrip");
 		
+	    $("#btn-add-command").click(function() {
+	    	ccOpen(specToken, onCommandCreateSuccess);
+	    });
+		
 		loadSpecification();
 		loadCommands();
 	});
+	
+	/** Called when 'edit command' is clicked */
+	function onEditCommand(e, token) {
+		var event = e || window.event;
+		event.stopPropagation();
+		cuOpen(token, onEditCommandComplete);
+	}
+	
+	/** Called after command has been edited */
+	function onEditCommandComplete() {
+		loadCommands();
+	}
+	
+	/** Called after command has been created */
+	function onCommandCreateSuccess() {
+		loadCommands();
+	}
 	
 	/** Loads information for the selected specification */
 	function loadSpecification() {
@@ -109,6 +140,29 @@
 	/** Handle error on getting specification data */
 	function loadGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to load specification data.");
+	}
+	
+	/** Called when 'delete command' is clicked */
+	function onDeleteCommand(e, token) {
+		var event = e || window.event;
+		event.stopPropagation();
+		swConfirm("Delete Command", "Are you sure that you want to delete device command with " +
+			"token '" + token + "'?", function(result) {
+			if (result) {
+				$.deleteJSON("${pageContext.request.contextPath}/api/commands/" + token, 
+						commandDeleteSuccess, commandDeleteFailed);
+			}
+		});
+	}
+    
+    /** Called on successful command delete request */
+    function commandDeleteSuccess(data, status, jqXHR) {
+		loadCommands();
+    }
+    
+	/** Handle error on deleting command */
+	function commandDeleteFailed(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete command.");
 	}
 	
 	/** Loads commands for the selected specification */
@@ -140,8 +194,13 @@
     
     /** Creates an HTML highlighted version of a command */
     function htmlify(command) {
-    	var chtml = "<span class='sw-spec-command-name'>" + command.name + "</span>(";
-    	for (var i = 0, param; param = command.parameters[i]; i++) {
+    	var chtml = "";
+    	if (command.description) {
+	    	chtml += "<div class='sw-spec-command-desc'>";
+	    	chtml += "/** " + command.description + " **/</div>"
+		}
+	    chtml += "<span class='sw-spec-command-name'>" + command.name + "</span>(";
+	    for (var i = 0, param; param = command.parameters[i]; i++) {
     		if (param.required) {
     			chtml += "<strong>"
     		}

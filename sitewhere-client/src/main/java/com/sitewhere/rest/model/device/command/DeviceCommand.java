@@ -35,6 +35,9 @@ public class DeviceCommand extends MetadataProviderEntity implements IDeviceComm
 	/** Command name */
 	private String name;
 
+	/** Command description */
+	private String description;
+
 	/** Parameter list */
 	private List<CommandParameter> parameters = new ArrayList<CommandParameter>();
 
@@ -92,6 +95,20 @@ public class DeviceCommand extends MetadataProviderEntity implements IDeviceComm
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.command.IDeviceCommand#getDescription()
+	 */
+	@Override
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	/*

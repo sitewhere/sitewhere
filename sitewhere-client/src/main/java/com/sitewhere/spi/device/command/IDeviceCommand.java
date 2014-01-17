@@ -49,6 +49,13 @@ public interface IDeviceCommand extends IMetadataProviderEntity {
 	public String getName();
 
 	/**
+	 * Get a description of the command.
+	 * 
+	 * @return
+	 */
+	public String getDescription();
+
+	/**
 	 * Get list of parameters.
 	 * 
 	 * @return
