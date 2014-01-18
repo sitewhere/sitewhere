@@ -39,7 +39,11 @@
 	    		</form>		
     		</div>
 			<div>
-				<div id="dc-metadata" class="sw-metadata-grid"></div>
+				<div id="dc-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="dc"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -57,9 +61,6 @@
 	/** Provides external access to tabs */
 	var dcTabs;
 	
-	/** Metadata datasource */
-	var dcMetadataDS;
-	
 	/** Datasource for specifications */
 	var dcSpecificationsDS;
 	
@@ -72,12 +73,6 @@
 		dcTabs = $("#dc-tabs").kendoTabStrip({
 			animation: false
 		}).data("kendoTabStrip");
-		
-		/** Local source for metadata entries */
-		dcMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#dc-metadata").kendoGrid(swMetadataGridOptions(dcMetadataDS));
 		
 		/** Create AJAX datasource for specifications list */
 		dcSpecificationsDS = new kendo.data.DataSource({

@@ -123,7 +123,11 @@
 				</div>
 			</div>
 			<div>
-				<div id="sc-metadata" class="sw-metadata-grid"></div>
+				<div id="sc-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="sc"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 		<div id="sc-map-content" class="hide">
@@ -154,9 +158,6 @@
 	/** Reference for sites datasource */
 	var scSitesDS;
 	
-	/** Reference for metadata datasource */
-	var scMetadataDS;
-	
 	/** Available map types shown in dropdown */
     var scMapTypes = [
 		{ text: "MapQuest World Map", value: "mapquest" },
@@ -172,12 +173,6 @@
 		scTabs = $("#sc-tabs").kendoTabStrip({
 			animation: false
 		}).data("kendoTabStrip");
-		
-		/** Local source for metadata entries */
-		scMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#sc-metadata").kendoGrid(swMetadataGridOptions(scMetadataDS));
 
     	// create DropDownList from input HTML element
     	$("#sc-map-type").kendoDropDownList({

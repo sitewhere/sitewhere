@@ -287,6 +287,41 @@ tr.sw-list-entry td {
 	opacity: 1;
 }
 
+/** BEGIN Subtable list views such as metadata */
+.sw-sublist-header {
+	background-color: #eee;
+	border: 1px solid #ccc;
+	padding: 2px 5px;
+	margin-top: 10px;
+}
+.sw-sublist-header div {
+	display: inline-block;
+	margin: 0px 1px;
+}
+.sw-sublist-list {
+	width: 100%; 
+	height: 200px;
+}
+.sw-sublist-list tr {
+	height: 26px;
+	border-bottom: 1px solid #eee;
+}
+.sw-sublist-list td {
+	padding: 0px 4px;
+}
+.sw-sublist-add-new {
+	background-color: #eee;
+	border: 1px solid #ccc;
+	margin-top: 10px;
+	padding: 5px;
+}
+.sw-sublist-footer {
+}
+.sw-sublist-footer div {
+	display: inline-block;
+}
+/** END Subtable list views such as metadata */
+
 div.sp-replacer {
 	padding: 3px;
 	background: none repeat scroll 0% 0% #dddddd;

@@ -43,7 +43,11 @@
 				</div>
 			</div>
 			<div>
-				<div id="au-metadata" class="sw-metadata-grid"></div>
+				<div id="au-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="au"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 		<input type="hidden" id="au-token"/>
@@ -107,17 +111,8 @@
 
 	/** Provides external access to tabs */
 	var auTabs;
-	
-	/** Metadata datasource */
-	var auMetadataDS;
 
 	$(document).ready(function() {
-		
-		/** Datasource for metadata entries */
-		auMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#au-metadata").kendoGrid(swMetadataGridOptions(auMetadataDS));
 		
 		/** Create tab strip for the update dialog */
 		auTabs = $("#au-tabs").kendoTabStrip({

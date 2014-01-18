@@ -1,15 +1,5 @@
 <!-- Dialog for command create/update -->
 <style>
-.sw-cc-command-params-header {
-	background-color: #eee;
-	border: 1px solid #ccc;
-	padding: 2px 5px;
-	margin-top: 10px;
-}
-.sw-cc-command-params-header div {
-	display: inline-block;
-	margin: 0px 1px;
-}
 .sw-cc-command-params-col-name {
 	width: 180px;
 }
@@ -18,28 +8,6 @@
 }
 .sw-cc-command-params-col-req {
 	width: 90px;
-}
-.sw-cc-command-params-list {
-	width: 100%; 
-	height: 200px;
-}
-.sw-cc-command-params-list tr {
-	height: 26px;
-	border-bottom: 1px solid #eee;
-}
-.sw-cc-command-params-list td {
-	padding: 0px 4px;
-}
-.sw-cc-command-params-new {
-	background-color: #eee;
-	border: 1px solid #ccc;
-	margin-top: 10px;
-	padding: 5px;
-}
-.sw-cc-command-params-footer {
-}
-.sw-cc-command-params-footer div {
-	display: inline-block;
 }
 </style>
 <div id="cc-dialog" class="modal hide">
@@ -77,15 +45,15 @@
 				</form>
 			</div>
 			<div>
-				<div class="sw-cc-command-params-header">
+				<div class="sw-sublist-header">
 					<div class="sw-cc-command-params-col-name">Parameter Name</div>
 					<div class="sw-cc-command-params-col-type">Parameter Type</div>
 					<div class="sw-cc-command-params-col-req">Required</div>
 				</div>
-				<table id="cc-parameters" class="sw-cc-command-params-list">
+				<table id="cc-parameters" class="sw-sublist-list">
 				</table>
-				<div class="sw-cc-command-params-new">
-					<div class="sw-cc-command-params-footer">
+				<div class="sw-sublist-add-new">
+					<div class="sw-sublist-footer">
 						<div style="width: 205px">Parameter Name</div>
 						<div style="width: 145px">Parameter Type</div>
 						<div>Req</div>
@@ -102,7 +70,11 @@
 				</div>
 			</div>
 			<div>
-				<div id="cc-metadata" class="sw-metadata-grid"></div>
+				<div id="cc-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="cc"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -127,9 +99,6 @@
 	
 	/** Parameters list view */
 	var paramsList;
-	
-	/** Reference for metadata datasource */
-	var ccMetadataDS;
 	
 	/** Dropdown list of account statuses */
 	var ccDatatypeList;
@@ -170,12 +139,6 @@
 			dataSource : paramsDS,
 			template : kendo.template($("#tpl-command-param-entry").html())
 		});
-		
-		/** Local source for metadata entries */
-		ccMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#cc-metadata").kendoGrid(swMetadataGridOptions(ccMetadataDS));
 		
         /** Handle dialog submit */
 		$('#cc-dialog-submit').click(function(event) {
@@ -267,6 +230,7 @@
 			$("#cc-new-error").toggle();
 		} else {
 			paramsDS.data().push(parameter);
+			$("#cc-new-name").val("");
 		}
 	}
 	

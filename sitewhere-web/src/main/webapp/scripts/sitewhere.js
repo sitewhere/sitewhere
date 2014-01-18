@@ -239,6 +239,16 @@ function swMetadataGridOptions(datasource, title) {
     }
 }
 
+/** Create block for handling metadata */
+function swMetadata(uid, dsource) {
+	var data = {
+		"uid": uid,
+		"dsname": dsource,
+	};
+	var template = kendo.template($("#tpl-metadata").html());
+	return template(data);
+}
+
 /** Expands metadata into rows of name/value */
 function swLookupAsMetadata(lookup) {
 	var metadata = [];

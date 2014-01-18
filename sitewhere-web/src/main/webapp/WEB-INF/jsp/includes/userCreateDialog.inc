@@ -55,7 +55,11 @@
 				<div id="uc-permissions" style="height: 250px; border: 0px; margin: 10px;"></div>
 			</div>
 			<div>
-				<div id="uc-metadata" class="sw-metadata-grid"></div>
+				<div id="uc-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="uc"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -76,9 +80,6 @@
 	
 	/** List of available authorities */
 	var authsDS;
-	
-	/** Reference for metadata datasource */
-	var ucMetadataDS;
 	
 	/** Dropdown list of account statuses */
 	var ucStatusList;
@@ -124,12 +125,6 @@
 			dataSource : authsDS,
 			template : kendo.template($("#tpl-user-authority-entry").html()),
 		});
-		
-		/** Local source for metadata entries */
-		ucMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#uc-metadata").kendoGrid(swMetadataGridOptions(ucMetadataDS));
 		
         /** Handle dialog submit */
 		$('#uc-dialog-submit').click(function(event) {

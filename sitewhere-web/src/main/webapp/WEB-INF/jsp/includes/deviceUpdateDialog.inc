@@ -53,7 +53,11 @@
 				</form>
 			</div>
 			<div>
-				<div id="du-metadata" class="sw-metadata-grid"></div>
+				<div id="du-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="du"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -81,20 +85,11 @@
 	/** Provides external access to tabs */
 	var duTabs;
 	
-	/** Metadata datasource */
-	var duMetadataDS;
-	
     $(document).ready(function() {
 		/** Create tab strip for the update dialog */
 		duTabs = $("#du-tabs").kendoTabStrip({
 			animation: false
 		}).data("kendoTabStrip");
-		
-		/** Local source for metadata entries */
-		duMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#du-metadata").kendoGrid(swMetadataGridOptions(duMetadataDS));
 		
         /** Handle update dialog submit */
 		$('#du-dialog-submit').click(function(event) {

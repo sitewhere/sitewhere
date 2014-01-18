@@ -173,7 +173,11 @@
 				</form>
 			</div>
 			<div>
-				<div id="lc-metadata" class="sw-metadata-grid"></div>
+				<div id="lc-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="lc"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -209,7 +213,11 @@
 				</form>
             </div>
 			<div>
-				<div id="mc-metadata" class="sw-metadata-grid"></div>
+				<div id="mc-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="mc"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -256,7 +264,11 @@
 				</form>
 			</div>
 			<div>
-				<div id="ac-metadata" class="sw-metadata-grid"></div>
+				<div id="ac-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="ac"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -289,9 +301,6 @@
 	/** Provides external access to tabs */
 	var lcTabs;
 	
-	/** Metadata datasource */
-	var lcMetadataDS;
-	
 	/** Event date type */
 	var lcDateType;
 	
@@ -304,9 +313,6 @@
 	/** Measurements datasource */
 	var mcMeasurementsDS;
 	
-	/** Metadata datasource */
-	var mcMetadataDS;
-	
 	/** Event date type */
 	var mcDateType;
 	
@@ -315,9 +321,6 @@
 
 	/** Provides external access to tabs */
 	var acTabs;
-	
-	/** Metadata datasource */
-	var acMetadataDS;
 	
 	/** Event date type */
 	var acDateType;
@@ -770,12 +773,6 @@
             value:new Date()
         }).data("kendoDateTimePicker");
 		
-		/** Local source for metadata entries */
-		lcMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#lc-metadata").kendoGrid(swMetadataGridOptions(lcMetadataDS));
-		
         /** Handle location create dialog submit */
 		$('#lc-dialog-submit').click(function(event) {
 			lcSubmit();
@@ -791,12 +788,6 @@
 		
 		/** Grid for metadata */
         $("#mc-measurements").kendoGrid(swMetadataGridOptions(mcMeasurementsDS, "Add Measurement"));
-		
-		/** Local source for metadata entries */
-		mcMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#mc-metadata").kendoGrid(swMetadataGridOptions(mcMetadataDS));
 
     	// Create DropDownList for measurements event date type.
     	mcDateType = $("#mc-date-type").kendoDropDownList({
@@ -831,12 +822,6 @@
         acDatePicker = $("#ac-event-date").kendoDateTimePicker({
             value:new Date()
         }).data("kendoDateTimePicker");
-		
-		/** Local source for metadata entries */
-		acMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#ac-metadata").kendoGrid(swMetadataGridOptions(acMetadataDS));
 		
         /** Handle location create dialog submit */
 		$('#ac-dialog-submit').click(function(event) {

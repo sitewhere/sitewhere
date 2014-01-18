@@ -32,7 +32,11 @@
 	    		</form>		
 			</div>
 			<div>
-				<div id="spc-metadata" class="sw-metadata-grid"></div>
+				<div id="spc-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="spc"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -51,9 +55,6 @@
 	/** Provides external access to tabs */
 	var spcTabs;
 	
-	/** Metadata datasource */
-	var spcMetadataDS;
-	
 	/** Datasource for hardware assets */
 	var spcHardwareDS;
 	
@@ -70,12 +71,6 @@
 		spcTabs = $("#spc-tabs").kendoTabStrip({
 			animation: false
 		}).data("kendoTabStrip");
-		
-		/** Local source for metadata entries */
-		spcMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#spc-metadata").kendoGrid(swMetadataGridOptions(spcMetadataDS));
 		
 		/** Create AJAX datasource for hardware search */
 		spcHardwareDS = new kendo.data.DataSource({
@@ -208,6 +203,9 @@
     	$('#spc-chosen-asset-id').val("");
     	spcHardwareSearchCriteriaUpdated();
     	spcHardwareMatches.clearSelection();
+		
+		// Remove token to prevent update.
+		$('#spec-token').val("");
     	
     	// Select first tab.
 		spcTabs.select(0);

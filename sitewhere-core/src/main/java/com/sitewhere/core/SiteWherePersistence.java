@@ -248,7 +248,7 @@ public class SiteWherePersistence {
 			target.getParameters().clear();
 			target.getParameters().addAll(request.getParameters());
 		}
-		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
+		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
 			MetadataProvider.copy(request, target);
 		}

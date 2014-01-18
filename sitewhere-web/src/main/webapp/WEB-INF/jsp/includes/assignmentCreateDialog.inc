@@ -60,7 +60,11 @@
 				</form>
 			</div>
 			<div>
-				<div id="ac-metadata" class="sw-metadata-grid"></div>
+				<div id="ac-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="ac"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -77,9 +81,6 @@
 
 	/** Provides external access to tabs */
 	var acTabs;
-	
-	/** Metadata datasource */
-	var acMetadataDS;
 	
 	/** Datasource for hardware assets */
 	var acHardwareDS;
@@ -101,12 +102,6 @@
 	var acLastSearch;
 
 	$(document).ready(function() {
-		
-		/** Datasource for metadata entries */
-		acMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#ac-metadata").kendoGrid(swMetadataGridOptions(acMetadataDS));
 
         acSitesDropdown = $("#ac-site-token").kendoDropDownList({
 			dataTextField: "name",

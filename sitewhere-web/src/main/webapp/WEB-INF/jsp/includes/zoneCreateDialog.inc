@@ -35,7 +35,11 @@
 				</div>
 			</div>
 			<div>
-				<div id="zc-metadata" class="sw-metadata-grid"></div>
+				<div id="zc-metadata">
+					<jsp:include page="../includes/metadata.jsp" flush="true">
+					    <jsp:param name="uid" value="zc"/>
+					</jsp:include>
+				</div>
             </div>
 		</div>
 	</div>
@@ -59,9 +63,6 @@
 	/** Provides external access to tabs */
 	var zcTabs;
 	
-	/** Metadata datasource */
-	var zcMetadataDS;
-	
 	/** Map reference */
 	var zcMap;
 	
@@ -83,12 +84,6 @@
 		zcTabs = $("#zc-tabs").kendoTabStrip({
 			animation: false
 		}).data("kendoTabStrip");
-		
-		/** Local source for metadata entries */
-		zcMetadataDS = swMetadataDatasource();
-		
-		/** Grid for metadata */
-        $("#zc-metadata").kendoGrid(swMetadataGridOptions(zcMetadataDS));
 		
         $("#zc-border-picker").spectrum({
             color: "#000",
