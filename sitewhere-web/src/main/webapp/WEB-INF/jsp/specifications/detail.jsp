@@ -199,8 +199,9 @@
 	    	chtml += "<div class='sw-spec-command-desc'>";
 	    	chtml += "/** " + command.description + " **/</div>"
 		}
-	    chtml += "<span class='sw-spec-command-name'>" + command.name + "</span>(";
-	    for (var i = 0, param; param = command.parameters[i]; i++) {
+	    chtml += "<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '" + command.token + "')\">" + 
+	    	command.name + "</span>(";
+	    for (var i = 0, param; param = command.parameters[i]; i++) {1
     		if (param.required) {
     			chtml += "<strong>"
     		}
