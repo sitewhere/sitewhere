@@ -9,8 +9,8 @@
  */
 package com.sitewhere.spi.geo;
 
-import com.sitewhere.spi.device.IDeviceLocation;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Represents a relationship between a location and a zone.

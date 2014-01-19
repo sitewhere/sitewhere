@@ -13,8 +13,8 @@ package com.sitewhere.mongodb.device;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.rest.model.device.DeviceLocation;
-import com.sitewhere.spi.device.IDeviceLocation;
+import com.sitewhere.rest.model.device.event.DeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Used to load or save device location data to MongoDB.

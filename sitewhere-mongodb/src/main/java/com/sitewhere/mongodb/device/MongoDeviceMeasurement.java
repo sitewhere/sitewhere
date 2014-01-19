@@ -12,8 +12,8 @@ package com.sitewhere.mongodb.device;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.rest.model.device.DeviceMeasurement;
-import com.sitewhere.spi.device.IDeviceMeasurement;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Used to load or save device measurement data to MongoDB.

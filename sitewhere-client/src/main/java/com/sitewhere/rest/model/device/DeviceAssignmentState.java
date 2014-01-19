@@ -12,10 +12,13 @@ package com.sitewhere.rest.model.device;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.spi.device.IDeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceLocation;
+import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
-import com.sitewhere.spi.device.IDeviceLocation;
-import com.sitewhere.spi.device.IDeviceMeasurement;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Model object for device assignment state.

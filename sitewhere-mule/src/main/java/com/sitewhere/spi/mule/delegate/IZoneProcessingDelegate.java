@@ -14,7 +14,7 @@ import java.util.List;
 
 import com.sitewhere.spi.ISiteWhereContext;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.geo.IZoneMatcher;
 
 /**

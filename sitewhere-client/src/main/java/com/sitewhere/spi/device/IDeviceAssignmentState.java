@@ -11,6 +11,10 @@ package com.sitewhere.spi.device;
 
 import java.util.List;
 
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
+
 /**
  * Holds event state for a device assignment including most recent location, measurements
  * and alerts.

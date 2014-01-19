@@ -9,7 +9,7 @@
  */
 package com.sitewhere.spi.device.command;
 
-import com.sitewhere.spi.device.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Captures information about the invocation of a command.

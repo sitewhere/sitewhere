@@ -18,18 +18,18 @@ import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.sitewhere.rest.model.device.DeviceEventBatchResponse;
+import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceManagementDecorator;
-import com.sitewhere.spi.device.IDeviceAlert;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceEventBatch;
-import com.sitewhere.spi.device.IDeviceEventBatchResponse;
-import com.sitewhere.spi.device.IDeviceLocation;
-import com.sitewhere.spi.device.IDeviceMeasurements;
-import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceEventBatch;
+import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
  * Wraps a device management implementation so that Apache Solr can index newly created

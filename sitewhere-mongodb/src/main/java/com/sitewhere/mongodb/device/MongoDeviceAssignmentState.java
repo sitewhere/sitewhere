@@ -16,9 +16,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
-import com.sitewhere.spi.device.IDeviceAlert;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
-import com.sitewhere.spi.device.IDeviceMeasurement;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
  * Used to load or save assignment state to MongoDB.

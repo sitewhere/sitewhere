@@ -18,8 +18,8 @@ import java.util.Map;
 
 import com.sitewhere.rest.model.device.charting.ChartEntry;
 import com.sitewhere.rest.model.device.charting.ChartSeries;
-import com.sitewhere.spi.device.IDeviceMeasurements;
 import com.sitewhere.spi.device.charting.IChartSeries;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
  * Builds chart series from measurements.

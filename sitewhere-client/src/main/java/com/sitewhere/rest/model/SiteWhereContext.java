@@ -15,13 +15,13 @@ import java.util.List;
 
 import com.sitewhere.spi.ISiteWhereContext;
 import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceAlert;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceLocation;
-import com.sitewhere.spi.device.IDeviceMeasurements;
-import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
  * Default context implementation.

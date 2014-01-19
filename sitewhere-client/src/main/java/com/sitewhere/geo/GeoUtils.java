@@ -12,8 +12,8 @@ package com.sitewhere.geo;
 import java.util.List;
 
 import com.sitewhere.spi.common.ILocation;
-import com.sitewhere.spi.device.IDeviceLocation;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;

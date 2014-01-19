@@ -14,10 +14,10 @@ import java.util.Map;
 import org.apache.solr.common.SolrInputDocument;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAlert;
-import com.sitewhere.spi.device.IDeviceEvent;
-import com.sitewhere.spi.device.IDeviceLocation;
-import com.sitewhere.spi.device.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
  * Factory that creates indexable Solr objects from SiteWhere objects.

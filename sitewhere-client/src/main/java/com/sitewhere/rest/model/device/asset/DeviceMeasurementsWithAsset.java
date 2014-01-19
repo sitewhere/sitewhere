@@ -14,10 +14,10 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.device.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.device.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
  * Wraps a {@link DeviceMeasurements} so that information about the asset associated with

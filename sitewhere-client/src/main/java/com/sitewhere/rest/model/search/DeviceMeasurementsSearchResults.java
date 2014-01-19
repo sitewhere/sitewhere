@@ -13,8 +13,8 @@ package com.sitewhere.rest.model.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.rest.model.device.DeviceMeasurements;
-import com.sitewhere.spi.device.IDeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
  * Search results that contain device measurements.

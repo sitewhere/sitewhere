@@ -14,9 +14,9 @@ import java.util.List;
 import org.mule.api.MuleEvent;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
  * Interface for class that parses SiteWhere context information from a given type of payload.

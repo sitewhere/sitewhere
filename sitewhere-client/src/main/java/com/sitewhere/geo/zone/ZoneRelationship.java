@@ -9,8 +9,8 @@
  */
 package com.sitewhere.geo.zone;
 
-import com.sitewhere.spi.device.IDeviceLocation;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.geo.IZoneRelationship;
 import com.sitewhere.spi.geo.ZoneContainment;
 

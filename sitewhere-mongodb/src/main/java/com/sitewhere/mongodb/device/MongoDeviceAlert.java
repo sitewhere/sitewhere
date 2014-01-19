@@ -13,10 +13,10 @@ package com.sitewhere.mongodb.device;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.rest.model.device.DeviceAlert;
-import com.sitewhere.spi.device.AlertLevel;
-import com.sitewhere.spi.device.AlertSource;
-import com.sitewhere.spi.device.IDeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.IDeviceAlert;
 
 /**
  * Used to load or save device alert data to MongoDB.

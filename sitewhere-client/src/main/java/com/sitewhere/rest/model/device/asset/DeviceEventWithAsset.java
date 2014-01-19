@@ -18,8 +18,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.DeviceAssignmentType;
-import com.sitewhere.spi.device.IDeviceEvent;
 import com.sitewhere.spi.device.asset.IDeviceEventWithAsset;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Wraps a device event and provides extra information the associated asset from its

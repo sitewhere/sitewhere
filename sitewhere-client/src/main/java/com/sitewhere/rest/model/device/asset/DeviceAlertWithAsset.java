@@ -9,12 +9,12 @@
  */
 package com.sitewhere.rest.model.device.asset;
 
-import com.sitewhere.rest.model.device.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.device.AlertLevel;
-import com.sitewhere.spi.device.AlertSource;
-import com.sitewhere.spi.device.IDeviceAlert;
+import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.IDeviceAlert;
 
 /**
  * Wraps a {@link DeviceAlert} so that information about the asset associated with its

@@ -9,10 +9,10 @@
  */
 package com.sitewhere.rest.model.device.asset;
 
-import com.sitewhere.rest.model.device.DeviceLocation;
+import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.device.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Wraps a {@link DeviceLocation} so that information about the asset associated with its

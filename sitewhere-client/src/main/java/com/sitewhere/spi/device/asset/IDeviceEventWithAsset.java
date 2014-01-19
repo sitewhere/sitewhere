@@ -9,7 +9,7 @@
  */
 package com.sitewhere.spi.device.asset;
 
-import com.sitewhere.spi.device.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Extends device event information with extra data from the asset associated with its

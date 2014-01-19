@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.core.device.InterpolatedHistoryBuilder;
-import com.sitewhere.rest.model.device.InterpolatedAssignmentHistory;
+import com.sitewhere.rest.model.device.support.InterpolatedAssignmentHistory;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.search.ISearchResults;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;

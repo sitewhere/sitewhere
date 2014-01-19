@@ -13,7 +13,7 @@ package com.sitewhere.rest.model.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitewhere.rest.model.device.DeviceLocation;
+import com.sitewhere.rest.model.device.event.DeviceLocation;
 
 /**
  * Search results that contain device locations.

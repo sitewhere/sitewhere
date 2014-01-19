@@ -17,9 +17,9 @@ import org.bson.types.ObjectId;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
-import com.sitewhere.rest.model.device.DeviceEvent;
+import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.spi.device.DeviceAssignmentType;
-import com.sitewhere.spi.device.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Used to load or save device event data to MongoDB.

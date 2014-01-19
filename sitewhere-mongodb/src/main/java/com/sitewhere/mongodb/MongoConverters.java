@@ -22,14 +22,14 @@ import com.sitewhere.mongodb.device.MongoDeviceSpecification;
 import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
 import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceAlert;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceLocation;
-import com.sitewhere.spi.device.IDeviceMeasurements;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.

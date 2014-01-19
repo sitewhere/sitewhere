@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.device.DeviceAssignmentHistoryEntry;
-import com.sitewhere.rest.model.device.InterpolatedAssignmentHistory;
-import com.sitewhere.spi.device.IDeviceLocation;
+import com.sitewhere.rest.model.device.support.DeviceAssignmentHistoryEntry;
+import com.sitewhere.rest.model.device.support.InterpolatedAssignmentHistory;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Builds an interpolated history based on location results.

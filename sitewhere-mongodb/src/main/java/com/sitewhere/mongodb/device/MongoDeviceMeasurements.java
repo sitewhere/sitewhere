@@ -16,8 +16,8 @@ import java.util.List;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.rest.model.device.DeviceMeasurements;
-import com.sitewhere.spi.device.IDeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
  * Used to load or save device measurements data to MongoDB.

@@ -11,7 +11,7 @@ package com.sitewhere.spi.geo;
 
 import java.util.Map;
 
-import com.sitewhere.spi.device.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
  * Contains results of matching a location against a list of zones.

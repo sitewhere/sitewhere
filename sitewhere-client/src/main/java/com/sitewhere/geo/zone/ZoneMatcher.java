@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.geo.GeoUtils;
-import com.sitewhere.spi.device.IDeviceLocation;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.geo.IZoneMatcher;
 import com.sitewhere.spi.geo.IZoneRelationship;
 import com.sitewhere.spi.geo.ZoneContainment;
