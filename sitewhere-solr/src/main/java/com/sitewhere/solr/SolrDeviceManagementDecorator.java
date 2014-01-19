@@ -18,9 +18,9 @@ import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.sitewhere.rest.model.device.DeviceManagementDecorator;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.DeviceManagementDecorator;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
