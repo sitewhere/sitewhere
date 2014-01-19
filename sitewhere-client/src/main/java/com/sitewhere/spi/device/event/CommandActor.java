@@ -1,5 +1,5 @@
 /*
- * CommandStatus.java 
+ * CommandActor.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,18 +7,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.command;
+package com.sitewhere.spi.device.event;
 
 /**
- * Status indicator for a command.
+ * Enumerates types of actors that may participate in commands.
  * 
  * @author Derek
  */
-public enum CommandStatus {
+public enum CommandActor {
 
-	/** Command is pending delivery */
-	PENDING,
+	/** Actor is a physical device */
+	Device,
 
-	/** Command has been processed */
-	PROCESSED;
+	/** Actor is the system */
+	System;
 }

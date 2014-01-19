@@ -7,9 +7,8 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.command;
+package com.sitewhere.spi.device.event;
 
-import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Captures information about the invocation of a command.
