@@ -22,6 +22,9 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 @JsonInclude(Include.NON_NULL)
 public class DeviceLocation extends DeviceEvent implements IDeviceLocation {
 
+	/** For Java serialization */
+	private static final long serialVersionUID = -6279278445519407648L;
+
 	/** Latitude value */
 	private Double latitude;
 

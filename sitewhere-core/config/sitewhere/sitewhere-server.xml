@@ -22,7 +22,21 @@
 
 	<!-- Device event processor that indexes events in Solr -->
 	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
-		<property name="solrServerUrl" value="http://192.168.32.129:8983/solr/sitewhere"/>
+		<property name="solrServerUrl" value="http://192.168.37.128:8983/solr/sitewhere"/>
+	</bean>
+
+	<!-- ########################### -->
+	<!-- # HAZELCAST CONFIGURATION # -->
+	<!-- ########################### -->
+
+	<!-- Provides access to a local Hazelcast instance for SiteWhere -->
+	<bean id="hazelcastConfig" class="com.sitewhere.server.hazelcast.SiteWhereHazelcastConfiguration">
+		<property name="configFileName" value="hazelcast.xml"/>
+	</bean>
+
+	<!-- Broadcasts SiteWhere state over Hazelcast -->
+	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.server.hazelcast.HazelcastEventProcessor">
+		<property name="configuration" ref="hazelcastConfig"/>
 	</bean>
 
 	<!-- ########################### -->
@@ -37,6 +51,7 @@
 		<property name="processors">
 			<list>
 				<ref bean="solrDeviceEventProcessor"/>
+				<ref bean="hazelcastDeviceEventProcessor"/>
 			</list>
 		</property>
 	</bean>

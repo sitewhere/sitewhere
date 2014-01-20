@@ -21,6 +21,9 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
  */
 public class DeviceAlert extends DeviceEvent implements IDeviceAlert {
 
+	/** For Java serialization */
+	private static final long serialVersionUID = 594540716893472520L;
+
 	/** Alert source */
 	private AlertSource source;
 

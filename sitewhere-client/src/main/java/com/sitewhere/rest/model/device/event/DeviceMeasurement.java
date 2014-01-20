@@ -18,6 +18,9 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  */
 public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement {
 
+	/** For Java serialization */
+	private static final long serialVersionUID = 5255345217091668945L;
+
 	/** Measurement name */
 	private String name;
 

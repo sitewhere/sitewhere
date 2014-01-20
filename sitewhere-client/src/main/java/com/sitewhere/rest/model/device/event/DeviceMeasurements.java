@@ -26,6 +26,9 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 @JsonInclude(Include.NON_NULL)
 public class DeviceMeasurements extends DeviceEvent implements IDeviceMeasurements {
 
+	/** For Java serialization */
+	private static final long serialVersionUID = -4369962596450151827L;
+
 	/** Holder for measurements */
 	private MeasurementsProvider measurementsMetadata = new MeasurementsProvider();
 
