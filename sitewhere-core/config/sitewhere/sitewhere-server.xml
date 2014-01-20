@@ -29,7 +29,7 @@
 	<!-- Logs event processor hooks being called -->
 	<bean id="placeholderEventProcessor" class="com.sitewhere.server.device.event.processor.PlaceholderEventProcessor"/>
 	
-	<!-- Asset module manager configuration -->
+	<!-- Device event processor chain configuration -->
 	<bean id="deviceEventProcessorChain" class="com.sitewhere.server.device.event.processor.DefaultDeviceEventProcessorChain">
 		<property name="processors">
 			<list>
