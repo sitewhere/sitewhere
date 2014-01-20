@@ -32,11 +32,13 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
-import com.sitewhere.server.metrics.DeviceManagementMetricsFacade;
+import com.sitewhere.server.device.event.processor.DeviceEventProcessorDecorator;
+import com.sitewhere.server.metrics.DeviceManagementMetricsDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.event.processor.IDeviceEventProcessorChain;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
@@ -193,42 +195,18 @@ public class SiteWhereServer {
 	 */
 	public void create() throws SiteWhereException {
 		LOGGER.info("Initializing SiteWhere server components.");
-		File sitewhereConf = getSiteWhereConfigFolder();
 
-		// Load server configuration.
-		LOGGER.info("Loading Spring configuration ...");
-		File serverConfigFile = new File(sitewhereConf, SERVER_CONFIG_FILE_NAME);
-		if (!serverConfigFile.exists()) {
-			throw new SiteWhereException("SiteWhere server configuration not found: "
-					+ serverConfigFile.getAbsolutePath());
-		}
-		SERVER_SPRING_CONTEXT = loadServerApplicationContext(serverConfigFile);
+		// Initialize Spring.
+		initializeSpringContext();
 
-		// Load device management and wrap it for metrics.
-		IDeviceManagement deviceManagementImpl =
-				(IDeviceManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
-		if (deviceManagementImpl == null) {
-			throw new SiteWhereException("No device management implementation configured.");
-		}
-		DeviceManagementMetricsFacade facade = new DeviceManagementMetricsFacade();
-		facade.setDelegate(deviceManagementImpl);
-		deviceManagement = facade;
-		deviceManagement.start();
+		// Initialize device management.
+		initializeDeviceManagement();
 
-		// Load user management.
-		userManagement =
-				(IUserManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
-		if (userManagement == null) {
-			throw new SiteWhereException("No user management implementation configured.");
-		}
-		userManagement.start();
+		// Initialize user management.
+		initializeUserManagement();
 
-		// Load the asset module manager.
-		assetModuleManager =
-				(IAssetModuleManager) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
-		if (assetModuleManager == null) {
-			throw new SiteWhereException("No asset module manager implementation configured.");
-		}
+		// Initialize asset management.
+		initializeAssetManagement();
 
 		// Print version information.
 		IVersion version = VersionHelper.getVersion();
@@ -240,9 +218,77 @@ public class SiteWhereServer {
 		messages.add("Copyright (c) 2013 Reveal Technologies, LLC");
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 		LOGGER.info("\n" + message + "\n");
+	}
 
-		verifyUserModel();
-		verifyDeviceModel();
+	/**
+	 * Verifies and loads the Spring configuration file.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeSpringContext() throws SiteWhereException {
+		LOGGER.info("Loading Spring configuration ...");
+		File sitewhereConf = getSiteWhereConfigFolder();
+		File serverConfigFile = new File(sitewhereConf, SERVER_CONFIG_FILE_NAME);
+		if (!serverConfigFile.exists()) {
+			throw new SiteWhereException("SiteWhere server configuration not found: "
+					+ serverConfigFile.getAbsolutePath());
+		}
+		SERVER_SPRING_CONTEXT = loadServerApplicationContext(serverConfigFile);
+	}
+
+	/**
+	 * Initialize device management implementation and associated decorators.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeDeviceManagement() throws SiteWhereException {
+		// Verify that a device management implementation exists.
+		try {
+			IDeviceManagement deviceManagementImpl =
+					(IDeviceManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
+			deviceManagement = new DeviceManagementMetricsDecorator(deviceManagementImpl);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No device management implementation configured.");
+		}
+
+		// If device event processor chain is defined, use it.
+		try {
+			IDeviceEventProcessorChain chainImpl =
+					(IDeviceEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_EVENT_PROCESSOR_CHAIN);
+			deviceManagement = new DeviceEventProcessorDecorator(deviceManagement, chainImpl);
+			LOGGER.info("Event processor chain found with " + chainImpl.getProcessors().size()
+					+ " processors.");
+		} catch (NoSuchBeanDefinitionException e) {
+			LOGGER.info("No event processor chain found in configuration file.");
+		}
+	}
+
+	/**
+	 * Verify and initialize user management implementation.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeUserManagement() throws SiteWhereException {
+		try {
+			userManagement =
+					(IUserManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No user management implementation configured.");
+		}
+	}
+
+	/**
+	 * Verify and initialize asset module manager.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeAssetManagement() throws SiteWhereException {
+		try {
+			assetModuleManager =
+					(IAssetModuleManager) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No asset module manager implementation configured.");
+		}
 	}
 
 	/**
@@ -332,16 +378,12 @@ public class SiteWhereServer {
 	 * Start the server.
 	 */
 	public void start() throws SiteWhereException {
-		startServerComponents();
-	}
-
-	/**
-	 * Start the various server components that have a lifecycle.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	protected void startServerComponents() throws SiteWhereException {
+		deviceManagement.start();
+		userManagement.start();
 		assetModuleManager.start();
+
+		verifyUserModel();
+		verifyDeviceModel();
 	}
 
 	/**

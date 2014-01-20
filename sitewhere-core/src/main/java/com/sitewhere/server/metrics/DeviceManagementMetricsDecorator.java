@@ -31,12 +31,16 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
 /**
- * Wraps a device management implementation in a facade that gathers metrics about each
- * API call.
+ * Wraps a device management implementation with a decorator that gathers metrics about
+ * each API call.
  * 
  * @author Derek
  */
-public class DeviceManagementMetricsFacade extends DeviceManagementDecorator {
+public class DeviceManagementMetricsDecorator extends DeviceManagementDecorator {
+
+	public DeviceManagementMetricsDecorator(IDeviceManagement delegate) {
+		super(delegate);
+	}
 
 	/** Times invocations of addDeviceEventBatch() */
 	private final Timer addDeviceEventBatchTimer = getMetrics().timer(

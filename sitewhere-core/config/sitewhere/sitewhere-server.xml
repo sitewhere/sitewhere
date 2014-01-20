@@ -22,6 +22,22 @@
 	<!-- Uncomment to use HBase datastore with Solr indexing -->
 	<!-- <import resource="sitewhere-hbase-solr.xml"/> -->
 
+	<!-- ########################### -->
+	<!-- # DEVICE EVENT PROCESSING # -->
+	<!-- ########################### -->
+	
+	<!-- Logs event processor hooks being called -->
+	<bean id="placeholderEventProcessor" class="com.sitewhere.server.device.event.processor.PlaceholderEventProcessor"/>
+	
+	<!-- Asset module manager configuration -->
+	<bean id="deviceEventProcessorChain" class="com.sitewhere.server.device.event.processor.DefaultDeviceEventProcessorChain">
+		<property name="processors">
+			<list>
+				<ref bean="placeholderEventProcessor"/>
+			</list>
+		</property>
+	</bean>
+
 	<!-- ##################### -->
 	<!-- # DATA INITIALIZERS # -->
 	<!-- ##################### -->

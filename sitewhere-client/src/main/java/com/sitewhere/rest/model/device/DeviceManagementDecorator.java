@@ -50,6 +50,13 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	/** Delegate instance */
 	private IDeviceManagement delegate;
 
+	public DeviceManagementDecorator() {
+	}
+
+	public DeviceManagementDecorator(IDeviceManagement delegate) {
+		this.delegate = delegate;
+	}
+
 	@Override
 	public void start() throws SiteWhereException {
 		delegate.start();
