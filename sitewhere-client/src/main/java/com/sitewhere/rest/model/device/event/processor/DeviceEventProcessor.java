@@ -1,5 +1,5 @@
 /*
- * PlaceholderEventProcessor.java 
+ * DeviceEventProcessor.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,9 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.device.event.processor;
-
-import org.apache.log4j.Logger;
+package com.sitewhere.rest.model.device.event.processor;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -22,14 +20,11 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
- * Event processor that logs when methods are called.
+ * Default implementation of {@link IDeviceEventProcessor}.
  * 
  * @author Derek
  */
-public class PlaceholderEventProcessor implements IDeviceEventProcessor {
-
-	/** Logger instance */
-	private static Logger LOGGER = Logger.getLogger(PlaceholderEventProcessor.class);
+public class DeviceEventProcessor implements IDeviceEventProcessor {
 
 	/*
 	 * (non-Javadoc)
@@ -60,7 +55,6 @@ public class PlaceholderEventProcessor implements IDeviceEventProcessor {
 	@Override
 	public void beforeMeasurements(IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request)
 			throws SiteWhereException {
-		LOGGER.info("Calling 'beforeMeasurements' in event processor.");
 	}
 
 	/*
@@ -72,7 +66,6 @@ public class PlaceholderEventProcessor implements IDeviceEventProcessor {
 	 */
 	@Override
 	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
-		LOGGER.info("Calling 'afterMeasurements' in event processor.");
 	}
 
 	/*
@@ -86,7 +79,6 @@ public class PlaceholderEventProcessor implements IDeviceEventProcessor {
 	@Override
 	public void beforeLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
 			throws SiteWhereException {
-		LOGGER.info("Calling 'beforeLocation' in event processor.");
 	}
 
 	/*
@@ -98,7 +90,6 @@ public class PlaceholderEventProcessor implements IDeviceEventProcessor {
 	 */
 	@Override
 	public void afterLocation(IDeviceLocation location) throws SiteWhereException {
-		LOGGER.info("Calling 'afterLocation' in event processor.");
 	}
 
 	/*
@@ -112,7 +103,6 @@ public class PlaceholderEventProcessor implements IDeviceEventProcessor {
 	@Override
 	public void beforeAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
 			throws SiteWhereException {
-		LOGGER.info("Calling 'beforeAlert' in event processor.");
 	}
 
 	/*
@@ -124,6 +114,5 @@ public class PlaceholderEventProcessor implements IDeviceEventProcessor {
 	 */
 	@Override
 	public void afterAlert(IDeviceAlert alert) throws SiteWhereException {
-		LOGGER.info("Calling 'afterAlert' in event processor.");
 	}
 }

@@ -12,6 +12,8 @@ package com.sitewhere.server.device.event.processor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import com.sitewhere.spi.device.event.processor.IDeviceEventProcessor;
 import com.sitewhere.spi.device.event.processor.IDeviceEventProcessorChain;
 
@@ -20,10 +22,22 @@ import com.sitewhere.spi.device.event.processor.IDeviceEventProcessorChain;
  * 
  * @author Derek
  */
-public class DefaultDeviceEventProcessorChain implements IDeviceEventProcessorChain {
+public class DefaultDeviceEventProcessorChain implements IDeviceEventProcessorChain, InitializingBean {
 
 	/** List of event processors */
 	private List<IDeviceEventProcessor> processors = new ArrayList<IDeviceEventProcessor>();
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		for (IDeviceEventProcessor processor : getProcessors()) {
+			processor.start();
+		}
+	}
 
 	/*
 	 * (non-Javadoc)

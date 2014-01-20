@@ -26,6 +26,20 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 public interface IDeviceEventProcessor {
 
 	/**
+	 * Start the processor.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void start() throws SiteWhereException;
+
+	/**
+	 * Stop the processor.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void stop() throws SiteWhereException;
+
+	/**
 	 * Executes code before saving device measurements.
 	 * 
 	 * @param assignment

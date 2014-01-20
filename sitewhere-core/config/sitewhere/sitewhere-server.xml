@@ -13,14 +13,17 @@
 	<!-- Leave uncommented to use MondoDB datastore -->
 	<import resource="sitewhere-mongodb.xml"/>
 
-	<!-- Uncomment to use MongoDB datastore with Solr indexing -->
-	<!-- <import resource="sitewhere-mongodb-solr.xml"/> -->
-
 	<!-- Uncomment to use HBase datastore -->
 	<!-- <import resource="sitewhere-hbase.xml"/> -->
 
-	<!-- Uncomment to use HBase datastore with Solr indexing -->
-	<!-- <import resource="sitewhere-hbase-solr.xml"/> -->
+	<!-- ############################# -->
+	<!-- # APACHE SOLR CONFIGURATION # -->
+	<!-- ############################# -->
+
+	<!-- Device event processor that indexes events in Solr -->
+	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
+		<property name="solrServerUrl" value="http://192.168.32.129:8983/solr/sitewhere"/>
+	</bean>
 
 	<!-- ########################### -->
 	<!-- # DEVICE EVENT PROCESSING # -->
@@ -33,7 +36,7 @@
 	<bean id="deviceEventProcessorChain" class="com.sitewhere.server.device.event.processor.DefaultDeviceEventProcessorChain">
 		<property name="processors">
 			<list>
-				<ref bean="placeholderEventProcessor"/>
+				<ref bean="solrDeviceEventProcessor"/>
 			</list>
 		</property>
 	</bean>
