@@ -234,8 +234,9 @@ public class SiteWhereClient implements ISiteWhereClient {
 	public DeviceAssignment getCurrentAssignmentForDevice(String hardwareId) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("hardwareId", hardwareId);
-		return sendRest(getBaseUrl() + "devices/{hardwareId}/assignment", HttpMethod.GET, null,
-				DeviceAssignment.class, vars);
+		return sendRest(getBaseUrl()
+				+ "devices/{hardwareId}/assignment?includeAsset=false&includeDevice=false&includeSite=false",
+				HttpMethod.GET, null, DeviceAssignment.class, vars);
 	}
 
 	/*

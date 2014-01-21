@@ -155,7 +155,10 @@ public class DevicesController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get the current assignment for a device")
 	public IDeviceAssignment getDeviceCurrentAssignment(
-			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId)
+			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
+			@ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
+			@ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "true") boolean includeSite)
 			throws SiteWhereException {
 		IDevice device = assertDeviceByHardwareId(hardwareId);
 		IDeviceAssignment assignment =
@@ -165,9 +168,9 @@ public class DevicesController extends SiteWhereController {
 					HttpServletResponse.SC_NOT_FOUND);
 		}
 		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(true);
-		helper.setIncludeDevice(false);
-		helper.setIncludeSite(true);
+		helper.setIncludeAsset(includeAsset);
+		helper.setIncludeDevice(includeDevice);
+		helper.setIncludeSite(includeSite);
 		return helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager());
 	}
 
