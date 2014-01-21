@@ -9,11 +9,14 @@
  */
 package com.sitewhere.server.device.event.processor;
 
+import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.rest.model.device.DeviceManagementDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceEventBatch;
+import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IDeviceEventProcessor;
@@ -36,6 +39,19 @@ public class DeviceEventProcessorDecorator extends DeviceManagementDecorator {
 	public DeviceEventProcessorDecorator(IDeviceManagement delegate, IDeviceEventProcessorChain chain) {
 		super(delegate);
 		this.chain = chain;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceEventBatch(java
+	 * .lang.String, com.sitewhere.spi.device.event.IDeviceEventBatch)
+	 */
+	@Override
+	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
+			throws SiteWhereException {
+		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
 	}
 
 	/*

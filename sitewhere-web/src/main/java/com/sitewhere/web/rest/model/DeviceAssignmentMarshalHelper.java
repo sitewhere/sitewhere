@@ -90,12 +90,12 @@ public class DeviceAssignmentMarshalHelper {
 				}
 			}
 		}
+		result.setSiteToken(source.getSiteToken());
 		if (isIncludeSite()) {
 			ISite site = SiteWhereServer.getInstance().getDeviceManagement().getSiteForAssignment(source);
 			result.setSite(Site.copy(site));
-		} else {
-			result.setSiteToken(source.getSiteToken());
 		}
+		result.setDeviceHardwareId(source.getDeviceHardwareId());
 		if (isIncludeDevice()) {
 			IDevice device =
 					SiteWhereServer.getInstance().getDeviceManagement().getDeviceForAssignment(source);
@@ -104,8 +104,6 @@ public class DeviceAssignmentMarshalHelper {
 			} else {
 				LOGGER.error("Assignment references invalid hardware id.");
 			}
-		} else {
-			result.setDeviceHardwareId(source.getDeviceHardwareId());
 		}
 		return result;
 	}

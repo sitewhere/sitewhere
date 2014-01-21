@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.spi.ISiteWhereContext;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -30,17 +29,16 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
  */
 public class SiteWhereContext implements ISiteWhereContext {
 
-	/** Device associated with current request */
-	private IDevice device;
-
 	/** Current assignment for device */
 	private IDeviceAssignment deviceAssignment;
 
 	/** Measurements that have not been persisted */
-	private List<IDeviceMeasurementsCreateRequest> unsavedDeviceMeasurements = new ArrayList<IDeviceMeasurementsCreateRequest>();
+	private List<IDeviceMeasurementsCreateRequest> unsavedDeviceMeasurements =
+			new ArrayList<IDeviceMeasurementsCreateRequest>();
 
 	/** Locations that have not been persisted */
-	private List<IDeviceLocationCreateRequest> unsavedDeviceLocations = new ArrayList<IDeviceLocationCreateRequest>();
+	private List<IDeviceLocationCreateRequest> unsavedDeviceLocations =
+			new ArrayList<IDeviceLocationCreateRequest>();
 
 	/** Alerts that have not been persisted */
 	private List<IDeviceAlertCreateRequest> unsavedDeviceAlerts = new ArrayList<IDeviceAlertCreateRequest>();
@@ -56,19 +54,6 @@ public class SiteWhereContext implements ISiteWhereContext {
 
 	/** Information for replying to originator */
 	private String replyTo;
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.ISiteWhereContext#getDevice()
-	 */
-	public IDevice getDevice() {
-		return device;
-	}
-
-	public void setDevice(IDevice device) {
-		this.device = device;
-	}
 
 	/*
 	 * (non-Javadoc)

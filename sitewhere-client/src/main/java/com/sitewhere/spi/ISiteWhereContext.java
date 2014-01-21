@@ -12,7 +12,6 @@ package com.sitewhere.spi;
 
 import java.util.List;
 
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -27,13 +26,6 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
  * @author dadams
  */
 public interface ISiteWhereContext {
-
-	/**
-	 * Get the device associated with the current request.
-	 * 
-	 * @return
-	 */
-	public IDevice getDevice();
 
 	/**
 	 * Get current assignment for device associated with the request.

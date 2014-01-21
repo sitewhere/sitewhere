@@ -76,6 +76,7 @@ public class HazelcastEventProcessor extends DeviceEventProcessor {
 	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
 		DeviceMeasurements marshaled = DeviceMeasurements.copy(measurements);
 		measurementsTopic.publish(marshaled);
+		LOGGER.debug("Published measurements for: " + measurements.getId());
 	}
 
 	/*
@@ -89,6 +90,7 @@ public class HazelcastEventProcessor extends DeviceEventProcessor {
 	public void afterLocation(IDeviceLocation location) throws SiteWhereException {
 		DeviceLocation marshaled = DeviceLocation.copy(location);
 		locationsTopic.publish(marshaled);
+		LOGGER.debug("Published location for: " + location.getId());
 	}
 
 	/*
@@ -102,6 +104,7 @@ public class HazelcastEventProcessor extends DeviceEventProcessor {
 	public void afterAlert(IDeviceAlert alert) throws SiteWhereException {
 		DeviceAlert marshaled = DeviceAlert.copy(alert);
 		alertsTopic.publish(marshaled);
+		LOGGER.debug("Published alert for: " + alert.getId());
 	}
 
 	public SiteWhereHazelcastConfiguration getConfiguration() {

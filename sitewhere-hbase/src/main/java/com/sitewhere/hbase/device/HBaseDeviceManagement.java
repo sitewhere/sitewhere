@@ -14,11 +14,11 @@ import java.util.List;
 import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
 import org.apache.log4j.Logger;
 
+import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.uid.IdManager;
-import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -405,18 +405,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
 			throws SiteWhereException {
-		DeviceEventBatchResponse response = new DeviceEventBatchResponse();
-		IDeviceAssignment assignment = getDeviceAssignmentByToken(assignmentToken);
-		for (IDeviceMeasurementsCreateRequest measurements : batch.getMeasurements()) {
-			response.getCreatedMeasurements().add(addDeviceMeasurements(assignment, measurements));
-		}
-		for (IDeviceLocationCreateRequest location : batch.getLocations()) {
-			response.getCreatedLocations().add(addDeviceLocation(assignment, location));
-		}
-		for (IDeviceAlertCreateRequest alert : batch.getAlerts()) {
-			response.getCreatedAlerts().add(addDeviceAlert(assignment, alert));
-		}
-		return response;
+		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
 	}
 
 	/*

@@ -31,6 +31,7 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
+import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
@@ -44,6 +45,7 @@ import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -367,6 +369,31 @@ public class SiteWherePersistence {
 		MetadataProvider.copy(source, newAssignment);
 
 		return newAssignment;
+	}
+
+	/**
+	 * Executes logic to process a batch of device events.
+	 * 
+	 * @param assignmentToken
+	 * @param batch
+	 * @param management
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceEventBatchResponse deviceEventBatchLogic(String assignmentToken,
+			IDeviceEventBatch batch, IDeviceManagement management) throws SiteWhereException {
+		DeviceEventBatchResponse response = new DeviceEventBatchResponse();
+		IDeviceAssignment assignment = management.getDeviceAssignmentByToken(assignmentToken);
+		for (IDeviceMeasurementsCreateRequest measurements : batch.getMeasurements()) {
+			response.getCreatedMeasurements().add(management.addDeviceMeasurements(assignment, measurements));
+		}
+		for (IDeviceLocationCreateRequest location : batch.getLocations()) {
+			response.getCreatedLocations().add(management.addDeviceLocation(assignment, location));
+		}
+		for (IDeviceAlertCreateRequest alert : batch.getAlerts()) {
+			response.getCreatedAlerts().add(management.addDeviceAlert(assignment, alert));
+		}
+		return response;
 	}
 
 	/**

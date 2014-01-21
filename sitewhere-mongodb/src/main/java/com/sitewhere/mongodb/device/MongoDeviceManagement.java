@@ -34,7 +34,6 @@ import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
-import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -719,19 +718,7 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	@Override
 	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
 			throws SiteWhereException {
-		DeviceEventBatchResponse response = new DeviceEventBatchResponse();
-		DBObject match = assertDeviceAssignment(assignmentToken);
-		DeviceAssignment assignment = MongoDeviceAssignment.fromDBObject(match);
-		for (IDeviceMeasurementsCreateRequest measurements : batch.getMeasurements()) {
-			response.getCreatedMeasurements().add(addDeviceMeasurements(assignment, measurements));
-		}
-		for (IDeviceLocationCreateRequest location : batch.getLocations()) {
-			response.getCreatedLocations().add(addDeviceLocation(assignment, location));
-		}
-		for (IDeviceAlertCreateRequest alert : batch.getAlerts()) {
-			response.getCreatedAlerts().add(addDeviceAlert(assignment, alert));
-		}
-		return response;
+		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
 	}
 
 	/*

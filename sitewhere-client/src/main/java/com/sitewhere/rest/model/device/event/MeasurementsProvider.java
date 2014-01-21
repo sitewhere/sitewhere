@@ -9,6 +9,7 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,10 @@ import com.sitewhere.spi.device.event.IMeasurementsProvider;
  * 
  * @author Derek
  */
-public class MeasurementsProvider implements IMeasurementsProvider {
+public class MeasurementsProvider implements IMeasurementsProvider, Serializable {
+
+	/** For Java serialization */
+	private static final long serialVersionUID = 3675057693017779000L;
 
 	/** List of measurement entries */
 	private Map<String, Double> measurements = new HashMap<String, Double>();
