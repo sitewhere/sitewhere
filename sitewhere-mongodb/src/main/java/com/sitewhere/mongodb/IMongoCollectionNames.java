@@ -44,6 +44,9 @@ public interface IMongoCollectionNames {
 	/** Default collection name for SiteWhere alerts */
 	public static final String DEFAULT_ALERTS_COLLECTION_NAME = "alerts";
 
+	/** Default collection name for SiteWhere command invocations */
+	public static final String DEFAULT_INVOCATIONS_COLLECTION_NAME = "invocations";
+
 	/** Default collection name for SiteWhere users */
 	public static final String DEFAULT_USERS_COLLECTION_NAME = "users";
 

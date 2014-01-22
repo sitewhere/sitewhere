@@ -15,11 +15,13 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -456,6 +458,40 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * @throws SiteWhereException
 	 */
 	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Add a device command invocation event for the given assignment.
+	 * 
+	 * @param assignment
+	 * @param command
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
+			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Gets device command invocations for an assignment based on criteria.
+	 * 
+	 * @param assignmentToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * List device command invocations for a site.
+	 * 
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**

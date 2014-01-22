@@ -16,6 +16,7 @@ import com.sitewhere.mongodb.device.MongoDevice;
 import com.sitewhere.mongodb.device.MongoDeviceAlert;
 import com.sitewhere.mongodb.device.MongoDeviceAssignment;
 import com.sitewhere.mongodb.device.MongoDeviceCommand;
+import com.sitewhere.mongodb.device.MongoDeviceCommandInvocation;
 import com.sitewhere.mongodb.device.MongoDeviceLocation;
 import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
 import com.sitewhere.mongodb.device.MongoDeviceSpecification;
@@ -28,6 +29,7 @@ import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
@@ -50,6 +52,7 @@ public class MongoConverters {
 		CONVERTERS.put(IDeviceMeasurements.class, new MongoDeviceMeasurements());
 		CONVERTERS.put(IDeviceAlert.class, new MongoDeviceAlert());
 		CONVERTERS.put(IDeviceLocation.class, new MongoDeviceLocation());
+		CONVERTERS.put(IDeviceCommandInvocation.class, new MongoDeviceCommandInvocation());
 		CONVERTERS.put(ISite.class, new MongoSite());
 		CONVERTERS.put(IZone.class, new MongoZone());
 	}

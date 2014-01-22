@@ -37,6 +37,7 @@ import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
@@ -44,11 +45,14 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
@@ -155,11 +159,7 @@ public class HBaseDeviceEvent {
 	public static IDeviceLocation createDeviceLocation(ISiteWhereHBaseClient hbase,
 			IDeviceAssignment assignment, IDeviceLocationCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
-		if (assnKey == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
-		}
-		byte[] rowkey = getRowKey(assnKey, time);
+		byte[] rowkey = getEventRowKey(assignment, time);
 		byte[] qualifier = getQualifier(DeviceAssignmentRecordType.Location, time);
 
 		DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
@@ -226,11 +226,7 @@ public class HBaseDeviceEvent {
 	public static IDeviceAlert createDeviceAlert(ISiteWhereHBaseClient hbase, IDeviceAssignment assignment,
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
-		if (assnKey == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
-		}
-		byte[] rowkey = getRowKey(assnKey, time);
+		byte[] rowkey = getEventRowKey(assignment, time);
 		byte[] qualifier = getQualifier(DeviceAssignmentRecordType.Alert, time);
 
 		// Create alert and marshal to JSON.
@@ -284,6 +280,96 @@ public class HBaseDeviceEvent {
 		Pager<byte[]> matches =
 				getEventRowsForSite(hbase, siteToken, DeviceAssignmentRecordType.Alert, criteria);
 		return convertMatches(matches, DeviceAlert.class);
+	}
+
+	/**
+	 * Create a new device command invocation entry for an assignment.
+	 * 
+	 * @param hbase
+	 * @param assignment
+	 * @param command
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDeviceCommandInvocation createDeviceCommandInvocation(ISiteWhereHBaseClient hbase,
+			IDeviceAssignment assignment, IDeviceCommand command,
+			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+		long time = getEventTime(request);
+		byte[] rowkey = getEventRowKey(assignment, time);
+		byte[] qualifier = getQualifier(DeviceAssignmentRecordType.CommandInvocation, time);
+
+		// Create a command invocation and marshal to JSON.
+		DeviceCommandInvocation ci =
+				SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command, request);
+		String id = getEncodedEventId(rowkey, qualifier);
+		ci.setId(id);
+		byte[] json = MarshalUtils.marshalJson(ci);
+
+		HTableInterface events = null;
+		try {
+			events = hbase.getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+			Put put = new Put(rowkey);
+			put.add(ISiteWhereHBase.FAMILY_ID, qualifier, json);
+			events.put(put);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to create command invocation.", e);
+		} finally {
+			HBaseUtils.closeCleanly(events);
+		}
+
+		return ci;
+	}
+
+	/**
+	 * List command invocations associated with an assignment based on the given criteria.
+	 * 
+	 * @param hbase
+	 * @param assnToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(
+			ISiteWhereHBaseClient hbase, String assnToken, IDateRangeSearchCriteria criteria)
+			throws SiteWhereException {
+		Pager<byte[]> matches =
+				getEventRowsForAssignment(hbase, assnToken, DeviceAssignmentRecordType.CommandInvocation,
+						criteria);
+		return convertMatches(matches, DeviceCommandInvocation.class);
+	}
+
+	/**
+	 * List device command invocations associated with a site.
+	 * 
+	 * @param hbase
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
+			ISiteWhereHBaseClient hbase, String siteToken, IDateRangeSearchCriteria criteria)
+			throws SiteWhereException {
+		Pager<byte[]> matches =
+				getEventRowsForSite(hbase, siteToken, DeviceAssignmentRecordType.CommandInvocation, criteria);
+		return convertMatches(matches, DeviceCommandInvocation.class);
+	}
+
+	/**
+	 * Get the event row key bytes.
+	 * 
+	 * @param assignment
+	 * @param time
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static byte[] getEventRowKey(IDeviceAssignment assignment, long time) throws SiteWhereException {
+		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
+		if (assnKey == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
+		}
+		return getRowKey(assnKey, time);
 	}
 
 	/**

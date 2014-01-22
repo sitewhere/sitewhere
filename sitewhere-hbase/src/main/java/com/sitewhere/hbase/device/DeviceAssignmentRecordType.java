@@ -26,7 +26,10 @@ public enum DeviceAssignmentRecordType {
 	Location((byte) 0x02),
 
 	/** Device alert record */
-	Alert((byte) 0x03);
+	Alert((byte) 0x03),
+
+	/** Device command invocation record */
+	CommandInvocation((byte) 0x04);
 
 	/** Type indicator */
 	private byte type;

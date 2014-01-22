@@ -82,6 +82,9 @@ public class SiteWhereMongoClient implements InitializingBean {
 	/** Injected name used for alerts collection */
 	private String alertsCollectionName = IMongoCollectionNames.DEFAULT_ALERTS_COLLECTION_NAME;
 
+	/** Injected name used for command invocations collection */
+	private String invocationsCollectionName = IMongoCollectionNames.DEFAULT_INVOCATIONS_COLLECTION_NAME;
+
 	/** Injected name used for users collection */
 	private String usersCollectionName = IMongoCollectionNames.DEFAULT_USERS_COLLECTION_NAME;
 
@@ -110,6 +113,7 @@ public class SiteWhereMongoClient implements InitializingBean {
 		messages.add("Measurements collection name: " + getMeasurementsCollectionName());
 		messages.add("Locations collection name: " + getLocationsCollectionName());
 		messages.add("Alerts collection name: " + getAlertsCollectionName());
+		messages.add("Invocations collection name: " + getInvocationsCollectionName());
 		messages.add("Users collection name: " + getUsersCollectionName());
 		messages.add("Authorities collection name: " + getAuthoritiesCollectionName());
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
@@ -163,6 +167,10 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public DBCollection getAlertsCollection() {
 		return getSiteWhereDatabase().getCollection(getAlertsCollectionName());
+	}
+
+	public DBCollection getInvocationsCollection() {
+		return getSiteWhereDatabase().getCollection(getInvocationsCollectionName());
 	}
 
 	public DBCollection getUsersCollection() {
@@ -267,6 +275,14 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public void setAlertsCollectionName(String alertsCollectionName) {
 		this.alertsCollectionName = alertsCollectionName;
+	}
+
+	public String getInvocationsCollectionName() {
+		return invocationsCollectionName;
+	}
+
+	public void setInvocationsCollectionName(String invocationsCollectionName) {
+		this.invocationsCollectionName = invocationsCollectionName;
 	}
 
 	public String getUsersCollectionName() {

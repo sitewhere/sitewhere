@@ -1,5 +1,5 @@
 /*
- * IDeviceCommand.java 
+ * IDeviceCommandInvocationCreateRequest.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,16 +7,19 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.event;
+package com.sitewhere.spi.device.event.request;
 
 import java.util.Map;
 
+import com.sitewhere.spi.device.event.CommandActor;
+import com.sitewhere.spi.device.event.CommandStatus;
+
 /**
- * Captures information about the invocation of a command.
+ * Interface for arguments needed to create a device command invocation.
  * 
  * @author Derek
  */
-public interface IDeviceCommandInvocation extends IDeviceEvent {
+public interface IDeviceCommandInvocationCreateRequest extends IDeviceEventCreateRequest {
 
 	/**
 	 * Get actor type that originated the command.
@@ -47,7 +50,7 @@ public interface IDeviceCommandInvocation extends IDeviceEvent {
 	public String getTargetId();
 
 	/**
-	 * Get the unique token of the command to be executed.
+	 * Get unique token for command to invoke.
 	 * 
 	 * @return
 	 */

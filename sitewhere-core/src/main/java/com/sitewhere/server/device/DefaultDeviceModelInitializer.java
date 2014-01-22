@@ -11,7 +11,9 @@ package com.sitewhere.server.device;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -23,6 +25,7 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
@@ -41,8 +44,13 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.ISiteMapMetadata;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.command.ICommandParameter;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.CommandActor;
+import com.sitewhere.spi.device.event.CommandStatus;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
@@ -121,6 +129,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 	/** Available device specifications */
 	protected IDeviceSpecification[] deviceSpecifications;
+
+	/** Map of commands for each specification token */
+	protected Map<String, List<IDeviceCommand>> commandsBySpecToken =
+			new HashMap<String, List<IDeviceCommand>>();
 
 	/** Available choices for devices/assignments that track location */
 	protected static AssignmentChoice[] LOCATION_TRACKERS = {
@@ -219,24 +231,26 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @throws SiteWhereException
 	 */
 	public void createDeviceCommands(IDeviceSpecification spec) throws SiteWhereException {
+		List<IDeviceCommand> commands = new ArrayList<IDeviceCommand>();
+
 		DeviceCommandCreateRequest cmdPing = new DeviceCommandCreateRequest();
 		cmdPing.setNamespace(null);
 		cmdPing.setName("ping");
 		cmdPing.setDescription("Send a 'ping' request to the device to verify it can be reached.");
-		getDeviceManagement().createDeviceCommand(spec, cmdPing);
+		commands.add(getDeviceManagement().createDeviceCommand(spec, cmdPing));
 
 		DeviceCommandCreateRequest cmdVersion = new DeviceCommandCreateRequest();
 		cmdVersion.setNamespace(null);
 		cmdVersion.setName("version");
 		cmdVersion.setDescription("Request a version identifier response from the device.");
-		getDeviceManagement().createDeviceCommand(spec, cmdVersion);
+		commands.add(getDeviceManagement().createDeviceCommand(spec, cmdVersion));
 
 		DeviceCommandCreateRequest powerUp = new DeviceCommandCreateRequest();
 		powerUp.setNamespace(CORE_HWCORE_NAMESPACE);
 		powerUp.setName("powerUp");
 		powerUp.setDescription("Request that the device enter 'powered on' mode.");
 		powerUp.getParameters().add(new CommandParameter("delayInMs", ParameterType.Integer, false));
-		getDeviceManagement().createDeviceCommand(spec, powerUp);
+		commands.add(getDeviceManagement().createDeviceCommand(spec, powerUp));
 
 		DeviceCommandCreateRequest firmware = new DeviceCommandCreateRequest();
 		firmware.setNamespace(CORE_HWCORE_NAMESPACE);
@@ -244,14 +258,16 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		firmware.setDescription("Ask the device to download a new firmware version from the given URL.");
 		firmware.getParameters().add(new CommandParameter("url", ParameterType.String, true));
 		firmware.getParameters().add(new CommandParameter("createRestorePoint", ParameterType.Boolean, false));
-		getDeviceManagement().createDeviceCommand(spec, firmware);
+		commands.add(getDeviceManagement().createDeviceCommand(spec, firmware));
 
 		DeviceCommandCreateRequest powerDown = new DeviceCommandCreateRequest();
 		powerDown.setNamespace(CORE_HWCORE_NAMESPACE);
 		powerDown.setName("powerDown");
 		powerDown.setDescription("Request that the device enter 'powered down' mode.");
 		powerDown.getParameters().add(new CommandParameter("delayInMs", ParameterType.Integer, false));
-		getDeviceManagement().createDeviceCommand(spec, powerDown);
+		commands.add(getDeviceManagement().createDeviceCommand(spec, powerDown));
+
+		commandsBySpecToken.put(spec.getToken(), commands);
 	}
 
 	/**
@@ -325,11 +341,13 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 		for (int x = 0; x < ASSIGNMENTS_PER_SITE; x++) {
 			AssignmentChoice assnChoice = getRandomAssignmentChoice();
+			IDeviceSpecification specification = getRandomDeviceSpecification();
+			List<IDeviceCommand> commands = commandsBySpecToken.get(specification.getToken());
 
 			// Create device.
 			DeviceCreateRequest request = new DeviceCreateRequest();
 			request.setHardwareId(UUID.randomUUID().toString());
-			request.setSpecificationToken(getRandomDeviceSpecification().getToken());
+			request.setSpecificationToken(specification.getToken());
 			request.setComments(assnChoice.getDeviceDescriptionBase() + " " + (x + 1) + ".");
 			IDevice device = getDeviceManagement().createDevice(request);
 			LOGGER.info(PREFIX_CREATE_DEVICE + " " + device.getHardwareId());
@@ -347,6 +365,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			// Create events for assignment.
 			createDeviceMeasurements(assignment, now);
 			createDeviceLocations(assignment, now);
+			createDeviceCommandInvocations(assignment, now, commands);
 
 			results.add(assignment);
 		}
@@ -512,6 +531,68 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			getDeviceManagement().updateDeviceAssignmentState(assignment.getToken(), batch);
 		}
 		return results;
+	}
+
+	/**
+	 * Create command invocations for an assignment.
+	 * 
+	 * @param assignment
+	 * @param date
+	 * @param commands
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected List<IDeviceCommandInvocation> createDeviceCommandInvocations(IDeviceAssignment assignment,
+			Date date, List<IDeviceCommand> commands) throws SiteWhereException {
+		long current = date.getTime();
+		List<IDeviceCommandInvocation> invocations = new ArrayList<IDeviceCommandInvocation>();
+		for (IDeviceCommand command : commands) {
+			DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
+			request.setCommandToken(command.getToken());
+			request.setSourceActor(CommandActor.RestCall);
+			request.setSourceId("system");
+			request.setTargetActor(CommandActor.Device);
+			request.setTargetId(assignment.getDeviceHardwareId());
+			request.setStatus(CommandStatus.PENDING);
+			request.setEventDate(new Date(current));
+			Map<String, String> values = new HashMap<String, String>();
+			for (ICommandParameter param : command.getParameters()) {
+				values.put(param.getName(), getSampleValue(param.getType()));
+			}
+			request.setParameterValues(values);
+			invocations.add(getDeviceManagement().addDeviceCommandInvocation(assignment, command, request));
+			current += 30000;
+		}
+		return invocations;
+	}
+
+	/**
+	 * Get a sample value based on datatype.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected String getSampleValue(ParameterType type) {
+		switch (type) {
+		case Boolean:
+			return "true";
+		case Byte:
+			return "0";
+		case Double:
+			return "0.0";
+		case Float:
+			return "0.0";
+		case Integer:
+			return "0";
+		case Long:
+			return "0";
+		case Short:
+			return "0";
+		case String:
+			return "test";
+		default:
+			return null;
+		}
 	}
 
 	/**

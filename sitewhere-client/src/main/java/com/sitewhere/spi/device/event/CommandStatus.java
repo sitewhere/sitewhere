@@ -19,6 +19,12 @@ public enum CommandStatus {
 	/** Command is pending delivery */
 	PENDING,
 
-	/** Command has been processed */
-	PROCESSED;
+	/** Command has started processing */
+	PROCESSING,
+
+	/** Command has been sent on the underlying transport */
+	SENT,
+
+	/** Response message has been received */
+	RESPONDED;
 }

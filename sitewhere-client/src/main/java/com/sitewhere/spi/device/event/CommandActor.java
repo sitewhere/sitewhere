@@ -16,6 +16,9 @@ package com.sitewhere.spi.device.event;
  */
 public enum CommandActor {
 
+	/** Actor is a REST service call */
+	RestCall,
+
 	/** Actor is a physical device */
 	Device,
 

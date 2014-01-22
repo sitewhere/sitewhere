@@ -30,6 +30,7 @@ import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
@@ -50,10 +51,12 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
@@ -474,6 +477,40 @@ public class SiteWherePersistence {
 		alert.setType(request.getType());
 		alert.setMessage(request.getMessage());
 		return alert;
+	}
+
+	/**
+	 * Common logic for created {@link DeviceCommandInvocation} from
+	 * {@link IDeviceCommandInvocationCreateRequest}.
+	 * 
+	 * @param assignment
+	 * @param command
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceCommandInvocation deviceCommandInvocationCreateLogic(IDeviceAssignment assignment,
+			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+		if (request.getSourceActor() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		if (request.getTargetActor() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		DeviceCommandInvocation ci = new DeviceCommandInvocation();
+		deviceEventCreateLogic(request, assignment, ci);
+		ci.setCommandToken(command.getToken());
+		ci.setSourceActor(request.getSourceActor());
+		ci.setSourceId(request.getSourceId());
+		ci.setTargetActor(request.getTargetActor());
+		ci.setTargetId(request.getTargetId());
+		ci.setParameterValues(request.getParameterValues());
+		if (request.getStatus() != null) {
+			ci.setStatus(request.getStatus());
+		} else {
+			ci.setStatus(CommandStatus.PENDING);
+		}
+		return ci;
 	}
 
 	/**

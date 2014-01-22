@@ -28,6 +28,7 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
+import com.sitewhere.rest.model.device.asset.DeviceCommandInvocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceLocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceMeasurementsWithAsset;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
@@ -43,6 +44,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.error.ErrorCode;
@@ -248,6 +250,38 @@ public class SitesController extends SiteWhereController {
 			wrapped.add(new DeviceAlertWithAsset(result, assets));
 		}
 		return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
+	}
+
+	/**
+	 * Get device command invocations for a given site.
+	 * 
+	 * @param siteToken
+	 * @param count
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{siteToken}/invocations", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List command invocations associated with a site")
+	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
+			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+			throws SiteWhereException {
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+		ISearchResults<IDeviceCommandInvocation> results =
+				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandInvocationsForSite(
+						siteToken, criteria);
+
+		// Marshal with asset info since multiple assignments might match.
+		List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
+		IAssetModuleManager assets = SiteWhereServer.getInstance().getAssetModuleManager();
+		for (IDeviceCommandInvocation result : results.getResults()) {
+			wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
+		}
+		return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
 	}
 
 	/**
