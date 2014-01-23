@@ -336,19 +336,6 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 			ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
-	 * Find assignments within a given distance of a location.
-	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @param maxDistance
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsNear(double latitude, double longitude,
-			double maxDistance, ISearchCriteria criteria) throws SiteWhereException;
-
-	/**
 	 * Add measurements for a given device assignment.
 	 * 
 	 * @param assignment

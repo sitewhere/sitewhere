@@ -770,26 +770,6 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsNear(double,
-	 * double, double, com.sitewhere.spi.common.ISearchCriteria)
-	 */
-	@Override
-	public SearchResults<IDeviceAssignment> getDeviceAssignmentsNear(double latitude, double longitude,
-			double maxDistance, ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
-		BasicDBObject filter = new BasicDBObject("$nearSphere", new double[] { longitude, latitude });
-		filter.put("$maxDistance", maxDistance / 3963192);
-		BasicDBObject query =
-				new BasicDBObject(MongoDeviceAssignment.PROP_STATE + "."
-						+ MongoDeviceAssignmentState.PROP_LAST_LOCATION + "."
-						+ MongoDeviceLocation.PROP_LATLONG, filter);
-		BasicDBObject sort = new BasicDBObject();
-		return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(java.lang
 	 * .String, com.sitewhere.spi.common.ISearchCriteria)

@@ -230,12 +230,6 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsNear(double latitude, double longitude,
-			double maxDistance, ISearchCriteria criteria) throws SiteWhereException {
-		return delegate.getDeviceAssignmentsNear(latitude, longitude, maxDistance, criteria);
-	}
-
-	@Override
 	public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
 			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
 		return delegate.addDeviceMeasurements(assignment, measurements);

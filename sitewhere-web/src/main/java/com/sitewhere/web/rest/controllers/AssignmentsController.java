@@ -9,7 +9,6 @@
  */
 package com.sitewhere.web.rest.controllers;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,8 +36,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
-import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -435,39 +432,6 @@ public class AssignmentsController extends SiteWhereController {
 		helper.setIncludeDevice(true);
 		helper.setIncludeSite(true);
 		return helper.convert(updated, SiteWhereServer.getInstance().getAssetModuleManager());
-	}
-
-	/**
-	 * Find all assignments near the given point.
-	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/near/{latitude}/{longitude}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Find assignments near a given location")
-	public ISearchResults<DeviceAssignment> findDeviceAssignmentsNear(
-			@PathVariable double latitude,
-			@PathVariable double longitude,
-			@RequestParam(defaultValue = "10") double maxDistance,
-			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
-		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		ISearchResults<IDeviceAssignment> results =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentsNear(latitude,
-						longitude, maxDistance, criteria);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(false);
-		helper.setIncludeDevice(false);
-		helper.setIncludeSite(false);
-		List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
-		for (IDeviceAssignment assignment : results.getResults()) {
-			converted.add(helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager()));
-		}
-		return new SearchResults<DeviceAssignment>(converted, results.getNumResults());
 	}
 
 	/**

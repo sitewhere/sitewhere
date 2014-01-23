@@ -447,17 +447,6 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsNear(double,
-	 * double, double, com.sitewhere.spi.common.ISearchCriteria)
-	 */
-	public SearchResults<IDeviceAssignment> getDeviceAssignmentsNear(double latitude, double longitude,
-			double maxDistance, ISearchCriteria criteria) throws SiteWhereException {
-		throw new SiteWhereException("Geospatial queries not avaliable on HBase version yet.");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(com.sitewhere.
 	 * spi.device.IDeviceAssignment,
