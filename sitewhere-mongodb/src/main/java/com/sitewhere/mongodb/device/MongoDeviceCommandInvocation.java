@@ -39,6 +39,9 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	/** Property for target id */
 	public static final String PROP_TARGET_ID = "targetId";
 
+	/** Property for command token */
+	public static final String PROP_COMMAND_TOKEN = "commandToken";
+
 	/** Property for parameter values */
 	public static final String PROP_PARAMETER_VALUES = "parameterValues";
 
@@ -78,6 +81,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 		target.append(PROP_SOURCE_ID, source.getSourceId());
 		target.append(PROP_TARGET_ACTOR, source.getTargetActor().name());
 		target.append(PROP_TARGET_ID, source.getTargetId());
+		target.append(PROP_COMMAND_TOKEN, source.getCommandToken());
 		target.append(PROP_STATUS, source.getStatus().name());
 
 		BasicDBObject params = new BasicDBObject();
@@ -100,6 +104,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 		String sourceId = (String) source.get(PROP_SOURCE_ID);
 		String targetActorName = (String) source.get(PROP_TARGET_ACTOR);
 		String targetId = (String) source.get(PROP_TARGET_ID);
+		String commandToken = (String) source.get(PROP_COMMAND_TOKEN);
 		String statusName = (String) source.get(PROP_STATUS);
 
 		if (sourceActorName != null) {
@@ -113,6 +118,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 		}
 		target.setSourceId(sourceId);
 		target.setTargetId(targetId);
+		target.setCommandToken(commandToken);
 
 		Map<String, String> params = new HashMap<String, String>();
 		DBObject dbparams = (DBObject) source.get(PROP_PARAMETER_VALUES);

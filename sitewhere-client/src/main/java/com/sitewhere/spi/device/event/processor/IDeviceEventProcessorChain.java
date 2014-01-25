@@ -16,10 +16,10 @@ import java.util.List;
  * 
  * @author Derek
  */
-public interface IDeviceEventProcessorChain {
+public interface IDeviceEventProcessorChain extends IDeviceEventProcessor {
 
 	/**
-	 * Get the list of device event processors.
+	 * Get the list of chained processors.
 	 * 
 	 * @return
 	 */

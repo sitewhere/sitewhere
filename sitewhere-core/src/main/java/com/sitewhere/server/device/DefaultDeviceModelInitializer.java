@@ -249,7 +249,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		powerUp.setNamespace(CORE_HWCORE_NAMESPACE);
 		powerUp.setName("powerUp");
 		powerUp.setDescription("Request that the device enter 'powered on' mode.");
-		powerUp.getParameters().add(new CommandParameter("delayInMs", ParameterType.Integer, false));
+		powerUp.getParameters().add(new CommandParameter("delayInMs", ParameterType.UInt64, false));
 		commands.add(getDeviceManagement().createDeviceCommand(spec, powerUp));
 
 		DeviceCommandCreateRequest firmware = new DeviceCommandCreateRequest();
@@ -264,7 +264,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		powerDown.setNamespace(CORE_HWCORE_NAMESPACE);
 		powerDown.setName("powerDown");
 		powerDown.setDescription("Request that the device enter 'powered down' mode.");
-		powerDown.getParameters().add(new CommandParameter("delayInMs", ParameterType.Integer, false));
+		powerDown.getParameters().add(new CommandParameter("delayInMs", ParameterType.UInt64, false));
 		commands.add(getDeviceManagement().createDeviceCommand(spec, powerDown));
 
 		commandsBySpecToken.put(spec.getToken(), commands);
@@ -576,22 +576,14 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		switch (type) {
 		case Boolean:
 			return "true";
-		case Byte:
-			return "0";
 		case Double:
 			return "0.0";
 		case Float:
 			return "0.0";
-		case Integer:
-			return "0";
-		case Long:
-			return "0";
-		case Short:
-			return "0";
 		case String:
 			return "test";
 		default:
-			return null;
+			return "0";
 		}
 	}
 

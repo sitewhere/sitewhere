@@ -39,17 +39,30 @@
 		<property name="configuration" ref="hazelcastConfig"/>
 	</bean>
 
-	<!-- ########################### -->
-	<!-- # DEVICE EVENT PROCESSING # -->
-	<!-- ########################### -->
+	<!-- ############################################ -->
+	<!-- # DEVICE PROVISIONING AND EVENT PROCESSING # -->
+	<!-- ############################################ -->
 	
-	<!-- Logs event processor hooks being called -->
-	<bean id="placeholderEventProcessor" class="com.sitewhere.server.device.event.processor.PlaceholderEventProcessor"/>
+	<!-- Encodes device commands using Google Protocol Buffers -->
+	<bean id="protobufExecutionEncoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
+	
+	<!-- Placeholder that does not send the encoded command anywhere -->
+	<bean id="defaultDeliveryProvider" class="com.sitewhere.device.provisioning.DefaultCommandDeliveryProvider"/>
+
+	<!-- Configures device provisioning -->
+	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
+		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
+		<property name="commandDeliveryProvider" ref="defaultDeliveryProvider"/>
+	</bean>
+	
+	<!-- Hands off command invocations to provisioning for processing -->
+	<bean id="provisioningEventProcessor" class="com.sitewhere.device.provisioning.DefaultProvisioningEventProcessor"/>
 	
 	<!-- Device event processor chain configuration -->
 	<bean id="deviceEventProcessorChain" class="com.sitewhere.server.device.event.processor.DefaultDeviceEventProcessorChain">
 		<property name="processors">
 			<list>
+				<ref bean="provisioningEventProcessor"/>
 				<ref bean="solrDeviceEventProcessor"/>
 				<ref bean="hazelcastDeviceEventProcessor"/>
 			</list>

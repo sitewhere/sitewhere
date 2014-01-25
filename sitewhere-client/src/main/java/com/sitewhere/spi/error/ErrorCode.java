@@ -105,6 +105,13 @@ public enum ErrorCode {
 	/** Operation assumes device is assigned but no assignment exists */
 	DeviceCanNotBeDeletedIfAssigned(603, "Device can not be deleted if it is currently assigned."),
 
+	/**********
+	 * COMMAND *
+	 **********/
+
+	/** Operation assumes device is assigned but no assignment exists */
+	RequiredCommandParameterMissing(650, "Invocation does not specify a parameter marked as required."),
+
 	/********
 	 * ZONE *
 	 ********/

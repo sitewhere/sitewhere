@@ -12,9 +12,11 @@ package com.sitewhere.spi.device.event.processor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
@@ -92,4 +94,22 @@ public interface IDeviceEventProcessor {
 	 * @throws SiteWhereException
 	 */
 	public void afterAlert(IDeviceAlert alert) throws SiteWhereException;
+
+	/**
+	 * Executes code before saving device command invocation.
+	 * 
+	 * @param assignment
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void beforeCommandInvocation(IDeviceAssignment assignment,
+			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Executes code after device command invocation has been successfully saved.
+	 * 
+	 * @param invocation
+	 * @throws SiteWhereException
+	 */
+	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
 }

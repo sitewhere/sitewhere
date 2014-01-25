@@ -39,6 +39,7 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.event.processor.IDeviceEventProcessorChain;
+import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
@@ -72,6 +73,9 @@ public class SiteWhereServer {
 
 	/** Interface to device management implementation */
 	private IDeviceManagement deviceManagement;
+
+	/** Interface to device provisioning implementation */
+	private IDeviceProvisioning deviceProvisioning;
 
 	/** Interface for the asset module manager */
 	private IAssetModuleManager assetModuleManager;
@@ -119,6 +123,15 @@ public class SiteWhereServer {
 	 */
 	public IDeviceManagement getDeviceManagement() {
 		return deviceManagement;
+	}
+
+	/**
+	 * Get the device provisioning implementation.
+	 * 
+	 * @return
+	 */
+	public IDeviceProvisioning getDeviceProvisioning() {
+		return deviceProvisioning;
 	}
 
 	/**
@@ -202,6 +215,9 @@ public class SiteWhereServer {
 		// Initialize device management.
 		initializeDeviceManagement();
 
+		// Initialize device provisioning.
+		initializeDeviceProvisioning();
+
 		// Initialize user management.
 		initializeUserManagement();
 
@@ -260,6 +276,20 @@ public class SiteWhereServer {
 					+ " processors.");
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No event processor chain found in configuration file.");
+		}
+	}
+
+	/**
+	 * Verify and initialize device provisioning implementation.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeDeviceProvisioning() throws SiteWhereException {
+		try {
+			deviceProvisioning =
+					(IDeviceProvisioning) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_PROVISIONING);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No device provisioning implementation configured.");
 		}
 	}
 

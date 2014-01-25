@@ -26,10 +26,44 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Locations</li>
+		<li class="k-state-active">Command Invocations</li>
+		<li>Locations</li>
 		<li>Measurements</li>
 		<li>Alerts</li>
 	</ul>
+	<div>
+		<div class="k-header sw-button-bar">
+			<div class="sw-button-bar-title">Device Command Invocations</div>
+			<div>
+				<a id="btn-filter-locations" class="btn" href="javascript:void(0)">
+					<i class="icon-search sw-button-icon"></i> Filter Results</a>
+				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)">
+					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+			</div>
+		</div>
+		<table id="invocations">
+			<colgroup>
+				<col style="width: 32%;"/>
+				<col style="width: 12%;"/>
+				<col style="width: 12%;"/>
+				<col style="width: 12%;"/>
+				<col style="width: 12%;"/>
+			</colgroup>
+			<thead>
+				<tr>
+					<th>Command</th>
+					<th>Source</th>
+					<th>Target</th>
+					<th>Event Date</th>
+					<th>Received Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr><td colspan="5"></td></tr>
+			</tbody>
+		</table>
+		<div id="invocations-pager" class="k-pager-wrap event-pager"></div>
+	</div>
 	<div>
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title">Device Locations</div>
@@ -128,19 +162,18 @@
 </div>
 
 <%@ include file="../includes/assignmentUpdateDialog.inc"%>
-
 <%@ include file="../includes/templateAssignmentEntry.inc"%>
-
+<%@ include file="../includes/templateInvocationEntry.inc"%>
 <%@ include file="../includes/templateLocationEntry.inc"%>
-
 <%@ include file="../includes/templateMeasurementsEntry.inc"%>
-
 <%@ include file="../includes/templateAlertEntry.inc"%>
-
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
 	var token = '<c:out value="${assignment.token}"/>';
+	
+	/** Datasource for invocations */
+	var invocationsDS;
 	
 	/** Datasource for locations */
 	var locationsDS;
@@ -284,7 +317,7 @@
             pageSize: pageSize,
 		});
 		
-		/** Create the measurements list */
+		/** Create the alerts list */
         $("#alerts").kendoGrid({
 			dataSource : alertsDS,
             rowTemplate: kendo.template($("#tpl-alert-entry").html()),
@@ -294,6 +327,40 @@
 		
 	    $("#alerts-pager").kendoPager({
 	        dataSource: alertsDS
+	    });
+		
+	    $("#btn-refresh-alerts").click(function() {
+	    	alertsDS.read();
+	    });
+	    
+		/** Create AJAX datasource for invocations list */
+		invocationsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/invocations",
+					dataType : "json",
+				}
+			},
+			schema : {
+				data: "results",
+				total: "numResults",
+				parse: parseEventResults,
+			},
+            serverPaging: true,
+            serverSorting: true,
+            pageSize: pageSize,
+		});
+		
+		/** Create the invocations list */
+        $("#invocations").kendoGrid({
+			dataSource : invocationsDS,
+            rowTemplate: kendo.template($("#tpl-invocation-entry").html()),
+            scrollable: true,
+            height: gridHeight,
+        });
+		
+	    $("#invocations-pager").kendoPager({
+	        dataSource: invocationsDS
 	    });
 		
 	    $("#btn-refresh-alerts").click(function() {
@@ -317,7 +384,10 @@
 	function onActivate(e) {
 		var tabName = e.item.textContent;
 		if (!e.item.swInitialized) {
-			if (tabName =="Measurements") {
+			if (tabName =="Locations") {
+				locationsDS.read();
+				e.item.swInitialized = true;
+			} else if (tabName =="Measurements") {
 				measurementsDS.read();
 				e.item.swInitialized = true;
 			} else if (tabName =="Alerts") {

@@ -12,10 +12,12 @@ package com.sitewhere.rest.model.device.event.processor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IDeviceEventProcessor;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
@@ -114,5 +116,29 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	 */
 	@Override
 	public void afterAlert(IDeviceAlert alert) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeCommandInvocation
+	 * (com.sitewhere.spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
+	 */
+	@Override
+	public void beforeCommandInvocation(IDeviceAssignment assignment,
+			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#afterCommandInvocation
+	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+	 */
+	@Override
+	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
 	}
 }

@@ -2,12 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
 >
 	<modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.sitewhere</groupId>
-        <artifactId>sitewhere</artifactId>
-        <version>0.9.4</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
+	<parent>
+		<groupId>com.sitewhere</groupId>
+		<artifactId>sitewhere</artifactId>
+		<version>0.9.4</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 
 	<artifactId>sitewhere-core</artifactId>
 	<packaging>jar</packaging>
@@ -85,6 +85,11 @@
 			<artifactId>hazelcast</artifactId>
 			<version>3.0.2</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>

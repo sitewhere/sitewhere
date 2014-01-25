@@ -158,6 +158,7 @@ public class DeviceCommandInvocation extends DeviceEvent implements IDeviceComma
 		result.setTargetId(input.getTargetId());
 		result.setCommandToken(input.getCommandToken());
 		result.setStatus(input.getStatus());
+		result.setParameterValues(input.getParameterValues());
 		return result;
 	}
 }

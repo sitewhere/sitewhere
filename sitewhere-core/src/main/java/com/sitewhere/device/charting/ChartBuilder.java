@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.core.device.charting;
+package com.sitewhere.device.charting;
 
 import java.util.ArrayList;
 import java.util.Collections;

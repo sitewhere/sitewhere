@@ -100,19 +100,25 @@
 	/** Parameters list view */
 	var paramsList;
 	
-	/** Dropdown list of account statuses */
+	/** Dropdown list of datatypes */
 	var ccDatatypeList;
 	
-	/** Available map types shown in dropdown */
+	/** Available parameter datatypes shown in dropdown */
     var ccParameterDatatypes = [
-		{ text: "Byte", datatype: "Byte" },
-		{ text: "Short", datatype: "Short" },
-		{ text: "Integer", datatype: "Integer" },
-		{ text: "Long", datatype: "Long" },
-		{ text: "Float", datatype: "Float" },
-		{ text: "Double", datatype: "Double" },
-		{ text: "Boolean", datatype: "Boolean" },
 		{ text: "String", datatype: "String" },
+		{ text: "Double", datatype: "Double" },
+		{ text: "Float", datatype: "Float" },
+		{ text: "Boolean", datatype: "Boolean" },
+		{ text: "Int32", datatype: "Int32" },
+		{ text: "Int64", datatype: "Int64" },
+		{ text: "UInt32", datatype: "UInt32" },
+		{ text: "UInt64", datatype: "UInt64" },
+		{ text: "SInt32", datatype: "SInt32" },
+		{ text: "SInt64", datatype: "SInt64" },
+		{ text: "Fixed32", datatype: "Fixed32" },
+		{ text: "Fixed64", datatype: "Fixed64" },
+		{ text: "SFixed32", datatype: "SFixed32" },
+		{ text: "SFixed64", datatype: "SFixed64" },
 	];
 
 	$(document).ready(function() {
