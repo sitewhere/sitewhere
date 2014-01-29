@@ -38,7 +38,27 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder {
 	@Override
 	public byte[] encode(IDeviceCommandExecution execution) throws SiteWhereException {
 		DynamicMessage message = ProtobufUtils.createMessage(execution);
-		LOGGER.info("MESSAGE: 0x " + DataUtils.bytesToHex(message.toByteArray()));
+		LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(message.toByteArray()));
 		return message.toByteArray();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+		LOGGER.info("Started Google Protocol Buffer execution encoder.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+		LOGGER.info("Stopped Google Protocol Buffer execution encoder");
 	}
 }

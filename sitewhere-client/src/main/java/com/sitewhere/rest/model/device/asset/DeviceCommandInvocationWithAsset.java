@@ -13,8 +13,9 @@ import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.device.event.CommandActor;
+import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
+import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset implements
@@ -28,31 +29,31 @@ public class DeviceCommandInvocationWithAsset extends DeviceEventWithAsset imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getSourceActor()
+	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiator()
 	 */
 	@Override
-	public CommandActor getSourceActor() {
-		return ((IDeviceCommandInvocation) getWrapped()).getSourceActor();
+	public CommandInitiator getInitiator() {
+		return ((IDeviceCommandInvocation) getWrapped()).getInitiator();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getSourceId()
+	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiatorId()
 	 */
 	@Override
-	public String getSourceId() {
-		return ((IDeviceCommandInvocation) getWrapped()).getSourceId();
+	public String getInitiatorId() {
+		return ((IDeviceCommandInvocation) getWrapped()).getInitiatorId();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTargetActor()
+	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTarget()
 	 */
 	@Override
-	public CommandActor getTargetActor() {
-		return ((IDeviceCommandInvocation) getWrapped()).getTargetActor();
+	public CommandTarget getTarget() {
+		return ((IDeviceCommandInvocation) getWrapped()).getTarget();
 	}
 
 	/*

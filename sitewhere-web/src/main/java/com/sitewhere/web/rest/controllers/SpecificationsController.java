@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.device.provisioning.protobuf.SpecificationProtoBuilder;
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
@@ -97,6 +98,24 @@ public class SpecificationsController extends SiteWhereController {
 		DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
 		helper.setIncludeAsset(includeAsset);
 		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+	}
+
+	/**
+	 * Get a device specification by unique token.
+	 * 
+	 * @param hardwareId
+	 * @return
+	 */
+	@RequestMapping(value = "/{token}/proto", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get a device specification by unique token")
+	public String getDeviceSpecificationProtoByToken(
+			@ApiParam(value = "Token", required = true) @PathVariable String token,
+			HttpServletResponse response) throws SiteWhereException {
+		IDeviceSpecification specification = assertDeviceSpecificationByToken(token);
+		String proto = SpecificationProtoBuilder.getProtoForSpecification(specification);
+		response.setContentType("text/plain");
+		return proto;
 	}
 
 	/**

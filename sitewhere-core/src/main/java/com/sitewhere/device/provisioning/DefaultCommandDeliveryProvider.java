@@ -12,6 +12,7 @@ package com.sitewhere.device.provisioning;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
 
@@ -30,10 +31,32 @@ public class DefaultCommandDeliveryProvider implements ICommandDeliveryProvider 
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliver(com.sitewhere
-	 * .spi.device.event.IDeviceCommandInvocation, byte[])
+	 * .spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation, byte[])
 	 */
 	@Override
-	public void deliver(IDeviceCommandInvocation invocation, byte[] encoded) throws SiteWhereException {
+	public void deliver(IDeviceAssignment assignment, IDeviceCommandInvocation invocation, byte[] encoded)
+			throws SiteWhereException {
 		LOGGER.info("Default message delivery provider called.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+		LOGGER.info("Started dummy delivery provider.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+		LOGGER.info("Stopped dummy delivery provider.");
 	}
 }

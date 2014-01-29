@@ -15,8 +15,9 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.spi.device.event.CommandActor;
+import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
+import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -31,14 +32,14 @@ public class DeviceCommandInvocation extends DeviceEvent implements IDeviceComma
 	/** For Java serialization */
 	private static final long serialVersionUID = -7389600825785131041L;
 
-	/** Type of actor that issued the command */
-	private CommandActor sourceActor;
+	/** Type of actor that initiated the command */
+	private CommandInitiator initiator;
 
-	/** Id of actor that issued the command */
-	private String sourceId;
+	/** Id of actor that initiated the command */
+	private String initiatorId;
 
 	/** Type of actor that will receive the command */
-	private CommandActor targetActor;
+	private CommandTarget target;
 
 	/** Id of actor that will receive the command */
 	private String targetId;
@@ -55,40 +56,40 @@ public class DeviceCommandInvocation extends DeviceEvent implements IDeviceComma
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getSourceActor()
+	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiator()
 	 */
-	public CommandActor getSourceActor() {
-		return sourceActor;
+	public CommandInitiator getInitiator() {
+		return initiator;
 	}
 
-	public void setSourceActor(CommandActor sourceActor) {
-		this.sourceActor = sourceActor;
+	public void setInitiator(CommandInitiator initiator) {
+		this.initiator = initiator;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getSourceId()
+	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getInitiatorId()
 	 */
-	public String getSourceId() {
-		return sourceId;
+	public String getInitiatorId() {
+		return initiatorId;
 	}
 
-	public void setSourceId(String sourceId) {
-		this.sourceId = sourceId;
+	public void setInitiatorId(String initiatorId) {
+		this.initiatorId = initiatorId;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTargetActor()
+	 * @see com.sitewhere.spi.device.event.IDeviceCommandInvocation#getTarget()
 	 */
-	public CommandActor getTargetActor() {
-		return targetActor;
+	public CommandTarget getTarget() {
+		return target;
 	}
 
-	public void setTargetActor(CommandActor targetActor) {
-		this.targetActor = targetActor;
+	public void setTarget(CommandTarget target) {
+		this.target = target;
 	}
 
 	/*
@@ -152,9 +153,9 @@ public class DeviceCommandInvocation extends DeviceEvent implements IDeviceComma
 	public static DeviceCommandInvocation copy(IDeviceCommandInvocation input) {
 		DeviceCommandInvocation result = new DeviceCommandInvocation();
 		DeviceEvent.copy(input, result);
-		result.setSourceActor(input.getSourceActor());
-		result.setSourceId(input.getSourceId());
-		result.setTargetActor(input.getTargetActor());
+		result.setInitiator(input.getInitiator());
+		result.setInitiatorId(input.getInitiatorId());
+		result.setTarget(input.getTarget());
 		result.setTargetId(input.getTargetId());
 		result.setCommandToken(input.getCommandToken());
 		result.setStatus(input.getStatus());

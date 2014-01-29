@@ -1,5 +1,5 @@
 /*
- * ICommandProcessingStrategy.java 
+ * ICommandTargetResolver.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,24 +9,29 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
+import java.util.List;
+
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
- * Defines the flow executed for processing a command for delivery.
+ * Allows an {@link IDeviceCommandInvocation} to be resolved to one or more
+ * {@link IDeviceAssignment} records that should receive the command.
  * 
  * @author Derek
  */
-public interface ICommandProcessingStrategy extends ISiteWhereLifecycle {
+public interface ICommandTargetResolver extends ISiteWhereLifecycle {
 
 	/**
-	 * Send a command using the given provisioning implementation.
+	 * Resolves a command invocation to a list of assignments that should receive the
+	 * command.
 	 * 
-	 * @param provisioning
 	 * @param invocation
+	 * @return
 	 * @throws SiteWhereException
 	 */
-	public void deliver(IDeviceProvisioning provisioning, IDeviceCommandInvocation invocation)
+	public List<IDeviceAssignment> resolveTargets(IDeviceCommandInvocation invocation)
 			throws SiteWhereException;
 }

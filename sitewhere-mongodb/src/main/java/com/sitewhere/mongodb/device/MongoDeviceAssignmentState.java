@@ -10,6 +10,7 @@
 package com.sitewhere.mongodb.device;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.mongodb.BasicDBObject;
@@ -27,6 +28,9 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  */
 public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignmentState> {
 
+	/** Property for last interaction date */
+	public static final String PROP_LAST_INTERACTION_DATE = "lastInteractionDate";
+
 	/** Property for last location */
 	public static final String PROP_LAST_LOCATION = "lastLocation";
 
@@ -35,6 +39,9 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 
 	/** Property for latest measurements */
 	public static final String PROP_LATEST_ALERTS = "latestAlerts";
+
+	/** Property for last 'reply to' location */
+	public static final String PROP_LAST_REPLY_TO = "lastReplyTo";
 
 	/*
 	 * (non-Javadoc)
@@ -63,6 +70,10 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 	 * @param target
 	 */
 	public static void toDBObject(IDeviceAssignmentState source, BasicDBObject target) {
+		if (source.getLastInteractionDate() != null) {
+			target.append(PROP_LAST_INTERACTION_DATE, source.getLastInteractionDate());
+		}
+
 		if (source.getLastLocation() != null) {
 			target.append(PROP_LAST_LOCATION, MongoDeviceLocation.toDBObject(source.getLastLocation()));
 		}
@@ -82,6 +93,10 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 			}
 			target.append(PROP_LATEST_ALERTS, alerts);
 		}
+
+		if (source.getLastReplyTo() != null) {
+			target.append(PROP_LAST_REPLY_TO, source.getLastReplyTo());
+		}
 	}
 
 	/**
@@ -92,6 +107,7 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 	 */
 	@SuppressWarnings("unchecked")
 	public static void fromDBObject(DBObject source, DeviceAssignmentState target) {
+		target.setLastInteractionDate((Date) source.get(PROP_LAST_INTERACTION_DATE));
 		DBObject lastLocation = (DBObject) source.get(PROP_LAST_LOCATION);
 		if (lastLocation != null) {
 			target.setLastLocation(MongoDeviceLocation.fromDBObject(lastLocation));
@@ -108,6 +124,7 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 				target.getLatestAlerts().add(MongoDeviceAlert.fromDBObject(sa));
 			}
 		}
+		target.setLastReplyTo((String) source.get(PROP_LAST_REPLY_TO));
 	}
 
 	/**

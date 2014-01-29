@@ -70,6 +70,9 @@ public class DefaultDeviceEventProcessorChain implements IDeviceEventProcessorCh
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		for (IDeviceEventProcessor processor : getProcessors()) {
+			processor.stop();
+		}
 	}
 
 	/*

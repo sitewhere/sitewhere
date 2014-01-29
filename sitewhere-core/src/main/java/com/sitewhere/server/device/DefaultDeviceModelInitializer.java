@@ -48,8 +48,9 @@ import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.event.AlertLevel;
-import com.sitewhere.spi.device.event.CommandActor;
+import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
+import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
@@ -257,7 +258,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		firmware.setName("updateFirmware");
 		firmware.setDescription("Ask the device to download a new firmware version from the given URL.");
 		firmware.getParameters().add(new CommandParameter("url", ParameterType.String, true));
-		firmware.getParameters().add(new CommandParameter("createRestorePoint", ParameterType.Boolean, false));
+		firmware.getParameters().add(new CommandParameter("createRestorePoint", ParameterType.Bool, false));
 		commands.add(getDeviceManagement().createDeviceCommand(spec, firmware));
 
 		DeviceCommandCreateRequest powerDown = new DeviceCommandCreateRequest();
@@ -549,9 +550,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		for (IDeviceCommand command : commands) {
 			DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
 			request.setCommandToken(command.getToken());
-			request.setSourceActor(CommandActor.RestCall);
-			request.setSourceId("system");
-			request.setTargetActor(CommandActor.Device);
+			request.setInitiator(CommandInitiator.REST);
+			request.setInitiatorId("system");
+			request.setTarget(CommandTarget.Default);
 			request.setTargetId(assignment.getDeviceHardwareId());
 			request.setStatus(CommandStatus.PENDING);
 			request.setEventDate(new Date(current));
@@ -574,7 +575,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 */
 	protected String getSampleValue(ParameterType type) {
 		switch (type) {
-		case Boolean:
+		case Bool:
 			return "true";
 		case Double:
 			return "0.0";

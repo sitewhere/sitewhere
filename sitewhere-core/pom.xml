@@ -115,6 +115,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.fusesource.mqtt-client</groupId>
+			<artifactId>mqtt-client</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
 			<groupId>org.mule</groupId>
 			<artifactId>mule-core</artifactId>
 			<version>${mule.version}</version>
@@ -131,29 +136,9 @@
 			<version>3.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.ws.security</groupId>
-			<artifactId>wss4j</artifactId>
-			<version>1.5.4</version>
-			<exclusions>
-				<exclusion>
-					<groupId>opensaml</groupId>
-					<artifactId>opensaml</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>bouncycastle</groupId>
-					<artifactId>bcprov-jdk13</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>jsr311-api</artifactId>
 			<version>1.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jpa_1.0_spec</artifactId>
-			<version>1.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

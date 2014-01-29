@@ -10,6 +10,7 @@
 package com.sitewhere.rest.model.device;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -27,6 +28,9 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  */
 public class DeviceAssignmentState implements IDeviceAssignmentState {
 
+	/** Date of last interaction with assignment */
+	private Date lastInteractionDate;
+
 	/** Last location event */
 	private DeviceLocation lastLocation;
 
@@ -35,6 +39,23 @@ public class DeviceAssignmentState implements IDeviceAssignmentState {
 
 	/** Last alert event for each alert type */
 	private List<DeviceAlert> latestAlerts = new ArrayList<DeviceAlert>();
+
+	/** Last reply-to address */
+	private String lastReplyTo;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLastInteractionDate()
+	 */
+	@Override
+	public Date getLastInteractionDate() {
+		return lastInteractionDate;
+	}
+
+	public void setLastInteractionDate(Date lastInteractionDate) {
+		this.lastInteractionDate = lastInteractionDate;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -80,8 +101,23 @@ public class DeviceAssignmentState implements IDeviceAssignmentState {
 		this.latestAlerts = latestAlerts;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLastReplyTo()
+	 */
+	@Override
+	public String getLastReplyTo() {
+		return lastReplyTo;
+	}
+
+	public void setLastReplyTo(String lastReplyTo) {
+		this.lastReplyTo = lastReplyTo;
+	}
+
 	public static DeviceAssignmentState copy(IDeviceAssignmentState source) {
 		DeviceAssignmentState target = new DeviceAssignmentState();
+		target.setLastInteractionDate(source.getLastInteractionDate());
 		if (source.getLastLocation() != null) {
 			target.setLastLocation(DeviceLocation.copy(source.getLastLocation()));
 		}
@@ -95,6 +131,7 @@ public class DeviceAssignmentState implements IDeviceAssignmentState {
 			alerts.add(DeviceAlert.copy(sa));
 		}
 		target.setLatestAlerts(alerts);
+		target.setLastReplyTo(source.getLastReplyTo());
 		return target;
 	}
 }

@@ -9,6 +9,8 @@
  */
 package com.sitewhere.device.provisioning;
 
+import org.apache.log4j.Logger;
+
 import com.sitewhere.rest.model.device.command.DeviceCommandExecution;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -30,6 +32,9 @@ import com.sitewhere.spi.error.ErrorLevel;
  */
 public class DefaultCommandExecutionBuilder implements ICommandExecutionBuilder {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(DefaultCommandExecutionBuilder.class);
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -41,6 +46,7 @@ public class DefaultCommandExecutionBuilder implements ICommandExecutionBuilder 
 	@Override
 	public IDeviceCommandExecution createExecution(IDeviceCommand command, IDeviceCommandInvocation invocation)
 			throws SiteWhereException {
+		LOGGER.debug("Building default command execution for invocation.");
 		DeviceCommandExecution execution = new DeviceCommandExecution();
 		execution.setCommand(command);
 		execution.setInvocation(invocation);
@@ -64,7 +70,7 @@ public class DefaultCommandExecutionBuilder implements ICommandExecutionBuilder 
 			}
 			Object converted = null;
 			switch (parameter.getType()) {
-			case Boolean: {
+			case Bool: {
 				converted = Boolean.parseBoolean(paramValue);
 				break;
 			}
@@ -129,5 +135,25 @@ public class DefaultCommandExecutionBuilder implements ICommandExecutionBuilder 
 				execution.getParameters().put(parameter.getName(), converted);
 			}
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+		LOGGER.info("Started command execution builder.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+		LOGGER.info("Stopped command execution builder.");
 	}
 }

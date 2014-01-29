@@ -491,18 +491,18 @@ public class SiteWherePersistence {
 	 */
 	public static DeviceCommandInvocation deviceCommandInvocationCreateLogic(IDeviceAssignment assignment,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-		if (request.getSourceActor() == null) {
+		if (request.getInitiator() == null) {
 			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
 		}
-		if (request.getTargetActor() == null) {
+		if (request.getTarget() == null) {
 			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
 		}
 		DeviceCommandInvocation ci = new DeviceCommandInvocation();
 		deviceEventCreateLogic(request, assignment, ci);
 		ci.setCommandToken(command.getToken());
-		ci.setSourceActor(request.getSourceActor());
-		ci.setSourceId(request.getSourceId());
-		ci.setTargetActor(request.getTargetActor());
+		ci.setInitiator(request.getInitiator());
+		ci.setInitiatorId(request.getInitiatorId());
+		ci.setTarget(request.getTarget());
 		ci.setTargetId(request.getTargetId());
 		ci.setParameterValues(request.getParameterValues());
 		if (request.getStatus() != null) {
@@ -525,9 +525,11 @@ public class SiteWherePersistence {
 	public static DeviceAssignmentState assignmentStateUpdateLogic(IDeviceAssignment assignment,
 			IDeviceEventBatch batch) throws SiteWhereException {
 		DeviceAssignmentState state = new DeviceAssignmentState();
+		state.setLastInteractionDate(new Date());
 		assignmentStateLocationUpdateLogic(assignment, state, batch);
 		assignmentStateMeasurementsUpdateLogic(assignment, state, batch);
 		assignmentStateAlertsUpdateLogic(assignment, state, batch);
+		assignmentStateReplyToUpdateLogic(assignment, state, batch);
 		return state;
 	}
 
@@ -627,6 +629,24 @@ public class SiteWherePersistence {
 		updated.getLatestAlerts().clear();
 		for (IDeviceAlert a : alertsById.values()) {
 			updated.getLatestAlerts().add(a);
+		}
+	}
+
+	/**
+	 * Update the last known 'reply to' address based on data from an event batch.
+	 * 
+	 * @param assignment
+	 * @param updated
+	 * @param batch
+	 * @throws SiteWhereException
+	 */
+	public static void assignmentStateReplyToUpdateLogic(IDeviceAssignment assignment,
+			DeviceAssignmentState updated, IDeviceEventBatch batch) throws SiteWhereException {
+		if (assignment.getState() != null) {
+			updated.setLastReplyTo(assignment.getState().getLastReplyTo());
+		}
+		if (batch.getReplyTo() != null) {
+			updated.setLastReplyTo(batch.getReplyTo());
 		}
 	}
 

@@ -353,11 +353,11 @@ public class AssignmentsController extends SiteWhereController {
 			@RequestBody DeviceCommandInvocationCreateRequest request,
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		if (request.getSourceActor() == null) {
-			throw new SiteWhereException("Source actor type is required.");
+		if (request.getInitiator() == null) {
+			throw new SiteWhereException("Command initiator is required.");
 		}
-		if (request.getTargetActor() == null) {
-			throw new SiteWhereException("Target actor type is required.");
+		if (request.getTarget() == null) {
+			throw new SiteWhereException("Command target is required.");
 		}
 		IDeviceAssignment assignment = assureAssignment(token);
 		IDeviceCommand command = assureDeviceCommand(request.getCommandToken());

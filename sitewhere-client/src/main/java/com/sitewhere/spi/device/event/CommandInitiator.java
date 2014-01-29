@@ -10,18 +10,12 @@
 package com.sitewhere.spi.device.event;
 
 /**
- * Enumerates types of actors that may participate in commands.
+ * Enumerates actors that can initiate commands.
  * 
  * @author Derek
  */
-public enum CommandActor {
-
-	/** Actor is a REST service call */
-	RestCall,
-
-	/** Actor is a physical device */
-	Device,
-
-	/** Actor is the system */
-	System;
+public enum CommandInitiator {
+	
+	/** Command initiated by REST call */
+	REST,
 }

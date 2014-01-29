@@ -9,6 +9,7 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
+import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
@@ -20,7 +21,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public interface ICommandExecutionBuilder {
+public interface ICommandExecutionBuilder extends ISiteWhereLifecycle {
 
 	/**
 	 * Create an execution from a command and invocation details.

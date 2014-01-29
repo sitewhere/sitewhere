@@ -9,7 +9,9 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
+import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -17,15 +19,17 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public interface ICommandDeliveryProvider {
+public interface ICommandDeliveryProvider extends ISiteWhereLifecycle {
 
 	/**
-	 * Deliver the given encoded invocation. The original invocation is included since it
-	 * may contain metadata important to the delivery mechanism.
+	 * Deliver the given encoded invocation. The device assignment and invocation details
+	 * are included since they may contain metadata important to the delivery mechanism.
 	 * 
+	 * @param assignment
 	 * @param invocation
 	 * @param encoded
 	 * @throws SiteWhereException
 	 */
-	public void deliver(IDeviceCommandInvocation invocation, byte[] encoded) throws SiteWhereException;
+	public void deliver(IDeviceAssignment assignment, IDeviceCommandInvocation invocation, byte[] encoded)
+			throws SiteWhereException;
 }

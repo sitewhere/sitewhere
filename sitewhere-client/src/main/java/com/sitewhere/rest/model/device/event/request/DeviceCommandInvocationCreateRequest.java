@@ -13,8 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
-import com.sitewhere.spi.device.event.CommandActor;
+import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
+import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 
 /**
@@ -25,14 +26,14 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateRequest implements
 		IDeviceCommandInvocationCreateRequest {
 
-	/** Type of actor that issued the command */
-	private CommandActor sourceActor;
+	/** Type of actor that initiated the command */
+	private CommandInitiator initiator;
 
-	/** Id of actor that issued the command */
-	private String sourceId;
+	/** Id of actor that initiated the command */
+	private String initiatorId;
 
 	/** Type of actor that will receive the command */
-	private CommandActor targetActor;
+	private CommandTarget target;
 
 	/** Id of actor that will receive the command */
 	private String targetId;
@@ -50,42 +51,43 @@ public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateReque
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest#
-	 * getSourceActor()
+	 * getInitiator()
 	 */
-	public CommandActor getSourceActor() {
-		return sourceActor;
+	public CommandInitiator getInitiator() {
+		return initiator;
 	}
 
-	public void setSourceActor(CommandActor sourceActor) {
-		this.sourceActor = sourceActor;
+	public void setInitiator(CommandInitiator initiator) {
+		this.initiator = initiator;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest#
-	 * getSourceId()
+	 * getInitiatorId()
 	 */
-	public String getSourceId() {
-		return sourceId;
+	public String getInitiatorId() {
+		return initiatorId;
 	}
 
-	public void setSourceId(String sourceId) {
-		this.sourceId = sourceId;
+	public void setInitiatorId(String initiatorId) {
+		this.initiatorId = initiatorId;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest#
-	 * getTargetActor()
+	 * @see
+	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest#getTarget
+	 * ()
 	 */
-	public CommandActor getTargetActor() {
-		return targetActor;
+	public CommandTarget getTarget() {
+		return target;
 	}
 
-	public void setTargetActor(CommandActor targetActor) {
-		this.targetActor = targetActor;
+	public void setTarget(CommandTarget target) {
+		this.target = target;
 	}
 
 	/*

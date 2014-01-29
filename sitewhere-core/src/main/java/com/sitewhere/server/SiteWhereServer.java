@@ -411,6 +411,7 @@ public class SiteWhereServer {
 		deviceManagement.start();
 		userManagement.start();
 		assetModuleManager.start();
+		deviceProvisioning.start();
 
 		verifyUserModel();
 		verifyDeviceModel();

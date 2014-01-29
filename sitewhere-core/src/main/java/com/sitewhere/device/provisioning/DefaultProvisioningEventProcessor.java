@@ -9,6 +9,13 @@
  */
 package com.sitewhere.device.provisioning;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.log4j.Logger;
+
 import com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,6 +29,41 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  */
 public class DefaultProvisioningEventProcessor extends DeviceEventProcessor {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(DefaultProvisioningEventProcessor.class);
+
+	/** Number of invocations to buffer before blocking calls */
+	private static final int BUFFER_SIZE = 100;
+
+	/** Bounded queue that holds documents to be processed */
+	private BlockingQueue<IDeviceCommandInvocation> queue = new ArrayBlockingQueue<IDeviceCommandInvocation>(
+			BUFFER_SIZE);
+
+	/** Used to execute Solr indexing in a separate thread */
+	private ExecutorService executor = Executors.newSingleThreadExecutor();
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+		executor.execute(new ProvisioningProcessor());
+		LOGGER.info("Provisioning event processing started.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+		LOGGER.info("Provisioning event processing shutting down.");
+		executor.shutdown();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -30,6 +72,36 @@ public class DefaultProvisioningEventProcessor extends DeviceEventProcessor {
 	 */
 	@Override
 	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		SiteWhereServer.getInstance().getDeviceProvisioning().deliver(invocation);
+		try {
+			queue.put(invocation);
+		} catch (InterruptedException e) {
+			throw new SiteWhereException("Interrupted while processing command invocation.", e);
+		}
+	}
+
+	/**
+	 * Processes provisioning operations asynchronously.
+	 */
+	private class ProvisioningProcessor implements Runnable {
+
+		@Override
+		public void run() {
+			LOGGER.info("Started device provisioning processor thread.");
+			while (true) {
+				try {
+					IDeviceCommandInvocation invocation = queue.take();
+					try {
+						LOGGER.debug("Provisioning processor thread picked up invocation.");
+						SiteWhereServer.getInstance().getDeviceProvisioning().deliver(invocation);
+					} catch (SiteWhereException e) {
+						LOGGER.error("Exception thrown in provisioning operation.", e);
+					} catch (Throwable e) {
+						LOGGER.error("Unhandled exception in provisioning operation.", e);
+					}
+				} catch (InterruptedException e) {
+					LOGGER.error(e);
+				}
+			}
+		}
 	}
 }

@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionBuilder;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
+import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 
 /**
@@ -36,6 +37,9 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning, Initializ
 	/** Configured command execution encoder */
 	private ICommandExecutionEncoder commandExecutionEncoder;
 
+	/** Configured command target resolver */
+	private ICommandTargetResolver commandTargetResolver = new DefaultCommandTargetResolver();
+
 	/** Configured command delivery provider */
 	private ICommandDeliveryProvider commandDeliveryProvider = new DefaultCommandDeliveryProvider();
 
@@ -45,24 +49,57 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning, Initializ
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+		LOGGER.info("Starting device provisioning...");
+
+		// Start command execution builder.
+		if (getCommandExecutionBuilder() == null) {
+			throw new SiteWhereException("No command execution builder configured for provisioning.");
+		}
+		getCommandExecutionBuilder().start();
+
+		// Start command execution encoder.
+		if (getCommandExecutionEncoder() == null) {
+			throw new SiteWhereException("No command execution encoder configured for provisioning.");
+		}
+		getCommandExecutionEncoder().start();
+
+		// Start command target resolver.
+		if (getCommandTargetResolver() == null) {
+			throw new SiteWhereException("No command target resolver configured for provisioning.");
+		}
+		getCommandTargetResolver().start();
+
+		// Start command delivery provider.
+		if (getCommandDeliveryProvider() == null) {
+			throw new SiteWhereException("No command delivery provider configured for provisioning.");
+		}
+		getCommandDeliveryProvider().start();
+
+		// Start command processing strategy.
+		if (getCommandProcessingStrategy() == null) {
+			throw new SiteWhereException("No command processing strategy configured for provisioning.");
+		}
+		getCommandProcessingStrategy().start();
+
+		LOGGER.info("Started device provisioning.");
+	}
+
+	@Override
+	public void stop() throws SiteWhereException {
+		LOGGER.info("Stopped device provisioning.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		LOGGER.info("Starting device provisioning support ...");
-		if (getCommandExecutionBuilder() == null) {
-			throw new SiteWhereException("No execution builder configured for provisioning.");
-		}
-		if (getCommandExecutionEncoder() == null) {
-			throw new SiteWhereException("No execution encoder configured for provisioning.");
-		}
-		if (getCommandDeliveryProvider() == null) {
-			throw new SiteWhereException("No delivery provider configured for provisioning.");
-		}
-		if (getCommandProcessingStrategy() == null) {
-			throw new SiteWhereException("No command processing strategy configured for provisioning.");
-		}
-		LOGGER.info("Started device provisioning support.");
 	}
 
 	/*
@@ -105,6 +142,21 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning, Initializ
 
 	public void setCommandExecutionEncoder(ICommandExecutionEncoder commandExecutionEncoder) {
 		this.commandExecutionEncoder = commandExecutionEncoder;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandTargetResolver
+	 * ()
+	 */
+	public ICommandTargetResolver getCommandTargetResolver() {
+		return commandTargetResolver;
+	}
+
+	public void setCommandTargetResolver(ICommandTargetResolver commandTargetResolver) {
+		this.commandTargetResolver = commandTargetResolver;
 	}
 
 	/*

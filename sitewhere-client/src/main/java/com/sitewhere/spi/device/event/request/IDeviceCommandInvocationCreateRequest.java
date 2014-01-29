@@ -11,8 +11,9 @@ package com.sitewhere.spi.device.event.request;
 
 import java.util.Map;
 
-import com.sitewhere.spi.device.event.CommandActor;
+import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
+import com.sitewhere.spi.device.event.CommandTarget;
 
 /**
  * Interface for arguments needed to create a device command invocation.
@@ -22,25 +23,25 @@ import com.sitewhere.spi.device.event.CommandStatus;
 public interface IDeviceCommandInvocationCreateRequest extends IDeviceEventCreateRequest {
 
 	/**
-	 * Get actor type that originated the command.
+	 * Get command initiator type.
 	 * 
 	 * @return
 	 */
-	public CommandActor getSourceActor();
+	public CommandInitiator getInitiator();
 
 	/**
-	 * Get unique id of command originator.
+	 * Get unique id of command inititator.
 	 * 
 	 * @return
 	 */
-	public String getSourceId();
+	public String getInitiatorId();
 
 	/**
-	 * Get actor type that received command.
+	 * Get command target type.
 	 * 
 	 * @return
 	 */
-	public CommandActor getTargetActor();
+	public CommandTarget getTarget();
 
 	/**
 	 * Get unique id of command target.

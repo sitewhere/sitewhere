@@ -9,6 +9,7 @@
  */
 package com.sitewhere.spi.device;
 
+import java.util.Date;
 import java.util.List;
 
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -22,6 +23,13 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  * @author Derek
  */
 public interface IDeviceAssignmentState {
+
+	/**
+	 * Date of last interaction with device.
+	 * 
+	 * @return
+	 */
+	public Date getLastInteractionDate();
 
 	/**
 	 * Get last device location.
@@ -43,4 +51,11 @@ public interface IDeviceAssignmentState {
 	 * @return
 	 */
 	public List<IDeviceAlert> getLatestAlerts();
+
+	/**
+	 * Get the last 'reply to' for assignment.
+	 * 
+	 * @return
+	 */
+	public String getLastReplyTo();
 }

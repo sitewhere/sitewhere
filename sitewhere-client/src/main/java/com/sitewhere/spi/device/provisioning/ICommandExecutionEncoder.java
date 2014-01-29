@@ -9,6 +9,7 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
+import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 
@@ -17,7 +18,7 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
  * 
  * @author Derek
  */
-public interface ICommandExecutionEncoder {
+public interface ICommandExecutionEncoder extends ISiteWhereLifecycle {
 
 	/**
 	 * Encodes a command execution as a byte array.

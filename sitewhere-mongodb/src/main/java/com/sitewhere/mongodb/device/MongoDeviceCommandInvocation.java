@@ -16,8 +16,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
-import com.sitewhere.spi.device.event.CommandActor;
+import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
+import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -27,14 +28,14 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  */
 public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceCommandInvocation> {
 
-	/** Property for source actor */
-	public static final String PROP_SOURCE_ACTOR = "sourceActor";
+	/** Property for initiator */
+	public static final String PROP_INITIATOR = "initiator";
 
-	/** Property for source id */
-	public static final String PROP_SOURCE_ID = "sourceId";
+	/** Property for initiator id */
+	public static final String PROP_INITIATOR_ID = "initiatorId";
 
-	/** Property for target actor */
-	public static final String PROP_TARGET_ACTOR = "targetActor";
+	/** Property for target */
+	public static final String PROP_TARGET = "target";
 
 	/** Property for target id */
 	public static final String PROP_TARGET_ID = "targetId";
@@ -77,9 +78,9 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	public static void toDBObject(IDeviceCommandInvocation source, BasicDBObject target) {
 		MongoDeviceEvent.toDBObject(source, target);
 
-		target.append(PROP_SOURCE_ACTOR, source.getSourceActor().name());
-		target.append(PROP_SOURCE_ID, source.getSourceId());
-		target.append(PROP_TARGET_ACTOR, source.getTargetActor().name());
+		target.append(PROP_INITIATOR, source.getInitiator().name());
+		target.append(PROP_INITIATOR_ID, source.getInitiatorId());
+		target.append(PROP_TARGET, source.getTarget().name());
 		target.append(PROP_TARGET_ID, source.getTargetId());
 		target.append(PROP_COMMAND_TOKEN, source.getCommandToken());
 		target.append(PROP_STATUS, source.getStatus().name());
@@ -100,23 +101,23 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	public static void fromDBObject(DBObject source, DeviceCommandInvocation target) {
 		MongoDeviceEvent.fromDBObject(source, target);
 
-		String sourceActorName = (String) source.get(PROP_SOURCE_ACTOR);
-		String sourceId = (String) source.get(PROP_SOURCE_ID);
-		String targetActorName = (String) source.get(PROP_TARGET_ACTOR);
+		String initiatorName = (String) source.get(PROP_INITIATOR);
+		String initiatorId = (String) source.get(PROP_INITIATOR_ID);
+		String targetName = (String) source.get(PROP_TARGET);
 		String targetId = (String) source.get(PROP_TARGET_ID);
 		String commandToken = (String) source.get(PROP_COMMAND_TOKEN);
 		String statusName = (String) source.get(PROP_STATUS);
 
-		if (sourceActorName != null) {
-			target.setSourceActor(CommandActor.valueOf(sourceActorName));
+		if (initiatorName != null) {
+			target.setInitiator(CommandInitiator.valueOf(initiatorName));
 		}
-		if (targetActorName != null) {
-			target.setTargetActor(CommandActor.valueOf(targetActorName));
+		if (targetName != null) {
+			target.setTarget(CommandTarget.valueOf(targetName));
 		}
 		if (statusName != null) {
 			target.setStatus(CommandStatus.valueOf(statusName));
 		}
-		target.setSourceId(sourceId);
+		target.setInitiatorId(initiatorId);
 		target.setTargetId(targetId);
 		target.setCommandToken(commandToken);
 

@@ -30,7 +30,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/hadoop/hadoop-core/1.0.4/hadoop-core-1.0.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase/0.94.12/hbase-0.94.12.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/solr/solr-solrj/4.6.0/solr-solrj-4.6.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/ws/security/wss4j/1.5.4/wss4j-1.5.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/mongodb/mongo-java-driver/2.10.1/mongo-java-driver-2.10.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/mule/mule-core/3.4.0/mule-core-3.4.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/security/spring-security-core/3.1.1.RELEASE/spring-security-core-3.1.1.RELEASE.jar"/>
@@ -45,5 +44,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-bundle/2.7.3/cxf-bundle-2.7.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast/3.0.2/hazelcast-3.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/fusesource/mqtt-client/mqtt-client/1.7/mqtt-client-1.7.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtbuf/hawtbuf/1.9/hawtbuf-1.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

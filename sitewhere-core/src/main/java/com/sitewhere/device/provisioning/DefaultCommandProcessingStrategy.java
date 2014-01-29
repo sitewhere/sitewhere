@@ -9,8 +9,13 @@
  */
 package com.sitewhere.device.provisioning;
 
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -24,6 +29,9 @@ import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
  */
 public class DefaultCommandProcessingStrategy implements ICommandProcessingStrategy {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(DefaultCommandProcessingStrategy.class);
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -35,6 +43,7 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	@Override
 	public void deliver(IDeviceProvisioning provisioning, IDeviceCommandInvocation invocation)
 			throws SiteWhereException {
+		LOGGER.debug("Command processing strategy handling invocation.");
 		IDeviceCommand command =
 				SiteWhereServer.getInstance().getDeviceManagement().getDeviceCommandByToken(
 						invocation.getCommandToken());
@@ -42,9 +51,33 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 			IDeviceCommandExecution execution =
 					provisioning.getCommandExecutionBuilder().createExecution(command, invocation);
 			byte[] encoded = provisioning.getCommandExecutionEncoder().encode(execution);
-			provisioning.getCommandDeliveryProvider().deliver(invocation, encoded);
+			List<IDeviceAssignment> assignments =
+					provisioning.getCommandTargetResolver().resolveTargets(invocation);
+			for (IDeviceAssignment assignment : assignments) {
+				provisioning.getCommandDeliveryProvider().deliver(assignment, invocation, encoded);
+			}
 		} else {
 			throw new SiteWhereException("Invalid command referenced from invocation.");
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+		LOGGER.info("Started command processing strategy.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+		LOGGER.info("Stopped command processing strategy");
 	}
 }

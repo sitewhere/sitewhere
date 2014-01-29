@@ -11,6 +11,7 @@ package com.sitewhere.solr;
 
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -52,8 +53,7 @@ public class SolrDeviceEventProcessor extends DeviceEventProcessor implements In
 	private HttpSolrServer solr;
 
 	/** Bounded queue that holds documents to be processed */
-	private ArrayBlockingQueue<SolrInputDocument> queue = new ArrayBlockingQueue<SolrInputDocument>(
-			BUFFER_SIZE);
+	private BlockingQueue<SolrInputDocument> queue = new ArrayBlockingQueue<SolrInputDocument>(BUFFER_SIZE);
 
 	/** Used to execute Solr indexing in a separate thread */
 	/** TODO: Use a better approach for scalability */
@@ -77,7 +77,7 @@ public class SolrDeviceEventProcessor extends DeviceEventProcessor implements In
 	@Override
 	public void start() throws SiteWhereException {
 		super.start();
-		LOGGER.info("Device managment will send indexing information to Solr server at: "
+		LOGGER.info("Device management will send indexing information to Solr server at: "
 				+ getSolrServerUrl());
 		executor.execute(new SolrDocumentQueueProcessor());
 	}

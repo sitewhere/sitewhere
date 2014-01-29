@@ -42,7 +42,7 @@ public enum ParameterType {
 
 	SFixed64,
 
-	Boolean,
+	Bool,
 
 	String,
 

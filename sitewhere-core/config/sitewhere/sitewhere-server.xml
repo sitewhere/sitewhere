@@ -48,11 +48,18 @@
 	
 	<!-- Placeholder that does not send the encoded command anywhere -->
 	<bean id="defaultDeliveryProvider" class="com.sitewhere.device.provisioning.DefaultCommandDeliveryProvider"/>
+	
+	<!-- Delivery provider that publishes commands to MQTT topics -->
+	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
+		<property name="hostname" value="localhost"/>
+		<property name="port" value="1883"/>
+		<property name="fallbackTopic" value="SiteWhere/commands"/>
+	</bean>
 
 	<!-- Configures device provisioning -->
 	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
-		<property name="commandDeliveryProvider" ref="defaultDeliveryProvider"/>
+		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
 	</bean>
 	
 	<!-- Hands off command invocations to provisioning for processing -->

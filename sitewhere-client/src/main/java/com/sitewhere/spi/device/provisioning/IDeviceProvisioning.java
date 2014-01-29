@@ -9,6 +9,7 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
+import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
@@ -17,7 +18,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public interface IDeviceProvisioning {
+public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 
 	/**
 	 * Gets the configured command execution builder.
@@ -32,6 +33,13 @@ public interface IDeviceProvisioning {
 	 * @return
 	 */
 	public ICommandExecutionEncoder getCommandExecutionEncoder();
+
+	/**
+	 * Gets the configured command target resolver.
+	 * 
+	 * @return
+	 */
+	public ICommandTargetResolver getCommandTargetResolver();
 
 	/**
 	 * Gets the configured command delivery provider.

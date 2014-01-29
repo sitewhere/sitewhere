@@ -19,25 +19,25 @@ import java.util.Map;
 public interface IDeviceCommandInvocation extends IDeviceEvent {
 
 	/**
-	 * Get actor type that originated the command.
+	 * Get actor type that initiated the command.
 	 * 
 	 * @return
 	 */
-	public CommandActor getSourceActor();
+	public CommandInitiator getInitiator();
 
 	/**
-	 * Get unique id of command originator.
+	 * Get unique id of command initiated.
 	 * 
 	 * @return
 	 */
-	public String getSourceId();
+	public String getInitiatorId();
 
 	/**
 	 * Get actor type that received command.
 	 * 
 	 * @return
 	 */
-	public CommandActor getTargetActor();
+	public CommandTarget getTarget();
 
 	/**
 	 * Get unique id of command target.
