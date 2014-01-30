@@ -37,7 +37,7 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder {
 	 */
 	@Override
 	public byte[] encode(IDeviceCommandExecution execution) throws SiteWhereException {
-		DynamicMessage message = ProtobufUtils.createMessage(execution);
+		DynamicMessage message = ProtobufMessageBuilder.createMessage(execution);
 		LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(message.toByteArray()));
 		return message.toByteArray();
 	}
