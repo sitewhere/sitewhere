@@ -21,10 +21,10 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 public class ProtobufNaming {
 
 	/** Name of enum for message types */
-	public static final String COMMAND_TYPES_ENUM = "_commands_";
+	public static final String COMMAND_TYPES_ENUM = "Command";
 
 	/** Name of message types enum field */
-	public static final String COMMAND_TYPES_FIELD = "type";
+	public static final String COMMAND_TYPES_FIELD = "_command";
 
 	/** Prefix to indicate field type */
 	public static final String FIELD_TYPE_PREFIX = "_type_";

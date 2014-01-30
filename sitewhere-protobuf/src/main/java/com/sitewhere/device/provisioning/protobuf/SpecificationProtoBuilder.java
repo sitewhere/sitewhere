@@ -55,7 +55,7 @@ public class SpecificationProtoBuilder {
 	protected static void generateProto(IDeviceSpecification specification, List<IDeviceCommand> commands,
 			StringBuffer buffer) throws SiteWhereException {
 		int indent = 0;
-		String specName = specification.getName().toLowerCase().replace(' ', '_');
+		String specName = ProtobufNaming.getSpecificationIdentifier(specification);
 		print("message " + specName + " {", indent, buffer);
 		print("\n", indent, buffer);
 		addCommandsEnum(specification, commands, buffer, indent + 1);
@@ -79,11 +79,11 @@ public class SpecificationProtoBuilder {
 	protected static void addCommandsEnum(IDeviceSpecification specification, List<IDeviceCommand> commands,
 			StringBuffer buffer, int indent) throws SiteWhereException {
 		StringBuffer enumCmds = new StringBuffer();
-		enumCmds.append("enum Type {");
-		int index = 1;
+		enumCmds.append("enum " + ProtobufNaming.COMMAND_TYPES_ENUM + " {");
+		int index = 2;
 		for (IDeviceCommand command : commands) {
-			String converted = command.getName().toUpperCase();
-			enumCmds.append(converted + " = " + (index++) + "; ");
+			String cmdName = ProtobufNaming.getCommandEnumName(command);
+			enumCmds.append(cmdName + " = " + (index++) + "; ");
 		}
 		enumCmds.append("}");
 
@@ -93,7 +93,8 @@ public class SpecificationProtoBuilder {
 		print("\n\n", indent, buffer);
 		print("// Identifies which command was passed", indent, buffer);
 		print("\n", indent, buffer);
-		print("required Type type = 1;", indent, buffer);
+		print("required " + ProtobufNaming.COMMAND_TYPES_ENUM + " " + ProtobufNaming.COMMAND_TYPES_FIELD
+				+ " = 1;", indent, buffer);
 	}
 
 	/**
@@ -106,7 +107,7 @@ public class SpecificationProtoBuilder {
 	 */
 	protected static void addCommand(IDeviceCommand command, int cmdIndex, StringBuffer buffer, int indent)
 			throws SiteWhereException {
-		String typeName = "_type_" + command.getName();
+		String typeName = ProtobufNaming.getCommandTypeName(command);
 		print("message " + typeName + " {\n", indent, buffer);
 		int index = 1;
 		for (ICommandParameter parameter : command.getParameters()) {

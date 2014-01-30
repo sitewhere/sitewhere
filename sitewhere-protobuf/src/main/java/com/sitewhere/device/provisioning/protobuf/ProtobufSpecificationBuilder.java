@@ -81,7 +81,7 @@ public class ProtobufSpecificationBuilder {
 		DescriptorProtos.EnumDescriptorProto.Builder builder =
 				DescriptorProtos.EnumDescriptorProto.newBuilder();
 		builder.setName(ProtobufNaming.COMMAND_TYPES_ENUM);
-		int i = 1;
+		int i = 2;
 		for (IDeviceCommand command : commands) {
 			DescriptorProtos.EnumValueDescriptorProto.Builder valueBuilder =
 					DescriptorProtos.EnumValueDescriptorProto.newBuilder();

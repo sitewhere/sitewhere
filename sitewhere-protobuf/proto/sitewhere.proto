@@ -1,0 +1,29 @@
+message sitewhere {
+
+	// Enumeration of inbound events.
+	enum Command {REGISTER = 2; ACKNOWLEDGE = 3; DEVICELOCATION = 4; } 
+
+	// Identifies which command was passed 
+	required Command _command = 1;
+
+	// Register a device with SiteWhere.
+	message _type_register {
+		required string hardwareId = 1;
+		required string specificationToken = 2;
+	}
+	optional _type_register register = 2;
+
+	// Acknowledge previous command.
+	message _type_acknowledge {
+		required string invocationToken = 1;
+	}
+	optional _type_acknowledge acknowledge = 3;
+
+	// Report device location
+	message _type_deviceLocation {
+		required double latitude = 1;
+		required double longitude = 2;
+		optional double elevation = 3;
+	}
+	optional _type_deviceLocation deviceLocation = 4;
+}
