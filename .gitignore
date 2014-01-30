@@ -5,6 +5,7 @@
 /sitewhere-magento/target
 /sitewhere-mongodb/target
 /sitewhere-mule/target
+/sitewhere-protobuf/target
 /sitewhere-solr/target
 /sitewhere-web/target
 /deploy
