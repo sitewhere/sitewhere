@@ -7,6 +7,7 @@
 	<classpathentry kind="src" path="sitewhere-magento/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mule/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-protobuf/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-solr/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-web/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>

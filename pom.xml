@@ -28,6 +28,7 @@
         <module>sitewhere-magento</module>
         <module>sitewhere-mongodb</module>
         <module>sitewhere-mule</module>
+        <module>sitewhere-protobuf</module>
         <module>sitewhere-solr</module>
         <module>sitewhere-web</module>
     </modules>

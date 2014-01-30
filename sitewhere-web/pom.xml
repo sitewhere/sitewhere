@@ -51,6 +51,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-protobuf</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>3.2.1.RELEASE</version>
