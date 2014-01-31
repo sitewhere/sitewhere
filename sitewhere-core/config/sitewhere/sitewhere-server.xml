@@ -16,32 +16,9 @@
 	<!-- Uncomment to use HBase datastore -->
 	<!-- <import resource="sitewhere-hbase.xml"/> -->
 
-	<!-- ############################# -->
-	<!-- # APACHE SOLR CONFIGURATION # -->
-	<!-- ############################# -->
-
-	<!-- Device event processor that indexes events in Solr -->
-	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
-		<property name="solrServerUrl" value="http://192.168.37.128:8983/solr/sitewhere"/>
-	</bean>
-
-	<!-- ########################### -->
-	<!-- # HAZELCAST CONFIGURATION # -->
-	<!-- ########################### -->
-
-	<!-- Provides access to a local Hazelcast instance for SiteWhere -->
-	<bean id="hazelcastConfig" class="com.sitewhere.server.hazelcast.SiteWhereHazelcastConfiguration">
-		<property name="configFileName" value="hazelcast.xml"/>
-	</bean>
-
-	<!-- Broadcasts SiteWhere state over Hazelcast -->
-	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.server.hazelcast.HazelcastEventProcessor">
-		<property name="configuration" ref="hazelcastConfig"/>
-	</bean>
-
-	<!-- ############################################ -->
-	<!-- # DEVICE PROVISIONING AND EVENT PROCESSING # -->
-	<!-- ############################################ -->
+	<!-- ####################### -->
+	<!-- # DEVICE PROVISIONING # -->
+	<!-- ####################### -->
 	
 	<!-- Encodes device commands using Google Protocol Buffers -->
 	<bean id="protobufExecutionEncoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
@@ -61,12 +38,47 @@
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
 	</bean>
+
+	<!-- ############################# -->
+	<!-- # APACHE SOLR CONFIGURATION # -->
+	<!-- ############################# -->
+
+	<!-- Device event processor that indexes events in Solr -->
+	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
+		<property name="solrServerUrl" value="http://192.168.37.128:8983/solr/sitewhere"/>
+	</bean>
+
+	<!-- ########################### -->
+	<!-- # HAZELCAST CONFIGURATION # -->
+	<!-- ########################### -->
+
+	<!-- Provides access to a local Hazelcast instance for SiteWhere -->
+	<bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
+		<property name="configFileName" value="hazelcast.xml"/>
+	</bean>
+
+	<!-- Broadcasts SiteWhere state over Hazelcast -->
+	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
+		<property name="configuration" ref="hazelcastConfig"/>
+	</bean>
+
+	<!-- #################### -->
+	<!-- # EVENT PROCESSING # -->
+	<!-- #################### -->
 	
 	<!-- Hands off command invocations to provisioning for processing -->
 	<bean id="provisioningEventProcessor" class="com.sitewhere.device.provisioning.DefaultProvisioningEventProcessor"/>
 	
-	<!-- Device event processor chain configuration -->
-	<bean id="deviceEventProcessorChain" class="com.sitewhere.server.device.event.processor.DefaultDeviceEventProcessorChain">
+	<!-- Inbound event processor chain configuration -->
+	<bean id="inboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
+		<property name="processors">
+			<list>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Outbound event processor chain configuration -->
+	<bean id="outboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain">
 		<property name="processors">
 			<list>
 				<ref bean="provisioningEventProcessor"/>

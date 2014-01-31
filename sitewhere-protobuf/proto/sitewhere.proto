@@ -1,17 +1,18 @@
 message sitewhere {
 
 	// Enumeration of inbound events.
-	enum Command {REGISTER = 2; ACKNOWLEDGE = 3; DEVICELOCATION = 4; } 
+	enum Command {REGISTER = 2; ACKNOWLEDGE = 3; DEVICELOCATION = 4; DEVICEALERT = 5; DEVICEMEASUREMENTS = 6; } 
 
 	// Identifies which command was passed 
 	required Command _command = 1;
 
 	// Register a device with SiteWhere.
-	message _type_register {
+	message _type_registerDevice {
 		required string hardwareId = 1;
 		required string specificationToken = 2;
+		optional string replyTo = 3;
 	}
-	optional _type_register register = 2;
+	optional _type_registerDevice registerDevice = 2;
 
 	// Acknowledge previous command.
 	message _type_acknowledge {
@@ -19,11 +20,39 @@ message sitewhere {
 	}
 	optional _type_acknowledge acknowledge = 3;
 
-	// Report device location
+	// Report device location.
 	message _type_deviceLocation {
-		required double latitude = 1;
-		required double longitude = 2;
-		optional double elevation = 3;
+		required string hardwareId = 1;
+		required float latitude = 2;
+		required float longitude = 3;
+		optional float elevation = 4;
+		optional int64 eventDate = 5;
+		optional string invocationToken = 6;
 	}
 	optional _type_deviceLocation deviceLocation = 4;
+
+	// Report device alert.
+	message _type_deviceAlert {
+		required string hardwareId = 1;
+		required string type = 2;
+		required string message = 3;
+		optional int64 eventDate = 4;
+		optional string invocationToken = 5;
+	}
+	optional _type_deviceAlert deviceAlert = 5;
+	
+	// Single measurement entry.
+	message _type_measurement {
+		required string measurementId = 1;
+		required float value = 2;
+	}
+
+	// Report device measurements.
+	message _type_deviceMeasurements {
+		required string hardwareId = 1;
+		repeated _type_measurement measurement = 2;
+		optional int64 eventDate = 3;
+		optional string invocationToken = 4;
+	}
+	optional _type_deviceMeasurements deviceMeasurements = 6;
 }

@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.hazelcast;
+package com.sitewhere.hazelcast;
 
 import java.io.File;
 import java.io.FileInputStream;

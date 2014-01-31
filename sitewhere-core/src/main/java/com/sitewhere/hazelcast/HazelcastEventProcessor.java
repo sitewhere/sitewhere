@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.hazelcast;
+package com.sitewhere.hazelcast;
 
 import org.apache.log4j.Logger;
 
@@ -15,7 +15,7 @@ import com.hazelcast.core.ITopic;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
-import com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor;
+import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
  * 
  * @author Derek
  */
-public class HazelcastEventProcessor extends DeviceEventProcessor {
+public class HazelcastEventProcessor extends OutboundEventProcessor {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(HazelcastEventProcessor.class);
@@ -47,7 +47,7 @@ public class HazelcastEventProcessor extends DeviceEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#start()
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -68,9 +68,8 @@ public class HazelcastEventProcessor extends DeviceEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#afterMeasurements
-	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
+	 * afterMeasurements(com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
 	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -83,7 +82,7 @@ public class HazelcastEventProcessor extends DeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#afterLocation
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#afterLocation
 	 * (com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
@@ -97,7 +96,7 @@ public class HazelcastEventProcessor extends DeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#afterAlert
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#afterAlert
 	 * (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override

@@ -15,23 +15,23 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.processor.IDeviceEventProcessor;
+import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
- * Default implementation of {@link IDeviceEventProcessor}.
+ * Default implementation of {@link IOutboundEventProcessor}.
  * 
  * @author Derek
  */
-public class DeviceEventProcessor implements IDeviceEventProcessor {
+public class OutboundEventProcessor implements IOutboundEventProcessor {
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#start()
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -40,7 +40,7 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#stop()
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
@@ -50,7 +50,7 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeMeasurements
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeMeasurements
 	 * (com.sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
 	 */
@@ -63,7 +63,7 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#afterMeasurements
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterMeasurements
 	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
@@ -74,8 +74,8 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeLocation(com
-	 * .sitewhere.spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeLocation
+	 * (com.sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
 	@Override
@@ -87,8 +87,8 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#afterLocation(com
-	 * .sitewhere.spi.device.event.IDeviceLocation)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterLocation(
+	 * com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
 	public void afterLocation(IDeviceLocation location) throws SiteWhereException {
@@ -98,8 +98,8 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeAlert(com.
-	 * sitewhere.spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeAlert(com
+	 * .sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
@@ -111,8 +111,8 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#afterAlert(com.sitewhere
-	 * .spi.device.event.IDeviceAlert)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterAlert(com
+	 * .sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void afterAlert(IDeviceAlert alert) throws SiteWhereException {
@@ -121,9 +121,8 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeCommandInvocation
-	 * (com.sitewhere.spi.device.IDeviceAssignment,
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+	 * beforeCommandInvocation(com.sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
@@ -135,7 +134,7 @@ public class DeviceEventProcessor implements IDeviceEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#afterCommandInvocation
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterCommandInvocation
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override

@@ -9,6 +9,7 @@
  */
 package com.sitewhere.spi.device.event.processor;
 
+import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -21,25 +22,11 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
- * Allows external systems to interact with SiteWhere event processing.
+ * Allows intereseted entities to interact with SiteWhere outbound event processing.
  * 
  * @author Derek
  */
-public interface IDeviceEventProcessor {
-
-	/**
-	 * Start the processor.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void start() throws SiteWhereException;
-
-	/**
-	 * Stop the processor.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void stop() throws SiteWhereException;
+public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 
 	/**
 	 * Executes code before saving device measurements.

@@ -27,18 +27,18 @@ import org.springframework.core.io.FileSystemResource;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import com.sitewhere.device.event.processor.DeviceEventProcessorDecorator;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
-import com.sitewhere.server.device.event.processor.DeviceEventProcessorDecorator;
 import com.sitewhere.server.metrics.DeviceManagementMetricsDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.event.processor.IDeviceEventProcessorChain;
+import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
@@ -269,8 +269,8 @@ public class SiteWhereServer {
 
 		// If device event processor chain is defined, use it.
 		try {
-			IDeviceEventProcessorChain chainImpl =
-					(IDeviceEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_EVENT_PROCESSOR_CHAIN);
+			IOutboundEventProcessorChain chainImpl =
+					(IOutboundEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
 			deviceManagement = new DeviceEventProcessorDecorator(deviceManagement, chainImpl);
 			LOGGER.info("Event processor chain found with " + chainImpl.getProcessors().size()
 					+ " processors.");

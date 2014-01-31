@@ -22,20 +22,20 @@ import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor;
+import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.processor.IDeviceEventProcessor;
+import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 
 /**
- * {@link IDeviceEventProcessor} implementation that takes saved events and indexes them
+ * {@link IOutboundEventProcessor} implementation that takes saved events and indexes them
  * in Apache Solr for advanced analytics processing.
  * 
  * @author Derek
  */
-public class SolrDeviceEventProcessor extends DeviceEventProcessor implements InitializingBean {
+public class SolrDeviceEventProcessor extends OutboundEventProcessor implements InitializingBean {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SolrDeviceEventProcessor.class);
@@ -72,7 +72,7 @@ public class SolrDeviceEventProcessor extends DeviceEventProcessor implements In
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#start()
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -85,7 +85,7 @@ public class SolrDeviceEventProcessor extends DeviceEventProcessor implements In
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#stop()
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
@@ -95,9 +95,8 @@ public class SolrDeviceEventProcessor extends DeviceEventProcessor implements In
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#afterMeasurements
-	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
+	 * afterMeasurements(com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
 	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -113,7 +112,7 @@ public class SolrDeviceEventProcessor extends DeviceEventProcessor implements In
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#afterLocation
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#afterLocation
 	 * (com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
@@ -130,7 +129,7 @@ public class SolrDeviceEventProcessor extends DeviceEventProcessor implements In
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#afterAlert
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#afterAlert
 	 * (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override

@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.device.event.processor;
+package com.sitewhere.device.event.processor;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.rest.model.device.DeviceManagementDecorator;
@@ -21,26 +21,37 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.processor.IDeviceEventProcessorChain;
+import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
- * Acts as a decorator for injecting a device event processor chain into the default
- * processing flow.
+ * Acts as a decorator for injecting a {@link IOutboundEventProcessorChain} into the
+ * default processing flow.
  * 
  * @author Derek
  */
 public class DeviceEventProcessorDecorator extends DeviceManagementDecorator {
 
 	/** Processor chain */
-	private IDeviceEventProcessorChain chain;
+	private IOutboundEventProcessorChain chain;
 
-	public DeviceEventProcessorDecorator(IDeviceManagement delegate, IDeviceEventProcessorChain chain) {
+	public DeviceEventProcessorDecorator(IDeviceManagement delegate, IOutboundEventProcessorChain chain) {
 		super(delegate);
 		this.chain = chain;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.rest.model.device.DeviceManagementDecorator#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+		super.start();
+		this.chain.start();
 	}
 
 	/*

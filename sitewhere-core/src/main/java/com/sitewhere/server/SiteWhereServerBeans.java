@@ -33,12 +33,15 @@ public interface SiteWhereServerBeans {
 	/** Bean id for asset module manager in server configuration */
 	public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";
 
-	/****************************
-	 * MANAGEMENT CONFIGURATION *
-	 ****************************/
+	/**********************************
+	 * EVENT PROCESSING CONFIGURATION *
+	 **********************************/
 
-	/** Bean id for device event processor chain */
-	public static final String BEAN_DEVICE_EVENT_PROCESSOR_CHAIN = "deviceEventProcessorChain";
+	/** Bean id for inbound event processor chain */
+	public static final String BEAN_INBOUND_PROCESSOR_CHAIN = "inboundProcessorChain";
+
+	/** Bean id for outbound event processor chain */
+	public static final String BEAN_OUTBOUND_PROCESSOR_CHAIN = "outboundProcessorChain";
 
 	/*********************
 	 * DATA INITIALIZERS *

@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor;
+import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public class DefaultProvisioningEventProcessor extends DeviceEventProcessor {
+public class DefaultProvisioningEventProcessor extends OutboundEventProcessor {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultProvisioningEventProcessor.class);
@@ -45,7 +45,7 @@ public class DefaultProvisioningEventProcessor extends DeviceEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#start()
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -56,7 +56,7 @@ public class DefaultProvisioningEventProcessor extends DeviceEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#stop()
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
@@ -67,7 +67,7 @@ public class DefaultProvisioningEventProcessor extends DeviceEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.DeviceEventProcessor#
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
 	 * afterCommandInvocation(com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
