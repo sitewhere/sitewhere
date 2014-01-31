@@ -10,7 +10,7 @@
 package com.sitewhere.spi.device.provisioning;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 
 /**
  * Decodes inbound device event messages.
@@ -20,11 +20,11 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 public interface IDeviceEventDecoder {
 
 	/**
-	 * Decodes a message payload into a device event.
+	 * Decodes a message payload into an {@link IDeviceEventCreateRequest} subclass.
 	 * 
 	 * @param payload
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceEvent decode(byte[] payload) throws SiteWhereException;
+	public IDeviceEventCreateRequest decode(byte[] payload) throws SiteWhereException;
 }

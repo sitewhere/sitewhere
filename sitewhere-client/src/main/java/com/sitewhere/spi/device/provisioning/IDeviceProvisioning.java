@@ -9,6 +9,8 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
+import java.util.List;
+
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -54,6 +56,13 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	 * @return
 	 */
 	public ICommandProcessingStrategy getCommandProcessingStrategy();
+
+	/**
+	 * Get the list of processors that bring device event data into the system.
+	 * 
+	 * @return
+	 */
+	public List<IDeviceEventProcessor> getDeviceEventProcessors();
 
 	/**
 	 * Deliver a command invocation.

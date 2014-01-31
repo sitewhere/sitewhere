@@ -9,11 +9,12 @@
  */
 package com.sitewhere.device.provisioning.mqtt;
 
+import java.net.URISyntaxException;
+
 import org.apache.log4j.Logger;
 import org.fusesource.mqtt.client.BlockingConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -26,7 +27,7 @@ import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
  * 
  * @author Derek
  */
-public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider, InitializingBean {
+public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttCommandDeliveryProvider.class);
@@ -61,21 +62,16 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider, In
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.mqtt = new MQTT();
-		mqtt.setHost(getHostname(), getPort());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		this.mqtt = new MQTT();
+		try {
+			mqtt.setHost(getHostname(), getPort());
+		} catch (URISyntaxException e) {
+			throw new SiteWhereException("Invalid hostname for MQTT server.", e);
+		}
 		LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
 		connection = mqtt.blockingConnection();
 		try {

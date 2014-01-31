@@ -23,20 +23,41 @@
 	<!-- Encodes device commands using Google Protocol Buffers -->
 	<bean id="protobufExecutionEncoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
 	
-	<!-- Placeholder that does not send the encoded command anywhere -->
-	<bean id="defaultDeliveryProvider" class="com.sitewhere.device.provisioning.DefaultCommandDeliveryProvider"/>
-	
 	<!-- Delivery provider that publishes commands to MQTT topics -->
 	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="fallbackTopic" value="SiteWhere/commands"/>
 	</bean>
+	
+	<!-- Device event receiver that monitors an MQTT topic for events -->
+	<bean id="mqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver">
+		<property name="hostname" value="localhost"/>
+		<property name="port" value="1883"/>
+	</bean>
+	
+	<!-- Decodes device event messages using Google Protocol Buffers -->
+	<bean id="protobufEventDecoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder"/>
+	
+	<!-- Device event processor for protobuf messages over MQTT -->
+	<bean id="protbufEventProcessor" class="com.sitewhere.device.provisioning.DefaultDeviceEventProcessor">
+		<property name="deviceEventDecoder" ref="protobufEventDecoder"/>
+		<property name="deviceEventReceivers">
+			<list>
+				<ref bean="mqttEventReceiver"/>
+			</list>
+		</property>
+	</bean>
 
 	<!-- Configures device provisioning -->
 	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
+		<property name="deviceEventProcessors">
+			<list>
+				<ref bean="protbufEventProcessor"/>
+			</list>
+		</property>
 	</bean>
 
 	<!-- ############################# -->

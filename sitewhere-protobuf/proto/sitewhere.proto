@@ -1,3 +1,5 @@
+option optimize_for = LITE_RUNTIME;
+
 message sitewhere {
 
 	// Enumeration of inbound events.

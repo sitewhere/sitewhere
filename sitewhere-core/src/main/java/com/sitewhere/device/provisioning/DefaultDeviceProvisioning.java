@@ -9,8 +9,10 @@
  */
 package com.sitewhere.device.provisioning;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -19,6 +21,7 @@ import com.sitewhere.spi.device.provisioning.ICommandExecutionBuilder;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
+import com.sitewhere.spi.device.provisioning.IDeviceEventProcessor;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 
 /**
@@ -26,7 +29,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
  * 
  * @author Derek
  */
-public class DefaultDeviceProvisioning implements IDeviceProvisioning, InitializingBean {
+public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultDeviceProvisioning.class);
@@ -45,6 +48,9 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning, Initializ
 
 	/** Configured command processing strategy */
 	private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
+
+	/** Configured list of device event processors */
+	private List<IDeviceEventProcessor> deviceEventProcessors = new ArrayList<IDeviceEventProcessor>();
 
 	/*
 	 * (non-Javadoc)
@@ -85,21 +91,58 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning, Initializ
 		}
 		getCommandProcessingStrategy().start();
 
-		LOGGER.info("Started device provisioning.");
-	}
+		// Start device event processors.
+		if (getDeviceEventProcessors() != null) {
+			for (IDeviceEventProcessor processor : getDeviceEventProcessors()) {
+				processor.start();
+			}
+		}
 
-	@Override
-	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopped device provisioning.");
+		LOGGER.info("Started device provisioning.");
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void stop() throws SiteWhereException {
+		LOGGER.info("Stopping device provisioning...");
+
+		// Stop command execution builder.
+		if (getCommandExecutionBuilder() != null) {
+			getCommandExecutionBuilder().stop();
+		}
+
+		// Stop command execution encoder.
+		if (getCommandExecutionEncoder() != null) {
+			getCommandExecutionEncoder().stop();
+		}
+
+		// Stop command target resolver.
+		if (getCommandTargetResolver() != null) {
+			getCommandTargetResolver().stop();
+		}
+
+		// Stop command delivery provider.
+		if (getCommandDeliveryProvider() != null) {
+			getCommandDeliveryProvider().stop();
+		}
+
+		// Stop command processing strategy.
+		if (getCommandProcessingStrategy() != null) {
+			getCommandProcessingStrategy().stop();
+		}
+
+		// Stop device event processors.
+		if (getDeviceEventProcessors() != null) {
+			for (IDeviceEventProcessor processor : getDeviceEventProcessors()) {
+				processor.stop();
+			}
+		}
+
+		LOGGER.info("Stopped device provisioning.");
 	}
 
 	/*
@@ -187,5 +230,20 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning, Initializ
 
 	public void setCommandProcessingStrategy(ICommandProcessingStrategy commandProcessingStrategy) {
 		this.commandProcessingStrategy = commandProcessingStrategy;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getDeviceEventProcessors
+	 * ()
+	 */
+	public List<IDeviceEventProcessor> getDeviceEventProcessors() {
+		return deviceEventProcessors;
+	}
+
+	public void setDeviceEventProcessors(List<IDeviceEventProcessor> deviceEventProcessors) {
+		this.deviceEventProcessors = deviceEventProcessors;
 	}
 }

@@ -11,6 +11,7 @@ package com.sitewhere.spi.device.provisioning;
 
 import java.util.concurrent.BlockingQueue;
 
+import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -18,7 +19,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public interface IDeviceEventReceiver {
+public interface IDeviceEventReceiver extends ISiteWhereLifecycle {
 
 	/**
 	 * Gets access to a queue of (still encoded) messages becoming available from the
