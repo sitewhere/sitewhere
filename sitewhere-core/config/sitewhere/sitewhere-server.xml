@@ -16,6 +16,55 @@
 	<!-- Uncomment to use HBase datastore -->
 	<!-- <import resource="sitewhere-hbase.xml"/> -->
 
+	<!-- ########################### -->
+	<!-- # HAZELCAST CONFIGURATION # -->
+	<!-- ########################### -->
+
+	<!-- Provides access to a local Hazelcast instance for SiteWhere -->
+	<bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
+		<property name="configFileName" value="hazelcast.xml"/>
+	</bean>
+
+	<!-- ############################ -->
+	<!-- # INBOUND EVENT PROCESSING # -->
+	<!-- ############################ -->
+	
+	<!-- Inbound event processor chain configuration -->
+	<bean id="inboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
+		<property name="processors">
+			<list>
+			</list>
+		</property>
+	</bean>
+
+	<!-- ############################# -->
+	<!-- # OUTBOUND EVENT PROCESSING # -->
+	<!-- ############################# -->
+	
+	<!-- Hands off command invocations to provisioning for processing -->
+	<bean id="provisioningEventProcessor" class="com.sitewhere.device.provisioning.DefaultProvisioningEventProcessor"/>
+
+	<!-- Broadcasts SiteWhere state over Hazelcast -->
+	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
+		<property name="configuration" ref="hazelcastConfig"/>
+	</bean>
+
+	<!-- Indexes SiteWhere events in Solr -->
+	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
+		<property name="solrServerUrl" value="http://192.168.37.128:8983/solr/sitewhere"/>
+	</bean>
+	
+	<!-- Outbound event processor chain configuration -->
+	<bean id="outboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain">
+		<property name="processors">
+			<list>
+				<ref bean="provisioningEventProcessor"/>
+				<ref bean="solrDeviceEventProcessor"/>
+				<ref bean="hazelcastDeviceEventProcessor"/>
+			</list>
+		</property>
+	</bean>
+
 	<!-- ####################### -->
 	<!-- # DEVICE PROVISIONING # -->
 	<!-- ####################### -->
@@ -56,55 +105,6 @@
 		<property name="deviceEventProcessors">
 			<list>
 				<ref bean="protbufEventProcessor"/>
-			</list>
-		</property>
-	</bean>
-
-	<!-- ############################# -->
-	<!-- # APACHE SOLR CONFIGURATION # -->
-	<!-- ############################# -->
-
-	<!-- Device event processor that indexes events in Solr -->
-	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
-		<property name="solrServerUrl" value="http://192.168.37.128:8983/solr/sitewhere"/>
-	</bean>
-
-	<!-- ########################### -->
-	<!-- # HAZELCAST CONFIGURATION # -->
-	<!-- ########################### -->
-
-	<!-- Provides access to a local Hazelcast instance for SiteWhere -->
-	<bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
-		<property name="configFileName" value="hazelcast.xml"/>
-	</bean>
-
-	<!-- Broadcasts SiteWhere state over Hazelcast -->
-	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
-		<property name="configuration" ref="hazelcastConfig"/>
-	</bean>
-
-	<!-- #################### -->
-	<!-- # EVENT PROCESSING # -->
-	<!-- #################### -->
-	
-	<!-- Hands off command invocations to provisioning for processing -->
-	<bean id="provisioningEventProcessor" class="com.sitewhere.device.provisioning.DefaultProvisioningEventProcessor"/>
-	
-	<!-- Inbound event processor chain configuration -->
-	<bean id="inboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
-		<property name="processors">
-			<list>
-			</list>
-		</property>
-	</bean>
-	
-	<!-- Outbound event processor chain configuration -->
-	<bean id="outboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain">
-		<property name="processors">
-			<list>
-				<ref bean="provisioningEventProcessor"/>
-				<ref bean="solrDeviceEventProcessor"/>
-				<ref bean="hazelcastDeviceEventProcessor"/>
 			</list>
 		</property>
 	</bean>

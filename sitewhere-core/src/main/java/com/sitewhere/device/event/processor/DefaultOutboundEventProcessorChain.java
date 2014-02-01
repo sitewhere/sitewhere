@@ -47,11 +47,11 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Outbound processor chain starting...");
+		LOGGER.info("Outbound event processor chain starting...");
 		for (IOutboundEventProcessor processor : getProcessors()) {
 			processor.start();
 		}
-		LOGGER.info("Outbound processor chain started.");
+		LOGGER.info("Outbound event processor chain started.");
 	}
 
 	/*
@@ -61,11 +61,11 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Outbound processor chain stopping...");
+		LOGGER.info("Outbound event processor chain stopping...");
 		for (IOutboundEventProcessor processor : getProcessors()) {
 			processor.stop();
 		}
-		LOGGER.info("Outbound processor chain stopped.");
+		LOGGER.info("Outbound event processor chain stopped.");
 	}
 
 	/*

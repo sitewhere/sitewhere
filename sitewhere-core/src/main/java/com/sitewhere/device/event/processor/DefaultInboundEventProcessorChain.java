@@ -39,9 +39,11 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		LOGGER.info("Inbound event processor chain starting...");
 		for (IInboundEventProcessor processor : getProcessors()) {
 			processor.start();
 		}
+		LOGGER.info("Inbound event processor chain started.");
 	}
 
 	/*
@@ -51,9 +53,11 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		LOGGER.info("Inbound event processor chain stopping...");
 		for (IInboundEventProcessor processor : getProcessors()) {
 			processor.stop();
 		}
+		LOGGER.info("Inbound event processor chain stopped.");
 	}
 
 	/*

@@ -38,6 +38,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
@@ -73,6 +74,12 @@ public class SiteWhereServer {
 
 	/** Interface to device management implementation */
 	private IDeviceManagement deviceManagement;
+
+	/** Interface to inbound event processor chain */
+	private IInboundEventProcessorChain inboundEventProcessorChain;
+
+	/** Interface to outbound event processor chain */
+	private IOutboundEventProcessorChain outboundEventProcessorChain;
 
 	/** Interface to device provisioning implementation */
 	private IDeviceProvisioning deviceProvisioning;
@@ -123,6 +130,24 @@ public class SiteWhereServer {
 	 */
 	public IDeviceManagement getDeviceManagement() {
 		return deviceManagement;
+	}
+
+	/**
+	 * Get the inbound event processor chain.
+	 * 
+	 * @return
+	 */
+	public IInboundEventProcessorChain getInboundEventProcessorChain() {
+		return inboundEventProcessorChain;
+	}
+
+	/**
+	 * Get the outbound event processor chain.
+	 * 
+	 * @return
+	 */
+	public IOutboundEventProcessorChain getOutboundEventProcessorChain() {
+		return outboundEventProcessorChain;
 	}
 
 	/**
@@ -215,6 +240,9 @@ public class SiteWhereServer {
 		// Initialize device management.
 		initializeDeviceManagement();
 
+		// Initialize processing chain for inbound events.
+		initializeInboundEventProcessorChain();
+
 		// Initialize device provisioning.
 		initializeDeviceProvisioning();
 
@@ -269,13 +297,29 @@ public class SiteWhereServer {
 
 		// If device event processor chain is defined, use it.
 		try {
-			IOutboundEventProcessorChain chainImpl =
+			outboundEventProcessorChain =
 					(IOutboundEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
-			deviceManagement = new DeviceEventProcessorDecorator(deviceManagement, chainImpl);
-			LOGGER.info("Event processor chain found with " + chainImpl.getProcessors().size()
-					+ " processors.");
+			deviceManagement =
+					new DeviceEventProcessorDecorator(deviceManagement, outboundEventProcessorChain);
+			LOGGER.info("Event processor chain found with "
+					+ outboundEventProcessorChain.getProcessors().size() + " processors.");
 		} catch (NoSuchBeanDefinitionException e) {
-			LOGGER.info("No event processor chain found in configuration file.");
+			LOGGER.info("No outbound event processor chain found in configuration file.");
+		}
+	}
+
+	/**
+	 * Initializes the {@link IInboundEventProcessorChain} that handles events coming into
+	 * the system from external devices.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeInboundEventProcessorChain() throws SiteWhereException {
+		try {
+			inboundEventProcessorChain =
+					(IInboundEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_INBOUND_PROCESSOR_CHAIN);
+		} catch (NoSuchBeanDefinitionException e) {
+			LOGGER.info("No inbound event processor chain found in configuration file.");
 		}
 	}
 
@@ -411,6 +455,7 @@ public class SiteWhereServer {
 		deviceManagement.start();
 		userManagement.start();
 		assetModuleManager.start();
+		inboundEventProcessorChain.start();
 		deviceProvisioning.start();
 
 		verifyUserModel();
