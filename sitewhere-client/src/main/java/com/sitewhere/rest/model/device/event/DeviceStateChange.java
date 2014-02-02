@@ -105,4 +105,21 @@ public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange
 	public void setData(Map<String, String> data) {
 		this.data = data;
 	}
+
+	/**
+	 * Create a copy of an SPI object. Used by web services for marshaling.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static DeviceStateChange copy(IDeviceStateChange input) {
+		DeviceStateChange result = new DeviceStateChange();
+		DeviceEvent.copy(input, result);
+		result.setCategory(input.getCategory());
+		result.setType(input.getType());
+		result.setPreviousState(input.getPreviousState());
+		result.setNewState(input.getNewState());
+		result.getData().putAll(input.getData());
+		return result;
+	}
 }

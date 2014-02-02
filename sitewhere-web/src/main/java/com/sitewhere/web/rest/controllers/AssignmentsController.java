@@ -30,10 +30,12 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.server.SiteWhereServer;
@@ -49,6 +51,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -212,7 +215,7 @@ public class AssignmentsController extends SiteWhereController {
 	}
 
 	/**
-	 * List all device measurements for a given assignment.
+	 * List device measurements for a given assignment.
 	 * 
 	 * @param assignmentToken
 	 * @return
@@ -256,7 +259,7 @@ public class AssignmentsController extends SiteWhereController {
 	}
 
 	/**
-	 * List all device locations for a given assignment.
+	 * List device locations for a given assignment.
 	 * 
 	 * @param assignmentToken
 	 * @return
@@ -297,7 +300,7 @@ public class AssignmentsController extends SiteWhereController {
 	}
 
 	/**
-	 * List all device alerts for a given assignment.
+	 * List device alerts for a given assignment.
 	 * 
 	 * @param assignmentToken
 	 * @return
@@ -368,7 +371,7 @@ public class AssignmentsController extends SiteWhereController {
 	}
 
 	/**
-	 * List all device command invocations for a given assignment.
+	 * List device command invocations for a given assignment.
 	 * 
 	 * @param assignmentToken
 	 * @return
@@ -387,6 +390,48 @@ public class AssignmentsController extends SiteWhereController {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 		return SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandInvocations(token,
 				criteria);
+	}
+
+	/**
+	 * Create state change to be associated with a device assignment.
+	 * 
+	 * @param input
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/statechanges", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Create an alert event for a device assignment")
+	public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+			throws SiteWhereException {
+		IDeviceAssignment assignment =
+				SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentByToken(token);
+		IDeviceStateChange result =
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceStateChange(assignment, input);
+		return DeviceStateChange.copy(result);
+	}
+
+	/**
+	 * List device state changes for a given assignment.
+	 * 
+	 * @param assignmentToken
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/statechanges", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List state change events for a device assignment")
+	public ISearchResults<IDeviceStateChange> listStateChanges(
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+			throws SiteWhereException {
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+		return SiteWhereServer.getInstance().getDeviceManagement().listDeviceStateChanges(token, criteria);
 	}
 
 	/**

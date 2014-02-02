@@ -31,6 +31,7 @@ import com.sitewhere.rest.model.device.asset.DeviceAlertWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceCommandInvocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceLocationWithAsset;
 import com.sitewhere.rest.model.device.asset.DeviceMeasurementsWithAsset;
+import com.sitewhere.rest.model.device.asset.DeviceStateChangeWithAsset;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
@@ -47,6 +48,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -282,6 +284,38 @@ public class SitesController extends SiteWhereController {
 			wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
 		}
 		return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
+	}
+
+	/**
+	 * Get device state changes for a given site.
+	 * 
+	 * @param siteToken
+	 * @param count
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{siteToken}/statechanges", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List state changes associated with a site")
+	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(
+			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+			throws SiteWhereException {
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+		ISearchResults<IDeviceStateChange> results =
+				SiteWhereServer.getInstance().getDeviceManagement().listDeviceStateChangesForSite(siteToken,
+						criteria);
+
+		// Marshal with asset info since multiple assignments might match.
+		List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
+		IAssetModuleManager assets = SiteWhereServer.getInstance().getAssetModuleManager();
+		for (IDeviceStateChange result : results.getResults()) {
+			wrapped.add(new DeviceStateChangeWithAsset(result, assets));
+		}
+		return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
 	}
 
 	/**
