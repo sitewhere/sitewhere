@@ -29,10 +29,14 @@
 	<!-- # INBOUND EVENT PROCESSING # -->
 	<!-- ############################ -->
 	
+	<!-- Takes inbound device events and stores them using device management SPI calls -->
+	<bean id="eventStorageProcessor" class="com.sitewhere.device.event.processor.DefaultEventStorageProcessor"/>
+	
 	<!-- Inbound event processor chain configuration -->
 	<bean id="inboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
 		<property name="processors">
 			<list>
+				<ref bean="eventStorageProcessor"/>
 			</list>
 		</property>
 	</bean>
