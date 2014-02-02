@@ -11,7 +11,7 @@ package com.sitewhere.spi.device.event.processor;
 
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 
 /**
  * Allows intereseted entities to interact with SiteWhere inbound event processing.
@@ -21,10 +21,10 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest;
 public interface IInboundEventProcessor extends ISiteWhereLifecycle {
 
 	/**
-	 * Called when a {@link IDeviceRegistrationCreateRequest} is received.
+	 * Called when a {@link IDeviceRegistrationRequest} is received.
 	 * 
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void onRegistrationRequest(IDeviceRegistrationCreateRequest request) throws SiteWhereException;
+	public void onRegistrationRequest(IDeviceRegistrationRequest request) throws SiteWhereException;
 }

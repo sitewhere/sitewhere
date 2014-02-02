@@ -47,6 +47,9 @@ public interface IMongoCollectionNames {
 	/** Default collection name for SiteWhere command invocations */
 	public static final String DEFAULT_INVOCATIONS_COLLECTION_NAME = "invocations";
 
+	/** Default collection name for SiteWhere device state change events */
+	public static final String DEFAULT_STATE_CHANGES_COLLECTION_NAME = "statechanges";
+
 	/** Default collection name for SiteWhere users */
 	public static final String DEFAULT_USERS_COLLECTION_NAME = "users";
 

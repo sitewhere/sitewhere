@@ -16,9 +16,6 @@ package com.sitewhere.hbase.device;
  */
 public enum DeviceAssignmentRecordType {
 
-	/** Primary site record */
-	Primary((byte) 0x00),
-
 	/** Device measurement record */
 	Measurement((byte) 0x01),
 
@@ -29,7 +26,10 @@ public enum DeviceAssignmentRecordType {
 	Alert((byte) 0x03),
 
 	/** Device command invocation record */
-	CommandInvocation((byte) 0x04);
+	CommandInvocation((byte) 0x04),
+
+	/** Device state change record */
+	StateChange((byte) 0x05);
 
 	/** Type indicator */
 	private byte type;

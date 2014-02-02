@@ -34,6 +34,7 @@ import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.metrics.DeviceManagementMetricsDecorator;
+import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -55,7 +56,7 @@ import com.sitewhere.version.VersionHelper;
  * 
  * @author Derek Adams
  */
-public class SiteWhereServer {
+public class SiteWhereServer implements ISiteWhereLifecycle {
 
 	/** Private logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereServer.class);
@@ -226,6 +227,36 @@ public class SiteWhereServer {
 		return auth;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 */
+	public void start() throws SiteWhereException {
+		// Start core management implementations.
+		deviceManagement.start();
+		userManagement.start();
+		assetModuleManager.start();
+
+		// Populate data if requested.
+		verifyUserModel();
+		verifyDeviceModel();
+
+		// Enable provisioning.
+		outboundEventProcessorChain.setProcessingEnabled(true);
+		inboundEventProcessorChain.start();
+		deviceProvisioning.start();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+	}
+
 	/**
 	 * Create the server.
 	 * 
@@ -259,7 +290,7 @@ public class SiteWhereServer {
 		messages.add("");
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
 		messages.add("");
-		messages.add("Copyright (c) 2013 Reveal Technologies, LLC");
+		messages.add("Copyright (c) 2013-2014 Reveal Technologies, LLC");
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 		LOGGER.info("\n" + message + "\n");
 	}
@@ -446,20 +477,6 @@ public class SiteWhereServer {
 		} catch (SiteWhereException e) {
 			LOGGER.warn("Unable to read from device model.", e);
 		}
-	}
-
-	/**
-	 * Start the server.
-	 */
-	public void start() throws SiteWhereException {
-		deviceManagement.start();
-		userManagement.start();
-		assetModuleManager.start();
-		inboundEventProcessorChain.start();
-		deviceProvisioning.start();
-
-		verifyUserModel();
-		verifyDeviceModel();
 	}
 
 	/**

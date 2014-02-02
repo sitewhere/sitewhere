@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 
 /**
  * Default implementation of {@link IInboundEventProcessorChain} interface.
@@ -68,7 +68,7 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 	 * (com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(IDeviceRegistrationCreateRequest request) throws SiteWhereException {
+	public void onRegistrationRequest(IDeviceRegistrationRequest request) throws SiteWhereException {
 		for (IInboundEventProcessor processor : getProcessors()) {
 			try {
 				processor.onRegistrationRequest(request);

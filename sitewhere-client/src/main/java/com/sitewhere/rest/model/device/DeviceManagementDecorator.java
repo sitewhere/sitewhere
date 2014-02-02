@@ -27,10 +27,12 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -305,6 +307,24 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return delegate.listDeviceCommandInvocationsForSite(siteToken, criteria);
+	}
+
+	@Override
+	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		return delegate.addDeviceStateChange(assignment, request);
+	}
+
+	@Override
+	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceStateChanges(assignmentToken, criteria);
+	}
+
+	@Override
+	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceStateChangesForSite(siteToken, criteria);
 	}
 
 	@Override

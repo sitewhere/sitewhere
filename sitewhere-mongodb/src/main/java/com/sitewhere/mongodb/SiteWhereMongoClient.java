@@ -85,6 +85,9 @@ public class SiteWhereMongoClient implements InitializingBean {
 	/** Injected name used for command invocations collection */
 	private String invocationsCollectionName = IMongoCollectionNames.DEFAULT_INVOCATIONS_COLLECTION_NAME;
 
+	/** Injected name used for device state change events collection */
+	private String stateChangesCollectionName = IMongoCollectionNames.DEFAULT_STATE_CHANGES_COLLECTION_NAME;
+
 	/** Injected name used for users collection */
 	private String usersCollectionName = IMongoCollectionNames.DEFAULT_USERS_COLLECTION_NAME;
 
@@ -99,21 +102,37 @@ public class SiteWhereMongoClient implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		this.client = new MongoClient(getHostname(), getPort());
 		List<String> messages = new ArrayList<String>();
+		messages.add("------------------");
+		messages.add("-- MONGO CLIENT --");
+		messages.add("------------------");
 		messages.add("Mongo client initialized. Version: " + client.getVersion());
 		messages.add("Hostname: " + hostname);
 		messages.add("Port: " + port);
 		messages.add("Database Name: " + databaseName);
 		messages.add("");
+		messages.add("-----------------------");
+		messages.add("-- Device Management --");
+		messages.add("-----------------------");
 		messages.add("Device specifications collection name: " + getDeviceSpecificationsCollectionName());
 		messages.add("Device commands collection name: " + getDeviceCommandsCollectionName());
 		messages.add("Devices collection name: " + getDevicesCollectionName());
 		messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
 		messages.add("Sites collection name: " + getSitesCollectionName());
 		messages.add("Zones collection name: " + getZonesCollectionName());
+		messages.add("");
+		messages.add("-------------------");
+		messages.add("-- Device Events --");
+		messages.add("-------------------");
 		messages.add("Measurements collection name: " + getMeasurementsCollectionName());
 		messages.add("Locations collection name: " + getLocationsCollectionName());
 		messages.add("Alerts collection name: " + getAlertsCollectionName());
 		messages.add("Invocations collection name: " + getInvocationsCollectionName());
+		messages.add("State Changes collection name: " + getInvocationsCollectionName());
+		messages.add("");
+		messages.add("");
+		messages.add("---------------------");
+		messages.add("-- User Management --");
+		messages.add("---------------------");
 		messages.add("Users collection name: " + getUsersCollectionName());
 		messages.add("Authorities collection name: " + getAuthoritiesCollectionName());
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
@@ -171,6 +190,10 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public DBCollection getInvocationsCollection() {
 		return getSiteWhereDatabase().getCollection(getInvocationsCollectionName());
+	}
+
+	public DBCollection getStateChangesCollection() {
+		return getSiteWhereDatabase().getCollection(getStateChangesCollectionName());
 	}
 
 	public DBCollection getUsersCollection() {
@@ -283,6 +306,14 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public void setInvocationsCollectionName(String invocationsCollectionName) {
 		this.invocationsCollectionName = invocationsCollectionName;
+	}
+
+	public String getStateChangesCollectionName() {
+		return stateChangesCollectionName;
+	}
+
+	public void setStateChangesCollectionName(String stateChangesCollectionName) {
+		this.stateChangesCollectionName = stateChangesCollectionName;
 	}
 
 	public String getUsersCollectionName() {

@@ -20,10 +20,12 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -479,6 +481,39 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * @throws SiteWhereException
 	 */
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Adds a new device state change event.
+	 * 
+	 * @param assignment
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Gets the most recent device state change entries for an assignment.
+	 * 
+	 * @param assignmentToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * List device state changes for a site.
+	 * 
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**

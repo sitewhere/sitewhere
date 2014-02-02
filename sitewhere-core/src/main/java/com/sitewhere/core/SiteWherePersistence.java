@@ -36,6 +36,7 @@ import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
@@ -60,6 +61,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -480,7 +482,7 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common logic for created {@link DeviceCommandInvocation} from
+	 * Common logic for creating {@link DeviceCommandInvocation} from an
 	 * {@link IDeviceCommandInvocationCreateRequest}.
 	 * 
 	 * @param assignment
@@ -511,6 +513,35 @@ public class SiteWherePersistence {
 			ci.setStatus(CommandStatus.PENDING);
 		}
 		return ci;
+	}
+
+	/**
+	 * Common logic for creating a {@link DeviceStateChange} from an
+	 * {@link IDeviceStateChangeCreateRequest}.
+	 * 
+	 * @param assignment
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceStateChange deviceStateChangeCreateLogic(IDeviceAssignment assignment,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		if (request.getCategory() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		if (request.getType() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		DeviceStateChange state = new DeviceStateChange();
+		deviceEventCreateLogic(request, assignment, state);
+		state.setCategory(request.getCategory());
+		state.setType(request.getType());
+		state.setPreviousState(request.getPreviousState());
+		state.setNewState(request.getNewState());
+		if (request.getData() != null) {
+			state.getData().putAll(request.getData());
+		}
+		return state;
 	}
 
 	/**

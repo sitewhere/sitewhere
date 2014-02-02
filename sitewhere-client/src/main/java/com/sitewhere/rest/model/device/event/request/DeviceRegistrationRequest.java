@@ -12,27 +12,33 @@ package com.sitewhere.rest.model.device.event.request;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.sitewhere.rest.model.device.event.DeviceMeasurements;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.state.RegistrationState;
+import com.sitewhere.spi.device.event.state.StateChangeCategory;
+import com.sitewhere.spi.device.event.state.StateChangeType;
 
 /**
- * Model object used to create a new {@link DeviceMeasurements} via REST APIs.
+ * Default model implementation of {@link IDeviceRegistrationRequest}.
  * 
  * @author Derek
  */
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
-public class DeviceRegistrationCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceRegistrationCreateRequest {
+public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest implements IDeviceRegistrationRequest {
 
-	/** Device hardware id */
-	private String hardwareId;
+	/** Data map identifier for hardware id */
+	public static final String DATA_HARDWARE_ID = "hardwareId";
 
-	/** Hardware specification token */
-	private String specificationToken;
+	/** Data map identifier for specification token */
+	public static final String DATA_SPECIFICATION_TOKEN = "specificationToken";
 
-	/** 'Reply to' address */
-	private String replyTo;
+	/** Data map identifier for 'reply to' address */
+	public static final String DATA_REPLY_TO = "replyTo";
+
+	public DeviceRegistrationRequest() {
+		super(StateChangeCategory.Registration, StateChangeType.Registration,
+				RegistrationState.Unregistered.name(), RegistrationState.Registered.name());
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -41,12 +47,13 @@ public class DeviceRegistrationCreateRequest extends DeviceEventCreateRequest im
 	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#getHardwareId
 	 * ()
 	 */
+	@Override
 	public String getHardwareId() {
-		return hardwareId;
+		return getData().get(DATA_HARDWARE_ID);
 	}
 
 	public void setHardwareId(String hardwareId) {
-		this.hardwareId = hardwareId;
+		getData().put(DATA_HARDWARE_ID, hardwareId);
 	}
 
 	/*
@@ -55,12 +62,13 @@ public class DeviceRegistrationCreateRequest extends DeviceEventCreateRequest im
 	 * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#
 	 * getSpecificationToken()
 	 */
+	@Override
 	public String getSpecificationToken() {
-		return specificationToken;
+		return getData().get(DATA_SPECIFICATION_TOKEN);
 	}
 
 	public void setSpecificationToken(String specificationToken) {
-		this.specificationToken = specificationToken;
+		getData().put(DATA_SPECIFICATION_TOKEN, specificationToken);
 	}
 
 	/*
@@ -70,11 +78,12 @@ public class DeviceRegistrationCreateRequest extends DeviceEventCreateRequest im
 	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#getReplyTo
 	 * ()
 	 */
+	@Override
 	public String getReplyTo() {
-		return replyTo;
+		return getData().get(DATA_REPLY_TO);
 	}
 
 	public void setReplyTo(String replyTo) {
-		this.replyTo = replyTo;
+		getData().put(DATA_REPLY_TO, replyTo);
 	}
 }

@@ -14,7 +14,7 @@ package com.sitewhere.spi.device.event.request;
  * 
  * @author Derek
  */
-public interface IDeviceRegistrationCreateRequest extends IDeviceEventCreateRequest {
+public interface IDeviceRegistrationRequest extends IDeviceStateChangeCreateRequest {
 
 	/**
 	 * Get hardware id to be registered.

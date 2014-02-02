@@ -12,7 +12,7 @@ package com.sitewhere.device.provisioning.protobuf;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.sitewhere;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.sitewhere._type_registerDevice;
-import com.sitewhere.rest.model.device.event.request.DeviceRegistrationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
@@ -37,7 +37,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 			switch (sw.getCommand()) {
 			case REGISTER: {
 				_type_registerDevice register = sw.getRegisterDevice();
-				DeviceRegistrationCreateRequest request = new DeviceRegistrationCreateRequest();
+				DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 				request.setHardwareId(register.getHardwareId());
 				request.setSpecificationToken(register.getSpecificationToken());
 				request.setReplyTo(register.getReplyTo());

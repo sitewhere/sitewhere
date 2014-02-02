@@ -28,6 +28,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
@@ -54,6 +55,7 @@ import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -367,6 +369,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			createDeviceMeasurements(assignment, now);
 			createDeviceLocations(assignment, now);
 			createDeviceCommandInvocations(assignment, now, commands);
+			createDeviceStateChanges(assignment, specification, now);
 
 			results.add(assignment);
 		}
@@ -565,6 +568,26 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			current += 30000;
 		}
 		return invocations;
+	}
+
+	/**
+	 * Create example state change events.
+	 * 
+	 * @param assignment
+	 * @param start
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected List<IDeviceStateChange> createDeviceStateChanges(IDeviceAssignment assignment,
+			IDeviceSpecification specification, Date start) throws SiteWhereException {
+		List<IDeviceStateChange> stateChanges = new ArrayList<IDeviceStateChange>();
+		DeviceRegistrationRequest register = new DeviceRegistrationRequest();
+		register.setHardwareId(assignment.getDeviceHardwareId());
+		register.setSpecificationToken(specification.getToken());
+		register.setReplyTo("SiteWhere/devices/" + assignment.getDeviceHardwareId());
+		register.setEventDate(start);
+		stateChanges.add(getDeviceManagement().addDeviceStateChange(assignment, register));
+		return stateChanges;
 	}
 
 	/**

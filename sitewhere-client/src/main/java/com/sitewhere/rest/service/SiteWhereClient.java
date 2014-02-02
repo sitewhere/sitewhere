@@ -318,26 +318,6 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereClient#findDeviceAssignmentsNear(double, double,
-	 * double, int)
-	 */
-	@Override
-	public DeviceAssignmentSearchResults findDeviceAssignmentsNear(double latitude, double longitude,
-			double maxDistance, int maxResults) throws SiteWhereException {
-		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("latitude", String.valueOf(latitude));
-		vars.put("longitude", String.valueOf(longitude));
-		vars.put("maxDistance", String.valueOf(maxDistance));
-		vars.put("maxResults", String.valueOf(maxResults));
-		String url =
-				getBaseUrl() + "assignments/near/{latitude}/{longitude}"
-						+ "?maxDistance={maxDistance}&maxResults={maxResults}";
-		return sendRest(url, HttpMethod.GET, null, DeviceAssignmentSearchResults.class, vars);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.sitewhere.spi.ISiteWhereClient#updateDeviceAssignmentMetadata(java.lang.String,
 	 * com.sitewhere.rest.model.device.MetadataProvider)
@@ -426,23 +406,6 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("count", String.valueOf(maxCount));
 		String url = getBaseUrl() + "assignments/{token}/locations?count={count}";
 		return sendRest(url, HttpMethod.GET, null, DeviceLocationSearchResults.class, vars);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.ISiteWhereClient#associateAlertWithDeviceLocation(java.lang.String
-	 * , java.lang.String)
-	 */
-	@Override
-	public DeviceLocation associateAlertWithDeviceLocation(String alertId, String locationId)
-			throws SiteWhereException {
-		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("locationId", locationId);
-		vars.put("alertId", alertId);
-		String url = getBaseUrl() + "locations/{locationId}/alerts/{alertId}";
-		return sendRest(url, HttpMethod.PUT, null, DeviceLocation.class, vars);
 	}
 
 	/*

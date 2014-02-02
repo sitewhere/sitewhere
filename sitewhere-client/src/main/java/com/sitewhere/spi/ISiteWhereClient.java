@@ -193,19 +193,6 @@ public interface ISiteWhereClient {
 			throws SiteWhereException;
 
 	/**
-	 * Find device assignments within a given distance of the given point.
-	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @param maxDistance
-	 * @param maxResults
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignmentSearchResults findDeviceAssignmentsNear(double latitude, double longitude,
-			double maxDistance, int maxResults) throws SiteWhereException;
-
-	/**
 	 * Update the metadata for an existing device assignment.
 	 * 
 	 * @param token
@@ -269,19 +256,6 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public DeviceLocationSearchResults listDeviceLocations(String assignmentToken, int maxCount)
-			throws SiteWhereException;
-
-	/**
-	 * Associates an alert with a device location.
-	 * 
-	 * @param alertId
-	 *            unique alert id
-	 * @param locationId
-	 *            unique location id
-	 * @return device location after updates
-	 * @throws SiteWhereException
-	 */
-	public DeviceLocation associateAlertWithDeviceLocation(String alertId, String locationId)
 			throws SiteWhereException;
 
 	/**

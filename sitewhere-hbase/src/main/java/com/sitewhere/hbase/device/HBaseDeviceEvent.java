@@ -41,6 +41,7 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -51,11 +52,13 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -354,6 +357,75 @@ public class HBaseDeviceEvent {
 		Pager<byte[]> matches =
 				getEventRowsForSite(hbase, siteToken, DeviceAssignmentRecordType.CommandInvocation, criteria);
 		return convertMatches(matches, DeviceCommandInvocation.class);
+	}
+
+	/**
+	 * Create a device state change event.
+	 * 
+	 * @param hbase
+	 * @param assignment
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDeviceStateChange createDeviceStateChange(ISiteWhereHBaseClient hbase,
+			IDeviceAssignment assignment, IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		long time = getEventTime(request);
+		byte[] rowkey = getEventRowKey(assignment, time);
+		byte[] qualifier = getQualifier(DeviceAssignmentRecordType.StateChange, time);
+
+		// Create a state change and marshal to JSON.
+		DeviceStateChange ci = SiteWherePersistence.deviceStateChangeCreateLogic(assignment, request);
+		String id = getEncodedEventId(rowkey, qualifier);
+		ci.setId(id);
+		byte[] json = MarshalUtils.marshalJson(ci);
+
+		HTableInterface events = null;
+		try {
+			events = hbase.getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+			Put put = new Put(rowkey);
+			put.add(ISiteWhereHBase.FAMILY_ID, qualifier, json);
+			events.put(put);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to create state change.", e);
+		} finally {
+			HBaseUtils.closeCleanly(events);
+		}
+
+		return ci;
+	}
+
+	/**
+	 * List state changes associated with an assignment based on the given criteria.
+	 * 
+	 * @param hbase
+	 * @param assnToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceStateChange> listDeviceStateChanges(ISiteWhereHBaseClient hbase,
+			String assnToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		Pager<byte[]> matches =
+				getEventRowsForAssignment(hbase, assnToken, DeviceAssignmentRecordType.StateChange, criteria);
+		return convertMatches(matches, DeviceStateChange.class);
+	}
+
+	/**
+	 * List device state changes associated with a site.
+	 * 
+	 * @param hbase
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceStateChange> listDeviceStateChangesForSite(
+			ISiteWhereHBaseClient hbase, String siteToken, IDateRangeSearchCriteria criteria)
+			throws SiteWhereException {
+		Pager<byte[]> matches =
+				getEventRowsForSite(hbase, siteToken, DeviceAssignmentRecordType.StateChange, criteria);
+		return convertMatches(matches, DeviceStateChange.class);
 	}
 
 	/**
