@@ -23,6 +23,7 @@ import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
 import com.sitewhere.spi.device.provisioning.IDeviceEventProcessor;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
+import com.sitewhere.spi.device.provisioning.IRegistrationManager;
 
 /**
  * Default implementation of the {@link IDeviceProvisioning} interface.
@@ -48,6 +49,9 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 	/** Configured command processing strategy */
 	private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
+
+	/** Configured registration manager */
+	private IRegistrationManager registrationManager = new DefaultRegistrationManager();
 
 	/** Configured list of device event processors */
 	private List<IDeviceEventProcessor> deviceEventProcessors = new ArrayList<IDeviceEventProcessor>();
@@ -90,6 +94,12 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 			throw new SiteWhereException("No command processing strategy configured for provisioning.");
 		}
 		getCommandProcessingStrategy().start();
+
+		// Start registration manager.
+		if (getRegistrationManager() == null) {
+			throw new SiteWhereException("No regsitration manager configured for provisioning.");
+		}
+		getRegistrationManager().start();
 
 		// Start device event processors.
 		if (getDeviceEventProcessors() != null) {
@@ -230,6 +240,20 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 	public void setCommandProcessingStrategy(ICommandProcessingStrategy commandProcessingStrategy) {
 		this.commandProcessingStrategy = commandProcessingStrategy;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getRegistrationManager()
+	 */
+	public IRegistrationManager getRegistrationManager() {
+		return registrationManager;
+	}
+
+	public void setRegistrationManager(IRegistrationManager registrationManager) {
+		this.registrationManager = registrationManager;
 	}
 
 	/*

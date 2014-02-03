@@ -9,9 +9,12 @@
  */
 package com.sitewhere.device.provisioning.protobuf;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.sitewhere;
-import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.sitewhere._type_registerDevice;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Header;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.RegisterDevice;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
@@ -33,10 +36,11 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 	@Override
 	public IDeviceEventCreateRequest decode(byte[] payload) throws SiteWhereException {
 		try {
-			sitewhere sw = sitewhere.parseFrom(payload);
+			ByteArrayInputStream stream = new ByteArrayInputStream(payload);
+			Header sw = SiteWhere.Header.parseDelimitedFrom(stream);
 			switch (sw.getCommand()) {
 			case REGISTER: {
-				_type_registerDevice register = sw.getRegisterDevice();
+				RegisterDevice register = RegisterDevice.parseDelimitedFrom(stream);
 				DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 				request.setHardwareId(register.getHardwareId());
 				request.setSpecificationToken(register.getSpecificationToken());
@@ -48,8 +52,8 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 						+ sw.getCommand().name());
 			}
 			}
-		} catch (InvalidProtocolBufferException e) {
-			throw new SiteWhereException("Unable to decode because message is not of expected type.", e);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to decode protobuf message.", e);
 		}
 	}
 }

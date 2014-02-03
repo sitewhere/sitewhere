@@ -1,60 +1,79 @@
 option optimize_for = LITE_RUNTIME;
 
-message sitewhere {
+// Encapsulates data sent to SiteWhere.
+message SiteWhere {
 
-	// Enumeration of inbound events.
-	enum Command {REGISTER = 2; ACKNOWLEDGE = 3; DEVICELOCATION = 4; DEVICEALERT = 5; DEVICEMEASUREMENTS = 6; } 
-
-	// Identifies which command was passed 
-	required Command _command = 1;
+	enum Command {REGISTER = 1; ACKNOWLEDGE = 2; DEVICELOCATION = 3; DEVICEALERT = 4; DEVICEMEASUREMENTS = 5; } 
+	
+	// Header contains the command and originator.
+	message Header {
+		required Command command = 1;
+		optional string originator = 2;
+	}
 
 	// Register a device with SiteWhere.
-	message _type_registerDevice {
+	message RegisterDevice {
 		required string hardwareId = 1;
 		required string specificationToken = 2;
-		optional string replyTo = 3;
+		optional string siteToken = 3;
+		optional string replyTo = 4;
 	}
-	optional _type_registerDevice registerDevice = 2;
 
 	// Acknowledge previous command.
-	message _type_acknowledge {
-		required string invocationToken = 1;
+	message Acknowledge {
+		required string hardwareId = 1;
 	}
-	optional _type_acknowledge acknowledge = 3;
 
 	// Report device location.
-	message _type_deviceLocation {
+	message DeviceLocation {
 		required string hardwareId = 1;
 		required float latitude = 2;
 		required float longitude = 3;
 		optional float elevation = 4;
 		optional int64 eventDate = 5;
-		optional string invocationToken = 6;
 	}
-	optional _type_deviceLocation deviceLocation = 4;
 
 	// Report device alert.
-	message _type_deviceAlert {
+	message DeviceAlert {
 		required string hardwareId = 1;
-		required string type = 2;
-		required string message = 3;
+		required string alertType = 2;
+		required string alertMessage = 3;
 		optional int64 eventDate = 4;
-		optional string invocationToken = 5;
 	}
-	optional _type_deviceAlert deviceAlert = 5;
 	
 	// Single measurement entry.
-	message _type_measurement {
+	message Measurement {
 		required string measurementId = 1;
 		required float value = 2;
 	}
 
 	// Report device measurements.
-	message _type_deviceMeasurements {
+	message DeviceMeasurements {
 		required string hardwareId = 1;
-		repeated _type_measurement measurement = 2;
+		repeated Measurement measurement = 2;
 		optional int64 eventDate = 3;
-		optional string invocationToken = 4;
 	}
-	optional _type_deviceMeasurements deviceMeasurements = 6;
+}
+
+// Encapsulates data received from SiteWhere.
+message Device {
+
+	enum Command {REGISTER_ACK = 1; } 
+	
+	// Header contains the command and originator.
+	message Header {
+		required Command command = 1;
+		optional string originator = 2;
+	}
+
+	// Enumeration of registation state responses.
+	enum RegistrationAckState {NEW_REGISTRATION = 1; ALREADY_REGISTERED = 2; REGISTRATION_ERROR = 3;} 
+	enum RegistrationAckError {INVALID_SPECIFICATION = 1; SITE_TOKEN_REQUIRED = 2; } 
+
+	// Acknowledges registration.
+	message registrationAck {
+		required RegistrationAckState state = 1;
+		optional RegistrationAckError errorType = 2;
+		optional string errorMessage = 3;
+	}
 }

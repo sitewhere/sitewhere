@@ -101,11 +101,18 @@
 			</list>
 		</property>
 	</bean>
+	
+	<!-- Manages registration of new devices in the system -->
+	<bean id="registrationManager" class="com.sitewhere.device.provisioning.DefaultRegistrationManager">
+		<property name="allowNewDevices" value="true"/>
+		<property name="autoAssignSite" value="true"/>
+	</bean>
 
 	<!-- Configures device provisioning -->
 	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
+		<property name="registrationManager" ref="registrationManager"/>
 		<property name="deviceEventProcessors">
 			<list>
 				<ref bean="protbufEventProcessor"/>

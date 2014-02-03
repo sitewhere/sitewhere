@@ -58,6 +58,13 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	public ICommandProcessingStrategy getCommandProcessingStrategy();
 
 	/**
+	 * Get the configured registration manager.
+	 * 
+	 * @return
+	 */
+	public IRegistrationManager getRegistrationManager();
+
+	/**
 	 * Get the list of processors that bring device event data into the system.
 	 * 
 	 * @return
