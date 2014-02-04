@@ -32,4 +32,13 @@ public interface ICommandDeliveryProvider extends ISiteWhereLifecycle {
 	 */
 	public void deliver(IDeviceAssignment assignment, IDeviceCommandInvocation invocation, byte[] encoded)
 			throws SiteWhereException;
+
+	/**
+	 * Delivers a system command.
+	 * 
+	 * @param hardwareId
+	 * @param encoded
+	 * @throws SiteWhereException
+	 */
+	public void deliverSystemCommand(String hardwareId, byte[] encoded) throws SiteWhereException;
 }

@@ -27,6 +27,17 @@ public interface ICommandProcessingStrategy extends ISiteWhereLifecycle {
 	 * @param invocation
 	 * @throws SiteWhereException
 	 */
-	public void deliver(IDeviceProvisioning provisioning, IDeviceCommandInvocation invocation)
+	public void deliverCommand(IDeviceProvisioning provisioning, IDeviceCommandInvocation invocation)
+			throws SiteWhereException;
+
+	/**
+	 * Delivers a system command using the given provisioning implementation.
+	 * 
+	 * @param provisioning
+	 * @param hardwareId
+	 * @param command
+	 * @throws SiteWhereException
+	 */
+	public void deliverSystemCommand(IDeviceProvisioning provisioning, String hardwareId, Object command)
 			throws SiteWhereException;
 }

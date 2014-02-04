@@ -175,8 +175,10 @@ public class DefaultDeviceEventProcessor implements IDeviceEventProcessor {
 					byte[] message = receiver.getEncodedMessages().take();
 					LOGGER.debug("Device event receiver thread picked up event.");
 					IDeviceEventCreateRequest request = getDeviceEventDecoder().decode(message);
-					pendingRequests.offer(request);
-					LOGGER.debug("Decoded event added to processing queue.");
+					if (request != null) {
+						pendingRequests.offer(request);
+						LOGGER.debug("Decoded event added to processing queue.");
+					}
 				} catch (SiteWhereException e) {
 					LOGGER.error("Event receiver thread unable to decode event request.", e);
 				} catch (InterruptedException e) {

@@ -1,5 +1,11 @@
 option optimize_for = LITE_RUNTIME;
 
+// Stores a 128 bit UUID value.
+message Uuid {
+	required int64 lsb = 1;
+	required int64 msb = 2;
+}
+
 // Encapsulates data sent to SiteWhere.
 message SiteWhere {
 
@@ -8,15 +14,13 @@ message SiteWhere {
 	// Header contains the command and originator.
 	message Header {
 		required Command command = 1;
-		optional string originator = 2;
+		optional Uuid originator = 2;
 	}
 
 	// Register a device with SiteWhere.
 	message RegisterDevice {
 		required string hardwareId = 1;
 		required string specificationToken = 2;
-		optional string siteToken = 3;
-		optional string replyTo = 4;
 	}
 
 	// Acknowledge previous command.
@@ -63,7 +67,7 @@ message Device {
 	// Header contains the command and originator.
 	message Header {
 		required Command command = 1;
-		optional string originator = 2;
+		optional Uuid originator = 2;
 	}
 
 	// Enumeration of registation state responses.
@@ -71,7 +75,7 @@ message Device {
 	enum RegistrationAckError {INVALID_SPECIFICATION = 1; SITE_TOKEN_REQUIRED = 2; } 
 
 	// Acknowledges registration.
-	message registrationAck {
+	message RegistrationAck {
 		required RegistrationAckState state = 1;
 		optional RegistrationAckError errorType = 2;
 		optional string errorMessage = 3;

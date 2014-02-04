@@ -9,10 +9,15 @@
  */
 package com.sitewhere.device.provisioning.protobuf;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
-import com.google.protobuf.DynamicMessage;
 import com.sitewhere.core.DataUtils;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.Command;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.Header;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAck;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
@@ -37,9 +42,34 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder {
 	 */
 	@Override
 	public byte[] encode(IDeviceCommandExecution execution) throws SiteWhereException {
-		DynamicMessage message = ProtobufMessageBuilder.createMessage(execution);
-		LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(message.toByteArray()));
-		return message.toByteArray();
+		byte[] encoded = ProtobufMessageBuilder.createMessage(execution);
+		LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
+		return encoded;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder#encodeSystemCommand
+	 * (java.lang.Object)
+	 */
+	@Override
+	public byte[] encodeSystemCommand(Object command) throws SiteWhereException {
+		if (command instanceof RegistrationAck) {
+			try {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				Header header = Header.newBuilder().setCommand(Command.REGISTER_ACK).build();
+				header.writeDelimitedTo(out);
+
+				((RegistrationAck) command).writeDelimitedTo(out);
+				out.close();
+				return out.toByteArray();
+			} catch (IOException e) {
+				throw new SiteWhereException("Unable to marshal regsiter ack to protobuf.", e);
+			}
+		}
+		throw new SiteWhereException("Unable to encode command: " + command.getClass().getName());
 	}
 
 	/*

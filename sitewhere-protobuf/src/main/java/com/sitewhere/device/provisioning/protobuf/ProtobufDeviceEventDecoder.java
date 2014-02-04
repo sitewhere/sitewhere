@@ -12,7 +12,10 @@ package com.sitewhere.device.provisioning.protobuf;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Acknowledge;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Header;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.RegisterDevice;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
@@ -27,6 +30,9 @@ import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
  * @author Derek
  */
 public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(ProtobufDeviceEventDecoder.class);
 
 	/*
 	 * (non-Javadoc)
@@ -44,8 +50,13 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 				DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 				request.setHardwareId(register.getHardwareId());
 				request.setSpecificationToken(register.getSpecificationToken());
-				request.setReplyTo(register.getReplyTo());
+				request.setReplyTo(null);
 				return request;
+			}
+			case ACKNOWLEDGE: {
+				Acknowledge ack = Acknowledge.parseDelimitedFrom(stream);
+				LOGGER.info("Got ack for: " + ack.getHardwareId());
+				return null;
 			}
 			default: {
 				throw new SiteWhereException("Unable to decode message. Type not supported: "

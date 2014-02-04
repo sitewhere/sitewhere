@@ -77,5 +77,14 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	 * @param invocation
 	 * @throws SiteWhereException
 	 */
-	public void deliver(IDeviceCommandInvocation invocation) throws SiteWhereException;
+	public void deliverCommand(IDeviceCommandInvocation invocation) throws SiteWhereException;
+
+	/**
+	 * Deliver a system command via the provisioning pipeline.
+	 * 
+	 * @param hardwareId
+	 * @param command
+	 * @throws SiteWhereException
+	 */
+	public void deliverSystemCommand(String hardwareId, Object command) throws SiteWhereException;
 }

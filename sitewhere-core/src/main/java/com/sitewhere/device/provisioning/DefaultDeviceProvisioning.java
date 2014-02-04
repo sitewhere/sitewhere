@@ -51,7 +51,7 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
 
 	/** Configured registration manager */
-	private IRegistrationManager registrationManager = new DefaultRegistrationManager();
+	private IRegistrationManager registrationManager;
 
 	/** Configured list of device event processors */
 	private List<IDeviceEventProcessor> deviceEventProcessors = new ArrayList<IDeviceEventProcessor>();
@@ -159,12 +159,24 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#deliver(com.sitewhere
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#deliverCommand(com.sitewhere
 	 * .spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void deliver(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		getCommandProcessingStrategy().deliver(this, invocation);
+	public void deliverCommand(IDeviceCommandInvocation invocation) throws SiteWhereException {
+		getCommandProcessingStrategy().deliverCommand(this, invocation);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#deliverSystemCommand(
+	 * java.lang.String, java.lang.Object)
+	 */
+	@Override
+	public void deliverSystemCommand(String hardwareId, Object command) throws SiteWhereException {
+		getCommandProcessingStrategy().deliverSystemCommand(this, hardwareId, command);
 	}
 
 	/*

@@ -36,12 +36,12 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy#deliver(com.sitewhere
-	 * .spi.device.provisioning.IDeviceProvisioning,
+	 * com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy#deliverCommand
+	 * (com.sitewhere.spi.device.provisioning.IDeviceProvisioning,
 	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void deliver(IDeviceProvisioning provisioning, IDeviceCommandInvocation invocation)
+	public void deliverCommand(IDeviceProvisioning provisioning, IDeviceCommandInvocation invocation)
 			throws SiteWhereException {
 		LOGGER.debug("Command processing strategy handling invocation.");
 		IDeviceCommand command =
@@ -59,6 +59,21 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 		} else {
 			throw new SiteWhereException("Invalid command referenced from invocation.");
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy#deliverSystemCommand
+	 * (com.sitewhere.spi.device.provisioning.IDeviceProvisioning, java.lang.String,
+	 * java.lang.Object)
+	 */
+	@Override
+	public void deliverSystemCommand(IDeviceProvisioning provisioning, String hardwareId, Object command)
+			throws SiteWhereException {
+		byte[] encoded = provisioning.getCommandExecutionEncoder().encodeSystemCommand(command);
+		provisioning.getCommandDeliveryProvider().deliverSystemCommand(hardwareId, encoded);
 	}
 
 	/*

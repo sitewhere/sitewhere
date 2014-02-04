@@ -92,7 +92,7 @@ public class DefaultProvisioningEventProcessor extends OutboundEventProcessor {
 					IDeviceCommandInvocation invocation = queue.take();
 					try {
 						LOGGER.debug("Provisioning processor thread picked up invocation.");
-						SiteWhereServer.getInstance().getDeviceProvisioning().deliver(invocation);
+						SiteWhereServer.getInstance().getDeviceProvisioning().deliverCommand(invocation);
 					} catch (SiteWhereException e) {
 						LOGGER.error("Exception thrown in provisioning operation.", e);
 					} catch (Throwable e) {

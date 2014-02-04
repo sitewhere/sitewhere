@@ -28,4 +28,13 @@ public interface ICommandExecutionEncoder extends ISiteWhereLifecycle {
 	 * @throws SiteWhereException
 	 */
 	public byte[] encode(IDeviceCommandExecution command) throws SiteWhereException;
+
+	/**
+	 * Encodes a SiteWhere system command as a byte array.
+	 * 
+	 * @param command
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] encodeSystemCommand(Object command) throws SiteWhereException;
 }

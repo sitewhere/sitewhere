@@ -56,16 +56,23 @@ public class SpecificationProtoBuilder {
 			StringBuffer buffer) throws SiteWhereException {
 		int indent = 0;
 		String specName = ProtobufNaming.getSpecificationIdentifier(specification);
-		print("message " + specName + " {", indent, buffer);
-		print("\n", indent, buffer);
+		println("option optimize_for = LITE_RUNTIME;", indent, buffer);
+		newline(buffer);
+		println("import \"sitewhere.proto\";", indent, buffer);
+		newline(buffer);
+
+		println("message " + specName + " {", indent, buffer);
+		newline(buffer);
 		addCommandsEnum(specification, commands, buffer, indent + 1);
-		print("\n\n", indent, buffer);
+		newline(buffer);
+		addHeader(buffer, indent + 1);
+		newline(buffer);
 		int index = 2;
 		for (IDeviceCommand command : commands) {
 			addCommand(command, index++, buffer, indent + 1);
+			newline(buffer);
 		}
-		print("\n", indent, buffer);
-		print("}", indent, buffer);
+		println("}", indent, buffer);
 	}
 
 	/**
@@ -80,21 +87,27 @@ public class SpecificationProtoBuilder {
 			StringBuffer buffer, int indent) throws SiteWhereException {
 		StringBuffer enumCmds = new StringBuffer();
 		enumCmds.append("enum " + ProtobufNaming.COMMAND_TYPES_ENUM + " {");
-		int index = 2;
+		int index = 1;
 		for (IDeviceCommand command : commands) {
 			String cmdName = ProtobufNaming.getCommandEnumName(command);
 			enumCmds.append(cmdName + " = " + (index++) + "; ");
 		}
 		enumCmds.append("}");
+		println(enumCmds.toString(), indent, buffer);
+	}
 
-		print("\n", indent, buffer);
-		print("// Enumeration of commands for specification\n", indent, buffer);
-		print(enumCmds.toString(), indent, buffer);
-		print("\n\n", indent, buffer);
-		print("// Identifies which command was passed", indent, buffer);
-		print("\n", indent, buffer);
-		print("required " + ProtobufNaming.COMMAND_TYPES_ENUM + " " + ProtobufNaming.COMMAND_TYPES_FIELD
-				+ " = 1;", indent, buffer);
+	/**
+	 * Add header message.
+	 * 
+	 * @param buffer
+	 * @param indent
+	 * @throws SiteWhereException
+	 */
+	protected static void addHeader(StringBuffer buffer, int indent) throws SiteWhereException {
+		println("message _Header {", indent, buffer);
+		println("required " + ProtobufNaming.COMMAND_TYPES_ENUM + " command = 1;", indent + 1, buffer);
+		println("optional Uuid originator = 2;", indent + 1, buffer);
+		println("}", indent, buffer);
 	}
 
 	/**
@@ -107,8 +120,7 @@ public class SpecificationProtoBuilder {
 	 */
 	protected static void addCommand(IDeviceCommand command, int cmdIndex, StringBuffer buffer, int indent)
 			throws SiteWhereException {
-		String typeName = ProtobufNaming.getCommandTypeName(command);
-		print("message " + typeName + " {\n", indent, buffer);
+		println("message " + command.getName() + " {", indent, buffer);
 		int index = 1;
 		for (ICommandParameter parameter : command.getParameters()) {
 			StringBuffer paramBuffer = new StringBuffer();
@@ -123,11 +135,10 @@ public class SpecificationProtoBuilder {
 			paramBuffer.append(parameter.getName());
 			paramBuffer.append(" = ");
 			paramBuffer.append(index++);
-			paramBuffer.append(";\n");
-			print(paramBuffer.toString(), indent + 1, buffer);
+			paramBuffer.append(";");
+			println(paramBuffer.toString(), indent + 1, buffer);
 		}
-		print("}\n", indent, buffer);
-		print("optional " + typeName + " " + command.getName() + " = " + cmdIndex + ";\n\n", indent, buffer);
+		println("}", indent, buffer);
 	}
 
 	/**
@@ -137,7 +148,16 @@ public class SpecificationProtoBuilder {
 	 * @param indent
 	 * @param buffer
 	 */
-	protected static void print(String line, int indent, StringBuffer buffer) {
-		buffer.append(INDENT_CHAR.substring(0, 2 * indent) + line);
+	protected static void println(String line, int indent, StringBuffer buffer) {
+		buffer.append(INDENT_CHAR.substring(0, 2 * indent) + line + "\n");
+	}
+
+	/**
+	 * Finishes a line.
+	 * 
+	 * @param buffer
+	 */
+	protected static void newline(StringBuffer buffer) {
+		buffer.append("\n");
 	}
 }

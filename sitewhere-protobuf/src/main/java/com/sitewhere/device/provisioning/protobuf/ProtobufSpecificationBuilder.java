@@ -12,6 +12,7 @@ package com.sitewhere.device.provisioning.protobuf;
 import java.util.List;
 
 import com.google.protobuf.DescriptorProtos;
+import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
@@ -58,12 +59,11 @@ public class ProtobufSpecificationBuilder {
 		DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
 		builder.setName(ProtobufNaming.getSpecificationIdentifier(specification));
 		builder.addEnumType(createCommandsEnum(commands));
-		builder.addField(createEnumField());
+		builder.addNestedType(createUuidMessage());
+		builder.addNestedType(createHeaderMessage());
 
-		int index = 2;
 		for (IDeviceCommand command : commands) {
 			builder.addNestedType(createCommandMessage(command)).build();
-			builder.addField(createCommandField(command, index++));
 		}
 
 		return builder.build();
@@ -81,7 +81,7 @@ public class ProtobufSpecificationBuilder {
 		DescriptorProtos.EnumDescriptorProto.Builder builder =
 				DescriptorProtos.EnumDescriptorProto.newBuilder();
 		builder.setName(ProtobufNaming.COMMAND_TYPES_ENUM);
-		int i = 2;
+		int i = 1;
 		for (IDeviceCommand command : commands) {
 			DescriptorProtos.EnumValueDescriptorProto.Builder valueBuilder =
 					DescriptorProtos.EnumValueDescriptorProto.newBuilder();
@@ -93,33 +93,44 @@ public class ProtobufSpecificationBuilder {
 	}
 
 	/**
-	 * Create field for a parameter.
+	 * Create message that defines a UUID in terms of two int64 fields.
 	 * 
-	 * @param parameter
-	 * @param fieldNumber
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DescriptorProtos.FieldDescriptorProto createEnumField() throws SiteWhereException {
-		DescriptorProtos.FieldDescriptorProto.Builder builder =
-				DescriptorProtos.FieldDescriptorProto.newBuilder().setName(ProtobufNaming.COMMAND_TYPES_FIELD).setNumber(
-						1).setTypeName(ProtobufNaming.COMMAND_TYPES_ENUM);
+	public static DescriptorProtos.DescriptorProto createUuidMessage() throws SiteWhereException {
+		DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
+		builder.setName(ProtobufNaming.UUID_MSG_NAME);
+		DescriptorProtos.FieldDescriptorProto.Builder lsb =
+				DescriptorProtos.FieldDescriptorProto.newBuilder().setName("lsb").setNumber(1).setType(
+						Type.TYPE_INT64);
+		builder.addField(lsb.build());
+		DescriptorProtos.FieldDescriptorProto.Builder msb =
+				DescriptorProtos.FieldDescriptorProto.newBuilder().setName("msb").setNumber(2).setType(
+						Type.TYPE_INT64);
+		builder.addField(msb.build());
 		return builder.build();
 	}
 
 	/**
-	 * Create field that references command type.
+	 * Create header message.
 	 * 
-	 * @param command
-	 * @param number
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DescriptorProtos.FieldDescriptorProto createCommandField(IDeviceCommand command, int number)
-			throws SiteWhereException {
-		DescriptorProtos.FieldDescriptorProto.Builder builder =
-				DescriptorProtos.FieldDescriptorProto.newBuilder().setName(command.getName()).setNumber(
-						number).setTypeName(ProtobufNaming.getCommandTypeName(command));
+	public static DescriptorProtos.DescriptorProto createHeaderMessage() throws SiteWhereException {
+		DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
+		builder.setName(ProtobufNaming.HEADER_MSG_NAME);
+		DescriptorProtos.FieldDescriptorProto.Builder command =
+				DescriptorProtos.FieldDescriptorProto.newBuilder().setName(
+						ProtobufNaming.HEADER_COMMAND_FIELD_NAME).setNumber(1).setTypeName(
+						ProtobufNaming.COMMAND_TYPES_ENUM);
+		builder.addField(command.build());
+		DescriptorProtos.FieldDescriptorProto.Builder originator =
+				DescriptorProtos.FieldDescriptorProto.newBuilder().setName(
+						ProtobufNaming.HEADER_ORIGINATOR_FIELD_NAME).setNumber(2).setTypeName(
+						ProtobufNaming.UUID_MSG_NAME);
+		builder.addField(originator.build());
 		return builder.build();
 	}
 
@@ -133,7 +144,7 @@ public class ProtobufSpecificationBuilder {
 	public static DescriptorProtos.DescriptorProto createCommandMessage(IDeviceCommand command)
 			throws SiteWhereException {
 		DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
-		builder.setName(ProtobufNaming.getCommandTypeName(command));
+		builder.setName(command.getName());
 
 		int i = 0;
 		for (ICommandParameter parameter : command.getParameters()) {

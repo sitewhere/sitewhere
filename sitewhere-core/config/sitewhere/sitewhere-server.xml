@@ -80,7 +80,8 @@
 	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
-		<property name="fallbackTopic" value="SiteWhere/commands"/>
+		<property name="commandTopicPrefix" value="SiteWhere/commands/"/>
+		<property name="systemTopicPrefix" value="SiteWhere/system/"/>
 	</bean>
 	
 	<!-- Device event receiver that monitors an MQTT topic for events -->
@@ -103,7 +104,7 @@
 	</bean>
 	
 	<!-- Manages registration of new devices in the system -->
-	<bean id="registrationManager" class="com.sitewhere.device.provisioning.DefaultRegistrationManager">
+	<bean id="protobufRegistrationManager" class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager">
 		<property name="allowNewDevices" value="true"/>
 		<property name="autoAssignSite" value="true"/>
 	</bean>
@@ -112,7 +113,7 @@
 	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
-		<property name="registrationManager" ref="registrationManager"/>
+		<property name="registrationManager" ref="protobufRegistrationManager"/>
 		<property name="deviceEventProcessors">
 			<list>
 				<ref bean="protbufEventProcessor"/>

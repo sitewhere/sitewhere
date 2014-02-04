@@ -23,11 +23,17 @@ public class ProtobufNaming {
 	/** Name of enum for message types */
 	public static final String COMMAND_TYPES_ENUM = "Command";
 
-	/** Name of message types enum field */
-	public static final String COMMAND_TYPES_FIELD = "_command";
+	/** Name of command field in header */
+	public static final String HEADER_COMMAND_FIELD_NAME = "command";
 
-	/** Prefix to indicate field type */
-	public static final String FIELD_TYPE_PREFIX = "_type_";
+	/** Name of originator field in header */
+	public static final String HEADER_ORIGINATOR_FIELD_NAME = "originator";
+
+	/** Name associated with uuid message */
+	public static final String UUID_MSG_NAME = "Uuid";
+
+	/** Name associated with header message */
+	public static final String HEADER_MSG_NAME = "_Header";
 
 	/**
 	 * Get the specification identifier.
@@ -47,15 +53,5 @@ public class ProtobufNaming {
 	 */
 	protected static String getCommandEnumName(IDeviceCommand command) {
 		return command.getName().toUpperCase();
-	}
-
-	/**
-	 * Get the command nested message type identifier.
-	 * 
-	 * @param command
-	 * @return
-	 */
-	protected static String getCommandTypeName(IDeviceCommand command) {
-		return FIELD_TYPE_PREFIX + command.getName();
 	}
 }

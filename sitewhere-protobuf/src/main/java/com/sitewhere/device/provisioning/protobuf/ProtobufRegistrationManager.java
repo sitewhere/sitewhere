@@ -1,5 +1,5 @@
 /*
- * DefaultRegistrationManager.java 
+ * ProtobufRegistrationManager.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,36 +7,35 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.provisioning;
+package com.sitewhere.device.provisioning.protobuf;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAck;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckError;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckState;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
-import com.sitewhere.spi.error.ErrorCode;
-import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 
 /**
- * Default implementation of {@link IRegistrationManager}.
+ * Google Protocol Buffer implementation of {@link IRegistrationManager}.
  * 
  * @author Derek
  */
-public class DefaultRegistrationManager implements IRegistrationManager {
+public class ProtobufRegistrationManager implements IRegistrationManager {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultRegistrationManager.class);
+	private static Logger LOGGER = Logger.getLogger(ProtobufRegistrationManager.class);
 
 	/** Indicates if new devices can register with the system */
 	private boolean allowNewDevices;
@@ -60,6 +59,9 @@ public class DefaultRegistrationManager implements IRegistrationManager {
 		IDevice device =
 				SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(
 						request.getHardwareId());
+		RegistrationAckState state =
+				(device == null) ? RegistrationAckState.NEW_REGISTRATION
+						: RegistrationAckState.ALREADY_REGISTERED;
 		IDeviceSpecification specification =
 				SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
 						request.getSpecificationToken());
@@ -67,8 +69,12 @@ public class DefaultRegistrationManager implements IRegistrationManager {
 		if (device == null) {
 			LOGGER.debug("Creating new device as part of registration.");
 			if (specification == null) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken,
-						ErrorLevel.ERROR);
+				RegistrationAck ack =
+						RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
+								RegistrationAckError.INVALID_SPECIFICATION).build();
+				SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(
+						request.getHardwareId(), ack);
+				return;
 			}
 			DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 			deviceCreate.setHardwareId(request.getHardwareId());
@@ -77,28 +83,35 @@ public class DefaultRegistrationManager implements IRegistrationManager {
 			device = SiteWhereServer.getInstance().getDeviceManagement().createDevice(deviceCreate);
 		} else if (!device.getSpecificationToken().equals(request.getSpecificationToken())) {
 			// TODO: Is this an error or a valid use case?
-			throw new SiteWhereException(
-					"Attempting to register device with different specification than currently assigned");
+			RegistrationAck ack =
+					RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
+							RegistrationAckError.INVALID_SPECIFICATION).build();
+			SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(
+					request.getHardwareId(), ack);
+			return;
 		}
 		// Make sure device is assigned.
-		IDeviceAssignment assignment = null;
 		if (device.getAssignmentToken() == null) {
 			if (!isAutoAssignSite()) {
-				throw new SiteWhereException("Attempting to register device with no site token specified. "
-						+ "Regsitration manager does not support auto-assigning device to a site.");
+				RegistrationAck ack =
+						RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
+								RegistrationAckError.SITE_TOKEN_REQUIRED).build();
+				SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(
+						request.getHardwareId(), ack);
+				return;
 			}
 			LOGGER.debug("Handling unassigned device for registration.");
 			DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 			assnCreate.setSiteToken(getAutoAssignSiteToken());
 			assnCreate.setDeviceHardwareId(device.getHardwareId());
 			assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
-			assignment =
-					SiteWhereServer.getInstance().getDeviceManagement().createDeviceAssignment(assnCreate);
-		} else {
-			assignment =
-					SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentByToken(
-							device.getAssignmentToken());
+			SiteWhereServer.getInstance().getDeviceManagement().createDeviceAssignment(assnCreate);
 		}
+		RegistrationAck ack =
+				RegistrationAck.newBuilder().setState(state).setErrorType(
+						RegistrationAckError.SITE_TOKEN_REQUIRED).build();
+		SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(),
+				ack);
 	}
 
 	/*

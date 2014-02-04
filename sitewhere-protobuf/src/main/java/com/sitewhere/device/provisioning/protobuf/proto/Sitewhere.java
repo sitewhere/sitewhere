@@ -9,6 +9,444 @@ public final class Sitewhere {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
+  public interface UuidOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required int64 lsb = 1;
+    /**
+     * <code>required int64 lsb = 1;</code>
+     */
+    boolean hasLsb();
+    /**
+     * <code>required int64 lsb = 1;</code>
+     */
+    long getLsb();
+
+    // required int64 msb = 2;
+    /**
+     * <code>required int64 msb = 2;</code>
+     */
+    boolean hasMsb();
+    /**
+     * <code>required int64 msb = 2;</code>
+     */
+    long getMsb();
+  }
+  /**
+   * Protobuf type {@code Uuid}
+   *
+   * <pre>
+   * Stores a 128 bit UUID value.
+   * </pre>
+   */
+  public static final class Uuid extends
+      com.google.protobuf.GeneratedMessageLite
+      implements UuidOrBuilder {
+    // Use Uuid.newBuilder() to construct.
+    private Uuid(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private Uuid(boolean noInit) {}
+
+    private static final Uuid defaultInstance;
+    public static Uuid getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Uuid getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private Uuid(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              lsb_ = input.readInt64();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              msb_ = input.readInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<Uuid> PARSER =
+        new com.google.protobuf.AbstractParser<Uuid>() {
+      public Uuid parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Uuid(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Uuid> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required int64 lsb = 1;
+    public static final int LSB_FIELD_NUMBER = 1;
+    private long lsb_;
+    /**
+     * <code>required int64 lsb = 1;</code>
+     */
+    public boolean hasLsb() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int64 lsb = 1;</code>
+     */
+    public long getLsb() {
+      return lsb_;
+    }
+
+    // required int64 msb = 2;
+    public static final int MSB_FIELD_NUMBER = 2;
+    private long msb_;
+    /**
+     * <code>required int64 msb = 2;</code>
+     */
+    public boolean hasMsb() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int64 msb = 2;</code>
+     */
+    public long getMsb() {
+      return msb_;
+    }
+
+    private void initFields() {
+      lsb_ = 0L;
+      msb_ = 0L;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasLsb()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasMsb()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt64(1, lsb_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt64(2, msb_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, lsb_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, msb_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static Sitewhere.Uuid parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static Sitewhere.Uuid parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static Sitewhere.Uuid parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static Sitewhere.Uuid parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static Sitewhere.Uuid parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static Sitewhere.Uuid parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static Sitewhere.Uuid parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static Sitewhere.Uuid parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static Sitewhere.Uuid parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static Sitewhere.Uuid parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(Sitewhere.Uuid prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code Uuid}
+     *
+     * <pre>
+     * Stores a 128 bit UUID value.
+     * </pre>
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          Sitewhere.Uuid, Builder>
+        implements Sitewhere.UuidOrBuilder {
+      // Construct using Sitewhere.Uuid.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        lsb_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        msb_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public Sitewhere.Uuid getDefaultInstanceForType() {
+        return Sitewhere.Uuid.getDefaultInstance();
+      }
+
+      public Sitewhere.Uuid build() {
+        Sitewhere.Uuid result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public Sitewhere.Uuid buildPartial() {
+        Sitewhere.Uuid result = new Sitewhere.Uuid(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.lsb_ = lsb_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.msb_ = msb_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(Sitewhere.Uuid other) {
+        if (other == Sitewhere.Uuid.getDefaultInstance()) return this;
+        if (other.hasLsb()) {
+          setLsb(other.getLsb());
+        }
+        if (other.hasMsb()) {
+          setMsb(other.getMsb());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasLsb()) {
+          
+          return false;
+        }
+        if (!hasMsb()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        Sitewhere.Uuid parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (Sitewhere.Uuid) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required int64 lsb = 1;
+      private long lsb_ ;
+      /**
+       * <code>required int64 lsb = 1;</code>
+       */
+      public boolean hasLsb() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required int64 lsb = 1;</code>
+       */
+      public long getLsb() {
+        return lsb_;
+      }
+      /**
+       * <code>required int64 lsb = 1;</code>
+       */
+      public Builder setLsb(long value) {
+        bitField0_ |= 0x00000001;
+        lsb_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required int64 lsb = 1;</code>
+       */
+      public Builder clearLsb() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lsb_ = 0L;
+        
+        return this;
+      }
+
+      // required int64 msb = 2;
+      private long msb_ ;
+      /**
+       * <code>required int64 msb = 2;</code>
+       */
+      public boolean hasMsb() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required int64 msb = 2;</code>
+       */
+      public long getMsb() {
+        return msb_;
+      }
+      /**
+       * <code>required int64 msb = 2;</code>
+       */
+      public Builder setMsb(long value) {
+        bitField0_ |= 0x00000002;
+        msb_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required int64 msb = 2;</code>
+       */
+      public Builder clearMsb() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        msb_ = 0L;
+        
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:Uuid)
+    }
+
+    static {
+      defaultInstance = new Uuid(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:Uuid)
+  }
+
   public interface SiteWhereOrBuilder
       extends com.google.protobuf.MessageLiteOrBuilder {
   }
@@ -180,20 +618,15 @@ public final class Sitewhere {
        */
       Sitewhere.SiteWhere.Command getCommand();
 
-      // optional string originator = 2;
+      // optional .Uuid originator = 2;
       /**
-       * <code>optional string originator = 2;</code>
+       * <code>optional .Uuid originator = 2;</code>
        */
       boolean hasOriginator();
       /**
-       * <code>optional string originator = 2;</code>
+       * <code>optional .Uuid originator = 2;</code>
        */
-      java.lang.String getOriginator();
-      /**
-       * <code>optional string originator = 2;</code>
-       */
-      com.google.protobuf.ByteString
-          getOriginatorBytes();
+      Sitewhere.Uuid getOriginator();
     }
     /**
      * Protobuf type {@code SiteWhere.Header}
@@ -252,8 +685,16 @@ public final class Sitewhere {
                 break;
               }
               case 18: {
+                Sitewhere.Uuid.Builder subBuilder = null;
+                if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                  subBuilder = originator_.toBuilder();
+                }
+                originator_ = input.readMessage(Sitewhere.Uuid.PARSER, extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(originator_);
+                  originator_ = subBuilder.buildPartial();
+                }
                 bitField0_ |= 0x00000002;
-                originator_ = input.readBytes();
                 break;
               }
             }
@@ -299,52 +740,25 @@ public final class Sitewhere {
         return command_;
       }
 
-      // optional string originator = 2;
+      // optional .Uuid originator = 2;
       public static final int ORIGINATOR_FIELD_NUMBER = 2;
-      private java.lang.Object originator_;
+      private Sitewhere.Uuid originator_;
       /**
-       * <code>optional string originator = 2;</code>
+       * <code>optional .Uuid originator = 2;</code>
        */
       public boolean hasOriginator() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional string originator = 2;</code>
+       * <code>optional .Uuid originator = 2;</code>
        */
-      public java.lang.String getOriginator() {
-        java.lang.Object ref = originator_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            originator_ = s;
-          }
-          return s;
-        }
-      }
-      /**
-       * <code>optional string originator = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getOriginatorBytes() {
-        java.lang.Object ref = originator_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          originator_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+      public Sitewhere.Uuid getOriginator() {
+        return originator_;
       }
 
       private void initFields() {
         command_ = Sitewhere.SiteWhere.Command.REGISTER;
-        originator_ = "";
+        originator_ = Sitewhere.Uuid.getDefaultInstance();
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -354,6 +768,12 @@ public final class Sitewhere {
         if (!hasCommand()) {
           memoizedIsInitialized = 0;
           return false;
+        }
+        if (hasOriginator()) {
+          if (!getOriginator().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         memoizedIsInitialized = 1;
         return true;
@@ -366,7 +786,7 @@ public final class Sitewhere {
           output.writeEnum(1, command_.getNumber());
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeBytes(2, getOriginatorBytes());
+          output.writeMessage(2, originator_);
         }
       }
 
@@ -382,7 +802,7 @@ public final class Sitewhere {
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(2, getOriginatorBytes());
+            .computeMessageSize(2, originator_);
         }
         memoizedSerializedSize = size;
         return size;
@@ -481,7 +901,7 @@ public final class Sitewhere {
           super.clear();
           command_ = Sitewhere.SiteWhere.Command.REGISTER;
           bitField0_ = (bitField0_ & ~0x00000001);
-          originator_ = "";
+          originator_ = Sitewhere.Uuid.getDefaultInstance();
           bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
@@ -524,9 +944,7 @@ public final class Sitewhere {
             setCommand(other.getCommand());
           }
           if (other.hasOriginator()) {
-            bitField0_ |= 0x00000002;
-            originator_ = other.originator_;
-            
+            mergeOriginator(other.getOriginator());
           }
           return this;
         }
@@ -535,6 +953,12 @@ public final class Sitewhere {
           if (!hasCommand()) {
             
             return false;
+          }
+          if (hasOriginator()) {
+            if (!getOriginator().isInitialized()) {
+              
+              return false;
+            }
           }
           return true;
         }
@@ -594,77 +1018,64 @@ public final class Sitewhere {
           return this;
         }
 
-        // optional string originator = 2;
-        private java.lang.Object originator_ = "";
+        // optional .Uuid originator = 2;
+        private Sitewhere.Uuid originator_ = Sitewhere.Uuid.getDefaultInstance();
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
          */
         public boolean hasOriginator() {
           return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
          */
-        public java.lang.String getOriginator() {
-          java.lang.Object ref = originator_;
-          if (!(ref instanceof java.lang.String)) {
-            java.lang.String s = ((com.google.protobuf.ByteString) ref)
-                .toStringUtf8();
-            originator_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
+        public Sitewhere.Uuid getOriginator() {
+          return originator_;
         }
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
          */
-        public com.google.protobuf.ByteString
-            getOriginatorBytes() {
-          java.lang.Object ref = originator_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            originator_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
+        public Builder setOriginator(Sitewhere.Uuid value) {
+          if (value == null) {
+            throw new NullPointerException();
           }
+          originator_ = value;
+
+          bitField0_ |= 0x00000002;
+          return this;
         }
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
          */
         public Builder setOriginator(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-          originator_ = value;
-          
+            Sitewhere.Uuid.Builder builderForValue) {
+          originator_ = builderForValue.build();
+
+          bitField0_ |= 0x00000002;
           return this;
         }
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
+         */
+        public Builder mergeOriginator(Sitewhere.Uuid value) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              originator_ != Sitewhere.Uuid.getDefaultInstance()) {
+            originator_ =
+              Sitewhere.Uuid.newBuilder(originator_).mergeFrom(value).buildPartial();
+          } else {
+            originator_ = value;
+          }
+
+          bitField0_ |= 0x00000002;
+          return this;
+        }
+        /**
+         * <code>optional .Uuid originator = 2;</code>
          */
         public Builder clearOriginator() {
+          originator_ = Sitewhere.Uuid.getDefaultInstance();
+
           bitField0_ = (bitField0_ & ~0x00000002);
-          originator_ = getDefaultInstance().getOriginator();
-          
-          return this;
-        }
-        /**
-         * <code>optional string originator = 2;</code>
-         */
-        public Builder setOriginatorBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-          originator_ = value;
-          
           return this;
         }
 
@@ -711,36 +1122,6 @@ public final class Sitewhere {
        */
       com.google.protobuf.ByteString
           getSpecificationTokenBytes();
-
-      // optional string siteToken = 3;
-      /**
-       * <code>optional string siteToken = 3;</code>
-       */
-      boolean hasSiteToken();
-      /**
-       * <code>optional string siteToken = 3;</code>
-       */
-      java.lang.String getSiteToken();
-      /**
-       * <code>optional string siteToken = 3;</code>
-       */
-      com.google.protobuf.ByteString
-          getSiteTokenBytes();
-
-      // optional string replyTo = 4;
-      /**
-       * <code>optional string replyTo = 4;</code>
-       */
-      boolean hasReplyTo();
-      /**
-       * <code>optional string replyTo = 4;</code>
-       */
-      java.lang.String getReplyTo();
-      /**
-       * <code>optional string replyTo = 4;</code>
-       */
-      com.google.protobuf.ByteString
-          getReplyToBytes();
     }
     /**
      * Protobuf type {@code SiteWhere.RegisterDevice}
@@ -797,16 +1178,6 @@ public final class Sitewhere {
               case 18: {
                 bitField0_ |= 0x00000002;
                 specificationToken_ = input.readBytes();
-                break;
-              }
-              case 26: {
-                bitField0_ |= 0x00000004;
-                siteToken_ = input.readBytes();
-                break;
-              }
-              case 34: {
-                bitField0_ |= 0x00000008;
-                replyTo_ = input.readBytes();
                 break;
               }
             }
@@ -922,97 +1293,9 @@ public final class Sitewhere {
         }
       }
 
-      // optional string siteToken = 3;
-      public static final int SITETOKEN_FIELD_NUMBER = 3;
-      private java.lang.Object siteToken_;
-      /**
-       * <code>optional string siteToken = 3;</code>
-       */
-      public boolean hasSiteToken() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional string siteToken = 3;</code>
-       */
-      public java.lang.String getSiteToken() {
-        java.lang.Object ref = siteToken_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            siteToken_ = s;
-          }
-          return s;
-        }
-      }
-      /**
-       * <code>optional string siteToken = 3;</code>
-       */
-      public com.google.protobuf.ByteString
-          getSiteTokenBytes() {
-        java.lang.Object ref = siteToken_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          siteToken_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      // optional string replyTo = 4;
-      public static final int REPLYTO_FIELD_NUMBER = 4;
-      private java.lang.Object replyTo_;
-      /**
-       * <code>optional string replyTo = 4;</code>
-       */
-      public boolean hasReplyTo() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional string replyTo = 4;</code>
-       */
-      public java.lang.String getReplyTo() {
-        java.lang.Object ref = replyTo_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            replyTo_ = s;
-          }
-          return s;
-        }
-      }
-      /**
-       * <code>optional string replyTo = 4;</code>
-       */
-      public com.google.protobuf.ByteString
-          getReplyToBytes() {
-        java.lang.Object ref = replyTo_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          replyTo_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
       private void initFields() {
         hardwareId_ = "";
         specificationToken_ = "";
-        siteToken_ = "";
-        replyTo_ = "";
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -1040,12 +1323,6 @@ public final class Sitewhere {
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
           output.writeBytes(2, getSpecificationTokenBytes());
         }
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          output.writeBytes(3, getSiteTokenBytes());
-        }
-        if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          output.writeBytes(4, getReplyToBytes());
-        }
       }
 
       private int memoizedSerializedSize = -1;
@@ -1061,14 +1338,6 @@ public final class Sitewhere {
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBytesSize(2, getSpecificationTokenBytes());
-        }
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(3, getSiteTokenBytes());
-        }
-        if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(4, getReplyToBytes());
         }
         memoizedSerializedSize = size;
         return size;
@@ -1169,10 +1438,6 @@ public final class Sitewhere {
           bitField0_ = (bitField0_ & ~0x00000001);
           specificationToken_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
-          siteToken_ = "";
-          bitField0_ = (bitField0_ & ~0x00000004);
-          replyTo_ = "";
-          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
         }
 
@@ -1204,14 +1469,6 @@ public final class Sitewhere {
             to_bitField0_ |= 0x00000002;
           }
           result.specificationToken_ = specificationToken_;
-          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-            to_bitField0_ |= 0x00000004;
-          }
-          result.siteToken_ = siteToken_;
-          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-            to_bitField0_ |= 0x00000008;
-          }
-          result.replyTo_ = replyTo_;
           result.bitField0_ = to_bitField0_;
           return result;
         }
@@ -1226,16 +1483,6 @@ public final class Sitewhere {
           if (other.hasSpecificationToken()) {
             bitField0_ |= 0x00000002;
             specificationToken_ = other.specificationToken_;
-            
-          }
-          if (other.hasSiteToken()) {
-            bitField0_ |= 0x00000004;
-            siteToken_ = other.siteToken_;
-            
-          }
-          if (other.hasReplyTo()) {
-            bitField0_ |= 0x00000008;
-            replyTo_ = other.replyTo_;
             
           }
           return this;
@@ -1416,154 +1663,6 @@ public final class Sitewhere {
   }
   bitField0_ |= 0x00000002;
           specificationToken_ = value;
-          
-          return this;
-        }
-
-        // optional string siteToken = 3;
-        private java.lang.Object siteToken_ = "";
-        /**
-         * <code>optional string siteToken = 3;</code>
-         */
-        public boolean hasSiteToken() {
-          return ((bitField0_ & 0x00000004) == 0x00000004);
-        }
-        /**
-         * <code>optional string siteToken = 3;</code>
-         */
-        public java.lang.String getSiteToken() {
-          java.lang.Object ref = siteToken_;
-          if (!(ref instanceof java.lang.String)) {
-            java.lang.String s = ((com.google.protobuf.ByteString) ref)
-                .toStringUtf8();
-            siteToken_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
-        }
-        /**
-         * <code>optional string siteToken = 3;</code>
-         */
-        public com.google.protobuf.ByteString
-            getSiteTokenBytes() {
-          java.lang.Object ref = siteToken_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            siteToken_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>optional string siteToken = 3;</code>
-         */
-        public Builder setSiteToken(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-          siteToken_ = value;
-          
-          return this;
-        }
-        /**
-         * <code>optional string siteToken = 3;</code>
-         */
-        public Builder clearSiteToken() {
-          bitField0_ = (bitField0_ & ~0x00000004);
-          siteToken_ = getDefaultInstance().getSiteToken();
-          
-          return this;
-        }
-        /**
-         * <code>optional string siteToken = 3;</code>
-         */
-        public Builder setSiteTokenBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-          siteToken_ = value;
-          
-          return this;
-        }
-
-        // optional string replyTo = 4;
-        private java.lang.Object replyTo_ = "";
-        /**
-         * <code>optional string replyTo = 4;</code>
-         */
-        public boolean hasReplyTo() {
-          return ((bitField0_ & 0x00000008) == 0x00000008);
-        }
-        /**
-         * <code>optional string replyTo = 4;</code>
-         */
-        public java.lang.String getReplyTo() {
-          java.lang.Object ref = replyTo_;
-          if (!(ref instanceof java.lang.String)) {
-            java.lang.String s = ((com.google.protobuf.ByteString) ref)
-                .toStringUtf8();
-            replyTo_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
-        }
-        /**
-         * <code>optional string replyTo = 4;</code>
-         */
-        public com.google.protobuf.ByteString
-            getReplyToBytes() {
-          java.lang.Object ref = replyTo_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            replyTo_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>optional string replyTo = 4;</code>
-         */
-        public Builder setReplyTo(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-          replyTo_ = value;
-          
-          return this;
-        }
-        /**
-         * <code>optional string replyTo = 4;</code>
-         */
-        public Builder clearReplyTo() {
-          bitField0_ = (bitField0_ & ~0x00000008);
-          replyTo_ = getDefaultInstance().getReplyTo();
-          
-          return this;
-        }
-        /**
-         * <code>optional string replyTo = 4;</code>
-         */
-        public Builder setReplyToBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-          replyTo_ = value;
           
           return this;
         }
@@ -5281,20 +5380,15 @@ public final class Sitewhere {
        */
       Sitewhere.Device.Command getCommand();
 
-      // optional string originator = 2;
+      // optional .Uuid originator = 2;
       /**
-       * <code>optional string originator = 2;</code>
+       * <code>optional .Uuid originator = 2;</code>
        */
       boolean hasOriginator();
       /**
-       * <code>optional string originator = 2;</code>
+       * <code>optional .Uuid originator = 2;</code>
        */
-      java.lang.String getOriginator();
-      /**
-       * <code>optional string originator = 2;</code>
-       */
-      com.google.protobuf.ByteString
-          getOriginatorBytes();
+      Sitewhere.Uuid getOriginator();
     }
     /**
      * Protobuf type {@code Device.Header}
@@ -5353,8 +5447,16 @@ public final class Sitewhere {
                 break;
               }
               case 18: {
+                Sitewhere.Uuid.Builder subBuilder = null;
+                if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                  subBuilder = originator_.toBuilder();
+                }
+                originator_ = input.readMessage(Sitewhere.Uuid.PARSER, extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(originator_);
+                  originator_ = subBuilder.buildPartial();
+                }
                 bitField0_ |= 0x00000002;
-                originator_ = input.readBytes();
                 break;
               }
             }
@@ -5400,52 +5502,25 @@ public final class Sitewhere {
         return command_;
       }
 
-      // optional string originator = 2;
+      // optional .Uuid originator = 2;
       public static final int ORIGINATOR_FIELD_NUMBER = 2;
-      private java.lang.Object originator_;
+      private Sitewhere.Uuid originator_;
       /**
-       * <code>optional string originator = 2;</code>
+       * <code>optional .Uuid originator = 2;</code>
        */
       public boolean hasOriginator() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional string originator = 2;</code>
+       * <code>optional .Uuid originator = 2;</code>
        */
-      public java.lang.String getOriginator() {
-        java.lang.Object ref = originator_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            originator_ = s;
-          }
-          return s;
-        }
-      }
-      /**
-       * <code>optional string originator = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getOriginatorBytes() {
-        java.lang.Object ref = originator_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          originator_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+      public Sitewhere.Uuid getOriginator() {
+        return originator_;
       }
 
       private void initFields() {
         command_ = Sitewhere.Device.Command.REGISTER_ACK;
-        originator_ = "";
+        originator_ = Sitewhere.Uuid.getDefaultInstance();
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -5455,6 +5530,12 @@ public final class Sitewhere {
         if (!hasCommand()) {
           memoizedIsInitialized = 0;
           return false;
+        }
+        if (hasOriginator()) {
+          if (!getOriginator().isInitialized()) {
+            memoizedIsInitialized = 0;
+            return false;
+          }
         }
         memoizedIsInitialized = 1;
         return true;
@@ -5467,7 +5548,7 @@ public final class Sitewhere {
           output.writeEnum(1, command_.getNumber());
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeBytes(2, getOriginatorBytes());
+          output.writeMessage(2, originator_);
         }
       }
 
@@ -5483,7 +5564,7 @@ public final class Sitewhere {
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(2, getOriginatorBytes());
+            .computeMessageSize(2, originator_);
         }
         memoizedSerializedSize = size;
         return size;
@@ -5582,7 +5663,7 @@ public final class Sitewhere {
           super.clear();
           command_ = Sitewhere.Device.Command.REGISTER_ACK;
           bitField0_ = (bitField0_ & ~0x00000001);
-          originator_ = "";
+          originator_ = Sitewhere.Uuid.getDefaultInstance();
           bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
@@ -5625,9 +5706,7 @@ public final class Sitewhere {
             setCommand(other.getCommand());
           }
           if (other.hasOriginator()) {
-            bitField0_ |= 0x00000002;
-            originator_ = other.originator_;
-            
+            mergeOriginator(other.getOriginator());
           }
           return this;
         }
@@ -5636,6 +5715,12 @@ public final class Sitewhere {
           if (!hasCommand()) {
             
             return false;
+          }
+          if (hasOriginator()) {
+            if (!getOriginator().isInitialized()) {
+              
+              return false;
+            }
           }
           return true;
         }
@@ -5695,77 +5780,64 @@ public final class Sitewhere {
           return this;
         }
 
-        // optional string originator = 2;
-        private java.lang.Object originator_ = "";
+        // optional .Uuid originator = 2;
+        private Sitewhere.Uuid originator_ = Sitewhere.Uuid.getDefaultInstance();
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
          */
         public boolean hasOriginator() {
           return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
          */
-        public java.lang.String getOriginator() {
-          java.lang.Object ref = originator_;
-          if (!(ref instanceof java.lang.String)) {
-            java.lang.String s = ((com.google.protobuf.ByteString) ref)
-                .toStringUtf8();
-            originator_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
+        public Sitewhere.Uuid getOriginator() {
+          return originator_;
         }
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
          */
-        public com.google.protobuf.ByteString
-            getOriginatorBytes() {
-          java.lang.Object ref = originator_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            originator_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
+        public Builder setOriginator(Sitewhere.Uuid value) {
+          if (value == null) {
+            throw new NullPointerException();
           }
+          originator_ = value;
+
+          bitField0_ |= 0x00000002;
+          return this;
         }
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
          */
         public Builder setOriginator(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-          originator_ = value;
-          
+            Sitewhere.Uuid.Builder builderForValue) {
+          originator_ = builderForValue.build();
+
+          bitField0_ |= 0x00000002;
           return this;
         }
         /**
-         * <code>optional string originator = 2;</code>
+         * <code>optional .Uuid originator = 2;</code>
+         */
+        public Builder mergeOriginator(Sitewhere.Uuid value) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              originator_ != Sitewhere.Uuid.getDefaultInstance()) {
+            originator_ =
+              Sitewhere.Uuid.newBuilder(originator_).mergeFrom(value).buildPartial();
+          } else {
+            originator_ = value;
+          }
+
+          bitField0_ |= 0x00000002;
+          return this;
+        }
+        /**
+         * <code>optional .Uuid originator = 2;</code>
          */
         public Builder clearOriginator() {
+          originator_ = Sitewhere.Uuid.getDefaultInstance();
+
           bitField0_ = (bitField0_ & ~0x00000002);
-          originator_ = getDefaultInstance().getOriginator();
-          
-          return this;
-        }
-        /**
-         * <code>optional string originator = 2;</code>
-         */
-        public Builder setOriginatorBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-          originator_ = value;
-          
           return this;
         }
 
@@ -5780,7 +5852,7 @@ public final class Sitewhere {
       // @@protoc_insertion_point(class_scope:Device.Header)
     }
 
-    public interface registrationAckOrBuilder
+    public interface RegistrationAckOrBuilder
         extends com.google.protobuf.MessageLiteOrBuilder {
 
       // required .Device.RegistrationAckState state = 1;
@@ -5819,32 +5891,32 @@ public final class Sitewhere {
           getErrorMessageBytes();
     }
     /**
-     * Protobuf type {@code Device.registrationAck}
+     * Protobuf type {@code Device.RegistrationAck}
      *
      * <pre>
      * Acknowledges registration.
      * </pre>
      */
-    public static final class registrationAck extends
+    public static final class RegistrationAck extends
         com.google.protobuf.GeneratedMessageLite
-        implements registrationAckOrBuilder {
-      // Use registrationAck.newBuilder() to construct.
-      private registrationAck(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+        implements RegistrationAckOrBuilder {
+      // Use RegistrationAck.newBuilder() to construct.
+      private RegistrationAck(com.google.protobuf.GeneratedMessageLite.Builder builder) {
         super(builder);
 
       }
-      private registrationAck(boolean noInit) {}
+      private RegistrationAck(boolean noInit) {}
 
-      private static final registrationAck defaultInstance;
-      public static registrationAck getDefaultInstance() {
+      private static final RegistrationAck defaultInstance;
+      public static RegistrationAck getDefaultInstance() {
         return defaultInstance;
       }
 
-      public registrationAck getDefaultInstanceForType() {
+      public RegistrationAck getDefaultInstanceForType() {
         return defaultInstance;
       }
 
-      private registrationAck(
+      private RegistrationAck(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5899,18 +5971,18 @@ public final class Sitewhere {
           makeExtensionsImmutable();
         }
       }
-      public static com.google.protobuf.Parser<registrationAck> PARSER =
-          new com.google.protobuf.AbstractParser<registrationAck>() {
-        public registrationAck parsePartialFrom(
+      public static com.google.protobuf.Parser<RegistrationAck> PARSER =
+          new com.google.protobuf.AbstractParser<RegistrationAck>() {
+        public RegistrationAck parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new registrationAck(input, extensionRegistry);
+          return new RegistrationAck(input, extensionRegistry);
         }
       };
 
       @java.lang.Override
-      public com.google.protobuf.Parser<registrationAck> getParserForType() {
+      public com.google.protobuf.Parser<RegistrationAck> getParserForType() {
         return PARSER;
       }
 
@@ -6051,53 +6123,53 @@ public final class Sitewhere {
         return super.writeReplace();
       }
 
-      public static Sitewhere.Device.registrationAck parseFrom(
+      public static Sitewhere.Device.RegistrationAck parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static Sitewhere.Device.registrationAck parseFrom(
+      public static Sitewhere.Device.RegistrationAck parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static Sitewhere.Device.registrationAck parseFrom(byte[] data)
+      public static Sitewhere.Device.RegistrationAck parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static Sitewhere.Device.registrationAck parseFrom(
+      public static Sitewhere.Device.RegistrationAck parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static Sitewhere.Device.registrationAck parseFrom(java.io.InputStream input)
+      public static Sitewhere.Device.RegistrationAck parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static Sitewhere.Device.registrationAck parseFrom(
+      public static Sitewhere.Device.RegistrationAck parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseFrom(input, extensionRegistry);
       }
-      public static Sitewhere.Device.registrationAck parseDelimitedFrom(java.io.InputStream input)
+      public static Sitewhere.Device.RegistrationAck parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input);
       }
-      public static Sitewhere.Device.registrationAck parseDelimitedFrom(
+      public static Sitewhere.Device.RegistrationAck parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input, extensionRegistry);
       }
-      public static Sitewhere.Device.registrationAck parseFrom(
+      public static Sitewhere.Device.RegistrationAck parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static Sitewhere.Device.registrationAck parseFrom(
+      public static Sitewhere.Device.RegistrationAck parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -6106,13 +6178,13 @@ public final class Sitewhere {
 
       public static Builder newBuilder() { return Builder.create(); }
       public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(Sitewhere.Device.registrationAck prototype) {
+      public static Builder newBuilder(Sitewhere.Device.RegistrationAck prototype) {
         return newBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() { return newBuilder(this); }
 
       /**
-       * Protobuf type {@code Device.registrationAck}
+       * Protobuf type {@code Device.RegistrationAck}
        *
        * <pre>
        * Acknowledges registration.
@@ -6120,9 +6192,9 @@ public final class Sitewhere {
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessageLite.Builder<
-            Sitewhere.Device.registrationAck, Builder>
-          implements Sitewhere.Device.registrationAckOrBuilder {
-        // Construct using Sitewhere.Device.registrationAck.newBuilder()
+            Sitewhere.Device.RegistrationAck, Builder>
+          implements Sitewhere.Device.RegistrationAckOrBuilder {
+        // Construct using Sitewhere.Device.RegistrationAck.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -6148,20 +6220,20 @@ public final class Sitewhere {
           return create().mergeFrom(buildPartial());
         }
 
-        public Sitewhere.Device.registrationAck getDefaultInstanceForType() {
-          return Sitewhere.Device.registrationAck.getDefaultInstance();
+        public Sitewhere.Device.RegistrationAck getDefaultInstanceForType() {
+          return Sitewhere.Device.RegistrationAck.getDefaultInstance();
         }
 
-        public Sitewhere.Device.registrationAck build() {
-          Sitewhere.Device.registrationAck result = buildPartial();
+        public Sitewhere.Device.RegistrationAck build() {
+          Sitewhere.Device.RegistrationAck result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public Sitewhere.Device.registrationAck buildPartial() {
-          Sitewhere.Device.registrationAck result = new Sitewhere.Device.registrationAck(this);
+        public Sitewhere.Device.RegistrationAck buildPartial() {
+          Sitewhere.Device.RegistrationAck result = new Sitewhere.Device.RegistrationAck(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -6180,8 +6252,8 @@ public final class Sitewhere {
           return result;
         }
 
-        public Builder mergeFrom(Sitewhere.Device.registrationAck other) {
-          if (other == Sitewhere.Device.registrationAck.getDefaultInstance()) return this;
+        public Builder mergeFrom(Sitewhere.Device.RegistrationAck other) {
+          if (other == Sitewhere.Device.RegistrationAck.getDefaultInstance()) return this;
           if (other.hasState()) {
             setState(other.getState());
           }
@@ -6208,11 +6280,11 @@ public final class Sitewhere {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          Sitewhere.Device.registrationAck parsedMessage = null;
+          Sitewhere.Device.RegistrationAck parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (Sitewhere.Device.registrationAck) e.getUnfinishedMessage();
+            parsedMessage = (Sitewhere.Device.RegistrationAck) e.getUnfinishedMessage();
             throw e;
           } finally {
             if (parsedMessage != null) {
@@ -6369,15 +6441,15 @@ public final class Sitewhere {
           return this;
         }
 
-        // @@protoc_insertion_point(builder_scope:Device.registrationAck)
+        // @@protoc_insertion_point(builder_scope:Device.RegistrationAck)
       }
 
       static {
-        defaultInstance = new registrationAck(true);
+        defaultInstance = new RegistrationAck(true);
         defaultInstance.initFields();
       }
 
-      // @@protoc_insertion_point(class_scope:Device.registrationAck)
+      // @@protoc_insertion_point(class_scope:Device.RegistrationAck)
     }
 
     private void initFields() {

@@ -9,6 +9,9 @@
  */
 package com.sitewhere.device.provisioning.protobuf;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
 import com.google.protobuf.DescriptorProtos;
@@ -37,18 +40,22 @@ public class ProtobufMessageBuilder {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DynamicMessage createMessage(IDeviceCommandExecution execution) throws SiteWhereException {
+	public static byte[] createMessage(IDeviceCommandExecution execution) throws SiteWhereException {
 		IDeviceSpecification specification =
 				SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
 						execution.getCommand().getSpecificationToken());
 		DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(specification);
 		LOGGER.debug("Using the following specification proto:\n" + fdproto.toString());
 		Descriptors.FileDescriptor[] fdescs = new Descriptors.FileDescriptor[0];
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			Descriptors.FileDescriptor filedesc = Descriptors.FileDescriptor.buildFrom(fdproto, fdescs);
 			Descriptors.Descriptor mdesc =
 					filedesc.findMessageTypeByName(ProtobufNaming.getSpecificationIdentifier(specification));
-			DynamicMessage.Builder sbuilder = DynamicMessage.newBuilder(mdesc);
+
+			// Create the header message.
+			Descriptors.Descriptor header = mdesc.findNestedTypeByName(ProtobufNaming.HEADER_MSG_NAME);
+			DynamicMessage.Builder headBuilder = DynamicMessage.newBuilder(header);
 
 			// Set enum value based on command.
 			Descriptors.EnumDescriptor enumDesc = mdesc.findEnumTypeByName(ProtobufNaming.COMMAND_TYPES_ENUM);
@@ -58,17 +65,19 @@ public class ProtobufMessageBuilder {
 				throw new SiteWhereException("No enum value found for command: "
 						+ execution.getCommand().getName());
 			}
-			sbuilder.setField(mdesc.findFieldByName(ProtobufNaming.COMMAND_TYPES_FIELD), enumValue);
+			headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_COMMAND_FIELD_NAME), enumValue);
+			DynamicMessage hmessage = headBuilder.build();
+			LOGGER.debug("Header:\n" + hmessage.toString());
+			hmessage.writeDelimitedTo(out);
 
 			// Find nested type for command and create/populate an instance.
-			Descriptors.Descriptor commandTypeDesc =
-					mdesc.findNestedTypeByName(ProtobufNaming.getCommandTypeName(execution.getCommand()));
-			DynamicMessage.Builder cbuilder = DynamicMessage.newBuilder(commandTypeDesc);
+			Descriptors.Descriptor command = mdesc.findNestedTypeByName(execution.getCommand().getName());
+			DynamicMessage.Builder cbuilder = DynamicMessage.newBuilder(command);
 
 			// Set each field in the command message.
 			for (String name : execution.getParameters().keySet()) {
 				Object value = execution.getParameters().get(name);
-				Descriptors.FieldDescriptor field = commandTypeDesc.findFieldByName(name);
+				Descriptors.FieldDescriptor field = command.findFieldByName(name);
 				if (field == null) {
 					throw new SiteWhereException("Command parameter '" + name
 							+ "' not found in specification: ");
@@ -80,13 +89,15 @@ public class ProtobufMessageBuilder {
 							+ value.getClass().getName(), iae);
 				}
 			}
-			sbuilder.setField(mdesc.findFieldByName(execution.getCommand().getName()), cbuilder.build());
+			DynamicMessage cmessage = cbuilder.build();
+			LOGGER.debug("Message:\n" + cmessage.toString());
+			cmessage.writeDelimitedTo(out);
 
-			DynamicMessage message = sbuilder.build();
-			LOGGER.debug("Generated message:\n" + message.toString());
-			return message;
+			return out.toByteArray();
 		} catch (Descriptors.DescriptorValidationException e) {
 			throw new SiteWhereException("Unable to create protobuf message.", e);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to encode protobuf message.", e);
 		}
 	}
 

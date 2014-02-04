@@ -38,8 +38,11 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
 	/** Default port if not set from Spring */
 	public static final int DEFAULT_PORT = 1883;
 
-	/** Fallback topic used if 'reply to' not set */
-	public static final String DEFAULT_FALLBACK_TOPIC = "SiteWhere/commands";
+	/** Prefix for command topic */
+	public static final String DEFAULT_COMMAND_PREFIX = "SiteWhere/command/";
+
+	/** Prefix for system command topic */
+	public static final String DEFAULT_SYSTEM_PREFIX = "SiteWhere/system/";
 
 	/** Host name */
 	private String hostname = DEFAULT_HOSTNAME;
@@ -47,8 +50,11 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
 	/** Port */
 	private int port = DEFAULT_PORT;
 
-	/** Fallback topic */
-	private String fallbackTopic = DEFAULT_FALLBACK_TOPIC;
+	/** Command topic prefix */
+	private String commandTopicPrefix = DEFAULT_COMMAND_PREFIX;
+
+	/** System topic prefix */
+	private String systemTopicPrefix = DEFAULT_SYSTEM_PREFIX;
 
 	/** Indicates whether to use a fallback topic if no 'reply to' found */
 	private boolean useFallbackTopic = true;
@@ -102,17 +108,29 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
 	@Override
 	public void deliver(IDeviceAssignment assignment, IDeviceCommandInvocation invocation, byte[] encoded)
 			throws SiteWhereException {
-		String replyTo = assignment.getState().getLastReplyTo();
-		if (replyTo == null) {
-			if (isUseFallbackTopic()) {
-				replyTo = getFallbackTopic();
-			} else {
-				throw new SiteWhereException("No replyTo address found for assignment. Command not sent.");
-			}
-		}
+		String commandTopic = getCommandTopicPrefix() + assignment.getDeviceHardwareId();
 		try {
-			LOGGER.debug("About to publish command message to topic: " + replyTo);
-			connection.publish(replyTo, encoded, QoS.AT_LEAST_ONCE, false);
+			LOGGER.debug("About to publish command message to topic: " + commandTopic);
+			connection.publish(commandTopic, encoded, QoS.AT_LEAST_ONCE, false);
+			LOGGER.debug("Command published.");
+		} catch (Exception e) {
+			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliverSystemCommand
+	 * (java.lang.String, byte[])
+	 */
+	@Override
+	public void deliverSystemCommand(String hardwareId, byte[] encoded) throws SiteWhereException {
+		String systemTopic = getSystemTopicPrefix() + hardwareId;
+		try {
+			LOGGER.debug("About to publish system message to topic: " + systemTopic);
+			connection.publish(systemTopic, encoded, QoS.AT_LEAST_ONCE, false);
 			LOGGER.debug("Command published.");
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
@@ -143,11 +161,19 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
 		this.useFallbackTopic = useFallbackTopic;
 	}
 
-	public String getFallbackTopic() {
-		return fallbackTopic;
+	public String getCommandTopicPrefix() {
+		return commandTopicPrefix;
 	}
 
-	public void setFallbackTopic(String fallbackTopic) {
-		this.fallbackTopic = fallbackTopic;
+	public void setCommandTopicPrefix(String commandTopicPrefix) {
+		this.commandTopicPrefix = commandTopicPrefix;
+	}
+
+	public String getSystemTopicPrefix() {
+		return systemTopicPrefix;
+	}
+
+	public void setSystemTopicPrefix(String systemTopicPrefix) {
+		this.systemTopicPrefix = systemTopicPrefix;
 	}
 }

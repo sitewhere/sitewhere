@@ -37,7 +37,19 @@ public class DefaultCommandDeliveryProvider implements ICommandDeliveryProvider 
 	@Override
 	public void deliver(IDeviceAssignment assignment, IDeviceCommandInvocation invocation, byte[] encoded)
 			throws SiteWhereException {
-		LOGGER.info("Default message delivery provider called.");
+		LOGGER.info("Invoked default command delivery provider with command invocation.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliverSystemCommand
+	 * (java.lang.String, byte[])
+	 */
+	@Override
+	public void deliverSystemCommand(String hardwareId, byte[] encoded) throws SiteWhereException {
+		LOGGER.info("Invoked default command delivery provider with system command.");
 	}
 
 	/*
