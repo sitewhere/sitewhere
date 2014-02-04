@@ -14,8 +14,14 @@ import org.apache.log4j.Logger;
 import com.sitewhere.rest.model.device.event.processor.InboundEventProcessor;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 
 /**
  * Implementation of {@link IInboundEventProcessor} that attempts to store the inbound
@@ -32,13 +38,47 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessor#onRegistrationRequest
-	 * (com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
+	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+	 * onRegistrationRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(IDeviceRegistrationRequest request) throws SiteWhereException {
+	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
+			throws SiteWhereException {
 		SiteWhereServer.getInstance().getDeviceProvisioning().getRegistrationManager().handleDeviceRegistration(
 				request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+	 * onDeviceLocationCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+	 */
+	@Override
+	public void onDeviceLocationCreateRequest(String hardwareId, String originator,
+			IDeviceLocationCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
+		SiteWhereServer.getInstance().getDeviceManagement().addDeviceLocation(assignment, request);
+	}
+
+	/**
+	 * Get the current assignment or throw errors if it can not be resolved.
+	 * 
+	 * @param hardwareId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IDeviceAssignment getCurrentAssignment(String hardwareId) throws SiteWhereException {
+		IDevice device =
+				SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(hardwareId);
+		if (device == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+		}
+		if (device.getAssignmentToken() == null) {
+			throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
+		}
+		return SiteWhereServer.getInstance().getDeviceManagement().getCurrentDeviceAssignment(device);
 	}
 }

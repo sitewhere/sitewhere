@@ -1,5 +1,5 @@
 /*
- * IDeviceEventDecoder.java 
+ * IDecodedDeviceEventRequest.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,22 +9,34 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 
 /**
- * Decodes inbound device event messages.
+ * Contains information decoded by an {@link IDeviceEventDecoder} includng the decoded
+ * event and information about its context.
  * 
  * @author Derek
  */
-public interface IDeviceEventDecoder {
+public interface IDecodedDeviceEventRequest {
 
 	/**
-	 * Decodes a message payload into an {@link IDeviceEventCreateRequest} subclass.
+	 * Get hardware id the request pertains to.
 	 * 
-	 * @param payload
 	 * @return
-	 * @throws SiteWhereException
 	 */
-	public IDecodedDeviceEventRequest decode(byte[] payload) throws SiteWhereException;
+	public String getHardwareId();
+
+	/**
+	 * Get event originator if available.
+	 * 
+	 * @return
+	 */
+	public String getOriginator();
+
+	/**
+	 * Get event create request.
+	 * 
+	 * @return
+	 */
+	public IDeviceEventCreateRequest getRequest();
 }

@@ -128,8 +128,7 @@ public class ProtobufSpecificationBuilder {
 		builder.addField(command.build());
 		DescriptorProtos.FieldDescriptorProto.Builder originator =
 				DescriptorProtos.FieldDescriptorProto.newBuilder().setName(
-						ProtobufNaming.HEADER_ORIGINATOR_FIELD_NAME).setNumber(2).setTypeName(
-						ProtobufNaming.UUID_MSG_NAME);
+						ProtobufNaming.HEADER_ORIGINATOR_FIELD_NAME).setNumber(2).setType(Type.TYPE_STRING);
 		builder.addField(originator.build());
 		return builder.build();
 	}

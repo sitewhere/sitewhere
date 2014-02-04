@@ -66,6 +66,8 @@ public class ProtobufMessageBuilder {
 						+ execution.getCommand().getName());
 			}
 			headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_COMMAND_FIELD_NAME), enumValue);
+			headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_ORIGINATOR_FIELD_NAME),
+					execution.getInvocation().getId());
 			DynamicMessage hmessage = headBuilder.build();
 			LOGGER.debug("Header:\n" + hmessage.toString());
 			hmessage.writeDelimitedTo(out);

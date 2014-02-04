@@ -17,7 +17,9 @@ import org.apache.log4j.Logger;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
 /**
  * Default implementation of {@link IInboundEventProcessorChain} interface.
@@ -63,15 +65,61 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessor#onRegistrationRequest
-	 * (com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest)
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDecodedDeviceEventRequest
+	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(IDeviceRegistrationRequest request) throws SiteWhereException {
+	public void onDecodedDeviceEventRequest(IDecodedDeviceEventRequest decoded) throws SiteWhereException {
 		for (IInboundEventProcessor processor : getProcessors()) {
 			try {
-				processor.onRegistrationRequest(request);
+				processor.onDecodedDeviceEventRequest(decoded);
+				if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
+					onRegistrationRequest(decoded.getHardwareId(), decoded.getOriginator(),
+							(IDeviceRegistrationRequest) decoded.getRequest());
+				} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
+					onDeviceLocationCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
+							(IDeviceLocationCreateRequest) decoded.getRequest());
+				}
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessor#onRegistrationRequest
+	 * (java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
+	 */
+	@Override
+	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
+			throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onRegistrationRequest(hardwareId, originator, request);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceLocationCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+	 */
+	@Override
+	public void onDeviceLocationCreateRequest(String hardwareId, String originator,
+			IDeviceLocationCreateRequest request) throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onDeviceLocationCreateRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
 				LOGGER.error(e);
 			}

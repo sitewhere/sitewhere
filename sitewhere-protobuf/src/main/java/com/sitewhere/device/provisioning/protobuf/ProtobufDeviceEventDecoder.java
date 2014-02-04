@@ -11,16 +11,20 @@ package com.sitewhere.device.provisioning.protobuf;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Acknowledge;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceLocation;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Header;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.RegisterDevice;
+import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
+import com.sitewhere.rest.model.device.provisioning.DecodedDeviceEventRequest;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
+import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
 
 /**
@@ -40,27 +44,56 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 	 * @see com.sitewhere.spi.device.provisioning.IDeviceEventDecoder#decode(byte[])
 	 */
 	@Override
-	public IDeviceEventCreateRequest decode(byte[] payload) throws SiteWhereException {
+	public IDecodedDeviceEventRequest decode(byte[] payload) throws SiteWhereException {
 		try {
 			ByteArrayInputStream stream = new ByteArrayInputStream(payload);
-			Header sw = SiteWhere.Header.parseDelimitedFrom(stream);
-			switch (sw.getCommand()) {
+			Header header = SiteWhere.Header.parseDelimitedFrom(stream);
+			DecodedDeviceEventRequest decoded = new DecodedDeviceEventRequest();
+			switch (header.getCommand()) {
 			case REGISTER: {
 				RegisterDevice register = RegisterDevice.parseDelimitedFrom(stream);
 				DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 				request.setHardwareId(register.getHardwareId());
 				request.setSpecificationToken(register.getSpecificationToken());
 				request.setReplyTo(null);
-				return request;
+				decoded.setHardwareId(register.getHardwareId());
+				decoded.setOriginator(header.getOriginator());
+				decoded.setRequest(request);
+				return decoded;
 			}
 			case ACKNOWLEDGE: {
 				Acknowledge ack = Acknowledge.parseDelimitedFrom(stream);
 				LOGGER.info("Got ack for: " + ack.getHardwareId());
+				if (header.getOriginator() != null) {
+					LOGGER.info("Ack originator was: " + header.getOriginator());
+				}
 				return null;
+			}
+			case DEVICELOCATION: {
+				DeviceLocation location = DeviceLocation.parseDelimitedFrom(stream);
+				LOGGER.info("Got location for: " + location.getHardwareId());
+				if (header.getOriginator() != null) {
+					LOGGER.info("Location originator was: " + header.getOriginator());
+				}
+				DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
+				request.setLatitude(Double.parseDouble(String.valueOf(location.getLatitude())));
+				request.setLongitude(Double.parseDouble(String.valueOf(location.getLongitude())));
+				if (location.hasElevation()) {
+					request.setElevation(Double.parseDouble(String.valueOf(location.getElevation())));
+				}
+				if (location.hasEventDate()) {
+					request.setEventDate(new Date(location.getEventDate()));
+				} else {
+					request.setEventDate(new Date());
+				}
+				decoded.setHardwareId(location.getHardwareId());
+				decoded.setOriginator(header.getOriginator());
+				decoded.setRequest(request);
+				return decoded;
 			}
 			default: {
 				throw new SiteWhereException("Unable to decode message. Type not supported: "
-						+ sw.getCommand().name());
+						+ header.getCommand().name());
 			}
 			}
 		} catch (IOException e) {

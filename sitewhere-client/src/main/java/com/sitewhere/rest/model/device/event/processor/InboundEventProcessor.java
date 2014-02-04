@@ -11,7 +11,9 @@ package com.sitewhere.rest.model.device.event.processor;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
 /**
  * Default implementation of {@link IInboundEventProcessor} interface with nothing
@@ -42,11 +44,36 @@ public class InboundEventProcessor implements IInboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessor#onRegistrationRequest
-	 * (com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDecodedDeviceEventRequest
+	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(IDeviceRegistrationRequest request) throws SiteWhereException {
+	public void onDecodedDeviceEventRequest(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessor#onRegistrationRequest
+	 * (java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
+	 */
+	@Override
+	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
+			throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceLocationCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+	 */
+	@Override
+	public void onDeviceLocationCreateRequest(String hardwareId, String originator,
+			IDeviceLocationCreateRequest request) throws SiteWhereException {
 	}
 }

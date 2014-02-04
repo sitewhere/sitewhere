@@ -22,7 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
 import com.sitewhere.spi.device.provisioning.IDeviceEventProcessor;
 import com.sitewhere.spi.device.provisioning.IDeviceEventReceiver;
@@ -53,8 +53,8 @@ public class DefaultDeviceEventProcessor implements IDeviceEventProcessor {
 	private ExecutorService receiverThreadPool;
 
 	/** Blocking queue of pending event creation requests from receivers */
-	private BlockingQueue<IDeviceEventCreateRequest> pendingRequests =
-			new ArrayBlockingQueue<IDeviceEventCreateRequest>(MAX_PENDING_REQUEST_QUEUE_SIZE);
+	private BlockingQueue<IDecodedDeviceEventRequest> pendingRequests =
+			new ArrayBlockingQueue<IDecodedDeviceEventRequest>(MAX_PENDING_REQUEST_QUEUE_SIZE);
 
 	/** Thread pool for event creation */
 	private ExecutorService processorThreadPool;
@@ -131,23 +131,16 @@ public class DefaultDeviceEventProcessor implements IDeviceEventProcessor {
 			}
 			while (true) {
 				try {
-					IDeviceEventCreateRequest request = pendingRequests.take();
+					IDecodedDeviceEventRequest decoded = pendingRequests.take();
 					LOGGER.debug("Device event processor thread picked up request.");
-					if (request instanceof IDeviceRegistrationRequest) {
-						LOGGER.debug("Processing registration request.");
-						SiteWhereServer.getInstance().getInboundEventProcessorChain().onRegistrationRequest(
-								(IDeviceRegistrationRequest) request);
-					} else {
-						throw new SiteWhereException(
-								"Unknown request type decoded by inbound receiver. Type was: "
-										+ request.getClass().getName());
-					}
+					SiteWhereServer.getInstance().getInboundEventProcessorChain().onDecodedDeviceEventRequest(
+							decoded);
 				} catch (SiteWhereException e) {
-					LOGGER.error("Event receiver thread unable to decode event request.", e);
+					LOGGER.error("Error processing inbound event request.", e);
 				} catch (InterruptedException e) {
-					LOGGER.warn("Device event receiver thread interrupted.", e);
+					LOGGER.warn("Device event processor thread interrupted.", e);
 				} catch (Throwable e) {
-					LOGGER.error("Unhandled exception in device event decoding.", e);
+					LOGGER.error("Unhandled exception in device event processing.", e);
 				}
 			}
 		}
@@ -174,7 +167,7 @@ public class DefaultDeviceEventProcessor implements IDeviceEventProcessor {
 				try {
 					byte[] message = receiver.getEncodedMessages().take();
 					LOGGER.debug("Device event receiver thread picked up event.");
-					IDeviceEventCreateRequest request = getDeviceEventDecoder().decode(message);
+					IDecodedDeviceEventRequest request = getDeviceEventDecoder().decode(message);
 					if (request != null) {
 						pendingRequests.offer(request);
 						LOGGER.debug("Decoded event added to processing queue.");
