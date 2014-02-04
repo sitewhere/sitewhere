@@ -14,7 +14,7 @@ message SiteWhere {
 	// Header contains the command and originator.
 	message Header {
 		required Command command = 1;
-		optional Uuid originator = 2;
+		optional string originator = 2;
 	}
 
 	// Register a device with SiteWhere.
@@ -67,7 +67,7 @@ message Device {
 	// Header contains the command and originator.
 	message Header {
 		required Command command = 1;
-		optional Uuid originator = 2;
+		optional string originator = 2;
 	}
 
 	// Enumeration of registation state responses.

@@ -618,15 +618,20 @@ public final class Sitewhere {
        */
       Sitewhere.SiteWhere.Command getCommand();
 
-      // optional .Uuid originator = 2;
+      // optional string originator = 2;
       /**
-       * <code>optional .Uuid originator = 2;</code>
+       * <code>optional string originator = 2;</code>
        */
       boolean hasOriginator();
       /**
-       * <code>optional .Uuid originator = 2;</code>
+       * <code>optional string originator = 2;</code>
        */
-      Sitewhere.Uuid getOriginator();
+      java.lang.String getOriginator();
+      /**
+       * <code>optional string originator = 2;</code>
+       */
+      com.google.protobuf.ByteString
+          getOriginatorBytes();
     }
     /**
      * Protobuf type {@code SiteWhere.Header}
@@ -685,16 +690,8 @@ public final class Sitewhere {
                 break;
               }
               case 18: {
-                Sitewhere.Uuid.Builder subBuilder = null;
-                if (((bitField0_ & 0x00000002) == 0x00000002)) {
-                  subBuilder = originator_.toBuilder();
-                }
-                originator_ = input.readMessage(Sitewhere.Uuid.PARSER, extensionRegistry);
-                if (subBuilder != null) {
-                  subBuilder.mergeFrom(originator_);
-                  originator_ = subBuilder.buildPartial();
-                }
                 bitField0_ |= 0x00000002;
+                originator_ = input.readBytes();
                 break;
               }
             }
@@ -740,25 +737,52 @@ public final class Sitewhere {
         return command_;
       }
 
-      // optional .Uuid originator = 2;
+      // optional string originator = 2;
       public static final int ORIGINATOR_FIELD_NUMBER = 2;
-      private Sitewhere.Uuid originator_;
+      private java.lang.Object originator_;
       /**
-       * <code>optional .Uuid originator = 2;</code>
+       * <code>optional string originator = 2;</code>
        */
       public boolean hasOriginator() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional .Uuid originator = 2;</code>
+       * <code>optional string originator = 2;</code>
        */
-      public Sitewhere.Uuid getOriginator() {
-        return originator_;
+      public java.lang.String getOriginator() {
+        java.lang.Object ref = originator_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            originator_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string originator = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOriginatorBytes() {
+        java.lang.Object ref = originator_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          originator_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
       private void initFields() {
         command_ = Sitewhere.SiteWhere.Command.REGISTER;
-        originator_ = Sitewhere.Uuid.getDefaultInstance();
+        originator_ = "";
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -768,12 +792,6 @@ public final class Sitewhere {
         if (!hasCommand()) {
           memoizedIsInitialized = 0;
           return false;
-        }
-        if (hasOriginator()) {
-          if (!getOriginator().isInitialized()) {
-            memoizedIsInitialized = 0;
-            return false;
-          }
         }
         memoizedIsInitialized = 1;
         return true;
@@ -786,7 +804,7 @@ public final class Sitewhere {
           output.writeEnum(1, command_.getNumber());
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeMessage(2, originator_);
+          output.writeBytes(2, getOriginatorBytes());
         }
       }
 
@@ -802,7 +820,7 @@ public final class Sitewhere {
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(2, originator_);
+            .computeBytesSize(2, getOriginatorBytes());
         }
         memoizedSerializedSize = size;
         return size;
@@ -901,7 +919,7 @@ public final class Sitewhere {
           super.clear();
           command_ = Sitewhere.SiteWhere.Command.REGISTER;
           bitField0_ = (bitField0_ & ~0x00000001);
-          originator_ = Sitewhere.Uuid.getDefaultInstance();
+          originator_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
@@ -944,7 +962,9 @@ public final class Sitewhere {
             setCommand(other.getCommand());
           }
           if (other.hasOriginator()) {
-            mergeOriginator(other.getOriginator());
+            bitField0_ |= 0x00000002;
+            originator_ = other.originator_;
+            
           }
           return this;
         }
@@ -953,12 +973,6 @@ public final class Sitewhere {
           if (!hasCommand()) {
             
             return false;
-          }
-          if (hasOriginator()) {
-            if (!getOriginator().isInitialized()) {
-              
-              return false;
-            }
           }
           return true;
         }
@@ -1018,64 +1032,77 @@ public final class Sitewhere {
           return this;
         }
 
-        // optional .Uuid originator = 2;
-        private Sitewhere.Uuid originator_ = Sitewhere.Uuid.getDefaultInstance();
+        // optional string originator = 2;
+        private java.lang.Object originator_ = "";
         /**
-         * <code>optional .Uuid originator = 2;</code>
+         * <code>optional string originator = 2;</code>
          */
         public boolean hasOriginator() {
           return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
-         * <code>optional .Uuid originator = 2;</code>
+         * <code>optional string originator = 2;</code>
          */
-        public Sitewhere.Uuid getOriginator() {
-          return originator_;
-        }
-        /**
-         * <code>optional .Uuid originator = 2;</code>
-         */
-        public Builder setOriginator(Sitewhere.Uuid value) {
-          if (value == null) {
-            throw new NullPointerException();
+        public java.lang.String getOriginator() {
+          java.lang.Object ref = originator_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            originator_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
           }
-          originator_ = value;
-
-          bitField0_ |= 0x00000002;
-          return this;
         }
         /**
-         * <code>optional .Uuid originator = 2;</code>
+         * <code>optional string originator = 2;</code>
+         */
+        public com.google.protobuf.ByteString
+            getOriginatorBytes() {
+          java.lang.Object ref = originator_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            originator_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string originator = 2;</code>
          */
         public Builder setOriginator(
-            Sitewhere.Uuid.Builder builderForValue) {
-          originator_ = builderForValue.build();
-
-          bitField0_ |= 0x00000002;
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          originator_ = value;
+          
           return this;
         }
         /**
-         * <code>optional .Uuid originator = 2;</code>
-         */
-        public Builder mergeOriginator(Sitewhere.Uuid value) {
-          if (((bitField0_ & 0x00000002) == 0x00000002) &&
-              originator_ != Sitewhere.Uuid.getDefaultInstance()) {
-            originator_ =
-              Sitewhere.Uuid.newBuilder(originator_).mergeFrom(value).buildPartial();
-          } else {
-            originator_ = value;
-          }
-
-          bitField0_ |= 0x00000002;
-          return this;
-        }
-        /**
-         * <code>optional .Uuid originator = 2;</code>
+         * <code>optional string originator = 2;</code>
          */
         public Builder clearOriginator() {
-          originator_ = Sitewhere.Uuid.getDefaultInstance();
-
           bitField0_ = (bitField0_ & ~0x00000002);
+          originator_ = getDefaultInstance().getOriginator();
+          
+          return this;
+        }
+        /**
+         * <code>optional string originator = 2;</code>
+         */
+        public Builder setOriginatorBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          originator_ = value;
+          
           return this;
         }
 
@@ -5380,15 +5407,20 @@ public final class Sitewhere {
        */
       Sitewhere.Device.Command getCommand();
 
-      // optional .Uuid originator = 2;
+      // optional string originator = 2;
       /**
-       * <code>optional .Uuid originator = 2;</code>
+       * <code>optional string originator = 2;</code>
        */
       boolean hasOriginator();
       /**
-       * <code>optional .Uuid originator = 2;</code>
+       * <code>optional string originator = 2;</code>
        */
-      Sitewhere.Uuid getOriginator();
+      java.lang.String getOriginator();
+      /**
+       * <code>optional string originator = 2;</code>
+       */
+      com.google.protobuf.ByteString
+          getOriginatorBytes();
     }
     /**
      * Protobuf type {@code Device.Header}
@@ -5447,16 +5479,8 @@ public final class Sitewhere {
                 break;
               }
               case 18: {
-                Sitewhere.Uuid.Builder subBuilder = null;
-                if (((bitField0_ & 0x00000002) == 0x00000002)) {
-                  subBuilder = originator_.toBuilder();
-                }
-                originator_ = input.readMessage(Sitewhere.Uuid.PARSER, extensionRegistry);
-                if (subBuilder != null) {
-                  subBuilder.mergeFrom(originator_);
-                  originator_ = subBuilder.buildPartial();
-                }
                 bitField0_ |= 0x00000002;
+                originator_ = input.readBytes();
                 break;
               }
             }
@@ -5502,25 +5526,52 @@ public final class Sitewhere {
         return command_;
       }
 
-      // optional .Uuid originator = 2;
+      // optional string originator = 2;
       public static final int ORIGINATOR_FIELD_NUMBER = 2;
-      private Sitewhere.Uuid originator_;
+      private java.lang.Object originator_;
       /**
-       * <code>optional .Uuid originator = 2;</code>
+       * <code>optional string originator = 2;</code>
        */
       public boolean hasOriginator() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional .Uuid originator = 2;</code>
+       * <code>optional string originator = 2;</code>
        */
-      public Sitewhere.Uuid getOriginator() {
-        return originator_;
+      public java.lang.String getOriginator() {
+        java.lang.Object ref = originator_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            originator_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string originator = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOriginatorBytes() {
+        java.lang.Object ref = originator_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          originator_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
       private void initFields() {
         command_ = Sitewhere.Device.Command.REGISTER_ACK;
-        originator_ = Sitewhere.Uuid.getDefaultInstance();
+        originator_ = "";
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -5530,12 +5581,6 @@ public final class Sitewhere {
         if (!hasCommand()) {
           memoizedIsInitialized = 0;
           return false;
-        }
-        if (hasOriginator()) {
-          if (!getOriginator().isInitialized()) {
-            memoizedIsInitialized = 0;
-            return false;
-          }
         }
         memoizedIsInitialized = 1;
         return true;
@@ -5548,7 +5593,7 @@ public final class Sitewhere {
           output.writeEnum(1, command_.getNumber());
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeMessage(2, originator_);
+          output.writeBytes(2, getOriginatorBytes());
         }
       }
 
@@ -5564,7 +5609,7 @@ public final class Sitewhere {
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(2, originator_);
+            .computeBytesSize(2, getOriginatorBytes());
         }
         memoizedSerializedSize = size;
         return size;
@@ -5663,7 +5708,7 @@ public final class Sitewhere {
           super.clear();
           command_ = Sitewhere.Device.Command.REGISTER_ACK;
           bitField0_ = (bitField0_ & ~0x00000001);
-          originator_ = Sitewhere.Uuid.getDefaultInstance();
+          originator_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
@@ -5706,7 +5751,9 @@ public final class Sitewhere {
             setCommand(other.getCommand());
           }
           if (other.hasOriginator()) {
-            mergeOriginator(other.getOriginator());
+            bitField0_ |= 0x00000002;
+            originator_ = other.originator_;
+            
           }
           return this;
         }
@@ -5715,12 +5762,6 @@ public final class Sitewhere {
           if (!hasCommand()) {
             
             return false;
-          }
-          if (hasOriginator()) {
-            if (!getOriginator().isInitialized()) {
-              
-              return false;
-            }
           }
           return true;
         }
@@ -5780,64 +5821,77 @@ public final class Sitewhere {
           return this;
         }
 
-        // optional .Uuid originator = 2;
-        private Sitewhere.Uuid originator_ = Sitewhere.Uuid.getDefaultInstance();
+        // optional string originator = 2;
+        private java.lang.Object originator_ = "";
         /**
-         * <code>optional .Uuid originator = 2;</code>
+         * <code>optional string originator = 2;</code>
          */
         public boolean hasOriginator() {
           return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
-         * <code>optional .Uuid originator = 2;</code>
+         * <code>optional string originator = 2;</code>
          */
-        public Sitewhere.Uuid getOriginator() {
-          return originator_;
-        }
-        /**
-         * <code>optional .Uuid originator = 2;</code>
-         */
-        public Builder setOriginator(Sitewhere.Uuid value) {
-          if (value == null) {
-            throw new NullPointerException();
+        public java.lang.String getOriginator() {
+          java.lang.Object ref = originator_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            originator_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
           }
-          originator_ = value;
-
-          bitField0_ |= 0x00000002;
-          return this;
         }
         /**
-         * <code>optional .Uuid originator = 2;</code>
+         * <code>optional string originator = 2;</code>
+         */
+        public com.google.protobuf.ByteString
+            getOriginatorBytes() {
+          java.lang.Object ref = originator_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            originator_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string originator = 2;</code>
          */
         public Builder setOriginator(
-            Sitewhere.Uuid.Builder builderForValue) {
-          originator_ = builderForValue.build();
-
-          bitField0_ |= 0x00000002;
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          originator_ = value;
+          
           return this;
         }
         /**
-         * <code>optional .Uuid originator = 2;</code>
-         */
-        public Builder mergeOriginator(Sitewhere.Uuid value) {
-          if (((bitField0_ & 0x00000002) == 0x00000002) &&
-              originator_ != Sitewhere.Uuid.getDefaultInstance()) {
-            originator_ =
-              Sitewhere.Uuid.newBuilder(originator_).mergeFrom(value).buildPartial();
-          } else {
-            originator_ = value;
-          }
-
-          bitField0_ |= 0x00000002;
-          return this;
-        }
-        /**
-         * <code>optional .Uuid originator = 2;</code>
+         * <code>optional string originator = 2;</code>
          */
         public Builder clearOriginator() {
-          originator_ = Sitewhere.Uuid.getDefaultInstance();
-
           bitField0_ = (bitField0_ & ~0x00000002);
+          originator_ = getDefaultInstance().getOriginator();
+          
+          return this;
+        }
+        /**
+         * <code>optional string originator = 2;</code>
+         */
+        public Builder setOriginatorBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          originator_ = value;
+          
           return this;
         }
 

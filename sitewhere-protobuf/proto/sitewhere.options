@@ -4,6 +4,9 @@
 # Fields Sent to SiteWhere #
 ############################
 
+# Max lengths for header.
+SiteWhere.Header.originator 						max_size:30
+
 # Max lengths for registerDevice().
 SiteWhere.RegisterDevice.hardwareId 				max_size:40
 SiteWhere.RegisterDevice.specificationToken 		max_size:40
@@ -28,6 +31,9 @@ SiteWhere.DeviceMeasurements.hardwareId 			max_size:40
 ##################################
 # Fields Received from SiteWhere #
 ##################################
+
+# Max lengths for header.
+Device.Header.originator 							max_size:30
 
 # Max lengths for registrationAck().
 Device.RegistrationAck.errorMessage 				max_size:50

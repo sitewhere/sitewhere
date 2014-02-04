@@ -29,6 +29,12 @@ public class ProtobufNaming {
 	/** Name of originator field in header */
 	public static final String HEADER_ORIGINATOR_FIELD_NAME = "originator";
 
+	/** Name of originator LSB field in header */
+	public static final String HEADER_ORIGINATOR_LSB_FIELD_NAME = "lsb";
+
+	/** Name of originator MSB field in header */
+	public static final String HEADER_ORIGINATOR_MSB_FIELD_NAME = "msb";
+
 	/** Name associated with uuid message */
 	public static final String UUID_MSG_NAME = "Uuid";
 

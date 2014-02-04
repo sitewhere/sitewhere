@@ -106,7 +106,7 @@ public class SpecificationProtoBuilder {
 	protected static void addHeader(StringBuffer buffer, int indent) throws SiteWhereException {
 		println("message _Header {", indent, buffer);
 		println("required " + ProtobufNaming.COMMAND_TYPES_ENUM + " command = 1;", indent + 1, buffer);
-		println("optional Uuid originator = 2;", indent + 1, buffer);
+		println("optional string originator = 2;", indent + 1, buffer);
 		println("}", indent, buffer);
 	}
 
