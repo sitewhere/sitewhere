@@ -107,9 +107,7 @@ public class ProtobufRegistrationManager implements IRegistrationManager {
 			assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
 			SiteWhereServer.getInstance().getDeviceManagement().createDeviceAssignment(assnCreate);
 		}
-		RegistrationAck ack =
-				RegistrationAck.newBuilder().setState(state).setErrorType(
-						RegistrationAckError.SITE_TOKEN_REQUIRED).build();
+		RegistrationAck ack = RegistrationAck.newBuilder().setState(state).build();
 		SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(),
 				ack);
 	}
