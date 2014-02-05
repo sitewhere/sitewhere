@@ -23,6 +23,7 @@ import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -30,6 +31,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -325,6 +327,24 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return delegate.listDeviceStateChangesForSite(siteToken, criteria);
+	}
+
+	@Override
+	public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
+			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
+		return delegate.addDeviceCommandResponse(assignment, request);
+	}
+
+	@Override
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceCommandResponses(assignmentToken, criteria);
+	}
+
+	@Override
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceCommandResponsesForSite(siteToken, criteria);
 	}
 
 	@Override

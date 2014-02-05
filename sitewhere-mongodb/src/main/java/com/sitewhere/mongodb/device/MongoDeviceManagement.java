@@ -35,6 +35,7 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
@@ -52,6 +53,7 @@ import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -59,6 +61,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -1110,6 +1113,65 @@ public class MongoDeviceManagement implements IDeviceManagement {
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
 		return MongoPersistence.search(IDeviceStateChange.class, states, query, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandResponse(com.sitewhere
+	 * .spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 */
+	@Override
+	public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
+			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
+		DeviceCommandResponse response =
+				SiteWherePersistence.deviceCommandResponseCreateLogic(assignment, request);
+
+		DBCollection responses = getMongoClient().getResponsesCollection();
+		DBObject dbresponse = MongoDeviceCommandResponse.toDBObject(response);
+		MongoPersistence.insert(responses, dbresponse);
+		return MongoDeviceCommandResponse.fromDBObject(dbresponse);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommandResponses(java.lang
+	 * .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		DBCollection responses = getMongoClient().getResponsesCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
+		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
+		BasicDBObject sort =
+				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
+						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
+		return MongoPersistence.search(IDeviceCommandResponse.class, responses, query, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommandResponsesForSite(java
+	 * .lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		DBCollection responses = getMongoClient().getResponsesCollection();
+		BasicDBObject query = new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken);
+		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
+		BasicDBObject sort =
+				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
+						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
+		return MongoPersistence.search(IDeviceCommandResponse.class, responses, query, sort, criteria);
 	}
 
 	/*

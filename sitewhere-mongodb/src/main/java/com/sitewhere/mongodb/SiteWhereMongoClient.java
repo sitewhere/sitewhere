@@ -85,6 +85,9 @@ public class SiteWhereMongoClient implements InitializingBean {
 	/** Injected name used for command invocations collection */
 	private String invocationsCollectionName = IMongoCollectionNames.DEFAULT_INVOCATIONS_COLLECTION_NAME;
 
+	/** Injected name used for command responses collection */
+	private String responsesCollectionName = IMongoCollectionNames.DEFAULT_RESPONSES_COLLECTION_NAME;
+
 	/** Injected name used for device state change events collection */
 	private String stateChangesCollectionName = IMongoCollectionNames.DEFAULT_STATE_CHANGES_COLLECTION_NAME;
 
@@ -127,7 +130,8 @@ public class SiteWhereMongoClient implements InitializingBean {
 		messages.add("Locations collection name: " + getLocationsCollectionName());
 		messages.add("Alerts collection name: " + getAlertsCollectionName());
 		messages.add("Invocations collection name: " + getInvocationsCollectionName());
-		messages.add("State Changes collection name: " + getInvocationsCollectionName());
+		messages.add("Responses collection name: " + getResponsesCollectionName());
+		messages.add("State Changes collection name: " + getStateChangesCollectionName());
 		messages.add("");
 		messages.add("");
 		messages.add("---------------------");
@@ -190,6 +194,10 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public DBCollection getInvocationsCollection() {
 		return getSiteWhereDatabase().getCollection(getInvocationsCollectionName());
+	}
+
+	public DBCollection getResponsesCollection() {
+		return getSiteWhereDatabase().getCollection(getResponsesCollectionName());
 	}
 
 	public DBCollection getStateChangesCollection() {
@@ -306,6 +314,14 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public void setInvocationsCollectionName(String invocationsCollectionName) {
 		this.invocationsCollectionName = invocationsCollectionName;
+	}
+
+	public String getResponsesCollectionName() {
+		return responsesCollectionName;
+	}
+
+	public void setResponsesCollectionName(String responsesCollectionName) {
+		this.responsesCollectionName = responsesCollectionName;
 	}
 
 	public String getStateChangesCollectionName() {

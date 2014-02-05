@@ -26,6 +26,7 @@ import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
@@ -53,6 +54,7 @@ import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -368,7 +370,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			// Create events for assignment.
 			createDeviceMeasurements(assignment, now);
 			createDeviceLocations(assignment, now);
-			createDeviceCommandInvocations(assignment, now, commands);
+			List<IDeviceCommandInvocation> invocations =
+					createDeviceCommandInvocations(assignment, now, commands);
+			createDeviceCommandResponses(assignment, now, invocations);
 			createDeviceStateChanges(assignment, specification, now);
 
 			results.add(assignment);
@@ -568,6 +572,30 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			current += 30000;
 		}
 		return invocations;
+	}
+
+	/**
+	 * Create command responses for each invocation.
+	 * 
+	 * @param assignment
+	 * @param date
+	 * @param invocations
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected List<IDeviceCommandResponse> createDeviceCommandResponses(IDeviceAssignment assignment,
+			Date date, List<IDeviceCommandInvocation> invocations) throws SiteWhereException {
+		long current = date.getTime();
+		List<IDeviceCommandResponse> responses = new ArrayList<IDeviceCommandResponse>();
+		for (IDeviceCommandInvocation invocation : invocations) {
+			DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
+			request.setOriginatingEventId(invocation.getId());
+			request.setResponse("ACK");
+			request.setEventDate(new Date(current));
+			responses.add(getDeviceManagement().addDeviceCommandResponse(assignment, request));
+			current += 30000;
+		}
+		return responses;
 	}
 
 	/**

@@ -47,5 +47,7 @@
 	<classpathentry kind="var" path="M2_REPO/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/mqtt-client/mqtt-client/1.7/mqtt-client-1.7.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtbuf/hawtbuf/1.9/hawtbuf-1.9.jar"/>
+	<classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.8/commons-codec-1.8.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/bitcoinj/0.10.3/bitcoinj-0.10.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

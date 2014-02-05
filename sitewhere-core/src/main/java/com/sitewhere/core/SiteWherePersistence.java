@@ -31,6 +31,7 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
@@ -58,6 +59,7 @@ import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
@@ -513,6 +515,28 @@ public class SiteWherePersistence {
 			ci.setStatus(CommandStatus.PENDING);
 		}
 		return ci;
+	}
+
+	/**
+	 * Common logic for creating a {@link DeviceCommandResponse} from an
+	 * {@link IDeviceCommandResponseCreateRequest}.
+	 * 
+	 * @param assignment
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceCommandResponse deviceCommandResponseCreateLogic(IDeviceAssignment assignment,
+			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
+		if (request.getOriginatingEventId() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		DeviceCommandResponse response = new DeviceCommandResponse();
+		deviceEventCreateLogic(request, assignment, response);
+		response.setOriginatingEventId(request.getOriginatingEventId());
+		response.setResponseEventId(request.getResponseEventId());
+		response.setResponse(request.getResponse());
+		return response;
 	}
 
 	/**

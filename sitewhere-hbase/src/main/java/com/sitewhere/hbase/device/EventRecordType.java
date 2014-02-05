@@ -10,11 +10,11 @@
 package com.sitewhere.hbase.device;
 
 /**
- * Indicates device assignment record type.
+ * Indicates type of event record.
  * 
  * @author Derek
  */
-public enum DeviceAssignmentRecordType {
+public enum EventRecordType {
 
 	/** Device measurement record */
 	Measurement((byte) 0x01),
@@ -26,10 +26,16 @@ public enum DeviceAssignmentRecordType {
 	Alert((byte) 0x03),
 
 	/** Device command invocation record */
-	CommandInvocation((byte) 0x04),
+	CommandInvocation((byte) 0x0a),
+
+	/** Device command response list record */
+	CommandResponseList((byte) 0x0b),
+
+	/** Device command response record */
+	CommandResponse((byte) 0x0c),
 
 	/** Device state change record */
-	StateChange((byte) 0x05);
+	StateChange((byte) 0x10);
 
 	/** Type indicator */
 	private byte type;
@@ -39,7 +45,7 @@ public enum DeviceAssignmentRecordType {
 	 * 
 	 * @param value
 	 */
-	private DeviceAssignmentRecordType(byte type) {
+	private EventRecordType(byte type) {
 		this.type = type;
 	}
 
