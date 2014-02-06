@@ -13,6 +13,7 @@ SiteWhere.RegisterDevice.specificationToken 		max_size:40
 
 # Max lengths for acknowledge().
 SiteWhere.Acknowledge.hardwareId 					max_size:40
+SiteWhere.Acknowledge.message 						max_size:50
 
 # Max lengths for deviceLocation().
 SiteWhere.DeviceLocation.hardwareId 				max_size:40

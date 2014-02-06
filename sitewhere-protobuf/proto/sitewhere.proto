@@ -26,6 +26,7 @@ message SiteWhere {
 	// Acknowledge previous command.
 	message Acknowledge {
 		required string hardwareId = 1;
+		optional string message = 2;
 	}
 
 	// Report device location.
@@ -33,7 +34,7 @@ message SiteWhere {
 		required string hardwareId = 1;
 		required float latitude = 2;
 		required float longitude = 3;
-		optional float elevation = 4;
+		required float elevation = 4;
 		optional int64 eventDate = 5;
 	}
 

@@ -1722,6 +1722,21 @@ public final class Sitewhere {
        */
       com.google.protobuf.ByteString
           getHardwareIdBytes();
+
+      // optional string message = 2;
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      boolean hasMessage();
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      java.lang.String getMessage();
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      com.google.protobuf.ByteString
+          getMessageBytes();
     }
     /**
      * Protobuf type {@code SiteWhere.Acknowledge}
@@ -1773,6 +1788,11 @@ public final class Sitewhere {
               case 10: {
                 bitField0_ |= 0x00000001;
                 hardwareId_ = input.readBytes();
+                break;
+              }
+              case 18: {
+                bitField0_ |= 0x00000002;
+                message_ = input.readBytes();
                 break;
               }
             }
@@ -1845,8 +1865,52 @@ public final class Sitewhere {
         }
       }
 
+      // optional string message = 2;
+      public static final int MESSAGE_FIELD_NUMBER = 2;
+      private java.lang.Object message_;
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            message_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
       private void initFields() {
         hardwareId_ = "";
+        message_ = "";
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -1867,6 +1931,9 @@ public final class Sitewhere {
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           output.writeBytes(1, getHardwareIdBytes());
         }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getMessageBytes());
+        }
       }
 
       private int memoizedSerializedSize = -1;
@@ -1878,6 +1945,10 @@ public final class Sitewhere {
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBytesSize(1, getHardwareIdBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(2, getMessageBytes());
         }
         memoizedSerializedSize = size;
         return size;
@@ -1976,6 +2047,8 @@ public final class Sitewhere {
           super.clear();
           hardwareId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
+          message_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
 
@@ -2003,6 +2076,10 @@ public final class Sitewhere {
             to_bitField0_ |= 0x00000001;
           }
           result.hardwareId_ = hardwareId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.message_ = message_;
           result.bitField0_ = to_bitField0_;
           return result;
         }
@@ -2012,6 +2089,11 @@ public final class Sitewhere {
           if (other.hasHardwareId()) {
             bitField0_ |= 0x00000001;
             hardwareId_ = other.hardwareId_;
+            
+          }
+          if (other.hasMessage()) {
+            bitField0_ |= 0x00000002;
+            message_ = other.message_;
             
           }
           return this;
@@ -2118,6 +2200,80 @@ public final class Sitewhere {
           return this;
         }
 
+        // optional string message = 2;
+        private java.lang.Object message_ = "";
+        /**
+         * <code>optional string message = 2;</code>
+         */
+        public boolean hasMessage() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        /**
+         * <code>optional string message = 2;</code>
+         */
+        public java.lang.String getMessage() {
+          java.lang.Object ref = message_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            message_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>optional string message = 2;</code>
+         */
+        public com.google.protobuf.ByteString
+            getMessageBytes() {
+          java.lang.Object ref = message_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            message_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>optional string message = 2;</code>
+         */
+        public Builder setMessage(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          message_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>optional string message = 2;</code>
+         */
+        public Builder clearMessage() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          message_ = getDefaultInstance().getMessage();
+          
+          return this;
+        }
+        /**
+         * <code>optional string message = 2;</code>
+         */
+        public Builder setMessageBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          message_ = value;
+          
+          return this;
+        }
+
         // @@protoc_insertion_point(builder_scope:SiteWhere.Acknowledge)
       }
 
@@ -2167,13 +2323,13 @@ public final class Sitewhere {
        */
       float getLongitude();
 
-      // optional float elevation = 4;
+      // required float elevation = 4;
       /**
-       * <code>optional float elevation = 4;</code>
+       * <code>required float elevation = 4;</code>
        */
       boolean hasElevation();
       /**
-       * <code>optional float elevation = 4;</code>
+       * <code>required float elevation = 4;</code>
        */
       float getElevation();
 
@@ -2361,17 +2517,17 @@ public final class Sitewhere {
         return longitude_;
       }
 
-      // optional float elevation = 4;
+      // required float elevation = 4;
       public static final int ELEVATION_FIELD_NUMBER = 4;
       private float elevation_;
       /**
-       * <code>optional float elevation = 4;</code>
+       * <code>required float elevation = 4;</code>
        */
       public boolean hasElevation() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional float elevation = 4;</code>
+       * <code>required float elevation = 4;</code>
        */
       public float getElevation() {
         return elevation_;
@@ -2414,6 +2570,10 @@ public final class Sitewhere {
           return false;
         }
         if (!hasLongitude()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasElevation()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -2654,6 +2814,10 @@ public final class Sitewhere {
             
             return false;
           }
+          if (!hasElevation()) {
+            
+            return false;
+          }
           return true;
         }
 
@@ -2816,22 +2980,22 @@ public final class Sitewhere {
           return this;
         }
 
-        // optional float elevation = 4;
+        // required float elevation = 4;
         private float elevation_ ;
         /**
-         * <code>optional float elevation = 4;</code>
+         * <code>required float elevation = 4;</code>
          */
         public boolean hasElevation() {
           return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         /**
-         * <code>optional float elevation = 4;</code>
+         * <code>required float elevation = 4;</code>
          */
         public float getElevation() {
           return elevation_;
         }
         /**
-         * <code>optional float elevation = 4;</code>
+         * <code>required float elevation = 4;</code>
          */
         public Builder setElevation(float value) {
           bitField0_ |= 0x00000008;
@@ -2840,7 +3004,7 @@ public final class Sitewhere {
           return this;
         }
         /**
-         * <code>optional float elevation = 4;</code>
+         * <code>required float elevation = 4;</code>
          */
         public Builder clearElevation() {
           bitField0_ = (bitField0_ & ~0x00000008);

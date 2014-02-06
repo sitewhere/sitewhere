@@ -12,6 +12,7 @@ package com.sitewhere.spi.device.event.processor;
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
@@ -35,11 +36,24 @@ public interface IInboundEventProcessor extends ISiteWhereLifecycle {
 	/**
 	 * Called when a {@link IDeviceRegistrationRequest} is received.
 	 * 
+	 * @param hardwareId
+	 * @param originator
 	 * @param request
 	 * @throws SiteWhereException
 	 */
 	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
 			throws SiteWhereException;
+
+	/**
+	 * Called when an {@link IDeviceCommandResponseCreateRequest} is received.
+	 * 
+	 * @param hardwareId
+	 * @param originator
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
+			IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
 
 	/**
 	 * Called to request the creation of a new {@link IDeviceLocation} based on the given

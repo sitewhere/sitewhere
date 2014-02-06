@@ -11,6 +11,7 @@ package com.sitewhere.rest.model.device.event.processor;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
@@ -63,6 +64,18 @@ public class InboundEventProcessor implements IInboundEventProcessor {
 	@Override
 	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
 			throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceCommandResponseRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 */
+	@Override
+	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
+			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 	}
 
 	/*

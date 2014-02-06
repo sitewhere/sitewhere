@@ -20,6 +20,7 @@ import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Ackn
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceLocation;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Header;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.RegisterDevice;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.provisioning.DecodedDeviceEventRequest;
@@ -49,32 +50,32 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 			ByteArrayInputStream stream = new ByteArrayInputStream(payload);
 			Header header = SiteWhere.Header.parseDelimitedFrom(stream);
 			DecodedDeviceEventRequest decoded = new DecodedDeviceEventRequest();
+			decoded.setOriginator(header.getOriginator());
 			switch (header.getCommand()) {
 			case REGISTER: {
 				RegisterDevice register = RegisterDevice.parseDelimitedFrom(stream);
+				LOGGER.debug("Decoded registration for: " + register.getHardwareId());
 				DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 				request.setHardwareId(register.getHardwareId());
 				request.setSpecificationToken(register.getSpecificationToken());
 				request.setReplyTo(null);
 				decoded.setHardwareId(register.getHardwareId());
-				decoded.setOriginator(header.getOriginator());
 				decoded.setRequest(request);
 				return decoded;
 			}
 			case ACKNOWLEDGE: {
 				Acknowledge ack = Acknowledge.parseDelimitedFrom(stream);
-				LOGGER.info("Got ack for: " + ack.getHardwareId());
-				if (header.getOriginator() != null) {
-					LOGGER.info("Ack originator was: " + header.getOriginator());
-				}
-				return null;
+				LOGGER.debug("Decoded acknowledge for: " + ack.getHardwareId());
+				DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
+				request.setOriginatingEventId(header.getOriginator());
+				request.setResponse(ack.getMessage());
+				decoded.setHardwareId(ack.getHardwareId());
+				decoded.setRequest(request);
+				return decoded;
 			}
 			case DEVICELOCATION: {
 				DeviceLocation location = DeviceLocation.parseDelimitedFrom(stream);
-				LOGGER.info("Got location for: " + location.getHardwareId());
-				if (header.getOriginator() != null) {
-					LOGGER.info("Location originator was: " + header.getOriginator());
-				}
+				LOGGER.debug("Decoded location for: " + location.getHardwareId());
 				DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
 				request.setLatitude(Double.parseDouble(String.valueOf(location.getLatitude())));
 				request.setLongitude(Double.parseDouble(String.valueOf(location.getLongitude())));
@@ -87,7 +88,6 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 					request.setEventDate(new Date());
 				}
 				decoded.setHardwareId(location.getHardwareId());
-				decoded.setOriginator(header.getOriginator());
 				decoded.setRequest(request);
 				return decoded;
 			}
