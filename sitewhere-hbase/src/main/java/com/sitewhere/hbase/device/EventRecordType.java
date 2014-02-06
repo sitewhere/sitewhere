@@ -28,11 +28,14 @@ public enum EventRecordType {
 	/** Device command invocation record */
 	CommandInvocation((byte) 0x0a),
 
-	/** Device command response list record */
-	CommandResponseList((byte) 0x0b),
-
 	/** Device command response record */
-	CommandResponse((byte) 0x0c),
+	CommandResponse((byte) 0x0b),
+
+	/** Device invocation command response entry */
+	CommandResponseEntry((byte) 0x0c),
+
+	/** Device invocation command response counter */
+	CommandResponseCounter((byte) 0x0d),
 
 	/** Device state change record */
 	StateChange((byte) 0x10);

@@ -12,6 +12,8 @@ package com.sitewhere.mongodb;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -76,6 +78,24 @@ public class MongoPersistence {
 	}
 
 	/**
+	 * Get a single entity by unique id.
+	 * 
+	 * @param id
+	 * @param api
+	 * @param collection
+	 * @return
+	 */
+	public static <T> T get(String id, Class<T> api, DBCollection collection) {
+		DBObject searchById = new BasicDBObject("_id", new ObjectId(id));
+		DBObject found = collection.findOne(searchById);
+		if (found != null) {
+			MongoConverter<T> converter = MongoConverters.getConverterFor(api);
+			return converter.convert(found);
+		}
+		return null;
+	}
+
+	/**
 	 * Search the given collection using the provided query and sort. Return the paged
 	 * seaerch results.
 	 * 
@@ -91,6 +111,33 @@ public class MongoPersistence {
 			DBObject sort, ISearchCriteria criteria) {
 		int offset = Math.max(0, criteria.getPageNumber() - 1) * criteria.getPageSize();
 		DBCursor cursor = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
+		List<T> matches = new ArrayList<T>();
+		SearchResults<T> results = new SearchResults<T>(matches);
+		MongoConverter<T> converter = MongoConverters.getConverterFor(api);
+		try {
+			results.setNumResults(cursor.count());
+			while (cursor.hasNext()) {
+				DBObject match = cursor.next();
+				matches.add(converter.convert(match));
+			}
+		} finally {
+			cursor.close();
+		}
+		return results;
+	}
+
+	/**
+	 * Search the given collection using the provided query and sort.
+	 * 
+	 * @param api
+	 * @param collection
+	 * @param query
+	 * @param sort
+	 * @return
+	 */
+	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
+			DBObject sort) {
+		DBCursor cursor = collection.find(query).sort(sort);
 		List<T> matches = new ArrayList<T>();
 		SearchResults<T> results = new SearchResults<T>(matches);
 		MongoConverter<T> converter = MongoConverters.getConverterFor(api);

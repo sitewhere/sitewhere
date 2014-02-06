@@ -586,6 +586,18 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandInvocation(java.lang
+	 * .String)
+	 */
+	@Override
+	public IDeviceCommandInvocation getDeviceCommandInvocation(String id) throws SiteWhereException {
+		return HBaseDeviceEvent.getDeviceCommandInvocation(client, id);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommandInvocations(java.lang
 	 * .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
@@ -612,40 +624,13 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStateChange(com.sitewhere.spi
-	 * .device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceCommandInvocationResponses
+	 * (java.lang.String)
 	 */
 	@Override
-	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
-			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
-		return HBaseDeviceEvent.createDeviceStateChange(client, assignment, request);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceStateChanges(java.lang.String,
-	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
-	 */
-	@Override
-	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceStateChanges(client, assignmentToken, criteria);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceStateChangesForSite(java.lang
-	 * .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
-	 */
-	@Override
-	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceStateChangesForSite(client, siteToken, criteria);
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
+			throws SiteWhereException {
+		return HBaseDeviceEvent.listDeviceCommandInvocationResponses(client, invocationId);
 	}
 
 	/*
@@ -686,6 +671,46 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceEvent.listDeviceCommandResponsesForSite(client, siteToken, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStateChange(com.sitewhere.spi
+	 * .device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+	 */
+	@Override
+	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		return HBaseDeviceEvent.createDeviceStateChange(client, assignment, request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceStateChanges(java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return HBaseDeviceEvent.listDeviceStateChanges(client, assignmentToken, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceStateChangesForSite(java.lang
+	 * .String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return HBaseDeviceEvent.listDeviceStateChangesForSite(client, siteToken, criteria);
 	}
 
 	/*

@@ -300,6 +300,11 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
+	public IDeviceCommandInvocation getDeviceCommandInvocation(String id) throws SiteWhereException {
+		return delegate.getDeviceCommandInvocation(id);
+	}
+
+	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return delegate.listDeviceCommandInvocations(assignmentToken, criteria);
@@ -312,21 +317,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
-			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
-		return delegate.addDeviceStateChange(assignment, request);
-	}
-
-	@Override
-	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return delegate.listDeviceStateChanges(assignmentToken, criteria);
-	}
-
-	@Override
-	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return delegate.listDeviceStateChangesForSite(siteToken, criteria);
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
+			throws SiteWhereException {
+		return delegate.listDeviceCommandInvocationResponses(invocationId);
 	}
 
 	@Override
@@ -345,6 +338,24 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return delegate.listDeviceCommandResponsesForSite(siteToken, criteria);
+	}
+
+	@Override
+	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		return delegate.addDeviceStateChange(assignment, request);
+	}
+
+	@Override
+	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceStateChanges(assignmentToken, criteria);
+	}
+
+	@Override
+	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceStateChangesForSite(siteToken, criteria);
 	}
 
 	@Override

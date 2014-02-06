@@ -18,6 +18,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
@@ -27,6 +31,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Base58;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -323,6 +328,19 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
+	 * Get a {@link IDeviceCommandInvocation} by unique id.
+	 * 
+	 * @param hbase
+	 * @param id
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDeviceCommandInvocation getDeviceCommandInvocation(ISiteWhereHBaseClient hbase, String id)
+			throws SiteWhereException {
+		return getEventById(hbase, id, DeviceCommandInvocation.class);
+	}
+
+	/**
 	 * List command invocations associated with an assignment based on the given criteria.
 	 * 
 	 * @param hbase
@@ -458,7 +476,99 @@ public class HBaseDeviceEvent {
 			HBaseUtils.closeCleanly(events);
 		}
 
+		linkDeviceCommandResponseToInvocation(hbase, cr);
 		return cr;
+	}
+
+	/**
+	 * Creates a link to the command response by incrementing(or creating) a counter and
+	 * sequential entries under the original invocation. TODO: Note that none of this is
+	 * transactional, so it is currently possible for responses not to be correctly linked
+	 * back to the original invocation if the calls in this method fail.
+	 * 
+	 * @param hbase
+	 * @param response
+	 * @param responseRow
+	 * @param responseQual
+	 * @throws SiteWhereException
+	 */
+	protected static void linkDeviceCommandResponseToInvocation(ISiteWhereHBaseClient hbase,
+			IDeviceCommandResponse response) throws SiteWhereException {
+		String originator = response.getOriginatingEventId();
+		if (originator == null) {
+			return;
+		}
+
+		HTableInterface events = null;
+		KeyValue okeys = null;
+		try {
+			okeys = getDecodedEventId(originator);
+		} catch (SiteWhereException e) {
+			throw new SiteWhereException("Originating event id is invalid.", e);
+		}
+
+		byte[] qual = okeys.getQualifier();
+		try {
+			events = hbase.getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+
+			// Increment the result counter.
+			qual[3] = EventRecordType.CommandResponseCounter.getType();
+			long counter = events.incrementColumnValue(okeys.getRow(), ISiteWhereHBase.FAMILY_ID, qual, 1);
+			byte[] counterBytes = Bytes.toBytes(counter);
+
+			// Add new response entry row under the invocation.
+			qual[3] = EventRecordType.CommandResponseEntry.getType();
+			ByteBuffer seqkey = ByteBuffer.allocate(qual.length + counterBytes.length);
+			seqkey.put(qual);
+			seqkey.put(counterBytes);
+
+			Put put = new Put(okeys.getRow());
+			put.add(ISiteWhereHBase.FAMILY_ID, seqkey.array(), response.getId().getBytes());
+			events.put(put);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to link command response.", e);
+		} finally {
+			HBaseUtils.closeCleanly(events);
+		}
+	}
+
+	/**
+	 * Find responses associated with a device command invocation.
+	 * 
+	 * @param hbase
+	 * @param invocationId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static SearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(
+			ISiteWhereHBaseClient hbase, String invocationId) throws SiteWhereException {
+		KeyValue ikeys = getDecodedEventId(invocationId);
+
+		HTableInterface events = null;
+		List<IDeviceCommandResponse> responses = new ArrayList<IDeviceCommandResponse>();
+		try {
+			events = hbase.getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+
+			Get get = new Get(ikeys.getRow());
+			Result result = events.get(get);
+			Map<byte[], byte[]> cells = result.getFamilyMap(ISiteWhereHBase.FAMILY_ID);
+
+			byte[] match = ikeys.getQualifier();
+			match[3] = EventRecordType.CommandResponseEntry.getType();
+			for (byte[] qual : cells.keySet()) {
+				if ((qual[0] == match[0]) && (qual[1] == match[1]) && (qual[2] == match[2])
+						&& (qual[3] == match[3])) {
+					byte[] value = cells.get(qual);
+					String responseId = new String(value);
+					responses.add(getDeviceCommandResponse(hbase, responseId));
+				}
+			}
+			return new SearchResults<IDeviceCommandResponse>(responses);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to link command response.", e);
+		} finally {
+			HBaseUtils.closeCleanly(events);
+		}
 	}
 
 	/**
@@ -476,6 +586,19 @@ public class HBaseDeviceEvent {
 		Pager<byte[]> matches =
 				getEventRowsForAssignment(hbase, assnToken, EventRecordType.CommandResponse, criteria);
 		return convertMatches(matches, DeviceCommandResponse.class);
+	}
+
+	/**
+	 * Get a {@link IDeviceCommandResponse} by unique id.
+	 * 
+	 * @param hbase
+	 * @param id
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDeviceCommandResponse getDeviceCommandResponse(ISiteWhereHBaseClient hbase, String id)
+			throws SiteWhereException {
+		return getEventById(hbase, id, DeviceCommandResponse.class);
 	}
 
 	/**
@@ -820,5 +943,71 @@ public class HBaseDeviceEvent {
 		buffer.put(qualifier);
 		byte[] bytes = buffer.array();
 		return Base58.encode(bytes);
+	}
+
+	/**
+	 * Decodes an event id into a {@link KeyValue} that can be used to access the data in
+	 * HBase.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static KeyValue getDecodedEventId(String id) throws SiteWhereException {
+		int rowLength =
+				HBaseSite.SITE_IDENTIFIER_LENGTH + 1 + HBaseDeviceAssignment.ASSIGNMENT_IDENTIFIER_LENGTH + 5;
+		int qualLength = 4;
+		try {
+			byte[] decoded = Base58.decode(id);
+			if (decoded.length != (rowLength + qualLength)) {
+				LOGGER.error("Event id not in expected internal format.");
+				return null;
+			}
+			byte[] row = new byte[rowLength];
+			System.arraycopy(decoded, 0, row, 0, rowLength);
+			byte[] qual = new byte[qualLength];
+			System.arraycopy(decoded, rowLength, qual, 0, qualLength);
+			return new KeyValue(row, ISiteWhereHBase.FAMILY_ID, qual);
+		} catch (AddressFormatException e) {
+			LOGGER.error("Unable to decode event id.", e);
+			return null;
+		}
+	}
+
+	/**
+	 * Gets an event by unique id.
+	 * 
+	 * @param hbase
+	 * @param id
+	 * @param type
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static <T> T getEventById(ISiteWhereHBaseClient hbase, String id, Class<T> type)
+			throws SiteWhereException {
+		KeyValue keys = getDecodedEventId(id);
+		if (keys == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceEventId, ErrorLevel.ERROR,
+					HttpServletResponse.SC_NOT_FOUND);
+		}
+		HTableInterface events = null;
+		try {
+			events = hbase.getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+			Get get = new Get(keys.getRow());
+			get.addColumn(ISiteWhereHBase.FAMILY_ID, keys.getQualifier());
+			Result result = events.get(get);
+			if (result != null) {
+				byte[] json = result.getValue(ISiteWhereHBase.FAMILY_ID, keys.getQualifier());
+				if (json != null) {
+					return MarshalUtils.unmarshalJson(json, type);
+				}
+			}
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceEventId, ErrorLevel.ERROR,
+					HttpServletResponse.SC_NOT_FOUND);
+		} catch (IOException e) {
+			throw new SiteWhereException(e);
+		} finally {
+			HBaseUtils.closeCleanly(events);
+		}
 	}
 }

@@ -464,6 +464,15 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
 
 	/**
+	 * Get a device command invocation by unique id.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceCommandInvocation getDeviceCommandInvocation(String id) throws SiteWhereException;
+
+	/**
 	 * Gets device command invocations for an assignment based on criteria.
 	 * 
 	 * @param assignmentToken
@@ -483,6 +492,49 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * @throws SiteWhereException
 	 */
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * List responses associated with a command invocation.
+	 * 
+	 * @param invocationId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
+			throws SiteWhereException;
+
+	/**
+	 * Adds a new device command response event.
+	 * 
+	 * @param assignment
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
+			IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Gets the most recent device command response entries for an assignment.
+	 * 
+	 * @param assignmentToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * List device command responses for a site.
+	 * 
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**
@@ -516,39 +568,6 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * @throws SiteWhereException
 	 */
 	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-	/**
-	 * Adds a new device command response event.
-	 * 
-	 * @param assignment
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
-			IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
-
-	/**
-	 * Gets the most recent device command response entries for an assignment.
-	 * 
-	 * @param assignmentToken
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException;
-
-	/**
-	 * List device command responses for a site.
-	 * 
-	 * @param siteToken
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**
