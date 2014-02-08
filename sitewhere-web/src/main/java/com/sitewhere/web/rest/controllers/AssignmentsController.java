@@ -9,6 +9,7 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateReq
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -59,6 +61,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.web.rest.model.DeviceAssignmentMarshalHelper;
+import com.sitewhere.web.rest.model.DeviceCommandInvocationMarshalHelper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -370,7 +373,8 @@ public class AssignmentsController extends SiteWhereController {
 		IDeviceCommandInvocation result =
 				SiteWhereServer.getInstance().getDeviceManagement().addDeviceCommandInvocation(assignment,
 						command, request);
-		return DeviceCommandInvocation.copy(result);
+		DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
+		return helper.convert(result);
 	}
 
 	/**
@@ -385,14 +389,23 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "List alert events for a device command invocations")
 	public ISearchResults<IDeviceCommandInvocation> listCommandInvocations(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Include command information", required = false) @RequestParam(defaultValue = "true") boolean includeCommand,
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		return SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandInvocations(token,
-				criteria);
+		ISearchResults<IDeviceCommandInvocation> matches =
+				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandInvocations(token,
+						criteria);
+		DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
+		helper.setIncludeCommand(includeCommand);
+		List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
+		for (IDeviceCommandInvocation invocation : matches.getResults()) {
+			converted.add(helper.convert(invocation));
+		}
+		return new SearchResults<IDeviceCommandInvocation>(converted);
 	}
 
 	/**

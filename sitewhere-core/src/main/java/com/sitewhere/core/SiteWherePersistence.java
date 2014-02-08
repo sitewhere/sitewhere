@@ -416,7 +416,11 @@ public class SiteWherePersistence {
 		target.setDeviceAssignmentToken(assignment.getToken());
 		target.setAssignmentType(assignment.getAssignmentType());
 		target.setAssetId(assignment.getAssetId());
-		target.setEventDate(request.getEventDate());
+		if (request.getEventDate() != null) {
+			target.setEventDate(request.getEventDate());
+		} else {
+			target.setEventDate(new Date());
+		}
 		target.setReceivedDate(new Date());
 		MetadataProvider.copy(request, target);
 	}
@@ -512,7 +516,7 @@ public class SiteWherePersistence {
 		if (request.getStatus() != null) {
 			ci.setStatus(request.getStatus());
 		} else {
-			ci.setStatus(CommandStatus.PENDING);
+			ci.setStatus(CommandStatus.Pending);
 		}
 		return ci;
 	}

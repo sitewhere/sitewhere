@@ -40,10 +40,8 @@
 	color: #333;
 }
 .sw-spec-command-param-type {
-	color: #33c;
-}
-.sw-spec-command-delete {
-	color: #33c;
+	color: #666;
+	padding-left: 3px;
 }
 </style>
 
@@ -201,7 +199,7 @@
 		}
 	    chtml += "<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '" + command.token + "')\">" + 
 	    	command.name + "</span>(";
-	    for (var i = 0, param; param = command.parameters[i]; i++) {1
+	    for (var i = 0, param; param = command.parameters[i]; i++) {
     		if (param.required) {
     			chtml += "<strong>"
     		}

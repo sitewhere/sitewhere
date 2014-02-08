@@ -34,9 +34,6 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 	/** Unique assignment token */
 	private String token;
 
-	/** Device being assigned */
-	private Device device;
-
 	/** Device hardware id */
 	private String deviceHardwareId;
 
@@ -67,6 +64,11 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 	/** Assignment end date */
 	private Date releasedDate;
 
+	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+
+	/** Device being assigned */
+	private Device device;
+
 	/** Last known location */
 	private DeviceAssignmentState state;
 
@@ -88,14 +90,6 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 
 	public void setToken(String token) {
 		this.token = token;
-	}
-
-	public Device getDevice() {
-		return device;
-	}
-
-	public void setDevice(Device device) {
-		this.device = device;
 	}
 
 	/*
@@ -230,6 +224,14 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 	@Override
 	public DeviceAssignmentState getState() {
 		return state;
+	}
+
+	public Device getDevice() {
+		return device;
+	}
+
+	public void setDevice(Device device) {
+		this.device = device;
 	}
 
 	public void setState(DeviceAssignmentState state) {

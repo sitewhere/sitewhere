@@ -5,6 +5,5 @@
 			<div>#= measurementsSummary #</div>
 		</td>
 		<td>#= formattedDate(eventDate) #</td>
-		<td>#= formattedDate(receivedDate) #</td>
 	</tr>
 </script>

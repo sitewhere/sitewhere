@@ -376,12 +376,12 @@ td[role="gridcell"] > input[type="text"] {
 	border-top: 3px solid rgb(220, 0, 0);
 }
 
-.k-state-selected, .k-state-selected:link, .k-list > .k-state-selected, .k-list > .k-state-focused, .k-list > .k-state-highlight, .k-panel > .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover {
+.k-state-selected, .k-state-selected:link, .k-state-default.k-state-focused, .k-list > .k-state-selected, .k-list > .k-state-focused, .k-list > .k-state-highlight, .k-panel > .k-state-selected, .k-button:active, .k-ghost-splitbar-vertical, .k-ghost-splitbar-horizontal, .k-draghandle.k-state-selected:hover {
     color: rgb(255, 255, 255);
     background-color: rgb(220, 0, 0);
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
-.k-button:hover, .k-autocomplete.k-state-hover, .k-picker-wrap.k-state-hover, .k-numeric-wrap.k-state-hover, .k-dropdown-wrap.k-state-hover, .k-textbox:hover, .k-state-hover, .k-state-hover:hover, .k-pager-wrap .k-link:hover, .k-other-month.k-state-hover .k-link, div.k-imagebrowser-dropzone em {
+.k-button:hover, .k-autocomplete.k-state-hover, .k-picker-wrap.k-state-hover, .k-numeric-wrap.k-state-hover, .k-dropdown-wrap.k-state-hover, .k-state-default.k-state-focused, .k-textbox:hover, .k-state-hover, .k-state-hover:hover, .k-pager-wrap .k-link:hover, .k-other-month.k-state-hover .k-link, div.k-imagebrowser-dropzone em {
     background-image: none, linear-gradient(to bottom, rgb(220, 0, 0) 0px, rgb(200, 0, 0) 100%);
 }
 

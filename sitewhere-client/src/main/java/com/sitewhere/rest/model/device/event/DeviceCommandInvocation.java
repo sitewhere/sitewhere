@@ -15,6 +15,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
@@ -52,6 +53,14 @@ public class DeviceCommandInvocation extends DeviceEvent implements IDeviceComma
 
 	/** Current invocation status */
 	private CommandStatus status;
+
+	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+
+	/** Command that was invoked */
+	private DeviceCommand command;
+
+	/** HTML representation of invocation */
+	private String asHtml;
 
 	/*
 	 * (non-Javadoc)
@@ -144,22 +153,19 @@ public class DeviceCommandInvocation extends DeviceEvent implements IDeviceComma
 		this.status = status;
 	}
 
-	/**
-	 * Create a copy of an SPI object. Used by web services for marshaling.
-	 * 
-	 * @param input
-	 * @return
-	 */
-	public static DeviceCommandInvocation copy(IDeviceCommandInvocation input) {
-		DeviceCommandInvocation result = new DeviceCommandInvocation();
-		DeviceEvent.copy(input, result);
-		result.setInitiator(input.getInitiator());
-		result.setInitiatorId(input.getInitiatorId());
-		result.setTarget(input.getTarget());
-		result.setTargetId(input.getTargetId());
-		result.setCommandToken(input.getCommandToken());
-		result.setStatus(input.getStatus());
-		result.setParameterValues(input.getParameterValues());
-		return result;
+	public DeviceCommand getCommand() {
+		return command;
+	}
+
+	public void setCommand(DeviceCommand command) {
+		this.command = command;
+	}
+
+	public String getAsHtml() {
+		return asHtml;
+	}
+
+	public void setAsHtml(String asHtml) {
+		this.asHtml = asHtml;
 	}
 }

@@ -163,7 +163,7 @@
 		$('#du-dialog').modal('show');
     }
     
-	/** Handle error on getting site */
+	/** Handle error on getting device information */
 	function duUpdateGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to get device for update.");
 	}

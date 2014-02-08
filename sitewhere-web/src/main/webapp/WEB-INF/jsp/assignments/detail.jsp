@@ -26,44 +26,11 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Command Invocations</li>
-		<li>Locations</li>
+		<li class="k-state-active">Locations</li>
 		<li>Measurements</li>
 		<li>Alerts</li>
+		<li>Command Invocations</li>
 	</ul>
-	<div>
-		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Command Invocations</div>
-			<div>
-				<a id="btn-filter-locations" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
-			</div>
-		</div>
-		<table id="invocations">
-			<colgroup>
-				<col style="width: 32%;"/>
-				<col style="width: 12%;"/>
-				<col style="width: 12%;"/>
-				<col style="width: 12%;"/>
-				<col style="width: 12%;"/>
-			</colgroup>
-			<thead>
-				<tr>
-					<th>Command</th>
-					<th>Source</th>
-					<th>Target</th>
-					<th>Event Date</th>
-					<th>Received Date</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr><td colspan="5"></td></tr>
-			</tbody>
-		</table>
-		<div id="invocations-pager" class="k-pager-wrap event-pager"></div>
-	</div>
 	<div>
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title">Device Locations</div>
@@ -80,7 +47,6 @@
 				<col style="width: 20%;"/>
 				<col style="width: 20%;"/>
 				<col style="width: 20%;"/>
-				<col style="width: 20%;"/>
 			</colgroup>
 			<thead>
 				<tr>
@@ -88,7 +54,6 @@
 					<th>Longitude</th>
 					<th>Elevation</th>
 					<th>Event Date</th>
-					<th>Received Date</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -111,13 +76,11 @@
 			<colgroup>
 				<col style="width: 37%;"/>
 				<col style="width: 20%;"/>
-				<col style="width: 20%;"/>
 			</colgroup>
 			<thead>
 				<tr>
 					<th>Measurements</th>
 					<th>Event Date</th>
-					<th>Received Date</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -142,7 +105,6 @@
 				<col style="width: 20%;"/>
 				<col style="width: 10%;"/>
 				<col style="width: 20%;"/>
-				<col style="width: 20%;"/>
 			</colgroup>
 			<thead>
 				<tr>
@@ -150,7 +112,6 @@
 					<th>Message</th>
 					<th>Source</th>
 					<th>Event Date</th>
-					<th>Received Date</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -159,9 +120,43 @@
 		</table>
 		<div id="alerts-pager" class="k-pager-wrap event-pager"></div>
 	</div>
+	<div>
+		<div class="k-header sw-button-bar">
+			<div class="sw-button-bar-title">Device Command Invocations</div>
+			<div>
+				<a id="btn-filter-invocations" class="btn" href="javascript:void(0)">
+					<i class="icon-search sw-button-icon"></i> Filter Results</a>
+				<a id="btn-refresh-invocations" class="btn" href="javascript:void(0)">
+					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-create-invocation" class="btn" href="javascript:void(0)">
+					<i class="icon-bolt sw-button-icon"></i> Invoke Command</a>
+			</div>
+		</div>
+		<table id="invocations">
+			<colgroup>
+				<col style="width: 32%;"/>
+				<col style="width: 15%;"/>
+				<col style="width: 12%;"/>
+				<col style="width: 20%;"/>
+			</colgroup>
+			<thead>
+				<tr>
+					<th>Command</th>
+					<th>Source</th>
+					<th>Target</th>
+					<th>Event Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr><td colspan="4"></td></tr>
+			</tbody>
+		</table>
+		<div id="invocations-pager" class="k-pager-wrap event-pager"></div>
+	</div>
 </div>
 
 <%@ include file="../includes/assignmentUpdateDialog.inc"%>
+<%@ include file="../includes/commandInvokeDialog.inc"%>
 <%@ include file="../includes/templateAssignmentEntry.inc"%>
 <%@ include file="../includes/templateInvocationEntry.inc"%>
 <%@ include file="../includes/templateLocationEntry.inc"%>
@@ -170,7 +165,11 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+	/** Assignment token */
 	var token = '<c:out value="${assignment.token}"/>';
+	
+	/** Device specification token */
+	var specificationToken = '<c:out value="${assignment.device.specificationToken}"/>';
 	
 	/** Datasource for invocations */
 	var invocationsDS;
@@ -359,12 +358,16 @@
             height: gridHeight,
         });
 		
-	    $("#invocations-pager").kendoPager({
-	        dataSource: invocationsDS
+	    $("#btn-refresh-invocations").click(function() {
+	    	invocationsDS.read();
 	    });
 		
-	    $("#btn-refresh-alerts").click(function() {
-	    	alertsDS.read();
+	    $("#btn-create-invocation").click(function() {
+			ciOpen(token, specificationToken, onInvokeCommandSuccess);
+	    });
+		
+	    $("#invocations-pager").kendoPager({
+	        dataSource: invocationsDS
 	    });
 		
 	    $("#btn-edit-assignment").click(function() {
@@ -392,6 +395,9 @@
 				e.item.swInitialized = true;
 			} else if (tabName =="Alerts") {
 				alertsDS.read();
+				e.item.swInitialized = true;
+			} else if (tabName =="Command Invocations") {
+				invocationsDS.read();
 				e.item.swInitialized = true;
 			}
 		}
@@ -427,6 +433,11 @@
 	/** Called after successful edit of assignment */
 	function onAssignmentEditSuccess() {
 		loadAssignment();
+	}
+	
+	/** Called after successful edit of assignment */
+	function onInvokeCommandSuccess() {
+    	invocationsDS.read();
 	}
 </script>
 

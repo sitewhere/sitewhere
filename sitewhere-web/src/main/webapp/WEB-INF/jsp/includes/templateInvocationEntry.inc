@@ -1,10 +1,31 @@
 <!-- Template for alert row -->
+<style>
+.sw-spec-command-desc {
+	color: #060;
+	font-style: italic;
+	max-width: 90%;
+}
+.sw-spec-command-name {
+	color: #333;
+	font-weight: bold;
+}
+.sw-spec-command-param-required {
+	font-weight: normal;
+}
+.sw-spec-command-param-name {
+	color: #333;
+}
+.sw-spec-command-param-type {
+	padding-left: 3px;
+	color: #333;
+	font-weight: bold;
+}
+</style>
 <script type="text/x-kendo-tmpl" id="tpl-invocation-entry">
 	<tr class="sw-list-entry row-gradient">
-		<td title="#:commandToken#">#:commandToken#</td>
-		<td title="#:sourceActor#">#:sourceActor#</td>
-		<td title="#:targetActor#">#:targetActor#</td>
+		<td title="#:command.name#">#= asHtml #</td>
+		<td title="#:initiator#(#:initiatorId#)">#:initiator#(#:initiatorId#)</td>
+		<td title="#:target#">#:target#</td>
 		<td>#= formattedDate(eventDate) #</td>
-		<td>#= formattedDate(receivedDate) #</td>
 	</tr>
 </script>

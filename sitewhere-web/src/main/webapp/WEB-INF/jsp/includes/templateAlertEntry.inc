@@ -5,6 +5,5 @@
 		<td class="ellipsis" style="max-width: 250px;" title="#:message#">#:message#</td>
 		<td class="ellipsis">#:source#</td>
 		<td>#= formattedDate(eventDate) #</td>
-		<td>#= formattedDate(receivedDate) #</td>
 	</tr>
 </script>

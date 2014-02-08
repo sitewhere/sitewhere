@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.web.rest.model.DeviceCommandInvocationMarshalHelper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -50,7 +50,8 @@ public class InvocationsController extends SiteWhereController {
 			throws SiteWhereException {
 		IDeviceCommandInvocation found =
 				SiteWhereServer.getInstance().getDeviceManagement().getDeviceCommandInvocation(id);
-		return DeviceCommandInvocation.copy(found);
+		DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
+		return helper.convert(found);
 	}
 
 	/**

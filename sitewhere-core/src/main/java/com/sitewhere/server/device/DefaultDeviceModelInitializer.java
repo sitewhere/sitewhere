@@ -559,9 +559,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setCommandToken(command.getToken());
 			request.setInitiator(CommandInitiator.REST);
 			request.setInitiatorId("system");
-			request.setTarget(CommandTarget.Default);
-			request.setTargetId(assignment.getDeviceHardwareId());
-			request.setStatus(CommandStatus.PENDING);
+			request.setTarget(CommandTarget.Assignment);
+			request.setTargetId(assignment.getToken());
+			request.setStatus(CommandStatus.Pending);
 			request.setEventDate(new Date(current));
 			Map<String, String> values = new HashMap<String, String>();
 			for (ICommandParameter param : command.getParameters()) {

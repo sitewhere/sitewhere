@@ -29,6 +29,9 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public class DeviceEventWithAsset implements IDeviceEventWithAsset {
 
+	/** Text shown when an asset is not assigned */
+	public static final String UNASSOCIATED_ASSET_NAME = "Unassociated";
+
 	/** Wrapped event */
 	protected IDeviceEvent wrapped;
 
@@ -50,7 +53,7 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
 		if (asset != null) {
 			return asset.getName();
 		}
-		return null;
+		return UNASSOCIATED_ASSET_NAME;
 	}
 
 	/*

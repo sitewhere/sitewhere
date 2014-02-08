@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.version.VersionHelper;
+import com.sitewhere.web.rest.model.DeviceAssignmentMarshalHelper;
 
 /**
  * Spring MVC controller for SiteWhere web application.
@@ -118,6 +119,9 @@ public class SiteWhereController {
 				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
 				IDeviceAssignment assignment = management.getDeviceAssignmentByToken(token);
 				if (assignment != null) {
+					DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+					helper.setIncludeDevice(true);
+					assignment = helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager());
 					data.put("assignment", assignment);
 					return new ModelAndView("assignments/detail", data);
 				}

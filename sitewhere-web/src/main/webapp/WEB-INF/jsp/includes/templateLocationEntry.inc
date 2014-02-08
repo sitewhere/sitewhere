@@ -11,6 +11,5 @@
 			<div>#= kendo.toString(elevation, "\\#\\#\\#.000000")#</div>
 		</td>
 		<td>#= formattedDate(eventDate) #</td>
-		<td>#= formattedDate(receivedDate) #</td>
 	</tr>
 </script>

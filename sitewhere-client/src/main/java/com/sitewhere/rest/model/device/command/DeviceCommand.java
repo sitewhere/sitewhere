@@ -125,4 +125,28 @@ public class DeviceCommand extends MetadataProviderEntity implements IDeviceComm
 	public void setParameters(List<CommandParameter> parameters) {
 		this.parameters = parameters;
 	}
+
+	/**
+	 * Create a copy of an SPI object. Used by web services for marshaling.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static DeviceCommand copy(IDeviceCommand input) {
+		DeviceCommand result = new DeviceCommand();
+		MetadataProviderEntity.copy(input, result);
+		result.setToken(input.getToken());
+		result.setSpecificationToken(input.getSpecificationToken());
+		result.setName(input.getName());
+		result.setNamespace(input.getNamespace());
+		result.setDescription(input.getDescription());
+		for (ICommandParameter inparam : input.getParameters()) {
+			CommandParameter param = new CommandParameter();
+			param.setName(inparam.getName());
+			param.setType(inparam.getType());
+			param.setRequired(inparam.isRequired());
+			result.getParameters().add(param);
+		}
+		return result;
+	}
 }
