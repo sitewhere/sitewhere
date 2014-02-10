@@ -27,5 +27,11 @@
 		<td title="#:initiator#(#:initiatorId#)">#:initiator#(#:initiatorId#)</td>
 		<td title="#:target#">#:target#</td>
 		<td>#= formattedDate(eventDate) #</td>
+		<td>
+			<div style="width: 100%; text-align: left">
+				<i class="icon-info-sign sw-action-glyph sw-edit-glyph" title="View Invocation"
+					onclick="onViewInvocation('#:id#')"></i>
+			</div>
+		</td>
 	</tr>
 </script>

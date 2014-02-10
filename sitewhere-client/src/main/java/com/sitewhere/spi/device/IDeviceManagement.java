@@ -17,6 +17,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -340,6 +341,15 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 			ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
+	 * Get a device event by unique id.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException;
+
+	/**
 	 * Add measurements for a given device assignment.
 	 * 
 	 * @param assignment
@@ -462,15 +472,6 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 */
 	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
-
-	/**
-	 * Get a device command invocation by unique id.
-	 * 
-	 * @param id
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IDeviceCommandInvocation getDeviceCommandInvocation(String id) throws SiteWhereException;
 
 	/**
 	 * Gets device command invocations for an assignment based on criteria.

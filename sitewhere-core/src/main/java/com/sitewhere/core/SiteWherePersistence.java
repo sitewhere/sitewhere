@@ -50,6 +50,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
@@ -505,6 +506,9 @@ public class SiteWherePersistence {
 		if (request.getTarget() == null) {
 			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
 		}
+		for (ICommandParameter parameter : command.getParameters()) {
+			checkData(parameter, request.getParameterValues());
+		}
 		DeviceCommandInvocation ci = new DeviceCommandInvocation();
 		deviceEventCreateLogic(request, assignment, ci);
 		ci.setCommandToken(command.getToken());
@@ -519,6 +523,61 @@ public class SiteWherePersistence {
 			ci.setStatus(CommandStatus.Pending);
 		}
 		return ci;
+	}
+
+	/**
+	 * Verify that data supplied for command parameters is valid.
+	 * 
+	 * @param parameter
+	 * @param values
+	 * @throws SiteWhereException
+	 */
+	protected static void checkData(ICommandParameter parameter, Map<String, String> values)
+			throws SiteWhereException {
+		// Make sure required fields are passed.
+		if (parameter.isRequired()) {
+			if (values.get(parameter.getName()) == null) {
+				throw new SiteWhereException("Required parameter '" + parameter.getName() + "' is missing.");
+			}
+		}
+		// If no value, do not try to validate.
+		String value = values.get(parameter.getName());
+		if (value == null) {
+			return;
+		}
+		switch (parameter.getType()) {
+		case Fixed32:
+		case Fixed64:
+		case Int32:
+		case Int64:
+		case SFixed32:
+		case SFixed64:
+		case SInt32:
+		case SInt64:
+		case UInt32:
+		case UInt64: {
+			try {
+				Long.parseLong(value);
+			} catch (NumberFormatException e) {
+				throw new SiteWhereException("Parameter '" + parameter.getName() + "' must be numeric.");
+			}
+		}
+		case Float: {
+			try {
+				Float.parseFloat(value);
+			} catch (NumberFormatException e) {
+				throw new SiteWhereException("Parameter '" + parameter.getName() + "' must be a float.");
+			}
+		}
+		case Double: {
+			try {
+				Double.parseDouble(value);
+			} catch (NumberFormatException e) {
+				throw new SiteWhereException("Parameter '" + parameter.getName() + "' must be a double.");
+			}
+		}
+		default:
+		}
 	}
 
 	/**

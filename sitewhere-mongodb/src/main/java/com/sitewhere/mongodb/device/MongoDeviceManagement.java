@@ -54,6 +54,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -1034,14 +1035,39 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandInvocation(java.lang
-	 * .String)
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceEventById(java.lang.String)
 	 */
 	@Override
-	public IDeviceCommandInvocation getDeviceCommandInvocation(String id) throws SiteWhereException {
-		IDeviceCommandInvocation result =
-				MongoPersistence.get(id, IDeviceCommandInvocation.class,
-						getMongoClient().getInvocationsCollection());
+	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
+		// TODO: This is a brute force way of searching to abstract out the fact that all
+		// events are in separate collections. Eventually, there just needs to be a single
+		// collection and an event type indocator.
+		IDeviceEvent result = null;
+		result =
+				MongoPersistence.get(id, IDeviceMeasurements.class,
+						getMongoClient().getMeasurementsCollection());
+		if (result == null) {
+			result =
+					MongoPersistence.get(id, IDeviceLocation.class, getMongoClient().getLocationsCollection());
+		}
+		if (result == null) {
+			result = MongoPersistence.get(id, IDeviceAlert.class, getMongoClient().getAlertsCollection());
+		}
+		if (result == null) {
+			result =
+					MongoPersistence.get(id, IDeviceCommandInvocation.class,
+							getMongoClient().getInvocationsCollection());
+		}
+		if (result == null) {
+			result =
+					MongoPersistence.get(id, IDeviceCommandResponse.class,
+							getMongoClient().getResponsesCollection());
+		}
+		if (result == null) {
+			result =
+					MongoPersistence.get(id, IDeviceStateChange.class,
+							getMongoClient().getStateChangesCollection());
+		}
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceEventId, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

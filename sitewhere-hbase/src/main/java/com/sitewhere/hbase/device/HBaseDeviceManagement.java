@@ -33,6 +33,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -452,6 +453,17 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceEventById(java.lang.String)
+	 */
+	@Override
+	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
+		return HBaseDeviceEvent.getDeviceEvent(client, id);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(com.sitewhere.
 	 * spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest)
@@ -580,18 +592,6 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		return HBaseDeviceEvent.createDeviceCommandInvocation(client, assignment, command, request);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceCommandInvocation(java.lang
-	 * .String)
-	 */
-	@Override
-	public IDeviceCommandInvocation getDeviceCommandInvocation(String id) throws SiteWhereException {
-		return HBaseDeviceEvent.getDeviceCommandInvocation(client, id);
 	}
 
 	/*

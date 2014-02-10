@@ -64,10 +64,12 @@
 		<td style="width: 205px">#:name#</td>
 		<td style="width: 145px">#:value#</td>
 		<td>
+<% if (request.getParameter("mdReadOnly") == null) { %>
 			<div style="text-align: right;">
 				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="Delete Metadata"
 					onclick="onDeleteMetadata_<%= request.getParameter("uid")%>('#:name#')"></i>
 			</div>
+<% } %>
 		</td>
 	</tr>
 </script>
@@ -77,6 +79,8 @@
 </div>
 <table id="sw-metadata-<%= request.getParameter("uid")%>" class="sw-sublist-list">
 </table>
+
+<% if (request.getParameter("mdReadOnly") == null) { %>
 <div class="sw-sublist-add-new">
 	<div class="sw-sublist-footer">
 		<div style="width: 225px; margin-left: 3px;">Name</div>
@@ -89,4 +93,5 @@
 	<a class="btn" href="javascript:void(0)" onclick="onAddMetadata_<%= request.getParameter("uid")%>()">
 		<i class="icon-plus sw-button-icon"></i> Add</a>
 	<div id="sw-metadata-error-<%= request.getParameter("uid")%>" style="color: #f00; display: none;"></div>
-</div>
+</div>	
+<% } %>

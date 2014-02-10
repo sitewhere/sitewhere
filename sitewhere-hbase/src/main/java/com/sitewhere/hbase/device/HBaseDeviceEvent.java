@@ -328,16 +328,16 @@ public class HBaseDeviceEvent {
 	}
 
 	/**
-	 * Get a {@link IDeviceCommandInvocation} by unique id.
+	 * Get a {@link IDeviceEvent} by unique id.
 	 * 
 	 * @param hbase
 	 * @param id
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceCommandInvocation getDeviceCommandInvocation(ISiteWhereHBaseClient hbase, String id)
+	public static IDeviceEvent getDeviceEvent(ISiteWhereHBaseClient hbase, String id)
 			throws SiteWhereException {
-		return getEventById(hbase, id, DeviceCommandInvocation.class);
+		return getEventById(hbase, id);
 	}
 
 	/**
@@ -598,7 +598,11 @@ public class HBaseDeviceEvent {
 	 */
 	public static IDeviceCommandResponse getDeviceCommandResponse(ISiteWhereHBaseClient hbase, String id)
 			throws SiteWhereException {
-		return getEventById(hbase, id, DeviceCommandResponse.class);
+		IDeviceEvent event = getEventById(hbase, id);
+		if (event instanceof IDeviceCommandResponse) {
+			return (IDeviceCommandResponse) event;
+		}
+		throw new SiteWhereException("Event is not a command response.");
 	}
 
 	/**
@@ -979,11 +983,10 @@ public class HBaseDeviceEvent {
 	 * 
 	 * @param hbase
 	 * @param id
-	 * @param type
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static <T> T getEventById(ISiteWhereHBaseClient hbase, String id, Class<T> type)
+	protected static IDeviceEvent getEventById(ISiteWhereHBaseClient hbase, String id)
 			throws SiteWhereException {
 		KeyValue keys = getDecodedEventId(id);
 		if (keys == null) {
@@ -996,10 +999,13 @@ public class HBaseDeviceEvent {
 			Get get = new Get(keys.getRow());
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, keys.getQualifier());
 			Result result = events.get(get);
+			byte type = keys.getQualifier()[3];
+			Class<? extends IDeviceEvent> eventClass = getEventClassForIndicator(type);
+
 			if (result != null) {
 				byte[] json = result.getValue(ISiteWhereHBase.FAMILY_ID, keys.getQualifier());
 				if (json != null) {
-					return MarshalUtils.unmarshalJson(json, type);
+					return MarshalUtils.unmarshalJson(json, eventClass);
 				}
 			}
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceEventId, ErrorLevel.ERROR,
@@ -1008,6 +1014,41 @@ public class HBaseDeviceEvent {
 			throw new SiteWhereException(e);
 		} finally {
 			HBaseUtils.closeCleanly(events);
+		}
+	}
+
+	/**
+	 * Get the REST wrapper class that can be used to unmarshal JSON.
+	 * 
+	 * @param indicator
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static Class<? extends IDeviceEvent> getEventClassForIndicator(byte indicator)
+			throws SiteWhereException {
+		EventRecordType eventType = EventRecordType.decode(indicator);
+		switch (eventType) {
+		case Measurement: {
+			return DeviceMeasurements.class;
+		}
+		case Location: {
+			return DeviceLocation.class;
+		}
+		case Alert: {
+			return DeviceAlert.class;
+		}
+		case CommandInvocation: {
+			return DeviceCommandInvocation.class;
+		}
+		case CommandResponse: {
+			return DeviceCommandResponse.class;
+		}
+		case StateChange: {
+			return DeviceStateChange.class;
+		}
+		default: {
+			throw new SiteWhereException("Id references unknown event type.");
+		}
 		}
 	}
 }

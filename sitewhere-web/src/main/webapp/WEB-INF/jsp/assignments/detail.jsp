@@ -138,6 +138,7 @@
 				<col style="width: 15%;"/>
 				<col style="width: 12%;"/>
 				<col style="width: 20%;"/>
+				<col style="width: 8%;"/>
 			</colgroup>
 			<thead>
 				<tr>
@@ -145,10 +146,11 @@
 					<th>Source</th>
 					<th>Target</th>
 					<th>Event Date</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr><td colspan="4"></td></tr>
+				<tr><td colspan="5"></td></tr>
 			</tbody>
 		</table>
 		<div id="invocations-pager" class="k-pager-wrap event-pager"></div>
@@ -157,8 +159,11 @@
 
 <%@ include file="../includes/assignmentUpdateDialog.inc"%>
 <%@ include file="../includes/commandInvokeDialog.inc"%>
+<%@ include file="../includes/invocationViewDialog.inc"%>
 <%@ include file="../includes/templateAssignmentEntry.inc"%>
 <%@ include file="../includes/templateInvocationEntry.inc"%>
+<%@ include file="../includes/templateInvocationSummaryEntry.inc"%>
+<%@ include file="../includes/templateResponseSummaryEntry.inc"%>
 <%@ include file="../includes/templateLocationEntry.inc"%>
 <%@ include file="../includes/templateMeasurementsEntry.inc"%>
 <%@ include file="../includes/templateAlertEntry.inc"%>
@@ -226,6 +231,11 @@
 	/** Called after successful missing assignment */
 	function onMissingAssignmentComplete() {
 		loadAssignment();
+	}
+	
+	/** Called to view an invocation */
+	function onViewInvocation(id) {
+		ivOpen(id);
 	}
 	
 	$(document).ready(function() {

@@ -95,6 +95,9 @@
 			for (var i = 0; i < selectedCommand.parameters.length; i++) {
 				var param = selectedCommand.parameters[i];
 				var value = $("#ci-param-" + param.name).val();
+				if (param.type == 'Bool') {
+					value = ($("#ci-param-" + param.name).is(':checked') ? "true" : "false");
+				}
 				params[param.name] = value; 
 			}
 			invocationData.parameterValues = params;
@@ -185,7 +188,11 @@
 			html += "<div class='control-group'>";
 			html += "<label class='control-label' for='ci-param-" + param.name + "'>" + param.name + "</label>";
 			html += "<div class='controls'>";
-			html += "<input type='text' id='ci-param-" + param.name + "' name='" + param.name + "' class='input-xlarge'>";
+			if (param.type == "Bool") {
+				html += "<input type='checkbox' id='ci-param-" + param.name + "' name='" + param.name + "'>";
+			} else {
+				html += "<input type='text' id='ci-param-" + param.name + "' name='" + param.name + "' class='input-xlarge'>";
+			}
 			html += "</div>";
 			html += "</div>";
 		}

@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.web.rest.model.DeviceCommandInvocationMarshalHelper;
+import com.sitewhere.web.rest.view.DeviceInvocationSummaryBuilder;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -48,10 +52,39 @@ public class InvocationsController extends SiteWhereController {
 	public IDeviceCommandInvocation getDeviceCommandInvocation(
 			@ApiParam(value = "Unique id", required = true) @PathVariable String id)
 			throws SiteWhereException {
-		IDeviceCommandInvocation found =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceCommandInvocation(id);
+		IDeviceEvent found = SiteWhereServer.getInstance().getDeviceManagement().getDeviceEventById(id);
+		if (!(found instanceof IDeviceCommandInvocation)) {
+			throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
+		}
 		DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
-		return helper.convert(found);
+		return helper.convert((IDeviceCommandInvocation) found);
+	}
+
+	/**
+	 * Get a summarized version of the given device command invocation.
+	 * 
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{id}/summary", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get device command invocation summary by unique id.")
+	public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
+			@ApiParam(value = "Unique id", required = true) @PathVariable String id)
+			throws SiteWhereException {
+		IDeviceEvent found = SiteWhereServer.getInstance().getDeviceManagement().getDeviceEventById(id);
+		if (!(found instanceof IDeviceCommandInvocation)) {
+			throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
+		}
+		IDeviceCommandInvocation invocation = (IDeviceCommandInvocation) found;
+		DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
+		helper.setIncludeCommand(true);
+		DeviceCommandInvocation converted = helper.convert(invocation);
+		ISearchResults<IDeviceCommandResponse> responses =
+				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandInvocationResponses(
+						found.getId());
+		return DeviceInvocationSummaryBuilder.build(converted, responses.getResults());
 	}
 
 	/**

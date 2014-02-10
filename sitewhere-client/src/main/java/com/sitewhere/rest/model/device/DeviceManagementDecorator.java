@@ -24,6 +24,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -234,6 +235,11 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
+	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
+		return delegate.getDeviceEventById(id);
+	}
+
+	@Override
 	public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
 			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
 		return delegate.addDeviceMeasurements(assignment, measurements);
@@ -297,11 +303,6 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		return delegate.addDeviceCommandInvocation(assignment, command, request);
-	}
-
-	@Override
-	public IDeviceCommandInvocation getDeviceCommandInvocation(String id) throws SiteWhereException {
-		return delegate.getDeviceCommandInvocation(id);
 	}
 
 	@Override

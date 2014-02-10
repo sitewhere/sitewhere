@@ -60,4 +60,19 @@ public enum EventRecordType {
 	public byte getType() {
 		return type;
 	}
+
+	/**
+	 * Decode a byte value to a record type.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static EventRecordType decode(byte type) {
+		for (EventRecordType current : EventRecordType.values()) {
+			if (current.getType() == type) {
+				return current;
+			}
+		}
+		return null;
+	}
 }
