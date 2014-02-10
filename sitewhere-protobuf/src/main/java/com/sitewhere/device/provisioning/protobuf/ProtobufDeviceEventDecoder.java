@@ -11,7 +11,9 @@ package com.sitewhere.device.provisioning.protobuf;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -45,12 +47,14 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 	 * @see com.sitewhere.spi.device.provisioning.IDeviceEventDecoder#decode(byte[])
 	 */
 	@Override
-	public IDecodedDeviceEventRequest decode(byte[] payload) throws SiteWhereException {
+	public List<IDecodedDeviceEventRequest> decode(byte[] payload) throws SiteWhereException {
 		try {
 			ByteArrayInputStream stream = new ByteArrayInputStream(payload);
 			Header header = SiteWhere.Header.parseDelimitedFrom(stream);
+			List<IDecodedDeviceEventRequest> results = new ArrayList<IDecodedDeviceEventRequest>();
 			DecodedDeviceEventRequest decoded = new DecodedDeviceEventRequest();
 			decoded.setOriginator(header.getOriginator());
+			results.add(decoded);
 			switch (header.getCommand()) {
 			case REGISTER: {
 				RegisterDevice register = RegisterDevice.parseDelimitedFrom(stream);
@@ -61,7 +65,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 				request.setReplyTo(null);
 				decoded.setHardwareId(register.getHardwareId());
 				decoded.setRequest(request);
-				return decoded;
+				return results;
 			}
 			case ACKNOWLEDGE: {
 				Acknowledge ack = Acknowledge.parseDelimitedFrom(stream);
@@ -71,7 +75,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 				request.setResponse(ack.getMessage());
 				decoded.setHardwareId(ack.getHardwareId());
 				decoded.setRequest(request);
-				return decoded;
+				return results;
 			}
 			case DEVICELOCATION: {
 				DeviceLocation location = DeviceLocation.parseDelimitedFrom(stream);
@@ -89,7 +93,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 				}
 				decoded.setHardwareId(location.getHardwareId());
 				decoded.setRequest(request);
-				return decoded;
+				return results;
 			}
 			default: {
 				throw new SiteWhereException("Unable to decode message. Type not supported: "
