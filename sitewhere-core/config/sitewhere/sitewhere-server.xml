@@ -73,6 +73,8 @@
 	<!-- # DEVICE PROVISIONING # -->
 	<!-- ####################### -->
 	
+	<!-- OUTBOUND PROCESSING -->
+	
 	<!-- Encodes device commands using Google Protocol Buffers -->
 	<bean id="protobufExecutionEncoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
 	
@@ -84,10 +86,13 @@
 		<property name="systemTopicPrefix" value="SiteWhere/system/"/>
 	</bean>
 	
-	<!-- Device event receiver that monitors an MQTT topic for events -->
-	<bean id="mqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver">
+	<!-- GOOGLE PROTOCOL BUFFER INBOUND PROCESSING -->
+	
+	<!-- Device event receiver that monitors an MQTT topic for events (protobuf format) -->
+	<bean id="protobufMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
+		<property name="topic" value="SiteWhere/input/protobuf"/>
 	</bean>
 	
 	<!-- Decodes device event messages using Google Protocol Buffers -->
@@ -98,10 +103,34 @@
 		<property name="deviceEventDecoder" ref="protobufEventDecoder"/>
 		<property name="deviceEventReceivers">
 			<list>
-				<ref bean="mqttEventReceiver"/>
+				<ref bean="protobufMqttEventReceiver"/>
 			</list>
 		</property>
 	</bean>
+	
+	<!-- JSON BATCH INBOUND PROCESSING -->
+	
+	<!-- Device event receiver that monitors an MQTT topic for events (JSON batch format) -->
+	<bean id="jsonMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver">
+		<property name="hostname" value="localhost"/>
+		<property name="port" value="1883"/>
+		<property name="topic" value="SiteWhere/input/jsonbatch"/>
+	</bean>
+	
+	<!-- Decodes device event messages using Jackson/JSON -->
+	<bean id="jsonEventDecoder" class="com.sitewhere.device.provisioning.decoders.JsonBatchEventDecoder"/>
+	
+	<!-- Device event processor for protobuf messages over MQTT -->
+	<bean id="jsonEventProcessor" class="com.sitewhere.device.provisioning.DefaultDeviceEventProcessor">
+		<property name="deviceEventDecoder" ref="jsonEventDecoder"/>
+		<property name="deviceEventReceivers">
+			<list>
+				<ref bean="jsonMqttEventReceiver"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- REGISTRATION -->
 	
 	<!-- Manages registration of new devices in the system -->
 	<bean id="protobufRegistrationManager" class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager">
@@ -117,6 +146,7 @@
 		<property name="deviceEventProcessors">
 			<list>
 				<ref bean="protbufEventProcessor"/>
+				<ref bean="jsonEventProcessor"/>
 			</list>
 		</property>
 	</bean>

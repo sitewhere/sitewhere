@@ -113,7 +113,7 @@
 						<div class="control-group">
 							<label class="control-label" for="mqtt-topic">Topic</label>
 							<div class="controls">
-								<input type="text" id="mqtt-topic" class="input-large" value="SiteWhere/input">
+								<input type="text" id="mqtt-topic" class="input-large" value="SiteWhere/input/jsonbatch">
 							</div>
 						</div>
 					</form>
