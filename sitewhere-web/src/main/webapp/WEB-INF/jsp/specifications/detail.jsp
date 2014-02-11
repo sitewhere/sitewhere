@@ -49,7 +49,7 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
 	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-device" class="btn" href="javascript:void(0)">
+		<a id="btn-edit-specification" class="btn" href="javascript:void(0)">
 			<i class="icon-pencil sw-button-icon"></i> Edit Specification</a>
 	</div>
 </div>
@@ -77,13 +77,11 @@
 </div>
 
 <%@ include file="../includes/commandCreateDialog.inc"%>
-
+<%@ include file="../includes/specificationCreateDialog.inc"%>
 <%@ include file="../includes/templateSpecificationEntry.inc"%>
-
 <%@ include file="../includes/templateCommandEntry.inc"%>
-
 <%@ include file="../includes/templateCommandParamEntry.inc"%>
-
+<%@ include file="../includes/assetTemplates.inc"%>
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
@@ -100,9 +98,23 @@
 	    	ccOpen(specToken, onCommandCreateSuccess);
 	    });
 		
+	    $("#btn-edit-specification").click(function() {
+	    	onSpecificationEditClicked();
+	    });
+		
 		loadSpecification();
 		loadCommands();
 	});
+	
+	/** Called when edit button on the list entry is pressed */
+	function onSpecificationEditClicked() {
+		spuOpen(specToken, onSpecificationEditComplete);
+	}
+	
+	/** Called after successful specification update */
+	function onSpecificationEditComplete() {
+		loadSpecification();
+	}
 	
 	/** Called when 'edit command' is clicked */
 	function onEditCommand(e, token) {

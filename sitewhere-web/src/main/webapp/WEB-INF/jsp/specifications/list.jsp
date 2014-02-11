@@ -29,9 +29,7 @@
 </form>
 
 <%@ include file="../includes/templateSpecificationEntry.inc"%>
-
 <%@ include file="../includes/assetTemplates.inc"%>
-
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
