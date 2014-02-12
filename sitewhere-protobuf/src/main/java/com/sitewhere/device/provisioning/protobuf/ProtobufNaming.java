@@ -9,6 +9,10 @@
  */
 package com.sitewhere.device.provisioning.protobuf;
 
+import java.nio.ByteBuffer;
+import java.util.UUID;
+
+import com.google.bitcoin.core.Base58;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 
@@ -42,7 +46,13 @@ public class ProtobufNaming {
 	 * @return
 	 */
 	protected static String getSpecificationIdentifier(IDeviceSpecification specification) {
-		return specification.getName().replace(' ', '_').toLowerCase().trim();
+		UUID uuid = UUID.fromString(specification.getToken());
+		long low = uuid.getLeastSignificantBits();
+		long high = uuid.getMostSignificantBits();
+		ByteBuffer buffer = ByteBuffer.allocate(16);
+		buffer.putLong(low);
+		buffer.putLong(high);
+		return "Spec_" + Base58.encode(buffer.array());
 	}
 
 	/**

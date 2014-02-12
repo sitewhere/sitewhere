@@ -9,6 +9,8 @@
  */
 package com.sitewhere.device.provisioning.protobuf;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.sitewhere.server.SiteWhereServer;
@@ -25,7 +27,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 public class SpecificationProtoBuilder {
 
 	/** Declare once to prevent having to dynamically allocate */
-	private static final String INDENT_CHAR = "                    ";
+	private static final String INDENT_CHAR = "\t\t\t\t\t\t\t\t\t\t\t\t";
 
 	/**
 	 * Generate a '.proto' file for a specification.
@@ -55,12 +57,13 @@ public class SpecificationProtoBuilder {
 	protected static void generateProto(IDeviceSpecification specification, List<IDeviceCommand> commands,
 			StringBuffer buffer) throws SiteWhereException {
 		int indent = 0;
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");
 		String specName = ProtobufNaming.getSpecificationIdentifier(specification);
 		println("option optimize_for = LITE_RUNTIME;", indent, buffer);
 		newline(buffer);
-		println("import \"sitewhere.proto\";", indent, buffer);
-		newline(buffer);
 
+		println("// Google Protocol Buffer for '" + specification.getName() + "'.", indent, buffer);
+		println("// Generated on " + formatter.format(new Date()), indent, buffer);
 		println("message " + specName + " {", indent, buffer);
 		newline(buffer);
 		addCommandsEnum(specification, commands, buffer, indent + 1);
@@ -149,7 +152,7 @@ public class SpecificationProtoBuilder {
 	 * @param buffer
 	 */
 	protected static void println(String line, int indent, StringBuffer buffer) {
-		buffer.append(INDENT_CHAR.substring(0, 2 * indent) + line + "\n");
+		buffer.append(INDENT_CHAR.substring(0, indent) + line + "\n");
 	}
 
 	/**

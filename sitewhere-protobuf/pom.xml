@@ -31,7 +31,19 @@
 			<artifactId>protobuf-java</artifactId>
 			<version>2.5.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google</groupId>
+			<artifactId>bitcoinj</artifactId>
+			<version>0.10.3</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>bitcoinj</id>
+			<url>http://distribution.bitcoinj.googlecode.com/git/releases/</url>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>

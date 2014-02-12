@@ -16,6 +16,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -116,6 +120,27 @@ public class SpecificationsController extends SiteWhereController {
 		String proto = SpecificationProtoBuilder.getProtoForSpecification(specification);
 		response.setContentType("text/plain");
 		return proto;
+	}
+
+	/**
+	 * Get a device specification by unique token.
+	 * 
+	 * @param hardwareId
+	 * @return
+	 */
+	@RequestMapping(value = "/{token}/spec.proto", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get a device specification by unique token")
+	public ResponseEntity<byte[]> getDeviceSpecificationProtoFileByToken(
+			@ApiParam(value = "Token", required = true) @PathVariable String token,
+			HttpServletResponse response) throws SiteWhereException {
+		IDeviceSpecification specification = assertDeviceSpecificationByToken(token);
+		String proto = SpecificationProtoBuilder.getProtoForSpecification(specification);
+
+		final HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		headers.set("Content-Disposition", "attachment; filename=Spec_" + specification.getToken() + ".proto");
+		return new ResponseEntity<byte[]>(proto.getBytes(), headers, HttpStatus.OK);
 	}
 
 	/**

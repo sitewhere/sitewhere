@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="sitewhere_title" value="View Specification" />
 <c:set var="sitewhere_section" value="specifications" />
+<c:set var="use_map_includes" value="true" />
 <%@ include file="../includes/top.inc"%>
 
 <style>
@@ -61,6 +62,7 @@
 <div id="tabs">
 	<ul>
 		<li class="k-state-active">Commands</li>
+		<li>Code Generation</li>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
@@ -73,6 +75,19 @@
 			</div>
 		</div>
 		<div id="commands" class="sw-assignment-list"></div>
+	</div>
+	<div>
+		<div class="k-header sw-button-bar">
+			<div class="sw-button-bar-title">Google Protocol Buffer Definition</div>
+			<div>
+				<a id="btn-refresh-protobuf" class="btn" href="javascript:void(0)">
+					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-download-protobuf" class="btn" href="javascript:void(0)">
+					<i class="icon-download-alt sw-button-icon"></i> Download</a>
+			</div>
+		</div>
+		<div id="sw-proto-section" class="protobuf" style="max-height: 450px; overflow-y: auto;">
+		</div>
 	</div>
 </div>
 
@@ -102,8 +117,18 @@
 	    	onSpecificationEditClicked();
 	    });
 		
+	    $("#btn-refresh-protobuf").click(function() {
+	    	loadProtobuf();
+	    });
+		
+	    $("#btn-download-protobuf").click(function(e) {
+	        e.preventDefault();
+	        window.location.href = "${pageContext.request.contextPath}/api/specifications/" + specToken + "/spec.proto";
+	    });
+		
 		loadSpecification();
 		loadCommands();
+		
 	});
 	
 	/** Called when edit button on the list entry is pressed */
@@ -145,6 +170,7 @@
 		parseSpecificationData(data);
 		data.inDetailView = true;
 		$('#specification-details').html(template(data));
+		loadProtobuf();
     }
     
 	/** Handle error on getting specification data */
@@ -231,6 +257,14 @@
 	/** Handle error on getting specification command data */
 	function loadCommandsFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to load specification command data.");
+	}
+	
+	/** Load google protocol buffer definition */
+	function loadProtobuf() {
+		$.get("${pageContext.request.contextPath}/api/specifications/" + specToken + "/proto", function(data) {
+			$("#sw-proto-section").html("<pre><code>" + data + "</code></pre>");
+			hljs.highlightBlock(document.getElementById('sw-proto-section').childNodes[0]);
+		});	
 	}
 </script>
 
