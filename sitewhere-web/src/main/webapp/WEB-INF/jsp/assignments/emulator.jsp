@@ -78,7 +78,7 @@
 						<div class="control-group">
 							<label class="control-label" for="mqtt-host-name">MQTT Host Name</label>
 							<div class="controls">
-								<input type="text" id="mqtt-host-name" value="localhost"
+								<input type="text" id="mqtt-host-name" value="<%= request.getServerName() %>"
 									class="input-large" title="Host name">
 							</div>
 						</div>
@@ -457,8 +457,9 @@
 		
 		// Create layer for locations
 		locationsLayer = L.FeatureGroup.SiteWhere.assignmentLocations({
-			'assignmentToken': token,
-			'onLocationsLoaded': onLocationsUpdated,
+			siteWhereApi: '${pageContext.request.contextPath}/api/',
+			assignmentToken: token,
+			onLocationsLoaded: onLocationsUpdated,
 		});
 		map.addLayer(locationsLayer);
 	}
@@ -845,6 +846,7 @@
        
         /** Create emulator map */
 		map = L.Map.siteWhere('emulator-map', {
+			siteWhereApi: '${pageContext.request.contextPath}/api/',
 		    siteToken: siteToken,
 		    onZonesLoaded: onZonesLoaded,
 		});
