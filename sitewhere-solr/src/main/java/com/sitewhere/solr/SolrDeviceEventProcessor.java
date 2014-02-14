@@ -164,9 +164,13 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor implements 
 				try {
 					SolrInputDocument document = queue.take();
 					try {
+						LOGGER.debug("Indexing document in Solr...");
 						UpdateResponse response = solr.add(document);
-						if (response.getStatus() != 0) {
-							LOGGER.info("Bad response code indexing document: " + response.getStatus());
+						if (response.getStatus() == 0) {
+							LOGGER.debug("Indexed document successfully. " + response.toString());
+							solr.commit();
+						} else {
+							LOGGER.warn("Bad response code indexing document: " + response.getStatus());
 						}
 					} catch (SolrServerException e) {
 						LOGGER.error("Exception indexing SiteWhere document.", e);
