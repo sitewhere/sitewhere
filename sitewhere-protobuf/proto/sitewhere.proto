@@ -1,15 +1,9 @@
 option optimize_for = LITE_RUNTIME;
 
-// Stores a 128 bit UUID value.
-message Uuid {
-	required int64 lsb = 1;
-	required int64 msb = 2;
-}
-
 // Encapsulates data sent to SiteWhere.
 message SiteWhere {
 
-	enum Command {REGISTER = 1; ACKNOWLEDGE = 2; DEVICELOCATION = 3; DEVICEALERT = 4; DEVICEMEASUREMENTS = 5; } 
+	enum Command {REGISTER = 1; ACKNOWLEDGE = 2; DEVICELOCATION = 3; DEVICEALERT = 4; DEVICEMEASUREMENT = 5; } 
 	
 	// Header contains the command and originator.
 	message Header {
@@ -45,18 +39,13 @@ message SiteWhere {
 		required string alertMessage = 3;
 		optional int64 eventDate = 4;
 	}
-	
-	// Single measurement entry.
-	message Measurement {
-		required string measurementId = 1;
-		required float value = 2;
-	}
 
-	// Report device measurements.
-	message DeviceMeasurements {
+	// Report device measurement.
+	message DeviceMeasurement {
 		required string hardwareId = 1;
-		repeated Measurement measurement = 2;
-		optional int64 eventDate = 3;
+		required string measurementId = 2;
+		required float measurementValue = 3;
+		optional int64 eventDate = 4;
 	}
 }
 

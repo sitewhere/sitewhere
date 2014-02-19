@@ -23,11 +23,9 @@ SiteWhere.DeviceAlert.hardwareId 					max_size:40
 SiteWhere.DeviceAlert.alertType 					max_size:25
 SiteWhere.DeviceAlert.alertMessage 					max_size:50
 
-# Max lengths for measurement().
-SiteWhere.Measurement.measurementId 				max_size:25
-
 # Max lengths for deviceMeasurements().
-SiteWhere.DeviceMeasurements.hardwareId 			max_size:40
+SiteWhere.DeviceMeasurement.hardwareId 				max_size:40
+SiteWhere.DeviceMeasurement.measurementId 			max_size:25
 
 ##################################
 # Fields Received from SiteWhere #

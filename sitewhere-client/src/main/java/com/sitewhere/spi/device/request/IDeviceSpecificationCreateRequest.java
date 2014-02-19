@@ -31,4 +31,11 @@ public interface IDeviceSpecificationCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public String getAssetId();
+
+	/**
+	 * Allows the specification id to be specified. (Optional)
+	 * 
+	 * @return
+	 */
+	public String getSpecificationId();
 }

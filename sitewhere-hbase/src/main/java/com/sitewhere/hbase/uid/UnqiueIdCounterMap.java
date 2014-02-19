@@ -28,7 +28,8 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UnqiueIdCounterMap extends UniqueIdMap<String, Long> {
 
-	public UnqiueIdCounterMap(ISiteWhereHBaseClient hbase, UniqueIdType keyIndicator, UniqueIdType valueIndicator) {
+	public UnqiueIdCounterMap(ISiteWhereHBaseClient hbase, UniqueIdType keyIndicator,
+			UniqueIdType valueIndicator) {
 		super(hbase, keyIndicator, valueIndicator);
 	}
 
@@ -40,6 +41,19 @@ public class UnqiueIdCounterMap extends UniqueIdMap<String, Long> {
 	 */
 	public String createUniqueId() throws SiteWhereException {
 		String uuid = UUID.randomUUID().toString();
+		Long value = getNextCounterValue();
+		create(uuid, value);
+		return uuid;
+	}
+
+	/**
+	 * Uses an externally specified identifier to map the next available id.
+	 * 
+	 * @param uuid
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public String useExistingId(String uuid) throws SiteWhereException {
 		Long value = getNextCounterValue();
 		create(uuid, value);
 		return uuid;

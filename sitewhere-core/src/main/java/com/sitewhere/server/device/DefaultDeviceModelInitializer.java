@@ -128,9 +128,12 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final String CORE_HWCORE_NAMESPACE = "common://hardware/core";
 
 	/** Information for available device specifications */
-	public static final SpecificationDetails[] SPECIFICATION_INFO = {
-			new SpecificationDetails("174", "MeiTrack MT88 Profile"),
-			new SpecificationDetails("175", "MeiTrack MT90 Profile") };
+	public static final SpecificationDetails[] SPECIFICATION_INFO =
+			{
+					new SpecificationDetails("174", "Arduino Uno Default",
+							"7dfd6d63-5e8d-4380-be04-fc5c73801dfb"),
+					new SpecificationDetails("175", "MeiTrack MT90 Default",
+							"82043707-9e3d-441f-bdcc-33cf0f4f7260") };
 
 	/** Available device specifications */
 	protected IDeviceSpecification[] deviceSpecifications;
@@ -222,6 +225,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			DeviceSpecificationCreateRequest request = new DeviceSpecificationCreateRequest();
 			request.setAssetId(details.getAssetId());
 			request.setName(details.getName());
+			request.setSpecificationId(details.getUuid());
 			IDeviceSpecification spec = getDeviceManagement().createDeviceSpecification(request);
 			createDeviceCommands(spec);
 			results[index] = spec;
@@ -660,9 +664,12 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 		private String name;
 
-		public SpecificationDetails(String assetId, String name) {
+		private String uuid;
+
+		public SpecificationDetails(String assetId, String name, String uuid) {
 			this.assetId = assetId;
 			this.name = name;
+			this.uuid = uuid;
 		}
 
 		public String getAssetId() {
@@ -671,6 +678,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 		public String getName() {
 			return name;
+		}
+
+		public String getUuid() {
+			return uuid;
 		}
 	}
 

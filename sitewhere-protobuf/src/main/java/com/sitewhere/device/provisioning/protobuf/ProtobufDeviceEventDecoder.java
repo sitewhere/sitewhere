@@ -19,14 +19,19 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Acknowledge;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceAlert;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceLocation;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceMeasurement;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Header;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.RegisterDevice;
+import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.provisioning.DecodedDeviceEventRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
 
@@ -77,6 +82,21 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 				decoded.setRequest(request);
 				return results;
 			}
+			case DEVICEMEASUREMENT: {
+				DeviceMeasurement measurement = DeviceMeasurement.parseDelimitedFrom(stream);
+				LOGGER.debug("Decoded measurement for: " + measurement.getHardwareId());
+				DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
+				request.addOrReplaceMeasurement(measurement.getMeasurementId(),
+						Double.parseDouble(String.valueOf(measurement.getMeasurementValue())));
+				if (measurement.hasEventDate()) {
+					request.setEventDate(new Date(measurement.getEventDate()));
+				} else {
+					request.setEventDate(new Date());
+				}
+				decoded.setHardwareId(measurement.getHardwareId());
+				decoded.setRequest(request);
+				return results;
+			}
 			case DEVICELOCATION: {
 				DeviceLocation location = DeviceLocation.parseDelimitedFrom(stream);
 				LOGGER.debug("Decoded location for: " + location.getHardwareId());
@@ -92,6 +112,22 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 					request.setEventDate(new Date());
 				}
 				decoded.setHardwareId(location.getHardwareId());
+				decoded.setRequest(request);
+				return results;
+			}
+			case DEVICEALERT: {
+				DeviceAlert alert = DeviceAlert.parseDelimitedFrom(stream);
+				LOGGER.debug("Decoded alert for: " + alert.getHardwareId());
+				DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
+				request.setType(alert.getAlertType());
+				request.setMessage(alert.getAlertMessage());
+				request.setLevel(AlertLevel.Info);
+				if (alert.hasEventDate()) {
+					request.setEventDate(new Date(alert.getEventDate()));
+				} else {
+					request.setEventDate(new Date());
+				}
+				decoded.setHardwareId(alert.getHardwareId());
 				decoded.setRequest(request);
 				return results;
 			}

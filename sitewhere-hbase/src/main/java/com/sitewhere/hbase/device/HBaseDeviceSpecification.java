@@ -68,7 +68,12 @@ public class HBaseDeviceSpecification {
 	 */
 	public static IDeviceSpecification createDeviceSpecification(ISiteWhereHBaseClient hbase,
 			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
-		String uuid = IdManager.getInstance().getSpecificationKeys().createUniqueId();
+		String uuid = null;
+		if (request.getSpecificationId() != null) {
+			uuid = IdManager.getInstance().getSpecificationKeys().useExistingId(uuid);
+		} else {
+			uuid = IdManager.getInstance().getSpecificationKeys().createUniqueId();
+		}
 
 		// Use common logic so all backend implementations work the same.
 		DeviceSpecification specification =

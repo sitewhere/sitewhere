@@ -164,9 +164,15 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	@Override
 	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
 			throws SiteWhereException {
+		String uuid = null;
+		if (request.getSpecificationId() != null) {
+			uuid = request.getSpecificationId();
+		} else {
+			uuid = UUID.randomUUID().toString();
+		}
+
 		// Use common logic so all backend implementations work the same.
-		DeviceSpecification spec =
-				SiteWherePersistence.deviceSpecificationCreateLogic(request, UUID.randomUUID().toString());
+		DeviceSpecification spec = SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
 
 		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
 		DBObject created = MongoDeviceSpecification.toDBObject(spec);

@@ -9,444 +9,6 @@ public final class Sitewhere {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
-  public interface UuidOrBuilder
-      extends com.google.protobuf.MessageLiteOrBuilder {
-
-    // required int64 lsb = 1;
-    /**
-     * <code>required int64 lsb = 1;</code>
-     */
-    boolean hasLsb();
-    /**
-     * <code>required int64 lsb = 1;</code>
-     */
-    long getLsb();
-
-    // required int64 msb = 2;
-    /**
-     * <code>required int64 msb = 2;</code>
-     */
-    boolean hasMsb();
-    /**
-     * <code>required int64 msb = 2;</code>
-     */
-    long getMsb();
-  }
-  /**
-   * Protobuf type {@code Uuid}
-   *
-   * <pre>
-   * Stores a 128 bit UUID value.
-   * </pre>
-   */
-  public static final class Uuid extends
-      com.google.protobuf.GeneratedMessageLite
-      implements UuidOrBuilder {
-    // Use Uuid.newBuilder() to construct.
-    private Uuid(com.google.protobuf.GeneratedMessageLite.Builder builder) {
-      super(builder);
-
-    }
-    private Uuid(boolean noInit) {}
-
-    private static final Uuid defaultInstance;
-    public static Uuid getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public Uuid getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private Uuid(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              lsb_ = input.readInt64();
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              msb_ = input.readInt64();
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        makeExtensionsImmutable();
-      }
-    }
-    public static com.google.protobuf.Parser<Uuid> PARSER =
-        new com.google.protobuf.AbstractParser<Uuid>() {
-      public Uuid parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Uuid(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<Uuid> getParserForType() {
-      return PARSER;
-    }
-
-    private int bitField0_;
-    // required int64 lsb = 1;
-    public static final int LSB_FIELD_NUMBER = 1;
-    private long lsb_;
-    /**
-     * <code>required int64 lsb = 1;</code>
-     */
-    public boolean hasLsb() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required int64 lsb = 1;</code>
-     */
-    public long getLsb() {
-      return lsb_;
-    }
-
-    // required int64 msb = 2;
-    public static final int MSB_FIELD_NUMBER = 2;
-    private long msb_;
-    /**
-     * <code>required int64 msb = 2;</code>
-     */
-    public boolean hasMsb() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required int64 msb = 2;</code>
-     */
-    public long getMsb() {
-      return msb_;
-    }
-
-    private void initFields() {
-      lsb_ = 0L;
-      msb_ = 0L;
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-
-      if (!hasLsb()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasMsb()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt64(1, lsb_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt64(2, msb_);
-      }
-    }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(1, lsb_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, msb_);
-      }
-      memoizedSerializedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-
-    public static Sitewhere.Uuid parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static Sitewhere.Uuid parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static Sitewhere.Uuid parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static Sitewhere.Uuid parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static Sitewhere.Uuid parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static Sitewhere.Uuid parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static Sitewhere.Uuid parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static Sitewhere.Uuid parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static Sitewhere.Uuid parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static Sitewhere.Uuid parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(Sitewhere.Uuid prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    /**
-     * Protobuf type {@code Uuid}
-     *
-     * <pre>
-     * Stores a 128 bit UUID value.
-     * </pre>
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          Sitewhere.Uuid, Builder>
-        implements Sitewhere.UuidOrBuilder {
-      // Construct using Sitewhere.Uuid.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private void maybeForceBuilderInitialization() {
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        lsb_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        msb_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public Sitewhere.Uuid getDefaultInstanceForType() {
-        return Sitewhere.Uuid.getDefaultInstance();
-      }
-
-      public Sitewhere.Uuid build() {
-        Sitewhere.Uuid result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public Sitewhere.Uuid buildPartial() {
-        Sitewhere.Uuid result = new Sitewhere.Uuid(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.lsb_ = lsb_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.msb_ = msb_;
-        result.bitField0_ = to_bitField0_;
-        return result;
-      }
-
-      public Builder mergeFrom(Sitewhere.Uuid other) {
-        if (other == Sitewhere.Uuid.getDefaultInstance()) return this;
-        if (other.hasLsb()) {
-          setLsb(other.getLsb());
-        }
-        if (other.hasMsb()) {
-          setMsb(other.getMsb());
-        }
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        if (!hasLsb()) {
-          
-          return false;
-        }
-        if (!hasMsb()) {
-          
-          return false;
-        }
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        Sitewhere.Uuid parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Sitewhere.Uuid) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      // required int64 lsb = 1;
-      private long lsb_ ;
-      /**
-       * <code>required int64 lsb = 1;</code>
-       */
-      public boolean hasLsb() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required int64 lsb = 1;</code>
-       */
-      public long getLsb() {
-        return lsb_;
-      }
-      /**
-       * <code>required int64 lsb = 1;</code>
-       */
-      public Builder setLsb(long value) {
-        bitField0_ |= 0x00000001;
-        lsb_ = value;
-        
-        return this;
-      }
-      /**
-       * <code>required int64 lsb = 1;</code>
-       */
-      public Builder clearLsb() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        lsb_ = 0L;
-        
-        return this;
-      }
-
-      // required int64 msb = 2;
-      private long msb_ ;
-      /**
-       * <code>required int64 msb = 2;</code>
-       */
-      public boolean hasMsb() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required int64 msb = 2;</code>
-       */
-      public long getMsb() {
-        return msb_;
-      }
-      /**
-       * <code>required int64 msb = 2;</code>
-       */
-      public Builder setMsb(long value) {
-        bitField0_ |= 0x00000002;
-        msb_ = value;
-        
-        return this;
-      }
-      /**
-       * <code>required int64 msb = 2;</code>
-       */
-      public Builder clearMsb() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        msb_ = 0L;
-        
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:Uuid)
-    }
-
-    static {
-      defaultInstance = new Uuid(true);
-      defaultInstance.initFields();
-    }
-
-    // @@protoc_insertion_point(class_scope:Uuid)
-  }
-
   public interface SiteWhereOrBuilder
       extends com.google.protobuf.MessageLiteOrBuilder {
   }
@@ -544,9 +106,9 @@ public final class Sitewhere {
        */
       DEVICEALERT(3, 4),
       /**
-       * <code>DEVICEMEASUREMENTS = 5;</code>
+       * <code>DEVICEMEASUREMENT = 5;</code>
        */
-      DEVICEMEASUREMENTS(4, 5),
+      DEVICEMEASUREMENT(4, 5),
       ;
 
       /**
@@ -566,9 +128,9 @@ public final class Sitewhere {
        */
       public static final int DEVICEALERT_VALUE = 4;
       /**
-       * <code>DEVICEMEASUREMENTS = 5;</code>
+       * <code>DEVICEMEASUREMENT = 5;</code>
        */
-      public static final int DEVICEMEASUREMENTS_VALUE = 5;
+      public static final int DEVICEMEASUREMENT_VALUE = 5;
 
 
       public final int getNumber() { return value; }
@@ -579,7 +141,7 @@ public final class Sitewhere {
           case 2: return ACKNOWLEDGE;
           case 3: return DEVICELOCATION;
           case 4: return DEVICEALERT;
-          case 5: return DEVICEMEASUREMENTS;
+          case 5: return DEVICEMEASUREMENT;
           default: return null;
         }
       }
@@ -3890,520 +3452,7 @@ public final class Sitewhere {
       // @@protoc_insertion_point(class_scope:SiteWhere.DeviceAlert)
     }
 
-    public interface MeasurementOrBuilder
-        extends com.google.protobuf.MessageLiteOrBuilder {
-
-      // required string measurementId = 1;
-      /**
-       * <code>required string measurementId = 1;</code>
-       */
-      boolean hasMeasurementId();
-      /**
-       * <code>required string measurementId = 1;</code>
-       */
-      java.lang.String getMeasurementId();
-      /**
-       * <code>required string measurementId = 1;</code>
-       */
-      com.google.protobuf.ByteString
-          getMeasurementIdBytes();
-
-      // required float value = 2;
-      /**
-       * <code>required float value = 2;</code>
-       */
-      boolean hasValue();
-      /**
-       * <code>required float value = 2;</code>
-       */
-      float getValue();
-    }
-    /**
-     * Protobuf type {@code SiteWhere.Measurement}
-     *
-     * <pre>
-     * Single measurement entry.
-     * </pre>
-     */
-    public static final class Measurement extends
-        com.google.protobuf.GeneratedMessageLite
-        implements MeasurementOrBuilder {
-      // Use Measurement.newBuilder() to construct.
-      private Measurement(com.google.protobuf.GeneratedMessageLite.Builder builder) {
-        super(builder);
-
-      }
-      private Measurement(boolean noInit) {}
-
-      private static final Measurement defaultInstance;
-      public static Measurement getDefaultInstance() {
-        return defaultInstance;
-      }
-
-      public Measurement getDefaultInstanceForType() {
-        return defaultInstance;
-      }
-
-      private Measurement(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        initFields();
-        int mutable_bitField0_ = 0;
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              default: {
-                if (!parseUnknownField(input,
-                                       extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
-              case 10: {
-                bitField0_ |= 0x00000001;
-                measurementId_ = input.readBytes();
-                break;
-              }
-              case 21: {
-                bitField0_ |= 0x00000002;
-                value_ = input.readFloat();
-                break;
-              }
-            }
-          }
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(this);
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(
-              e.getMessage()).setUnfinishedMessage(this);
-        } finally {
-          makeExtensionsImmutable();
-        }
-      }
-      public static com.google.protobuf.Parser<Measurement> PARSER =
-          new com.google.protobuf.AbstractParser<Measurement>() {
-        public Measurement parsePartialFrom(
-            com.google.protobuf.CodedInputStream input,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return new Measurement(input, extensionRegistry);
-        }
-      };
-
-      @java.lang.Override
-      public com.google.protobuf.Parser<Measurement> getParserForType() {
-        return PARSER;
-      }
-
-      private int bitField0_;
-      // required string measurementId = 1;
-      public static final int MEASUREMENTID_FIELD_NUMBER = 1;
-      private java.lang.Object measurementId_;
-      /**
-       * <code>required string measurementId = 1;</code>
-       */
-      public boolean hasMeasurementId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required string measurementId = 1;</code>
-       */
-      public java.lang.String getMeasurementId() {
-        java.lang.Object ref = measurementId_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            measurementId_ = s;
-          }
-          return s;
-        }
-      }
-      /**
-       * <code>required string measurementId = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getMeasurementIdBytes() {
-        java.lang.Object ref = measurementId_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          measurementId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      // required float value = 2;
-      public static final int VALUE_FIELD_NUMBER = 2;
-      private float value_;
-      /**
-       * <code>required float value = 2;</code>
-       */
-      public boolean hasValue() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required float value = 2;</code>
-       */
-      public float getValue() {
-        return value_;
-      }
-
-      private void initFields() {
-        measurementId_ = "";
-        value_ = 0F;
-      }
-      private byte memoizedIsInitialized = -1;
-      public final boolean isInitialized() {
-        byte isInitialized = memoizedIsInitialized;
-        if (isInitialized != -1) return isInitialized == 1;
-
-        if (!hasMeasurementId()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-        if (!hasValue()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-        memoizedIsInitialized = 1;
-        return true;
-      }
-
-      public void writeTo(com.google.protobuf.CodedOutputStream output)
-                          throws java.io.IOException {
-        getSerializedSize();
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          output.writeBytes(1, getMeasurementIdBytes());
-        }
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeFloat(2, value_);
-        }
-      }
-
-      private int memoizedSerializedSize = -1;
-      public int getSerializedSize() {
-        int size = memoizedSerializedSize;
-        if (size != -1) return size;
-
-        size = 0;
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(1, getMeasurementIdBytes());
-        }
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeFloatSize(2, value_);
-        }
-        memoizedSerializedSize = size;
-        return size;
-      }
-
-      private static final long serialVersionUID = 0L;
-      @java.lang.Override
-      protected java.lang.Object writeReplace()
-          throws java.io.ObjectStreamException {
-        return super.writeReplace();
-      }
-
-      public static Sitewhere.SiteWhere.Measurement parseFrom(
-          com.google.protobuf.ByteString data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseFrom(
-          com.google.protobuf.ByteString data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseFrom(byte[] data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseFrom(
-          byte[] data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseFrom(java.io.InputStream input)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseFrom(
-          java.io.InputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input, extensionRegistry);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseDelimitedFrom(java.io.InputStream input)
-          throws java.io.IOException {
-        return PARSER.parseDelimitedFrom(input);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseDelimitedFrom(
-          java.io.InputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseDelimitedFrom(input, extensionRegistry);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseFrom(
-          com.google.protobuf.CodedInputStream input)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input);
-      }
-      public static Sitewhere.SiteWhere.Measurement parseFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input, extensionRegistry);
-      }
-
-      public static Builder newBuilder() { return Builder.create(); }
-      public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(Sitewhere.SiteWhere.Measurement prototype) {
-        return newBuilder().mergeFrom(prototype);
-      }
-      public Builder toBuilder() { return newBuilder(this); }
-
-      /**
-       * Protobuf type {@code SiteWhere.Measurement}
-       *
-       * <pre>
-       * Single measurement entry.
-       * </pre>
-       */
-      public static final class Builder extends
-          com.google.protobuf.GeneratedMessageLite.Builder<
-            Sitewhere.SiteWhere.Measurement, Builder>
-          implements Sitewhere.SiteWhere.MeasurementOrBuilder {
-        // Construct using Sitewhere.SiteWhere.Measurement.newBuilder()
-        private Builder() {
-          maybeForceBuilderInitialization();
-        }
-
-        private void maybeForceBuilderInitialization() {
-        }
-        private static Builder create() {
-          return new Builder();
-        }
-
-        public Builder clear() {
-          super.clear();
-          measurementId_ = "";
-          bitField0_ = (bitField0_ & ~0x00000001);
-          value_ = 0F;
-          bitField0_ = (bitField0_ & ~0x00000002);
-          return this;
-        }
-
-        public Builder clone() {
-          return create().mergeFrom(buildPartial());
-        }
-
-        public Sitewhere.SiteWhere.Measurement getDefaultInstanceForType() {
-          return Sitewhere.SiteWhere.Measurement.getDefaultInstance();
-        }
-
-        public Sitewhere.SiteWhere.Measurement build() {
-          Sitewhere.SiteWhere.Measurement result = buildPartial();
-          if (!result.isInitialized()) {
-            throw newUninitializedMessageException(result);
-          }
-          return result;
-        }
-
-        public Sitewhere.SiteWhere.Measurement buildPartial() {
-          Sitewhere.SiteWhere.Measurement result = new Sitewhere.SiteWhere.Measurement(this);
-          int from_bitField0_ = bitField0_;
-          int to_bitField0_ = 0;
-          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-            to_bitField0_ |= 0x00000001;
-          }
-          result.measurementId_ = measurementId_;
-          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-            to_bitField0_ |= 0x00000002;
-          }
-          result.value_ = value_;
-          result.bitField0_ = to_bitField0_;
-          return result;
-        }
-
-        public Builder mergeFrom(Sitewhere.SiteWhere.Measurement other) {
-          if (other == Sitewhere.SiteWhere.Measurement.getDefaultInstance()) return this;
-          if (other.hasMeasurementId()) {
-            bitField0_ |= 0x00000001;
-            measurementId_ = other.measurementId_;
-            
-          }
-          if (other.hasValue()) {
-            setValue(other.getValue());
-          }
-          return this;
-        }
-
-        public final boolean isInitialized() {
-          if (!hasMeasurementId()) {
-            
-            return false;
-          }
-          if (!hasValue()) {
-            
-            return false;
-          }
-          return true;
-        }
-
-        public Builder mergeFrom(
-            com.google.protobuf.CodedInputStream input,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws java.io.IOException {
-          Sitewhere.SiteWhere.Measurement parsedMessage = null;
-          try {
-            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (Sitewhere.SiteWhere.Measurement) e.getUnfinishedMessage();
-            throw e;
-          } finally {
-            if (parsedMessage != null) {
-              mergeFrom(parsedMessage);
-            }
-          }
-          return this;
-        }
-        private int bitField0_;
-
-        // required string measurementId = 1;
-        private java.lang.Object measurementId_ = "";
-        /**
-         * <code>required string measurementId = 1;</code>
-         */
-        public boolean hasMeasurementId() {
-          return ((bitField0_ & 0x00000001) == 0x00000001);
-        }
-        /**
-         * <code>required string measurementId = 1;</code>
-         */
-        public java.lang.String getMeasurementId() {
-          java.lang.Object ref = measurementId_;
-          if (!(ref instanceof java.lang.String)) {
-            java.lang.String s = ((com.google.protobuf.ByteString) ref)
-                .toStringUtf8();
-            measurementId_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
-        }
-        /**
-         * <code>required string measurementId = 1;</code>
-         */
-        public com.google.protobuf.ByteString
-            getMeasurementIdBytes() {
-          java.lang.Object ref = measurementId_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            measurementId_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>required string measurementId = 1;</code>
-         */
-        public Builder setMeasurementId(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-          measurementId_ = value;
-          
-          return this;
-        }
-        /**
-         * <code>required string measurementId = 1;</code>
-         */
-        public Builder clearMeasurementId() {
-          bitField0_ = (bitField0_ & ~0x00000001);
-          measurementId_ = getDefaultInstance().getMeasurementId();
-          
-          return this;
-        }
-        /**
-         * <code>required string measurementId = 1;</code>
-         */
-        public Builder setMeasurementIdBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-          measurementId_ = value;
-          
-          return this;
-        }
-
-        // required float value = 2;
-        private float value_ ;
-        /**
-         * <code>required float value = 2;</code>
-         */
-        public boolean hasValue() {
-          return ((bitField0_ & 0x00000002) == 0x00000002);
-        }
-        /**
-         * <code>required float value = 2;</code>
-         */
-        public float getValue() {
-          return value_;
-        }
-        /**
-         * <code>required float value = 2;</code>
-         */
-        public Builder setValue(float value) {
-          bitField0_ |= 0x00000002;
-          value_ = value;
-          
-          return this;
-        }
-        /**
-         * <code>required float value = 2;</code>
-         */
-        public Builder clearValue() {
-          bitField0_ = (bitField0_ & ~0x00000002);
-          value_ = 0F;
-          
-          return this;
-        }
-
-        // @@protoc_insertion_point(builder_scope:SiteWhere.Measurement)
-      }
-
-      static {
-        defaultInstance = new Measurement(true);
-        defaultInstance.initFields();
-      }
-
-      // @@protoc_insertion_point(class_scope:SiteWhere.Measurement)
-    }
-
-    public interface DeviceMeasurementsOrBuilder
+    public interface DeviceMeasurementOrBuilder
         extends com.google.protobuf.MessageLiteOrBuilder {
 
       // required string hardwareId = 1;
@@ -4421,58 +3470,68 @@ public final class Sitewhere {
       com.google.protobuf.ByteString
           getHardwareIdBytes();
 
-      // repeated .SiteWhere.Measurement measurement = 2;
+      // required string measurementId = 2;
       /**
-       * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+       * <code>required string measurementId = 2;</code>
        */
-      java.util.List<Sitewhere.SiteWhere.Measurement> 
-          getMeasurementList();
+      boolean hasMeasurementId();
       /**
-       * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+       * <code>required string measurementId = 2;</code>
        */
-      Sitewhere.SiteWhere.Measurement getMeasurement(int index);
+      java.lang.String getMeasurementId();
       /**
-       * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+       * <code>required string measurementId = 2;</code>
        */
-      int getMeasurementCount();
+      com.google.protobuf.ByteString
+          getMeasurementIdBytes();
 
-      // optional int64 eventDate = 3;
+      // required float measurementValue = 3;
       /**
-       * <code>optional int64 eventDate = 3;</code>
+       * <code>required float measurementValue = 3;</code>
+       */
+      boolean hasMeasurementValue();
+      /**
+       * <code>required float measurementValue = 3;</code>
+       */
+      float getMeasurementValue();
+
+      // optional int64 eventDate = 4;
+      /**
+       * <code>optional int64 eventDate = 4;</code>
        */
       boolean hasEventDate();
       /**
-       * <code>optional int64 eventDate = 3;</code>
+       * <code>optional int64 eventDate = 4;</code>
        */
       long getEventDate();
     }
     /**
-     * Protobuf type {@code SiteWhere.DeviceMeasurements}
+     * Protobuf type {@code SiteWhere.DeviceMeasurement}
      *
      * <pre>
-     * Report device measurements.
+     * Report device measurement.
      * </pre>
      */
-    public static final class DeviceMeasurements extends
+    public static final class DeviceMeasurement extends
         com.google.protobuf.GeneratedMessageLite
-        implements DeviceMeasurementsOrBuilder {
-      // Use DeviceMeasurements.newBuilder() to construct.
-      private DeviceMeasurements(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+        implements DeviceMeasurementOrBuilder {
+      // Use DeviceMeasurement.newBuilder() to construct.
+      private DeviceMeasurement(com.google.protobuf.GeneratedMessageLite.Builder builder) {
         super(builder);
 
       }
-      private DeviceMeasurements(boolean noInit) {}
+      private DeviceMeasurement(boolean noInit) {}
 
-      private static final DeviceMeasurements defaultInstance;
-      public static DeviceMeasurements getDefaultInstance() {
+      private static final DeviceMeasurement defaultInstance;
+      public static DeviceMeasurement getDefaultInstance() {
         return defaultInstance;
       }
 
-      public DeviceMeasurements getDefaultInstanceForType() {
+      public DeviceMeasurement getDefaultInstanceForType() {
         return defaultInstance;
       }
 
-      private DeviceMeasurements(
+      private DeviceMeasurement(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -4499,15 +3558,17 @@ public final class Sitewhere {
                 break;
               }
               case 18: {
-                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                  measurement_ = new java.util.ArrayList<Sitewhere.SiteWhere.Measurement>();
-                  mutable_bitField0_ |= 0x00000002;
-                }
-                measurement_.add(input.readMessage(Sitewhere.SiteWhere.Measurement.PARSER, extensionRegistry));
+                bitField0_ |= 0x00000002;
+                measurementId_ = input.readBytes();
                 break;
               }
-              case 24: {
-                bitField0_ |= 0x00000002;
+              case 29: {
+                bitField0_ |= 0x00000004;
+                measurementValue_ = input.readFloat();
+                break;
+              }
+              case 32: {
+                bitField0_ |= 0x00000008;
                 eventDate_ = input.readInt64();
                 break;
               }
@@ -4519,24 +3580,21 @@ public final class Sitewhere {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e.getMessage()).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-            measurement_ = java.util.Collections.unmodifiableList(measurement_);
-          }
           makeExtensionsImmutable();
         }
       }
-      public static com.google.protobuf.Parser<DeviceMeasurements> PARSER =
-          new com.google.protobuf.AbstractParser<DeviceMeasurements>() {
-        public DeviceMeasurements parsePartialFrom(
+      public static com.google.protobuf.Parser<DeviceMeasurement> PARSER =
+          new com.google.protobuf.AbstractParser<DeviceMeasurement>() {
+        public DeviceMeasurement parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-          return new DeviceMeasurements(input, extensionRegistry);
+          return new DeviceMeasurement(input, extensionRegistry);
         }
       };
 
       @java.lang.Override
-      public com.google.protobuf.Parser<DeviceMeasurements> getParserForType() {
+      public com.google.protobuf.Parser<DeviceMeasurement> getParserForType() {
         return PARSER;
       }
 
@@ -4584,53 +3642,76 @@ public final class Sitewhere {
         }
       }
 
-      // repeated .SiteWhere.Measurement measurement = 2;
-      public static final int MEASUREMENT_FIELD_NUMBER = 2;
-      private java.util.List<Sitewhere.SiteWhere.Measurement> measurement_;
+      // required string measurementId = 2;
+      public static final int MEASUREMENTID_FIELD_NUMBER = 2;
+      private java.lang.Object measurementId_;
       /**
-       * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+       * <code>required string measurementId = 2;</code>
        */
-      public java.util.List<Sitewhere.SiteWhere.Measurement> getMeasurementList() {
-        return measurement_;
-      }
-      /**
-       * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-       */
-      public java.util.List<? extends Sitewhere.SiteWhere.MeasurementOrBuilder> 
-          getMeasurementOrBuilderList() {
-        return measurement_;
-      }
-      /**
-       * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-       */
-      public int getMeasurementCount() {
-        return measurement_.size();
-      }
-      /**
-       * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-       */
-      public Sitewhere.SiteWhere.Measurement getMeasurement(int index) {
-        return measurement_.get(index);
-      }
-      /**
-       * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-       */
-      public Sitewhere.SiteWhere.MeasurementOrBuilder getMeasurementOrBuilder(
-          int index) {
-        return measurement_.get(index);
-      }
-
-      // optional int64 eventDate = 3;
-      public static final int EVENTDATE_FIELD_NUMBER = 3;
-      private long eventDate_;
-      /**
-       * <code>optional int64 eventDate = 3;</code>
-       */
-      public boolean hasEventDate() {
+      public boolean hasMeasurementId() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional int64 eventDate = 3;</code>
+       * <code>required string measurementId = 2;</code>
+       */
+      public java.lang.String getMeasurementId() {
+        java.lang.Object ref = measurementId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            measurementId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string measurementId = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMeasurementIdBytes() {
+        java.lang.Object ref = measurementId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          measurementId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      // required float measurementValue = 3;
+      public static final int MEASUREMENTVALUE_FIELD_NUMBER = 3;
+      private float measurementValue_;
+      /**
+       * <code>required float measurementValue = 3;</code>
+       */
+      public boolean hasMeasurementValue() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required float measurementValue = 3;</code>
+       */
+      public float getMeasurementValue() {
+        return measurementValue_;
+      }
+
+      // optional int64 eventDate = 4;
+      public static final int EVENTDATE_FIELD_NUMBER = 4;
+      private long eventDate_;
+      /**
+       * <code>optional int64 eventDate = 4;</code>
+       */
+      public boolean hasEventDate() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional int64 eventDate = 4;</code>
        */
       public long getEventDate() {
         return eventDate_;
@@ -4638,7 +3719,8 @@ public final class Sitewhere {
 
       private void initFields() {
         hardwareId_ = "";
-        measurement_ = java.util.Collections.emptyList();
+        measurementId_ = "";
+        measurementValue_ = 0F;
         eventDate_ = 0L;
       }
       private byte memoizedIsInitialized = -1;
@@ -4650,11 +3732,13 @@ public final class Sitewhere {
           memoizedIsInitialized = 0;
           return false;
         }
-        for (int i = 0; i < getMeasurementCount(); i++) {
-          if (!getMeasurement(i).isInitialized()) {
-            memoizedIsInitialized = 0;
-            return false;
-          }
+        if (!hasMeasurementId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasMeasurementValue()) {
+          memoizedIsInitialized = 0;
+          return false;
         }
         memoizedIsInitialized = 1;
         return true;
@@ -4666,11 +3750,14 @@ public final class Sitewhere {
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           output.writeBytes(1, getHardwareIdBytes());
         }
-        for (int i = 0; i < measurement_.size(); i++) {
-          output.writeMessage(2, measurement_.get(i));
-        }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeInt64(3, eventDate_);
+          output.writeBytes(2, getMeasurementIdBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeFloat(3, measurementValue_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          output.writeInt64(4, eventDate_);
         }
       }
 
@@ -4684,13 +3771,17 @@ public final class Sitewhere {
           size += com.google.protobuf.CodedOutputStream
             .computeBytesSize(1, getHardwareIdBytes());
         }
-        for (int i = 0; i < measurement_.size(); i++) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(2, measurement_.get(i));
-        }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(3, eventDate_);
+            .computeBytesSize(2, getMeasurementIdBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeFloatSize(3, measurementValue_);
+        }
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt64Size(4, eventDate_);
         }
         memoizedSerializedSize = size;
         return size;
@@ -4703,53 +3794,53 @@ public final class Sitewhere {
         return super.writeReplace();
       }
 
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseFrom(
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseFrom(
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseFrom(byte[] data)
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseFrom(
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseFrom(java.io.InputStream input)
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseFrom(
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseFrom(input, extensionRegistry);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseDelimitedFrom(java.io.InputStream input)
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseDelimitedFrom(
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return PARSER.parseDelimitedFrom(input, extensionRegistry);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseFrom(
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return PARSER.parseFrom(input);
       }
-      public static Sitewhere.SiteWhere.DeviceMeasurements parseFrom(
+      public static Sitewhere.SiteWhere.DeviceMeasurement parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -4758,23 +3849,23 @@ public final class Sitewhere {
 
       public static Builder newBuilder() { return Builder.create(); }
       public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(Sitewhere.SiteWhere.DeviceMeasurements prototype) {
+      public static Builder newBuilder(Sitewhere.SiteWhere.DeviceMeasurement prototype) {
         return newBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() { return newBuilder(this); }
 
       /**
-       * Protobuf type {@code SiteWhere.DeviceMeasurements}
+       * Protobuf type {@code SiteWhere.DeviceMeasurement}
        *
        * <pre>
-       * Report device measurements.
+       * Report device measurement.
        * </pre>
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessageLite.Builder<
-            Sitewhere.SiteWhere.DeviceMeasurements, Builder>
-          implements Sitewhere.SiteWhere.DeviceMeasurementsOrBuilder {
-        // Construct using Sitewhere.SiteWhere.DeviceMeasurements.newBuilder()
+            Sitewhere.SiteWhere.DeviceMeasurement, Builder>
+          implements Sitewhere.SiteWhere.DeviceMeasurementOrBuilder {
+        // Construct using Sitewhere.SiteWhere.DeviceMeasurement.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -4789,10 +3880,12 @@ public final class Sitewhere {
           super.clear();
           hardwareId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          measurement_ = java.util.Collections.emptyList();
+          measurementId_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
-          eventDate_ = 0L;
+          measurementValue_ = 0F;
           bitField0_ = (bitField0_ & ~0x00000004);
+          eventDate_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000008);
           return this;
         }
 
@@ -4800,55 +3893,56 @@ public final class Sitewhere {
           return create().mergeFrom(buildPartial());
         }
 
-        public Sitewhere.SiteWhere.DeviceMeasurements getDefaultInstanceForType() {
-          return Sitewhere.SiteWhere.DeviceMeasurements.getDefaultInstance();
+        public Sitewhere.SiteWhere.DeviceMeasurement getDefaultInstanceForType() {
+          return Sitewhere.SiteWhere.DeviceMeasurement.getDefaultInstance();
         }
 
-        public Sitewhere.SiteWhere.DeviceMeasurements build() {
-          Sitewhere.SiteWhere.DeviceMeasurements result = buildPartial();
+        public Sitewhere.SiteWhere.DeviceMeasurement build() {
+          Sitewhere.SiteWhere.DeviceMeasurement result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public Sitewhere.SiteWhere.DeviceMeasurements buildPartial() {
-          Sitewhere.SiteWhere.DeviceMeasurements result = new Sitewhere.SiteWhere.DeviceMeasurements(this);
+        public Sitewhere.SiteWhere.DeviceMeasurement buildPartial() {
+          Sitewhere.SiteWhere.DeviceMeasurement result = new Sitewhere.SiteWhere.DeviceMeasurement(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
             to_bitField0_ |= 0x00000001;
           }
           result.hardwareId_ = hardwareId_;
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
-            measurement_ = java.util.Collections.unmodifiableList(measurement_);
-            bitField0_ = (bitField0_ & ~0x00000002);
-          }
-          result.measurement_ = measurement_;
-          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
             to_bitField0_ |= 0x00000002;
+          }
+          result.measurementId_ = measurementId_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.measurementValue_ = measurementValue_;
+          if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+            to_bitField0_ |= 0x00000008;
           }
           result.eventDate_ = eventDate_;
           result.bitField0_ = to_bitField0_;
           return result;
         }
 
-        public Builder mergeFrom(Sitewhere.SiteWhere.DeviceMeasurements other) {
-          if (other == Sitewhere.SiteWhere.DeviceMeasurements.getDefaultInstance()) return this;
+        public Builder mergeFrom(Sitewhere.SiteWhere.DeviceMeasurement other) {
+          if (other == Sitewhere.SiteWhere.DeviceMeasurement.getDefaultInstance()) return this;
           if (other.hasHardwareId()) {
             bitField0_ |= 0x00000001;
             hardwareId_ = other.hardwareId_;
             
           }
-          if (!other.measurement_.isEmpty()) {
-            if (measurement_.isEmpty()) {
-              measurement_ = other.measurement_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-            } else {
-              ensureMeasurementIsMutable();
-              measurement_.addAll(other.measurement_);
-            }
+          if (other.hasMeasurementId()) {
+            bitField0_ |= 0x00000002;
+            measurementId_ = other.measurementId_;
             
+          }
+          if (other.hasMeasurementValue()) {
+            setMeasurementValue(other.getMeasurementValue());
           }
           if (other.hasEventDate()) {
             setEventDate(other.getEventDate());
@@ -4861,11 +3955,13 @@ public final class Sitewhere {
             
             return false;
           }
-          for (int i = 0; i < getMeasurementCount(); i++) {
-            if (!getMeasurement(i).isInitialized()) {
-              
-              return false;
-            }
+          if (!hasMeasurementId()) {
+            
+            return false;
+          }
+          if (!hasMeasurementValue()) {
+            
+            return false;
           }
           return true;
         }
@@ -4874,11 +3970,11 @@ public final class Sitewhere {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          Sitewhere.SiteWhere.DeviceMeasurements parsedMessage = null;
+          Sitewhere.SiteWhere.DeviceMeasurement parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (Sitewhere.SiteWhere.DeviceMeasurements) e.getUnfinishedMessage();
+            parsedMessage = (Sitewhere.SiteWhere.DeviceMeasurement) e.getUnfinishedMessage();
             throw e;
           } finally {
             if (parsedMessage != null) {
@@ -4963,173 +4059,155 @@ public final class Sitewhere {
           return this;
         }
 
-        // repeated .SiteWhere.Measurement measurement = 2;
-        private java.util.List<Sitewhere.SiteWhere.Measurement> measurement_ =
-          java.util.Collections.emptyList();
-        private void ensureMeasurementIsMutable() {
-          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-            measurement_ = new java.util.ArrayList<Sitewhere.SiteWhere.Measurement>(measurement_);
-            bitField0_ |= 0x00000002;
-           }
-        }
-
+        // required string measurementId = 2;
+        private java.lang.Object measurementId_ = "";
         /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+         * <code>required string measurementId = 2;</code>
          */
-        public java.util.List<Sitewhere.SiteWhere.Measurement> getMeasurementList() {
-          return java.util.Collections.unmodifiableList(measurement_);
+        public boolean hasMeasurementId() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+         * <code>required string measurementId = 2;</code>
          */
-        public int getMeasurementCount() {
-          return measurement_.size();
-        }
-        /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-         */
-        public Sitewhere.SiteWhere.Measurement getMeasurement(int index) {
-          return measurement_.get(index);
-        }
-        /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-         */
-        public Builder setMeasurement(
-            int index, Sitewhere.SiteWhere.Measurement value) {
-          if (value == null) {
-            throw new NullPointerException();
+        public java.lang.String getMeasurementId() {
+          java.lang.Object ref = measurementId_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            measurementId_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
           }
-          ensureMeasurementIsMutable();
-          measurement_.set(index, value);
-
-          return this;
         }
         /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+         * <code>required string measurementId = 2;</code>
          */
-        public Builder setMeasurement(
-            int index, Sitewhere.SiteWhere.Measurement.Builder builderForValue) {
-          ensureMeasurementIsMutable();
-          measurement_.set(index, builderForValue.build());
-
-          return this;
-        }
-        /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-         */
-        public Builder addMeasurement(Sitewhere.SiteWhere.Measurement value) {
-          if (value == null) {
-            throw new NullPointerException();
+        public com.google.protobuf.ByteString
+            getMeasurementIdBytes() {
+          java.lang.Object ref = measurementId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            measurementId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
           }
-          ensureMeasurementIsMutable();
-          measurement_.add(value);
-
-          return this;
         }
         /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+         * <code>required string measurementId = 2;</code>
          */
-        public Builder addMeasurement(
-            int index, Sitewhere.SiteWhere.Measurement value) {
+        public Builder setMeasurementId(
+            java.lang.String value) {
           if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureMeasurementIsMutable();
-          measurement_.add(index, value);
-
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          measurementId_ = value;
+          
           return this;
         }
         /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+         * <code>required string measurementId = 2;</code>
          */
-        public Builder addMeasurement(
-            Sitewhere.SiteWhere.Measurement.Builder builderForValue) {
-          ensureMeasurementIsMutable();
-          measurement_.add(builderForValue.build());
-
-          return this;
-        }
-        /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-         */
-        public Builder addMeasurement(
-            int index, Sitewhere.SiteWhere.Measurement.Builder builderForValue) {
-          ensureMeasurementIsMutable();
-          measurement_.add(index, builderForValue.build());
-
-          return this;
-        }
-        /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-         */
-        public Builder addAllMeasurement(
-            java.lang.Iterable<? extends Sitewhere.SiteWhere.Measurement> values) {
-          ensureMeasurementIsMutable();
-          super.addAll(values, measurement_);
-
-          return this;
-        }
-        /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
-         */
-        public Builder clearMeasurement() {
-          measurement_ = java.util.Collections.emptyList();
+        public Builder clearMeasurementId() {
           bitField0_ = (bitField0_ & ~0x00000002);
-
+          measurementId_ = getDefaultInstance().getMeasurementId();
+          
           return this;
         }
         /**
-         * <code>repeated .SiteWhere.Measurement measurement = 2;</code>
+         * <code>required string measurementId = 2;</code>
          */
-        public Builder removeMeasurement(int index) {
-          ensureMeasurementIsMutable();
-          measurement_.remove(index);
-
+        public Builder setMeasurementIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          measurementId_ = value;
+          
           return this;
         }
 
-        // optional int64 eventDate = 3;
-        private long eventDate_ ;
+        // required float measurementValue = 3;
+        private float measurementValue_ ;
         /**
-         * <code>optional int64 eventDate = 3;</code>
+         * <code>required float measurementValue = 3;</code>
          */
-        public boolean hasEventDate() {
+        public boolean hasMeasurementValue() {
           return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         /**
-         * <code>optional int64 eventDate = 3;</code>
+         * <code>required float measurementValue = 3;</code>
+         */
+        public float getMeasurementValue() {
+          return measurementValue_;
+        }
+        /**
+         * <code>required float measurementValue = 3;</code>
+         */
+        public Builder setMeasurementValue(float value) {
+          bitField0_ |= 0x00000004;
+          measurementValue_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>required float measurementValue = 3;</code>
+         */
+        public Builder clearMeasurementValue() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          measurementValue_ = 0F;
+          
+          return this;
+        }
+
+        // optional int64 eventDate = 4;
+        private long eventDate_ ;
+        /**
+         * <code>optional int64 eventDate = 4;</code>
+         */
+        public boolean hasEventDate() {
+          return ((bitField0_ & 0x00000008) == 0x00000008);
+        }
+        /**
+         * <code>optional int64 eventDate = 4;</code>
          */
         public long getEventDate() {
           return eventDate_;
         }
         /**
-         * <code>optional int64 eventDate = 3;</code>
+         * <code>optional int64 eventDate = 4;</code>
          */
         public Builder setEventDate(long value) {
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
           eventDate_ = value;
           
           return this;
         }
         /**
-         * <code>optional int64 eventDate = 3;</code>
+         * <code>optional int64 eventDate = 4;</code>
          */
         public Builder clearEventDate() {
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
           eventDate_ = 0L;
           
           return this;
         }
 
-        // @@protoc_insertion_point(builder_scope:SiteWhere.DeviceMeasurements)
+        // @@protoc_insertion_point(builder_scope:SiteWhere.DeviceMeasurement)
       }
 
       static {
-        defaultInstance = new DeviceMeasurements(true);
+        defaultInstance = new DeviceMeasurement(true);
         defaultInstance.initFields();
       }
 
-      // @@protoc_insertion_point(class_scope:SiteWhere.DeviceMeasurements)
+      // @@protoc_insertion_point(class_scope:SiteWhere.DeviceMeasurement)
     }
 
     private void initFields() {
