@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.rest.model;
+package com.sitewhere.device.marshaling;
 
 import org.apache.log4j.Logger;
 

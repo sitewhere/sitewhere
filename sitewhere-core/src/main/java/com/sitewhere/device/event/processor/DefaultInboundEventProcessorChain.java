@@ -17,8 +17,10 @@ import org.apache.log4j.Logger;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
@@ -81,11 +83,17 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 				} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
 					onDeviceCommandResponseRequest(decoded.getHardwareId(), decoded.getOriginator(),
 							(IDeviceCommandResponseCreateRequest) decoded.getRequest());
+				} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
+					onDeviceMeasurementsCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
+							(IDeviceMeasurementsCreateRequest) decoded.getRequest());
 				} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
 					onDeviceLocationCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
 							(IDeviceLocationCreateRequest) decoded.getRequest());
+				} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
+					onDeviceAlertCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
+							(IDeviceAlertCreateRequest) decoded.getRequest());
 				} else {
-					LOGGER.debug("Decoded device event request could not be routed: "
+					LOGGER.error("Decoded device event request could not be routed: "
 							+ decoded.getRequest().getClass().getName());
 				}
 			} catch (SiteWhereException e) {
@@ -137,6 +145,25 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceMeasurementsCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+	 */
+	@Override
+	public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
+			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onDeviceMeasurementsCreateRequest(hardwareId, originator, request);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
 	 * onDeviceLocationCreateRequest(java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
@@ -146,6 +173,25 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 		for (IInboundEventProcessor processor : getProcessors()) {
 			try {
 				processor.onDeviceLocationCreateRequest(hardwareId, originator, request);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceAlertCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+	 */
+	@Override
+	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
+			IDeviceAlertCreateRequest request) throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onDeviceAlertCreateRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
 				LOGGER.error(e);
 			}

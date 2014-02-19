@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.rest.model;
+package com.sitewhere.device.marshaling;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,6 @@ import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.web.helper.CommandHtmlHelper;
 
 /**
  * Configurable helper class that allows {@link DeviceCommandInvocation} model objects to
@@ -39,6 +38,14 @@ public class DeviceCommandInvocationMarshalHelper {
 
 	/** Cache to prevent repeated command lookups */
 	private Map<String, DeviceCommand> commandsByToken = new HashMap<String, DeviceCommand>();
+
+	public DeviceCommandInvocationMarshalHelper() {
+		this(false);
+	}
+
+	public DeviceCommandInvocationMarshalHelper(boolean includeCommand) {
+		this.includeCommand = includeCommand;
+	}
 
 	/**
 	 * Convert an {@link IDeviceCommandInvocation} to a {@link DeviceCommandInvocation},

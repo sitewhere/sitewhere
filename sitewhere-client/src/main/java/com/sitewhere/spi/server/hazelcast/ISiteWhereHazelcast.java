@@ -24,4 +24,7 @@ public interface ISiteWhereHazelcast {
 
 	/** Topic name for newly added alerts */
 	public static final String TOPIC_ALERT_ADDED = "sitewhere.topic.alert.added";
+
+	/** Topic name for newly added command invocations */
+	public static final String TOPIC_COMMAND_INVOCATION_ADDED = "sitewhere.topic.command.invocation.added";
 }

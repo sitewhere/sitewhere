@@ -11,10 +11,14 @@ package com.sitewhere.spi.device.event.processor;
 
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
@@ -56,6 +60,18 @@ public interface IInboundEventProcessor extends ISiteWhereLifecycle {
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
 
 	/**
+	 * Called to request the creation of a new {@link IDeviceMeasurements} based on the
+	 * given information.
+	 * 
+	 * @param hardwareId
+	 * @param originator
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
+			IDeviceMeasurementsCreateRequest request) throws SiteWhereException;
+
+	/**
 	 * Called to request the creation of a new {@link IDeviceLocation} based on the given
 	 * information.
 	 * 
@@ -66,4 +82,16 @@ public interface IInboundEventProcessor extends ISiteWhereLifecycle {
 	 */
 	public void onDeviceLocationCreateRequest(String hardwareId, String originator,
 			IDeviceLocationCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Called to request the creation of a new {@link IDeviceAlert} based on the given
+	 * information.
+	 * 
+	 * @param hardwareId
+	 * @param originator
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
+			IDeviceAlertCreateRequest request) throws SiteWhereException;
 }

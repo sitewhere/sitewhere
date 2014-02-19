@@ -16,6 +16,7 @@ import java.util.List;
 import com.sitewhere.spi.ISiteWhereContext;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -51,6 +52,10 @@ public class SiteWhereContext implements ISiteWhereContext {
 
 	/** Alerts that have been persisted */
 	private List<IDeviceAlert> deviceAlerts = new ArrayList<IDeviceAlert>();
+
+	/** Command invocations that have been persisted */
+	private List<IDeviceCommandInvocation> deviceCommandInvocations =
+			new ArrayList<IDeviceCommandInvocation>();
 
 	/** Information for replying to originator */
 	private String replyTo;
@@ -144,6 +149,19 @@ public class SiteWhereContext implements ISiteWhereContext {
 
 	public void setDeviceAlerts(List<IDeviceAlert> deviceAlerts) {
 		this.deviceAlerts = deviceAlerts;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereContext#getDeviceCommandInvocations()
+	 */
+	public List<IDeviceCommandInvocation> getDeviceCommandInvocations() {
+		return deviceCommandInvocations;
+	}
+
+	public void setDeviceCommandInvocations(List<IDeviceCommandInvocation> deviceCommandInvocations) {
+		this.deviceCommandInvocations = deviceCommandInvocations;
 	}
 
 	/*

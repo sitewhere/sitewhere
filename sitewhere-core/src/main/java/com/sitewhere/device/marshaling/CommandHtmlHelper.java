@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.helper;
+package com.sitewhere.device.marshaling;
 
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -16,7 +16,9 @@ import com.sitewhere.spi.device.command.ICommandParameter;
 
 /**
  * Helper class that creates an HTML version of a command for display in the user
- * interface.
+ * interface. TODO: This class is really presentation-only, so it should be moved to
+ * sitewhere-web at some point. For now, there is a dependency from the marshal helper
+ * that prevents it.
  * 
  * @author Derek
  */

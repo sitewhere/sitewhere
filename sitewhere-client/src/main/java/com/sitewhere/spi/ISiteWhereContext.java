@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -56,25 +57,32 @@ public interface ISiteWhereContext {
 	public List<IDeviceAlertCreateRequest> getUnsavedDeviceAlerts();
 
 	/**
-	 * Get the device measurements associated with the current request.
+	 * Get the {@link IDeviceMeasurements} events.
 	 * 
 	 * @return
 	 */
 	public List<IDeviceMeasurements> getDeviceMeasurements();
 
 	/**
-	 * Get the device locations associated with the current request.
+	 * Get the {@link IDeviceLocation} events.
 	 * 
 	 * @return
 	 */
 	public List<IDeviceLocation> getDeviceLocations();
 
 	/**
-	 * Get the device alerts associated with the current request.
+	 * Get the {@link IDeviceAlert} events.
 	 * 
 	 * @return
 	 */
 	public List<IDeviceAlert> getDeviceAlerts();
+
+	/**
+	 * Get the {@link IDeviceCommandInvocation} events.
+	 * 
+	 * @return
+	 */
+	public List<IDeviceCommandInvocation> getDeviceCommandInvocations();
 
 	/**
 	 * Get information for replying to originator.

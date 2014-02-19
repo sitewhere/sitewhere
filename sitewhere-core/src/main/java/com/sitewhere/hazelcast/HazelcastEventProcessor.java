@@ -12,12 +12,15 @@ package com.sitewhere.hazelcast;
 import org.apache.log4j.Logger;
 
 import com.hazelcast.core.ITopic;
+import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
@@ -44,6 +47,13 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 	/** Topic for device alerts */
 	private ITopic<DeviceAlert> alertsTopic;
 
+	/** Topic for device command invocations */
+	private ITopic<DeviceCommandInvocation> commandInvocationsTopic;
+
+	/** Used for marshaling command invocations */
+	private DeviceCommandInvocationMarshalHelper invocationHelper = new DeviceCommandInvocationMarshalHelper(
+			true);
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -62,6 +72,9 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 				getConfiguration().getHazelcastInstance().getTopic(ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
 		this.alertsTopic =
 				getConfiguration().getHazelcastInstance().getTopic(ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
+		this.commandInvocationsTopic =
+				getConfiguration().getHazelcastInstance().getTopic(
+						ISiteWhereHazelcast.TOPIC_COMMAND_INVOCATION_ADDED);
 		LOGGER.info("Hazelcast device event processor started.");
 	}
 
@@ -75,7 +88,7 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
 		DeviceMeasurements marshaled = DeviceMeasurements.copy(measurements);
 		measurementsTopic.publish(marshaled);
-		LOGGER.debug("Published measurements for: " + measurements.getId());
+		LOGGER.debug("Published measurements event to Hazelcast (id=" + measurements.getId() + ")");
 	}
 
 	/*
@@ -89,7 +102,7 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 	public void afterLocation(IDeviceLocation location) throws SiteWhereException {
 		DeviceLocation marshaled = DeviceLocation.copy(location);
 		locationsTopic.publish(marshaled);
-		LOGGER.debug("Published location for: " + location.getId());
+		LOGGER.debug("Published location event to Hazelcast (id=" + location.getId() + ")");
 	}
 
 	/*
@@ -103,7 +116,18 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 	public void afterAlert(IDeviceAlert alert) throws SiteWhereException {
 		DeviceAlert marshaled = DeviceAlert.copy(alert);
 		alertsTopic.publish(marshaled);
-		LOGGER.debug("Published alert for: " + alert.getId());
+		LOGGER.debug("Published alert event to Hazelcast (id=" + alert.getId() + ")");
+	}
+
+	/**
+	 * @param invocation
+	 * @throws SiteWhereException
+	 */
+	@Override
+	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+		DeviceCommandInvocation converted = invocationHelper.convert(invocation);
+		commandInvocationsTopic.publish(converted);
+		LOGGER.debug("Published command invocation event to Hazelcast (id=" + invocation.getId() + ")");
 	}
 
 	public SiteWhereHazelcastConfiguration getConfiguration() {

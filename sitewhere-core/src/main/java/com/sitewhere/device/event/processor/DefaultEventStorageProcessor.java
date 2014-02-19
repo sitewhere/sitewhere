@@ -18,11 +18,15 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -71,6 +75,22 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+	 * onDeviceMeasurementsCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+	 */
+	@Override
+	public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
+			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
+		IDeviceMeasurements measurements =
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceMeasurements(assignment, request);
+		handleLinkResponseToInvocation(originator, measurements.getId(), assignment);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
 	 * onDeviceLocationCreateRequest(java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
@@ -81,6 +101,22 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 		IDeviceLocation location =
 				SiteWhereServer.getInstance().getDeviceManagement().addDeviceLocation(assignment, request);
 		handleLinkResponseToInvocation(originator, location.getId(), assignment);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.rest.model.device.event.processor.InboundEventProcessor#
+	 * onDeviceAlertCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+	 */
+	@Override
+	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
+			IDeviceAlertCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
+		IDeviceAlert alert =
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceAlert(assignment, request);
+		handleLinkResponseToInvocation(originator, alert.getId(), assignment);
 	}
 
 	/**

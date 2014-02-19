@@ -9,6 +9,8 @@
  */
 package com.sitewhere.rest.model.device.command;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.ParameterType;
 
@@ -17,7 +19,10 @@ import com.sitewhere.spi.device.command.ParameterType;
  * 
  * @author Derek
  */
-public class CommandParameter implements ICommandParameter {
+public class CommandParameter implements ICommandParameter, Serializable {
+
+	/** For Java serialization */
+	private static final long serialVersionUID = -4689464499966528051L;
 
 	/** Command name */
 	private String name;

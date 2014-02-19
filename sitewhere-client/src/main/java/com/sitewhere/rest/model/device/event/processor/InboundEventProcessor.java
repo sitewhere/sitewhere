@@ -11,8 +11,10 @@ package com.sitewhere.rest.model.device.event.processor;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
@@ -82,11 +84,35 @@ public class InboundEventProcessor implements IInboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceMeasurementsCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+	 */
+	@Override
+	public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
+			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
 	 * onDeviceLocationCreateRequest(java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
 	@Override
 	public void onDeviceLocationCreateRequest(String hardwareId, String originator,
 			IDeviceLocationCreateRequest request) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceAlertCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+	 */
+	@Override
+	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
+			IDeviceAlertCreateRequest request) throws SiteWhereException {
 	}
 }
