@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.sitewhere</groupId>
+		<artifactId>sitewhere</artifactId>
+		<version>0.9.4</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>sitewhere-documentation</artifactId>
+	<packaging>jar</packaging>
+	<name>SiteWhere Documentation</name>
+
+	<dependencies>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.tomdz.maven</groupId>
+				<artifactId>sphinx-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<configuration>
+					<outputDirectory>${project.build.directory}/docs</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

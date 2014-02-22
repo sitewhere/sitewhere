@@ -26,9 +26,9 @@ message SiteWhere {
 	// Report device location.
 	message DeviceLocation {
 		required string hardwareId = 1;
-		required float latitude = 2;
-		required float longitude = 3;
-		required float elevation = 4;
+		required string latitude = 2;
+		required string longitude = 3;
+		required string elevation = 4;
 		optional int64 eventDate = 5;
 	}
 
@@ -44,7 +44,7 @@ message SiteWhere {
 	message DeviceMeasurement {
 		required string hardwareId = 1;
 		required string measurementId = 2;
-		required float measurementValue = 3;
+		required string measurementValue = 3;
 		optional int64 eventDate = 4;
 	}
 }

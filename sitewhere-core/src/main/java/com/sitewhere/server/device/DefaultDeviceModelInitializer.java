@@ -125,7 +125,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			"https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg";
 
 	/** Namespace for common core commands */
-	public static final String CORE_HWCORE_NAMESPACE = "common://hardware/core";
+	public static final String SITEWHERE_COMMON_NAMESPACE = "http://sitewhere/common";
+
+	/** Namespace for Arduino microcontroller commands */
+	public static final String ARDUINO_MICROCONTROLLER_NAMESPACE = "http://arduino/microcontroller";
 
 	/** Information for available device specifications */
 	public static final SpecificationDetails[] SPECIFICATION_INFO =
@@ -243,38 +246,55 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		List<IDeviceCommand> commands = new ArrayList<IDeviceCommand>();
 
 		DeviceCommandCreateRequest cmdPing = new DeviceCommandCreateRequest();
-		cmdPing.setNamespace(null);
+		cmdPing.setNamespace(SITEWHERE_COMMON_NAMESPACE);
 		cmdPing.setName("ping");
 		cmdPing.setDescription("Send a 'ping' request to the device to verify it can be reached.");
 		commands.add(getDeviceManagement().createDeviceCommand(spec, cmdPing));
 
-		DeviceCommandCreateRequest cmdVersion = new DeviceCommandCreateRequest();
-		cmdVersion.setNamespace(null);
-		cmdVersion.setName("version");
-		cmdVersion.setDescription("Request a version identifier response from the device.");
-		commands.add(getDeviceManagement().createDeviceCommand(spec, cmdVersion));
+		DeviceCommandCreateRequest testEvents = new DeviceCommandCreateRequest();
+		testEvents.setNamespace(SITEWHERE_COMMON_NAMESPACE);
+		testEvents.setName("testEvents");
+		testEvents.setDescription("Send a request that results in sample events being returned.");
+		commands.add(getDeviceManagement().createDeviceCommand(spec, testEvents));
 
-		DeviceCommandCreateRequest powerUp = new DeviceCommandCreateRequest();
-		powerUp.setNamespace(CORE_HWCORE_NAMESPACE);
-		powerUp.setName("powerUp");
-		powerUp.setDescription("Request that the device enter 'powered on' mode.");
-		powerUp.getParameters().add(new CommandParameter("delayInMs", ParameterType.UInt64, false));
-		commands.add(getDeviceManagement().createDeviceCommand(spec, powerUp));
+		if (spec.getToken().equals("7dfd6d63-5e8d-4380-be04-fc5c73801dfb")) {
+			DeviceCommandCreateRequest pinMode = new DeviceCommandCreateRequest();
+			pinMode.setNamespace(ARDUINO_MICROCONTROLLER_NAMESPACE);
+			pinMode.setName("pinMode");
+			pinMode.setDescription("Set the mode (input/output) of a given pin.");
+			pinMode.getParameters().add(new CommandParameter("pinNumber", ParameterType.Int32, true));
+			pinMode.getParameters().add(new CommandParameter("output", ParameterType.Bool, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, pinMode));
 
-		DeviceCommandCreateRequest firmware = new DeviceCommandCreateRequest();
-		firmware.setNamespace(CORE_HWCORE_NAMESPACE);
-		firmware.setName("updateFirmware");
-		firmware.setDescription("Ask the device to download a new firmware version from the given URL.");
-		firmware.getParameters().add(new CommandParameter("url", ParameterType.String, true));
-		firmware.getParameters().add(new CommandParameter("createRestorePoint", ParameterType.Bool, false));
-		commands.add(getDeviceManagement().createDeviceCommand(spec, firmware));
+			DeviceCommandCreateRequest digitalRead = new DeviceCommandCreateRequest();
+			digitalRead.setNamespace(ARDUINO_MICROCONTROLLER_NAMESPACE);
+			digitalRead.setName("digitalRead");
+			digitalRead.setDescription("Request the current value of a digital pin as a measurement.");
+			digitalRead.getParameters().add(new CommandParameter("pinNumber", ParameterType.Int32, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, digitalRead));
 
-		DeviceCommandCreateRequest powerDown = new DeviceCommandCreateRequest();
-		powerDown.setNamespace(CORE_HWCORE_NAMESPACE);
-		powerDown.setName("powerDown");
-		powerDown.setDescription("Request that the device enter 'powered down' mode.");
-		powerDown.getParameters().add(new CommandParameter("delayInMs", ParameterType.UInt64, false));
-		commands.add(getDeviceManagement().createDeviceCommand(spec, powerDown));
+			DeviceCommandCreateRequest digitalWrite = new DeviceCommandCreateRequest();
+			digitalWrite.setNamespace(ARDUINO_MICROCONTROLLER_NAMESPACE);
+			digitalWrite.setName("digitalWrite");
+			digitalWrite.setDescription("Set the value of a digital pin and return an ack of updated value.");
+			digitalWrite.getParameters().add(new CommandParameter("pinNumber", ParameterType.Int32, true));
+			digitalWrite.getParameters().add(new CommandParameter("value", ParameterType.Bool, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, digitalWrite));
+
+			DeviceCommandCreateRequest analogRead = new DeviceCommandCreateRequest();
+			analogRead.setNamespace(ARDUINO_MICROCONTROLLER_NAMESPACE);
+			analogRead.setName("analogRead");
+			analogRead.setDescription("Read the analog value of a given pin. Mode must be input beforehand.");
+			analogRead.getParameters().add(new CommandParameter("pinNumber", ParameterType.Int32, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, analogRead));
+
+			DeviceCommandCreateRequest serialPrintln = new DeviceCommandCreateRequest();
+			serialPrintln.setNamespace(ARDUINO_MICROCONTROLLER_NAMESPACE);
+			serialPrintln.setName("serialPrintln");
+			serialPrintln.setDescription("Print a line of text via the serial port of the device.");
+			serialPrintln.getParameters().add(new CommandParameter("message", ParameterType.String, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, serialPrintln));
+		}
 
 		commandsBySpecToken.put(spec.getToken(), commands);
 	}

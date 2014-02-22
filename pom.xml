@@ -30,6 +30,7 @@
         <module>sitewhere-mule</module>
         <module>sitewhere-protobuf</module>
         <module>sitewhere-solr</module>
+        <module>sitewhere-documentation</module>
         <module>sitewhere-web</module>
     </modules>
     

@@ -1,6 +1,7 @@
 /bin
 /sitewhere-client/target
 /sitewhere-core/target
+/sitewhere-documentation/target
 /sitewhere-hbase/target
 /sitewhere-magento/target
 /sitewhere-mongodb/target

@@ -1,13 +1,13 @@
 <hardware-assets>
-	<!-- MeiTrack personal trackers -->
-	<hardware-asset id="174" name="MeiTrack MT88" sku="MT88" device="true">
-		<description>Smallest GPS Tracker Suitable for the Blind, Elderly, Children and Pets. Recessed Braille SOS Button. Small Size. Clip for Watch Belt.</description>
-		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/meitrack/mt88.jpg</image-url>
-		<property name="manufacturer" value="MeiTrack"/>
-		<property name="weight" value="1.000"/>
-		<property name="sos.button" value="true"/>
-		<property name="two.way.audio" value="false"/>
+	<!-- Arduino microcontrollers -->
+	<hardware-asset id="174" name="Arduino UNO" sku="UNO" device="true">
+		<description>The Arduino Uno is a microcontroller board based on the ATmega328. It has 14 digital input/output pins (of which 6 can be used as PWM outputs), 6 analog inputs, a 16 MHz ceramic resonator, a USB connection, a power jack, an ICSP header, and a reset button.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/arduino/uno.jpg</image-url>
+		<property name="manufacturer" value="Arduino"/>
+		<property name="weight" value="0.780"/>
 	</hardware-asset>
+	
+	<!-- MeiTrack personal trackers -->
 	<hardware-asset id="175" name="MeiTrack MT90" sku="MT90" device="true">
 		<description>MT90 is a waterproof GPS personal tracker suitable for lone workers, kids, aged, pet, assets, vehicle and fleet management.</description>
 		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/meitrack/mt90.jpg</image-url>

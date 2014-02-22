@@ -1865,35 +1865,50 @@ public final class Sitewhere {
       com.google.protobuf.ByteString
           getHardwareIdBytes();
 
-      // required float latitude = 2;
+      // required string latitude = 2;
       /**
-       * <code>required float latitude = 2;</code>
+       * <code>required string latitude = 2;</code>
        */
       boolean hasLatitude();
       /**
-       * <code>required float latitude = 2;</code>
+       * <code>required string latitude = 2;</code>
        */
-      float getLatitude();
-
-      // required float longitude = 3;
+      java.lang.String getLatitude();
       /**
-       * <code>required float longitude = 3;</code>
+       * <code>required string latitude = 2;</code>
+       */
+      com.google.protobuf.ByteString
+          getLatitudeBytes();
+
+      // required string longitude = 3;
+      /**
+       * <code>required string longitude = 3;</code>
        */
       boolean hasLongitude();
       /**
-       * <code>required float longitude = 3;</code>
+       * <code>required string longitude = 3;</code>
        */
-      float getLongitude();
-
-      // required float elevation = 4;
+      java.lang.String getLongitude();
       /**
-       * <code>required float elevation = 4;</code>
+       * <code>required string longitude = 3;</code>
+       */
+      com.google.protobuf.ByteString
+          getLongitudeBytes();
+
+      // required string elevation = 4;
+      /**
+       * <code>required string elevation = 4;</code>
        */
       boolean hasElevation();
       /**
-       * <code>required float elevation = 4;</code>
+       * <code>required string elevation = 4;</code>
        */
-      float getElevation();
+      java.lang.String getElevation();
+      /**
+       * <code>required string elevation = 4;</code>
+       */
+      com.google.protobuf.ByteString
+          getElevationBytes();
 
       // optional int64 eventDate = 5;
       /**
@@ -1957,19 +1972,19 @@ public final class Sitewhere {
                 hardwareId_ = input.readBytes();
                 break;
               }
-              case 21: {
+              case 18: {
                 bitField0_ |= 0x00000002;
-                latitude_ = input.readFloat();
+                latitude_ = input.readBytes();
                 break;
               }
-              case 29: {
+              case 26: {
                 bitField0_ |= 0x00000004;
-                longitude_ = input.readFloat();
+                longitude_ = input.readBytes();
                 break;
               }
-              case 37: {
+              case 34: {
                 bitField0_ |= 0x00000008;
-                elevation_ = input.readFloat();
+                elevation_ = input.readBytes();
                 break;
               }
               case 40: {
@@ -2047,52 +2062,133 @@ public final class Sitewhere {
         }
       }
 
-      // required float latitude = 2;
+      // required string latitude = 2;
       public static final int LATITUDE_FIELD_NUMBER = 2;
-      private float latitude_;
+      private java.lang.Object latitude_;
       /**
-       * <code>required float latitude = 2;</code>
+       * <code>required string latitude = 2;</code>
        */
       public boolean hasLatitude() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required float latitude = 2;</code>
+       * <code>required string latitude = 2;</code>
        */
-      public float getLatitude() {
-        return latitude_;
+      public java.lang.String getLatitude() {
+        java.lang.Object ref = latitude_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            latitude_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string latitude = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getLatitudeBytes() {
+        java.lang.Object ref = latitude_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          latitude_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
-      // required float longitude = 3;
+      // required string longitude = 3;
       public static final int LONGITUDE_FIELD_NUMBER = 3;
-      private float longitude_;
+      private java.lang.Object longitude_;
       /**
-       * <code>required float longitude = 3;</code>
+       * <code>required string longitude = 3;</code>
        */
       public boolean hasLongitude() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>required float longitude = 3;</code>
+       * <code>required string longitude = 3;</code>
        */
-      public float getLongitude() {
-        return longitude_;
+      public java.lang.String getLongitude() {
+        java.lang.Object ref = longitude_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            longitude_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string longitude = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getLongitudeBytes() {
+        java.lang.Object ref = longitude_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          longitude_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
-      // required float elevation = 4;
+      // required string elevation = 4;
       public static final int ELEVATION_FIELD_NUMBER = 4;
-      private float elevation_;
+      private java.lang.Object elevation_;
       /**
-       * <code>required float elevation = 4;</code>
+       * <code>required string elevation = 4;</code>
        */
       public boolean hasElevation() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>required float elevation = 4;</code>
+       * <code>required string elevation = 4;</code>
        */
-      public float getElevation() {
-        return elevation_;
+      public java.lang.String getElevation() {
+        java.lang.Object ref = elevation_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            elevation_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string elevation = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getElevationBytes() {
+        java.lang.Object ref = elevation_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          elevation_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
       // optional int64 eventDate = 5;
@@ -2113,9 +2209,9 @@ public final class Sitewhere {
 
       private void initFields() {
         hardwareId_ = "";
-        latitude_ = 0F;
-        longitude_ = 0F;
-        elevation_ = 0F;
+        latitude_ = "";
+        longitude_ = "";
+        elevation_ = "";
         eventDate_ = 0L;
       }
       private byte memoizedIsInitialized = -1;
@@ -2150,13 +2246,13 @@ public final class Sitewhere {
           output.writeBytes(1, getHardwareIdBytes());
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeFloat(2, latitude_);
+          output.writeBytes(2, getLatitudeBytes());
         }
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          output.writeFloat(3, longitude_);
+          output.writeBytes(3, getLongitudeBytes());
         }
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          output.writeFloat(4, elevation_);
+          output.writeBytes(4, getElevationBytes());
         }
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
           output.writeInt64(5, eventDate_);
@@ -2175,15 +2271,15 @@ public final class Sitewhere {
         }
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeFloatSize(2, latitude_);
+            .computeBytesSize(2, getLatitudeBytes());
         }
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeFloatSize(3, longitude_);
+            .computeBytesSize(3, getLongitudeBytes());
         }
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeFloatSize(4, elevation_);
+            .computeBytesSize(4, getElevationBytes());
         }
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
           size += com.google.protobuf.CodedOutputStream
@@ -2286,11 +2382,11 @@ public final class Sitewhere {
           super.clear();
           hardwareId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
-          latitude_ = 0F;
+          latitude_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
-          longitude_ = 0F;
+          longitude_ = "";
           bitField0_ = (bitField0_ & ~0x00000004);
-          elevation_ = 0F;
+          elevation_ = "";
           bitField0_ = (bitField0_ & ~0x00000008);
           eventDate_ = 0L;
           bitField0_ = (bitField0_ & ~0x00000010);
@@ -2349,13 +2445,19 @@ public final class Sitewhere {
             
           }
           if (other.hasLatitude()) {
-            setLatitude(other.getLatitude());
+            bitField0_ |= 0x00000002;
+            latitude_ = other.latitude_;
+            
           }
           if (other.hasLongitude()) {
-            setLongitude(other.getLongitude());
+            bitField0_ |= 0x00000004;
+            longitude_ = other.longitude_;
+            
           }
           if (other.hasElevation()) {
-            setElevation(other.getElevation());
+            bitField0_ |= 0x00000008;
+            elevation_ = other.elevation_;
+            
           }
           if (other.hasEventDate()) {
             setEventDate(other.getEventDate());
@@ -2476,101 +2578,224 @@ public final class Sitewhere {
           return this;
         }
 
-        // required float latitude = 2;
-        private float latitude_ ;
+        // required string latitude = 2;
+        private java.lang.Object latitude_ = "";
         /**
-         * <code>required float latitude = 2;</code>
+         * <code>required string latitude = 2;</code>
          */
         public boolean hasLatitude() {
           return ((bitField0_ & 0x00000002) == 0x00000002);
         }
         /**
-         * <code>required float latitude = 2;</code>
+         * <code>required string latitude = 2;</code>
          */
-        public float getLatitude() {
-          return latitude_;
+        public java.lang.String getLatitude() {
+          java.lang.Object ref = latitude_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            latitude_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
         }
         /**
-         * <code>required float latitude = 2;</code>
+         * <code>required string latitude = 2;</code>
          */
-        public Builder setLatitude(float value) {
-          bitField0_ |= 0x00000002;
+        public com.google.protobuf.ByteString
+            getLatitudeBytes() {
+          java.lang.Object ref = latitude_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            latitude_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string latitude = 2;</code>
+         */
+        public Builder setLatitude(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
           latitude_ = value;
           
           return this;
         }
         /**
-         * <code>required float latitude = 2;</code>
+         * <code>required string latitude = 2;</code>
          */
         public Builder clearLatitude() {
           bitField0_ = (bitField0_ & ~0x00000002);
-          latitude_ = 0F;
+          latitude_ = getDefaultInstance().getLatitude();
+          
+          return this;
+        }
+        /**
+         * <code>required string latitude = 2;</code>
+         */
+        public Builder setLatitudeBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          latitude_ = value;
           
           return this;
         }
 
-        // required float longitude = 3;
-        private float longitude_ ;
+        // required string longitude = 3;
+        private java.lang.Object longitude_ = "";
         /**
-         * <code>required float longitude = 3;</code>
+         * <code>required string longitude = 3;</code>
          */
         public boolean hasLongitude() {
           return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         /**
-         * <code>required float longitude = 3;</code>
+         * <code>required string longitude = 3;</code>
          */
-        public float getLongitude() {
-          return longitude_;
+        public java.lang.String getLongitude() {
+          java.lang.Object ref = longitude_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            longitude_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
         }
         /**
-         * <code>required float longitude = 3;</code>
+         * <code>required string longitude = 3;</code>
          */
-        public Builder setLongitude(float value) {
-          bitField0_ |= 0x00000004;
+        public com.google.protobuf.ByteString
+            getLongitudeBytes() {
+          java.lang.Object ref = longitude_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            longitude_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string longitude = 3;</code>
+         */
+        public Builder setLongitude(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
           longitude_ = value;
           
           return this;
         }
         /**
-         * <code>required float longitude = 3;</code>
+         * <code>required string longitude = 3;</code>
          */
         public Builder clearLongitude() {
           bitField0_ = (bitField0_ & ~0x00000004);
-          longitude_ = 0F;
+          longitude_ = getDefaultInstance().getLongitude();
+          
+          return this;
+        }
+        /**
+         * <code>required string longitude = 3;</code>
+         */
+        public Builder setLongitudeBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          longitude_ = value;
           
           return this;
         }
 
-        // required float elevation = 4;
-        private float elevation_ ;
+        // required string elevation = 4;
+        private java.lang.Object elevation_ = "";
         /**
-         * <code>required float elevation = 4;</code>
+         * <code>required string elevation = 4;</code>
          */
         public boolean hasElevation() {
           return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         /**
-         * <code>required float elevation = 4;</code>
+         * <code>required string elevation = 4;</code>
          */
-        public float getElevation() {
-          return elevation_;
+        public java.lang.String getElevation() {
+          java.lang.Object ref = elevation_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            elevation_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
         }
         /**
-         * <code>required float elevation = 4;</code>
+         * <code>required string elevation = 4;</code>
          */
-        public Builder setElevation(float value) {
-          bitField0_ |= 0x00000008;
+        public com.google.protobuf.ByteString
+            getElevationBytes() {
+          java.lang.Object ref = elevation_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            elevation_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string elevation = 4;</code>
+         */
+        public Builder setElevation(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
           elevation_ = value;
           
           return this;
         }
         /**
-         * <code>required float elevation = 4;</code>
+         * <code>required string elevation = 4;</code>
          */
         public Builder clearElevation() {
           bitField0_ = (bitField0_ & ~0x00000008);
-          elevation_ = 0F;
+          elevation_ = getDefaultInstance().getElevation();
+          
+          return this;
+        }
+        /**
+         * <code>required string elevation = 4;</code>
+         */
+        public Builder setElevationBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+          elevation_ = value;
           
           return this;
         }
@@ -3485,15 +3710,20 @@ public final class Sitewhere {
       com.google.protobuf.ByteString
           getMeasurementIdBytes();
 
-      // required float measurementValue = 3;
+      // required string measurementValue = 3;
       /**
-       * <code>required float measurementValue = 3;</code>
+       * <code>required string measurementValue = 3;</code>
        */
       boolean hasMeasurementValue();
       /**
-       * <code>required float measurementValue = 3;</code>
+       * <code>required string measurementValue = 3;</code>
        */
-      float getMeasurementValue();
+      java.lang.String getMeasurementValue();
+      /**
+       * <code>required string measurementValue = 3;</code>
+       */
+      com.google.protobuf.ByteString
+          getMeasurementValueBytes();
 
       // optional int64 eventDate = 4;
       /**
@@ -3562,9 +3792,9 @@ public final class Sitewhere {
                 measurementId_ = input.readBytes();
                 break;
               }
-              case 29: {
+              case 26: {
                 bitField0_ |= 0x00000004;
-                measurementValue_ = input.readFloat();
+                measurementValue_ = input.readBytes();
                 break;
               }
               case 32: {
@@ -3685,20 +3915,47 @@ public final class Sitewhere {
         }
       }
 
-      // required float measurementValue = 3;
+      // required string measurementValue = 3;
       public static final int MEASUREMENTVALUE_FIELD_NUMBER = 3;
-      private float measurementValue_;
+      private java.lang.Object measurementValue_;
       /**
-       * <code>required float measurementValue = 3;</code>
+       * <code>required string measurementValue = 3;</code>
        */
       public boolean hasMeasurementValue() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>required float measurementValue = 3;</code>
+       * <code>required string measurementValue = 3;</code>
        */
-      public float getMeasurementValue() {
-        return measurementValue_;
+      public java.lang.String getMeasurementValue() {
+        java.lang.Object ref = measurementValue_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            measurementValue_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string measurementValue = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMeasurementValueBytes() {
+        java.lang.Object ref = measurementValue_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          measurementValue_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
       // optional int64 eventDate = 4;
@@ -3720,7 +3977,7 @@ public final class Sitewhere {
       private void initFields() {
         hardwareId_ = "";
         measurementId_ = "";
-        measurementValue_ = 0F;
+        measurementValue_ = "";
         eventDate_ = 0L;
       }
       private byte memoizedIsInitialized = -1;
@@ -3754,7 +4011,7 @@ public final class Sitewhere {
           output.writeBytes(2, getMeasurementIdBytes());
         }
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          output.writeFloat(3, measurementValue_);
+          output.writeBytes(3, getMeasurementValueBytes());
         }
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
           output.writeInt64(4, eventDate_);
@@ -3777,7 +4034,7 @@ public final class Sitewhere {
         }
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeFloatSize(3, measurementValue_);
+            .computeBytesSize(3, getMeasurementValueBytes());
         }
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
@@ -3882,7 +4139,7 @@ public final class Sitewhere {
           bitField0_ = (bitField0_ & ~0x00000001);
           measurementId_ = "";
           bitField0_ = (bitField0_ & ~0x00000002);
-          measurementValue_ = 0F;
+          measurementValue_ = "";
           bitField0_ = (bitField0_ & ~0x00000004);
           eventDate_ = 0L;
           bitField0_ = (bitField0_ & ~0x00000008);
@@ -3942,7 +4199,9 @@ public final class Sitewhere {
             
           }
           if (other.hasMeasurementValue()) {
-            setMeasurementValue(other.getMeasurementValue());
+            bitField0_ |= 0x00000004;
+            measurementValue_ = other.measurementValue_;
+            
           }
           if (other.hasEventDate()) {
             setEventDate(other.getEventDate());
@@ -4133,35 +4392,76 @@ public final class Sitewhere {
           return this;
         }
 
-        // required float measurementValue = 3;
-        private float measurementValue_ ;
+        // required string measurementValue = 3;
+        private java.lang.Object measurementValue_ = "";
         /**
-         * <code>required float measurementValue = 3;</code>
+         * <code>required string measurementValue = 3;</code>
          */
         public boolean hasMeasurementValue() {
           return ((bitField0_ & 0x00000004) == 0x00000004);
         }
         /**
-         * <code>required float measurementValue = 3;</code>
+         * <code>required string measurementValue = 3;</code>
          */
-        public float getMeasurementValue() {
-          return measurementValue_;
+        public java.lang.String getMeasurementValue() {
+          java.lang.Object ref = measurementValue_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            measurementValue_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
         }
         /**
-         * <code>required float measurementValue = 3;</code>
+         * <code>required string measurementValue = 3;</code>
          */
-        public Builder setMeasurementValue(float value) {
-          bitField0_ |= 0x00000004;
+        public com.google.protobuf.ByteString
+            getMeasurementValueBytes() {
+          java.lang.Object ref = measurementValue_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            measurementValue_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string measurementValue = 3;</code>
+         */
+        public Builder setMeasurementValue(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
           measurementValue_ = value;
           
           return this;
         }
         /**
-         * <code>required float measurementValue = 3;</code>
+         * <code>required string measurementValue = 3;</code>
          */
         public Builder clearMeasurementValue() {
           bitField0_ = (bitField0_ & ~0x00000004);
-          measurementValue_ = 0F;
+          measurementValue_ = getDefaultInstance().getMeasurementValue();
+          
+          return this;
+        }
+        /**
+         * <code>required string measurementValue = 3;</code>
+         */
+        public Builder setMeasurementValueBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          measurementValue_ = value;
           
           return this;
         }
