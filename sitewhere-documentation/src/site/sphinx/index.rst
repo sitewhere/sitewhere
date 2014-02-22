@@ -6,6 +6,7 @@
    :maxdepth: 3
 
    overview
+   architecture
    installation
    cloud
    configuration

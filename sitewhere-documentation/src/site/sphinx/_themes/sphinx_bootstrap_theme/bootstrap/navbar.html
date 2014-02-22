@@ -1,22 +1,22 @@
-  <div id="navbar" class="{{ theme_navbar_class }} navbar-default {% if theme_navbar_fixed_top == 'true' -%} navbar-fixed-top{%- endif -%}" style="border: none; background-color: inherit;">
-    <div class="container" style="height: 75px; border-width: 3px 1px 1px; border-color: #fc0000 #bbb #bbb; border-style: solid; background-color: #fff; -webkit-box-shadow: 0 8px 6px -6px black; -moz-box-shadow: 0 8px 6px -6px black; box-shadow: 0 8px 6px -6px black;">
-      <div class="navbar-header">
-        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="{{ pathto(master_doc) }}">
-          {%- block sidebarlogo %}
-            {%- if logo %}<img src="{{ pathto('_static/' + logo, 1) }}" style="position: relative; left: -5px; top: -3px;">{%- endif %}
-          {%- endblock %}
-        </a>
-        <span class="navbar-text navbar-version pull-left"><b>Version {{ version|e }}</b></span>
-      </div>
+  <div id="navbar" class="{{ theme_navbar_class }} navbar-default {% if theme_navbar_fixed_top == 'true' -%} navbar-fixed-top{%- endif -%}" style="border: none; background-color: inherit; position: fixed;">
+    <div class="container sw-nav-content">
+    
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="{{ pathto(master_doc) }}">
+			{%- block sidebarlogo %}
+				{%- if logo %}<img src="{{ pathto('_static/' + logo, 1) }}" style="position: relative; left: -5px; top: -3px;">{%- endif %}
+			{%- endblock %}
+			</a>
+			<span class="navbar-text navbar-version pull-left"><b>Version {{ version|e }}</b></span>
+		</div>
 
-        <div class="collapse navbar-collapse nav-collapse" style="position: relative; top: 15px; font-size: 12pt;">
-          <ul class="nav navbar-nav" style="float: left; margin-left: 50px; margin-top: 0px;">
+        <div style="position: relative;">
+          <ul class="nav navbar-nav" style="position: absolute; right: 0px; top: 15px;">
             <li class="divider-vertical"></li>
             {% if theme_navbar_links %}
               {%- for link in theme_navbar_links %}
@@ -29,18 +29,12 @@
                 {% include "navbartoc.html" %}
               {% endif %}
             {% endblock %}
-            {% if theme_navbar_sidebarrel %}
-              {% block sidebarrel %}
-                {% include "relations.html" %}
-              {% endblock %}
-            {% endif %}
             {% block navbarextra %}
             {% endblock %}
           </ul>
-
-          {% block navbarsearch %}
-            {% include "navbarsearchbox.html" %}
-          {% endblock %}
         </div>
+        
+		{% include "relations.html" %}
+		</div>
     </div>
   </div>

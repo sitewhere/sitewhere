@@ -16,13 +16,45 @@
 }
 
 .section h1 {
-	font-size: 22pt;
-	border-bottom: 1px solid #eee;
+	font-size: 24pt;
+	border-bottom: 1px solid #DDD;
+	padding-bottom: 5px;
 }
 
 .section h2 {
 	font-size: 18pt;
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid #DDD;
+	padding-bottom: 5px;
+}
+
+.section h3 {
+	font-size: 16pt;
+}
+
+.sw-nav-content {
+	height: 95px; 
+	position: relative; 
+	border-width: 3px 1px 1px; 
+	border-color: #fc0000 #bbb #bbb; 
+	border-style: solid; 
+	background-color: #fff; 
+	-webkit-box-shadow: 0 8px 6px -6px black; 
+	-moz-box-shadow: 0 8px 6px -6px black; 
+	box-shadow: 0 8px 6px -6px black;
+}
+
+.sw-prev-chapter {
+	font-size: 12px;
+	position: absolute;
+	left: 20px;
+	bottom: 3px;
+}
+
+.sw-next-chapter {
+	font-size: 12px;
+	position: absolute;
+	right: 20px;
+	bottom: 3px;
 }
 
 .toctree-wrapper {

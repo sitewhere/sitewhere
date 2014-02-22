@@ -5,6 +5,7 @@
 This guide is intended to provide a high-level understanding of what SiteWhere does and how it
 is implemented.
 
+------------------
 What is SiteWhere?
 ------------------
 SiteWhere is an open source M2M integration platform -- a system that choreographs data coming from 
@@ -28,7 +29,7 @@ and going to a web of connected devices. It provides the following functionality
   an audit trail is available after the fact.
 - Associates devices with external assets such as people or physical items. For instance, a badge may
   be associated with the person wearing it. A tracking device can be associated with the piece of heavy 
-  equipment it is attached to. The asset information is offered via as asset management framework that 
+  equipment it is attached to. The asset information is offered via an asset management framework that 
   allows external systems to drive the information. For instance, the list of people that badges can be assigned
   to can come from an existing LDAP data store. SiteWhere tracks the assignment of devices to assets over time
   and ties events to the assignment so at a later date you can query '*what were the locations of the badge
@@ -47,6 +48,7 @@ and going to a web of connected devices. It provides the following functionality
 - Generates detailed analytics information from gathered device data and provides factilities for
   executing advanced faceted queries on the data.
 
+--------------------------
 Core Platform Technologies
 --------------------------
 Rather than reinventing the wheel, SiteWhere depends on many supporting open source technologies to
@@ -93,6 +95,7 @@ source components are used by SiteWhere:
 	processed. An external entity can use the Hazelcast client to connect to a running SiteWhere instance and
 	listen to a feed of events including location data, measurements, alerts, and command invocations.
 
+------------------------
 Integration Technologies
 ------------------------
 In addition to the technologies used to implement core SiteWhere features, there are a number of 
@@ -125,18 +128,43 @@ complementary technologies that enhance SiteWhere. These include:
 	that SiteWhere has more context in reacting to events. For instance, if an alert condition occurs, SiteWhere 
 	can originate an automated call to the cell phone registered to the user assigned to a device.
 
+-------------------
 Leveraging Big Data
 -------------------
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et 
-dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
-ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt 
-mollit anim id est laborum.
+The core purpose of SiteWhere is to choreograph interactions between devices and various external entities, but
+an important byproduct of the management process is data.. lots of data. Consider an application that tracks the 
+current locations of cars in a rental car fleet. Suppose that the tracking device sends a location event back to 
+SiteWhere every 10 seconds. In one day, the car will have reported 8640 location events. Multiply that by 10000 
+cars in a fleet and the number of events approaches 87 million per day. Lower the monitoring interval to per-second 
+accuracy and the number of events moves toward a billion. In the '*Internet of Things*', the number
+of events generated can quickly reach levels that would break your average database. SiteWhere was designed with
+huge data in mind and is intended to scale gracefully without performance degrading.
 
-Potential Uses
---------------
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et 
-dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
-ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt 
-mollit anim id est laborum.
+-------------------
+Potential Use Cases
+-------------------
+The possible uses for SiteWhere are endless. Almost any industry can benefit from some level of monitoring, automation,
+and analytics. Below are a few examples of real-world uses for SiteWhere:
+
+:Vehicle Tracking:
+	Whether monitoring a rental car fleet or a few very expensive pieces of heavy equipment, it makes sense to track 
+	the location of vehicles and monitor their condition over time. An automated system based on SiteWhere could help
+	in theft prevention, monitor service intervals or point out trends in maintenance costs based on vehicle type.
+
+:Home Automation:
+	Home automation is one of the fastest growing areas in *IoT*. Many devices that were once passive now
+	contain microcontrollers and have the ability to be monitored or actuated externally. SiteWhere provides a
+	central system for extended retention of measurements from devices and facilitates sending commands in response 
+	to various conditions. Many off-the-shelf systems are customizable, but SiteWhere is truly programmable. An
+	example of the power of SiteWhere in the cloud is a climate control system. A system could be designed to learn
+	wake/sleep patterns and temperature preferences. Since SiteWhere can operate in the cloud, your climate profile
+	could follow you when you check into a hotel, so that the room is already confortable when you check in and 
+	adjusts itself on your schedule.
+
+:Medical:
+	The medical industry is full of opportunities for monitoring, automation, and analytics. For instance, monitors
+	attached to patients could gather a patient's vital signs on a short interval, storing them in SiteWhere. Doctors
+	could use the stored data to look for signs of abnormal readings. Better yet, SiteWhere analytics could automatically
+	analyze the data and look for outlying data, even cross-referencing data between patients to draw more global
+	conclusions. Data from local hospital SiteWhere instances could be aggregated with data from other hospitals to
+	create larger study groups, revealing otherwise hidden trends.
