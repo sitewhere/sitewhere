@@ -57,6 +57,10 @@
 	bottom: 3px;
 }
 
+.section > img {
+	margin: 25px 0px 45px;
+}
+
 .toctree-wrapper {
 	font-size: 12pt;
 	padding-top: 10px;
