@@ -56,6 +56,7 @@
                 if (response.apiVersion != null) {
                     _this.apiVersion = response.apiVersion;
                 }
+                response.basePath = _sw_override_basePath;
                 if ((response.basePath != null) && jQuery.trim(response.basePath).length > 0) {
                     _this.basePath = response.basePath;
                     if (_this.basePath.match(/^HTTP/i) == null) {
@@ -218,6 +219,7 @@
                 this.api.progress('fetching resource ' + this.name + ': ' + this.url);
                 jQuery.getJSON(this.url, function(response) {
                     var endpoint, _i, _len, _ref;
+                    response.basePath = _sw_override_basePath;
                     if ((response.basePath != null) && jQuery.trim(response.basePath).length > 0) {
                         _this.basePath = response.basePath;
                         _this.basePath = _this.basePath.replace(/\/$/, '');
@@ -511,7 +513,11 @@
 
         SwaggerOperation.prototype.isListType = function(dataType) {
             if (dataType.indexOf('[') >= 0) {
-                return dataType.substring(dataType.indexOf('[') + 1, dataType.indexOf(']'));
+                var result = dataType.substring(dataType.indexOf('[') + 1, dataType.indexOf(']'));
+                if (result == "") {
+                	return void 0;
+                }
+                return result;
             } else {
                 return void 0;
             }

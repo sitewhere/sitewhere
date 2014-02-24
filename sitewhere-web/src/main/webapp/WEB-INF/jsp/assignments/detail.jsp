@@ -273,6 +273,7 @@
 	    $("#btn-refresh-locations").click(function() {
 	    	locationsDS.read();
 	    });
+	    $('#btn-filter-locations').attr('disabled', true);
 	    
 		/** Create AJAX datasource for measurements list */
 		measurementsDS = new kendo.data.DataSource({
@@ -307,6 +308,7 @@
 	    $("#btn-refresh-measurements").click(function() {
 	    	measurementsDS.read();
 	    });
+	    $('#btn-filter-measurements').attr('disabled', true);
 	    
 		/** Create AJAX datasource for alerts list */
 		alertsDS = new kendo.data.DataSource({
@@ -341,6 +343,7 @@
 	    $("#btn-refresh-alerts").click(function() {
 	    	alertsDS.read();
 	    });
+	    $('#btn-filter-alerts').attr('disabled', true);
 	    
 		/** Create AJAX datasource for invocations list */
 		invocationsDS = new kendo.data.DataSource({
@@ -371,6 +374,7 @@
 	    $("#btn-refresh-invocations").click(function() {
 	    	invocationsDS.read();
 	    });
+	    $('#btn-filter-invocations').attr('disabled', true);
 		
 	    $("#btn-create-invocation").click(function() {
 			ciOpen(token, specificationToken, onInvokeCommandSuccess);
