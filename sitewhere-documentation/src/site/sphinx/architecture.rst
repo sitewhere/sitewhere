@@ -174,6 +174,20 @@ perform other asynchronous processing tasks in real time. Access to Hazelcast cl
 adjusting the SiteWhere server Hazelcast configuration so that, for instance, only machines in certain IP
 ranges can receive the event data.
 
+Solr Integration
+----------------
+The backend datastores used by SiteWhere are intended to store a lot of information which is accessed in a 
+very specific pattern -- namely, events are stored based on device assignment and time they occur. This 
+approach scales well and stores all the information so that it can easily be retrieved, but it does not
+do a good job of supporting adhoc queries. Apache Solr Cloud is a highly scalable, distributed search
+engine that indexes data in a document-centric view. Rather than try to reinvent the wheel and provide
+advanced searching directly in SiteWhere, a module has been created that translates SiteWhere events into
+Solr documents and indexes them in the engine. This allows for advanced queries that would not be possible
+using the underlying data stores alone. Solr allows for advanced searches using a custom SiteWhere schema
+that indicates how event data should be indexed. Solr can then be queried for SiteWhere events based on
+features like geospatial searches, faceted result sets, and other complicated searches that make it possible
+to derive more meaning from the event data.
+
 ------------
 Object Model
 ------------
@@ -222,3 +236,102 @@ the list of zones for a site when displaying its map. On the integration side of
 Mule Studio that will compare locations coming into the system against defined zones, allowing the developer to react 
 to devices entering or exiting zones.
 
+Device Specifications
+---------------------
+Specifications are used to capture characteristics of a given hardware configuration. This is not necessarily a
+one-to-one mapping to a part number or SKU since some peripheral devices may have been added or certain characteristics
+upgraded. A device specification contains a reference to a hardware asset which provides the basic information about
+the hardware including name, description, image URL, etc. 
+
+:Device Specification Commands:
+	A device specification contains a list of commands that may be invoked by SiteWhere on the device. Commands can be 
+	added, updated, viewed, and deleted in the admin UI or via the REST services. It is perfectly acceptable for two 
+	device specifications to point to the same asset type, but have a different set of commands, reflecting different 
+	configurations (or *profiles*) of the given device.
+
+:Device Command Invocations:
+	SiteWhere provides APIs for invoking commands on a device based on the list available in its device specification.
+	Each command invocation is captured as an event associated with the current device assignment. The admin UI and 
+	REST services allow commands to be invoked and previous invocations for an assignment to be searched.
+	
+:Device Command Responses:
+	After a device processes a command invocation, it may return a response to SiteWhere. Command invocation messages
+	carry an *originator* event id that can be sent back with any responses to tie responses back to the event that
+	they are responding to. SiteWhere provides a simple *ack* event that acknowledges receipt of an event. Devices can
+	also return locations, measurements, or alerts in responses to commands and use the originator id to associate
+	those with a command as well. From an API perspective, a user can list the responses for a given command (any
+	number of responses can be associated) and act on the responses to initiate other actions.
+	
+Devices
+-------
+Devices are a SiteWhere representation of connected physical hardware that conforms to an assigned device specification.
+Each device is addressable by a unique hardware id that identifies it uniquely in the system. A new device can register
+itself in the system by providing a hardware id and device specification token. SiteWhere in turn creates a new 
+device record via the APIs and (optionally) creates a placeholder unassociated device assignment (see below) to allow 
+events to be collected for the device. Devices can be manually added via the REST services or via the admin UI.
+
+Device Assignments
+------------------
+Events are not logged directly against devices, since a given device may serve in a number of contexts. For instance,
+a visitor badge may be assigned to a new person every day. Rather than intermingle event data from all the people a 
+badge has been assigned to, the concept of a *device assignment* allows events to be associated with the asset they
+relate to. A device assignment is an association between a device, a site, and (optionally) a related asset. Some
+assignments do not specify an asset and are referred to as **unassociated**. A real-world example of this is a
+vending machine that has wireless connectivity to report inventory. The device *is* the asset, so there is no need
+to associate an external asset.
+
+:Current Device State:
+	Device assignments also act as a storage bin for recent device state. As events are processed for an assignment it
+	can keep a record of the most recent event values. By default, the assignment stores the most recent location measurement,
+	the most recent value for each measurement identifier, and the most recent alert for each alert type. Using this
+	stored state, SiteWhere can infer the current state of a device without having to send a command to request new data.
+	Included in the state information is the date on which the data was stored, so logic can intelligently choose when
+	to request an update of the data.
+
+:Assignment Status Indicator:
+	Each device assignment also holds a status of the assignment itself. By default, an assignment is marked *active* 
+	immediately after it is created. Using the REST services or admin UI, the status can be changed to *missing* if the
+	device or associated asset have been reported missing. Processing logic can be altered for missing assignments. The
+	assignment status is updated to *released* when an assignment is terminiated. This indicates the device is no longer 
+	assigned and may be reassigned.
+	
+Device Events
+-------------
+Device events are the data generated by connected devices interacting with SiteWhere. They are the core data that SiteWhere
+revolves around. SiteWhere captures many types of events including:
+
+:Meaurements:
+	Measurement events send measured values from a device to SiteWhere. Measurements are name/value pairs that capture 
+	information gathered by the device. For instance, a weather sensing device might send measurements for temperature, 
+	humidity, and barometric pressure. A single measurements event can send any number of measurements to SiteWhere 
+	(to prevent the overhead of having to repeatedly send multiple events to capture state).
+
+:Locations:
+	Location events are used to reflect geographic location (latitude, longitude, and elevation) for devices that have 
+	the ability to measure it. Location events are stored with a geospatial index when added to Solr so that they 
+	may be queried as such.
+	
+:Alerts:
+	Alert events are sent from a device to indicate exceptional conditions that SiteWhere may need to act on. 
+	For instance, a fire alarm might send a "smoke detected" alert to indicate it has been triggered. Alerts contain 
+	two primary pieces of information: a type and a message. The alert type is used to identify which class of alert
+	is being fired. The alert message is a human-readable message suitable for displaying in a monitoring application.
+	
+:Command Invocations:
+	Each time a command is invoked via SiteWhere, the information about the invocation is stored as an event for the
+	current device assignment. The invocation captures which command was executed, when it was executed, values for
+	command parameters, etc.
+	
+:Command Responses:
+	If a device generates a response to a command invocation, the response is stored as an event. Responses may be in
+	the form of measurements, locations, alerts, or acks. If the device passes an originating event id with the response,
+	the response is tied back to the original command invocation. The REST APIs allow all responses for a given
+	command invocation to be enumerated so that they can be processed.
+	
+All event types share some common information that applies more generally to events. Each event records an event date 
+and a received date. The event date is the timestamp for when the data was gathered by the device. It is important to 
+understand that some devices cache events to prevent the battery drain of network access. Because of this, the event 
+date may differ significantly from the received date, which is the date that the event was processed by SiteWhere. 
+All events also contain an area for arbitrary metadata. This allows application-specific information to be piggy-backed 
+on events so it can be used in later processing.
+	
