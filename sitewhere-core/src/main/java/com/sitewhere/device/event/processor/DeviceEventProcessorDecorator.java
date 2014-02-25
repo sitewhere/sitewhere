@@ -12,7 +12,6 @@ package com.sitewhere.device.event.processor;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.rest.model.device.DeviceManagementDecorator;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -64,7 +63,7 @@ public class DeviceEventProcessorDecorator extends DeviceManagementDecorator {
 	@Override
 	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
 			throws SiteWhereException {
-		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
+		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this, true);
 	}
 
 	/*
@@ -72,14 +71,14 @@ public class DeviceEventProcessorDecorator extends DeviceManagementDecorator {
 	 * 
 	 * @see
 	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceMeasurements
-	 * (com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
+	 * (java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest, boolean)
 	 */
 	@Override
-	public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
-			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
-		chain.beforeMeasurements(assignment, request);
-		IDeviceMeasurements result = super.addDeviceMeasurements(assignment, request);
+	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
+			IDeviceMeasurementsCreateRequest request, boolean updateState) throws SiteWhereException {
+		chain.beforeMeasurements(assignmentToken, request);
+		IDeviceMeasurements result = super.addDeviceMeasurements(assignmentToken, request, updateState);
 		chain.afterMeasurements(result);
 		return result;
 	}
@@ -88,15 +87,15 @@ public class DeviceEventProcessorDecorator extends DeviceManagementDecorator {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceLocation(com
-	 * .sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceLocation(java
+	 * .lang.String, com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest,
+	 * boolean)
 	 */
 	@Override
-	public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment,
-			IDeviceLocationCreateRequest request) throws SiteWhereException {
-		chain.beforeLocation(assignment, request);
-		IDeviceLocation result = super.addDeviceLocation(assignment, request);
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
+			boolean updateState) throws SiteWhereException {
+		chain.beforeLocation(assignmentToken, request);
+		IDeviceLocation result = super.addDeviceLocation(assignmentToken, request, updateState);
 		chain.afterLocation(result);
 		return result;
 	}
@@ -105,15 +104,14 @@ public class DeviceEventProcessorDecorator extends DeviceManagementDecorator {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceAlert(com.sitewhere
-	 * .spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceAlert(java.lang
+	 * .String, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest, boolean)
 	 */
 	@Override
-	public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
-			throws SiteWhereException {
-		chain.beforeAlert(assignment, request);
-		IDeviceAlert result = super.addDeviceAlert(assignment, request);
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
+			boolean updateState) throws SiteWhereException {
+		chain.beforeAlert(assignmentToken, request);
+		IDeviceAlert result = super.addDeviceAlert(assignmentToken, request, updateState);
 		chain.afterAlert(result);
 		return result;
 	}
@@ -123,15 +121,14 @@ public class DeviceEventProcessorDecorator extends DeviceManagementDecorator {
 	 * 
 	 * @see
 	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceCommandInvocation
-	 * (com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.command.IDeviceCommand,
+	 * (java.lang.String, com.sitewhere.spi.device.command.IDeviceCommand,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
-	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
+	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-		chain.beforeCommandInvocation(assignment, request);
-		IDeviceCommandInvocation result = super.addDeviceCommandInvocation(assignment, command, request);
+		chain.beforeCommandInvocation(assignmentToken, request);
+		IDeviceCommandInvocation result = super.addDeviceCommandInvocation(assignmentToken, command, request);
 		chain.afterCommandInvocation(result);
 		return result;
 	}

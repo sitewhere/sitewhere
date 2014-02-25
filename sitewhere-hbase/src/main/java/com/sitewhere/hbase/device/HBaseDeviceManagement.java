@@ -21,10 +21,12 @@ import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
@@ -51,6 +53,8 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
@@ -396,11 +400,11 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#updateDeviceAssignmentState(java.lang
-	 * .String, com.sitewhere.spi.device.IDeviceEventBatch)
+	 * .String, com.sitewhere.spi.device.IDeviceAssignmentState)
 	 */
-	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceEventBatch batch)
+	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.updateDeviceAssignmentState(client, token, batch);
+		return HBaseDeviceAssignment.updateDeviceAssignmentState(client, token, state);
 	}
 
 	/*
@@ -412,7 +416,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
 			throws SiteWhereException {
-		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
+		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this, true);
 	}
 
 	/*
@@ -464,13 +468,14 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(com.sitewhere.
-	 * spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest)
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest, boolean)
 	 */
-	public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
-			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
-		return HBaseDeviceEvent.createDeviceMeasurements(client, assignment, measurements);
+	@Override
+	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
+			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException {
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+		return HBaseDeviceEvent.createDeviceMeasurements(client, assignment, measurements, updateState);
 	}
 
 	/*
@@ -480,6 +485,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceMeasurements(java.lang.String,
 	 * com.sitewhere.spi.common.IDateRangeSearchCriteria)
 	 */
+	@Override
 	public SearchResults<IDeviceMeasurements> listDeviceMeasurements(String token,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceEvent.listDeviceMeasurements(client, token, criteria);
@@ -492,6 +498,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceMeasurementsForSite(java.lang
 	 * .String, com.sitewhere.spi.common.IDateRangeSearchCriteria)
 	 */
+	@Override
 	public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceEvent.listDeviceMeasurementsForSite(client, siteToken, criteria);
@@ -500,14 +507,14 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceLocation(com.sitewhere.spi.
-	 * device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.request.IDeviceLocationCreateRequest)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceLocation(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest, boolean)
 	 */
-	public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment,
-			IDeviceLocationCreateRequest request) throws SiteWhereException {
-		return HBaseDeviceEvent.createDeviceLocation(client, assignment, request);
+	@Override
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
+			boolean updateState) throws SiteWhereException {
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+		return HBaseDeviceEvent.createDeviceLocation(client, assignment, request, updateState);
 	}
 
 	/*
@@ -517,6 +524,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceLocations(java.lang.String,
 	 * com.sitewhere.spi.common.IDateRangeSearchCriteria)
 	 */
+	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceEvent.listDeviceLocations(client, assignmentToken, criteria);
@@ -529,6 +537,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceLocationsForSite(java.lang
 	 * .String, com.sitewhere.spi.common.IDateRangeSearchCriteria)
 	 */
+	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceEvent.listDeviceLocationsForSite(client, siteToken, criteria);
@@ -540,6 +549,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceLocations(java.util.List,
 	 * com.sitewhere.spi.common.IDateRangeSearchCriteria)
 	 */
+	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		throw new SiteWhereException("Not implemented yet for HBase device management.");
@@ -548,13 +558,14 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceAlert(com.sitewhere.spi.device
-	 * .IDeviceAssignment, com.sitewhere.spi.device.request.IDeviceAlertCreateRequest)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceAlert(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest, boolean)
 	 */
-	public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
-			throws SiteWhereException {
-		return HBaseDeviceEvent.createDeviceAlert(client, assignment, request);
+	@Override
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
+			boolean updateState) throws SiteWhereException {
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+		return HBaseDeviceEvent.createDeviceAlert(client, assignment, request, updateState);
 	}
 
 	/*
@@ -563,6 +574,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceAlerts(java.lang.String,
 	 * com.sitewhere.spi.common.IDateRangeSearchCriteria)
 	 */
+	@Override
 	public SearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceEvent.listDeviceAlerts(client, assignmentToken, criteria);
@@ -575,6 +587,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceAlertsForSite(java.lang.String
 	 * , com.sitewhere.spi.common.IDateRangeSearchCriteria)
 	 */
+	@Override
 	public SearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceEvent.listDeviceAlertsForSite(client, siteToken, criteria);
@@ -584,13 +597,14 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandInvocation(com.sitewhere
-	 * .spi.device.IDeviceAssignment, com.sitewhere.spi.device.command.IDeviceCommand,
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandInvocation(java.lang
+	 * .String, com.sitewhere.spi.device.command.IDeviceCommand,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
-	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
+	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 		return HBaseDeviceEvent.createDeviceCommandInvocation(client, assignment, command, request);
 	}
 
@@ -637,13 +651,13 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandResponse(com.sitewhere
-	 * .spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandResponse(java.lang.String
+	 * , com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
 	 */
 	@Override
-	public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
+	public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 		return HBaseDeviceEvent.createDeviceCommandResponse(client, assignment, request);
 	}
 
@@ -677,13 +691,13 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStateChange(com.sitewhere.spi
-	 * .device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStateChange(java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
 	 */
 	@Override
-	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+	public IDeviceStateChange addDeviceStateChange(String assignmentToken,
 			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 		return HBaseDeviceEvent.createDeviceStateChange(client, assignment, request);
 	}
 
@@ -812,6 +826,21 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException {
 		return HBaseZone.deleteZone(client, zoneToken, force);
+	}
+
+	/**
+	 * Verify that the given assignment exists.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IDeviceAssignment assertDeviceAssignment(String token) throws SiteWhereException {
+		IDeviceAssignment result = HBaseDeviceAssignment.getDeviceAssignment(client, token);
+		if (result == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
+		}
+		return result;
 	}
 
 	public ISiteWhereHBaseClient getClient() {

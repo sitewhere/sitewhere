@@ -34,7 +34,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.event.IDeviceEventBatch;
+import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -180,15 +180,14 @@ public class HBaseDeviceAssignment {
 	 * 
 	 * @param hbase
 	 * @param token
-	 * @param batch
+	 * @param state
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static DeviceAssignment updateDeviceAssignmentState(ISiteWhereHBaseClient hbase, String token,
-			IDeviceEventBatch batch) throws SiteWhereException {
+			IDeviceAssignmentState state) throws SiteWhereException {
 		DeviceAssignment updated = getDeviceAssignment(hbase, token);
-		DeviceAssignmentState state = SiteWherePersistence.assignmentStateUpdateLogic(updated, batch);
-		updated.setState(state);
+		updated.setState(DeviceAssignmentState.copy(state));
 
 		byte[] rowkey = IdManager.getInstance().getAssignmentKeys().getValue(token);
 		byte[] json = MarshalUtils.marshalJson(updated);

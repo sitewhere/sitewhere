@@ -11,7 +11,6 @@ package com.sitewhere.spi.device.event.processor;
 
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -35,7 +34,7 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void beforeMeasurements(IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request)
+	public void beforeMeasurements(String assignment, IDeviceMeasurementsCreateRequest request)
 			throws SiteWhereException;
 
 	/**
@@ -53,7 +52,7 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void beforeLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
+	public void beforeLocation(String assignment, IDeviceLocationCreateRequest request)
 			throws SiteWhereException;
 
 	/**
@@ -71,8 +70,7 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void beforeAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
-			throws SiteWhereException;
+	public void beforeAlert(String assignment, IDeviceAlertCreateRequest request) throws SiteWhereException;
 
 	/**
 	 * Executes code after device alert has been successfully saved.
@@ -89,8 +87,8 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void beforeCommandInvocation(IDeviceAssignment assignment,
-			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
+	public void beforeCommandInvocation(String assignment, IDeviceCommandInvocationCreateRequest request)
+			throws SiteWhereException;
 
 	/**
 	 * Executes code after device command invocation has been successfully saved.

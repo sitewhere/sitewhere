@@ -46,6 +46,7 @@ import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
@@ -727,11 +728,9 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 * .String, com.sitewhere.spi.device.IDeviceEventBatch)
 	 */
 	@Override
-	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceEventBatch batch)
+	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
 			throws SiteWhereException {
 		DBObject match = assertDeviceAssignment(token);
-		DeviceAssignment assignment = MongoDeviceAssignment.fromDBObject(match);
-		DeviceAssignmentState state = SiteWherePersistence.assignmentStateUpdateLogic(assignment, batch);
 		MongoDeviceAssignment.setState(state, match);
 		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
@@ -750,7 +749,7 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	@Override
 	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
 			throws SiteWhereException {
-		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
+		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this, true);
 	}
 
 	/*
@@ -831,18 +830,27 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(com.sitewhere.
-	 * spi.device.IDeviceAssignment ,
-	 * com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest)
+	 * spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest, boolean)
 	 */
 	@Override
-	public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
-			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
+	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
+			IDeviceMeasurementsCreateRequest request, boolean updateState) throws SiteWhereException {
+		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceMeasurements measurements =
 				SiteWherePersistence.deviceMeasurementsCreateLogic(request, assignment);
 
 		DBCollection measurementColl = getMongoClient().getMeasurementsCollection();
 		DBObject mObject = MongoDeviceMeasurements.toDBObject(measurements);
 		MongoPersistence.insert(measurementColl, mObject);
+
+		// Update assignment state if requested.
+		if (updateState) {
+			DeviceAssignmentState updated =
+					SiteWherePersistence.assignmentStateMeasurementsUpdateLogic(assignment, measurements);
+			updateDeviceAssignmentState(assignmentToken, updated);
+		}
+
 		return MongoDeviceMeasurements.fromDBObject(mObject);
 	}
 
@@ -887,19 +895,26 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceLocation(com.sitewhere.spi.
-	 * device.IDeviceAssignment ,
-	 * com.sitewhere.spi.device.request.IDeviceLocationCreateRequest)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceLocation(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest, boolean)
 	 */
 	@Override
-	public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment,
-			IDeviceLocationCreateRequest request) throws SiteWhereException {
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
+			boolean updateState) throws SiteWhereException {
+		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
 
 		DBCollection locationsColl = getMongoClient().getLocationsCollection();
 		DBObject locObject = MongoDeviceLocation.toDBObject(location);
 		MongoPersistence.insert(locationsColl, locObject);
+
+		// Update assignment state if requested.
+		if (updateState) {
+			DeviceAssignmentState updated =
+					SiteWherePersistence.assignmentStateLocationUpdateLogic(assignment, location);
+			updateDeviceAssignmentState(assignment.getToken(), updated);
+		}
+
 		return MongoDeviceLocation.fromDBObject(locObject);
 	}
 
@@ -964,18 +979,26 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceAlert(com.sitewhere.spi.device
-	 * .IDeviceAssignment, com.sitewhere.spi.device.request.IDeviceAlertCreateRequest)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceAlert(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest, boolean)
 	 */
 	@Override
-	public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
-			throws SiteWhereException {
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
+			boolean updateState) throws SiteWhereException {
+		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceAlert alert = SiteWherePersistence.deviceAlertCreateLogic(assignment, request);
 
 		DBCollection alertsColl = getMongoClient().getAlertsCollection();
 		DBObject alertObject = MongoDeviceAlert.toDBObject(alert);
 		MongoPersistence.insert(alertsColl, alertObject);
+
+		// Update assignment state if requested.
+		if (updateState) {
+			DeviceAssignmentState updated =
+					SiteWherePersistence.assignmentStateAlertUpdateLogic(assignment, alert);
+			updateDeviceAssignmentState(assignment.getToken(), updated);
+		}
+
 		return MongoDeviceAlert.fromDBObject(alertObject);
 	}
 
@@ -1021,13 +1044,14 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandInvocation(com.sitewhere
-	 * .spi.device.IDeviceAssignment, com.sitewhere.spi.device.command.IDeviceCommand,
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandInvocation(java.lang
+	 * .String, com.sitewhere.spi.device.command.IDeviceCommand,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
-	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
+	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceCommandInvocation ci =
 				SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command, request);
 
@@ -1143,13 +1167,13 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandResponse(com.sitewhere
-	 * .spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandResponse(java.lang.String
+	 * , com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
 	 */
 	@Override
-	public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
+	public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceCommandResponse response =
 				SiteWherePersistence.deviceCommandResponseCreateLogic(assignment, request);
 
@@ -1202,13 +1226,13 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStateChange(com.sitewhere.spi
-	 * .device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStateChange(java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
 	 */
 	@Override
-	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+	public IDeviceStateChange addDeviceStateChange(String assignmentToken,
 			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceStateChange state = SiteWherePersistence.deviceStateChangeCreateLogic(assignment, request);
 
 		DBCollection states = getMongoClient().getStateChangesCollection();
@@ -1496,6 +1520,19 @@ public class MongoDeviceManagement implements IDeviceManagement {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
 		return match;
+	}
+
+	/**
+	 * Return an {@link IDeviceAssignment} for the given token. Throws an exception if the
+	 * token is not valid.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IDeviceAssignment assertApiDeviceAssignment(String token) throws SiteWhereException {
+		DBObject match = assertDeviceAssignment(token);
+		return MongoDeviceAssignment.fromDBObject(match);
 	}
 
 	/**

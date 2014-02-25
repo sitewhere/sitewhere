@@ -204,17 +204,6 @@ public interface ISiteWhereClient {
 			throws SiteWhereException;
 
 	/**
-	 * Update assignment state based on a batch of events.
-	 * 
-	 * @param token
-	 * @param batch
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceAssignment updateDeviceAssignmentState(String token, DeviceEventBatch batch)
-			throws SiteWhereException;
-
-	/**
 	 * Create measurements for an assignment.
 	 * 
 	 * @param assignmentToken

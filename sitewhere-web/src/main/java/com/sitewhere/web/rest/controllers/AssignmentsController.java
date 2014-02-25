@@ -31,7 +31,6 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
-import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
@@ -176,30 +175,6 @@ public class AssignmentsController extends SiteWhereController {
 	}
 
 	/**
-	 * Update latest state information associated with an assignment.
-	 * 
-	 * @param token
-	 * @param batch
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/{token}/state", method = RequestMethod.PUT)
-	@ResponseBody
-	@ApiOperation(value = "Update current state for a device assignment")
-	public DeviceAssignment updateDeviceAssignmentState(
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@RequestBody DeviceEventBatch batch) throws SiteWhereException {
-
-		IDeviceAssignment result =
-				SiteWhereServer.getInstance().getDeviceManagement().updateDeviceAssignmentState(token, batch);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(true);
-		helper.setIncludeDevice(true);
-		helper.setIncludeSite(true);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
-	}
-
-	/**
 	 * List all device measurements for a given assignment.
 	 * 
 	 * @param assignmentToken
@@ -249,18 +224,21 @@ public class AssignmentsController extends SiteWhereController {
 	 * 
 	 * @param input
 	 * @param token
+	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	@RequestMapping(value = "/{token}/measurements", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create measurements event for a device assignment")
-	public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	public DeviceMeasurements createMeasurements(
+			@RequestBody DeviceMeasurementsCreateRequest input,
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Update state", required = false) @RequestParam(defaultValue = "true") boolean updateState)
 			throws SiteWhereException {
-		IDeviceAssignment assignment = assureAssignment(token);
 		IDeviceMeasurements result =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceMeasurements(assignment, input);
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceMeasurements(token, input,
+						updateState);
 		return DeviceMeasurements.copy(result);
 	}
 
@@ -290,18 +268,21 @@ public class AssignmentsController extends SiteWhereController {
 	 * 
 	 * @param input
 	 * @param token
+	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	@RequestMapping(value = "/{token}/locations", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a location event for a device assignment")
-	public DeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	public DeviceLocation createLocation(
+			@RequestBody DeviceLocationCreateRequest input,
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Update state", required = false) @RequestParam(defaultValue = "true") boolean updateState)
 			throws SiteWhereException {
-		IDeviceAssignment assignment = assureAssignment(token);
 		IDeviceLocation result =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceLocation(assignment, input);
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceLocation(token, input,
+						updateState);
 		return DeviceLocation.copy(result);
 	}
 
@@ -331,19 +312,20 @@ public class AssignmentsController extends SiteWhereController {
 	 * 
 	 * @param input
 	 * @param token
+	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	@RequestMapping(value = "/{token}/alerts", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create an alert event for a device assignment")
-	public DeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+	public DeviceAlert createAlert(
+			@RequestBody DeviceAlertCreateRequest input,
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Update state", required = false) @RequestParam(defaultValue = "true") boolean updateState)
 			throws SiteWhereException {
-		IDeviceAssignment assignment =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentByToken(token);
 		IDeviceAlert result =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceAlert(assignment, input);
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceAlert(token, input, updateState);
 		return DeviceAlert.copy(result);
 	}
 
@@ -368,10 +350,9 @@ public class AssignmentsController extends SiteWhereController {
 		if (request.getTarget() == null) {
 			throw new SiteWhereException("Command target is required.");
 		}
-		IDeviceAssignment assignment = assureAssignment(token);
 		IDeviceCommand command = assureDeviceCommand(request.getCommandToken());
 		IDeviceCommandInvocation result =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceCommandInvocation(assignment,
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceCommandInvocation(token,
 						command, request);
 		DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
 		return helper.convert(result);
@@ -422,10 +403,8 @@ public class AssignmentsController extends SiteWhereController {
 	public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		IDeviceAssignment assignment =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentByToken(token);
 		IDeviceStateChange result =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceStateChange(assignment, input);
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceStateChange(token, input);
 		return DeviceStateChange.copy(result);
 	}
 
@@ -464,11 +443,8 @@ public class AssignmentsController extends SiteWhereController {
 	public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		IDeviceAssignment assignment =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentByToken(token);
 		IDeviceCommandResponse result =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceCommandResponse(assignment,
-						input);
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceCommandResponse(token, input);
 		return DeviceCommandResponse.copy(result);
 	}
 

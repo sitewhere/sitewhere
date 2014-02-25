@@ -334,22 +334,6 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.ISiteWhereClient#updateDeviceAssignmentState(java.lang.String,
-	 * com.sitewhere.rest.model.device.DeviceEventBatch)
-	 */
-	@Override
-	public DeviceAssignment updateDeviceAssignmentState(String token, DeviceEventBatch batch)
-			throws SiteWhereException {
-		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("token", token);
-		return sendRest(getBaseUrl() + "assignments/{token}/state", HttpMethod.PUT, batch,
-				DeviceAssignment.class, vars);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see com.sitewhere.spi.ISiteWhereClient#createDeviceMeasurements(java.lang.String,
 	 * com.sitewhere.rest.model.device.request.DeviceMeasurementsCreateRequest)
 	 */

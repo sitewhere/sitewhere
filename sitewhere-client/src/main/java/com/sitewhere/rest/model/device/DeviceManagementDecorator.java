@@ -16,6 +16,7 @@ import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
@@ -206,9 +207,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceEventBatch batch)
+	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
 			throws SiteWhereException {
-		return delegate.updateDeviceAssignmentState(token, batch);
+		return delegate.updateDeviceAssignmentState(token, state);
 	}
 
 	@Override
@@ -240,9 +241,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
-			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
-		return delegate.addDeviceMeasurements(assignment, measurements);
+	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
+			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException {
+		return delegate.addDeviceMeasurements(assignmentToken, measurements, updateState);
 	}
 
 	@Override
@@ -258,9 +259,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment,
-			IDeviceLocationCreateRequest request) throws SiteWhereException {
-		return delegate.addDeviceLocation(assignment, request);
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
+			boolean updateState) throws SiteWhereException {
+		return delegate.addDeviceLocation(assignmentToken, request, updateState);
 	}
 
 	@Override
@@ -282,9 +283,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
-			throws SiteWhereException {
-		return delegate.addDeviceAlert(assignment, request);
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
+			boolean updateState) throws SiteWhereException {
+		return delegate.addDeviceAlert(assignmentToken, request, updateState);
 	}
 
 	@Override
@@ -300,9 +301,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
+	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
-		return delegate.addDeviceCommandInvocation(assignment, command, request);
+		return delegate.addDeviceCommandInvocation(assignmentToken, command, request);
 	}
 
 	@Override
@@ -324,9 +325,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
+	public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-		return delegate.addDeviceCommandResponse(assignment, request);
+		return delegate.addDeviceCommandResponse(assignmentToken, request);
 	}
 
 	@Override
@@ -342,9 +343,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+	public IDeviceStateChange addDeviceStateChange(String assignmentToken,
 			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
-		return delegate.addDeviceStateChange(assignment, request);
+		return delegate.addDeviceStateChange(assignmentToken, request);
 	}
 
 	@Override

@@ -70,7 +70,7 @@ public class HBaseDeviceSpecification {
 			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
 		String uuid = null;
 		if (request.getSpecificationId() != null) {
-			uuid = IdManager.getInstance().getSpecificationKeys().useExistingId(uuid);
+			uuid = IdManager.getInstance().getSpecificationKeys().useExistingId(request.getSpecificationId());
 		} else {
 			uuid = IdManager.getInstance().getSpecificationKeys().createUniqueId();
 		}

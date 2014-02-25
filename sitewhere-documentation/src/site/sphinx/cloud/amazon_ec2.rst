@@ -1,6 +1,6 @@
----------------------
-Running on Amazon EC2
----------------------
+-------------------------------
+Running SiteWhere on Amazon EC2
+-------------------------------
 Amazon's `Elastic Compute Cloud (EC2) <http://aws.amazon.com/ec2/>`_ provides an environnment for running virtual
 servers in the cloud. Server images are offered in the form on *Amazon Machine Instances (AMIs)* which capture
 the state of a configured server so it can be started in the cloud as a virtual machine.
@@ -44,7 +44,7 @@ Launching an Instance
 ---------------------
 Click the *Select* button next to the version of SiteWhere you want to run. The wizard will move to the next step 
 which is to select the *instance type*. Click on the **General Purpose** tab on the left to get a list of instance
-types. More powerful instances cost more money, so you will probably want to use with an *m1.small* or *m1.medium* 
+types. More powerful instances cost more money, so you will probably want to use an *m1.small* or *m1.medium* 
 instance to run your server. Performance will be noticeably better with more powerful instances.
 
 .. note:: Amazon offers a free tier which allows you to run a *Micro* instance for a period of time. While SiteWhere 
@@ -110,7 +110,13 @@ After adding the host, you should be able to access the SiteWhere Administrative
 	
 If the page doesn't load, the server is probably not running. Make sure it shows up with an *Instance State* of 
 *running* (with a green indicator) in the instances panel. If you are able to access the admin UI, the server
-should be ready to go.
+should be ready to go. The admin login page should look similar to the one below:
+
+.. image:: /_static/images/cloud/sw-admin-login.png
+   :width: 100%
+   :alt: SiteWhere Admin Login Page
+   :align: left
+
 
 Viewing Swagger for REST APIs
 -----------------------------
@@ -119,6 +125,10 @@ with the SiteWhere REST services. Enter the following URL:
 
 	http://sitewhere-aws/sitewhere/
 	
-and the Swagger user interface should load in the browser.
+and the Swagger user interface should load in the browser as shown below:
 
+.. image:: /_static/images/cloud/sw-swagger.png
+   :width: 100%
+   :alt: Swagger Interface
+   :align: left
 	 

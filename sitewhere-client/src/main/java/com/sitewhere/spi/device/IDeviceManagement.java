@@ -288,14 +288,14 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 			throws SiteWhereException;
 
 	/**
-	 * Updates the state of a device assignment based on a batch of new events.
+	 * Updates the current state of a device assignment.
 	 * 
 	 * @param token
-	 * @param batch
+	 * @param state
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceEventBatch batch)
+	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
 			throws SiteWhereException;
 
 	/**
@@ -352,13 +352,14 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	/**
 	 * Add measurements for a given device assignment.
 	 * 
-	 * @param assignment
+	 * @param assignmentToken
 	 * @param measurements
+	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
-			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException;
+	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
+			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException;
 
 	/**
 	 * Gets device measurement entries for an assignment based on criteria.
@@ -385,13 +386,14 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	/**
 	 * Add location for a given device assignment.
 	 * 
-	 * @param assignment
+	 * @param assignmentToken
 	 * @param request
+	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment,
-			IDeviceLocationCreateRequest request) throws SiteWhereException;
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
+			boolean updateState) throws SiteWhereException;
 
 	/**
 	 * Gets device location entries for an assignment.
@@ -431,13 +433,14 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	/**
 	 * Add alert for a given device assignment.
 	 * 
-	 * @param assignment
+	 * @param assignmentToken
 	 * @param request
+	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
-			throws SiteWhereException;
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
+			boolean updateState) throws SiteWhereException;
 
 	/**
 	 * Gets the most recent device alert entries for an assignment.
@@ -464,13 +467,13 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	/**
 	 * Add a device command invocation event for the given assignment.
 	 * 
-	 * @param assignment
+	 * @param assignmentToken
 	 * @param command
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceCommandInvocation addDeviceCommandInvocation(IDeviceAssignment assignment,
+	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException;
 
 	/**
@@ -508,12 +511,12 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	/**
 	 * Adds a new device command response event.
 	 * 
-	 * @param assignment
+	 * @param assignmentToken
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceCommandResponse addDeviceCommandResponse(IDeviceAssignment assignment,
+	public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException;
 
 	/**
@@ -541,12 +544,12 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	/**
 	 * Adds a new device state change event.
 	 * 
-	 * @param assignment
+	 * @param assignmentToken
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceStateChange addDeviceStateChange(IDeviceAssignment assignment,
+	public IDeviceStateChange addDeviceStateChange(String assignmentToken,
 			IDeviceStateChangeCreateRequest request) throws SiteWhereException;
 
 	/**

@@ -23,7 +23,6 @@ import com.sitewhere.geo.GeoUtils;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.command.CommandParameter;
-import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
@@ -421,8 +420,6 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		int measurementCount = 0;
 		int alertCount = 0;
 		List<IDeviceMeasurements> results = new ArrayList<IDeviceMeasurements>();
-		DeviceMeasurementsCreateRequest lastMx = null;
-		DeviceAlertCreateRequest lastAlert = null;
 		for (int x = 0; x < EVENTS_PER_ASSIGNMENT; x++) {
 			// Simulate temperature changes.
 			temp = temp + (delta + ((Math.random() * mult * 2) - mult));
@@ -443,8 +440,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			mreq.addOrReplaceMeasurement("engine.temperature", temp);
 			mreq.addOrReplaceMeasurement("fuel.level", fuel);
 			mreq.setEventDate(new Date(current));
-			results.add(getDeviceManagement().addDeviceMeasurements(assignment, mreq));
-			lastMx = mreq;
+			results.add(getDeviceManagement().addDeviceMeasurements(assignment.getToken(), mreq, true));
 			measurementCount++;
 
 			// Create alerts based on current temperature.
@@ -462,8 +458,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					areq.setLevel(AlertLevel.Critical);
 					break;
 				}
-				getDeviceManagement().addDeviceAlert(assignment, areq);
-				lastAlert = areq;
+				getDeviceManagement().addDeviceAlert(assignment.getToken(), areq, true);
 				alertCount++;
 			}
 
@@ -471,16 +466,6 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		}
 		LOGGER.info(PREFIX_CREATE_EVENTS + " " + measurementCount + " measurements. " + alertCount
 				+ " alerts.");
-
-		// Update assignment state.
-		DeviceEventBatch batch = new DeviceEventBatch();
-		if (lastMx != null) {
-			batch.getMeasurements().add(lastMx);
-		}
-		if (lastAlert != null) {
-			batch.getAlerts().add(lastAlert);
-		}
-		getDeviceManagement().updateDeviceAssignmentState(assignment.getToken(), batch);
 		return results;
 	}
 
@@ -513,7 +498,6 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 		List<IDeviceLocation> results = new ArrayList<IDeviceLocation>();
 		GeometryFactory factory = new GeometryFactory();
-		DeviceLocationCreateRequest lastLoc = null;
 		for (int x = 0; x < LOCATIONS_PER_ASSIGNMENT; x++) {
 			boolean foundNext = false;
 
@@ -537,8 +521,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					request.setLongitude(end.x);
 					request.setElevation(0.0);
 					request.setEventDate(new Date(current));
-					IDeviceLocation created = getDeviceManagement().addDeviceLocation(assignment, request);
-					lastLoc = request;
+					IDeviceLocation created =
+							getDeviceManagement().addDeviceLocation(assignment.getToken(), request, true);
 					results.add(created);
 
 					cx = cx + deltaX;
@@ -555,13 +539,6 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			current += 30000;
 		}
 		LOGGER.info(PREFIX_CREATE_EVENTS + " " + results.size() + " locations. ");
-
-		// Update assignment state.
-		if (lastLoc != null) {
-			DeviceEventBatch batch = new DeviceEventBatch();
-			batch.getLocations().add(lastLoc);
-			getDeviceManagement().updateDeviceAssignmentState(assignment.getToken(), batch);
-		}
 		return results;
 	}
 
@@ -592,7 +569,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 				values.put(param.getName(), getSampleValue(param.getType()));
 			}
 			request.setParameterValues(values);
-			invocations.add(getDeviceManagement().addDeviceCommandInvocation(assignment, command, request));
+			invocations.add(getDeviceManagement().addDeviceCommandInvocation(assignment.getToken(), command,
+					request));
 			current += 30000;
 		}
 		return invocations;
@@ -616,7 +594,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setOriginatingEventId(invocation.getId());
 			request.setResponse("ACK");
 			request.setEventDate(new Date(current));
-			responses.add(getDeviceManagement().addDeviceCommandResponse(assignment, request));
+			responses.add(getDeviceManagement().addDeviceCommandResponse(assignment.getToken(), request));
 			current += 30000;
 		}
 		return responses;
@@ -638,7 +616,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		register.setSpecificationToken(specification.getToken());
 		register.setReplyTo("SiteWhere/devices/" + assignment.getDeviceHardwareId());
 		register.setEventDate(start);
-		stateChanges.add(getDeviceManagement().addDeviceStateChange(assignment, register));
+		stateChanges.add(getDeviceManagement().addDeviceStateChange(assignment.getToken(), register));
 		return stateChanges;
 	}
 

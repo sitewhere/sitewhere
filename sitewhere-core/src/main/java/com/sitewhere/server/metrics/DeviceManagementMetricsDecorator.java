@@ -133,15 +133,15 @@ public class DeviceManagementMetricsDecorator extends DeviceManagementDecorator 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(com.sitewhere.
-	 * spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.request.IDeviceMeasurementsCreateRequest)
+	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceMeasurements
+	 * (java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest, boolean)
 	 */
-	public IDeviceMeasurements addDeviceMeasurements(IDeviceAssignment assignment,
-			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
+	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
+			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException {
 		final Timer.Context context = addDeviceMeasurementsTimer.time();
 		try {
-			return super.addDeviceMeasurements(assignment, measurements);
+			return super.addDeviceMeasurements(assignmentToken, measurements, updateState);
 		} finally {
 			context.stop();
 		}
@@ -185,15 +185,16 @@ public class DeviceManagementMetricsDecorator extends DeviceManagementDecorator 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceLocation(com.sitewhere.spi.
-	 * device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.request.IDeviceLocationCreateRequest)
+	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceLocation(java
+	 * .lang.String, com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest,
+	 * boolean)
 	 */
-	public IDeviceLocation addDeviceLocation(IDeviceAssignment assignment,
-			IDeviceLocationCreateRequest request) throws SiteWhereException {
+	@Override
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
+			boolean updateState) throws SiteWhereException {
 		final Timer.Context context = addDeviceLocationTimer.time();
 		try {
-			return super.addDeviceLocation(assignment, request);
+			return super.addDeviceLocation(assignmentToken, request, updateState);
 		} finally {
 			context.stop();
 		}
@@ -248,14 +249,15 @@ public class DeviceManagementMetricsDecorator extends DeviceManagementDecorator 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceAlert(com.sitewhere.spi.device
-	 * .IDeviceAssignment, com.sitewhere.spi.device.request.IDeviceAlertCreateRequest)
+	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceAlert(java.lang
+	 * .String, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest, boolean)
 	 */
-	public IDeviceAlert addDeviceAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
-			throws SiteWhereException {
+	@Override
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
+			boolean updateState) throws SiteWhereException {
 		final Timer.Context context = addDeviceAlertTimer.time();
 		try {
-			return super.addDeviceAlert(assignment, request);
+			return super.addDeviceAlert(assignmentToken, request, updateState);
 		} finally {
 			context.stop();
 		}

@@ -12,7 +12,6 @@ package com.sitewhere.device.event.processor;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -55,12 +54,12 @@ public class PlaceholderEventProcessor implements IOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeMeasurements
-	 * (com.sitewhere.spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeMeasurements
+	 * (java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
 	 */
 	@Override
-	public void beforeMeasurements(IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request)
+	public void beforeMeasurements(String assignmentToken, IDeviceMeasurementsCreateRequest request)
 			throws SiteWhereException {
 		LOGGER.info("Calling 'beforeMeasurements' in event processor.");
 	}
@@ -81,12 +80,12 @@ public class PlaceholderEventProcessor implements IOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeLocation(com
-	 * .sitewhere.spi.device.IDeviceAssignment,
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeLocation
+	 * (java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
 	@Override
-	public void beforeLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
+	public void beforeLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 			throws SiteWhereException {
 		LOGGER.info("Calling 'beforeLocation' in event processor.");
 	}
@@ -107,12 +106,11 @@ public class PlaceholderEventProcessor implements IOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeAlert(com.
-	 * sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeAlert(java
+	 * .lang.String, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
-	public void beforeAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
+	public void beforeAlert(String assignmentToken, IDeviceAlertCreateRequest request)
 			throws SiteWhereException {
 		LOGGER.info("Calling 'beforeAlert' in event processor.");
 	}
@@ -132,14 +130,13 @@ public class PlaceholderEventProcessor implements IOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IDeviceEventProcessor#beforeCommandInvocation
-	 * (com.sitewhere.spi.device.IDeviceAssignment,
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+	 * beforeCommandInvocation(java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
-	public void beforeCommandInvocation(IDeviceAssignment assignment,
-			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+	public void beforeCommandInvocation(String assignmentToken, IDeviceCommandInvocationCreateRequest request)
+			throws SiteWhereException {
 		LOGGER.info("Calling 'beforeCommandInvocation' in event processor.");
 	}
 

@@ -11,6 +11,8 @@ package com.sitewhere.hbase.device;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,6 +93,13 @@ public class HBaseDeviceCommand {
 		for (byte[] json : matches) {
 			response.add(MarshalUtils.unmarshalJson(json, DeviceCommand.class));
 		}
+		Collections.sort(response, new Comparator<IDeviceCommand>() {
+
+			@Override
+			public int compare(IDeviceCommand a, IDeviceCommand b) {
+				return a.getCreatedDate().compareTo(b.getCreatedDate());
+			}
+		});
 		return response;
 	}
 

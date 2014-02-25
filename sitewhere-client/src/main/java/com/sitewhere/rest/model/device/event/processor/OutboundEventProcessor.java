@@ -10,7 +10,6 @@
 package com.sitewhere.rest.model.device.event.processor;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -51,11 +50,11 @@ public class OutboundEventProcessor implements IOutboundEventProcessor {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeMeasurements
-	 * (com.sitewhere.spi.device.IDeviceAssignment,
+	 * (java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
 	 */
 	@Override
-	public void beforeMeasurements(IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request)
+	public void beforeMeasurements(String assignmentToken, IDeviceMeasurementsCreateRequest request)
 			throws SiteWhereException {
 	}
 
@@ -75,11 +74,11 @@ public class OutboundEventProcessor implements IOutboundEventProcessor {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeLocation
-	 * (com.sitewhere.spi.device.IDeviceAssignment,
+	 * (java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
 	@Override
-	public void beforeLocation(IDeviceAssignment assignment, IDeviceLocationCreateRequest request)
+	public void beforeLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 			throws SiteWhereException {
 	}
 
@@ -98,12 +97,11 @@ public class OutboundEventProcessor implements IOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeAlert(com
-	 * .sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeAlert(java
+	 * .lang.String, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
-	public void beforeAlert(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
+	public void beforeAlert(String assignmentToken, IDeviceAlertCreateRequest request)
 			throws SiteWhereException {
 	}
 
@@ -122,12 +120,12 @@ public class OutboundEventProcessor implements IOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-	 * beforeCommandInvocation(com.sitewhere.spi.device.IDeviceAssignment,
+	 * beforeCommandInvocation(java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
-	public void beforeCommandInvocation(IDeviceAssignment assignment,
-			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+	public void beforeCommandInvocation(String assignmentToken, IDeviceCommandInvocationCreateRequest request)
+			throws SiteWhereException {
 	}
 
 	/*
