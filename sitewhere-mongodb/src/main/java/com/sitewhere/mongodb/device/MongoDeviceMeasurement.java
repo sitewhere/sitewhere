@@ -29,7 +29,7 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
 	 */
 	@Override
 	public BasicDBObject convert(IDeviceMeasurement source) {
-		return MongoDeviceMeasurement.toDBObject(source);
+		return MongoDeviceMeasurement.toDBObject(source, false);
 	}
 
 	/*
@@ -39,7 +39,7 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
 	 */
 	@Override
 	public IDeviceMeasurement convert(DBObject source) {
-		return MongoDeviceMeasurement.fromDBObject(source);
+		return MongoDeviceMeasurement.fromDBObject(source, false);
 	}
 
 	/**
@@ -47,9 +47,10 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
 	 * 
 	 * @param source
 	 * @param target
+	 * @param isNested
 	 */
-	public static void toDBObject(IDeviceMeasurement source, BasicDBObject target) {
-		MongoDeviceEvent.toDBObject(source, target);
+	public static void toDBObject(IDeviceMeasurement source, BasicDBObject target, boolean isNested) {
+		MongoDeviceEvent.toDBObject(source, target, isNested);
 
 		target.put(MongoDeviceMeasurements.PROP_NAME, source.getName());
 		target.put(MongoDeviceMeasurements.PROP_VALUE, source.getValue());
@@ -60,9 +61,10 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
 	 * 
 	 * @param source
 	 * @param target
+	 * @param isNested
 	 */
-	public static void fromDBObject(DBObject source, DeviceMeasurement target) {
-		MongoDeviceEvent.fromDBObject(source, target);
+	public static void fromDBObject(DBObject source, DeviceMeasurement target, boolean isNested) {
+		MongoDeviceEvent.fromDBObject(source, target, isNested);
 
 		String name = (String) source.get(MongoDeviceMeasurements.PROP_NAME);
 		Double value = (Double) source.get(MongoDeviceMeasurements.PROP_VALUE);
@@ -74,11 +76,12 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
 	 * Convert SPI object to Mongo DBObject.
 	 * 
 	 * @param source
+	 * @param isNested
 	 * @return
 	 */
-	public static BasicDBObject toDBObject(IDeviceMeasurement source) {
+	public static BasicDBObject toDBObject(IDeviceMeasurement source, boolean isNested) {
 		BasicDBObject result = new BasicDBObject();
-		MongoDeviceMeasurement.toDBObject(source, result);
+		MongoDeviceMeasurement.toDBObject(source, result, isNested);
 		return result;
 	}
 
@@ -86,11 +89,12 @@ public class MongoDeviceMeasurement implements MongoConverter<IDeviceMeasurement
 	 * Convert a DBObject into the SPI equivalent.
 	 * 
 	 * @param source
+	 * @param isNested
 	 * @return
 	 */
-	public static DeviceMeasurement fromDBObject(DBObject source) {
+	public static DeviceMeasurement fromDBObject(DBObject source, boolean isNested) {
 		DeviceMeasurement result = new DeviceMeasurement();
-		MongoDeviceMeasurement.fromDBObject(source, result);
+		MongoDeviceMeasurement.fromDBObject(source, result, isNested);
 		return result;
 	}
 }

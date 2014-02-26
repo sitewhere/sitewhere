@@ -365,7 +365,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @throws SiteWhereException
 	 */
 	public List<IDeviceAssignment> createAssignments(ISite site) throws SiteWhereException {
-		Date now = new Date();
+		Date before = new Date(System.currentTimeMillis() - (2* 60 * 60 * 1000));
 		List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 		for (int x = 0; x < ASSIGNMENTS_PER_SITE; x++) {
 			AssignmentChoice assnChoice = getRandomAssignmentChoice();
@@ -391,12 +391,12 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			LOGGER.info(PREFIX_CREATE_ASSIGNMENT + " " + assignment.getToken());
 
 			// Create events for assignment.
-			createDeviceMeasurements(assignment, now);
-			createDeviceLocations(assignment, now);
+			createDeviceMeasurements(assignment, before);
+			createDeviceLocations(assignment, before);
 			List<IDeviceCommandInvocation> invocations =
-					createDeviceCommandInvocations(assignment, now, commands);
-			createDeviceCommandResponses(assignment, now, invocations);
-			createDeviceStateChanges(assignment, specification, now);
+					createDeviceCommandInvocations(assignment, before, commands);
+			createDeviceCommandResponses(assignment, before, invocations);
+			createDeviceStateChanges(assignment, specification, before);
 
 			results.add(assignment);
 		}

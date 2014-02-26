@@ -76,7 +76,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	 * @param target
 	 */
 	public static void toDBObject(IDeviceCommandInvocation source, BasicDBObject target) {
-		MongoDeviceEvent.toDBObject(source, target);
+		MongoDeviceEvent.toDBObject(source, target, false);
 
 		target.append(PROP_INITIATOR, source.getInitiator().name());
 		target.append(PROP_INITIATOR_ID, source.getInitiatorId());
@@ -99,7 +99,7 @@ public class MongoDeviceCommandInvocation implements MongoConverter<IDeviceComma
 	 * @param target
 	 */
 	public static void fromDBObject(DBObject source, DeviceCommandInvocation target) {
-		MongoDeviceEvent.fromDBObject(source, target);
+		MongoDeviceEvent.fromDBObject(source, target, false);
 
 		String initiatorName = (String) source.get(PROP_INITIATOR);
 		String initiatorId = (String) source.get(PROP_INITIATOR_ID);

@@ -41,7 +41,7 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
 	 * @see com.sitewhere.dao.mongodb.MongoConverter#convert(java.lang.Object)
 	 */
 	public BasicDBObject convert(IDeviceLocation source) {
-		return MongoDeviceLocation.toDBObject(source);
+		return MongoDeviceLocation.toDBObject(source, false);
 	}
 
 	/*
@@ -50,7 +50,7 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
 	 * @see com.sitewhere.dao.mongodb.MongoConverter#convert(com.mongodb.DBObject)
 	 */
 	public IDeviceLocation convert(DBObject source) {
-		return MongoDeviceLocation.fromDBObject(source);
+		return MongoDeviceLocation.fromDBObject(source, false);
 	}
 
 	/**
@@ -58,9 +58,10 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
 	 * 
 	 * @param source
 	 * @param target
+	 * @param isNested
 	 */
-	public static void toDBObject(IDeviceLocation source, BasicDBObject target) {
-		MongoDeviceEvent.toDBObject(source, target);
+	public static void toDBObject(IDeviceLocation source, BasicDBObject target, boolean isNested) {
+		MongoDeviceEvent.toDBObject(source, target, isNested);
 
 		BasicDBObject locFields = new BasicDBObject();
 		locFields.append(PROP_LONGITUDE, source.getLongitude());
@@ -76,9 +77,10 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
 	 * 
 	 * @param source
 	 * @param target
+	 * @param isNested
 	 */
-	public static void fromDBObject(DBObject source, DeviceLocation target) {
-		MongoDeviceEvent.fromDBObject(source, target);
+	public static void fromDBObject(DBObject source, DeviceLocation target, boolean isNested) {
+		MongoDeviceEvent.fromDBObject(source, target, isNested);
 
 		DBObject location = (DBObject) source.get(PROP_LATLONG);
 		Double latitude = (Double) location.get(PROP_LATITUDE);
@@ -94,11 +96,12 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
 	 * Convert SPI object to Mongo DBObject.
 	 * 
 	 * @param source
+	 * @param isNested
 	 * @return
 	 */
-	public static BasicDBObject toDBObject(IDeviceLocation source) {
+	public static BasicDBObject toDBObject(IDeviceLocation source, boolean isNested) {
 		BasicDBObject result = new BasicDBObject();
-		MongoDeviceLocation.toDBObject(source, result);
+		MongoDeviceLocation.toDBObject(source, result, isNested);
 		return result;
 	}
 
@@ -106,11 +109,12 @@ public class MongoDeviceLocation implements MongoConverter<IDeviceLocation> {
 	 * Convert a DBObject into the SPI equivalent.
 	 * 
 	 * @param source
+	 * @param isNested
 	 * @return
 	 */
-	public static DeviceLocation fromDBObject(DBObject source) {
+	public static DeviceLocation fromDBObject(DBObject source, boolean isNested) {
 		DeviceLocation result = new DeviceLocation();
-		MongoDeviceLocation.fromDBObject(source, result);
+		MongoDeviceLocation.fromDBObject(source, result, isNested);
 		return result;
 	}
 }

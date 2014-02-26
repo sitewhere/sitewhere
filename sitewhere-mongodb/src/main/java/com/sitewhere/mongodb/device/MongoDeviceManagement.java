@@ -841,17 +841,18 @@ public class MongoDeviceManagement implements IDeviceManagement {
 				SiteWherePersistence.deviceMeasurementsCreateLogic(request, assignment);
 
 		DBCollection measurementColl = getMongoClient().getMeasurementsCollection();
-		DBObject mObject = MongoDeviceMeasurements.toDBObject(measurements);
+		DBObject mObject = MongoDeviceMeasurements.toDBObject(measurements, false);
 		MongoPersistence.insert(measurementColl, mObject);
 
 		// Update assignment state if requested.
+		measurements = MongoDeviceMeasurements.fromDBObject(mObject, false);
 		if (updateState) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateMeasurementsUpdateLogic(assignment, measurements);
 			updateDeviceAssignmentState(assignmentToken, updated);
 		}
 
-		return MongoDeviceMeasurements.fromDBObject(mObject);
+		return measurements;
 	}
 
 	/*
@@ -905,17 +906,18 @@ public class MongoDeviceManagement implements IDeviceManagement {
 		DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
 
 		DBCollection locationsColl = getMongoClient().getLocationsCollection();
-		DBObject locObject = MongoDeviceLocation.toDBObject(location);
+		DBObject locObject = MongoDeviceLocation.toDBObject(location, false);
 		MongoPersistence.insert(locationsColl, locObject);
 
 		// Update assignment state if requested.
+		location = MongoDeviceLocation.fromDBObject(locObject, false);
 		if (updateState) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateLocationUpdateLogic(assignment, location);
 			updateDeviceAssignmentState(assignment.getToken(), updated);
 		}
 
-		return MongoDeviceLocation.fromDBObject(locObject);
+		return location;
 	}
 
 	/*
@@ -989,17 +991,18 @@ public class MongoDeviceManagement implements IDeviceManagement {
 		DeviceAlert alert = SiteWherePersistence.deviceAlertCreateLogic(assignment, request);
 
 		DBCollection alertsColl = getMongoClient().getAlertsCollection();
-		DBObject alertObject = MongoDeviceAlert.toDBObject(alert);
+		DBObject alertObject = MongoDeviceAlert.toDBObject(alert, false);
 		MongoPersistence.insert(alertsColl, alertObject);
 
 		// Update assignment state if requested.
+		alert = MongoDeviceAlert.fromDBObject(alertObject, false);
 		if (updateState) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateAlertUpdateLogic(assignment, alert);
 			updateDeviceAssignmentState(assignment.getToken(), updated);
 		}
 
-		return MongoDeviceAlert.fromDBObject(alertObject);
+		return alert;
 	}
 
 	/*

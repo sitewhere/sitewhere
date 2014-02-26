@@ -58,7 +58,7 @@ public class MongoDeviceCommandResponse implements MongoConverter<IDeviceCommand
 	 * @param target
 	 */
 	public static void toDBObject(IDeviceCommandResponse source, BasicDBObject target) {
-		MongoDeviceEvent.toDBObject(source, target);
+		MongoDeviceEvent.toDBObject(source, target, false);
 
 		target.append(PROP_ORIGINATING_EVENT_ID, source.getOriginatingEventId());
 		target.append(PROP_RESPONSE_EVENT_ID, source.getResponseEventId());
@@ -72,7 +72,7 @@ public class MongoDeviceCommandResponse implements MongoConverter<IDeviceCommand
 	 * @param target
 	 */
 	public static void fromDBObject(DBObject source, DeviceCommandResponse target) {
-		MongoDeviceEvent.fromDBObject(source, target);
+		MongoDeviceEvent.fromDBObject(source, target, false);
 
 		String originator = (String) source.get(PROP_ORIGINATING_EVENT_ID);
 		String responder = (String) source.get(PROP_RESPONSE_EVENT_ID);

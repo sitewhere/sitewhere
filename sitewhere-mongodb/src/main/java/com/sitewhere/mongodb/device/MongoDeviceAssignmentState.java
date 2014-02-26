@@ -75,13 +75,13 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 		}
 
 		if (source.getLastLocation() != null) {
-			target.append(PROP_LAST_LOCATION, MongoDeviceLocation.toDBObject(source.getLastLocation()));
+			target.append(PROP_LAST_LOCATION, MongoDeviceLocation.toDBObject(source.getLastLocation(), true));
 		}
 
 		if (!source.getLatestMeasurements().isEmpty()) {
 			List<BasicDBObject> measurements = new ArrayList<BasicDBObject>();
 			for (IDeviceMeasurement sm : source.getLatestMeasurements()) {
-				measurements.add(MongoDeviceMeasurement.toDBObject(sm));
+				measurements.add(MongoDeviceMeasurement.toDBObject(sm, true));
 			}
 			target.append(PROP_LATEST_MEASUREMENTS, measurements);
 		}
@@ -89,7 +89,7 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 		if (!source.getLatestAlerts().isEmpty()) {
 			List<BasicDBObject> alerts = new ArrayList<BasicDBObject>();
 			for (IDeviceAlert sa : source.getLatestAlerts()) {
-				alerts.add(MongoDeviceAlert.toDBObject(sa));
+				alerts.add(MongoDeviceAlert.toDBObject(sa, true));
 			}
 			target.append(PROP_LATEST_ALERTS, alerts);
 		}
@@ -110,18 +110,18 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 		target.setLastInteractionDate((Date) source.get(PROP_LAST_INTERACTION_DATE));
 		DBObject lastLocation = (DBObject) source.get(PROP_LAST_LOCATION);
 		if (lastLocation != null) {
-			target.setLastLocation(MongoDeviceLocation.fromDBObject(lastLocation));
+			target.setLastLocation(MongoDeviceLocation.fromDBObject(lastLocation, true));
 		}
 		List<DBObject> latestMeasurements = (List<DBObject>) source.get(PROP_LATEST_MEASUREMENTS);
 		if (latestMeasurements != null) {
 			for (DBObject sm : latestMeasurements) {
-				target.getLatestMeasurements().add(MongoDeviceMeasurement.fromDBObject(sm));
+				target.getLatestMeasurements().add(MongoDeviceMeasurement.fromDBObject(sm, true));
 			}
 		}
 		List<DBObject> latestAlerts = (List<DBObject>) source.get(PROP_LATEST_ALERTS);
 		if (latestAlerts != null) {
 			for (DBObject sa : latestAlerts) {
-				target.getLatestAlerts().add(MongoDeviceAlert.fromDBObject(sa));
+				target.getLatestAlerts().add(MongoDeviceAlert.fromDBObject(sa, true));
 			}
 		}
 		target.setLastReplyTo((String) source.get(PROP_LAST_REPLY_TO));

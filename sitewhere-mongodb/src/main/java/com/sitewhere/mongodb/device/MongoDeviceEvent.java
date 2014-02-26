@@ -28,6 +28,9 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public class MongoDeviceEvent {
 
+	/** Event id for events nested in other objects */
+	public static final String PROP_NESTED_ID = "eventId";
+
 	/** Property for site token */
 	public static final String PROP_SITE_TOKEN = "siteToken";
 
@@ -51,8 +54,12 @@ public class MongoDeviceEvent {
 	 * 
 	 * @param source
 	 * @param target
+	 * @param isNested
 	 */
-	public static void toDBObject(IDeviceEvent source, BasicDBObject target) {
+	public static void toDBObject(IDeviceEvent source, BasicDBObject target, boolean isNested) {
+		if (isNested) {
+			target.append(PROP_NESTED_ID, source.getId());
+		}
 		target.append(PROP_SITE_TOKEN, source.getSiteToken());
 		target.append(PROP_DEVICE_ASSIGNMENT_TOKEN, source.getDeviceAssignmentToken());
 		target.append(PROP_DEVICE_ASSIGNMENT_TYPE, source.getAssignmentType().name());
@@ -68,8 +75,9 @@ public class MongoDeviceEvent {
 	 * 
 	 * @param source
 	 * @param target
+	 * @param isNested
 	 */
-	public static void fromDBObject(DBObject source, DeviceEvent target) {
+	public static void fromDBObject(DBObject source, DeviceEvent target, boolean isNested) {
 		ObjectId id = (ObjectId) source.get("_id");
 		String siteToken = (String) source.get(PROP_SITE_TOKEN);
 		String assignmentToken = (String) source.get(PROP_DEVICE_ASSIGNMENT_TOKEN);
@@ -80,6 +88,9 @@ public class MongoDeviceEvent {
 
 		if (id != null) {
 			target.setId(id.toString());
+		}
+		if (isNested) {
+			target.setId((String) source.get(PROP_NESTED_ID));
 		}
 		target.setSiteToken(siteToken);
 		target.setDeviceAssignmentToken(assignmentToken);

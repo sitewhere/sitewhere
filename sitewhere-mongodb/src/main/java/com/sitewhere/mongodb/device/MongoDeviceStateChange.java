@@ -69,7 +69,7 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
 	 * @param target
 	 */
 	public static void toDBObject(IDeviceStateChange source, BasicDBObject target) {
-		MongoDeviceEvent.toDBObject(source, target);
+		MongoDeviceEvent.toDBObject(source, target, false);
 
 		target.append(PROP_CATEGORY, source.getCategory().name());
 		target.append(PROP_TYPE, source.getType().name());
@@ -90,7 +90,7 @@ public class MongoDeviceStateChange implements MongoConverter<IDeviceStateChange
 	 * @param target
 	 */
 	public static void fromDBObject(DBObject source, DeviceStateChange target) {
-		MongoDeviceEvent.fromDBObject(source, target);
+		MongoDeviceEvent.fromDBObject(source, target, false);
 
 		String category = (String) source.get(PROP_CATEGORY);
 		String type = (String) source.get(PROP_TYPE);

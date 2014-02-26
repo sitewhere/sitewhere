@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.spi.ISiteWhereContext;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -175,5 +177,25 @@ public class SiteWhereContext implements ISiteWhereContext {
 
 	public void setReplyTo(String replyTo) {
 		this.replyTo = replyTo;
+	}
+
+	/**
+	 * Helper function for add an arbitrary device event.
+	 * 
+	 * @param event
+	 * @throws SiteWhereException
+	 */
+	public void addDeviceEvent(IDeviceEvent event) throws SiteWhereException {
+		if (event instanceof IDeviceMeasurements) {
+			getDeviceMeasurements().add((IDeviceMeasurements) event);
+		} else if (event instanceof IDeviceLocation) {
+			getDeviceLocations().add((IDeviceLocation) event);
+		} else if (event instanceof IDeviceAlert) {
+			getDeviceAlerts().add((IDeviceAlert) event);
+		} else if (event instanceof IDeviceCommandInvocation) {
+			getDeviceCommandInvocations().add((IDeviceCommandInvocation) event);
+		} else {
+			throw new SiteWhereException("Context does not support event type: " + event.getClass().getName());
+		}
 	}
 }

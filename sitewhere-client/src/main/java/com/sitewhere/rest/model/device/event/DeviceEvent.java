@@ -13,6 +13,8 @@ package com.sitewhere.rest.model.device.event;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
@@ -24,6 +26,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  * 
  * @author dadams
  */
+@JsonInclude(Include.NON_NULL)
 public abstract class DeviceEvent extends MetadataProvider implements IDeviceEvent, Comparable<IDeviceEvent>,
 		Serializable {
 
