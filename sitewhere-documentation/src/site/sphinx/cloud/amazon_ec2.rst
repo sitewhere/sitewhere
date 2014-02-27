@@ -117,7 +117,6 @@ should be ready to go. The admin login page should look similar to the one below
    :alt: SiteWhere Admin Login Page
    :align: left
 
-
 Viewing Swagger for REST APIs
 -----------------------------
 The SiteWhere server comes with `Swagger <https://github.com/wordnik/swagger-ui>`_ installed to allow you to interact
@@ -131,4 +130,77 @@ and the Swagger user interface should load in the browser as shown below:
    :width: 100%
    :alt: Swagger Interface
    :align: left
+
+Viewing Documentation
+---------------------
+Documentation for the version of SiteWhere installed on the cloud instance is available at the root of the server. You
+can access it via the following URL:
+
+	http://sitewhere-aws/
+
+Accessing Solr Instance
+-----------------------
+The cloud instance contains a recent version of `Solr Cloud <https://cwiki.apache.org/confluence/display/solr/SolrCloud>`_ 
+for indexing device events for advanced searching. You can access it via:
+
+	http://sitewhere-aws/solr/
+
+There is a default *core* set up with the SiteWhere document schema. The SiteWhere server instance is already 
+configured to send any events it receives to be indexed into Solr automatically.
+
+.. note:: The sample data that was auto-loaded into the instance is not indexed in Solr, so you will start
+          with zero documents in the index.
+          
+You can use the built-in Solr tools to access the SiteWhere core and query the documents produced. In the near future,
+SiteWhere will have REST APIs that proxy the Solr queries for you, but for now, you have to do it manually.
+	 
+Logging in via SSH
+------------------
+In order to configure your cloud instance beyond the default setup, you will need to log in via SSH. Amazon has
+a nice overview of how to do exactly that here:
+
+	http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html
+	
+Now that you can connect to your cloud instance, the first thing to do is obtain root access so you can crash it!
+To swap to root privileges enter:
+
+.. code-block:: none
+
+	sudo -i
+	
+You will need to be logged in as root to do things like update configurations and restart SiteWhere.
+	 	 
+Starting and Stopping SiteWhere
+-------------------------------
+If you make changes to the SiteWhere configuration files or otherwise have need to restart the SiteWhere server,
+you can do so without having to restart the entire cloud instance. From an SSH prompt (with root) type:
+
+.. code-block:: none
+
+	/etc/init.d/sitewhere start
+	
+to start the SiteWhere server. To shut it down, type:
+
+.. code-block:: none
+
+	/etc/init.d/sitewhere stop
+
+Setting Up Hazelcast Public Address
+-----------------------------------
+
+.. danger:: If you are using external tools that require Hazelcast (such as Mule), you must make an update to
+            the default configuration and restart SiteWhere.
+            
+By default, the Amazon EC2 instance does not know its public IP address and instead sends its internal address
+when Hazelcast clients try to connect. This is a bad thing. To fix the problem, locate the public IP address 
+in the EC2 control panel (the same address you have mapped to *sitewhere-aws* in your hosts file). Open the
+Hazelcast configuration for SiteWhere:
+
+.. code-block:: none
+
+	vi /opt/sitewhere/conf/sitewhere/hazelcast.xml
+
+In the *network* section, there is a *public-address* entry. Replace the address already there with your public
+IP address. Save your changes and restart SiteWhere as explained above. You should now be able to connect via Hazelcast.
+
 	 

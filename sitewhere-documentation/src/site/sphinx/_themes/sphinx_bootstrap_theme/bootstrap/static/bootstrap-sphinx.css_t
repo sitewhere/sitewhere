@@ -58,7 +58,8 @@
 }
 
 .section > img {
-	margin: 25px 0px 45px;
+	margin-top: 15px;
+	margin-bottom: 35px;
 }
 
 .toctree-wrapper {
