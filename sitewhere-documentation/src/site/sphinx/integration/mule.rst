@@ -165,7 +165,7 @@ Now your flow should look like below:
    :align: left
   
 The final step in the process is to print out the *context* that has been created. SiteWhere has the concept of a
-context that keeps device events, their device information, and current assignment all in one neat package called
+context that holds device events, their device information, and current assignment all in one neat package called
 a **SiteWhereContext**. We can print the context to the Mule Studio log by adding one more node to the flow.
 From the palette on the right of the editor drag another SiteWhere node out to the right of the **Device Info** node.
 If done correctly, there should now be three nodes connected in series. Click on the new node and look at the 
