@@ -1,41 +1,62 @@
-<!--  
+<!-- Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com 
+	The software in this package is published under the terms of the CPAL v1.0 
+	license, a copy of which has been included with this distribution in the 
+	LICENSE.txt file. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/maven-v4_0_0.xsd"
+>
+	<modelVersion>4.0.0</modelVersion>
 
- Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
- 
- The software in this package is published under the terms of the CPAL v1.0
- license, a copy of which has been included with this distribution in the
- LICENSE.txt file.
- 
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<groupId>com.sitewhere</groupId>
+	<artifactId>sitewhere</artifactId>
+	<packaging>pom</packaging>
+	<version>0.9.4</version>
+	<name>SiteWhere Root</name>
+	<description>SiteWhere M2M Integration Platform</description>
+	<url>http://www.sitewhere.org/</url>
 
-    <groupId>com.sitewhere</groupId>
-    <artifactId>sitewhere</artifactId>
-    <packaging>pom</packaging>
-    <version>0.9.4</version>
-    <name>SiteWhere Root</name>
-    <description>SiteWhere M2M Integration Platform</description>
-    <url>http://www.sitewhere.org/</url>
- 
-    <modules>
-        <module>sitewhere-client</module>
-        <module>sitewhere-core</module>
-        <module>sitewhere-hbase</module>
-        <module>sitewhere-magento</module>
-        <module>sitewhere-mongodb</module>
-        <module>sitewhere-mule</module>
-        <module>sitewhere-protobuf</module>
-        <module>sitewhere-solr</module>
-        <!--  
-        <module>sitewhere-documentation</module>
-        -->
-        <module>sitewhere-web</module>
-    </modules>
-    
+	<profiles>
+		<profile>
+			<id>nodocs</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<maven.javadoc.skip>true</maven.javadoc.skip>
+			</properties>
+			<modules>
+				<module>sitewhere-client</module>
+				<module>sitewhere-core</module>
+				<module>sitewhere-hbase</module>
+				<module>sitewhere-magento</module>
+				<module>sitewhere-mongodb</module>
+				<module>sitewhere-mule</module>
+				<module>sitewhere-protobuf</module>
+				<module>sitewhere-solr</module>
+				<module>sitewhere-web</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>withdocs</id>
+			<properties>
+				<maven.javadoc.skip>false</maven.javadoc.skip>
+			</properties>
+			<modules>
+				<module>sitewhere-client</module>
+				<module>sitewhere-core</module>
+				<module>sitewhere-hbase</module>
+				<module>sitewhere-magento</module>
+				<module>sitewhere-mongodb</module>
+				<module>sitewhere-mule</module>
+				<module>sitewhere-protobuf</module>
+				<module>sitewhere-solr</module>
+				<module>sitewhere-documentation</module>
+				<module>sitewhere-web</module>
+			</modules>
+		</profile>
+	</profiles>
+
 	<properties>
 		<sitewhere.version>0.9.4</sitewhere.version>
 		<hbase.version>0.94.12</hbase.version>
@@ -43,56 +64,57 @@
 		<mule.version>3.4.0</mule.version>
 		<junit.version>4.0</junit.version>
 		<log4j.version>1.2.15</log4j.version>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
 	</properties>
 
-   <licenses>
-        <license>
-            <name>Common Public Attribution License Version 1.0 (CPAL-1.0)</name>
-            <url>http://opensource.org/licenses/CPAL-1.0</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <scm>
-        <connection>https://github.com/reveal-technologies/sitewhere.git</connection>
-        <url>https://github.com/reveal-technologies/sitewhere</url>
-    </scm>
-    <developers>
-        <developer>
-            <id>derekadams</id>
-            <name>Derek Adams</name>
-            <email>derek.adams@reveal-tech.com</email>
-        </developer>
-    </developers>
-    <issueManagement>
-        <system>Jira</system>
-        <url>https://sitewhere.atlassian.net</url>
-    </issueManagement>
-    <organization>
-        <name>Reveal Technologies, LLC.</name>
-        <url>http://www.reveal-tech.com/</url>
-    </organization>
+	<licenses>
+		<license>
+			<name>Common Public Attribution License Version 1.0 (CPAL-1.0)</name>
+			<url>http://opensource.org/licenses/CPAL-1.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<connection>https://github.com/reveal-technologies/sitewhere.git</connection>
+		<url>https://github.com/reveal-technologies/sitewhere</url>
+	</scm>
+	<developers>
+		<developer>
+			<id>derekadams</id>
+			<name>Derek Adams</name>
+			<email>derek.adams@reveal-tech.com</email>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Jira</system>
+		<url>https://sitewhere.atlassian.net</url>
+	</issueManagement>
+	<organization>
+		<name>Reveal Technologies, LLC.</name>
+		<url>http://www.reveal-tech.com/</url>
+	</organization>
 
-    <distributionManagement>
-        <repository>
-            <id>release-repository</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshot-repository</id>
-            <name>Maven2 Snapshot Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>release-repository</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshot-repository</id>
+			<name>Maven2 Snapshot Repository</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-            <optional>true</optional>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -113,6 +135,6 @@
 			</exclusions>
 			<scope>compile</scope>
 		</dependency>
-    </dependencies>
+	</dependencies>
 
 </project>
