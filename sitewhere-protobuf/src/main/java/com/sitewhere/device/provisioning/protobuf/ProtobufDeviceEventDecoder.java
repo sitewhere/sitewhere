@@ -87,7 +87,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 				LOGGER.debug("Decoded measurement for: " + measurement.getHardwareId());
 				DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
 				request.addOrReplaceMeasurement(measurement.getMeasurementId(),
-						Double.parseDouble(measurement.getMeasurementValue()));
+						measurement.getMeasurementValue());
 				if (measurement.hasEventDate()) {
 					request.setEventDate(new Date(measurement.getEventDate()));
 				} else {
@@ -101,9 +101,9 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 				DeviceLocation location = DeviceLocation.parseDelimitedFrom(stream);
 				LOGGER.debug("Decoded location for: " + location.getHardwareId());
 				DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
-				request.setLatitude(Double.parseDouble(location.getLatitude()));
-				request.setLongitude(Double.parseDouble(location.getLongitude()));
-				request.setElevation(Double.parseDouble(location.getElevation()));
+				request.setLatitude(location.getLatitude());
+				request.setLongitude(location.getLongitude());
+				request.setElevation(location.getElevation());
 				if (location.hasEventDate()) {
 					request.setEventDate(new Date(location.getEventDate()));
 				} else {
