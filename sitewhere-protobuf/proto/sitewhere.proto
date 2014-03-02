@@ -1,5 +1,7 @@
 option optimize_for = LITE_RUNTIME;
 
+option java_package = "com.sitewhere.device.provisioning.protobuf.proto";
+
 // Encapsulates data sent to SiteWhere.
 message SiteWhere {
 
