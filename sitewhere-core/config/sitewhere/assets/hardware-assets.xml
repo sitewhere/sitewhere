@@ -1,10 +1,11 @@
 <hardware-assets>
-	<!-- Arduino microcontrollers -->
-	<hardware-asset id="174" name="Arduino UNO" sku="UNO" device="true">
-		<description>The Arduino Uno is a microcontroller board based on the ATmega328. It has 14 digital input/output pins (of which 6 can be used as PWM outputs), 6 analog inputs, a 16 MHz ceramic resonator, a USB connection, a power jack, an ICSP header, and a reset button.</description>
-		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/arduino/uno.jpg</image-url>
-		<property name="manufacturer" value="Arduino"/>
-		<property name="weight" value="0.780"/>
+	<!-- Raspberry Pi -->
+	<hardware-asset id="174" name="Raspberry Pi" sku="RPI" device="true">
+		<description>The Raspberry Pi is a credit-card-sized single-board computer developed in the UK by the Raspberry Pi Foundation with the intention of promoting the teaching of basic computer science in schools.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/raspberry-pi.jpg</image-url>
+		<property name="manufacturer" value="Raspberry Pi Foundation"/>
+		<property name="cpu" value="ARM1176JZF-S"/>
+		<property name="sd.size" value="32gb"/>
 	</hardware-asset>
 	
 	<!-- MeiTrack personal trackers -->

@@ -118,6 +118,7 @@ public class MqttDeviceEventReceiver implements IDeviceEventReceiver {
 			while (true) {
 				try {
 					Message message = connection.receive();
+					message.ack();
 					if (!encodedMessages.offer(message.getPayload())) {
 						LOGGER.error("MQTT messages are being discarded because "
 								+ "they are not being processed quickly enough.");
