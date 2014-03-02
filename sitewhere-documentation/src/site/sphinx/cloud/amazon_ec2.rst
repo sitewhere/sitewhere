@@ -184,6 +184,14 @@ to start the SiteWhere server. To shut it down, type:
 .. code-block:: none
 
 	/etc/init.d/sitewhere stop
+	 	 
+Viewing the SiteWhere Log File
+------------------------------
+The SiteWhere log file (Log4j output) can be 'tailed' to the terminal by executing the command:
+
+.. code-block:: none
+
+	tail -f /opt/sitewhere/logs/catalina.out
 
 Setting Up Hazelcast Public Address
 -----------------------------------
