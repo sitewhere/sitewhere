@@ -36,13 +36,22 @@ Datastores
 ----------
 When storing and retrieving data, SiteWhere never deals directly with a database. Instead, the system defines
 *Service Provider Interfaces (SPIs)* for the data operations it needs to operate and expects datastore 
-implementations to comply with the required interfaces. When configuring a new SiteWhere server instance, 
-you change settings in the core Spring configuration file to indicate which type of datastore to use for 
-the underlying data implementation. The types of datastores currently supported include MongoDB and Apache 
+implementations to comply with the required interfaces. The primary interfaces that a datastore needs
+to implements are:
+
+:`IDeviceManagement <apidocs/com/sitewhere/spi/device/IDeviceManagement.html>`_: Contains all of the core 
+	device management calls including CRUD methods for sites, specifications, devices, events, etc.
+:`IUserManagement <apidocs/com/sitewhere/spi/user/IUserManagement.html>`_: Contains all of the core
+	user management calls including CRUD methods for users, authorities, etc.
+
+When configuring a new SiteWhere server instance, you change settings in the core 
+Spring configuration file to indicate which type of datastore to use for the underlying 
+data implementation. The types of datastores currently supported include MongoDB and Apache 
 HBase. MongoDB is a great choice for running on a personal workstation or a  cloud instance with limited 
 resources. HBase is better suited for projects that require massive scalability,  but at the expense of 
 more overhead both in system configuration and system resources. For more information
-on configuring a datastore for SiteWhere see **XXXXX** in the configuration guide.
+on configuring a datastore for SiteWhere see `Datastore Configuration <configuration/datasources.html>`_ 
+in the configuration guide.
 
 Asset Modules
 -------------
@@ -60,42 +69,7 @@ systems to be used in providing a list of available person assets. It also allow
 be used in defining available hardware assets. SiteWhere uses asset modules in a read-only manner and only 
 ever references entities based on a unique id understood by the underlying asset module. Maintaining the list
 of available assets is left to the systems behind the asset modules (which ususally already have a user interface
-specific to the features they provide). For more information on configuring asset modules see **XXXXX** in the 
-configuration guide.
-
-Provisioning Engine
--------------------
-A central concept in SiteWhere is the idea of device provisioning. Device provisioning is a loaded term since,
-depending on who you ask, it can mean anything from setting up network access, to loading firmware, to activating 
-or otherwise enabling a device. Provisioning in SiteWhere involves a few key elements.
-
-:Registration of new or existing devices:
-	SiteWhere has services and API calls for creating new devices, but it is often preferable to have devices
-	self-register. In that case, the device provides a unique *hardware id* and *specification token* to the
-	system which in turns creates a new device record that can start accepting events. SiteWhere assumes that
-	each device will have a unique id in the system so it can be independently addressed. The specification 
-	token passed at startup indicates the type of hardware the device is using and references a *device specification*
-	that already exists in the system. Devices send a registration event when they boot or connect to the network
-	and SiteWhere either creates a new device record or finds an existing one. SiteWhere returns a response message
-	to the device indicating the registration status.
-	
-:Receipt of events from connected devices:
-	Once registered with the system, devices can report any number or type of events to SiteWhere, which in turn stores
-	the events. Event types include location updates, sensor measurements and other acquired data, or alerts in response
-	to exceptional events. Devices also have the ability to acknowledge receipt of commands issued by SiteWhere.
-	Events are delivered to SiteWhere via an inbound event pipeline, which can be configured to watch on
-	various transports and use various methods of decoding events. For more information on customizing how events
-	are processed, see **XXXXX** in the configuration guide.
-	
-:Delivery of commands to connected devices:
-	Each device registered with SiteWhere has an associated *device specification* which is tied to the type
-	of hardware running on the device. Each device specification has a list of *commands* that can be executed
-	against devices with that specification. SiteWhere allows any number of commands to be added for a specification
-	and each command can carry any number of arguments. The commands and arguments can be added via the administrative
-	user interface or via REST calls. When commands are executed, they travel through a pipeline that encodes them
-	in an expected format and delivers them across an expected protocol. For more information about commands and
-	how they are delivered, see **XXXXX** in the configuration guide.
-	
+specific to the features they provide).
 
 REST Services
 -------------
@@ -188,6 +162,46 @@ that indicates how event data should be indexed. Solr can then be queried for Si
 features like geospatial searches, faceted result sets, and other complicated searches that make it possible
 to derive more meaning from the event data.
 
+-------------------
+Provisioning Engine
+-------------------
+A central concept in SiteWhere is the idea of device provisioning. Device provisioning is a loaded term since,
+depending on who you ask, it can mean anything from setting up network access, to loading firmware, to activating 
+or otherwise enabling a device. Provisioning in SiteWhere involves a few key elements.
+
+:Registration of new or existing devices:
+	SiteWhere has services and API calls for creating new devices, but it is often preferable to have devices
+	self-register. In that case, the device provides a unique *hardware id* and *specification token* to the
+	system which in turns creates a new device record that can start accepting events. SiteWhere assumes that
+	each device will have a unique id in the system so it can be independently addressed. The specification 
+	token passed at startup indicates the type of hardware the device is using and references a *device specification*
+	that already exists in the system. Devices send a registration event when they boot or connect to the network
+	and SiteWhere either creates a new device record or finds an existing one. SiteWhere returns a response message
+	to the device indicating the registration status.
+	
+:Receipt of events from connected devices:
+	Once registered with the system, devices can report any number or type of events to SiteWhere, which in turn stores
+	the events. Event types include location updates, sensor measurements and other acquired data, or alerts in response
+	to exceptional events. Devices also have the ability to acknowledge receipt of commands issued by SiteWhere.
+	Events are delivered to SiteWhere via an inbound event pipeline, which can be configured to watch on
+	various transports and use various methods of decoding events.
+	
+:Delivery of commands to connected devices:
+	Each device registered with SiteWhere has an associated *device specification* which is tied to the type
+	of hardware running on the device. Each device specification has a list of *commands* that can be executed
+	against devices with that specification. SiteWhere allows any number of commands to be added for a specification
+	and each command can carry any number of arguments. The commands and arguments can be added via the administrative
+	user interface or via REST calls. When commands are executed, they travel through a pipeline that encodes them
+	in an expected format and delivers them across an expected protocol.
+	
+The flow of data in the SiteWhere provisioning engine is shown below:
+
+.. image:: /_static/images/provisioning/provisioning.png
+   :width: 100%
+   :alt: SiteWhere Provisioning Data Flow
+   :align: left
+
+	
 ------------
 Object Model
 ------------

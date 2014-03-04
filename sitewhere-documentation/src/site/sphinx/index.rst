@@ -9,6 +9,6 @@
    architecture
    installation
    cloud
-   integration
    configuration
+   integration
    development
