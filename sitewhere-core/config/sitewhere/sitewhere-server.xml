@@ -10,7 +10,7 @@
 	<!-- # SERVICE PROVIDER IMPLEMENTATIONS # -->
 	<!-- #################################### -->
 
-	<!-- Leave uncommented to use MondoDB datastore -->
+	<!-- Leave uncommented to use MongoDB datastore -->
 	<import resource="sitewhere-mongodb.xml"/>
 
 	<!-- Uncomment to use HBase datastore -->
