@@ -188,6 +188,18 @@
 </div>
 
 <!-- Dialog for creating a new measurement -->
+<script type="text/x-kendo-tmpl" id="tpl-sw-mx-entry">
+	<tr class="sw-list-entry">
+		<td style="width: 205px">#:name#</td>
+		<td style="width: 145px">#:value#</td>
+		<td>
+			<div style="text-align: right;">
+				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="Delete Measurement"
+					onclick="mcDeleteMeasurement('#:name#')"></i>
+			</div>
+		</td>
+	</tr>
+</script>
 <div id="mc-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -200,7 +212,25 @@
 				<li>Metadata</li>
 			</ul>
 			<div>
-				<div id="mc-measurements"></div>
+				<div class="sw-sublist-header">
+					<div style="width: 205px;">Name</div>
+					<div style="width: 145px">Value</div>
+				</div>
+				<table id="mc-measurements" class="sw-sublist-list" style="height: 150px;">
+				</table>
+				<div class="sw-sublist-add-new">
+					<div class="sw-sublist-footer">
+						<div style="width: 225px; margin-left: 3px;">Name</div>
+						<div style="width: 145px">Value</div>
+					</div>
+					<input type="text" id="sw-mx-name" 
+						style="width: 205px; margin-bottom: 0px; margin-right: 10px;" title="Measurement name">
+					<input type="text" id="sw-mx-value" 
+						style="width: 150px; margin-bottom: 0px; margin-right: 10px;" title="Measurement value">
+					<a class="btn" href="javascript:void(0)" onclick="mcAddMeasurement()">
+						<i class="icon-plus sw-button-icon"></i> Add</a>
+					<div id="sw-mx-error" style="color: #f00; display: none;"></div>
+				</div>	
 				<form class="form-horizontal" style="padding-top: 20px">
 					<div class="control-group">
 						<label class="control-label" for="lc-event-date">Event Date</label>
@@ -626,6 +656,64 @@
 		}
 	}
 	
+	/** Add a new measurement */
+	function mcAddMeasurement() {
+		// Reset error.
+		$("#sw-mx-error").hide();
+		var error = "";
+		
+		// Create measurement entry.
+		var mx = {};
+		mx.name = $("#sw-mx-name").val();
+		mx.value = $("#sw-mx-value").val();
+		
+		// Check for empty.
+		if (mx.name.length == 0) {
+			error = "Name is required.";
+		}
+		var nameRegex = /^[\w-_\.]+$/;
+		if (!nameRegex.test(mx.name)) {
+			error = "Invalid measurement in name."
+		}
+		
+		// Check for empty.
+		if (mx.value.length == 0) {
+			error = "Value is required.";
+		}
+		var valueRegex = /^-?\d+\.?\d*$/;
+		if (!valueRegex.test(mx.value)) {
+			error = "Invalid value."
+		}
+		
+		// Check for already used.
+		var data = mcMeasurementsDS.data();
+		for (var index = 0, existing; existing = data[index]; index++) {
+			if (mx.name == existing.name) {
+				error = "Measurment name is already being used.";
+				break;
+			}
+		}
+		if (error.length > 0) {
+			$("#sw-mx-error").html(error);
+			$("#sw-mx-error").toggle();
+		} else {
+			mcMeasurementsDS.data().push(mx);
+			$("#sw-mx-name").val("");
+			$("#sw-mx-value").val("");
+		}
+	}
+
+	/** Deletes a measurement by name */
+	function mcDeleteMeasurement(name) {
+		var data = mcMeasurementsDS.data();
+		for (var index = 0, existing; existing = data[index]; index++) {
+			if (existing.name == name) {
+				mcMeasurementsDS.data().splice(index, 1);
+				return;
+			}
+		}
+	}
+	
 	/** Submit measurements data via MQTT */
 	function mcSubmit() {
 		var eventDate = calculateDateValue(mcDateType, mcDatePicker);
@@ -787,8 +875,11 @@
 		/** Local source for metadata entries */
 		mcMeasurementsDS = swMetadataDatasource();
 		
-		/** Grid for metadata */
-        $("#mc-measurements").kendoGrid(swMetadataGridOptions(mcMeasurementsDS, "Add Measurement"));
+		/** Grid for measurements */
+		$("#mc-measurements").kendoListView({
+			dataSource : mcMeasurementsDS,
+			template : kendo.template($("#tpl-sw-mx-entry").html())
+		});
 
     	// Create DropDownList for measurements event date type.
     	mcDateType = $("#mc-date-type").kendoDropDownList({
