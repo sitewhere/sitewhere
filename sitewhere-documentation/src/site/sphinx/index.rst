@@ -12,3 +12,4 @@
    configuration
    integration
    development
+   tutorials

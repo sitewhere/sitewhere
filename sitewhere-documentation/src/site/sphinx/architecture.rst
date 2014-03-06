@@ -36,8 +36,8 @@ Datastores
 ----------
 When storing and retrieving data, SiteWhere never deals directly with a database. Instead, the system defines
 *Service Provider Interfaces (SPIs)* for the data operations it needs to operate and expects datastore 
-implementations to comply with the required interfaces. The primary interfaces that a datastore needs
-to implements are:
+implementations to comply with the required interfaces. The two core interfaces that a datastore needs
+to implement are:
 
 :`IDeviceManagement <apidocs/com/sitewhere/spi/device/IDeviceManagement.html>`_: Contains all of the core 
 	device management calls including CRUD methods for sites, specifications, devices, events, etc.
@@ -165,13 +165,13 @@ to derive more meaning from the event data.
 -------------------
 Provisioning Engine
 -------------------
-A central concept in SiteWhere is the idea of device provisioning. Device provisioning is a loaded term since,
+A central concept in SiteWhere is the idea of device provisioning. Device provisioning can be a loaded term since,
 depending on who you ask, it can mean anything from setting up network access, to loading firmware, to activating 
 or otherwise enabling a device. Provisioning in SiteWhere involves a few key elements.
 
 :Registration of new or existing devices:
 	SiteWhere has services and API calls for creating new devices, but it is often preferable to have devices
-	self-register. In that case, the device provides a unique *hardware id* and *specification token* to the
+	self-register. In that case, the device provides a unique *hardware id* and a *specification token* to the
 	system which in turns creates a new device record that can start accepting events. SiteWhere assumes that
 	each device will have a unique id in the system so it can be independently addressed. The specification 
 	token passed at startup indicates the type of hardware the device is using and references a *device specification*

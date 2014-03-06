@@ -5,6 +5,13 @@
 * Sphinx stylesheet -- Twitter Bootstrap theme.
 */
 
+div.highlight {
+	max-height: 350px;
+	overflow-y: scroll;
+	margin-top: 25px;
+	margin-bottom: 25px;
+}
+
 .navbar-inverse .brand {
   color: #FFF;
 }
