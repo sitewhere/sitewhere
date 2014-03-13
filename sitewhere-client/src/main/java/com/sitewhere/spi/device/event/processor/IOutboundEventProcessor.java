@@ -13,10 +13,12 @@ import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
@@ -97,4 +99,22 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @throws SiteWhereException
 	 */
 	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
+
+	/**
+	 * Executes code before saving a device response.
+	 * 
+	 * @param assignment
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void beforeCommandResponse(String assignment, IDeviceCommandResponseCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Executes code after device command response has been successfully saved.
+	 * 
+	 * @param response
+	 * @throws SiteWhereException
+	 */
+	public void afterCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
 }

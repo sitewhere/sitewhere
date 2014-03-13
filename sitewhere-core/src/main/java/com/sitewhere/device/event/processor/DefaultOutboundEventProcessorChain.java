@@ -17,12 +17,14 @@ import org.apache.log4j.Logger;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
@@ -249,6 +251,48 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
 					processor.afterCommandInvocation(invocation);
+				} catch (SiteWhereException e) {
+					LOGGER.error(e);
+				}
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeCommandResponse
+	 * (java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 */
+	@Override
+	public void beforeCommandResponse(String assignmentToken, IDeviceCommandResponseCreateRequest request)
+			throws SiteWhereException {
+		if (isProcessingEnabled()) {
+			for (IOutboundEventProcessor processor : getProcessors()) {
+				try {
+					processor.beforeCommandResponse(assignmentToken, request);
+				} catch (SiteWhereException e) {
+					LOGGER.error(e);
+				}
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterCommandResponse
+	 * (com.sitewhere.spi.device.event.IDeviceCommandResponse)
+	 */
+	@Override
+	public void afterCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+		if (isProcessingEnabled()) {
+			for (IOutboundEventProcessor processor : getProcessors()) {
+				try {
+					processor.afterCommandResponse(response);
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}

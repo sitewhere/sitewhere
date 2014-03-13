@@ -15,12 +15,14 @@ import com.hazelcast.core.ITopic;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
@@ -50,6 +52,9 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 	/** Topic for device command invocations */
 	private ITopic<DeviceCommandInvocation> commandInvocationsTopic;
 
+	/** Topic for device command responses */
+	private ITopic<DeviceCommandResponse> commandResponsesTopic;
+
 	/** Used for marshaling command invocations */
 	private DeviceCommandInvocationMarshalHelper invocationHelper = new DeviceCommandInvocationMarshalHelper(
 			true);
@@ -75,6 +80,9 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 		this.commandInvocationsTopic =
 				getConfiguration().getHazelcastInstance().getTopic(
 						ISiteWhereHazelcast.TOPIC_COMMAND_INVOCATION_ADDED);
+		this.commandResponsesTopic =
+				getConfiguration().getHazelcastInstance().getTopic(
+						ISiteWhereHazelcast.TOPIC_COMMAND_RESPONSE_ADDED);
 		LOGGER.info("Hazelcast device event processor started.");
 	}
 
@@ -119,15 +127,30 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 		LOGGER.debug("Published alert event to Hazelcast (id=" + alert.getId() + ")");
 	}
 
-	/**
-	 * @param invocation
-	 * @throws SiteWhereException
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
+	 * afterCommandInvocation(com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
 	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		DeviceCommandInvocation converted = invocationHelper.convert(invocation);
 		commandInvocationsTopic.publish(converted);
 		LOGGER.debug("Published command invocation event to Hazelcast (id=" + invocation.getId() + ")");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
+	 * afterCommandResponse(com.sitewhere.spi.device.event.IDeviceCommandResponse)
+	 */
+	@Override
+	public void afterCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+		DeviceCommandResponse marshaled = DeviceCommandResponse.copy(response);
+		commandResponsesTopic.publish(marshaled);
+		LOGGER.debug("Published command response event to Hazelcast (id=" + response.getId() + ")");
 	}
 
 	public SiteWhereHazelcastConfiguration getConfiguration() {

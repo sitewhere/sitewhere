@@ -27,4 +27,7 @@ public interface ISiteWhereHazelcast {
 
 	/** Topic name for newly added command invocations */
 	public static final String TOPIC_COMMAND_INVOCATION_ADDED = "sitewhere.topic.command.invocation.added";
+
+	/** Topic name for newly added command responses */
+	public static final String TOPIC_COMMAND_RESPONSE_ADDED = "sitewhere.topic.command.response.added";
 }

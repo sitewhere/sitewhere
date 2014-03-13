@@ -18,6 +18,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
@@ -58,6 +59,9 @@ public class SiteWhereContext implements ISiteWhereContext {
 	/** Command invocations that have been persisted */
 	private List<IDeviceCommandInvocation> deviceCommandInvocations =
 			new ArrayList<IDeviceCommandInvocation>();
+
+	/** Command responses that have been persisted */
+	private List<IDeviceCommandResponse> deviceCommandResponses = new ArrayList<IDeviceCommandResponse>();
 
 	/** Information for replying to originator */
 	private String replyTo;
@@ -169,6 +173,19 @@ public class SiteWhereContext implements ISiteWhereContext {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.ISiteWhereContext#getDeviceCommandResponses()
+	 */
+	public List<IDeviceCommandResponse> getDeviceCommandResponses() {
+		return deviceCommandResponses;
+	}
+
+	public void setDeviceCommandResponses(List<IDeviceCommandResponse> deviceCommandResponses) {
+		this.deviceCommandResponses = deviceCommandResponses;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.ISiteWhereContext#getReplyTo()
 	 */
 	public String getReplyTo() {
@@ -194,6 +211,8 @@ public class SiteWhereContext implements ISiteWhereContext {
 			getDeviceAlerts().add((IDeviceAlert) event);
 		} else if (event instanceof IDeviceCommandInvocation) {
 			getDeviceCommandInvocations().add((IDeviceCommandInvocation) event);
+		} else if (event instanceof IDeviceCommandResponse) {
+			getDeviceCommandResponses().add((IDeviceCommandResponse) event);
 		} else {
 			throw new SiteWhereException("Context does not support event type: " + event.getClass().getName());
 		}
