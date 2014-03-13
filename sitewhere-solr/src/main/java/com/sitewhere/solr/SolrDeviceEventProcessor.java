@@ -17,10 +17,9 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
@@ -35,22 +34,16 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
  * 
  * @author Derek
  */
-public class SolrDeviceEventProcessor extends OutboundEventProcessor implements InitializingBean {
+public class SolrDeviceEventProcessor extends OutboundEventProcessor {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SolrDeviceEventProcessor.class);
 
-	/** Default URL for contacting Solr server */
-	private static final String DEFAULT_SOLR_URL = "http://localhost:8983/solr";
-
 	/** Number of documents to buffer before blocking calls */
 	private static final int BUFFER_SIZE = 1000;
 
-	/** URL used to interact with Solr server */
-	private String solrServerUrl = DEFAULT_SOLR_URL;
-
-	/** Solr server instance */
-	private HttpSolrServer solr;
+	/** Injected Solr configuration */
+	private SiteWhereSolrConfiguration solr;
 
 	/** Bounded queue that holds documents to be processed */
 	private BlockingQueue<SolrInputDocument> queue = new ArrayBlockingQueue<SolrInputDocument>(BUFFER_SIZE);
@@ -62,23 +55,25 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		solr = new HttpSolrServer(getSolrServerUrl());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
 		super.start();
-		LOGGER.info("Device management will send indexing information to Solr server at: "
-				+ getSolrServerUrl());
+		if (getSolr() == null) {
+			throw new SiteWhereException("No Solr configuration provided to " + getClass().getName());
+		}
+		try {
+			LOGGER.info("Attempting to ping Solr server to verify availability...");
+			SolrPingResponse response = getSolr().getSolrServer().ping();
+			int pingTime = response.getQTime();
+			LOGGER.info("Solr server location verified. Ping responded in " + pingTime + " ms.");
+		} catch (SolrServerException e) {
+			throw new SiteWhereException("Ping failed. Verify that Solr server is available.", e);
+		} catch (IOException e) {
+			throw new SiteWhereException("Exception in ping. Verify that Solr server is available.", e);
+		}
+		LOGGER.info("Solr event processor indexing events to server at: " + getSolr().getSolrServerUrl());
 		executor.execute(new SolrDocumentQueueProcessor());
 	}
 
@@ -142,14 +137,6 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor implements 
 		}
 	}
 
-	public String getSolrServerUrl() {
-		return solrServerUrl;
-	}
-
-	public void setSolrServerUrl(String solrServerUrl) {
-		this.solrServerUrl = solrServerUrl;
-	}
-
 	/**
 	 * Class that processes documents in the queue asynchronously.
 	 * 
@@ -165,10 +152,10 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor implements 
 					SolrInputDocument document = queue.take();
 					try {
 						LOGGER.debug("Indexing document in Solr...");
-						UpdateResponse response = solr.add(document);
+						UpdateResponse response = getSolr().getSolrServer().add(document);
 						if (response.getStatus() == 0) {
 							LOGGER.debug("Indexed document successfully. " + response.toString());
-							solr.commit();
+							getSolr().getSolrServer().commit();
 						} else {
 							LOGGER.warn("Bad response code indexing document: " + response.getStatus());
 						}
@@ -184,5 +171,13 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor implements 
 				}
 			}
 		}
+	}
+
+	public SiteWhereSolrConfiguration getSolr() {
+		return solr;
+	}
+
+	public void setSolr(SiteWhereSolrConfiguration solr) {
+		this.solr = solr;
 	}
 }

@@ -25,6 +25,15 @@
 		<property name="configFileName" value="hazelcast.xml"/>
 	</bean>
 
+	<!-- ###################### -->
+	<!-- # SOLR CONFIGURATION # -->
+	<!-- ###################### -->
+
+	<!-- Provides connectivity to Solr for components that need it -->
+	<bean id="solrConfig" class="com.sitewhere.solr.SiteWhereSolrConfiguration">
+		<property name="solrServerUrl" value="http://192.168.37.128:8983/solr/sitewhere"/>
+	</bean>
+
 	<!-- ############################ -->
 	<!-- # INBOUND EVENT PROCESSING # -->
 	<!-- ############################ -->
@@ -55,7 +64,7 @@
 
 	<!-- Indexes SiteWhere events in Solr -->
 	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
-		<property name="solrServerUrl" value="http://192.168.37.128:8983/solr/sitewhere"/>
+		<property name="solr" ref="solrConfig"/>
 	</bean>
 	
 	<!-- Outbound event processor chain configuration -->
