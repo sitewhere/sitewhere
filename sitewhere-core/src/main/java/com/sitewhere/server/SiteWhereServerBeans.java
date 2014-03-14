@@ -43,6 +43,13 @@ public interface SiteWhereServerBeans {
 	/** Bean id for outbound event processor chain */
 	public static final String BEAN_OUTBOUND_PROCESSOR_CHAIN = "outboundProcessorChain";
 
+	/*****************************
+	 * SEARCH PROVIDER MANAGMENT *
+	 *****************************/
+
+	/** Bean id for serach provider manager */
+	public static final String BEAN_SEARCH_PROVIDER_MANAGER = "searchProviderManager";
+
 	/*********************
 	 * DATA INITIALIZERS *
 	 *********************/

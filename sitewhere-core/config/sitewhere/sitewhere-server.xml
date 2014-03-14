@@ -37,12 +37,16 @@
 	<!-- ############################ -->
 	<!-- # INBOUND EVENT PROCESSING # -->
 	<!-- ############################ -->
-	
-	<!-- Takes inbound device events and stores them using device management SPI calls -->
-	<bean id="eventStorageProcessor" class="com.sitewhere.device.event.processor.DefaultEventStorageProcessor"/>
-	
+
+	<!-- Takes inbound device events and stores them using device management 
+		SPI calls -->
+	<bean id="eventStorageProcessor"
+		class="com.sitewhere.device.event.processor.DefaultEventStorageProcessor"/>
+
 	<!-- Inbound event processor chain configuration -->
-	<bean id="inboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
+	<bean id="inboundProcessorChain"
+		class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain"
+	>
 		<property name="processors">
 			<list>
 				<ref bean="eventStorageProcessor"/>
@@ -53,9 +57,10 @@
 	<!-- ############################# -->
 	<!-- # OUTBOUND EVENT PROCESSING # -->
 	<!-- ############################# -->
-	
+
 	<!-- Hands off command invocations to provisioning for processing -->
-	<bean id="provisioningEventProcessor" class="com.sitewhere.device.provisioning.DefaultProvisioningEventProcessor"/>
+	<bean id="provisioningEventProcessor"
+		class="com.sitewhere.device.provisioning.DefaultProvisioningEventProcessor"/>
 
 	<!-- Broadcasts SiteWhere state over Hazelcast -->
 	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
@@ -66,9 +71,11 @@
 	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
 		<property name="solr" ref="solrConfig"/>
 	</bean>
-	
+
 	<!-- Outbound event processor chain configuration -->
-	<bean id="outboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain">
+	<bean id="outboundProcessorChain"
+		class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain"
+	>
 		<property name="processors">
 			<list>
 				<ref bean="provisioningEventProcessor"/>
@@ -81,34 +88,43 @@
 	<!-- ####################### -->
 	<!-- # DEVICE PROVISIONING # -->
 	<!-- ####################### -->
-	
+
 	<!-- OUTBOUND PROCESSING -->
-	
+
 	<!-- Encodes device commands using Google Protocol Buffers -->
-	<bean id="protobufExecutionEncoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
-	
+	<bean id="protobufExecutionEncoder"
+		class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
+
 	<!-- Delivery provider that publishes commands to MQTT topics -->
-	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
+	<bean id="mqttDeliveryProvider"
+		class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider"
+	>
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="commandTopicPrefix" value="SiteWhere/commands/"/>
 		<property name="systemTopicPrefix" value="SiteWhere/system/"/>
 	</bean>
-	
+
 	<!-- GOOGLE PROTOCOL BUFFER INBOUND PROCESSING -->
-	
-	<!-- Device event receiver that monitors an MQTT topic for events (protobuf format) -->
-	<bean id="protobufMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver">
+
+	<!-- Device event receiver that monitors an MQTT topic for events (protobuf 
+		format) -->
+	<bean id="protobufMqttEventReceiver"
+		class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver"
+	>
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="topic" value="SiteWhere/input/protobuf"/>
 	</bean>
-	
+
 	<!-- Decodes device event messages using Google Protocol Buffers -->
-	<bean id="protobufEventDecoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder"/>
-	
+	<bean id="protobufEventDecoder"
+		class="com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder"/>
+
 	<!-- Device event processor for protobuf messages over MQTT -->
-	<bean id="protbufEventProcessor" class="com.sitewhere.device.provisioning.DefaultDeviceEventProcessor">
+	<bean id="protbufEventProcessor"
+		class="com.sitewhere.device.provisioning.DefaultDeviceEventProcessor"
+	>
 		<property name="deviceEventDecoder" ref="protobufEventDecoder"/>
 		<property name="deviceEventReceivers">
 			<list>
@@ -116,21 +132,27 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!-- JSON BATCH INBOUND PROCESSING -->
-	
-	<!-- Device event receiver that monitors an MQTT topic for events (JSON batch format) -->
-	<bean id="jsonMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver">
+
+	<!-- Device event receiver that monitors an MQTT topic for events (JSON 
+		batch format) -->
+	<bean id="jsonMqttEventReceiver"
+		class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver"
+	>
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="topic" value="SiteWhere/input/jsonbatch"/>
 	</bean>
-	
+
 	<!-- Decodes device event messages using Jackson/JSON -->
-	<bean id="jsonEventDecoder" class="com.sitewhere.device.provisioning.decoders.JsonBatchEventDecoder"/>
-	
+	<bean id="jsonEventDecoder"
+		class="com.sitewhere.device.provisioning.decoders.JsonBatchEventDecoder"/>
+
 	<!-- Device event processor for protobuf messages over MQTT -->
-	<bean id="jsonEventProcessor" class="com.sitewhere.device.provisioning.DefaultDeviceEventProcessor">
+	<bean id="jsonEventProcessor"
+		class="com.sitewhere.device.provisioning.DefaultDeviceEventProcessor"
+	>
 		<property name="deviceEventDecoder" ref="jsonEventDecoder"/>
 		<property name="deviceEventReceivers">
 			<list>
@@ -138,17 +160,21 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!-- REGISTRATION -->
-	
+
 	<!-- Manages registration of new devices in the system -->
-	<bean id="protobufRegistrationManager" class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager">
+	<bean id="protobufRegistrationManager"
+		class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager"
+	>
 		<property name="allowNewDevices" value="true"/>
 		<property name="autoAssignSite" value="true"/>
 	</bean>
 
 	<!-- Configures device provisioning -->
-	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
+	<bean id="deviceProvisioning"
+		class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning"
+	>
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
 		<property name="registrationManager" ref="protobufRegistrationManager"/>
@@ -170,50 +196,34 @@
 	</bean>
 
 	<!-- Default file system hardware asset module -->
-	<bean id="deviceModelInitializer" class="com.sitewhere.server.device.DefaultDeviceModelInitializer">
+	<bean id="deviceModelInitializer"
+		class="com.sitewhere.server.device.DefaultDeviceModelInitializer"
+	>
 		<property name="initializeIfNoConsole" value="Yes"/>
 	</bean>
 
-	<!-- ################################ -->
-	<!-- # ASSET MODULE IMPLEMENTATIONS # -->
-	<!-- ################################ -->
+	<!-- ############################# -->
+	<!-- # EXTERNAL SEARCH PROVIDERS # -->
+	<!-- ############################# -->
 
-	<!-- Default file system hardware asset module -->
-	<bean id="fileHardwareModule"
-		class="com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule"/>
+	<!-- Configuration for Solr external search provider -->
+	<bean id="solrSearchProvider" class="com.sitewhere.solr.search.SolrSearchProvider">
+		<property name="solr" ref="solrConfig"/>
+	</bean>
 
-	<!-- Default file system person asset module -->
-	<bean id="filePersonModule"
-		class="com.sitewhere.server.asset.filesystem.FileSystemPersonAssetModule"/>
-
-	<!-- Magento module configuration -->
-	<!-- <bean id="magentoModule" class="com.sitewhere.assetmodule.magento.MagentoAssetModule"> 
-		<property name="magentoUrl" value="http://magento1.com/magento/index.php/api/v2_soap?wsdl" 
-		/> <property name="magentoUsername" value="sitewhere" /> <property name="magentoPassword" 
-		value="sitewhere" /> <property name="debugSoap" value="false" /> </bean> -->
-
-	<!-- SSL configuration for WSO2 Identity Server -->
-	<!-- Add disableCNCheck="true" if server hostname not same as on certificate -->
-	<!-- <http:conduit name="https://wso2serverUrl:9443.*"> <http:client ConnectionTimeout="3000000" 
-		ReceiveTimeout="3000000" /> <http:tlsClientParameters disableCNCheck="true"> 
-		<sec:keyManagers keyPassword="wso2carbon"> <sec:keyStore file="/localpathforkeystores/wso2carbon.jks" 
-		password="wso2carbon" type="JKS" /> </sec:keyManagers> <sec:trustManagers> 
-		<sec:keyStore file="/localpathforkeystores/client-truststore.jks" password="wso2carbon" 
-		type="JKS" /> </sec:trustManagers> </http:tlsClientParameters> </http:conduit> -->
-
-	<!-- WSO2 Identity Server module configuration -->
-	<!-- <bean id="wso2Module" class="com.sitewhere.server.asset.scim.Wso2ScimAssetModule"> 
-		<property name="userUrl" value="https://wso2serverUrl:9443/wso2/scim/Users" 
-		/> </bean> -->
-
-	<!-- Asset module manager configuration -->
-	<bean id="assetModuleManager" class="com.sitewhere.server.asset.AssetModuleManager">
-		<property name="modules">
+	<!-- Search provider manager and configured external search providers -->
+	<bean id="searchProviderManager" class="com.sitewhere.server.search.SearchProviderManager">
+		<property name="searchProviders">
 			<list>
-				<ref bean="fileHardwareModule"/>
-				<ref bean="filePersonModule"/>
+				<ref bean="solrSearchProvider"/>
 			</list>
 		</property>
 	</bean>
+
+	<!-- ############################## -->
+	<!-- # ASSET MANAGEMENT REFERENCE # -->
+	<!-- ############################## -->
+	
+	<import resource="assets/sitewhere-assets.xml"/>
 
 </beans>

@@ -43,6 +43,7 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -87,6 +88,9 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 
 	/** Interface for the asset module manager */
 	private IAssetModuleManager assetModuleManager;
+
+	/** Interface for the search provider manager */
+	private ISearchProviderManager searchProviderManager;
 
 	/** Metric regsitry */
 	private MetricRegistry metricRegistry = new MetricRegistry();
@@ -237,6 +241,7 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		deviceManagement.start();
 		userManagement.start();
 		assetModuleManager.start();
+		searchProviderManager.start();
 
 		// Populate data if requested.
 		verifyUserModel();
@@ -255,6 +260,17 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		// Disable provisioning.
+		outboundEventProcessorChain.setProcessingEnabled(false);
+		outboundEventProcessorChain.stop();
+		inboundEventProcessorChain.stop();
+		deviceProvisioning.stop();
+
+		// Stop core management implementations.
+		deviceManagement.stop();
+		userManagement.stop();
+		assetModuleManager.stop();
+		searchProviderManager.stop();
 	}
 
 	/**
@@ -282,6 +298,9 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 
 		// Initialize asset management.
 		initializeAssetManagement();
+
+		// Initialize search provider management.
+		initializeSearchProviderManagement();
 
 		// Print version information.
 		IVersion version = VersionHelper.getVersion();
@@ -393,6 +412,20 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 					(IAssetModuleManager) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No asset module manager implementation configured.");
+		}
+	}
+
+	/**
+	 * Verify and initialize search provider manager.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeSearchProviderManagement() throws SiteWhereException {
+		try {
+			searchProviderManager =
+					(ISearchProviderManager) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_SEARCH_PROVIDER_MANAGER);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No search provider manager implementation configured.");
 		}
 	}
 
