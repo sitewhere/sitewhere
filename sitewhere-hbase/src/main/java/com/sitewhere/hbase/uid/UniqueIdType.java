@@ -35,7 +35,10 @@ public enum UniqueIdType {
 	SpecificationKey((byte) 0x09), SpecificationValue((byte) 0x0a),
 
 	/** Key and value for specification UUIDs */
-	CommandKey((byte) 0x0b), CommandValue((byte) 0x0c);
+	CommandKey((byte) 0x0b), CommandValue((byte) 0x0c),
+
+	/** Key and value for network UUIDs */
+	NetworkKey((byte) 0x0d), NetworkValue((byte) 0x0e);
 
 	/** Type indicator */
 	private byte indicator;

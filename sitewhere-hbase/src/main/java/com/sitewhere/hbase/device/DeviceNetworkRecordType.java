@@ -1,5 +1,5 @@
 /*
- * DeviceSpecificationRecordType.java 
+ * DeviceNetworkRecordType.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -10,20 +10,17 @@
 package com.sitewhere.hbase.device;
 
 /**
- * Used to differentiate records stored under a device specification row.
+ * Binary type indicator flag for device nework records.
  * 
  * @author Derek
  */
-public enum DeviceSpecificationRecordType {
+public enum DeviceNetworkRecordType {
 
-	/** Device specification record */
-	DeviceSpecification((byte) 0x00),
-
-	/** Device command record */
-	DeviceCommand((byte) 0x01),
+	/** Device network record */
+	DeviceNetwork((byte) 0x00),
 
 	/** End marker for scan ranges */
-	End((byte) 0x02);
+	DeviceNetworkElement((byte) 0x01);
 
 	/** Type indicator */
 	private byte type;
@@ -33,7 +30,7 @@ public enum DeviceSpecificationRecordType {
 	 * 
 	 * @param value
 	 */
-	private DeviceSpecificationRecordType(byte type) {
+	private DeviceNetworkRecordType(byte type) {
 		this.type = type;
 	}
 

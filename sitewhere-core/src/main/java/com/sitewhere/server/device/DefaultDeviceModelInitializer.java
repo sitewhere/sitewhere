@@ -32,9 +32,13 @@ import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceNetworkCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceNetworkElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
+import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -57,6 +61,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.network.IDeviceNetwork;
+import com.sitewhere.spi.device.network.IDeviceNetworkElement;
+import com.sitewhere.spi.device.network.NetworkElementType;
+import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -152,6 +160,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "303"),
 			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "304") };
 
+	/** Token for default device network */
+	protected static String NETWORK_TOKEN = "396e484a-7b76-4fff-85b7-2746ea849705";
+
 	/** Locations that determine zone edges */
 	protected List<Location> zoneLocations;
 
@@ -191,14 +202,50 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		this.deviceSpecifications = createDeviceSpecifications();
 
 		List<ISite> sites = createSites();
+		IDeviceNetwork network = createDeviceNetwork();
 		for (ISite site : sites) {
 			List<IDeviceAssignment> assignments = createAssignments(site);
+			List<IDeviceNetworkElementCreateRequest> requests =
+					new ArrayList<IDeviceNetworkElementCreateRequest>();
 			for (IDeviceAssignment assignment : assignments) {
-				assignment.getActiveDate();
+				DeviceNetworkElementCreateRequest request = new DeviceNetworkElementCreateRequest();
+				request.setType(NetworkElementType.Device);
+				request.setElementId(assignment.getDeviceHardwareId());
+				requests.add(request);
 			}
+			getDeviceManagement().addDeviceNetworkElements(network.getToken(), requests);
+			testListAndRemoveNetworkElements(network);
 		}
 
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+
+	/**
+	 * Test API calls for listing and removing network elements.
+	 * 
+	 * @param network
+	 * @throws SiteWhereException
+	 */
+	protected void testListAndRemoveNetworkElements(IDeviceNetwork network) throws SiteWhereException {
+		SearchResults<IDeviceNetworkElement> netElements =
+				getDeviceManagement().listDeviceNetworkElements(network.getToken(), new SearchCriteria(0, 10));
+		LOGGER.info("Matched " + netElements.getResults().size() + " network elements.");
+
+		List<IDeviceNetworkElementCreateRequest> delete = new ArrayList<IDeviceNetworkElementCreateRequest>();
+		for (IDeviceNetworkElement current : netElements.getResults()) {
+			DeviceNetworkElementCreateRequest delElm = new DeviceNetworkElementCreateRequest();
+			delElm.setType(current.getType());
+			delElm.setElementId(current.getElementId());
+			delete.add(delElm);
+		}
+		List<IDeviceNetworkElement> deleted =
+				getDeviceManagement().removeDeviceNetworkElements(network.getToken(), delete);
+		LOGGER.info("Deleted " + deleted.size() + " network elements.");
+
+		netElements =
+				getDeviceManagement().listDeviceNetworkElements(network.getToken(),
+						new SearchCriteria(0, 100));
+		LOGGER.info("Remaining was " + netElements.getResults().size() + " network elements.");
 	}
 
 	/*
@@ -227,7 +274,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			DeviceSpecificationCreateRequest request = new DeviceSpecificationCreateRequest();
 			request.setAssetId(details.getAssetId());
 			request.setName(details.getName());
-			request.setSpecificationId(details.getUuid());
+			request.setToken(details.getUuid());
 			IDeviceSpecification spec = getDeviceManagement().createDeviceSpecification(request);
 			createDeviceCommands(spec);
 			results[index] = spec;
@@ -326,6 +373,20 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		IZone zone = getDeviceManagement().createZone(site, request);
 		LOGGER.info(PREFIX_CREATE_ZONE + " " + zone.getToken());
 		return zone;
+	}
+
+	/**
+	 * Create a device network.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceNetwork createDeviceNetwork() throws SiteWhereException {
+		DeviceNetworkCreateRequest request = new DeviceNetworkCreateRequest();
+		request.setToken(NETWORK_TOKEN);
+		request.setName("Default device network");
+		request.setDescription("Device network that contains all devices.");
+		return getDeviceManagement().createDeviceNetwork(request);
 	}
 
 	/**

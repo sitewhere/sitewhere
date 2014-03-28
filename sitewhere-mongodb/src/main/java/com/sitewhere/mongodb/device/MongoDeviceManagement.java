@@ -10,6 +10,7 @@
 
 package com.sitewhere.mongodb.device;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +22,7 @@ import org.apache.log4j.Logger;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.SiteWhereMongoClient;
@@ -39,6 +41,8 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
+import com.sitewhere.rest.model.device.network.DeviceNetwork;
+import com.sitewhere.rest.model.device.network.DeviceNetworkElement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -67,9 +71,13 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.network.IDeviceNetwork;
+import com.sitewhere.spi.device.network.IDeviceNetworkElement;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
@@ -144,6 +152,12 @@ public class MongoDeviceManagement implements IDeviceManagement {
 		getMongoClient().getStateChangesCollection().ensureIndex(
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
 						MongoDeviceEvent.PROP_EVENT_DATE, -1));
+		getMongoClient().getNetworksCollection().ensureIndex(
+				new BasicDBObject(MongoDeviceNetwork.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		getMongoClient().getNetworkElementsCollection().ensureIndex(
+				new BasicDBObject(MongoDeviceNetworkElement.PROP_NETWORK_TOKEN, 1).append(
+						MongoDeviceNetworkElement.PROP_TYPE, 1).append(
+						MongoDeviceNetworkElement.PROP_ELEMENT_ID, 1));
 	}
 
 	/*
@@ -166,8 +180,8 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
 			throws SiteWhereException {
 		String uuid = null;
-		if (request.getSpecificationId() != null) {
-			uuid = request.getSpecificationId();
+		if (request.getToken() != null) {
+			uuid = request.getToken();
 		} else {
 			uuid = UUID.randomUUID().toString();
 		}
@@ -1477,6 +1491,170 @@ public class MongoDeviceManagement implements IDeviceManagement {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceNetwork(com.sitewhere.spi
+	 * .device.request.IDeviceNetworkCreateRequest)
+	 */
+	@Override
+	public IDeviceNetwork createDeviceNetwork(IDeviceNetworkCreateRequest request) throws SiteWhereException {
+		String uuid;
+		if (request.getToken() != null) {
+			uuid = request.getToken();
+		} else {
+			uuid = UUID.randomUUID().toString();
+		}
+		DeviceNetwork network = SiteWherePersistence.deviceNetworkCreateLogic(request, uuid);
+
+		DBCollection networks = getMongoClient().getNetworksCollection();
+		DBObject created = MongoDeviceNetwork.toDBObject(network);
+		MongoPersistence.insert(networks, created);
+		return MongoDeviceNetwork.fromDBObject(created);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateDeviceNetwork(java.lang.String,
+	 * com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest)
+	 */
+	@Override
+	public IDeviceNetwork updateDeviceNetwork(String token, IDeviceNetworkCreateRequest request)
+			throws SiteWhereException {
+		DBCollection networks = getMongoClient().getNetworksCollection();
+		DBObject match = assertDeviceNetwork(token);
+
+		DeviceNetwork network = MongoDeviceNetwork.fromDBObject(match);
+		SiteWherePersistence.deviceNetworkUpdateLogic(request, network);
+
+		DBObject updated = MongoDeviceNetwork.toDBObject(network);
+
+		BasicDBObject query = new BasicDBObject(MongoDeviceNetwork.PROP_TOKEN, token);
+		MongoPersistence.update(networks, query, updated);
+		return MongoDeviceNetwork.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceNetwork(java.lang.String)
+	 */
+	@Override
+	public IDeviceNetwork getDeviceNetwork(String token) throws SiteWhereException {
+		DBObject found = assertDeviceNetwork(token);
+		return MongoDeviceNetwork.fromDBObject(found);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceNetworks(boolean,
+	 * com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceNetwork> listDeviceNetworks(boolean includeDeleted, ISearchCriteria criteria)
+			throws SiteWhereException {
+		DBCollection networks = getMongoClient().getNetworksCollection();
+		DBObject dbCriteria = new BasicDBObject();
+		if (!includeDeleted) {
+			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
+		}
+		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+		return MongoPersistence.search(IDeviceNetwork.class, networks, dbCriteria, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceNetwork(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public IDeviceNetwork deleteDeviceNetwork(String token, boolean force) throws SiteWhereException {
+		DBObject existing = assertDeviceNetwork(token);
+		if (force) {
+			DBCollection networks = getMongoClient().getNetworksCollection();
+			MongoPersistence.delete(networks, existing);
+			return MongoDeviceNetwork.fromDBObject(existing);
+		} else {
+			MongoSiteWhereEntity.setDeleted(existing, true);
+			BasicDBObject query = new BasicDBObject(MongoDeviceNetwork.PROP_TOKEN, token);
+			DBCollection networks = getMongoClient().getNetworksCollection();
+			MongoPersistence.update(networks, query, existing);
+			return MongoDeviceNetwork.fromDBObject(existing);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceNetworkElements(java.lang.String
+	 * , java.util.List)
+	 */
+	@Override
+	public List<IDeviceNetworkElement> addDeviceNetworkElements(String networkToken,
+			List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException {
+		List<IDeviceNetworkElement> results = new ArrayList<IDeviceNetworkElement>();
+		for (IDeviceNetworkElementCreateRequest request : elements) {
+			long index = MongoDeviceNetwork.getNextNetworkIndex(getMongoClient(), networkToken);
+			DeviceNetworkElement element =
+					SiteWherePersistence.deviceNetworkElementCreateLogic(request, networkToken, index);
+			DBObject created = MongoDeviceNetworkElement.toDBObject(element);
+			MongoPersistence.insert(getMongoClient().getNetworkElementsCollection(), created);
+			results.add(MongoDeviceNetworkElement.fromDBObject(created));
+		}
+		return results;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#removeDeviceNetworkElements(java.lang
+	 * .String, java.util.List)
+	 */
+	@Override
+	public List<IDeviceNetworkElement> removeDeviceNetworkElements(String networkToken,
+			List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException {
+		List<IDeviceNetworkElement> deleted = new ArrayList<IDeviceNetworkElement>();
+		for (IDeviceNetworkElementCreateRequest request : elements) {
+			BasicDBObject match =
+					new BasicDBObject(MongoDeviceNetworkElement.PROP_NETWORK_TOKEN, networkToken).append(
+							MongoDeviceNetworkElement.PROP_TYPE, request.getType().name()).append(
+							MongoDeviceNetworkElement.PROP_ELEMENT_ID, request.getElementId());
+			DBObject found = getMongoClient().getNetworkElementsCollection().findOne(match);
+			if (found != null) {
+				WriteResult result =
+						MongoPersistence.delete(getMongoClient().getNetworkElementsCollection(), match);
+				if (result.getN() > 0) {
+					deleted.add(MongoDeviceNetworkElement.fromDBObject(found));
+				}
+			}
+		}
+		return deleted;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceNetworkElements(java.lang.
+	 * String, com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public SearchResults<IDeviceNetworkElement> listDeviceNetworkElements(String networkToken,
+			ISearchCriteria criteria) throws SiteWhereException {
+		BasicDBObject match = new BasicDBObject(MongoDeviceNetworkElement.PROP_NETWORK_TOKEN, networkToken);
+		BasicDBObject sort = new BasicDBObject(MongoDeviceNetworkElement.PROP_INDEX, 1);
+		return MongoPersistence.search(IDeviceNetworkElement.class,
+				getMongoClient().getNetworkElementsCollection(), match, sort, criteria);
+	}
+
 	/**
 	 * Return the {@link DBObject} for the site with the given token. Throws an exception
 	 * if the token is not found.
@@ -1564,6 +1742,37 @@ public class MongoDeviceManagement implements IDeviceManagement {
 		DBObject match = getZoneDBObjectByToken(token);
 		if (match == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
+		}
+		return match;
+	}
+
+	/**
+	 * Returns the {@link DBObject} for the device network with the given token. Returns
+	 * null if not found.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject getDeviceNetworkDBObjectByToken(String token) throws SiteWhereException {
+		DBCollection networks = getMongoClient().getNetworksCollection();
+		BasicDBObject query = new BasicDBObject(MongoDeviceNetwork.PROP_TOKEN, token);
+		DBObject result = networks.findOne(query);
+		return result;
+	}
+
+	/**
+	 * Return the {@link DBObject} for the device network with the given token. Throws an
+	 * exception if the token is not valid.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject assertDeviceNetwork(String token) throws SiteWhereException {
+		DBObject match = getDeviceNetworkDBObjectByToken(token);
+		if (match == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceNetworkToken, ErrorLevel.ERROR);
 		}
 		return match;
 	}

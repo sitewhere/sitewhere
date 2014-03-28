@@ -23,13 +23,16 @@ public class IdManager {
 	private static IdManager SINGLETON;
 
 	/** Manager for site tokens */
-	private UnqiueIdCounterMap siteKeys;
+	private UniqueIdCounterMap siteKeys;
 
 	/** Manager for device ids */
-	private UnqiueIdCounterMap deviceKeys;
+	private UniqueIdCounterMap deviceKeys;
 
 	/** Manager for device specification tokens */
-	private UnqiueIdCounterMap specificationKeys;
+	private UniqueIdCounterMap specificationKeys;
+
+	/** Manager for device network tokens */
+	private UniqueIdCounterMap networkKeys;
 
 	/** Manager for command tokens */
 	private UuidRowKeyMap commandKeys;
@@ -57,15 +60,18 @@ public class IdManager {
 	 * @throws SiteWhereException
 	 */
 	public void load(ISiteWhereHBaseClient hbase) throws SiteWhereException {
-		siteKeys = new UnqiueIdCounterMap(hbase, UniqueIdType.SiteKey, UniqueIdType.SiteValue);
+		siteKeys = new UniqueIdCounterMap(hbase, UniqueIdType.SiteKey, UniqueIdType.SiteValue);
 		siteKeys.refresh();
 
-		deviceKeys = new UnqiueIdCounterMap(hbase, UniqueIdType.DeviceKey, UniqueIdType.DeviceValue);
+		deviceKeys = new UniqueIdCounterMap(hbase, UniqueIdType.DeviceKey, UniqueIdType.DeviceValue);
 		deviceKeys.refresh();
 
 		specificationKeys =
-				new UnqiueIdCounterMap(hbase, UniqueIdType.SpecificationKey, UniqueIdType.SpecificationValue);
+				new UniqueIdCounterMap(hbase, UniqueIdType.SpecificationKey, UniqueIdType.SpecificationValue);
 		specificationKeys.refresh();
+
+		networkKeys = new UniqueIdCounterMap(hbase, UniqueIdType.NetworkKey, UniqueIdType.NetworkValue);
+		networkKeys.refresh();
 
 		commandKeys = new UuidRowKeyMap(hbase, UniqueIdType.CommandKey, UniqueIdType.CommandValue);
 		commandKeys.refresh();
@@ -78,27 +84,27 @@ public class IdManager {
 		assignmentKeys.refresh();
 	}
 
-	public UnqiueIdCounterMap getSiteKeys() {
+	public UniqueIdCounterMap getSiteKeys() {
 		return siteKeys;
 	}
 
-	protected void setSiteKeys(UnqiueIdCounterMap siteKeys) {
+	protected void setSiteKeys(UniqueIdCounterMap siteKeys) {
 		this.siteKeys = siteKeys;
 	}
 
-	public UnqiueIdCounterMap getDeviceKeys() {
+	public UniqueIdCounterMap getDeviceKeys() {
 		return deviceKeys;
 	}
 
-	protected void setDeviceKeys(UnqiueIdCounterMap deviceKeys) {
+	protected void setDeviceKeys(UniqueIdCounterMap deviceKeys) {
 		this.deviceKeys = deviceKeys;
 	}
 
-	public UnqiueIdCounterMap getSpecificationKeys() {
+	public UniqueIdCounterMap getSpecificationKeys() {
 		return specificationKeys;
 	}
 
-	protected void setSpecificationKeys(UnqiueIdCounterMap specificationKeys) {
+	protected void setSpecificationKeys(UniqueIdCounterMap specificationKeys) {
 		this.specificationKeys = specificationKeys;
 	}
 
@@ -108,6 +114,14 @@ public class IdManager {
 
 	public void setCommandKeys(UuidRowKeyMap commandKeys) {
 		this.commandKeys = commandKeys;
+	}
+
+	public UniqueIdCounterMap getNetworkKeys() {
+		return networkKeys;
+	}
+
+	public void setNetworkKeys(UniqueIdCounterMap networkKeys) {
+		this.networkKeys = networkKeys;
 	}
 
 	public UuidRowKeyMap getZoneKeys() {

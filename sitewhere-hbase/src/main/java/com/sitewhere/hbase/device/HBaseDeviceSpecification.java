@@ -12,26 +12,25 @@ package com.sitewhere.hbase.device;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Increment;
-import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
+import com.sitewhere.hbase.common.IRowKeyBuilder;
 import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.uid.IdManager;
+import com.sitewhere.hbase.uid.UniqueIdCounterMap;
+import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -49,7 +48,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
  */
 public class HBaseDeviceSpecification {
 
-	/** Length of device identifier (subset of 8 byte long) */
+	/** Length of specification identifier (subset of 8 byte long) */
 	public static final int SPEC_IDENTIFIER_LENGTH = 4;
 
 	/** Length of command identifier (subset of 8 byte long) */
@@ -57,6 +56,35 @@ public class HBaseDeviceSpecification {
 
 	/** Column qualifier for command counter */
 	public static final byte[] COMMAND_COUNTER = Bytes.toBytes("commandctr");
+
+	/** Used to look up row keys from tokens */
+	public static IRowKeyBuilder KEY_BUILDER = new UniqueIdCounterMapRowKeyBuilder() {
+
+		@Override
+		public UniqueIdCounterMap getMap() {
+			return IdManager.getInstance().getSpecificationKeys();
+		}
+
+		@Override
+		public byte getTypeIdentifier() {
+			return DeviceRecordType.DeviceSpecification.getType();
+		}
+
+		@Override
+		public byte getPrimaryIdentifier() {
+			return DeviceSpecificationRecordType.DeviceSpecification.getType();
+		}
+
+		@Override
+		public int getKeyIdLength() {
+			return 4;
+		}
+
+		@Override
+		public ErrorCode getInvalidKeyErrorCode() {
+			return ErrorCode.InvalidDeviceSpecificationToken;
+		}
+	};
 
 	/**
 	 * Create a device specification.
@@ -69,8 +97,8 @@ public class HBaseDeviceSpecification {
 	public static IDeviceSpecification createDeviceSpecification(ISiteWhereHBaseClient hbase,
 			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
 		String uuid = null;
-		if (request.getSpecificationId() != null) {
-			uuid = IdManager.getInstance().getSpecificationKeys().useExistingId(request.getSpecificationId());
+		if (request.getToken() != null) {
+			uuid = IdManager.getInstance().getSpecificationKeys().useExistingId(request.getToken());
 		} else {
 			uuid = IdManager.getInstance().getSpecificationKeys().createUniqueId();
 		}
@@ -79,28 +107,11 @@ public class HBaseDeviceSpecification {
 		DeviceSpecification specification =
 				SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
 
-		Long value = IdManager.getInstance().getSpecificationKeys().getValue(specification.getToken());
-		if (value == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
-		}
-		byte[] primary = getPrimaryRowKey(value);
-		byte[] json = MarshalUtils.marshalJson(specification);
-
+		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 		byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
-		HTableInterface devices = null;
-		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
-			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
-			put.add(ISiteWhereHBase.FAMILY_ID, COMMAND_COUNTER, maxLong);
-			devices.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to put device specification data.", e);
-		} finally {
-			HBaseUtils.closeCleanly(devices);
-		}
-
-		return specification;
+		qualifiers.put(COMMAND_COUNTER, maxLong);
+		return HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, specification, uuid, KEY_BUILDER,
+				qualifiers);
 	}
 
 	/**
@@ -113,28 +124,8 @@ public class HBaseDeviceSpecification {
 	 */
 	public static DeviceSpecification getDeviceSpecificationByToken(ISiteWhereHBaseClient hbase, String token)
 			throws SiteWhereException {
-		Long specId = IdManager.getInstance().getSpecificationKeys().getValue(token);
-		if (specId == null) {
-			return null;
-		}
-		byte[] key = getPrimaryRowKey(specId);
-
-		HTableInterface devices = null;
-		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
-			Get get = new Get(key);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
-			Result result = devices.get(get);
-			if (result.size() != 1) {
-				throw new SiteWhereException("Expected one JSON entry for device specification and found: "
-						+ result.size());
-			}
-			return MarshalUtils.unmarshalJson(result.value(), DeviceSpecification.class);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to load device specification by token.", e);
-		} finally {
-			HBaseUtils.closeCleanly(devices);
-		}
+		return HBaseUtils.get(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
+				DeviceSpecification.class);
 	}
 
 	/**
@@ -150,7 +141,7 @@ public class HBaseDeviceSpecification {
 			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
 		DeviceSpecification updated = assertDeviceSpecification(hbase, token);
 		SiteWherePersistence.deviceSpecificationUpdateLogic(request, updated);
-		return putDeviceSpecificationJson(hbase, updated);
+		return HBaseUtils.putJson(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER);
 	}
 
 	/**
@@ -164,68 +155,14 @@ public class HBaseDeviceSpecification {
 	 */
 	public static SearchResults<IDeviceSpecification> listDeviceSpecifications(ISiteWhereHBaseClient hbase,
 			boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
-		Pager<byte[]> matches = getFilteredDeviceSpecifications(hbase, includeDeleted, criteria);
+		Pager<byte[]> matches =
+				HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
+						includeDeleted, criteria);
 		List<IDeviceSpecification> response = new ArrayList<IDeviceSpecification>();
 		for (byte[] json : matches.getResults()) {
 			response.add(MarshalUtils.unmarshalJson(json, DeviceSpecification.class));
 		}
 		return new SearchResults<IDeviceSpecification>(response, matches.getTotal());
-	}
-
-	/**
-	 * Get list of device specifications based on filter criteria.
-	 * 
-	 * @param hbase
-	 * @param includeDeleted
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected static Pager<byte[]> getFilteredDeviceSpecifications(ISiteWhereHBaseClient hbase,
-			boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
-		HTableInterface devices = null;
-		ResultScanner scanner = null;
-		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
-			Scan scan = new Scan();
-			scan.setStartRow(new byte[] { DeviceRecordType.DeviceSpecification.getType() });
-			scan.setStopRow(new byte[] { DeviceRecordType.End.getType() });
-			scanner = devices.getScanner(scan);
-
-			Pager<byte[]> pager = new Pager<byte[]>(criteria);
-			for (Result result : scanner) {
-				byte[] row = result.getRow();
-
-				// Only match specification rows.
-				if ((row[0] != DeviceRecordType.DeviceSpecification.getType())
-						|| (row[SPEC_IDENTIFIER_LENGTH + 1] != DeviceSpecificationRecordType.DeviceSpecification.getType())) {
-					continue;
-				}
-
-				boolean shouldAdd = true;
-				byte[] json = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
-						shouldAdd = false;
-					}
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = column.getValue();
-					}
-				}
-				if ((shouldAdd) && (json != null)) {
-					pager.process(json);
-				}
-			}
-			return pager;
-		} catch (IOException e) {
-			throw new SiteWhereException("Error scanning device specification rows.", e);
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-			HBaseUtils.closeCleanly(devices);
-		}
 	}
 
 	/**
@@ -239,42 +176,8 @@ public class HBaseDeviceSpecification {
 	 */
 	public static IDeviceSpecification deleteDeviceSpecification(ISiteWhereHBaseClient hbase, String token,
 			boolean force) throws SiteWhereException {
-		DeviceSpecification existing = assertDeviceSpecification(hbase, token);
-		existing.setDeleted(true);
-
-		Long specId = IdManager.getInstance().getSpecificationKeys().getValue(token);
-		byte[] key = getPrimaryRowKey(specId);
-		if (force) {
-			IdManager.getInstance().getSpecificationKeys().delete(token);
-			HTableInterface devices = null;
-			try {
-				Delete delete = new Delete(key);
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
-				devices.delete(delete);
-			} catch (IOException e) {
-				throw new SiteWhereException("Unable to delete device specification.", e);
-			} finally {
-				HBaseUtils.closeCleanly(devices);
-			}
-		} else {
-			byte[] marker = { (byte) 0x01 };
-			SiteWherePersistence.setUpdatedEntityMetadata(existing);
-			byte[] updated = MarshalUtils.marshalJson(existing);
-
-			HTableInterface devices = null;
-			try {
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
-				Put put = new Put(key);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
-				devices.put(put);
-			} catch (IOException e) {
-				throw new SiteWhereException("Unable to set deleted flag for device specification.", e);
-			} finally {
-				HBaseUtils.closeCleanly(devices);
-			}
-		}
-		return existing;
+		return HBaseUtils.delete(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER,
+				DeviceSpecification.class);
 	}
 
 	/**
@@ -292,38 +195,6 @@ public class HBaseDeviceSpecification {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 		}
 		return existing;
-	}
-
-	/**
-	 * Save the JSON representation of a device specification.
-	 * 
-	 * @param hbase
-	 * @param specification
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static DeviceSpecification putDeviceSpecificationJson(ISiteWhereHBaseClient hbase,
-			DeviceSpecification specification) throws SiteWhereException {
-		Long value = IdManager.getInstance().getSpecificationKeys().getValue(specification.getToken());
-		if (value == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
-		}
-		byte[] primary = getPrimaryRowKey(value);
-		byte[] json = MarshalUtils.marshalJson(specification);
-
-		HTableInterface devices = null;
-		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
-			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
-			devices.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to put device specification data.", e);
-		} finally {
-			HBaseUtils.closeCleanly(devices);
-		}
-
-		return specification;
 	}
 
 	/**

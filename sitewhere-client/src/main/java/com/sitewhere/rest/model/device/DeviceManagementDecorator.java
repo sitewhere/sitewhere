@@ -11,6 +11,7 @@ package com.sitewhere.rest.model.device;
 
 import java.util.List;
 
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -37,9 +38,13 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.network.IDeviceNetwork;
+import com.sitewhere.spi.device.network.IDeviceNetworkElement;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
@@ -409,6 +414,51 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	@Override
 	public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException {
 		return delegate.deleteZone(zoneToken, force);
+	}
+
+	@Override
+	public IDeviceNetwork createDeviceNetwork(IDeviceNetworkCreateRequest request) throws SiteWhereException {
+		return delegate.createDeviceNetwork(request);
+	}
+
+	@Override
+	public IDeviceNetwork updateDeviceNetwork(String token, IDeviceNetworkCreateRequest request)
+			throws SiteWhereException {
+		return delegate.updateDeviceNetwork(token, request);
+	}
+
+	@Override
+	public IDeviceNetwork getDeviceNetwork(String token) throws SiteWhereException {
+		return delegate.getDeviceNetwork(token);
+	}
+
+	@Override
+	public ISearchResults<IDeviceNetwork> listDeviceNetworks(boolean includeDeleted, ISearchCriteria criteria)
+			throws SiteWhereException {
+		return delegate.listDeviceNetworks(includeDeleted, criteria);
+	}
+
+	@Override
+	public List<IDeviceNetworkElement> addDeviceNetworkElements(String networkToken,
+			List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException {
+		return delegate.addDeviceNetworkElements(networkToken, elements);
+	}
+
+	@Override
+	public List<IDeviceNetworkElement> removeDeviceNetworkElements(String networkToken,
+			List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException {
+		return delegate.removeDeviceNetworkElements(networkToken, elements);
+	}
+
+	@Override
+	public SearchResults<IDeviceNetworkElement> listDeviceNetworkElements(String networkToken,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceNetworkElements(networkToken, criteria);
+	}
+
+	@Override
+	public IDeviceNetwork deleteDeviceNetwork(String token, boolean force) throws SiteWhereException {
+		return delegate.deleteDeviceNetwork(token, force);
 	}
 
 	public IDeviceManagement getDelegate() {

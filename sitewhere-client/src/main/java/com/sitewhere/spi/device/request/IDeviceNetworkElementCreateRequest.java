@@ -1,5 +1,5 @@
 /*
- * IDeviceSpecificationCreateRequest.java 
+ * IDeviceNetworkEntryCreateRequest.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,33 +9,26 @@
  */
 package com.sitewhere.spi.device.request;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.device.network.NetworkElementType;
 
 /**
- * Interface for arguments needed to create a device specification.
+ * Interface for arguments needed to create a device network element.
  * 
  * @author Derek
  */
-public interface IDeviceSpecificationCreateRequest extends IMetadataProvider {
+public interface IDeviceNetworkElementCreateRequest {
 
 	/**
-	 * Get name that describes specification.
+	 * Get the element type.
 	 * 
 	 * @return
 	 */
-	public String getName();
+	public NetworkElementType getType();
 
 	/**
-	 * Get id for specification asset type.
+	 * Get the element id (relative to element type).
 	 * 
 	 * @return
 	 */
-	public String getAssetId();
-
-	/**
-	 * Allows the specification id to be specified. (Optional)
-	 * 
-	 * @return
-	 */
-	public String getToken();
+	public String getElementId();
 }

@@ -73,6 +73,13 @@ public class SiteWhereMongoClient implements InitializingBean {
 	/** Injected name used for zones collection */
 	private String zonesCollectionName = IMongoCollectionNames.DEFAULT_ZONES_COLLECTION_NAME;
 
+	/** Injected name used for networks collection */
+	private String networksCollectionName = IMongoCollectionNames.DEFAULT_DEVICE_NETWORKS_COLLECTION_NAME;
+
+	/** Injected name used for network elements collection */
+	private String networkElementsCollectionName =
+			IMongoCollectionNames.DEFAULT_DEVICE_NETWORK_ELEMENTS_COLLECTION_NAME;
+
 	/** Injected name used for measurements collection */
 	private String measurementsCollectionName = IMongoCollectionNames.DEFAULT_MEASUREMENTS_COLLECTION_NAME;
 
@@ -122,6 +129,8 @@ public class SiteWhereMongoClient implements InitializingBean {
 		messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
 		messages.add("Sites collection name: " + getSitesCollectionName());
 		messages.add("Zones collection name: " + getZonesCollectionName());
+		messages.add("Networks collection name: " + getNetworksCollectionName());
+		messages.add("Network elements collection name: " + getNetworkElementsCollectionName());
 		messages.add("");
 		messages.add("-------------------");
 		messages.add("-- Device Events --");
@@ -178,6 +187,14 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public DBCollection getZonesCollection() {
 		return getSiteWhereDatabase().getCollection(getZonesCollectionName());
+	}
+
+	public DBCollection getNetworksCollection() {
+		return getSiteWhereDatabase().getCollection(getNetworksCollectionName());
+	}
+
+	public DBCollection getNetworkElementsCollection() {
+		return getSiteWhereDatabase().getCollection(getNetworkElementsCollectionName());
 	}
 
 	public DBCollection getMeasurementsCollection() {
@@ -278,6 +295,22 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public String getZonesCollectionName() {
 		return zonesCollectionName;
+	}
+
+	public String getNetworksCollectionName() {
+		return networksCollectionName;
+	}
+
+	public void setNetworksCollectionName(String networksCollectionName) {
+		this.networksCollectionName = networksCollectionName;
+	}
+
+	public String getNetworkElementsCollectionName() {
+		return networkElementsCollectionName;
+	}
+
+	public void setNetworkElementsCollectionName(String networkElementsCollectionName) {
+		this.networkElementsCollectionName = networkElementsCollectionName;
 	}
 
 	public void setZonesCollectionName(String zonesCollectionName) {

@@ -13,7 +13,7 @@ package com.sitewhere.spi.device;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * Interface for a device that provides location information.
+ * Interface for a SiteWhere device.
  * 
  * @author Derek
  */

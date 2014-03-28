@@ -22,8 +22,11 @@ public enum DeviceRecordType {
 	/** Device specification record */
 	DeviceSpecification((byte) 0x01),
 
+	/** Device specification record */
+	DeviceNetwork((byte) 0x02),
+
 	/** End marker for scan ranges */
-	End((byte) 0x02);
+	End((byte) 0x03);
 
 	/** Type indicator */
 	private byte type;

@@ -68,13 +68,15 @@ public class MongoPersistence {
 	 * 
 	 * @param collection
 	 * @param object
+	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static void delete(DBCollection collection, DBObject object) throws SiteWhereException {
+	public static WriteResult delete(DBCollection collection, DBObject object) throws SiteWhereException {
 		WriteResult result = collection.remove(object);
 		if (!result.getLastError().ok()) {
 			throw new SiteWhereException("Error during delete: " + result.getLastError().toString());
 		}
+		return result;
 	}
 
 	/**

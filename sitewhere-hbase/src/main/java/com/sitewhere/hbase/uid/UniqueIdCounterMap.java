@@ -24,9 +24,9 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class UnqiueIdCounterMap extends UniqueIdMap<String, Long> {
+public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 
-	public UnqiueIdCounterMap(ISiteWhereHBaseClient hbase, UniqueIdType keyIndicator,
+	public UniqueIdCounterMap(ISiteWhereHBaseClient hbase, UniqueIdType keyIndicator,
 			UniqueIdType valueIndicator) {
 		super(hbase, keyIndicator, valueIndicator);
 	}

@@ -38,6 +38,8 @@ import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
+import com.sitewhere.rest.model.device.network.DeviceNetwork;
+import com.sitewhere.rest.model.device.network.DeviceNetworkElement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
@@ -69,6 +71,8 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
@@ -784,6 +788,62 @@ public class SiteWherePersistence {
 
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 		MetadataProvider.copy(source, target);
+	}
+
+	/**
+	 * Common logic for creating a device network based on an incoming request.
+	 * 
+	 * @param source
+	 * @param uuid
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceNetwork deviceNetworkCreateLogic(IDeviceNetworkCreateRequest source, String uuid)
+			throws SiteWhereException {
+		DeviceNetwork network = new DeviceNetwork();
+		network.setToken(uuid);
+		network.setName(source.getName());
+		network.setDescription(source.getDescription());
+
+		SiteWherePersistence.initializeEntityMetadata(network);
+		MetadataProvider.copy(source, network);
+		return network;
+	}
+
+	/**
+	 * Common logic for updating an existing device network.
+	 * 
+	 * @param source
+	 * @param target
+	 * @throws SiteWhereException
+	 */
+	public static void deviceNetworkUpdateLogic(IDeviceNetworkCreateRequest source, DeviceNetwork target)
+			throws SiteWhereException {
+		target.setName(source.getName());
+		target.setDescription(source.getDescription());
+
+		SiteWherePersistence.setUpdatedEntityMetadata(target);
+		MetadataProvider.copy(source, target);
+	}
+
+	/**
+	 * Common logic for creating a new device network element.
+	 * 
+	 * @param source
+	 * @param networkToken
+	 * @param index
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceNetworkElement deviceNetworkElementCreateLogic(
+			IDeviceNetworkElementCreateRequest source, String networkToken, long index)
+			throws SiteWhereException {
+		DeviceNetworkElement element = new DeviceNetworkElement();
+		element.setNetworkToken(networkToken);
+		element.setIndex(index);
+		element.setType(source.getType());
+		element.setElementId(source.getElementId());
+		return element;
 	}
 
 	/**
