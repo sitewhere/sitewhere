@@ -51,6 +51,13 @@ public interface IDeviceAssignment extends IMetadataProviderEntity {
 	public DeviceAssignmentType getAssignmentType();
 
 	/**
+	 * Get id of referenced asset module.
+	 * 
+	 * @return
+	 */
+	public String getAssetModuleId();
+
+	/**
 	 * Get the asset identifier.
 	 * 
 	 * @return

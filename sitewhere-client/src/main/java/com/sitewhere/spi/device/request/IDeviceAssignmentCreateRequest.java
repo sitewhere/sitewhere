@@ -41,6 +41,13 @@ public interface IDeviceAssignmentCreateRequest extends IMetadataProvider {
 	public DeviceAssignmentType getAssignmentType();
 
 	/**
+	 * Get asset module id.
+	 * 
+	 * @return
+	 */
+	public String getAssetModuleId();
+
+	/**
 	 * Get assigned asset id.
 	 * 
 	 * @return

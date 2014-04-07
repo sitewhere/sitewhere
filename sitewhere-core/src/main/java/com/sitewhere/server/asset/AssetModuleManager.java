@@ -12,18 +12,17 @@ package com.sitewhere.server.asset;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 
 /**
  * Manages the list of modules
@@ -38,16 +37,21 @@ public class AssetModuleManager implements IAssetModuleManager {
 	/** List of asset modules */
 	private List<IAssetModule<?>> modules;
 
+	/** Map of asset modules by unique id */
+	private Map<String, IAssetModule<?>> modulesById = new HashMap<String, IAssetModule<?>>();
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.asset.IAssetModuleManager#start()
 	 */
 	public void start() throws SiteWhereException {
+		modulesById.clear();
 		for (IAssetModule<?> module : modules) {
 			LOGGER.info("Starting asset module: " + module.getName());
 			try {
 				module.start();
+				modulesById.put(module.getId(), module);
 				LOGGER.info("Started asset module: " + module.getName());
 			} catch (SiteWhereException e) {
 				LOGGER.error("Unable to start asset module: " + module.getName(), e);
@@ -78,54 +82,25 @@ public class AssetModuleManager implements IAssetModuleManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModuleManager#getAssetById(com.sitewhere.spi.asset
-	 * .AssetType, java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModuleManager#getAssetById(java.lang.String,
+	 * java.lang.String)
 	 */
-	public IAsset getAssetById(AssetType type, String id) throws SiteWhereException {
-		for (IAssetModule<?> module : modules) {
-			if (module.isAssetTypeSupported(type)) {
-				IAsset result = module.getAssetById(type, id);
-				if (result != null) {
-					return result;
-				}
-			}
-		}
-		return null;
+	public IAsset getAssetById(String assetModuleId, String id) throws SiteWhereException {
+		IAssetModule<?> match = assertAssetModule(assetModuleId);
+		return match.getAssetById(id);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModuleManager#getAssignedAsset(com.sitewhere.spi.
-	 * device.DeviceAssignmentType, java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModuleManager#search(java.lang.String,
+	 * java.lang.String)
 	 */
-	public IAsset getAssignedAsset(DeviceAssignmentType type, String id) throws SiteWhereException {
-		if (type == DeviceAssignmentType.Person) {
-			return getAssetById(AssetType.Person, id);
-		} else if (type == DeviceAssignmentType.Hardware) {
-			return getAssetById(AssetType.Hardware, id);
-		}
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModuleManager#search(com.sitewhere.spi.asset.AssetType
-	 * , java.lang.String)
-	 */
-	public List<? extends IAsset> search(AssetType type, String criteria) throws SiteWhereException {
-		for (IAssetModule<?> module : modules) {
-			if (module.isAssetTypeSupported(type)) {
-				List<? extends IAsset> results = module.search(type, criteria);
-				Collections.sort(results);
-				return results;
-			}
-		}
-		return new ArrayList<Asset>();
+	public List<? extends IAsset> search(String assetModuleId, String criteria) throws SiteWhereException {
+		IAssetModule<?> match = assertAssetModule(assetModuleId);
+		List<? extends IAsset> results = match.search(criteria);
+		Collections.sort(results);
+		return results;
 	}
 
 	/*
@@ -139,6 +114,21 @@ public class AssetModuleManager implements IAssetModuleManager {
 			responses.add(module.refresh());
 		}
 		return responses;
+	}
+
+	/**
+	 * Get asset module by id or throw exception if not found.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IAssetModule<?> assertAssetModule(String id) throws SiteWhereException {
+		IAssetModule<?> match = modulesById.get(id);
+		if (match == null) {
+			throw new SiteWhereException("Invalid asset module id: " + id);
+		}
+		return match;
 	}
 
 	/*

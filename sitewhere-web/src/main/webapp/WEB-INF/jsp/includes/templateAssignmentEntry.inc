@@ -96,12 +96,12 @@
 	<div class="sw-assignment-list-entry sw-assignment-released">
 		<div class="sw-assignment-status-indicator"></div>
 # } #
-# if (data.assignmentType == 'Person') { #
+# if (data.associatedPerson) { #
 		<div class="sw-assignment-list-entry-logowrapper"
 			style="background-image: url(#:associatedPerson.photoUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
 		</div>
-# } else if (data.assignmentType == 'Hardware') { #
+# } else if (data.associatedHardware) { #
 		<div class="sw-assignment-list-entry-logowrapper"
 			style="background-image: url(#:associatedHardware.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
@@ -175,13 +175,13 @@
 			</div>
 		</div>
 # } #
-# if (data.assignmentType == 'Person') { #
+# if (data.associatedPerson) { #
 		<div>
 			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedPerson.name#">#:associatedPerson.name#</p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 45px;">Email:</span><span title="#:associatedPerson.emailAddress#">#:associatedPerson.emailAddress#</span></p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 45px;">Roles:</span><span title="#:swArrayAsCommaDelimited(associatedPerson.roles)#">#:swArrayAsCommaDelimited(associatedPerson.roles)#</span></p>
 		</div>
-# } else if (data.assignmentType == 'Hardware') { #
+# } else if (data.associatedHardware) { #
 		<div>
 			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedHardware.name#">#:associatedHardware.name#</p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">SKU:</span><span title="#:associatedHardware.sku#">#:associatedHardware.sku#</span></p>

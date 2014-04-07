@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
@@ -23,8 +24,10 @@ import org.apache.solr.common.params.ModifiableSolrParams;
 
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
+import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
 
 /**
@@ -32,7 +35,7 @@ import com.sitewhere.spi.search.external.ISearchProvider;
  * 
  * @author Derek
  */
-public class SolrSearchProvider implements ISearchProvider {
+public class SolrSearchProvider implements IDeviceEventSearchProvider {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SolrSearchProvider.class);
@@ -80,8 +83,33 @@ public class SolrSearchProvider implements ISearchProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.search.external.ISearchProvider#getLocationsNear(double,
-	 * double, double, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see
+	 * com.sitewhere.spi.search.external.IDeviceEventSearchProvider#executeQuery(java.
+	 * lang.String)
+	 */
+	@Override
+	public List<IDeviceEvent> executeQuery(String query) throws SiteWhereException {
+		try {
+			List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
+			SolrQuery sq = new SolrQuery(query);
+			QueryResponse response = getSolr().getSolrServer().query(sq);
+			SolrDocumentList docs = response.getResults();
+			while (docs.iterator().hasNext()) {
+				SolrDocument doc = docs.iterator().next();
+				doc.getFieldNames();
+			}
+			return results;
+		} catch (SolrServerException e) {
+			throw new SiteWhereException("Unable to execute query.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.search.external.IDeviceEventSearchProvider#getLocationsNear(double
+	 * , double, double, com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public List<IDeviceLocation> getLocationsNear(double latitude, double longitude, double distance,

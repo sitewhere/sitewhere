@@ -47,6 +47,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -138,6 +139,12 @@ public class SiteWherePersistence {
 		}
 		spec.setName(request.getName());
 
+		// Asset module id is required.
+		if (request.getAssetModuleId() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		spec.setAssetModuleId(request.getAssetModuleId());
+
 		// Asset id is required.
 		if (request.getAssetId() == null) {
 			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
@@ -160,6 +167,9 @@ public class SiteWherePersistence {
 			DeviceSpecification target) throws SiteWhereException {
 		if (request.getName() != null) {
 			target.setName(request.getName());
+		}
+		if (request.getAssetModuleId() != null) {
+			target.setAssetModuleId(request.getAssetModuleId());
 		}
 		if (request.getAssetId() != null) {
 			target.setAssetId(request.getAssetId());
@@ -370,11 +380,39 @@ public class SiteWherePersistence {
 	public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source,
 			String siteToken, String uuid) throws SiteWhereException {
 		DeviceAssignment newAssignment = new DeviceAssignment();
+
+		if (uuid == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
 		newAssignment.setToken(uuid);
+
+		if (source.getSiteToken() == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+		}
 		newAssignment.setSiteToken(source.getSiteToken());
+
+		if (source.getDeviceHardwareId() == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+		}
 		newAssignment.setDeviceHardwareId(source.getDeviceHardwareId());
+
+		if (source.getAssignmentType() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
 		newAssignment.setAssignmentType(source.getAssignmentType());
-		newAssignment.setAssetId(source.getAssetId());
+		
+		if (source.getAssignmentType() == DeviceAssignmentType.Associated) {
+			if (source.getAssetModuleId() == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
+			}
+			newAssignment.setAssetModuleId(source.getAssetModuleId());
+
+			if (source.getAssetId() == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
+			}
+			newAssignment.setAssetId(source.getAssetId());
+		}
+
 		newAssignment.setActiveDate(new Date());
 		newAssignment.setStatus(DeviceAssignmentStatus.Active);
 
@@ -418,12 +456,14 @@ public class SiteWherePersistence {
 	 * @param request
 	 * @param assignment
 	 * @param target
+	 * @throws SiteWhereException
 	 */
 	public static void deviceEventCreateLogic(IDeviceEventCreateRequest request,
-			IDeviceAssignment assignment, DeviceEvent target) {
+			IDeviceAssignment assignment, DeviceEvent target) throws SiteWhereException {
 		target.setSiteToken(assignment.getSiteToken());
 		target.setDeviceAssignmentToken(assignment.getToken());
 		target.setAssignmentType(assignment.getAssignmentType());
+		target.setAssetModuleId(assignment.getAssetModuleId());
 		target.setAssetId(assignment.getAssetId());
 		if (request.getEventDate() != null) {
 			target.setEventDate(request.getEventDate());

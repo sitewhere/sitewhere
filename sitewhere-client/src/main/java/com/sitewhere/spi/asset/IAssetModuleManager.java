@@ -14,7 +14,6 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 
 /**
  * Interface for interacting with the asset module manager.
@@ -51,32 +50,22 @@ public interface IAssetModuleManager {
 	public List<ICommandResponse> refreshModules() throws SiteWhereException;
 
 	/**
-	 * Finds an asset of the given type by id by querying the modules.
+	 * Finds an asset in a given module.
 	 * 
-	 * @param type
+	 * @param assetModuleId
 	 * @param id
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IAsset getAssetById(AssetType type, String id) throws SiteWhereException;
+	public IAsset getAssetById(String assetModuleId, String id) throws SiteWhereException;
 
 	/**
-	 * Finds an associated asset based on unique id.
+	 * Search an asset module for assets matching the given criteria.
 	 * 
-	 * @param type
-	 * @param id
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IAsset getAssignedAsset(DeviceAssignmentType type, String id) throws SiteWhereException;
-
-	/**
-	 * Search for an asset of the given type based on the given criteria.
-	 * 
-	 * @param type
+	 * @param assetModuleId
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<? extends IAsset> search(AssetType type, String criteria) throws SiteWhereException;
+	public List<? extends IAsset> search(String assetModuleId, String criteria) throws SiteWhereException;
 }

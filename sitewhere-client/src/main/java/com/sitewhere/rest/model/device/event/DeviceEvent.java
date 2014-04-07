@@ -45,6 +45,9 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
 	/** Device assignment type */
 	private DeviceAssignmentType assignmentType;
 
+	/** Asset module id */
+	private String assetModuleId;
+
 	/** Associated asset id */
 	private String assetId;
 
@@ -104,6 +107,19 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
 
 	public void setAssignmentType(DeviceAssignmentType assignmentType) {
 		this.assignmentType = assignmentType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetModuleId()
+	 */
+	public String getAssetModuleId() {
+		return assetModuleId;
+	}
+
+	public void setAssetModuleId(String assetModuleId) {
+		this.assetModuleId = assetModuleId;
 	}
 
 	/*
@@ -170,6 +186,7 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
 		target.setSiteToken(source.getSiteToken());
 		target.setDeviceAssignmentToken(source.getDeviceAssignmentToken());
 		target.setAssignmentType(source.getAssignmentType());
+		target.setAssetModuleId(source.getAssetModuleId());
 		target.setAssetId(source.getAssetId());
 		target.setReceivedDate(source.getReceivedDate());
 		target.setEventDate(source.getEventDate());

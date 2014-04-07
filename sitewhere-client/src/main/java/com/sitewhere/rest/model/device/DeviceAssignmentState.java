@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
@@ -49,6 +51,7 @@ public class DeviceAssignmentState implements IDeviceAssignmentState {
 	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLastInteractionDate()
 	 */
 	@Override
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getLastInteractionDate() {
 		return lastInteractionDate;
 	}

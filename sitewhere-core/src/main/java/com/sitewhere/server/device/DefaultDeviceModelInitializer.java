@@ -40,6 +40,8 @@ import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.server.asset.filesystem.FileSystemDeviceAssetModule;
+import com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
@@ -154,11 +156,11 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 	/** Available choices for devices/assignments that track location */
 	protected static AssignmentChoice[] LOCATION_TRACKERS = {
-			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "300"),
-			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "301"),
-			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "302"),
-			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "303"),
-			new AssignmentChoice("Equipment Tracker", DeviceAssignmentType.Hardware, "304") };
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "300"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "301"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "302"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
 
 	/** Token for default device network */
 	protected static String NETWORK_TOKEN = "396e484a-7b76-4fff-85b7-2746ea849705";
@@ -272,6 +274,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		int index = 0;
 		for (SpecificationDetails details : SPECIFICATION_INFO) {
 			DeviceSpecificationCreateRequest request = new DeviceSpecificationCreateRequest();
+			request.setAssetModuleId(FileSystemDeviceAssetModule.MODULE_ID);
 			request.setAssetId(details.getAssetId());
 			request.setName(details.getName());
 			request.setToken(details.getUuid());
@@ -414,11 +417,12 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 			// Create assignment.
 			DeviceAssignmentCreateRequest assnRequest = new DeviceAssignmentCreateRequest();
-			assnRequest.setAssignmentType(assnChoice.getAssignmentType());
+			assnRequest.setAssignmentType(DeviceAssignmentType.Associated);
+			assnRequest.setAssetModuleId(assnChoice.getAssignmentAssetModuleId());
 			assnRequest.setAssetId(assnChoice.getAssignmentAssetId());
 			assnRequest.setDeviceHardwareId(device.getHardwareId());
 			assnRequest.setSiteToken(site.getToken());
-			assnRequest.addOrReplaceMetadata("S/N", UUID.randomUUID().toString());
+			assnRequest.addOrReplaceMetadata("serialNumber", UUID.randomUUID().toString());
 			IDeviceAssignment assignment = getDeviceManagement().createDeviceAssignment(assnRequest);
 			LOGGER.info(PREFIX_CREATE_ASSIGNMENT + " " + assignment.getToken());
 
@@ -723,12 +727,12 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	private static class AssignmentChoice {
 
 		private String devDescBase;
-		private DeviceAssignmentType assnType;
+		private String assnAssetModuleId;
 		private String assnAssetId;
 
-		public AssignmentChoice(String devDescBase, DeviceAssignmentType assnType, String assnAssetId) {
+		public AssignmentChoice(String devDescBase, String assnAssetModuleId, String assnAssetId) {
 			this.devDescBase = devDescBase;
-			this.assnType = assnType;
+			this.assnAssetModuleId = assnAssetModuleId;
 			this.assnAssetId = assnAssetId;
 		}
 
@@ -736,8 +740,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			return devDescBase;
 		}
 
-		protected DeviceAssignmentType getAssignmentType() {
-			return assnType;
+		protected String getAssignmentAssetModuleId() {
+			return assnAssetModuleId;
 		}
 
 		protected String getAssignmentAssetId() {

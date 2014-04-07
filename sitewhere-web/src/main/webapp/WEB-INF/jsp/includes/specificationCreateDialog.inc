@@ -19,7 +19,13 @@
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="spc-hardware-search">Choose Hardware Type</label>
+						<label class="control-label" for="spc-asset-module">Asset Provider</label>
+						<div class="controls">
+							<select id="spc-asset-module" class="input-xlarge"/></select>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="spc-hardware-search">Choose Device Type</label>
 						<div class="controls">
 							<div class="input-append">
 	    						<input class="input-xlarge" id="spc-hardware-search" type="text">
@@ -55,6 +61,12 @@
 	/** Provides external access to tabs */
 	var spcTabs;
 	
+	/** Datasource for device asset modules */
+	var spcAssetModulesDS;
+	
+	/** Asset modules dropdown */
+	var spcAssetModules;
+	
 	/** Datasource for hardware assets */
 	var spcHardwareDS;
 	
@@ -72,23 +84,30 @@
 			animation: false
 		}).data("kendoTabStrip");
 		
-		/** Create AJAX datasource for hardware search */
-		spcHardwareDS = new kendo.data.DataSource({
+		/** Create AJAX datasource for device asset modules */
+		spcAssetModulesDS = new kendo.data.DataSource({
 			transport : {
 				read : {
-					url : "${pageContext.request.contextPath}/api/assets/devices",
+					url : "${pageContext.request.contextPath}/api/assets/modules/devices",
 					dataType : "json",
 				}
 			},
-			schema : {
-				data: "results",
-				total: "numResults",
-			},
 		});
+
+		/** Create asset modules dropdown */
+    	spcAssetModules = $("#spc-asset-module").kendoDropDownList({
+    		dataTextField: "name",
+    		dataValueField: "id",
+    	    dataSource: spcAssetModulesDS,
+    	    index: 0,
+    	    change: spcAssetModuleChanged,
+			dataBound: function(e) {
+				spcAssetModuleChanged();
+			}
+    	}).data("kendoDropDownList");
 		
 		/** Create the hardware match list */
 		spcHardwareMatches = $("#spc-hardware-matches").kendoListView({
-			dataSource : spcHardwareDS,
 			selectable : "single",
 			template : kendo.template($("#hardware-asset-entry").html()),
 			change: spcHardwareAssetChosen,
@@ -115,6 +134,7 @@
 			}
 			var specData = {
 				"name": $('#spc-name').val(), 
+				"assetModuleId": $('#spc-asset-module').val(), 
 				"assetId": $('#spc-chosen-asset-id').val(), 
 				"metadata": swMetadataAsLookup(spcMetadataDS.data()),
 			}
@@ -162,29 +182,58 @@
 		return result.valid;
 	}
 	
+	/** Called when selected asset module changes */
+	function spcAssetModuleChanged() {
+		var assetModuleId = spcGetSelectedAssetModuleId();
+		var criteria = $('#spc-hardware-search').val();
+		spcHardwareDS = new kendo.data.DataSource({ 
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/assets/" + assetModuleId + "?criteria=" + criteria,
+					dataType : "json",
+				}
+			},
+			schema : {
+				data: "results",
+				total: "numResults",
+			},
+		});
+		spcHardwareMatches.setDataSource(spcHardwareDS);
+	}
+	
+	/** Gets the currently selected asset module id */
+	function spcGetSelectedAssetModuleId() {
+		return $("#spc-asset-module").val();
+	}
+	
 	/** Called when hardware search criteria has changed */
 	function spcHardwareSearchCriteriaUpdated() {
-		var criteria = $('#spc-hardware-search').val();
-		if (criteria != spcLastSearch) {
-			var url = "${pageContext.request.contextPath}/api/assets/devices?criteria=" + criteria;
-			spcHardwareDS.transport.options.read.url = url;
-			spcHardwareDS.read();
+		if (spcHardwareDS) {
+			var assetModuleId = spcGetSelectedAssetModuleId();
+			var criteria = $('#spc-hardware-search').val();
+			if (criteria != spcLastSearch) {
+				var url = "${pageContext.request.contextPath}/api/assets/" + assetModuleId + "?criteria=" + criteria;
+				spcHardwareDS.transport.options.read.url = url;
+				spcHardwareDS.read();
+			}
+			spcLastSearch = criteria;
 		}
-		spcLastSearch = criteria;
 	}
 	
 	/** Called when a hardware asset is chosen from the list */
 	function spcHardwareAssetChosen() {
-		var listView = spcHardwareDS.view();
-		var selected = $.map(this.select(), function(item) {
-			return listView[$(item).index()];
-		});
-
-		if (selected.length > 0) {
-			$('#spc-chosen-asset-id').val(selected[0].id);
-		} else {
-			$('#spc-chosen-asset-id').val("");
-		}				
+		if (spcHardwareDS) {
+			var listView = spcHardwareDS.view();
+			var selected = $.map(this.select(), function(item) {
+				return listView[$(item).index()];
+			});
+	
+			if (selected.length > 0) {
+				$('#spc-chosen-asset-id').val(selected[0].id);
+			} else {
+				$('#spc-chosen-asset-id').val("");
+			}
+		}
 	}
 	
 	/** Open the dialog */
@@ -201,7 +250,6 @@
 		// Reset hardware search.
     	$('#spc-hardware-search').val("");
     	$('#spc-chosen-asset-id').val("");
-    	spcHardwareSearchCriteriaUpdated();
     	spcHardwareMatches.clearSelection();
 		
 		// Remove token to prevent update.
@@ -240,9 +288,12 @@
 		$('#spc-name').val(data.name);
 		spcMetadataDS.data(swLookupAsMetadata(data.metadata));
 		
-		// Reset hardware search.
+		// Select correct asset module.
+		spcAssetModules.value(data.assetModuleId);
+		
+		// Reset search.
     	$('#spc-hardware-search').val("");
-    	$('#spc-chosen-asset-id').val(data.asset.id);
+    	$('#spc-chosen-asset-id').val(data.assetId);
     	spcLastSearch = null;
     	spcHardwareSearchCriteriaUpdated();
     	

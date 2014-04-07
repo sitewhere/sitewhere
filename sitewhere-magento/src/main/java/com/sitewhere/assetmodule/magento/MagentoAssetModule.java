@@ -73,7 +73,7 @@ public class MagentoAssetModule implements IAssetModule<HardwareAsset> {
 	private static final String MODULE_ID = "magento";
 
 	/** Module name */
-	private static final String MODULE_NAME = "Magento Asset Module";
+	private static final String MODULE_NAME = "Magento Identity Management";
 
 	/** Default base URL for Magento SOAP v2 web service */
 	private static final String DEFAULT_URL = "http://locahost/magento/index.php/api/v2_soap?wsdl";
@@ -187,35 +187,27 @@ public class MagentoAssetModule implements IAssetModule<HardwareAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#isAssetTypeSupported(com.sitewhere.spi.asset
-	 * .AssetType)
+	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetType()
 	 */
-	public boolean isAssetTypeSupported(AssetType type) {
-		if (type == AssetType.Hardware) {
-			return true;
-		}
-		return false;
+	public AssetType getAssetType() {
+		return AssetType.Hardware;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#getAssetById(com.sitewhere.spi.asset.AssetType
-	 * , java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
 	 */
-	public HardwareAsset getAssetById(AssetType type, String id) throws SiteWhereException {
+	public HardwareAsset getAssetById(String id) throws SiteWhereException {
 		return assetCache.get(id);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#search(com.sitewhere.spi.asset.AssetType,
-	 * java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
 	 */
-	public List<HardwareAsset> search(AssetType type, String criteria) throws SiteWhereException {
+	public List<HardwareAsset> search(String criteria) throws SiteWhereException {
 		criteria = criteria.toLowerCase();
 		List<HardwareAsset> results = new ArrayList<HardwareAsset>();
 		if (criteria.length() == 0) {
@@ -413,11 +405,12 @@ public class MagentoAssetModule implements IAssetModule<HardwareAsset> {
 			asset.setDescription(asset.getProperty(IMagentoFields.PROP_DESCRIPTION));
 
 			// Load product image data.
-			CatalogProductAttributeMediaListRequestParam mediaReq = new CatalogProductAttributeMediaListRequestParam();
+			CatalogProductAttributeMediaListRequestParam mediaReq =
+					new CatalogProductAttributeMediaListRequestParam();
 			mediaReq.setSessionId(sessionId);
 			mediaReq.setProductId(product.getProductId());
-			CatalogProductAttributeMediaListResponseParam mediaResp = port
-					.catalogProductAttributeMediaList(mediaReq);
+			CatalogProductAttributeMediaListResponseParam mediaResp =
+					port.catalogProductAttributeMediaList(mediaReq);
 			List<CatalogProductImageEntity> mediaList = mediaResp.getResult().getComplexObjectArray();
 			for (CatalogProductImageEntity media : mediaList) {
 				asset.setImageUrl(media.getUrl());

@@ -85,33 +85,40 @@ public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#isAssetTypeSupported(com.sitewhere.spi.asset
-	 * .AssetType)
+	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetType()
 	 */
 	@Override
-	public boolean isAssetTypeSupported(AssetType type) {
-		if (type == AssetType.Hardware) {
-			return true;
-		}
-		return false;
+	public AssetType getAssetType() {
+		return AssetType.Hardware;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
+	 */
 	@Override
-	public HardwareAsset getAssetById(AssetType type, String id) throws SiteWhereException {
-		// TODO Auto-generated method stub
+	public HardwareAsset getAssetById(String id) throws SiteWhereException {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
+	 */
 	@Override
-	public List<HardwareAsset> search(AssetType type, String criteria) throws SiteWhereException {
-		// TODO Auto-generated method stub
+	public List<HardwareAsset> search(String criteria) throws SiteWhereException {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.asset.IAssetModule#refresh()
+	 */
 	@Override
 	public ICommandResponse refresh() throws SiteWhereException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

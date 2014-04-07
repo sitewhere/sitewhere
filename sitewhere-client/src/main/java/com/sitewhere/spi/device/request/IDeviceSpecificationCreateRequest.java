@@ -26,6 +26,13 @@ public interface IDeviceSpecificationCreateRequest extends IMetadataProvider {
 	public String getName();
 
 	/**
+	 * Get id for asset module.
+	 * 
+	 * @return
+	 */
+	public String getAssetModuleId();
+
+	/**
 	 * Get id for specification asset type.
 	 * 
 	 * @return

@@ -65,13 +65,14 @@ public class DeviceAssignmentMarshalHelper {
 		result.setReleasedDate(source.getReleasedDate());
 		result.setStatus(source.getStatus());
 		result.setAssignmentType(source.getAssignmentType());
+		result.setAssetModuleId(source.getAssetModuleId());
 		result.setAssetId(source.getAssetId());
 		MetadataProviderEntity.copy(source, result);
 		if (source.getState() != null) {
 			result.setState(DeviceAssignmentState.copy(source.getState()));
 		}
 		if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-			IAsset asset = manager.getAssignedAsset(source.getAssignmentType(), source.getAssetId());
+			IAsset asset = manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
 			if (isIncludeAsset() || (asset == null)) {
 				if (asset instanceof HardwareAsset) {
 					result.setAssociatedHardware((HardwareAsset) asset);

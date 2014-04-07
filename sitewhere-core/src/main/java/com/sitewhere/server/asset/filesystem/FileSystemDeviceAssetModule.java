@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * FileSystemDeviceAssetModule.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -29,32 +29,32 @@ import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
 
 /**
- * Module that loads a list of hardware assets from an XML file on the filesystem.
+ * Module that loads a list of device assets from an XML file on the filesystem.
  * 
- * @author Derek Adams
+ * @author Derek
  */
-public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset> {
+public class FileSystemDeviceAssetModule implements IAssetModule<HardwareAsset> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(FileSystemHardwareAssetModule.class);
+	private static Logger LOGGER = Logger.getLogger(FileSystemDeviceAssetModule.class);
 
 	/** Module id */
-	public static final String MODULE_ID = "fs-hardware";
+	public static final String MODULE_ID = "fs-devices";
 
 	/** Module name */
-	public static final String MODULE_NAME = "Default Hardware Management";
+	public static final String MODULE_NAME = "Default Device Management";
 
-	/** Filename in SiteWhere config folder that contains hardware assets */
-	public static final String HARDWARE_CONFIG_FILENAME = "hardware-assets.xml";
+	/** Filename in SiteWhere config folder that contains device assets */
+	public static final String DEVICE_CONFIG_FILENAME = "device-assets.xml";
 
-	/** Map of hardware assets by unique id */
-	protected Map<String, HardwareAsset> hardwareAssetsById;
+	/** Map of device assets by unique id */
+	protected Map<String, HardwareAsset> deviceAssetsById;
 
 	/** Matcher used for searches */
 	protected AssetMatcher matcher = new AssetMatcher();
 
 	/** Filename used to load assets */
-	private String filename = HARDWARE_CONFIG_FILENAME;
+	private String filename = DEVICE_CONFIG_FILENAME;
 
 	/** Module id */
 	private String moduleId = MODULE_ID;
@@ -72,7 +72,7 @@ public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset
 	}
 
 	/**
-	 * Reloads list of hardware assets from the filesystem.
+	 * Reloads list of device assets from the filesystem.
 	 */
 	protected void reload() throws SiteWhereException {
 		File config = SiteWhereServer.getSiteWhereConfigFolder();
@@ -83,16 +83,16 @@ public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset
 		}
 		File hardwareConfig = new File(assetsFolder, getFilename());
 		if (!hardwareConfig.exists()) {
-			throw new SiteWhereException("Assets file missing. Looking for: "
+			throw new SiteWhereException("Device assets file missing. Looking for: "
 					+ hardwareConfig.getAbsolutePath());
 		}
-		LOGGER.info("Loading assets from: " + hardwareConfig.getAbsolutePath());
+		LOGGER.info("Loading device assets from: " + hardwareConfig.getAbsolutePath());
 
 		// Unmarshal assets from XML file and store in data object.
-		List<HardwareAsset> assets = MarshalUtils.loadHardwareAssets(hardwareConfig, AssetType.Hardware);
-		this.hardwareAssetsById = new HashMap<String, HardwareAsset>();
+		List<HardwareAsset> assets = MarshalUtils.loadHardwareAssets(hardwareConfig, AssetType.Device);
+		this.deviceAssetsById = new HashMap<String, HardwareAsset>();
 		for (HardwareAsset asset : assets) {
-			hardwareAssetsById.put(asset.getId(), asset);
+			deviceAssetsById.put(asset.getId(), asset);
 		}
 		showLoadResults();
 	}
@@ -101,7 +101,7 @@ public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset
 	 * Log the number of assets loaded for each type.
 	 */
 	protected void showLoadResults() {
-		String message = "Loaded " + hardwareAssetsById.size() + " hardware assets.";
+		String message = "Loaded " + deviceAssetsById.size() + " device assets.";
 		LOGGER.info(message);
 	}
 
@@ -139,7 +139,7 @@ public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset
 	 * .AssetType)
 	 */
 	public AssetType getAssetType() {
-		return AssetType.Hardware;
+		return AssetType.Device;
 	}
 
 	/*
@@ -150,7 +150,7 @@ public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset
 	 * , java.lang.String)
 	 */
 	public HardwareAsset getAssetById(String id) throws SiteWhereException {
-		return hardwareAssetsById.get(id);
+		return deviceAssetsById.get(id);
 	}
 
 	/*
@@ -159,7 +159,7 @@ public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset
 	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
 	 */
 	public List<HardwareAsset> search(String criteria) throws SiteWhereException {
-		return search(criteria, hardwareAssetsById);
+		return search(criteria, deviceAssetsById);
 	}
 
 	/**

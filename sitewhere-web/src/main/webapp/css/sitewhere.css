@@ -338,6 +338,10 @@ div.sp-container {
 	border: 1px solid #aaaaaa;
 }
 
+div.modal-body {
+	max-height: 600px;
+}
+
 .controls {
 	position: relative;
 }

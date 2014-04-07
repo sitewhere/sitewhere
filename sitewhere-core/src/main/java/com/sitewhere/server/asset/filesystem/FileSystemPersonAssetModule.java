@@ -15,9 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.log4j.Logger;
 
 import com.sitewhere.rest.model.asset.PersonAsset;
@@ -41,10 +38,10 @@ public class FileSystemPersonAssetModule implements IAssetModule<PersonAsset> {
 	private static Logger LOGGER = Logger.getLogger(FileSystemPersonAssetModule.class);
 
 	/** Module id */
-	public static final String MODULE_ID = "filesystem-person";
+	public static final String MODULE_ID = "fs-persons";
 
 	/** Module name */
-	public static final String MODULE_NAME = "Filesystem Person Asset Module";
+	public static final String MODULE_NAME = "Default Identity Management";
 
 	/** Filename in SiteWhere config folder that contains person assets */
 	public static final String PERSON_CONFIG_FILENAME = "person-assets.xml";
@@ -54,6 +51,15 @@ public class FileSystemPersonAssetModule implements IAssetModule<PersonAsset> {
 
 	/** Matcher used for searches */
 	protected AssetMatcher matcher = new AssetMatcher();
+
+	/** Filename used to load assets */
+	private String filename = PERSON_CONFIG_FILENAME;
+
+	/** Module id */
+	private String moduleId = MODULE_ID;
+
+	/** Module name */
+	private String moduleName = MODULE_NAME;
 
 	/*
 	 * (non-Javadoc)
@@ -74,7 +80,7 @@ public class FileSystemPersonAssetModule implements IAssetModule<PersonAsset> {
 			throw new SiteWhereException("Assets subfolder not found. Looking for: "
 					+ assetsFolder.getAbsolutePath());
 		}
-		File personConfig = new File(assetsFolder, PERSON_CONFIG_FILENAME);
+		File personConfig = new File(assetsFolder, getFilename());
 		if (!personConfig.exists()) {
 			throw new SiteWhereException("Person assets file missing. Looking for: "
 					+ personConfig.getAbsolutePath());
@@ -82,44 +88,19 @@ public class FileSystemPersonAssetModule implements IAssetModule<PersonAsset> {
 		LOGGER.info("Loading person assets from: " + personConfig.getAbsolutePath());
 
 		// Unmarshal assets from XML file and store in data object.
-		List<PersonAsset> assets = new ArrayList<PersonAsset>();
-		Map<String, PersonAsset> assetsById = new HashMap<String, PersonAsset>();
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(FileSystemPersonAssets.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			FileSystemPersonAssets xmlAssets = (FileSystemPersonAssets) jaxbUnmarshaller
-					.unmarshal(personConfig);
-			for (FileSystemPersonAsset xmlAsset : xmlAssets.getPersonAssets()) {
-				PersonAsset asset = new PersonAsset();
-				asset.setId(xmlAsset.getId());
-				asset.setName(xmlAsset.getName());
-				asset.setUserName(xmlAsset.getUserName());
-				asset.setEmailAddress(xmlAsset.getEmailAddress());
-				asset.setPhotoUrl(xmlAsset.getPhotoUrl());
-				for (FileSystemAssetProperty xmlProperty : xmlAsset.getProperties()) {
-					asset.setProperty(xmlProperty.getName(), xmlProperty.getValue());
-				}
-				if (xmlAsset.getRoles() != null) {
-					List<String> roles = xmlAsset.getRoles().getRoles();
-					for (String role : roles) {
-						asset.getRoles().add(role);
-					}
-				}
-				assets.add(asset);
-				assetsById.put(asset.getId(), asset);
-			}
-			this.assetsById = assetsById;
-			showLoadResults();
-		} catch (Exception e) {
-			throw new SiteWhereException("Unable to unmarshal person assets file.", e);
+		List<PersonAsset> assets = MarshalUtils.loadPersonAssets(personConfig);
+		this.assetsById = new HashMap<String, PersonAsset>();
+		for (PersonAsset asset : assets) {
+			assetsById.put(asset.getId(), asset);
 		}
+		showLoadResults();
 	}
 
 	/**
 	 * Log the number of assets loaded for each type.
 	 */
 	protected void showLoadResults() {
-		String message = "Loaded " + assetsById.size() + " assets.";
+		String message = "Loaded " + assetsById.size() + " person assets.";
 		LOGGER.info(message);
 	}
 
@@ -137,7 +118,7 @@ public class FileSystemPersonAssetModule implements IAssetModule<PersonAsset> {
 	 * @see com.sitewhere.spi.asset.IAssetModule#getId()
 	 */
 	public String getId() {
-		return MODULE_ID;
+		return getModuleId();
 	}
 
 	/*
@@ -146,41 +127,33 @@ public class FileSystemPersonAssetModule implements IAssetModule<PersonAsset> {
 	 * @see com.sitewhere.spi.asset.IAssetModule#getName()
 	 */
 	public String getName() {
-		return MODULE_NAME;
+		return getModuleName();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#isAssetTypeSupported(com.sitewhere.spi.asset
-	 * .AssetType)
+	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetType()
 	 */
-	public boolean isAssetTypeSupported(AssetType type) {
-		if (type == AssetType.Person) {
-			return true;
-		}
-		return false;
+	public AssetType getAssetType() {
+		return AssetType.Person;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#getAssetById(com.sitewhere.spi.asset.AssetType
-	 * , java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
 	 */
-	public PersonAsset getAssetById(AssetType type, String id) throws SiteWhereException {
+	public PersonAsset getAssetById(String id) throws SiteWhereException {
 		return assetsById.get(id);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#search(com.sitewhere.spi.asset.AssetType,
-	 * java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
 	 */
-	public List<PersonAsset> search(AssetType type, String criteria) throws SiteWhereException {
+	public List<PersonAsset> search(String criteria) throws SiteWhereException {
 		criteria = criteria.toLowerCase();
 		List<PersonAsset> results = new ArrayList<PersonAsset>();
 		if (criteria.length() == 0) {
@@ -208,5 +181,29 @@ public class FileSystemPersonAssetModule implements IAssetModule<PersonAsset> {
 		} catch (SiteWhereException e) {
 			return new CommandResponse(CommandResult.Failed, e.getMessage());
 		}
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getModuleId() {
+		return moduleId;
+	}
+
+	public void setModuleId(String moduleId) {
+		this.moduleId = moduleId;
+	}
+
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
 	}
 }

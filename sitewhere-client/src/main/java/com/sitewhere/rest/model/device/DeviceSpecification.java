@@ -29,6 +29,9 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
 	/** Specificaiton name */
 	private String name;
 
+	/** Asset module id */
+	private String assetModuleId;
+
 	/** Asset id of device hardware */
 	private String assetId;
 
@@ -65,6 +68,19 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceSpecification#getAssetModuleId()
+	 */
+	public String getAssetModuleId() {
+		return assetModuleId;
+	}
+
+	public void setAssetModuleId(String assetModuleId) {
+		this.assetModuleId = assetModuleId;
 	}
 
 	/*

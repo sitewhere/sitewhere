@@ -30,6 +30,9 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 	/** Property for specification name */
 	public static final String PROP_NAME = "name";
 
+	/** Property for asset module id */
+	public static final String PROP_ASSET_MODULE_ID = "assetModuleId";
+
 	/** Property for asset id */
 	public static final String PROP_ASSET_ID = "assetId";
 
@@ -62,6 +65,7 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 	public static void toDBObject(IDeviceSpecification source, BasicDBObject target) {
 		target.append(PROP_TOKEN, source.getToken());
 		target.append(PROP_NAME, source.getName());
+		target.append(PROP_ASSET_MODULE_ID, source.getAssetModuleId());
 		target.append(PROP_ASSET_ID, source.getAssetId());
 		MongoSiteWhereEntity.toDBObject(source, target);
 		MongoMetadataProvider.toDBObject(source, target);
@@ -76,10 +80,12 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 	public static void fromDBObject(DBObject source, DeviceSpecification target) {
 		String token = (String) source.get(PROP_TOKEN);
 		String name = (String) source.get(PROP_NAME);
+		String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
 		String assetId = (String) source.get(PROP_ASSET_ID);
 
 		target.setToken(token);
 		target.setName(name);
+		target.setAssetModuleId(assetModuleId);
 		target.setAssetId(assetId);
 		MongoSiteWhereEntity.fromDBObject(source, target);
 		MongoMetadataProvider.fromDBObject(source, target);

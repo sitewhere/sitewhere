@@ -60,7 +60,7 @@
 
 <!-- Static content in top of update dialog -->
 <script type="text/x-kendo-tmpl" id="au-static-block">
-# if ((assignmentType == 'Hardware') && (associatedHardware)) { #
+# if (data.associatedHardware) { #
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">
 			<img class="sw-assignment-update-img" src="#:associatedHardware.imageUrl#"/>
@@ -70,7 +70,7 @@
 			<p class="ellipsis"><span class="sw-assignment-update-label">Asset:</span> #:associatedHardware.name#</p>
 			<p class="ellipsis"><span class="sw-assignment-update-label">SKU:</span> #:associatedHardware.sku#</p>
 			<p class="ellipsis"><span class="sw-assignment-update-label">Info:</span> #:associatedHardware.description#</p>
-# } else if ((assignmentType == 'Person') && (associatedPerson)) { #
+# } else if (data.associatedPerson) { #
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">
 			<img class="sw-assignment-update-img" src="#:associatedPerson.photoUrl#"/>

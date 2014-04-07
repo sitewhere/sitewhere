@@ -34,6 +34,9 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	/** Property for active date */
 	public static final String PROP_ACTIVE_DATE = "activeDate";
 
+	/** Property for asset module id */
+	public static final String PROP_ASSET_MODULE_ID = "assetModuleId";
+
 	/** Property for asset id */
 	public static final String PROP_ASSET_ID = "assetId";
 
@@ -86,6 +89,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 		if (source.getActiveDate() != null) {
 			target.append(PROP_ACTIVE_DATE, source.getActiveDate());
 		}
+		target.append(PROP_ASSET_MODULE_ID, source.getAssetModuleId());
 		target.append(PROP_ASSET_ID, source.getAssetId());
 		if (source.getAssignmentType() != null) {
 			target.append(PROP_ASSIGNMENT_TYPE, source.getAssignmentType().name());
@@ -128,6 +132,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 	 */
 	public static void fromDBObject(DBObject source, DeviceAssignment target) {
 		Date activeDate = (Date) source.get(PROP_ACTIVE_DATE);
+		String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
 		String assetId = (String) source.get(PROP_ASSET_ID);
 		String assignmentType = (String) source.get(PROP_ASSIGNMENT_TYPE);
 		Date releasedDate = (Date) source.get(PROP_RELEASED_DATE);
@@ -139,6 +144,7 @@ public class MongoDeviceAssignment implements MongoConverter<IDeviceAssignment> 
 		if (activeDate != null) {
 			target.setActiveDate(activeDate);
 		}
+		target.setAssetModuleId(assetModuleId);
 		target.setAssetId(assetId);
 		if (assignmentType != null) {
 			target.setAssignmentType(DeviceAssignmentType.valueOf(assignmentType));

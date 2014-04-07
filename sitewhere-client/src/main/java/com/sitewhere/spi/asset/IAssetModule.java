@@ -51,32 +51,29 @@ public interface IAssetModule<T extends IAsset> {
 	public String getName();
 
 	/**
-	 * Indicates if the module can be used to locate assets of a given type.
+	 * Indicates the type of assets provided.
 	 * 
-	 * @param type
 	 * @return
 	 */
-	public boolean isAssetTypeSupported(AssetType type);
+	public AssetType getAssetType();
 
 	/**
 	 * Get an asset by unique id.
 	 * 
-	 * @param type
 	 * @param id
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public T getAssetById(AssetType type, String id) throws SiteWhereException;
+	public T getAssetById(String id) throws SiteWhereException;
 
 	/**
 	 * Search for all assets of a given type that meet the criteria.
 	 * 
-	 * @param type
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<T> search(AssetType type, String criteria) throws SiteWhereException;
+	public List<T> search(String criteria) throws SiteWhereException;
 
 	/**
 	 * Refresh any cached data in the module.

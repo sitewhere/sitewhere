@@ -40,7 +40,9 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
 
 	public DeviceEventWithAsset(IDeviceEvent wrapped, IAssetModuleManager assets) throws SiteWhereException {
 		this.wrapped = wrapped;
-		this.asset = assets.getAssignedAsset(wrapped.getAssignmentType(), wrapped.getAssetId());
+		if (wrapped.getAssignmentType() == DeviceAssignmentType.Associated) {
+			this.asset = assets.getAssetById(wrapped.getAssetModuleId(), wrapped.getAssetId());
+		}
 	}
 
 	/*
@@ -156,6 +158,16 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
 	@Override
 	public DeviceAssignmentType getAssignmentType() {
 		return getWrapped().getAssignmentType();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.IDeviceEvent#getAssetModuleId()
+	 */
+	@Override
+	public String getAssetModuleId() {
+		return getWrapped().getAssetModuleId();
 	}
 
 	/*

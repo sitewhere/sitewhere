@@ -10,6 +10,10 @@
 	<!-- # ASSET MODULE IMPLEMENTATIONS # -->
 	<!-- ################################ -->
 
+	<!-- Default file system device asset module -->
+	<bean id="fileDeviceModule"
+		class="com.sitewhere.server.asset.filesystem.FileSystemDeviceAssetModule"/>
+
 	<!-- Default file system hardware asset module -->
 	<bean id="fileHardwareModule"
 		class="com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule"/>
@@ -42,6 +46,7 @@
 	<bean id="assetModuleManager" class="com.sitewhere.server.asset.AssetModuleManager">
 		<property name="modules">
 			<list>
+				<ref bean="fileDeviceModule"/>
 				<ref bean="fileHardwareModule"/>
 				<ref bean="filePersonModule"/>
 			</list>

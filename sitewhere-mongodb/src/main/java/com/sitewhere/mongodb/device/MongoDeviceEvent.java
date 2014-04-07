@@ -40,6 +40,9 @@ public class MongoDeviceEvent {
 	/** Property for device assignment type */
 	public static final String PROP_DEVICE_ASSIGNMENT_TYPE = "deviceAssignmentType";
 
+	/** Property for asset module id */
+	public static final String PROP_ASSET_MODULE_ID = "assetModuleId";
+
 	/** Property for asset id */
 	public static final String PROP_ASSET_ID = "assetId";
 
@@ -63,6 +66,7 @@ public class MongoDeviceEvent {
 		target.append(PROP_SITE_TOKEN, source.getSiteToken());
 		target.append(PROP_DEVICE_ASSIGNMENT_TOKEN, source.getDeviceAssignmentToken());
 		target.append(PROP_DEVICE_ASSIGNMENT_TYPE, source.getAssignmentType().name());
+		target.append(PROP_ASSET_MODULE_ID, source.getAssetModuleId());
 		target.append(PROP_ASSET_ID, source.getAssetId());
 		target.append(PROP_EVENT_DATE, source.getEventDate());
 		target.append(PROP_RECEIVED_DATE, source.getReceivedDate());
@@ -82,6 +86,7 @@ public class MongoDeviceEvent {
 		String siteToken = (String) source.get(PROP_SITE_TOKEN);
 		String assignmentToken = (String) source.get(PROP_DEVICE_ASSIGNMENT_TOKEN);
 		String assignmentType = (String) source.get(PROP_DEVICE_ASSIGNMENT_TYPE);
+		String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
 		String assetId = (String) source.get(PROP_ASSET_ID);
 		Date eventDate = (Date) source.get(PROP_EVENT_DATE);
 		Date receivedDate = (Date) source.get(PROP_RECEIVED_DATE);
@@ -94,6 +99,7 @@ public class MongoDeviceEvent {
 		}
 		target.setSiteToken(siteToken);
 		target.setDeviceAssignmentToken(assignmentToken);
+		target.setAssetModuleId(assetModuleId);
 		target.setAssetId(assetId);
 		target.setEventDate(eventDate);
 		target.setReceivedDate(receivedDate);

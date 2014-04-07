@@ -38,7 +38,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -72,8 +71,8 @@ public class SpecificationsController extends SiteWhereController {
 	public IDeviceSpecification createDeviceSpecification(
 			@RequestBody DeviceSpecificationCreateRequest request) throws SiteWhereException {
 		IAsset asset =
-				SiteWhereServer.getInstance().getAssetModuleManager().getAssetById(AssetType.Device,
-						request.getAssetId());
+				SiteWhereServer.getInstance().getAssetModuleManager().getAssetById(
+						request.getAssetModuleId(), request.getAssetId());
 		if (asset == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

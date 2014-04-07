@@ -51,6 +51,13 @@ public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent
 	public DeviceAssignmentType getAssignmentType();
 
 	/**
+	 * Get id of asset module.
+	 * 
+	 * @return
+	 */
+	public String getAssetModuleId();
+
+	/**
 	 * Get id of asset if associated.
 	 * 
 	 * @return

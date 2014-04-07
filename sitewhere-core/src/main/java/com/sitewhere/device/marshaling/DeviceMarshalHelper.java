@@ -16,7 +16,6 @@ import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -71,13 +70,17 @@ public class DeviceMarshalHelper {
 			if (includeSpecification) {
 				result.setSpecification(getSpecificationHelper().convert(spec, manager));
 			} else {
+				result.setSpecificationToken(source.getSpecificationToken());
 				HardwareAsset asset =
 						(HardwareAsset) SiteWhereServer.getInstance().getAssetModuleManager().getAssetById(
-								AssetType.Device, spec.getAssetId());
-				result.setAssetId(asset.getId());
-				result.setAssetName(asset.getName());
-				result.setAssetImageUrl(asset.getImageUrl());
-				result.setSpecificationToken(source.getSpecificationToken());
+								spec.getAssetModuleId(), spec.getAssetId());
+				if (asset != null) {
+					result.setAssetId(asset.getId());
+					result.setAssetName(asset.getName());
+					result.setAssetImageUrl(asset.getImageUrl());
+				} else {
+					throw new SiteWhereException("Specification references non-existent asset.");
+				}
 			}
 		}
 		if (source.getAssignmentToken() != null) {

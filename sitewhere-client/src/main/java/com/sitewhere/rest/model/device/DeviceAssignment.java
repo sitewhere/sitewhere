@@ -40,6 +40,9 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 	/** Type of associated asset */
 	private DeviceAssignmentType assignmentType;
 
+	/** Id of asset module */
+	private String assetModuleId;
+
 	/** Id of associated asset */
 	private String assetId;
 
@@ -118,6 +121,19 @@ public class DeviceAssignment extends MetadataProviderEntity implements IDeviceA
 
 	public void setAssignmentType(DeviceAssignmentType assignmentType) {
 		this.assignmentType = assignmentType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceAssignment#getAssetModuleId()
+	 */
+	public String getAssetModuleId() {
+		return assetModuleId;
+	}
+
+	public void setAssetModuleId(String assetModuleId) {
+		this.assetModuleId = assetModuleId;
 	}
 
 	/*

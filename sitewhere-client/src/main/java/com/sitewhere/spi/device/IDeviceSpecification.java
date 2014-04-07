@@ -33,6 +33,13 @@ public interface IDeviceSpecification extends IMetadataProviderEntity {
 	public String getName();
 
 	/**
+	 * Get asset module id.
+	 * 
+	 * @return
+	 */
+	public String getAssetModuleId();
+
+	/**
 	 * Get id for specification asset type.
 	 * 
 	 * @return

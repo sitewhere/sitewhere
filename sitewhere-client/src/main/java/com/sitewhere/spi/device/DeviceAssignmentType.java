@@ -19,9 +19,6 @@ public enum DeviceAssignmentType {
 	/** No associated asset */
 	Unassociated,
 
-	/** Asset is a person */
-	Person,
-
-	/** Asset is a piece of hardware */
-	Hardware;
+	/** Assignment is associated with an asset */
+	Associated;
 }

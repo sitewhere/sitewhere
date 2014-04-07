@@ -23,6 +23,9 @@ public class DeviceSpecificationCreateRequest extends MetadataProvider implement
 	/** Specification name */
 	private String name;
 
+	/** Asset module id */
+	private String assetModuleId;
+
 	/** Asset id */
 	private String assetId;
 
@@ -40,6 +43,21 @@ public class DeviceSpecificationCreateRequest extends MetadataProvider implement
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#getAssetModuleId
+	 * ()
+	 */
+	public String getAssetModuleId() {
+		return assetModuleId;
+	}
+
+	public void setAssetModuleId(String assetModuleId) {
+		this.assetModuleId = assetModuleId;
 	}
 
 	/*

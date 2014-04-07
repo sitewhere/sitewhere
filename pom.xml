@@ -29,6 +29,7 @@
 				<module>sitewhere-client</module>
 				<module>sitewhere-core</module>
 				<module>sitewhere-hbase</module>
+				<module>sitewhere-gnuhealth</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-mule</module>
@@ -46,6 +47,7 @@
 				<module>sitewhere-client</module>
 				<module>sitewhere-core</module>
 				<module>sitewhere-hbase</module>
+				<module>sitewhere-gnuhealth</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-mule</module>

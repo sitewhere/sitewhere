@@ -9,9 +9,9 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +19,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sitewhere.rest.model.asset.HardwareAsset;
-import com.sitewhere.rest.model.asset.PersonAsset;
+import com.sitewhere.rest.model.asset.AssetModule;
+import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetModule;
+import com.sitewhere.spi.command.ICommandResponse;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -40,135 +42,99 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "", description = "Operations related to SiteWhere assets.")
 public class AssetsController extends SiteWhereController {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(AssetsController.class);
-
 	/**
-	 * Search hardware assets for the given criteria.
+	 * Search for assets in an {@link IAssetModule} that meet the given criteria.
 	 * 
+	 * @param assetModuleId
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/hardware", method = RequestMethod.GET)
+	@RequestMapping(value = "/{assetModuleId}", method = RequestMethod.GET)
 	@ResponseBody
-	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "Search hardware assets")
-	public SearchResults<HardwareAsset> searchHardwareAssets(
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public SearchResults<? extends IAsset> searchAssets(
+			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria)
 			throws SiteWhereException {
-		List<HardwareAsset> found = (List<HardwareAsset>) SiteWhereServer.getInstance()
-				.getAssetModuleManager().search(AssetType.Hardware, criteria);
-		SearchResults<HardwareAsset> results = new SearchResults<HardwareAsset>(found);
+		List<? extends IAsset> found =
+				SiteWhereServer.getInstance().getAssetModuleManager().search(assetModuleId, criteria);
+		SearchResults<? extends IAsset> results = new SearchResults(found);
 		return results;
 	}
 
 	/**
-	 * Get a hardware asset by unique id.
+	 * Get an asset from an {@link IAssetModule} by unique id.
 	 * 
+	 * @param assetModuleId
 	 * @param assetId
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/hardware/{assetId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{assetModuleId}/{assetId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Find hardware asset by unique id")
-	public HardwareAsset getHardwareAssetById(
+	public IAsset getAssetById(
+			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
 			throws SiteWhereException {
-		IAsset result = SiteWhereServer.getInstance().getAssetModuleManager()
-				.getAssetById(AssetType.Hardware, assetId);
-		if (result instanceof HardwareAsset) {
-			return (HardwareAsset) result;
-		} else {
-			LOGGER.error("Result could not be marshaled as a hardware asset.");
-			return null;
+		IAsset result =
+				SiteWhereServer.getInstance().getAssetModuleManager().getAssetById(assetModuleId, assetId);
+		return result;
+	}
+
+	/**
+	 * List all asset modules.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/modules", method = RequestMethod.GET)
+	@ResponseBody
+	public List<AssetModule> listAssetModules() throws SiteWhereException {
+		List<AssetModule> amConverted = new ArrayList<AssetModule>();
+		List<IAssetModule<?>> modules = SiteWhereServer.getInstance().getAssetModuleManager().getModules();
+		for (IAssetModule<?> module : modules) {
+			amConverted.add(AssetModule.copy(module));
 		}
+		return amConverted;
 	}
 
 	/**
-	 * Search device assets for the given criteria.
+	 * List all asset modules that contain device assets.
 	 * 
-	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/devices", method = RequestMethod.GET)
+	@RequestMapping(value = "/modules/devices", method = RequestMethod.GET)
 	@ResponseBody
-	@SuppressWarnings("unchecked")
-	@ApiOperation(value = "Search device assets")
-	public SearchResults<HardwareAsset> searchDeviceAssets(
-			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria)
-			throws SiteWhereException {
-		List<HardwareAsset> found = (List<HardwareAsset>) SiteWhereServer.getInstance()
-				.getAssetModuleManager().search(AssetType.Device, criteria);
-		SearchResults<HardwareAsset> results = new SearchResults<HardwareAsset>(found);
-		return results;
-	}
-
-	/**
-	 * Get a device asset by unique id.
-	 * 
-	 * @param assetId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/devices/{assetId}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Find device asset by unique id")
-	public HardwareAsset getDeviceAssetById(
-			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
-			throws SiteWhereException {
-		IAsset result = SiteWhereServer.getInstance().getAssetModuleManager()
-				.getAssetById(AssetType.Device, assetId);
-		if (result instanceof HardwareAsset) {
-			return (HardwareAsset) result;
-		} else {
-			LOGGER.error("Result could not be marshaled as a hardware asset.");
-			return null;
+	public List<AssetModule> listDeviceAssetModules() throws SiteWhereException {
+		List<AssetModule> amConverted = new ArrayList<AssetModule>();
+		List<IAssetModule<?>> modules = SiteWhereServer.getInstance().getAssetModuleManager().getModules();
+		for (IAssetModule<?> module : modules) {
+			if (module.getAssetType() == AssetType.Device) {
+				amConverted.add(AssetModule.copy(module));
+			}
 		}
+		return amConverted;
 	}
 
 	/**
-	 * Search person assets for the given criteria.
+	 * Refresh all asset modules.
 	 * 
-	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/people", method = RequestMethod.GET)
+	@RequestMapping(value = "/modules/refresh", method = RequestMethod.POST)
 	@ResponseBody
-	@SuppressWarnings("unchecked")
-	@ApiOperation(value = "Search person assets")
-	public SearchResults<PersonAsset> searchPersonAssets(
-			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria)
-			throws SiteWhereException {
-		List<PersonAsset> found = (List<PersonAsset>) SiteWhereServer.getInstance().getAssetModuleManager()
-				.search(AssetType.Person, criteria);
-		SearchResults<PersonAsset> results = new SearchResults<PersonAsset>(found);
-		return results;
-	}
-
-	/**
-	 * Get a person asset by unique id.
-	 * 
-	 * @param assetId
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/people/{assetId}", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "Find person asset by unique id")
-	public PersonAsset getPersonAssetById(
-			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
-			throws SiteWhereException {
-		IAsset result = SiteWhereServer.getInstance().getAssetModuleManager()
-				.getAssetById(AssetType.Person, assetId);
-		if (result instanceof PersonAsset) {
-			return (PersonAsset) result;
-		} else {
-			LOGGER.error("Result could not be marshaled as a person asset.");
-			return null;
+	public List<CommandResponse> refreshModules() throws SiteWhereException {
+		List<ICommandResponse> responses =
+				SiteWhereServer.getInstance().getAssetModuleManager().refreshModules();
+		List<CommandResponse> converted = new ArrayList<CommandResponse>();
+		for (ICommandResponse response : responses) {
+			converted.add(CommandResponse.copy(response));
 		}
+		return converted;
 	}
 }

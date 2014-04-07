@@ -27,6 +27,9 @@ public class DeviceAssignmentCreateRequest extends MetadataProvider implements I
 	/** Type of assignment */
 	private DeviceAssignmentType assignmentType;
 
+	/** Asset module id */
+	private String assetModuleId;
+
 	/** Unique asset id */
 	private String assetId;
 
@@ -70,6 +73,20 @@ public class DeviceAssignmentCreateRequest extends MetadataProvider implements I
 
 	public void setAssignmentType(DeviceAssignmentType assignmentType) {
 		this.assignmentType = assignmentType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getAssetModuleId()
+	 */
+	public String getAssetModuleId() {
+		return assetModuleId;
+	}
+
+	public void setAssetModuleId(String assetModuleId) {
+		this.assetModuleId = assetModuleId;
 	}
 
 	/*

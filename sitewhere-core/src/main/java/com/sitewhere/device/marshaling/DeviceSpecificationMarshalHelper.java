@@ -17,7 +17,6 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.error.ErrorCode;
@@ -53,17 +52,17 @@ public class DeviceSpecificationMarshalHelper {
 		spec.setName(source.getName());
 		HardwareAsset asset =
 				(HardwareAsset) SiteWhereServer.getInstance().getAssetModuleManager().getAssetById(
-						AssetType.Device, source.getAssetId());
+						source.getAssetModuleId(), source.getAssetId());
 		if (asset == null) {
 			LOGGER.warn("Device specification has reference to non-existent asset.");
 			throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
 		}
+		spec.setAssetModuleId(source.getAssetModuleId());
+		spec.setAssetId(asset.getId());
+		spec.setAssetName(asset.getName());
+		spec.setAssetImageUrl(asset.getImageUrl());
 		if (isIncludeAsset()) {
 			spec.setAsset(asset);
-		} else {
-			spec.setAssetId(asset.getId());
-			spec.setAssetName(asset.getName());
-			spec.setAssetImageUrl(asset.getImageUrl());
 		}
 		return spec;
 	}

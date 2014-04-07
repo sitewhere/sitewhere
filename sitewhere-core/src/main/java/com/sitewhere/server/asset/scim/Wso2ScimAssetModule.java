@@ -50,7 +50,7 @@ public class Wso2ScimAssetModule implements IAssetModule<PersonAsset> {
 	private static final String MODULE_ID = "wso2scim";
 
 	/** Module name */
-	private static final String MODULE_NAME = "WSO2 SCIM Asset Module";
+	private static final String MODULE_NAME = "WSO2 Identity Management";
 
 	/** Default base url for user operations */
 	private static final String DEFAULT_URL = "https://localhost:9443/wso2/scim/Users";
@@ -117,35 +117,27 @@ public class Wso2ScimAssetModule implements IAssetModule<PersonAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#isAssetTypeSupported(com.sitewhere.spi.asset
-	 * .AssetType)
+	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetType()
 	 */
-	public boolean isAssetTypeSupported(AssetType type) {
-		if (type == AssetType.Person) {
-			return true;
-		}
-		return false;
+	public AssetType getAssetType() {
+		return AssetType.Person;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#getAssetById(com.sitewhere.spi.asset.AssetType
-	 * , java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
 	 */
-	public PersonAsset getAssetById(AssetType type, String id) throws SiteWhereException {
+	public PersonAsset getAssetById(String id) throws SiteWhereException {
 		return assetCache.get(id);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#search(com.sitewhere.spi.asset.AssetType,
-	 * java.lang.String)
+	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
 	 */
-	public List<PersonAsset> search(AssetType type, String criteria) throws SiteWhereException {
+	public List<PersonAsset> search(String criteria) throws SiteWhereException {
 		criteria = criteria.toLowerCase();
 		List<PersonAsset> results = new ArrayList<PersonAsset>();
 		if (criteria.length() == 0) {

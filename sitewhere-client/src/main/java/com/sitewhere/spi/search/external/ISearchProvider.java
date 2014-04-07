@@ -9,12 +9,7 @@
  */
 package com.sitewhere.spi.search.external;
 
-import java.util.List;
-
 import com.sitewhere.spi.ISiteWhereLifecycle;
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 
 /**
  * Implemented by external search providers that index SiteWhere data.
@@ -29,17 +24,4 @@ public interface ISearchProvider extends ISiteWhereLifecycle {
 	 * @return
 	 */
 	public String getName();
-
-	/**
-	 * Get a list of device locations near the given lat/long in the given time period.
-	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @param distance
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public List<IDeviceLocation> getLocationsNear(double latitude, double longitude, double distance,
-			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 }

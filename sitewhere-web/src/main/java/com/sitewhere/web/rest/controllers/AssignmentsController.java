@@ -95,9 +95,13 @@ public class AssignmentsController extends SiteWhereController {
 		if (request.getAssignmentType() == null) {
 			throw new SiteWhereException("Assignment type required.");
 		}
-		if ((request.getAssignmentType() != DeviceAssignmentType.Unassociated)
-				&& (request.getAssetId() == null)) {
-			throw new SiteWhereException("Asset id required.");
+		if (request.getAssignmentType() != DeviceAssignmentType.Unassociated) {
+			if (request.getAssetModuleId() == null) {
+				throw new SiteWhereException("Asset module id required.");
+			}
+			if (request.getAssetId() == null) {
+				throw new SiteWhereException("Asset id required.");
+			}
 		}
 		IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
 		IDeviceAssignment created = management.createDeviceAssignment(request);
