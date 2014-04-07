@@ -86,7 +86,7 @@ public class MarshalUtils {
 				asset.setName(xmlAsset.getName());
 				asset.setUserName(xmlAsset.getUserName());
 				asset.setEmailAddress(xmlAsset.getEmailAddress());
-				asset.setPhotoUrl(xmlAsset.getPhotoUrl());
+				asset.setImageUrl(xmlAsset.getPhotoUrl());
 				for (FileSystemAssetProperty xmlProperty : xmlAsset.getProperties()) {
 					asset.setProperty(xmlProperty.getName(), xmlProperty.getValue());
 				}

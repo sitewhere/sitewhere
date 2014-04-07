@@ -34,6 +34,9 @@ public class Asset implements IAsset {
 	/** Asset type indicator */
 	private AssetType type;
 
+	/** Asset image url */
+	private String imageUrl;
+
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	/*
@@ -78,6 +81,19 @@ public class Asset implements IAsset {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.asset.IAsset#getImageUrl()
+	 */
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.asset.IAsset#getPropertyNames()
 	 */
 	@JsonIgnore
@@ -112,9 +128,10 @@ public class Asset implements IAsset {
 	public String getIdProperty() {
 		return null;
 	}
-	
+
 	/**
 	 * Included for JSON marshaling of properties map.
+	 * 
 	 * @return
 	 */
 	public Map<String, String> getProperties() {

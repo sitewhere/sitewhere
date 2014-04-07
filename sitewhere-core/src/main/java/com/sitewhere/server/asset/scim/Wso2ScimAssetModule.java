@@ -251,7 +251,7 @@ public class Wso2ScimAssetModule implements IAssetModule<PersonAsset> {
 		asset.setName(IWso2ScimFields.PROP_NAME);
 		asset.setEmailAddress(IWso2ScimFields.PROP_EMAIL_ADDRESS);
 		asset.setUserName(IWso2ScimFields.PROP_USERNAME);
-		asset.setPhotoUrl(IWso2ScimFields.PROP_PROFILE_URL);
+		asset.setImageUrl(IWso2ScimFields.PROP_PROFILE_URL);
 
 		return asset;
 	}

@@ -41,6 +41,13 @@ public interface IAsset extends Comparable<IAsset> {
 	public AssetType getType();
 
 	/**
+	 * Get URL for asset image.
+	 * 
+	 * @return
+	 */
+	public String getImageUrl();
+
+	/**
 	 * Get list of property names.
 	 * 
 	 * @return
@@ -48,7 +55,8 @@ public interface IAsset extends Comparable<IAsset> {
 	public Set<String> getPropertyNames();
 
 	/**
-	 * Add a property. If there is an existing property with the same name, it is replaced.
+	 * Add a property. If there is an existing property with the same name, it is
+	 * replaced.
 	 * 
 	 * @param property
 	 */

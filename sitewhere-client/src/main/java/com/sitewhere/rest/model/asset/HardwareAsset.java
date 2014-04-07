@@ -26,9 +26,6 @@ public class HardwareAsset extends Asset implements IHardwareAsset {
 	/** Asset description */
 	private String description;
 
-	/** Asset image URL */
-	private String imageUrl;
-
 	public HardwareAsset() {
 		setType(AssetType.Hardware);
 	}
@@ -38,6 +35,7 @@ public class HardwareAsset extends Asset implements IHardwareAsset {
 	 * 
 	 * @see com.sitewhere.spi.asset.IHardwareAsset#getSku()
 	 */
+	@Override
 	public String getSku() {
 		return sku;
 	}
@@ -51,24 +49,12 @@ public class HardwareAsset extends Asset implements IHardwareAsset {
 	 * 
 	 * @see com.sitewhere.spi.asset.IHardwareAsset#getDescription()
 	 */
+	@Override
 	public String getDescription() {
 		return this.description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IHardwareAsset#getImageUrl()
-	 */
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String url) {
-		this.imageUrl = url;
 	}
 }

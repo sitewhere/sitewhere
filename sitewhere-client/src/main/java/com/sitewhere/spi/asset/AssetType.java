@@ -20,9 +20,12 @@ public enum AssetType {
 	/** Device asset (hardware used for monitoring) */
 	Device,
 
-	/** Asset is a person */
+	/** Asset represents a person */
 	Person,
 
-	/** Asset is a piece of hardware */
-	Hardware;
+	/** Asset represents a piece of hardware */
+	Hardware,
+
+	/** Asset represents a location */
+	Location;
 }

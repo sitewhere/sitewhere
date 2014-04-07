@@ -30,11 +30,4 @@ public interface IHardwareAsset extends IAsset {
 	 * @return
 	 */
 	public String getDescription();
-
-	/**
-	 * Get URL for asset image.
-	 * 
-	 * @return
-	 */
-	public String getImageUrl();
 }

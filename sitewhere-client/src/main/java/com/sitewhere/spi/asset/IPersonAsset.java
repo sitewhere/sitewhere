@@ -38,11 +38,4 @@ public interface IPersonAsset extends IAsset {
 	 * @return
 	 */
 	public List<String> getRoles();
-
-	/**
-	 * Get the primary photo URL.
-	 * 
-	 * @return
-	 */
-	public String getPhotoUrl();
 }

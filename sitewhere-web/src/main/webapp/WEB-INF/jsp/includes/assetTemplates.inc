@@ -13,7 +13,7 @@
 <script type="text/x-kendo-tmpl" id="person-asset-entry">
 	<div class="asset-entry gradient-bg" id="asset-#:id#">
 		<div class="asset-entry-logowrapper">
-			<img class="asset-entry-logo" src="#:photoUrl#"/>
+			<img class="asset-entry-logo" src="#:imageUrl#"/>
 		</div>
 		<div class="ellipsis"><b>#:name#</b></div>
 		<div class="ellipsis">#:emailAddress#</div>

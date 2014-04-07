@@ -73,7 +73,7 @@
 # } else if (data.associatedPerson) { #
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">
-			<img class="sw-assignment-update-img" src="#:associatedPerson.photoUrl#"/>
+			<img class="sw-assignment-update-img" src="#:associatedPerson.imageUrl#"/>
 			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
 		</div>
 		<div style="display: inline-block; max-width: 280px;">

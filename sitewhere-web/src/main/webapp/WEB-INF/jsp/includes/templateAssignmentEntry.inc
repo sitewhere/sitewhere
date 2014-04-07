@@ -98,7 +98,7 @@
 # } #
 # if (data.associatedPerson) { #
 		<div class="sw-assignment-list-entry-logowrapper"
-			style="background-image: url(#:associatedPerson.photoUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
+			style="background-image: url(#:associatedPerson.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
 		</div>
 # } else if (data.associatedHardware) { #

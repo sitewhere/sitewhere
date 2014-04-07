@@ -81,14 +81,8 @@ public class DeviceAssignmentMarshalHelper {
 					result.setAssociatedPerson((PersonAsset) asset);
 				}
 			} else {
-				if (asset instanceof HardwareAsset) {
-					result.setAssetName(((HardwareAsset) asset).getName());
-					result.setAssetImageUrl(((HardwareAsset) asset).getImageUrl());
-				}
-				if (asset instanceof PersonAsset) {
-					result.setAssetName(((PersonAsset) asset).getName());
-					result.setAssetImageUrl(((PersonAsset) asset).getPhotoUrl());
-				}
+				result.setAssetName(asset.getName());
+				result.setAssetImageUrl(asset.getImageUrl());
 			}
 		}
 		result.setSiteToken(source.getSiteToken());

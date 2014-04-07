@@ -30,9 +30,6 @@ public class PersonAsset extends Asset implements IPersonAsset {
 	/** List of roles */
 	private List<String> roles = new ArrayList<String>();
 
-	/** Primary photo URL */
-	private String photoUrl;
-
 	public PersonAsset() {
 		setType(AssetType.Person);
 	}
@@ -42,6 +39,7 @@ public class PersonAsset extends Asset implements IPersonAsset {
 	 * 
 	 * @see com.sitewhere.spi.asset.IPersonAsset#getUserName()
 	 */
+	@Override
 	public String getUserName() {
 		return userName;
 	}
@@ -55,6 +53,7 @@ public class PersonAsset extends Asset implements IPersonAsset {
 	 * 
 	 * @see com.sitewhere.spi.asset.IPersonAsset#getEmailAddress()
 	 */
+	@Override
 	public String getEmailAddress() {
 		return emailAddress;
 	}
@@ -68,24 +67,12 @@ public class PersonAsset extends Asset implements IPersonAsset {
 	 * 
 	 * @see com.sitewhere.spi.asset.IPersonAsset#getRoles()
 	 */
+	@Override
 	public List<String> getRoles() {
 		return roles;
 	}
 
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IPersonAsset#getPhotoUrl()
-	 */
-	public String getPhotoUrl() {
-		return photoUrl;
-	}
-
-	public void setPhotoUrl(String photoUrl) {
-		this.photoUrl = photoUrl;
 	}
 }
