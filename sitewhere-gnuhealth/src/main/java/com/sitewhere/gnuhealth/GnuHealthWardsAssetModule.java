@@ -26,11 +26,13 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.sitewhere.rest.model.asset.HardwareAsset;
+import com.sitewhere.gnuhealth.GnuHealthConfiguration.JsonCall;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.command.CommandResponse;
-import com.sitewhere.server.asset.scim.IScimFields;
+import com.sitewhere.server.asset.AssetMatcher;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
@@ -42,7 +44,7 @@ import com.sitewhere.spi.command.ICommandResponse;
  * 
  * @author Derek
  */
-public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
+public class GnuHealthWardsAssetModule implements IAssetModule<LocationAsset> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GnuHealthWardsAssetModule.class);
@@ -52,6 +54,10 @@ public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
 
 	/** Module name */
 	private static final String MODULE_NAME = "GNU Health Wards";
+
+	/** Default image associated with wards */
+	private static final String WARD_IMAGE_URL =
+			"https://s3.amazonaws.com/sitewhere-demo/healthcare/ward.jpg";
 
 	/** Unique module id */
 	private String moduleId = MODULE_ID;
@@ -71,6 +77,9 @@ public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
 	/** Cached asset map */
 	private Map<String, LocationAsset> assetCache = new HashMap<String, LocationAsset>();
 
+	/** Used to find search results */
+	private AssetMatcher matcher = new AssetMatcher();
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -85,7 +94,7 @@ public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
 				WebClient.create(getConfiguration().getBaseUrl(), providers).type(MediaType.APPLICATION_JSON).accept(
 						MediaType.APPLICATION_JSON);
 		getConfiguration().login(client);
-		// cacheAssetData();
+		cacheAssetData();
 	}
 
 	/*
@@ -106,35 +115,88 @@ public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
 	protected ICommandResponse cacheAssetData() throws SiteWhereException {
 		assetCache.clear();
 
-		LOGGER.info("Caching search data.");
-		int totalAssets = 0;
+		JsonNode ids = getWardRecordIds();
+		JsonNode results = getWardRecords(ids);
+
 		long startTime = System.currentTimeMillis();
-		Response response = client.get();
-		Object entity = response.getEntity();
-		try {
-			JsonNode json = mapper.readTree((InputStream) entity);
-			JsonNode resources = json.get(IScimFields.RESOURCES);
-			if (resources == null) {
-				String message = "SCIM JSON response did not contain a 'resources' section.";
-				LOGGER.info(message);
-				return new CommandResponse(CommandResult.Failed, message);
+
+		Iterator<JsonNode> it = results.elements();
+		while (it.hasNext()) {
+			JsonNode node = it.next();
+			LocationAsset asset = new LocationAsset();
+			asset.setId(node.get("id").asText());
+			asset.setName(node.get("rec_name").asText());
+			asset.setImageUrl(WARD_IMAGE_URL);
+			Iterator<String> fieldNames = node.fieldNames();
+			while (fieldNames.hasNext()) {
+				String name = fieldNames.next();
+				JsonNode value = node.get(name);
+				if ((!value.isObject()) && (!value.isNull())) {
+					asset.setProperty(name, value.asText());
+				}
 			}
-			Iterator<JsonNode> it = resources.elements();
-			while (it.hasNext()) {
-				JsonNode resource = it.next();
-				LocationAsset asset = parse(resource);
-				assetCache.put(asset.getId(), asset);
-				totalAssets++;
-			}
-		} catch (JsonParseException e) {
-			throw new SiteWhereException("Unable to parse asset response.", e);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to read asset response.", e);
+			assetCache.put(asset.getId(), asset);
 		}
+
 		long totalTime = System.currentTimeMillis() - startTime;
-		String message = "Cached " + totalAssets + " assets in " + totalTime + "ms.";
+		String message = "Cached " + assetCache.size() + " assets in " + totalTime + "ms.";
 		LOGGER.info(message);
 		return new CommandResponse(CommandResult.Successful, message);
+	}
+
+	/**
+	 * Get a list of available record ids by doing a search.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected JsonNode getWardRecordIds() throws SiteWhereException {
+		ObjectNode context = JsonNodeFactory.instance.objectNode();
+		JsonCall login =
+				new JsonCall("model.gnuhealth.hospital.ward.search", 2, new Object[] {
+						getConfiguration().getUserId(),
+						getConfiguration().getCookie(),
+						new Object[] {},
+						context });
+		Response response = client.invoke(GnuHealthConfiguration.METHOD_POST, login);
+		JsonNode json = null;
+		try {
+			json = mapper.readTree((InputStream) response.getEntity());
+			LOGGER.debug("Response from ward search was: " + json.toString());
+		} catch (JsonParseException e) {
+			throw new SiteWhereException("Unable to parse login response.", e);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to read login response.", e);
+		}
+		return json.get("result");
+	}
+
+	/**
+	 * Get the records matched in the previous search.
+	 * 
+	 * @param ids
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected JsonNode getWardRecords(JsonNode ids) throws SiteWhereException {
+		ObjectNode context = JsonNodeFactory.instance.objectNode();
+		JsonCall login =
+				new JsonCall("model.gnuhealth.hospital.ward.read", 3, new Object[] {
+						getConfiguration().getUserId(),
+						getConfiguration().getCookie(),
+						ids,
+						context });
+		Response response = client.invoke(GnuHealthConfiguration.METHOD_POST, login);
+		JsonNode json = null;
+		try {
+			json = mapper.readTree((InputStream) response.getEntity());
+			LOGGER.info("Response from ward read was: " + json.toString());
+		} catch (JsonParseException e) {
+			throw new SiteWhereException("Unable to parse login response.", e);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to read login response.", e);
+		}
+		return json.get("result");
 	}
 
 	/**
@@ -155,8 +217,8 @@ public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
 	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
 	 */
 	@Override
-	public HardwareAsset getAssetById(String id) throws SiteWhereException {
-		return null;
+	public LocationAsset getAssetById(String id) throws SiteWhereException {
+		return assetCache.get(id);
 	}
 
 	/*
@@ -165,8 +227,19 @@ public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
 	 * @see com.sitewhere.spi.asset.IAssetModule#search(java.lang.String)
 	 */
 	@Override
-	public List<HardwareAsset> search(String criteria) throws SiteWhereException {
-		return null;
+	public List<LocationAsset> search(String criteria) throws SiteWhereException {
+		criteria = criteria.toLowerCase();
+		List<LocationAsset> results = new ArrayList<LocationAsset>();
+		if (criteria.length() == 0) {
+			results.addAll(assetCache.values());
+			return results;
+		}
+		for (LocationAsset asset : assetCache.values()) {
+			if (matcher.isLocationMatch(asset, criteria)) {
+				results.add(asset);
+			}
+		}
+		return results;
 	}
 
 	/*
@@ -176,7 +249,7 @@ public class GnuHealthWardsAssetModule implements IAssetModule<HardwareAsset> {
 	 */
 	@Override
 	public ICommandResponse refresh() throws SiteWhereException {
-		return null;
+		return cacheAssetData();
 	}
 
 	/*
