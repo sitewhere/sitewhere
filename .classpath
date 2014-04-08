@@ -52,5 +52,6 @@
 	<classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.8/commons-codec-1.8.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/google/bitcoinj/0.10.3/bitcoinj-0.10.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast-client/3.0.2/hazelcast-client-3.0.2.jar" sourcepath="/HAZELCAST_HOME/hazelcast-client/src/main/java"/>
+	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.0.0/jackson-jaxrs-json-provider-2.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

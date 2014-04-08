@@ -22,6 +22,11 @@
 	<bean id="filePersonModule"
 		class="com.sitewhere.server.asset.filesystem.FileSystemPersonAssetModule"/>
 
+	<!-- Uncomment to add GNU Health asset modules -->
+	<!--  
+	<import resource="gnu-health.xml"/>
+	-->
+
 	<!-- Magento module configuration -->
 	<!-- <bean id="magentoModule" class="com.sitewhere.assetmodule.magento.MagentoAssetModule"> 
 		<property name="magentoUrl" value="http://magento1.com/magento/index.php/api/v2_soap?wsdl" 
