@@ -1,6 +1,7 @@
 package com.sitewhere.server.asset;
 
 import com.sitewhere.spi.asset.IHardwareAsset;
+import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
 
 /**
@@ -35,6 +36,20 @@ public class AssetMatcher {
 	public boolean isPersonMatch(IPersonAsset asset, String criteria) {
 		if ((contains(asset.getName(), criteria)) || (contains(asset.getEmailAddress(), criteria))
 				|| (contains(asset.getUserName(), criteria)) || (contains(asset.getId(), criteria))) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Indicates if location asset matches the given criteria.
+	 * 
+	 * @param asset
+	 * @param criteria
+	 * @return
+	 */
+	public boolean isLocationMatch(ILocationAsset asset, String criteria) {
+		if (contains(asset.getName(), criteria)) {
 			return true;
 		}
 		return false;

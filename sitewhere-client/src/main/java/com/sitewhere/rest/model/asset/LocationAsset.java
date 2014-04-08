@@ -20,39 +20,39 @@ import com.sitewhere.spi.asset.ILocationAsset;
 public class LocationAsset extends Asset implements ILocationAsset {
 
 	/** Latitude */
-	private double latitude;
+	private Double latitude;
 
 	/** Longitude */
-	private double longitude;
+	private Double longitude;
 
 	/** Elevation */
-	private double elevation;
+	private Double elevation;
 
 	public LocationAsset() {
 		setType(AssetType.Location);
 	}
 
-	public double getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(double latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public double getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(double longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
-	public double getElevation() {
+	public Double getElevation() {
 		return elevation;
 	}
 
-	public void setElevation(double elevation) {
+	public void setElevation(Double elevation) {
 		this.elevation = elevation;
 	}
 }

@@ -21,19 +21,19 @@ public interface ILocationAsset extends IAsset {
 	 * 
 	 * @return
 	 */
-	public double getLatitude();
+	public Double getLatitude();
 
 	/**
 	 * Get location longitude.
 	 * 
 	 * @return
 	 */
-	public double getLongitude();
+	public Double getLongitude();
 
 	/**
 	 * Get location elevation.
 	 * 
 	 * @return
 	 */
-	public double getElevation();
+	public Double getElevation();
 }
