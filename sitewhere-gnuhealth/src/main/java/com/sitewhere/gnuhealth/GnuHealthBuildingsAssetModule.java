@@ -1,5 +1,5 @@
 /*
- * GnuHealthWardsAssetModule.java 
+ * GnuHealthBuildingsAssetModule.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -18,20 +18,21 @@ import com.sitewhere.server.asset.AssetMatcher;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
+import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.command.ICommandResponse;
 
 /**
- * Asset module that enumerates wards from GNU Health for use as SiteWhere assets.
+ * Asset module that represents GNU Health buildings as {@link ILocationAsset}.
  * 
  * @author Derek
  */
-public class GnuHealthWardsAssetModule implements IAssetModule<LocationAsset> {
+public class GnuHealthBuildingsAssetModule implements IAssetModule<LocationAsset> {
 
 	/** Module id */
-	private static final String MODULE_ID = "gnuhealth-wards";
+	private static final String MODULE_ID = "gnuhealth-buildings";
 
 	/** Module name */
-	private static final String MODULE_NAME = "GNU Health - Wards";
+	private static final String MODULE_NAME = "GNU Health - Buildings";
 
 	/** Unique module id */
 	private String moduleId = MODULE_ID;
@@ -72,7 +73,7 @@ public class GnuHealthWardsAssetModule implements IAssetModule<LocationAsset> {
 	 */
 	@Override
 	public LocationAsset getAssetById(String id) throws SiteWhereException {
-		return getConfiguration().getGnuHealthData().getCachedWards().get(id);
+		return getConfiguration().getGnuHealthData().getCachedBuildings().get(id);
 	}
 
 	/*
@@ -84,7 +85,7 @@ public class GnuHealthWardsAssetModule implements IAssetModule<LocationAsset> {
 	public List<LocationAsset> search(String criteria) throws SiteWhereException {
 		criteria = criteria.toLowerCase();
 		List<LocationAsset> results = new ArrayList<LocationAsset>();
-		Map<String, LocationAsset> cache = getConfiguration().getGnuHealthData().getCachedWards();
+		Map<String, LocationAsset> cache = getConfiguration().getGnuHealthData().getCachedBuildings();
 		if (criteria.length() == 0) {
 			results.addAll(cache.values());
 			return results;
@@ -104,7 +105,7 @@ public class GnuHealthWardsAssetModule implements IAssetModule<LocationAsset> {
 	 */
 	@Override
 	public ICommandResponse refresh() throws SiteWhereException {
-		return getConfiguration().getGnuHealthData().refreshWards();
+		return getConfiguration().getGnuHealthData().refreshBuildings();
 	}
 
 	/*

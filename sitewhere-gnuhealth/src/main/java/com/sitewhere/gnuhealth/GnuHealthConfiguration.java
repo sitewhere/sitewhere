@@ -58,6 +58,23 @@ public class GnuHealthConfiguration {
 	/** Jackson JSON mapper */
 	private ObjectMapper mapper = new ObjectMapper();
 
+	/** Handler for accessing data */
+	private GnuHealthData gnuHealthData;
+
+	/**
+	 * Lazy load the underlying data cache.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public GnuHealthData getGnuHealthData() throws SiteWhereException {
+		if (gnuHealthData == null) {
+			gnuHealthData = new GnuHealthData(this);
+			gnuHealthData.start();
+		}
+		return gnuHealthData;
+	}
+
 	/**
 	 * Attempt login to GNU Health server.
 	 * 

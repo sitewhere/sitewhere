@@ -12,6 +12,11 @@
 		<property name="password" value="gnuadmin"/>
 	</bean>
 
+	<!-- GNU Health buildings asset module -->
+	<bean id="gnuHealthBuildingsModule" class="com.sitewhere.gnuhealth.GnuHealthBuildingsAssetModule">
+		<property name="configuration" ref="gnuHealthConfiguration"/>
+	</bean>
+
 	<!-- GNU Health wards asset module -->
 	<bean id="gnuHealthWardsModule" class="com.sitewhere.gnuhealth.GnuHealthWardsAssetModule">
 		<property name="configuration" ref="gnuHealthConfiguration"/>

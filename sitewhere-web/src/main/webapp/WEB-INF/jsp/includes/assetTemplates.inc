@@ -20,6 +20,17 @@
 	</div>
 </script>
 
+<!-- Location asset template -->
+<script type="text/x-kendo-tmpl" id="location-asset-entry">
+	<div class="asset-entry gradient-bg" id="asset-#:id#">
+		<div class="asset-entry-logowrapper">
+			<img class="asset-entry-logo" src="#:imageUrl#"/>
+		</div>
+		<div class="ellipsis"><b>#:name#</b></div>
+		<div class="ellipsis">More stuff goes here</div>
+	</div>
+</script>
+
 <style>
 	.asset-entry {
 		padding: 5px;

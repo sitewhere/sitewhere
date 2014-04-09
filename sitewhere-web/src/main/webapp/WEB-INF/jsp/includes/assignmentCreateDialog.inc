@@ -282,6 +282,8 @@
 	function getTemplateForAssetModule(module) {
 		if (module.assetType == "Person") {
 			return kendo.template($("#person-asset-entry").html());
+		} else if (module.assetType == "Location") {
+			return kendo.template($("#location-asset-entry").html());
 		}
 		return kendo.template($("#hardware-asset-entry").html());
 	}
