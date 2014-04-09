@@ -1,5 +1,5 @@
 /*
- * IDeviceNetworkCursor.java 
+ * GroupElementType.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,26 +7,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.network;
+package com.sitewhere.spi.device.group;
 
 /**
- * Provides a stateful cursor for processing entries in an {@link IDeviceNetwork}.
+ * Defines group element type.
  * 
  * @author Derek
  */
-public interface IDeviceNetworkCursor {
+public enum GroupElementType {
 
-	/**
-	 * Get unique network token.
-	 * 
-	 * @return
-	 */
-	public String getNetworkToken();
+	/** Individual device element */
+	Device,
 
-	/**
-	 * Get index of current device in list.
-	 * 
-	 * @return
-	 */
-	public long getDeviceIndex();
+	/** Group element */
+	Group;
 }

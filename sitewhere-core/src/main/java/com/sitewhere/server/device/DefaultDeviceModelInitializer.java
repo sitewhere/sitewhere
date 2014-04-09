@@ -32,8 +32,8 @@ import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceNetworkCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceNetworkElementCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
@@ -63,10 +63,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
-import com.sitewhere.spi.device.network.IDeviceNetwork;
-import com.sitewhere.spi.device.network.IDeviceNetworkElement;
-import com.sitewhere.spi.device.network.NetworkElementType;
-import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
+import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -162,8 +162,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
 			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
 
-	/** Token for default device network */
-	protected static String NETWORK_TOKEN = "396e484a-7b76-4fff-85b7-2746ea849705";
+	/** Token for default device group */
+	protected static String GROUP_TOKEN = "396e484a-7b76-4fff-85b7-2746ea849705";
 
 	/** Locations that determine zone edges */
 	protected List<Location> zoneLocations;
@@ -204,50 +204,49 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		this.deviceSpecifications = createDeviceSpecifications();
 
 		List<ISite> sites = createSites();
-		IDeviceNetwork network = createDeviceNetwork();
+		IDeviceGroup group = createDeviceGroup();
 		for (ISite site : sites) {
 			List<IDeviceAssignment> assignments = createAssignments(site);
-			List<IDeviceNetworkElementCreateRequest> requests =
-					new ArrayList<IDeviceNetworkElementCreateRequest>();
+			List<IDeviceGroupElementCreateRequest> requests =
+					new ArrayList<IDeviceGroupElementCreateRequest>();
 			for (IDeviceAssignment assignment : assignments) {
-				DeviceNetworkElementCreateRequest request = new DeviceNetworkElementCreateRequest();
-				request.setType(NetworkElementType.Device);
+				DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
+				request.setType(GroupElementType.Device);
 				request.setElementId(assignment.getDeviceHardwareId());
 				requests.add(request);
 			}
-			getDeviceManagement().addDeviceNetworkElements(network.getToken(), requests);
-			testListAndRemoveNetworkElements(network);
+			getDeviceManagement().addDeviceGroupElements(group.getToken(), requests);
+			testListAndRemoveNetworkElements(group);
 		}
 
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
 	/**
-	 * Test API calls for listing and removing network elements.
+	 * Test API calls for listing and removing group elements.
 	 * 
-	 * @param network
+	 * @param group
 	 * @throws SiteWhereException
 	 */
-	protected void testListAndRemoveNetworkElements(IDeviceNetwork network) throws SiteWhereException {
-		SearchResults<IDeviceNetworkElement> netElements =
-				getDeviceManagement().listDeviceNetworkElements(network.getToken(), new SearchCriteria(0, 10));
-		LOGGER.info("Matched " + netElements.getResults().size() + " network elements.");
+	protected void testListAndRemoveNetworkElements(IDeviceGroup group) throws SiteWhereException {
+		SearchResults<IDeviceGroupElement> groupElements =
+				getDeviceManagement().listDeviceGroupElements(group.getToken(), new SearchCriteria(0, 10));
+		LOGGER.info("Matched " + groupElements.getResults().size() + " group elements.");
 
-		List<IDeviceNetworkElementCreateRequest> delete = new ArrayList<IDeviceNetworkElementCreateRequest>();
-		for (IDeviceNetworkElement current : netElements.getResults()) {
-			DeviceNetworkElementCreateRequest delElm = new DeviceNetworkElementCreateRequest();
+		List<IDeviceGroupElementCreateRequest> delete = new ArrayList<IDeviceGroupElementCreateRequest>();
+		for (IDeviceGroupElement current : groupElements.getResults()) {
+			DeviceGroupElementCreateRequest delElm = new DeviceGroupElementCreateRequest();
 			delElm.setType(current.getType());
 			delElm.setElementId(current.getElementId());
 			delete.add(delElm);
 		}
-		List<IDeviceNetworkElement> deleted =
-				getDeviceManagement().removeDeviceNetworkElements(network.getToken(), delete);
-		LOGGER.info("Deleted " + deleted.size() + " network elements.");
+		List<IDeviceGroupElement> deleted =
+				getDeviceManagement().removeDeviceGroupElements(group.getToken(), delete);
+		LOGGER.info("Deleted " + deleted.size() + " group elements.");
 
-		netElements =
-				getDeviceManagement().listDeviceNetworkElements(network.getToken(),
-						new SearchCriteria(0, 100));
-		LOGGER.info("Remaining was " + netElements.getResults().size() + " network elements.");
+		groupElements =
+				getDeviceManagement().listDeviceGroupElements(group.getToken(), new SearchCriteria(0, 100));
+		LOGGER.info("Remaining was " + groupElements.getResults().size() + " group elements.");
 	}
 
 	/*
@@ -379,17 +378,17 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	}
 
 	/**
-	 * Create a device network.
+	 * Create a device group.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceNetwork createDeviceNetwork() throws SiteWhereException {
-		DeviceNetworkCreateRequest request = new DeviceNetworkCreateRequest();
-		request.setToken(NETWORK_TOKEN);
-		request.setName("Default device network");
-		request.setDescription("Device network that contains all devices.");
-		return getDeviceManagement().createDeviceNetwork(request);
+	public IDeviceGroup createDeviceGroup() throws SiteWhereException {
+		DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
+		request.setToken(GROUP_TOKEN);
+		request.setName("Default device group");
+		request.setDescription("Device group that contains all devices.");
+		return getDeviceManagement().createDeviceGroup(request);
 	}
 
 	/**

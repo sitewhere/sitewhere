@@ -30,22 +30,22 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.hbase.common.Pager;
-import com.sitewhere.rest.model.device.network.DeviceNetworkElement;
+import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.network.IDeviceNetworkElement;
-import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
- * HBase specifics for dealing with SiteWhere device network elements.
+ * HBase specifics for dealing with SiteWhere device group elements.
  * 
  * @author Derek
  */
-public class HBaseDeviceNetworkElement {
+public class HBaseDeviceGroupElement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(HBaseDeviceNetworkElement.class);
+	private static Logger LOGGER = Logger.getLogger(HBaseDeviceGroupElement.class);
 
 	/** Length of element index info (subset of 8 byte long) */
 	public static final int INDEX_LENGTH = 4;
@@ -54,43 +54,42 @@ public class HBaseDeviceNetworkElement {
 	public static final byte[] ELEMENT_IDENTIFIER = Bytes.toBytes("ident");
 
 	/**
-	 * Create a group of network elements.
+	 * Create a group of group elements.
 	 * 
 	 * @param hbase
-	 * @param networkToken
+	 * @param groupToken
 	 * @param requests
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDeviceNetworkElement> createDeviceNetworkElements(ISiteWhereHBaseClient hbase,
-			String networkToken, List<IDeviceNetworkElementCreateRequest> requests) throws SiteWhereException {
-		byte[] networkKey = HBaseDeviceNetwork.KEY_BUILDER.buildPrimaryKey(networkToken);
-		List<IDeviceNetworkElement> results = new ArrayList<IDeviceNetworkElement>();
-		for (IDeviceNetworkElementCreateRequest request : requests) {
-			Long eid = HBaseDeviceNetwork.allocateNextElementId(hbase, networkKey);
-			results.add(HBaseDeviceNetworkElement.createDeviceNetworkElement(hbase, networkToken, eid,
-					request));
+	public static List<IDeviceGroupElement> createDeviceGroupElements(ISiteWhereHBaseClient hbase,
+			String groupToken, List<IDeviceGroupElementCreateRequest> requests) throws SiteWhereException {
+		byte[] groupKey = HBaseDeviceGroup.KEY_BUILDER.buildPrimaryKey(groupToken);
+		List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
+		for (IDeviceGroupElementCreateRequest request : requests) {
+			Long eid = HBaseDeviceGroup.allocateNextElementId(hbase, groupKey);
+			results.add(HBaseDeviceGroupElement.createDeviceGroupElement(hbase, groupToken, eid, request));
 		}
 		return results;
 	}
 
 	/**
-	 * Create a new device network element.
+	 * Create a new device group element.
 	 * 
 	 * @param hbase
-	 * @param networkToken
+	 * @param groupToken
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceNetworkElement createDeviceNetworkElement(ISiteWhereHBaseClient hbase,
-			String networkToken, Long index, IDeviceNetworkElementCreateRequest request)
+	public static IDeviceGroupElement createDeviceGroupElement(ISiteWhereHBaseClient hbase,
+			String groupToken, Long index, IDeviceGroupElementCreateRequest request)
 			throws SiteWhereException {
-		byte[] elementKey = getElementRowKey(networkToken, index);
+		byte[] elementKey = getElementRowKey(groupToken, index);
 
 		// Use common processing logic so all backend implementations work the same.
-		DeviceNetworkElement element =
-				SiteWherePersistence.deviceNetworkElementCreateLogic(request, networkToken, index);
+		DeviceGroupElement element =
+				SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
 
 		// Serialize as JSON.
 		byte[] json = MarshalUtils.marshalJson(element);
@@ -103,7 +102,7 @@ public class HBaseDeviceNetworkElement {
 			put.add(ISiteWhereHBase.FAMILY_ID, ELEMENT_IDENTIFIER, getCombinedIdentifier(request));
 			devices.put(put);
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create zone.", e);
+			throw new SiteWhereException("Unable to create device group element.", e);
 		} finally {
 			HBaseUtils.closeCleanly(devices);
 		}
@@ -112,44 +111,44 @@ public class HBaseDeviceNetworkElement {
 	}
 
 	/**
-	 * Remove the given device network elements.
+	 * Remove the given device group elements.
 	 * 
 	 * @param hbase
-	 * @param networkToken
+	 * @param groupToken
 	 * @param elements
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDeviceNetworkElement> removeDeviceNetworkElements(ISiteWhereHBaseClient hbase,
-			String networkToken, List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException {
+	public static List<IDeviceGroupElement> removeDeviceGroupElements(ISiteWhereHBaseClient hbase,
+			String groupToken, List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
 		List<byte[]> combinedIds = new ArrayList<byte[]>();
-		for (IDeviceNetworkElementCreateRequest request : elements) {
+		for (IDeviceGroupElementCreateRequest request : elements) {
 			combinedIds.add(getCombinedIdentifier(request));
 		}
-		return deleteElements(hbase, networkToken, combinedIds);
+		return deleteElements(hbase, groupToken, combinedIds);
 	}
 
 	/**
-	 * Handles logic for finding and deleting device network elements.
+	 * Handles logic for finding and deleting device group elements.
 	 * 
 	 * @param hbase
-	 * @param networkToken
+	 * @param groupToken
 	 * @param combinedIds
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static List<IDeviceNetworkElement> deleteElements(ISiteWhereHBaseClient hbase,
-			String networkToken, List<byte[]> combinedIds) throws SiteWhereException {
+	protected static List<IDeviceGroupElement> deleteElements(ISiteWhereHBaseClient hbase, String groupToken,
+			List<byte[]> combinedIds) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
 			table = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			byte[] primary =
-					HBaseDeviceNetwork.KEY_BUILDER.buildSubkey(networkToken,
-							DeviceNetworkRecordType.DeviceNetworkElement.getType());
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+							DeviceGroupRecordType.DeviceGroupElement.getType());
 			byte[] after =
-					HBaseDeviceNetwork.KEY_BUILDER.buildSubkey(networkToken,
-							(byte) (DeviceNetworkRecordType.DeviceNetworkElement.getType() + 1));
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
 			scan.setStopRow(after);
@@ -178,19 +177,19 @@ public class HBaseDeviceNetworkElement {
 					matches.add(new DeleteRecord(row, json));
 				}
 			}
-			List<IDeviceNetworkElement> results = new ArrayList<IDeviceNetworkElement>();
+			List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 			for (DeleteRecord dr : matches) {
 				try {
 					Delete delete = new Delete(dr.getRowkey());
 					table.delete(delete);
-					results.add(MarshalUtils.unmarshalJson(dr.getJson(), DeviceNetworkElement.class));
+					results.add(MarshalUtils.unmarshalJson(dr.getJson(), DeviceGroupElement.class));
 				} catch (IOException e) {
-					LOGGER.warn("Network element delete failed for key: " + dr.getRowkey());
+					LOGGER.warn("Group element delete failed for key: " + dr.getRowkey());
 				}
 			}
 			return results;
 		} catch (IOException e) {
-			throw new SiteWhereException("Error scanning device network rows.", e);
+			throw new SiteWhereException("Error scanning device group element rows.", e);
 		} finally {
 			if (scanner != null) {
 				scanner.close();
@@ -224,28 +223,28 @@ public class HBaseDeviceNetworkElement {
 	}
 
 	/**
-	 * Get paged results for listing device network elements. TODO: This is not optimized!
+	 * Get paged results for listing device group elements. TODO: This is not optimized!
 	 * Getting the correct record count requires a full scan of all elements in the
-	 * network.
+	 * group.
 	 * 
 	 * @param hbase
-	 * @param networkToken
+	 * @param groupToken
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceNetworkElement> listDeviceNetworkElements(ISiteWhereHBaseClient hbase,
-			String networkToken, ISearchCriteria criteria) throws SiteWhereException {
+	public static SearchResults<IDeviceGroupElement> listDeviceGroupElements(ISiteWhereHBaseClient hbase,
+			String groupToken, ISearchCriteria criteria) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
 			table = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			byte[] primary =
-					HBaseDeviceNetwork.KEY_BUILDER.buildSubkey(networkToken,
-							DeviceNetworkRecordType.DeviceNetworkElement.getType());
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+							DeviceGroupRecordType.DeviceGroupElement.getType());
 			byte[] after =
-					HBaseDeviceNetwork.KEY_BUILDER.buildSubkey(networkToken,
-							(byte) (DeviceNetworkRecordType.DeviceNetworkElement.getType() + 1));
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
 			scan.setStopRow(after);
@@ -260,13 +259,13 @@ public class HBaseDeviceNetworkElement {
 					}
 				}
 			}
-			List<IDeviceNetworkElement> results = new ArrayList<IDeviceNetworkElement>();
+			List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 			for (byte[] json : pager.getResults()) {
-				results.add(MarshalUtils.unmarshalJson(json, DeviceNetworkElement.class));
+				results.add(MarshalUtils.unmarshalJson(json, DeviceGroupElement.class));
 			}
-			return new SearchResults<IDeviceNetworkElement>(results);
+			return new SearchResults<IDeviceGroupElement>(results);
 		} catch (IOException e) {
-			throw new SiteWhereException("Error scanning device network rows.", e);
+			throw new SiteWhereException("Error scanning device group element rows.", e);
 		} finally {
 			if (scanner != null) {
 				scanner.close();
@@ -278,15 +277,15 @@ public class HBaseDeviceNetworkElement {
 	/**
 	 * Get key for a network element.
 	 * 
-	 * @param networkToken
+	 * @param groupToken
 	 * @param elementId
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static byte[] getElementRowKey(String networkToken, Long elementId) throws SiteWhereException {
+	public static byte[] getElementRowKey(String groupToken, Long elementId) throws SiteWhereException {
 		byte[] baserow =
-				HBaseDeviceNetwork.KEY_BUILDER.buildSubkey(networkToken,
-						DeviceNetworkRecordType.DeviceNetworkElement.getType());
+				HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+						DeviceGroupRecordType.DeviceGroupElement.getType());
 		byte[] eidBytes = getTruncatedIdentifier(elementId);
 		ByteBuffer buffer = ByteBuffer.allocate(baserow.length + eidBytes.length);
 		buffer.put(baserow);
@@ -314,7 +313,7 @@ public class HBaseDeviceNetworkElement {
 	 * @param request
 	 * @return
 	 */
-	public static byte[] getCombinedIdentifier(IDeviceNetworkElementCreateRequest request) {
+	public static byte[] getCombinedIdentifier(IDeviceGroupElementCreateRequest request) {
 		byte[] id = Bytes.toBytes(request.getElementId());
 		ByteBuffer buffer = ByteBuffer.allocate(1 + id.length);
 		switch (request.getType()) {
@@ -322,12 +321,12 @@ public class HBaseDeviceNetworkElement {
 			buffer.put((byte) 0x00);
 			break;
 		}
-		case Network: {
+		case Group: {
 			buffer.put((byte) 0x01);
 			break;
 		}
 		default: {
-			throw new RuntimeException("Unknown device network element type: " + request.getType().name());
+			throw new RuntimeException("Unknown device group element type: " + request.getType().name());
 		}
 		}
 		buffer.put(id);

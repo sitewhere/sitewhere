@@ -1,5 +1,5 @@
 /*
- * IDeviceNetworkCreateRequest.java 
+ * IDeviceGroup.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,33 +7,33 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.request;
+package com.sitewhere.spi.device.group;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
- * Interface for arguments needed to create a device network.
+ * Interface for a group of related devices.
  * 
  * @author Derek
  */
-public interface IDeviceNetworkCreateRequest extends IMetadataProvider {
+public interface IDeviceGroup extends IMetadataProviderEntity {
 
 	/**
-	 * Get the unique token.
+	 * Get the unique group token.
 	 * 
 	 * @return
 	 */
 	public String getToken();
 
 	/**
-	 * Get the network name.
+	 * Get the group name.
 	 * 
 	 * @return
 	 */
 	public String getName();
 
 	/**
-	 * Get the network description.
+	 * Get the group description.
 	 * 
 	 * @return
 	 */

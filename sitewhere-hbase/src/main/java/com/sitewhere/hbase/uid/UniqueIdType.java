@@ -37,8 +37,8 @@ public enum UniqueIdType {
 	/** Key and value for specification UUIDs */
 	CommandKey((byte) 0x0b), CommandValue((byte) 0x0c),
 
-	/** Key and value for network UUIDs */
-	NetworkKey((byte) 0x0d), NetworkValue((byte) 0x0e);
+	/** Key and value for device group UUIDs */
+	DeviceGroupKey((byte) 0x0d), DeviceGroupValue((byte) 0x0e);
 
 	/** Type indicator */
 	private byte indicator;

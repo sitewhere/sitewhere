@@ -38,8 +38,8 @@ import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
-import com.sitewhere.rest.model.device.network.DeviceNetwork;
-import com.sitewhere.rest.model.device.network.DeviceNetworkElement;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
+import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
@@ -72,8 +72,8 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
@@ -400,7 +400,7 @@ public class SiteWherePersistence {
 			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
 		}
 		newAssignment.setAssignmentType(source.getAssignmentType());
-		
+
 		if (source.getAssignmentType() == DeviceAssignmentType.Associated) {
 			if (source.getAssetModuleId() == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
@@ -831,33 +831,33 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common logic for creating a device network based on an incoming request.
+	 * Common logic for creating a device group based on an incoming request.
 	 * 
 	 * @param source
 	 * @param uuid
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceNetwork deviceNetworkCreateLogic(IDeviceNetworkCreateRequest source, String uuid)
+	public static DeviceGroup deviceGroupCreateLogic(IDeviceGroupCreateRequest source, String uuid)
 			throws SiteWhereException {
-		DeviceNetwork network = new DeviceNetwork();
-		network.setToken(uuid);
-		network.setName(source.getName());
-		network.setDescription(source.getDescription());
+		DeviceGroup group = new DeviceGroup();
+		group.setToken(uuid);
+		group.setName(source.getName());
+		group.setDescription(source.getDescription());
 
-		SiteWherePersistence.initializeEntityMetadata(network);
-		MetadataProvider.copy(source, network);
-		return network;
+		SiteWherePersistence.initializeEntityMetadata(group);
+		MetadataProvider.copy(source, group);
+		return group;
 	}
 
 	/**
-	 * Common logic for updating an existing device network.
+	 * Common logic for updating an existing device group.
 	 * 
 	 * @param source
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void deviceNetworkUpdateLogic(IDeviceNetworkCreateRequest source, DeviceNetwork target)
+	public static void deviceGroupUpdateLogic(IDeviceGroupCreateRequest source, DeviceGroup target)
 			throws SiteWhereException {
 		target.setName(source.getName());
 		target.setDescription(source.getDescription());
@@ -867,19 +867,18 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common logic for creating a new device network element.
+	 * Common logic for creating a new device group element.
 	 * 
 	 * @param source
-	 * @param networkToken
+	 * @param groupToken
 	 * @param index
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceNetworkElement deviceNetworkElementCreateLogic(
-			IDeviceNetworkElementCreateRequest source, String networkToken, long index)
-			throws SiteWhereException {
-		DeviceNetworkElement element = new DeviceNetworkElement();
-		element.setNetworkToken(networkToken);
+	public static DeviceGroupElement deviceGroupElementCreateLogic(IDeviceGroupElementCreateRequest source,
+			String groupToken, long index) throws SiteWhereException {
+		DeviceGroupElement element = new DeviceGroupElement();
+		element.setGroupToken(groupToken);
 		element.setIndex(index);
 		element.setType(source.getType());
 		element.setElementId(source.getElementId());

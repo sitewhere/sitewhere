@@ -1,5 +1,5 @@
 /*
- * DeviceNetworkElementCreateRequest.java 
+ * DeviceGroupElementCreateRequest.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,27 +9,27 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import com.sitewhere.spi.device.network.NetworkElementType;
-import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
+import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 
 /**
- * Holds fields needed to create a new device network element.
+ * Holds fields needed to create a new device group element.
  * 
  * @author Derek
  */
-public class DeviceNetworkElementCreateRequest implements IDeviceNetworkElementCreateRequest {
+public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreateRequest {
 
 	/** Element type */
-	private NetworkElementType type;
+	private GroupElementType type;
 
 	/** Element id */
 	private String elementId;
 
-	public NetworkElementType getType() {
+	public GroupElementType getType() {
 		return type;
 	}
 
-	public void setType(NetworkElementType type) {
+	public void setType(GroupElementType type) {
 		this.type = type;
 	}
 

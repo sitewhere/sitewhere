@@ -47,13 +47,13 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.network.IDeviceNetwork;
-import com.sitewhere.spi.device.network.IDeviceNetworkElement;
+import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
@@ -846,98 +846,96 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceNetwork(com.sitewhere.spi
-	 * .device.request.IDeviceNetworkCreateRequest)
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceGroup(com.sitewhere.spi.
+	 * device.request.IDeviceGroupCreateRequest)
 	 */
 	@Override
-	public IDeviceNetwork createDeviceNetwork(IDeviceNetworkCreateRequest request) throws SiteWhereException {
-		return HBaseDeviceNetwork.createDeviceNetwork(client, request);
+	public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
+		return HBaseDeviceGroup.createDeviceGroup(client, request);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#updateDeviceNetwork(java.lang.String,
-	 * com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#updateDeviceGroup(java.lang.String,
+	 * com.sitewhere.spi.device.request.IDeviceGroupCreateRequest)
 	 */
 	@Override
-	public IDeviceNetwork updateDeviceNetwork(String token, IDeviceNetworkCreateRequest request)
+	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request)
 			throws SiteWhereException {
-		return HBaseDeviceNetwork.updateDeviceNetwork(client, token, request);
+		return HBaseDeviceGroup.updateDeviceGroup(client, token, request);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceNetwork(java.lang.String)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceGroup(java.lang.String)
 	 */
 	@Override
-	public IDeviceNetwork getDeviceNetwork(String token) throws SiteWhereException {
-		return HBaseDeviceNetwork.getDeviceNetworkByToken(client, token);
+	public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException {
+		return HBaseDeviceGroup.getDeviceGroupByToken(client, token);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceNetworks(boolean,
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroups(boolean,
 	 * com.sitewhere.spi.search.ISearchCriteria)
 	 */
 	@Override
-	public ISearchResults<IDeviceNetwork> listDeviceNetworks(boolean includeDeleted, ISearchCriteria criteria)
+	public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
 			throws SiteWhereException {
-		return HBaseDeviceNetwork.listDeviceNetworks(client, includeDeleted, criteria);
+		return HBaseDeviceGroup.listDeviceGroups(client, includeDeleted, criteria);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceNetwork(java.lang.String,
+	 * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.lang.String,
 	 * boolean)
 	 */
 	@Override
-	public IDeviceNetwork deleteDeviceNetwork(String token, boolean force) throws SiteWhereException {
-		return HBaseDeviceNetwork.deleteDeviceNetwork(client, token, force);
+	public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
+		return HBaseDeviceGroup.deleteDeviceGroup(client, token, force);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceNetworkElements(java.lang.String
-	 * , java.util.List)
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceGroupElements(java.lang.String,
+	 * java.util.List)
 	 */
 	@Override
-	public List<IDeviceNetworkElement> addDeviceNetworkElements(String networkToken,
-			List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException {
-		return HBaseDeviceNetworkElement.createDeviceNetworkElements(client, networkToken, elements);
+	public List<IDeviceGroupElement> addDeviceGroupElements(String networkToken,
+			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+		return HBaseDeviceGroupElement.createDeviceGroupElements(client, networkToken, elements);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#removeDeviceNetworkElements(java.lang
-	 * .String, java.util.List)
+	 * com.sitewhere.spi.device.IDeviceManagement#removeDeviceGroupElements(java.lang.
+	 * String, java.util.List)
 	 */
 	@Override
-	public List<IDeviceNetworkElement> removeDeviceNetworkElements(String networkToken,
-			List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException {
-		return HBaseDeviceNetworkElement.removeDeviceNetworkElements(client, networkToken, elements);
+	public List<IDeviceGroupElement> removeDeviceGroupElements(String networkToken,
+			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+		return HBaseDeviceGroupElement.removeDeviceGroupElements(client, networkToken, elements);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceNetworkElements(java.lang.
-	 * String, com.sitewhere.spi.search.ISearchCriteria)
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupElements(java.lang.String
+	 * , com.sitewhere.spi.search.ISearchCriteria)
 	 */
 	@Override
-	public SearchResults<IDeviceNetworkElement> listDeviceNetworkElements(String networkToken,
+	public SearchResults<IDeviceGroupElement> listDeviceGroupElements(String networkToken,
 			ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceNetworkElement.listDeviceNetworkElements(client, networkToken, criteria);
+		return HBaseDeviceGroupElement.listDeviceGroupElements(client, networkToken, criteria);
 	}
 
 	/**

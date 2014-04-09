@@ -12,19 +12,19 @@ package com.sitewhere.mongodb.device;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.rest.model.device.network.DeviceNetworkElement;
-import com.sitewhere.spi.device.network.IDeviceNetworkElement;
-import com.sitewhere.spi.device.network.NetworkElementType;
+import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
 
 /**
- * Used to load or save device network data to MongoDB.
+ * Used to load or save device group element data to MongoDB.
  * 
  * @author Derek
  */
-public class MongoDeviceNetworkElement implements MongoConverter<IDeviceNetworkElement> {
+public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupElement> {
 
-	/** Property for element network token */
-	public static final String PROP_NETWORK_TOKEN = "networkToken";
+	/** Property for element group token */
+	public static final String PROP_GROUP_TOKEN = "groupToken";
 
 	/** Property for element type */
 	public static final String PROP_TYPE = "type";
@@ -41,8 +41,8 @@ public class MongoDeviceNetworkElement implements MongoConverter<IDeviceNetworkE
 	 * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
 	 */
 	@Override
-	public BasicDBObject convert(IDeviceNetworkElement source) {
-		return MongoDeviceNetworkElement.toDBObject(source);
+	public BasicDBObject convert(IDeviceGroupElement source) {
+		return MongoDeviceGroupElement.toDBObject(source);
 	}
 
 	/*
@@ -51,8 +51,8 @@ public class MongoDeviceNetworkElement implements MongoConverter<IDeviceNetworkE
 	 * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
 	 */
 	@Override
-	public IDeviceNetworkElement convert(DBObject source) {
-		return MongoDeviceNetworkElement.fromDBObject(source);
+	public IDeviceGroupElement convert(DBObject source) {
+		return MongoDeviceGroupElement.fromDBObject(source);
 	}
 
 	/**
@@ -61,8 +61,8 @@ public class MongoDeviceNetworkElement implements MongoConverter<IDeviceNetworkE
 	 * @param source
 	 * @param target
 	 */
-	public static void toDBObject(IDeviceNetworkElement source, BasicDBObject target) {
-		target.append(PROP_NETWORK_TOKEN, source.getNetworkToken());
+	public static void toDBObject(IDeviceGroupElement source, BasicDBObject target) {
+		target.append(PROP_GROUP_TOKEN, source.getGroupToken());
 		target.append(PROP_INDEX, source.getIndex());
 		target.append(PROP_TYPE, source.getType().name());
 		target.append(PROP_ELEMENT_ID, source.getElementId());
@@ -74,17 +74,17 @@ public class MongoDeviceNetworkElement implements MongoConverter<IDeviceNetworkE
 	 * @param source
 	 * @param target
 	 */
-	public static void fromDBObject(DBObject source, DeviceNetworkElement target) {
-		String network = (String) source.get(PROP_NETWORK_TOKEN);
+	public static void fromDBObject(DBObject source, DeviceGroupElement target) {
+		String group = (String) source.get(PROP_GROUP_TOKEN);
 		Long index = (Long) source.get(PROP_INDEX);
 		String type = (String) source.get(PROP_TYPE);
 		String elementId = (String) source.get(PROP_ELEMENT_ID);
 
 		if (type == null) {
-			throw new RuntimeException("Network element type not stored.");
+			throw new RuntimeException("Group element type not stored.");
 		}
-		target.setNetworkToken(network);
-		target.setType(NetworkElementType.valueOf(type));
+		target.setGroupToken(group);
+		target.setType(GroupElementType.valueOf(type));
 		target.setElementId(elementId);
 		target.setIndex(index);
 	}
@@ -95,9 +95,9 @@ public class MongoDeviceNetworkElement implements MongoConverter<IDeviceNetworkE
 	 * @param source
 	 * @return
 	 */
-	public static BasicDBObject toDBObject(IDeviceNetworkElement source) {
+	public static BasicDBObject toDBObject(IDeviceGroupElement source) {
 		BasicDBObject result = new BasicDBObject();
-		MongoDeviceNetworkElement.toDBObject(source, result);
+		MongoDeviceGroupElement.toDBObject(source, result);
 		return result;
 	}
 
@@ -107,9 +107,9 @@ public class MongoDeviceNetworkElement implements MongoConverter<IDeviceNetworkE
 	 * @param source
 	 * @return
 	 */
-	public static DeviceNetworkElement fromDBObject(DBObject source) {
-		DeviceNetworkElement result = new DeviceNetworkElement();
-		MongoDeviceNetworkElement.fromDBObject(source, result);
+	public static DeviceGroupElement fromDBObject(DBObject source) {
+		DeviceGroupElement result = new DeviceGroupElement();
+		MongoDeviceGroupElement.fromDBObject(source, result);
 		return result;
 	}
 }

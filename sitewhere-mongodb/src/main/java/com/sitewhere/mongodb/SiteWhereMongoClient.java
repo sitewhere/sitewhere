@@ -73,12 +73,12 @@ public class SiteWhereMongoClient implements InitializingBean {
 	/** Injected name used for zones collection */
 	private String zonesCollectionName = IMongoCollectionNames.DEFAULT_ZONES_COLLECTION_NAME;
 
-	/** Injected name used for networks collection */
-	private String networksCollectionName = IMongoCollectionNames.DEFAULT_DEVICE_NETWORKS_COLLECTION_NAME;
+	/** Injected name used for device groups collection */
+	private String deviceGroupsCollectionName = IMongoCollectionNames.DEFAULT_DEVICE_GROUPS_COLLECTION_NAME;
 
-	/** Injected name used for network elements collection */
-	private String networkElementsCollectionName =
-			IMongoCollectionNames.DEFAULT_DEVICE_NETWORK_ELEMENTS_COLLECTION_NAME;
+	/** Injected name used for group elements collection */
+	private String groupElementsCollectionName =
+			IMongoCollectionNames.DEFAULT_DEVICE_GROUP_ELEMENTS_COLLECTION_NAME;
 
 	/** Injected name used for measurements collection */
 	private String measurementsCollectionName = IMongoCollectionNames.DEFAULT_MEASUREMENTS_COLLECTION_NAME;
@@ -126,11 +126,11 @@ public class SiteWhereMongoClient implements InitializingBean {
 		messages.add("Device specifications collection name: " + getDeviceSpecificationsCollectionName());
 		messages.add("Device commands collection name: " + getDeviceCommandsCollectionName());
 		messages.add("Devices collection name: " + getDevicesCollectionName());
+		messages.add("Device groups collection name: " + getDeviceGroupsCollectionName());
+		messages.add("Group elements collection name: " + getGroupElementsCollectionName());
 		messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
 		messages.add("Sites collection name: " + getSitesCollectionName());
 		messages.add("Zones collection name: " + getZonesCollectionName());
-		messages.add("Networks collection name: " + getNetworksCollectionName());
-		messages.add("Network elements collection name: " + getNetworkElementsCollectionName());
 		messages.add("");
 		messages.add("-------------------");
 		messages.add("-- Device Events --");
@@ -189,12 +189,12 @@ public class SiteWhereMongoClient implements InitializingBean {
 		return getSiteWhereDatabase().getCollection(getZonesCollectionName());
 	}
 
-	public DBCollection getNetworksCollection() {
-		return getSiteWhereDatabase().getCollection(getNetworksCollectionName());
+	public DBCollection getDeviceGroupsCollection() {
+		return getSiteWhereDatabase().getCollection(getDeviceGroupsCollectionName());
 	}
 
-	public DBCollection getNetworkElementsCollection() {
-		return getSiteWhereDatabase().getCollection(getNetworkElementsCollectionName());
+	public DBCollection getGroupElementsCollection() {
+		return getSiteWhereDatabase().getCollection(getGroupElementsCollectionName());
 	}
 
 	public DBCollection getMeasurementsCollection() {
@@ -277,6 +277,22 @@ public class SiteWhereMongoClient implements InitializingBean {
 		this.devicesCollectionName = devicesCollectionName;
 	}
 
+	public String getDeviceGroupsCollectionName() {
+		return deviceGroupsCollectionName;
+	}
+
+	public void setDeviceGroupsCollectionName(String deviceGroupsCollectionName) {
+		this.deviceGroupsCollectionName = deviceGroupsCollectionName;
+	}
+
+	public String getGroupElementsCollectionName() {
+		return groupElementsCollectionName;
+	}
+
+	public void setGroupElementsCollectionName(String groupElementsCollectionName) {
+		this.groupElementsCollectionName = groupElementsCollectionName;
+	}
+
 	public String getDeviceAssignmentsCollectionName() {
 		return deviceAssignmentsCollectionName;
 	}
@@ -295,22 +311,6 @@ public class SiteWhereMongoClient implements InitializingBean {
 
 	public String getZonesCollectionName() {
 		return zonesCollectionName;
-	}
-
-	public String getNetworksCollectionName() {
-		return networksCollectionName;
-	}
-
-	public void setNetworksCollectionName(String networksCollectionName) {
-		this.networksCollectionName = networksCollectionName;
-	}
-
-	public String getNetworkElementsCollectionName() {
-		return networkElementsCollectionName;
-	}
-
-	public void setNetworkElementsCollectionName(String networkElementsCollectionName) {
-		this.networkElementsCollectionName = networkElementsCollectionName;
 	}
 
 	public void setZonesCollectionName(String zonesCollectionName) {

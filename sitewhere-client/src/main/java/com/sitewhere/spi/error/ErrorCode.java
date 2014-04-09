@@ -76,8 +76,8 @@ public enum ErrorCode {
 	/** Invalid device event id */
 	InvalidDeviceEventId(523, "Device event not found for id."),
 
-	/** Invalid zone token */
-	InvalidDeviceNetworkToken(525, "Device network not found."),
+	/** Invalid device group token */
+	InvalidDeviceGroupToken(525, "Device group not found."),
 
 	/******************
 	 * DEVICE COMMAND *

@@ -15,15 +15,15 @@ import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
-import com.sitewhere.rest.model.device.network.DeviceNetwork;
-import com.sitewhere.spi.device.network.IDeviceNetwork;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
- * Used to load or save device network data to MongoDB.
+ * Used to load or save device group data to MongoDB.
  * 
  * @author dadams
  */
-public class MongoDeviceNetwork implements MongoConverter<IDeviceNetwork> {
+public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 
 	/** Property for unique token */
 	public static final String PROP_TOKEN = "token";
@@ -43,8 +43,8 @@ public class MongoDeviceNetwork implements MongoConverter<IDeviceNetwork> {
 	 * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
 	 */
 	@Override
-	public BasicDBObject convert(IDeviceNetwork source) {
-		return MongoDeviceNetwork.toDBObject(source);
+	public BasicDBObject convert(IDeviceGroup source) {
+		return MongoDeviceGroup.toDBObject(source);
 	}
 
 	/*
@@ -53,8 +53,8 @@ public class MongoDeviceNetwork implements MongoConverter<IDeviceNetwork> {
 	 * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
 	 */
 	@Override
-	public IDeviceNetwork convert(DBObject source) {
-		return MongoDeviceNetwork.fromDBObject(source);
+	public IDeviceGroup convert(DBObject source) {
+		return MongoDeviceGroup.fromDBObject(source);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class MongoDeviceNetwork implements MongoConverter<IDeviceNetwork> {
 	 * @param source
 	 * @param target
 	 */
-	public static void toDBObject(IDeviceNetwork source, BasicDBObject target) {
+	public static void toDBObject(IDeviceGroup source, BasicDBObject target) {
 		target.append(PROP_TOKEN, source.getToken());
 		target.append(PROP_NAME, source.getName());
 		target.append(PROP_DESCRIPTION, source.getDescription());
@@ -77,7 +77,7 @@ public class MongoDeviceNetwork implements MongoConverter<IDeviceNetwork> {
 	 * @param source
 	 * @param target
 	 */
-	public static void fromDBObject(DBObject source, DeviceNetwork target) {
+	public static void fromDBObject(DBObject source, DeviceGroup target) {
 		String token = (String) source.get(PROP_TOKEN);
 		String name = (String) source.get(PROP_NAME);
 		String desc = (String) source.get(PROP_DESCRIPTION);
@@ -95,9 +95,9 @@ public class MongoDeviceNetwork implements MongoConverter<IDeviceNetwork> {
 	 * @param source
 	 * @return
 	 */
-	public static BasicDBObject toDBObject(IDeviceNetwork source) {
+	public static BasicDBObject toDBObject(IDeviceGroup source) {
 		BasicDBObject result = new BasicDBObject();
-		MongoDeviceNetwork.toDBObject(source, result);
+		MongoDeviceGroup.toDBObject(source, result);
 		return result;
 	}
 
@@ -107,26 +107,26 @@ public class MongoDeviceNetwork implements MongoConverter<IDeviceNetwork> {
 	 * @param source
 	 * @return
 	 */
-	public static DeviceNetwork fromDBObject(DBObject source) {
-		DeviceNetwork result = new DeviceNetwork();
-		MongoDeviceNetwork.fromDBObject(source, result);
+	public static DeviceGroup fromDBObject(DBObject source) {
+		DeviceGroup result = new DeviceGroup();
+		MongoDeviceGroup.fromDBObject(source, result);
 		return result;
 	}
 
 	/**
-	 * Get the next available index for the network.
+	 * Get the next available index for the group.
 	 * 
 	 * @param mongo
 	 * @param token
 	 * @return
 	 */
-	public static long getNextNetworkIndex(SiteWhereMongoClient mongo, String token) {
-		BasicDBObject query = new BasicDBObject(MongoDeviceNetwork.PROP_TOKEN, token);
-		BasicDBObject update = new BasicDBObject(MongoDeviceNetwork.PROP_LAST_INDEX, (long) 1);
+	public static long getNextGroupIndex(SiteWhereMongoClient mongo, String token) {
+		BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
+		BasicDBObject update = new BasicDBObject(MongoDeviceGroup.PROP_LAST_INDEX, (long) 1);
 		BasicDBObject increment = new BasicDBObject("$inc", update);
 		DBObject updated =
-				mongo.getNetworksCollection().findAndModify(query, new BasicDBObject(), new BasicDBObject(),
-						false, increment, true, true);
+				mongo.getDeviceGroupsCollection().findAndModify(query, new BasicDBObject(),
+						new BasicDBObject(), false, increment, true, true);
 		return (Long) updated.get(PROP_LAST_INDEX);
 	}
 }

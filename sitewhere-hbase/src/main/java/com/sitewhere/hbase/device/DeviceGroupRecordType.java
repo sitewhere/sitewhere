@@ -10,17 +10,17 @@
 package com.sitewhere.hbase.device;
 
 /**
- * Binary type indicator flag for device nework records.
+ * Binary type indicator flag for device group records.
  * 
  * @author Derek
  */
-public enum DeviceNetworkRecordType {
+public enum DeviceGroupRecordType {
 
-	/** Device network record */
-	DeviceNetwork((byte) 0x00),
+	/** Device group record */
+	DeviceGroup((byte) 0x00),
 
-	/** End marker for scan ranges */
-	DeviceNetworkElement((byte) 0x01);
+	/** Device group element record */
+	DeviceGroupElement((byte) 0x01);
 
 	/** Type indicator */
 	private byte type;
@@ -30,7 +30,7 @@ public enum DeviceNetworkRecordType {
 	 * 
 	 * @param value
 	 */
-	private DeviceNetworkRecordType(byte type) {
+	private DeviceGroupRecordType(byte type) {
 		this.type = type;
 	}
 

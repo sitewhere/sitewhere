@@ -1,5 +1,5 @@
 /*
- * DeviceNetwork.java 
+ * DeviceGroup.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,31 +7,31 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device.network;
+package com.sitewhere.rest.model.device.group;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.spi.device.network.IDeviceNetwork;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
- * Model object for a device network.
+ * Model object for a device group.
  * 
  * @author Derek
  */
-public class DeviceNetwork extends MetadataProviderEntity implements IDeviceNetwork {
+public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup {
 
 	/** Unique token */
 	private String token;
 
-	/** Network name */
+	/** Group name */
 	private String name;
 
-	/** Network description */
+	/** Group description */
 	private String description;
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.network.IDeviceNetwork#getToken()
+	 * @see com.sitewhere.spi.device.group.IDeviceGroup#getToken()
 	 */
 	@Override
 	public String getToken() {
@@ -45,7 +45,7 @@ public class DeviceNetwork extends MetadataProviderEntity implements IDeviceNetw
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.network.IDeviceNetwork#getName()
+	 * @see com.sitewhere.spi.device.group.IDeviceGroup#getName()
 	 */
 	@Override
 	public String getName() {
@@ -59,7 +59,7 @@ public class DeviceNetwork extends MetadataProviderEntity implements IDeviceNetw
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.network.IDeviceNetwork#getDescription()
+	 * @see com.sitewhere.spi.device.group.IDeviceGroup#getDescription()
 	 */
 	@Override
 	public String getDescription() {
@@ -70,8 +70,8 @@ public class DeviceNetwork extends MetadataProviderEntity implements IDeviceNetw
 		this.description = description;
 	}
 
-	public static DeviceNetwork copy(IDeviceNetwork input) {
-		DeviceNetwork result = new DeviceNetwork();
+	public static DeviceGroup copy(IDeviceGroup input) {
+		DeviceGroup result = new DeviceGroup();
 		result.setToken(input.getToken());
 		result.setName(input.getName());
 		result.setDescription(input.getDescription());

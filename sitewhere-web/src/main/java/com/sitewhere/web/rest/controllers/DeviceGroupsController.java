@@ -15,37 +15,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sitewhere.rest.model.device.network.DeviceNetwork;
-import com.sitewhere.rest.model.device.request.DeviceNetworkCreateRequest;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
+import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.network.IDeviceNetwork;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
- * Controller for network operations.
+ * Controller for device group operations.
  * 
  * @author Derek Adams
  */
 @Controller
-@RequestMapping(value = "/networks")
-@Api(value = "", description = "Operations related to SiteWhere device networks.")
-public class NetworksController extends SiteWhereController {
+@RequestMapping(value = "/devicegroups")
+@Api(value = "", description = "Operations related to SiteWhere device groups.")
+public class DeviceGroupsController extends SiteWhereController {
 
 	/**
-	 * Create a device network.
+	 * Create a device group.
 	 * 
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new device network")
-	public IDeviceNetwork createDeviceNetwork(@RequestBody DeviceNetworkCreateRequest request)
+	@ApiOperation(value = "Create a new device group")
+	public IDeviceGroup createDeviceNetwork(@RequestBody DeviceGroupCreateRequest request)
 			throws SiteWhereException {
-		IDeviceNetwork result =
-				SiteWhereServer.getInstance().getDeviceManagement().createDeviceNetwork(request);
-		return DeviceNetwork.copy(result);
+		IDeviceGroup result = SiteWhereServer.getInstance().getDeviceManagement().createDeviceGroup(request);
+		return DeviceGroup.copy(result);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * DeviceNetworkCreateRequest.java 
+ * DeviceGroupCreateRequest.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -10,22 +10,22 @@
 package com.sitewhere.rest.model.device.request;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
-import com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 
 /**
- * Holds fields needed to create a new device network.
+ * Holds fields needed to create a new device group.
  * 
  * @author Derek
  */
-public class DeviceNetworkCreateRequest extends MetadataProvider implements IDeviceNetworkCreateRequest {
+public class DeviceGroupCreateRequest extends MetadataProvider implements IDeviceGroupCreateRequest {
 
 	/** Unique token */
 	private String token;
 
-	/** Network name */
+	/** Group name */
 	private String name;
 
-	/** Network description */
+	/** Group description */
 	private String description;
 
 	public String getToken() {

@@ -23,12 +23,6 @@ public interface IMongoCollectionNames {
 	/** Default collection name for SiteWhere zones */
 	public static final String DEFAULT_ZONES_COLLECTION_NAME = "zones";
 
-	/** Default collection name for SiteWhere device networks */
-	public static final String DEFAULT_DEVICE_NETWORKS_COLLECTION_NAME = "networks";
-
-	/** Default collection name for SiteWhere device network elements */
-	public static final String DEFAULT_DEVICE_NETWORK_ELEMENTS_COLLECTION_NAME = "elements";
-
 	/** Default collection name for SiteWhere device specifications */
 	public static final String DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME = "specifications";
 
@@ -37,6 +31,12 @@ public interface IMongoCollectionNames {
 
 	/** Default collection name for SiteWhere devices */
 	public static final String DEFAULT_DEVICES_COLLECTION_NAME = "devices";
+
+	/** Default collection name for SiteWhere device groups */
+	public static final String DEFAULT_DEVICE_GROUPS_COLLECTION_NAME = "devicegroups";
+
+	/** Default collection name for SiteWhere device group elements */
+	public static final String DEFAULT_DEVICE_GROUP_ELEMENTS_COLLECTION_NAME = "groupelements";
 
 	/** Default collection name for SiteWhere device assignments */
 	public static final String DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME = "assignments";

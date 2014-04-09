@@ -1,5 +1,5 @@
 /*
- * HBaseDeviceNetwork.java 
+ * HBaseDeviceGroup.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -30,27 +30,27 @@ import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
-import com.sitewhere.rest.model.device.network.DeviceNetwork;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.network.IDeviceNetwork;
-import com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest;
+import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
- * HBase specifics for dealing with SiteWhere device networks.
+ * HBase specifics for dealing with SiteWhere device groups.
  * 
  * @author Derek
  */
-public class HBaseDeviceNetwork {
+public class HBaseDeviceGroup {
 
-	/** Length of device identifier (subset of 8 byte long) */
+	/** Length of group identifier (subset of 8 byte long) */
 	public static final int IDENTIFIER_LENGTH = 4;
 
-	/** Column qualifier for network entry counter */
+	/** Column qualifier for group entry counter */
 	public static final byte[] ENTRY_COUNTER = Bytes.toBytes("entryctr");
 
 	/** Used to look up row keys from tokens */
@@ -58,17 +58,17 @@ public class HBaseDeviceNetwork {
 
 		@Override
 		public UniqueIdCounterMap getMap() {
-			return IdManager.getInstance().getNetworkKeys();
+			return IdManager.getInstance().getDeviceGroupKeys();
 		}
 
 		@Override
 		public byte getTypeIdentifier() {
-			return DeviceRecordType.DeviceNetwork.getType();
+			return DeviceRecordType.DeviceGroup.getType();
 		}
 
 		@Override
 		public byte getPrimaryIdentifier() {
-			return DeviceNetworkRecordType.DeviceNetwork.getType();
+			return DeviceGroupRecordType.DeviceGroup.getType();
 		}
 
 		@Override
@@ -78,20 +78,20 @@ public class HBaseDeviceNetwork {
 
 		@Override
 		public ErrorCode getInvalidKeyErrorCode() {
-			return ErrorCode.InvalidDeviceNetworkToken;
+			return ErrorCode.InvalidDeviceGroupToken;
 		}
 	};
 
 	/**
-	 * Create a device network.
+	 * Create a device group.
 	 * 
 	 * @param hbase
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceNetwork createDeviceNetwork(ISiteWhereHBaseClient hbase,
-			IDeviceNetworkCreateRequest request) throws SiteWhereException {
+	public static IDeviceGroup createDeviceGroup(ISiteWhereHBaseClient hbase,
+			IDeviceGroupCreateRequest request) throws SiteWhereException {
 		String uuid = null;
 		if (request.getToken() != null) {
 			uuid = KEY_BUILDER.getMap().useExistingId(request.getToken());
@@ -100,17 +100,17 @@ public class HBaseDeviceNetwork {
 		}
 
 		// Use common logic so all backend implementations work the same.
-		DeviceNetwork network = SiteWherePersistence.deviceNetworkCreateLogic(request, uuid);
+		DeviceGroup group = SiteWherePersistence.deviceGroupCreateLogic(request, uuid);
 
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 		byte[] zero = Bytes.toBytes((long) 0);
 		qualifiers.put(ENTRY_COUNTER, zero);
-		return HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, network, uuid, KEY_BUILDER,
+		return HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, group, uuid, KEY_BUILDER,
 				qualifiers);
 	}
 
 	/**
-	 * Update device network information.
+	 * Update device group information.
 	 * 
 	 * @param hbase
 	 * @param token
@@ -118,29 +118,29 @@ public class HBaseDeviceNetwork {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceNetwork updateDeviceNetwork(ISiteWhereHBaseClient hbase, String token,
-			IDeviceNetworkCreateRequest request) throws SiteWhereException {
-		DeviceNetwork updated = assertDeviceNetwork(hbase, token);
-		SiteWherePersistence.deviceNetworkUpdateLogic(request, updated);
+	public static IDeviceGroup updateDeviceGroup(ISiteWhereHBaseClient hbase, String token,
+			IDeviceGroupCreateRequest request) throws SiteWhereException {
+		DeviceGroup updated = assertDeviceGroup(hbase, token);
+		SiteWherePersistence.deviceGroupUpdateLogic(request, updated);
 		return HBaseUtils.putJson(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER);
 	}
 
 	/**
-	 * Get a {@link DeviceNetwork} by unique token.
+	 * Get a {@link DeviceGroup} by unique token.
 	 * 
 	 * @param hbase
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceNetwork getDeviceNetworkByToken(ISiteWhereHBaseClient hbase, String token)
+	public static DeviceGroup getDeviceGroupByToken(ISiteWhereHBaseClient hbase, String token)
 			throws SiteWhereException {
 		return HBaseUtils.get(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
-				DeviceNetwork.class);
+				DeviceGroup.class);
 	}
 
 	/**
-	 * Get paged {@link IDeviceNetwork} results based on the given search criteria.
+	 * Get paged {@link IDeviceGroup} results based on the given search criteria.
 	 * 
 	 * @param hbase
 	 * @param includeDeleted
@@ -148,20 +148,20 @@ public class HBaseDeviceNetwork {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceNetwork> listDeviceNetworks(ISiteWhereHBaseClient hbase,
+	public static SearchResults<IDeviceGroup> listDeviceGroups(ISiteWhereHBaseClient hbase,
 			boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
 		Pager<byte[]> matches =
 				HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
 						includeDeleted, criteria);
-		List<IDeviceNetwork> response = new ArrayList<IDeviceNetwork>();
+		List<IDeviceGroup> response = new ArrayList<IDeviceGroup>();
 		for (byte[] json : matches.getResults()) {
-			response.add(MarshalUtils.unmarshalJson(json, DeviceNetwork.class));
+			response.add(MarshalUtils.unmarshalJson(json, DeviceGroup.class));
 		}
-		return new SearchResults<IDeviceNetwork>(response, matches.getTotal());
+		return new SearchResults<IDeviceGroup>(response, matches.getTotal());
 	}
 
 	/**
-	 * Aloocates the next available network element id.
+	 * Aloocates the next available group element id.
 	 * 
 	 * @param hbase
 	 * @param primary
@@ -170,22 +170,22 @@ public class HBaseDeviceNetwork {
 	 */
 	public static Long allocateNextElementId(ISiteWhereHBaseClient hbase, byte[] primary)
 			throws SiteWhereException {
-		HTableInterface networks = null;
+		HTableInterface devices = null;
 		try {
-			networks = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Increment increment = new Increment(primary);
 			increment.addColumn(ISiteWhereHBase.FAMILY_ID, ENTRY_COUNTER, 1);
-			Result result = networks.increment(increment);
+			Result result = devices.increment(increment);
 			return Bytes.toLong(result.value());
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to allocate next network element id.", e);
+			throw new SiteWhereException("Unable to allocate next group element id.", e);
 		} finally {
-			HBaseUtils.closeCleanly(networks);
+			HBaseUtils.closeCleanly(devices);
 		}
 	}
 
 	/**
-	 * Delete an existing device network.
+	 * Delete an existing device group.
 	 * 
 	 * @param hbase
 	 * @param token
@@ -193,32 +193,32 @@ public class HBaseDeviceNetwork {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceNetwork deleteDeviceNetwork(ISiteWhereHBaseClient hbase, String token, boolean force)
+	public static IDeviceGroup deleteDeviceGroup(ISiteWhereHBaseClient hbase, String token, boolean force)
 			throws SiteWhereException {
 		return HBaseUtils.delete(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER,
-				DeviceNetwork.class);
+				DeviceGroup.class);
 	}
 
 	/**
-	 * Get a {@link DeviceNetwork} by token or throw an exception if token is not valid.
+	 * Get a {@link DeviceGroup} by token or throw an exception if token is not valid.
 	 * 
 	 * @param hbase
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceNetwork assertDeviceNetwork(ISiteWhereHBaseClient hbase, String token)
+	public static DeviceGroup assertDeviceGroup(ISiteWhereHBaseClient hbase, String token)
 			throws SiteWhereException {
-		DeviceNetwork existing = getDeviceNetworkByToken(hbase, token);
+		DeviceGroup existing = getDeviceGroupByToken(hbase, token);
 		if (existing == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceNetworkToken, ErrorLevel.ERROR);
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 		}
 		return existing;
 	}
 
 	/**
 	 * Get the unique device identifier based on the long value associated with the device
-	 * network UUID. This will be a subset of the full 8-bit long value.
+	 * group UUID. This will be a subset of the full 8-bit long value.
 	 * 
 	 * @param value
 	 * @return
@@ -231,16 +231,16 @@ public class HBaseDeviceNetwork {
 	}
 
 	/**
-	 * Get row key for a device network with the given internal id.
+	 * Get row key for a device group with the given internal id.
 	 * 
-	 * @param networkId
+	 * @param groupId
 	 * @return
 	 */
-	public static byte[] getPrimaryRowKey(Long networkId) {
+	public static byte[] getPrimaryRowKey(Long groupId) {
 		ByteBuffer buffer = ByteBuffer.allocate(IDENTIFIER_LENGTH + 2);
-		buffer.put(DeviceRecordType.DeviceNetwork.getType());
-		buffer.put(getTruncatedIdentifier(networkId));
-		buffer.put(DeviceNetworkRecordType.DeviceNetwork.getType());
+		buffer.put(DeviceRecordType.DeviceGroup.getType());
+		buffer.put(getTruncatedIdentifier(groupId));
+		buffer.put(DeviceGroupRecordType.DeviceGroup.getType());
 		return buffer.array();
 	}
 }

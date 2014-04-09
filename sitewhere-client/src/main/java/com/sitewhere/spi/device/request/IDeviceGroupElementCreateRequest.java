@@ -1,5 +1,5 @@
 /*
- * IDeviceNetworkEntry.java 
+ * IDeviceGroupElementCreateRequest.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,38 +7,26 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.network;
+package com.sitewhere.spi.device.request;
+
+import com.sitewhere.spi.device.group.GroupElementType;
 
 /**
- * Interface for an entry in an {@link IDeviceNetwork}.
+ * Interface for arguments needed to create a device group element.
  * 
  * @author Derek
  */
-public interface IDeviceNetworkElement {
+public interface IDeviceGroupElementCreateRequest {
 
 	/**
-	 * Get token for parent network.
+	 * Get the element type.
 	 * 
 	 * @return
 	 */
-	public String getNetworkToken();
+	public GroupElementType getType();
 
 	/**
-	 * Get index that corresponds to this entry.
-	 * 
-	 * @return
-	 */
-	public long getIndex();
-
-	/**
-	 * Get network element type.
-	 * 
-	 * @return
-	 */
-	public NetworkElementType getType();
-
-	/**
-	 * Get element id (relative to element type).
+	 * Get the element id (relative to element type).
 	 * 
 	 * @return
 	 */

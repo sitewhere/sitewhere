@@ -31,8 +31,8 @@ public class IdManager {
 	/** Manager for device specification tokens */
 	private UniqueIdCounterMap specificationKeys;
 
-	/** Manager for device network tokens */
-	private UniqueIdCounterMap networkKeys;
+	/** Manager for device group tokens */
+	private UniqueIdCounterMap deviceGroupKeys;
 
 	/** Manager for command tokens */
 	private UuidRowKeyMap commandKeys;
@@ -70,8 +70,9 @@ public class IdManager {
 				new UniqueIdCounterMap(hbase, UniqueIdType.SpecificationKey, UniqueIdType.SpecificationValue);
 		specificationKeys.refresh();
 
-		networkKeys = new UniqueIdCounterMap(hbase, UniqueIdType.NetworkKey, UniqueIdType.NetworkValue);
-		networkKeys.refresh();
+		deviceGroupKeys =
+				new UniqueIdCounterMap(hbase, UniqueIdType.DeviceGroupKey, UniqueIdType.DeviceGroupValue);
+		deviceGroupKeys.refresh();
 
 		commandKeys = new UuidRowKeyMap(hbase, UniqueIdType.CommandKey, UniqueIdType.CommandValue);
 		commandKeys.refresh();
@@ -116,12 +117,12 @@ public class IdManager {
 		this.commandKeys = commandKeys;
 	}
 
-	public UniqueIdCounterMap getNetworkKeys() {
-		return networkKeys;
+	public UniqueIdCounterMap getDeviceGroupKeys() {
+		return deviceGroupKeys;
 	}
 
-	public void setNetworkKeys(UniqueIdCounterMap networkKeys) {
-		this.networkKeys = networkKeys;
+	public void setDeviceGroupKeys(UniqueIdCounterMap deviceGroupKeys) {
+		this.deviceGroupKeys = deviceGroupKeys;
 	}
 
 	public UuidRowKeyMap getZoneKeys() {

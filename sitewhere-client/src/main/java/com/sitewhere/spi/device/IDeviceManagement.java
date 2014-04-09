@@ -30,13 +30,13 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
-import com.sitewhere.spi.device.network.IDeviceNetwork;
-import com.sitewhere.spi.device.network.IDeviceNetworkElement;
+import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceNetworkCreateRequest;
-import com.sitewhere.spi.device.request.IDeviceNetworkElementCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
@@ -678,23 +678,23 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException;
 
 	/**
-	 * Create a new device network.
+	 * Create a new device group.
 	 * 
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceNetwork createDeviceNetwork(IDeviceNetworkCreateRequest request) throws SiteWhereException;
+	public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException;
 
 	/**
-	 * Update an existing device network.
+	 * Update an existing device group.
 	 * 
 	 * @param token
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceNetwork updateDeviceNetwork(String token, IDeviceNetworkCreateRequest request)
+	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request)
 			throws SiteWhereException;
 
 	/**
@@ -704,59 +704,59 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceNetwork getDeviceNetwork(String token) throws SiteWhereException;
+	public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException;
 
 	/**
-	 * List device networks.
+	 * List device groups.
 	 * 
 	 * @param includeDeleted
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IDeviceNetwork> listDeviceNetworks(boolean includeDeleted, ISearchCriteria criteria)
+	public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
 			throws SiteWhereException;
 
 	/**
-	 * Delete a device network.
+	 * Delete a device group.
 	 * 
 	 * @param token
 	 * @param force
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceNetwork deleteDeviceNetwork(String token, boolean force) throws SiteWhereException;
+	public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException;
 
 	/**
-	 * Add elements to a device network.
+	 * Add elements to a device group.
 	 * 
-	 * @param networkToken
+	 * @param groupToken
 	 * @param elements
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<IDeviceNetworkElement> addDeviceNetworkElements(String networkToken,
-			List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException;
+	public List<IDeviceGroupElement> addDeviceGroupElements(String groupToken,
+			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException;
 
 	/**
-	 * Remove selected elements from a device network.
+	 * Remove selected elements from a device group.
 	 * 
-	 * @param networkToken
+	 * @param groupToken
 	 * @param elements
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<IDeviceNetworkElement> removeDeviceNetworkElements(String networkToken,
-			List<IDeviceNetworkElementCreateRequest> elements) throws SiteWhereException;
+	public List<IDeviceGroupElement> removeDeviceGroupElements(String groupToken,
+			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException;
 
 	/**
-	 * List device network elements that meet the given criteria.
+	 * List device group elements that meet the given criteria.
 	 * 
-	 * @param networkToken
+	 * @param groupToken
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public SearchResults<IDeviceNetworkElement> listDeviceNetworkElements(String networkToken,
+	public SearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
 			ISearchCriteria criteria) throws SiteWhereException;
 }
