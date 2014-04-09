@@ -106,6 +106,11 @@
 			style="background-image: url(#:associatedHardware.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
 		</div>
+# } else if (data.associatedLocation) { #
+		<div class="sw-assignment-list-entry-logowrapper"
+			style="background-image: url(#:associatedLocation.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
+			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
+		</div>
 # } else if ((data.assignmentType == 'Unassociated') && (data.device)) { #
 		<div class="sw-assignment-list-entry-logowrapper"
 			style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
@@ -186,6 +191,12 @@
 			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedHardware.name#">#:associatedHardware.name#</p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">SKU:</span><span title="#:associatedHardware.sku#">#:associatedHardware.sku#</span></p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">Info:</span><span title="#:associatedHardware.description#">#:associatedHardware.description#</span></p>
+		</div>
+# } else if (data.associatedLocation) { #
+		<div>
+			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedLocation.name#">#:associatedLocation.name#</p>
+			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">Lat:</span><span title="#:associatedLocation.latitude#">#:associatedLocation.latitude#</span></p>
+			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">Long:</span><span title="#:associatedLocation.longitude#">#:associatedLocation.longitude#</span></p>
 		</div>
 # } else if (data.assignmentType == 'Unassociated') { #
 		<div>

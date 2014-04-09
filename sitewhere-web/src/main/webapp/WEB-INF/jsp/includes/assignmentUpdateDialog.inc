@@ -80,6 +80,16 @@
 			<p class="ellipsis"><span class="sw-assignment-update-label">Asset:</span> #:associatedPerson.name#</p>
 			<p class="ellipsis"><span class="sw-assignment-update-label">Email:</span> #:associatedPerson.emailAddress#</p>
 			<p class="ellipsis"><span class="sw-assignment-update-label">Roles:</span> #:swArrayAsCommaDelimited(associatedPerson.roles)#</p>
+# } else if (data.associatedLocation) { #
+	<div style="min-height: 120px;">
+		<div class="sw-assignment-update-imgwrapper">
+			<img class="sw-assignment-update-img" src="#:associatedLocation.imageUrl#"/>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
+		</div>
+		<div style="display: inline-block; max-width: 280px;">
+			<p class="ellipsis"><span class="sw-assignment-update-label">Latitude:</span> #:associatedLocation.latitude#</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">Longitude:</span> #:associatedLocation.longitude#</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">Elevation:</span> #:associatedLocation.elevation#</p>
 # } else if (assignmentType == 'Unassociated') { #
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">

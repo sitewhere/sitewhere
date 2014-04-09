@@ -12,6 +12,7 @@ package com.sitewhere.device.marshaling;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.rest.model.asset.HardwareAsset;
+import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -76,9 +77,10 @@ public class DeviceAssignmentMarshalHelper {
 			if (isIncludeAsset() || (asset == null)) {
 				if (asset instanceof HardwareAsset) {
 					result.setAssociatedHardware((HardwareAsset) asset);
-				}
-				if (asset instanceof PersonAsset) {
+				} else if (asset instanceof PersonAsset) {
 					result.setAssociatedPerson((PersonAsset) asset);
+				} else if (asset instanceof LocationAsset) {
+					result.setAssociatedLocation((LocationAsset) asset);
 				}
 			} else {
 				result.setAssetName(asset.getName());
