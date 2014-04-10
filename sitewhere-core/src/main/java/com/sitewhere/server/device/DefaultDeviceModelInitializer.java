@@ -10,6 +10,7 @@
 package com.sitewhere.server.device;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -162,8 +163,25 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
 			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
 
+	/** Role for a temperature measuring device */
+	protected static final String GRP_ROLE_TEMP_MEASURER = "mx-temperature";
+
+	/** Role for a temperature measuring device */
+	protected static final String GRP_ROLE_HUM_MEASURER = "mx-humidity";
+
+	/** Role for responders */
+	protected static final String GRP_ROLE_RESPONDER = "responder";
+
+	/** Role lists that can be applied to device group elements */
+	protected static String[][] GRP_ROLE_LISTS = {
+			new String[] { GRP_ROLE_TEMP_MEASURER },
+			new String[] { GRP_ROLE_HUM_MEASURER },
+			new String[] { GRP_ROLE_TEMP_MEASURER, GRP_ROLE_HUM_MEASURER },
+			new String[] { GRP_ROLE_RESPONDER },
+			new String[] { GRP_ROLE_RESPONDER, GRP_ROLE_TEMP_MEASURER }, };
+
 	/** Token for default device group */
-	protected static String GROUP_TOKEN = "396e484a-7b76-4fff-85b7-2746ea849705";
+	protected static final String GROUP_TOKEN = "396e484a-7b76-4fff-85b7-2746ea849705";
 
 	/** Locations that determine zone edges */
 	protected List<Location> zoneLocations;
@@ -213,6 +231,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 				DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
 				request.setType(GroupElementType.Device);
 				request.setElementId(assignment.getDeviceHardwareId());
+				request.setRoles(getRandomDeviceGroupRoleList());
 				requests.add(request);
 			}
 			getDeviceManagement().addDeviceGroupElements(group.getToken(), requests);
@@ -684,6 +703,17 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	protected AssignmentChoice getRandomAssignmentChoice() {
 		int slot = (int) Math.floor(LOCATION_TRACKERS.length * Math.random());
 		return LOCATION_TRACKERS[slot];
+	}
+
+	/**
+	 * Gets a random group role list for a device group element.
+	 * 
+	 * @return
+	 */
+	protected List<String> getRandomDeviceGroupRoleList() {
+		int slot = (int) Math.floor(GRP_ROLE_LISTS.length * Math.random());
+		String[] roles = GRP_ROLE_LISTS[slot];
+		return Arrays.asList(roles);
 	}
 
 	/**

@@ -9,6 +9,9 @@
  */
 package com.sitewhere.rest.model.device.group;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
@@ -31,6 +34,9 @@ public class DeviceGroupElement implements IDeviceGroupElement {
 
 	/** Element type */
 	private String elementId;
+
+	/** List of roles for the element */
+	private List<String> roles = new ArrayList<String>();
 
 	/*
 	 * (non-Javadoc)
@@ -82,5 +88,28 @@ public class DeviceGroupElement implements IDeviceGroupElement {
 
 	public void setElementId(String elementId) {
 		this.elementId = elementId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.group.IDeviceGroupElement#getRoles()
+	 */
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
+
+	public static DeviceGroupElement copy(IDeviceGroupElement input) {
+		DeviceGroupElement result = new DeviceGroupElement();
+		result.setGroupToken(input.getGroupToken());
+		result.setIndex(input.getIndex());
+		result.setType(input.getType());
+		result.setElementId(input.getElementId());
+		result.getRoles().addAll(input.getRoles());
+		return result;
 	}
 }

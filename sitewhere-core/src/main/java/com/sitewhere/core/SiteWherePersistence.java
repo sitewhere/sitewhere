@@ -882,6 +882,7 @@ public class SiteWherePersistence {
 		element.setIndex(index);
 		element.setType(source.getType());
 		element.setElementId(source.getElementId());
+		element.setRoles(source.getRoles());
 		return element;
 	}
 

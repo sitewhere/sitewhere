@@ -9,6 +9,9 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 
@@ -25,6 +28,9 @@ public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreat
 	/** Element id */
 	private String elementId;
 
+	/** List of roles for element */
+	private List<String> roles = new ArrayList<String>();
+
 	public GroupElementType getType() {
 		return type;
 	}
@@ -39,5 +45,13 @@ public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreat
 
 	public void setElementId(String elementId) {
 		this.elementId = elementId;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 }

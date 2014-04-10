@@ -9,6 +9,8 @@
  */
 package com.sitewhere.spi.device.group;
 
+import java.util.List;
+
 /**
  * Interface for an entry in an {@link IDeviceGroup}.
  * 
@@ -43,4 +45,11 @@ public interface IDeviceGroupElement {
 	 * @return
 	 */
 	public String getElementId();
+
+	/**
+	 * Get list of roles associated with element.
+	 * 
+	 * @return
+	 */
+	public List<String> getRoles();
 }

@@ -9,6 +9,8 @@
  */
 package com.sitewhere.spi.device.request;
 
+import java.util.List;
+
 import com.sitewhere.spi.device.group.GroupElementType;
 
 /**
@@ -31,4 +33,11 @@ public interface IDeviceGroupElementCreateRequest {
 	 * @return
 	 */
 	public String getElementId();
+
+	/**
+	 * Get list of roles associated with element.
+	 * 
+	 * @return
+	 */
+	public List<String> getRoles();
 }

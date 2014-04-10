@@ -9,6 +9,8 @@
  */
 package com.sitewhere.mongodb.device;
 
+import java.util.List;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
@@ -31,6 +33,9 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
 
 	/** Property for element id */
 	public static final String PROP_ELEMENT_ID = "elementId";
+
+	/** Property for list of roles */
+	public static final String PROP_ROLES = "roles";
 
 	/** Property for element index */
 	public static final String PROP_INDEX = "index";
@@ -66,6 +71,7 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
 		target.append(PROP_INDEX, source.getIndex());
 		target.append(PROP_TYPE, source.getType().name());
 		target.append(PROP_ELEMENT_ID, source.getElementId());
+		target.append(PROP_ROLES, source.getRoles());
 	}
 
 	/**
@@ -74,11 +80,13 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
 	 * @param source
 	 * @param target
 	 */
+	@SuppressWarnings("unchecked")
 	public static void fromDBObject(DBObject source, DeviceGroupElement target) {
 		String group = (String) source.get(PROP_GROUP_TOKEN);
 		Long index = (Long) source.get(PROP_INDEX);
 		String type = (String) source.get(PROP_TYPE);
 		String elementId = (String) source.get(PROP_ELEMENT_ID);
+		List<String> roles = (List<String>) source.get(PROP_ROLES);
 
 		if (type == null) {
 			throw new RuntimeException("Group element type not stored.");
@@ -86,6 +94,7 @@ public class MongoDeviceGroupElement implements MongoConverter<IDeviceGroupEleme
 		target.setGroupToken(group);
 		target.setType(GroupElementType.valueOf(type));
 		target.setElementId(elementId);
+		target.setRoles(roles);
 		target.setIndex(index);
 	}
 
