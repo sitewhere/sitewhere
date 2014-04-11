@@ -146,6 +146,16 @@ function parseDeviceData(item){
 	}
 }
 
+/** Converts fields that need to be parsed in a device group */
+function parseDeviceGroupData(item){
+	if (item.createdDate && typeof item.createdDate === "string") {
+		item.createdDate = kendo.parseDate(item.createdDate);
+	}
+	if (item.updatedDate && typeof item.updatedDate === "string") {
+		item.updatedDate = kendo.parseDate(item.updatedDate);
+	}
+}
+
 /** Converts fields that need to be parsed in an assignment */
 function parseAssignmentData(item) {
     if (item.createdDate && typeof item.createdDate === "string") {

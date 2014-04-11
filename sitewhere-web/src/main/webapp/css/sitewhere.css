@@ -410,10 +410,15 @@ td[role="gridcell"] > input[type="text"] {
 	clear: both;
 	visibility: hidden;
 }
+
 .k-listview {
 	border: 1px solid #eee;
 	padding: 0;
 	min-width: 0;
+}
+
+.nav-pills > li {
+	padding-left: 10px;
 }
 
 label.error {

@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.version.VersionHelper;
 
 /**
@@ -121,7 +122,8 @@ public class SiteWhereController {
 				if (assignment != null) {
 					DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
 					helper.setIncludeDevice(true);
-					assignment = helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager());
+					assignment =
+							helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager());
 					data.put("assignment", assignment);
 					return new ModelAndView("assignments/detail", data);
 				}
@@ -241,7 +243,49 @@ public class SiteWhereController {
 				return showError(e.getMessage());
 			}
 		}
-		return showError("No hardware id token passed.");
+		return showError("No device hardware id passed.");
+	}
+
+	/**
+	 * Display the "list device groups" page.
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/groups/list")
+	public ModelAndView listDeviceGroups() {
+		try {
+			Map<String, Object> data = createBaseData();
+			return new ModelAndView("groups/list", data);
+		} catch (SiteWhereException e) {
+			LOGGER.error(e);
+			return showError(e.getMessage());
+		}
+	}
+
+	/**
+	 * Display the "device group detail" page.
+	 * 
+	 * @param groupToken
+	 * @return
+	 */
+	@RequestMapping("/groups/detail")
+	public ModelAndView deviceGroupDetail(@RequestParam("groupToken") String groupToken) {
+		if (groupToken != null) {
+			try {
+				Map<String, Object> data = createBaseData();
+				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+				IDeviceGroup group = management.getDeviceGroup(groupToken);
+				if (group != null) {
+					data.put("group", group);
+					return new ModelAndView("groups/detail", data);
+				}
+				return showError("Device group for token '" + groupToken + "' not found.");
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		}
+		return showError("No group token passed.");
 	}
 
 	/**

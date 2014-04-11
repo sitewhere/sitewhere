@@ -67,6 +67,14 @@
 	</c:otherwise>
 </c:choose>
 <c:choose>
+	<c:when test="${sitewhere_section == 'devicegroups'}">
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/groups/list.html">Device Groups</a></li>
+	</c:when>
+	<c:otherwise>
+		<li><a href="${pageContext.request.contextPath}/admin/groups/list.html">Device Groups</a></li>
+	</c:otherwise>
+</c:choose>
+<c:choose>
 	<c:when test="${sitewhere_section == 'users'}">
 		<li class="active"><a href="${pageContext.request.contextPath}/admin/users/list.html">Users</a></li>
 	</c:when>

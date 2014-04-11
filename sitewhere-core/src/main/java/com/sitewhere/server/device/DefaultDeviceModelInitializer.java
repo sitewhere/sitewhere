@@ -106,6 +106,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Number of devices to create */
 	public static final int NUM_SITES = 1;
 
+	/** Number of device groups to create */
+	public static final int NUM_DEVICE_GROUPS = 3;
+
 	/** Number of devices/assignments to create */
 	public static final int ASSIGNMENTS_PER_SITE = 15;
 
@@ -164,24 +167,21 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
 
 	/** Role for a temperature measuring device */
-	protected static final String GRP_ROLE_TEMP_MEASURER = "mx-temperature";
+	protected static final String GRP_ROLE_FIRST_TEAM = "first-team";
 
 	/** Role for a temperature measuring device */
-	protected static final String GRP_ROLE_HUM_MEASURER = "mx-humidity";
+	protected static final String GRP_ROLE_SECOND_TEAM = "second-team";
 
 	/** Role for responders */
-	protected static final String GRP_ROLE_RESPONDER = "responder";
+	protected static final String GRP_ROLE_EARTH_MOVERS_TEAM = "earth-movers";
 
 	/** Role lists that can be applied to device group elements */
 	protected static String[][] GRP_ROLE_LISTS = {
-			new String[] { GRP_ROLE_TEMP_MEASURER },
-			new String[] { GRP_ROLE_HUM_MEASURER },
-			new String[] { GRP_ROLE_TEMP_MEASURER, GRP_ROLE_HUM_MEASURER },
-			new String[] { GRP_ROLE_RESPONDER },
-			new String[] { GRP_ROLE_RESPONDER, GRP_ROLE_TEMP_MEASURER }, };
-
-	/** Token for default device group */
-	protected static final String GROUP_TOKEN = "396e484a-7b76-4fff-85b7-2746ea849705";
+			new String[] { GRP_ROLE_FIRST_TEAM },
+			new String[] { GRP_ROLE_SECOND_TEAM },
+			new String[] { GRP_ROLE_FIRST_TEAM, GRP_ROLE_EARTH_MOVERS_TEAM },
+			new String[] { GRP_ROLE_EARTH_MOVERS_TEAM },
+			new String[] { GRP_ROLE_SECOND_TEAM, GRP_ROLE_EARTH_MOVERS_TEAM }, };
 
 	/** Locations that determine zone edges */
 	protected List<Location> zoneLocations;
@@ -222,20 +222,22 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		this.deviceSpecifications = createDeviceSpecifications();
 
 		List<ISite> sites = createSites();
-		IDeviceGroup group = createDeviceGroup();
 		for (ISite site : sites) {
 			List<IDeviceAssignment> assignments = createAssignments(site);
-			List<IDeviceGroupElementCreateRequest> requests =
-					new ArrayList<IDeviceGroupElementCreateRequest>();
-			for (IDeviceAssignment assignment : assignments) {
-				DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
-				request.setType(GroupElementType.Device);
-				request.setElementId(assignment.getDeviceHardwareId());
-				request.setRoles(getRandomDeviceGroupRoleList());
-				requests.add(request);
+			for (int groupIndex = 0; groupIndex < NUM_DEVICE_GROUPS; groupIndex++) {
+				List<IDeviceGroupElementCreateRequest> requests =
+						new ArrayList<IDeviceGroupElementCreateRequest>();
+				IDeviceGroup group = createDeviceGroup(groupIndex);
+				for (IDeviceAssignment assignment : assignments) {
+					DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
+					request.setType(GroupElementType.Device);
+					request.setElementId(assignment.getDeviceHardwareId());
+					request.setRoles(getRandomDeviceGroupRoleList());
+					requests.add(request);
+				}
+				getDeviceManagement().addDeviceGroupElements(group.getToken(), requests);
+				// testListAndRemoveNetworkElements(group);
 			}
-			getDeviceManagement().addDeviceGroupElements(group.getToken(), requests);
-			testListAndRemoveNetworkElements(group);
 		}
 
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -402,11 +404,11 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceGroup createDeviceGroup() throws SiteWhereException {
+	public IDeviceGroup createDeviceGroup(int index) throws SiteWhereException {
 		DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
-		request.setToken(GROUP_TOKEN);
-		request.setName("Default device group");
-		request.setDescription("Device group that contains all devices.");
+		request.setToken(UUID.randomUUID().toString());
+		request.setName("Heavy Equipment Group " + (index + 1));
+		request.setDescription("Device group that contains heavy equipment assets.");
 		return getDeviceManagement().createDeviceGroup(request);
 	}
 
