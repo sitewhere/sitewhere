@@ -9,6 +9,8 @@
  */
 package com.sitewhere.spi.device.group;
 
+import java.util.List;
+
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
@@ -38,4 +40,11 @@ public interface IDeviceGroup extends IMetadataProviderEntity {
 	 * @return
 	 */
 	public String getDescription();
+
+	/**
+	 * Get list of roles associated with element.
+	 * 
+	 * @return
+	 */
+	public List<String> getRoles();
 }

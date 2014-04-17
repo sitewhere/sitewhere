@@ -9,6 +9,9 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 
@@ -27,6 +30,9 @@ public class DeviceGroupCreateRequest extends MetadataProvider implements IDevic
 
 	/** Group description */
 	private String description;
+
+	/** List of roles */
+	private List<String> roles = new ArrayList<String>();
 
 	public String getToken() {
 		return token;
@@ -50,5 +56,13 @@ public class DeviceGroupCreateRequest extends MetadataProvider implements IDevic
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 }

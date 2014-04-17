@@ -154,10 +154,15 @@ public class MongoDeviceManagement implements IDeviceManagement {
 						MongoDeviceEvent.PROP_EVENT_DATE, -1));
 		getMongoClient().getDeviceGroupsCollection().ensureIndex(
 				new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		getMongoClient().getDeviceGroupsCollection().ensureIndex(
+				new BasicDBObject(MongoDeviceGroup.PROP_ROLES, 1));
 		getMongoClient().getGroupElementsCollection().ensureIndex(
 				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
 						MongoDeviceGroupElement.PROP_TYPE, 1).append(MongoDeviceGroupElement.PROP_ELEMENT_ID,
 						1));
+		getMongoClient().getGroupElementsCollection().ensureIndex(
+				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
+						MongoDeviceGroupElement.PROP_ROLES, 1));
 	}
 
 	/*

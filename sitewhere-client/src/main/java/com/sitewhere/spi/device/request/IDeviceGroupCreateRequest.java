@@ -9,6 +9,8 @@
  */
 package com.sitewhere.spi.device.request;
 
+import java.util.List;
+
 import com.sitewhere.spi.common.IMetadataProvider;
 
 /**
@@ -38,4 +40,11 @@ public interface IDeviceGroupCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public String getDescription();
+
+	/**
+	 * Get list of roles associated with group.
+	 * 
+	 * @return
+	 */
+	public List<String> getRoles();
 }

@@ -9,6 +9,8 @@
  */
 package com.sitewhere.mongodb.device;
 
+import java.util.List;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
@@ -33,6 +35,9 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 
 	/** Property for description */
 	public static final String PROP_DESCRIPTION = "description";
+
+	/** Property for list of roles */
+	public static final String PROP_ROLES = "roles";
 
 	/** Property for element list */
 	public static final String PROP_LAST_INDEX = "lastIndex";
@@ -67,6 +72,7 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 		target.append(PROP_TOKEN, source.getToken());
 		target.append(PROP_NAME, source.getName());
 		target.append(PROP_DESCRIPTION, source.getDescription());
+		target.append(PROP_ROLES, source.getRoles());
 		MongoSiteWhereEntity.toDBObject(source, target);
 		MongoMetadataProvider.toDBObject(source, target);
 	}
@@ -77,14 +83,17 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 	 * @param source
 	 * @param target
 	 */
+	@SuppressWarnings("unchecked")
 	public static void fromDBObject(DBObject source, DeviceGroup target) {
 		String token = (String) source.get(PROP_TOKEN);
 		String name = (String) source.get(PROP_NAME);
 		String desc = (String) source.get(PROP_DESCRIPTION);
+		List<String> roles = (List<String>) source.get(PROP_ROLES);
 
 		target.setToken(token);
 		target.setName(name);
 		target.setDescription(desc);
+		target.setRoles(roles);
 		MongoSiteWhereEntity.fromDBObject(source, target);
 		MongoMetadataProvider.fromDBObject(source, target);
 	}

@@ -154,6 +154,9 @@ function parseDeviceGroupData(item){
 	if (item.updatedDate && typeof item.updatedDate === "string") {
 		item.updatedDate = kendo.parseDate(item.updatedDate);
 	}
+	if (item.roles) {
+    	item.cdRoles = swArrayAsCommaDelimited(item.roles);
+	}
 }
 
 /** Converts fields that need to be parsed in an assignment */

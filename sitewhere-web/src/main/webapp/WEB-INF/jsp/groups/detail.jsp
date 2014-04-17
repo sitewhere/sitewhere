@@ -116,7 +116,7 @@
 		loadDeviceGroup();
 	});
 	
-	/** Parses event response records to format dates */
+	/** Parses result records to format data */
 	function parseElementResults(response) {
 	    $.each(response.results, function (index, item) {
 	        if (item.roles) {

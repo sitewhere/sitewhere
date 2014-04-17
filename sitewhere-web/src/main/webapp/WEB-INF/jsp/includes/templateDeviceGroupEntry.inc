@@ -84,6 +84,8 @@
 				<span class="sw-groups-list-entry-label" style="min-width: 50px;">Token:</span><span title="#:token#">#:token#</span></p>
 			<p class="ellipsis sw-groups-list-entry-subhead">
 				<span class="sw-groups-list-entry-label" style="min-width: 50px;">Desc:</span><span title="#:description#">#:description#</span></p>
+			<p class="ellipsis sw-groups-list-entry-subhead">
+				<span class="sw-groups-list-entry-label" style="min-width: 50px;">Roles:</span><span title="#:cdRoles#">#:cdRoles#</span></p>
 		</div>
 	</div>
 </script>

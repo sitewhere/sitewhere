@@ -844,6 +844,9 @@ public class SiteWherePersistence {
 		group.setToken(uuid);
 		group.setName(source.getName());
 		group.setDescription(source.getDescription());
+		if (source.getRoles() != null) {
+			group.getRoles().addAll(source.getRoles());
+		}
 
 		SiteWherePersistence.initializeEntityMetadata(group);
 		MetadataProvider.copy(source, group);

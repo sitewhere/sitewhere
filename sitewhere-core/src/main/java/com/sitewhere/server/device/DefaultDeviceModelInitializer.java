@@ -166,22 +166,33 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
 			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
 
-	/** Role for a temperature measuring device */
-	protected static final String GRP_ROLE_FIRST_TEAM = "first-team";
+	/** Role for 'light equipment' groups */
+	protected static final String GRP_ROLE_LIGHT_EQUIPMENT = "light-equipment";
 
-	/** Role for a temperature measuring device */
-	protected static final String GRP_ROLE_SECOND_TEAM = "second-team";
+	/** Role for 'heavy equipment' groups */
+	protected static final String GRP_ROLE_HEAVY_EQUIPMENT = "heavy-equipment";
 
-	/** Role for responders */
-	protected static final String GRP_ROLE_EARTH_MOVERS_TEAM = "earth-movers";
+	/** Role lists that can be applied to device groups */
+	protected static String[][] GRP_ROLE_LISTS = {
+			new String[] { GRP_ROLE_LIGHT_EQUIPMENT },
+			new String[] { GRP_ROLE_HEAVY_EQUIPMENT } };
+
+	/** Role for 'first team' members */
+	protected static final String GRP_ELM_ROLE_FIRST_TEAM = "first-team";
+
+	/** Role for 'second team' members */
+	protected static final String GRP_ELM_ROLE_SECOND_TEAM = "second-team";
+
+	/** Role for 'earth movers' members */
+	protected static final String GRP_ELM_ROLE_EARTH_MOVERS_TEAM = "earth-movers";
 
 	/** Role lists that can be applied to device group elements */
-	protected static String[][] GRP_ROLE_LISTS = {
-			new String[] { GRP_ROLE_FIRST_TEAM },
-			new String[] { GRP_ROLE_SECOND_TEAM },
-			new String[] { GRP_ROLE_FIRST_TEAM, GRP_ROLE_EARTH_MOVERS_TEAM },
-			new String[] { GRP_ROLE_EARTH_MOVERS_TEAM },
-			new String[] { GRP_ROLE_SECOND_TEAM, GRP_ROLE_EARTH_MOVERS_TEAM }, };
+	protected static String[][] GRP_ELEMENT_ROLE_LISTS = {
+			new String[] { GRP_ELM_ROLE_FIRST_TEAM },
+			new String[] { GRP_ELM_ROLE_SECOND_TEAM },
+			new String[] { GRP_ELM_ROLE_FIRST_TEAM, GRP_ELM_ROLE_EARTH_MOVERS_TEAM },
+			new String[] { GRP_ELM_ROLE_EARTH_MOVERS_TEAM },
+			new String[] { GRP_ELM_ROLE_SECOND_TEAM, GRP_ELM_ROLE_EARTH_MOVERS_TEAM }, };
 
 	/** Locations that determine zone edges */
 	protected List<Location> zoneLocations;
@@ -232,7 +243,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
 					request.setType(GroupElementType.Device);
 					request.setElementId(assignment.getDeviceHardwareId());
-					request.setRoles(getRandomDeviceGroupRoleList());
+					request.setRoles(getRandomDeviceGroupElementRoleList());
 					requests.add(request);
 				}
 				getDeviceManagement().addDeviceGroupElements(group.getToken(), requests);
@@ -407,8 +418,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public IDeviceGroup createDeviceGroup(int index) throws SiteWhereException {
 		DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
 		request.setToken(UUID.randomUUID().toString());
-		request.setName("Heavy Equipment Group " + (index + 1));
-		request.setDescription("Device group that contains heavy equipment assets.");
+		request.setName("Construction Equipment Group " + (index + 1));
+		request.setDescription("Device group that contains contruction equipment assets.");
+		request.setRoles(getRandomDeviceGroupRoleList());
 		return getDeviceManagement().createDeviceGroup(request);
 	}
 
@@ -708,13 +720,24 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	}
 
 	/**
-	 * Gets a random group role list for a device group element.
+	 * Gets a random role list for a device group.
 	 * 
 	 * @return
 	 */
 	protected List<String> getRandomDeviceGroupRoleList() {
 		int slot = (int) Math.floor(GRP_ROLE_LISTS.length * Math.random());
 		String[] roles = GRP_ROLE_LISTS[slot];
+		return Arrays.asList(roles);
+	}
+
+	/**
+	 * Gets a random role list for a device group element.
+	 * 
+	 * @return
+	 */
+	protected List<String> getRandomDeviceGroupElementRoleList() {
+		int slot = (int) Math.floor(GRP_ELEMENT_ROLE_LISTS.length * Math.random());
+		String[] roles = GRP_ELEMENT_ROLE_LISTS[slot];
 		return Arrays.asList(roles);
 	}
 

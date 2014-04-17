@@ -9,6 +9,9 @@
  */
 package com.sitewhere.rest.model.device.group;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 
@@ -27,6 +30,9 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup 
 
 	/** Group description */
 	private String description;
+
+	/** List of roles */
+	private List<String> roles = new ArrayList<String>();
 
 	/*
 	 * (non-Javadoc)
@@ -70,11 +76,25 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup 
 		this.description = description;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.group.IDeviceGroup#getRoles()
+	 */
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
+
 	public static DeviceGroup copy(IDeviceGroup input) {
 		DeviceGroup result = new DeviceGroup();
 		result.setToken(input.getToken());
 		result.setName(input.getName());
 		result.setDescription(input.getDescription());
+		result.getRoles().addAll(input.getRoles());
 		MetadataProviderEntity.copy(input, result);
 		return result;
 	}
