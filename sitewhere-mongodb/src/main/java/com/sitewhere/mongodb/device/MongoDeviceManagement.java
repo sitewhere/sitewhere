@@ -48,10 +48,12 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
@@ -92,13 +94,16 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author dadams
  */
-public class MongoDeviceManagement implements IDeviceManagement {
+public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceManagement {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MongoDeviceManagement.class);
 
 	/** Injected with global SiteWhere Mongo client */
 	private SiteWhereMongoClient mongoClient;
+
+	/** Provides caching for device management entities */
+	private IDeviceManagementCacheProvider cacheProvider;
 
 	/*
 	 * (non-Javadoc)
@@ -110,6 +115,21 @@ public class MongoDeviceManagement implements IDeviceManagement {
 
 		/** Ensure that collection indexes exist */
 		ensureIndexes();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.ICachingDeviceManagement#setCacheProvider(com.sitewhere
+	 * .spi.device.IDeviceManagementCacheProvider)
+	 */
+	public void setCacheProvider(IDeviceManagementCacheProvider cacheProvider) {
+		this.cacheProvider = cacheProvider;
+	}
+
+	public IDeviceManagementCacheProvider getCacheProvider() {
+		return cacheProvider;
 	}
 
 	/**
@@ -499,9 +519,19 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 */
 	@Override
 	public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
+		if (getCacheProvider() != null) {
+			IDevice cached = getCacheProvider().getDeviceCache().get(hardwareId);
+			if (cached != null) {
+				return cached;
+			}
+		}
 		DBObject dbDevice = getDeviceDBObjectByHardwareId(hardwareId);
 		if (dbDevice != null) {
-			return MongoDevice.fromDBObject(dbDevice);
+			IDevice result = MongoDevice.fromDBObject(dbDevice);
+			if ((getCacheProvider() != null) && (result != null)) {
+				getCacheProvider().getDeviceCache().put(hardwareId, result);
+			}
+			return result;
 		}
 		return null;
 	}
@@ -517,8 +547,7 @@ public class MongoDeviceManagement implements IDeviceManagement {
 		if (device.getAssignmentToken() == null) {
 			return null;
 		}
-		DBObject match = assertDeviceAssignment(device.getAssignmentToken());
-		return MongoDeviceAssignment.fromDBObject(match);
+		return assertApiDeviceAssignment(device.getAssignmentToken());
 	}
 
 	/*
@@ -1683,6 +1712,9 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 * @throws SiteWhereException
 	 */
 	protected DBObject assertDevice(String hardwareId) throws SiteWhereException {
+		if (getCacheProvider() != null) {
+
+		}
 		DBObject match = getDeviceDBObjectByHardwareId(hardwareId);
 		if (match == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.INFO);
@@ -1715,8 +1747,18 @@ public class MongoDeviceManagement implements IDeviceManagement {
 	 * @throws SiteWhereException
 	 */
 	protected IDeviceAssignment assertApiDeviceAssignment(String token) throws SiteWhereException {
+		if (getCacheProvider() != null) {
+			IDeviceAssignment result = getCacheProvider().getDeviceAssignmentCache().get(token);
+			if (result != null) {
+				return result;
+			}
+		}
 		DBObject match = assertDeviceAssignment(token);
-		return MongoDeviceAssignment.fromDBObject(match);
+		IDeviceAssignment result = MongoDeviceAssignment.fromDBObject(match);
+		if ((getCacheProvider() != null) && (result != null)) {
+			getCacheProvider().getDeviceAssignmentCache().put(token, result);
+		}
+		return result;
 	}
 
 	/**

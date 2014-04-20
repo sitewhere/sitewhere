@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="sitewhere-client/src/test/java"/>
 	<classpathentry kind="src" path="sitewhere-core/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-core/src/main/test"/>
+	<classpathentry kind="src" path="sitewhere-ehcache/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-gnuhealth/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-hbase/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-magento/src/main/java"/>
@@ -53,5 +54,7 @@
 	<classpathentry kind="var" path="M2_REPO/com/google/bitcoinj/0.10.3/bitcoinj-0.10.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast-client/3.0.2/hazelcast-client-3.0.2.jar" sourcepath="/HAZELCAST_HOME/hazelcast-client/src/main/java"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.0.0/jackson-jaxrs-json-provider-2.0.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/net/sf/ehcache/ehcache/2.8.1/ehcache-2.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -28,6 +28,7 @@
 			<modules>
 				<module>sitewhere-client</module>
 				<module>sitewhere-core</module>
+				<module>sitewhere-ehcache</module>
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
 				<module>sitewhere-magento</module>
@@ -46,6 +47,7 @@
 			<modules>
 				<module>sitewhere-client</module>
 				<module>sitewhere-core</module>
+				<module>sitewhere-ehcache</module>
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
 				<module>sitewhere-magento</module>

@@ -28,6 +28,24 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-ehcache</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-hbase</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-gnuhealth</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-magento</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
@@ -40,25 +58,13 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-hbase</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-solr</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-protobuf</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-gnuhealth</artifactId>
+			<artifactId>sitewhere-solr</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
 		</dependency>

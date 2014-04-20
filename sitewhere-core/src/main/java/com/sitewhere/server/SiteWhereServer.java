@@ -37,7 +37,9 @@ import com.sitewhere.server.metrics.DeviceManagementMetricsDecorator;
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
@@ -73,6 +75,9 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
+
+	/** Device management cache provider implementation */
+	private IDeviceManagementCacheProvider deviceManagementCacheProvider;
 
 	/** Interface to device management implementation */
 	private IDeviceManagement deviceManagement;
@@ -138,6 +143,15 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	}
 
 	/**
+	 * Get the configured device management cache provider implementation.
+	 * 
+	 * @return
+	 */
+	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider() {
+		return deviceManagementCacheProvider;
+	}
+
+	/**
 	 * Get the inbound event processor chain.
 	 * 
 	 * @return
@@ -171,6 +185,15 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	 */
 	public IAssetModuleManager getAssetModuleManager() {
 		return assetModuleManager;
+	}
+
+	/**
+	 * Get the search provider manager implementation.
+	 * 
+	 * @return
+	 */
+	public ISearchProviderManager getSearchProviderManager() {
+		return searchProviderManager;
 	}
 
 	/**
@@ -238,10 +261,13 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	 */
 	public void start() throws SiteWhereException {
 		// Start core management implementations.
-		deviceManagement.start();
-		userManagement.start();
-		assetModuleManager.start();
-		searchProviderManager.start();
+		getDeviceManagement().start();
+		if (getDeviceManagementCacheProvider() != null) {
+			getDeviceManagementCacheProvider().start();
+		}
+		getUserManagement().start();
+		getAssetModuleManager().start();
+		getSearchProviderManager().start();
 
 		// Populate data if requested.
 		verifyUserModel();
@@ -267,10 +293,13 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		deviceProvisioning.stop();
 
 		// Stop core management implementations.
-		deviceManagement.stop();
-		userManagement.stop();
-		assetModuleManager.stop();
-		searchProviderManager.stop();
+		if (getDeviceManagementCacheProvider() != null) {
+			getDeviceManagementCacheProvider().stop();
+		}
+		getDeviceManagement().stop();
+		getUserManagement().stop();
+		getAssetModuleManager().stop();
+		getSearchProviderManager().stop();
 	}
 
 	/**
@@ -336,11 +365,29 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	 * @throws SiteWhereException
 	 */
 	protected void initializeDeviceManagement() throws SiteWhereException {
+		// Load device management cache provider if configured.
+		try {
+			this.deviceManagementCacheProvider =
+					(IDeviceManagementCacheProvider) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER);
+		} catch (NoSuchBeanDefinitionException e) {
+			LOGGER.info("No device management cache provider configured. Caching disabled.");
+		}
+
 		// Verify that a device management implementation exists.
 		try {
 			IDeviceManagement deviceManagementImpl =
 					(IDeviceManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
 			deviceManagement = new DeviceManagementMetricsDecorator(deviceManagementImpl);
+
+			// Inject cache provider.
+			if (getDeviceManagementCacheProvider() != null) {
+				if (deviceManagementImpl instanceof ICachingDeviceManagement) {
+					((ICachingDeviceManagement) deviceManagementImpl).setCacheProvider(getDeviceManagementCacheProvider());
+					LOGGER.info("Device management implementation is using configured cache provider.");
+				} else {
+					LOGGER.info("Device management implementation not using cache provider.");
+				}
+			}
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No device management implementation configured.");
 		}
