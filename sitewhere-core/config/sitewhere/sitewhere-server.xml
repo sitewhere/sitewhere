@@ -16,6 +16,13 @@
 	<!-- Uncomment to use HBase datastore -->
 	<!-- <import resource="sitewhere-hbase.xml"/> -->
 
+	<!-- #################################### -->
+	<!-- # DEVICE MANAGEMENT CACHE PROVIDER # -->
+	<!-- #################################### -->
+
+	<!-- Uses EHCache to cache device mangament entities -->
+	<bean id="deviceManagementCacheProvider" class="com.sitewhere.ehcache.DeviceManagementCacheProvider"/>
+
 	<!-- ########################### -->
 	<!-- # HAZELCAST CONFIGURATION # -->
 	<!-- ########################### -->
