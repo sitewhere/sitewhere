@@ -124,23 +124,26 @@ public class DeviceAssignmentMarshalHelper {
 		return includeAsset;
 	}
 
-	public void setIncludeAsset(boolean includeAsset) {
+	public DeviceAssignmentMarshalHelper setIncludeAsset(boolean includeAsset) {
 		this.includeAsset = includeAsset;
+		return this;
 	}
 
 	public boolean isIncludeDevice() {
 		return includeDevice;
 	}
 
-	public void setIncludeDevice(boolean includeDevice) {
+	public DeviceAssignmentMarshalHelper setIncludeDevice(boolean includeDevice) {
 		this.includeDevice = includeDevice;
+		return this;
 	}
 
 	public boolean isIncludeSite() {
 		return includeSite;
 	}
 
-	public void setIncludeSite(boolean includeSite) {
+	public DeviceAssignmentMarshalHelper setIncludeSite(boolean includeSite) {
 		this.includeSite = includeSite;
+		return this;
 	}
 }

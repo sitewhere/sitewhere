@@ -24,10 +24,12 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
@@ -68,13 +70,16 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class HBaseDeviceManagement implements IDeviceManagement {
+public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceManagement {
 
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(HBaseDeviceManagement.class);
 
 	/** Used to communicate with HBase */
 	private ISiteWhereHBaseClient client;
+
+	/** Injected cache provider */
+	private IDeviceManagementCacheProvider cacheProvider;
 
 	/*
 	 * (non-Javadoc)
@@ -112,6 +117,22 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public void stop() throws SiteWhereException {
 		LOGGER.info("HBase device management stopped.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.ICachingDeviceManagement#setCacheProvider(com.sitewhere
+	 * .spi.device.IDeviceManagementCacheProvider)
+	 */
+	@Override
+	public void setCacheProvider(IDeviceManagementCacheProvider cacheProvider) {
+		this.cacheProvider = cacheProvider;
+	}
+
+	public IDeviceManagementCacheProvider getCacheProvider() {
+		return cacheProvider;
 	}
 
 	/*
@@ -259,7 +280,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.lang.String)
 	 */
 	public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-		return HBaseDevice.getDeviceByHardwareId(client, hardwareId);
+		return HBaseDevice.getDeviceByHardwareId(client, hardwareId, cacheProvider);
 	}
 
 	/*
@@ -269,7 +290,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * com.sitewhere.spi.device.request.IDeviceCreateRequest)
 	 */
 	public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException {
-		return HBaseDevice.updateDevice(client, hardwareId, request);
+		return HBaseDevice.updateDevice(client, hardwareId, request, cacheProvider);
 	}
 
 	/*
@@ -284,7 +305,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 		if (token == null) {
 			return null;
 		}
-		return HBaseDeviceAssignment.getDeviceAssignment(client, token);
+		return HBaseDeviceAssignment.getDeviceAssignment(client, token, cacheProvider);
 	}
 
 	/*
@@ -316,7 +337,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * boolean)
 	 */
 	public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
-		return HBaseDevice.deleteDevice(client, hardwareId, force);
+		return HBaseDevice.deleteDevice(client, hardwareId, force, cacheProvider);
 	}
 
 	/*
@@ -328,7 +349,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.createDeviceAssignment(client, request);
+		return HBaseDeviceAssignment.createDeviceAssignment(client, request, cacheProvider);
 	}
 
 	/*
@@ -339,7 +360,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * .String)
 	 */
 	public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-		return HBaseDeviceAssignment.getDeviceAssignment(client, token);
+		return HBaseDeviceAssignment.getDeviceAssignment(client, token, cacheProvider);
 	}
 
 	/*
@@ -350,7 +371,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * boolean)
 	 */
 	public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
-		return HBaseDeviceAssignment.deleteDeviceAssignment(client, token, force);
+		return HBaseDeviceAssignment.deleteDeviceAssignment(client, token, force, cacheProvider);
 	}
 
 	/*
@@ -361,7 +382,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * .spi.device.IDeviceAssignment)
 	 */
 	public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		return HBaseDevice.getDeviceByHardwareId(client, assignment.getDeviceHardwareId());
+		return HBaseDevice.getDeviceByHardwareId(client, assignment.getDeviceHardwareId(), cacheProvider);
 	}
 
 	/*
@@ -384,7 +405,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.updateDeviceAssignmentMetadata(client, token, metadata);
+		return HBaseDeviceAssignment.updateDeviceAssignmentMetadata(client, token, metadata, cacheProvider);
 	}
 
 	/*
@@ -396,7 +417,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.updateDeviceAssignmentStatus(client, token, status);
+		return HBaseDeviceAssignment.updateDeviceAssignmentStatus(client, token, status, cacheProvider);
 	}
 
 	/*
@@ -408,7 +429,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.updateDeviceAssignmentState(client, token, state);
+		return HBaseDeviceAssignment.updateDeviceAssignmentState(client, token, state, cacheProvider);
 	}
 
 	/*
@@ -430,7 +451,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * com.sitewhere.spi.device.IDeviceManagement#endDeviceAssignment(java.lang.String)
 	 */
 	public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
-		return HBaseDeviceAssignment.endDeviceAssignment(client, token);
+		return HBaseDeviceAssignment.endDeviceAssignment(client, token, cacheProvider);
 	}
 
 	/*
@@ -442,7 +463,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 */
 	public SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId,
 			ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseDevice.getDeviceAssignmentHistory(client, hardwareId, criteria);
+		return HBaseDevice.getDeviceAssignmentHistory(client, hardwareId, criteria, cacheProvider);
 	}
 
 	/*
@@ -479,7 +500,8 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
 			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceMeasurements(client, assignment, measurements, updateState);
+		return HBaseDeviceEvent.createDeviceMeasurements(client, assignment, measurements, updateState,
+				cacheProvider);
 	}
 
 	/*
@@ -518,7 +540,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
 			boolean updateState) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceLocation(client, assignment, request, updateState);
+		return HBaseDeviceEvent.createDeviceLocation(client, assignment, request, updateState, cacheProvider);
 	}
 
 	/*
@@ -569,7 +591,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
 			boolean updateState) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceAlert(client, assignment, request, updateState);
+		return HBaseDeviceEvent.createDeviceAlert(client, assignment, request, updateState, cacheProvider);
 	}
 
 	/*
@@ -946,7 +968,7 @@ public class HBaseDeviceManagement implements IDeviceManagement {
 	 * @throws SiteWhereException
 	 */
 	protected IDeviceAssignment assertDeviceAssignment(String token) throws SiteWhereException {
-		IDeviceAssignment result = HBaseDeviceAssignment.getDeviceAssignment(client, token);
+		IDeviceAssignment result = HBaseDeviceAssignment.getDeviceAssignment(client, token, cacheProvider);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}

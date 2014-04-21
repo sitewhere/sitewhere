@@ -52,6 +52,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -91,12 +92,13 @@ public class HBaseDeviceEvent {
 	 * @param assignment
 	 * @param request
 	 * @param updateState
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static IDeviceMeasurements createDeviceMeasurements(ISiteWhereHBaseClient hbase,
-			IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request, boolean updateState)
-			throws SiteWhereException {
+			IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request, boolean updateState,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
 		if (assnKey == null) {
@@ -128,7 +130,7 @@ public class HBaseDeviceEvent {
 		if (updateState) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateMeasurementsUpdateLogic(assignment, measurements);
-			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated);
+			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated, cache);
 		}
 
 		return measurements;
@@ -173,12 +175,13 @@ public class HBaseDeviceEvent {
 	 * @param assignment
 	 * @param request
 	 * @param updateState
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static IDeviceLocation createDeviceLocation(ISiteWhereHBaseClient hbase,
-			IDeviceAssignment assignment, IDeviceLocationCreateRequest request, boolean updateState)
-			throws SiteWhereException {
+			IDeviceAssignment assignment, IDeviceLocationCreateRequest request, boolean updateState,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(assignment, time);
 		byte[] qualifier = getQualifier(EventRecordType.Location, time);
@@ -204,7 +207,7 @@ public class HBaseDeviceEvent {
 		if (updateState) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateLocationUpdateLogic(assignment, location);
-			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated);
+			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated, cache);
 		}
 
 		return location;
@@ -248,11 +251,13 @@ public class HBaseDeviceEvent {
 	 * @param assignment
 	 * @param request
 	 * @param updateState
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static IDeviceAlert createDeviceAlert(ISiteWhereHBaseClient hbase, IDeviceAssignment assignment,
-			IDeviceAlertCreateRequest request, boolean updateState) throws SiteWhereException {
+			IDeviceAlertCreateRequest request, boolean updateState, IDeviceManagementCacheProvider cache)
+			throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(assignment, time);
 		byte[] qualifier = getQualifier(EventRecordType.Alert, time);
@@ -279,7 +284,7 @@ public class HBaseDeviceEvent {
 		if (updateState) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateAlertUpdateLogic(assignment, alert);
-			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated);
+			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated, cache);
 		}
 
 		return alert;

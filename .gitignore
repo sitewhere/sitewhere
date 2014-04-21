@@ -2,6 +2,7 @@
 /sitewhere-client/target
 /sitewhere-core/target
 /sitewhere-documentation/target
+/sitewhere-ehcache/target
 /sitewhere-gnuhealth/target
 /sitewhere-hbase/target
 /sitewhere-magento/target

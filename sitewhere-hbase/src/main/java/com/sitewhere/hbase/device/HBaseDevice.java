@@ -28,6 +28,7 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.device.marshaling.DeviceMarshalHelper;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
@@ -37,10 +38,12 @@ import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -61,6 +64,11 @@ public class HBaseDevice {
 
 	/** Column qualifier for current device assignment */
 	public static final byte[] CURRENT_ASSIGNMENT = "assignment".getBytes();
+
+	/** Used for cloning device results */
+	private static DeviceMarshalHelper DEVICE_HELPER =
+			new DeviceMarshalHelper().setIncludeAsset(false).setIncludeAssignment(false).setIncludeSpecification(
+					false);
 
 	/**
 	 * Create a new device.
@@ -91,12 +99,13 @@ public class HBaseDevice {
 	 * @param hbase
 	 * @param hardwareId
 	 * @param request
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static IDevice updateDevice(ISiteWhereHBaseClient hbase, String hardwareId,
-			IDeviceCreateRequest request) throws SiteWhereException {
-		Device updated = getDeviceByHardwareId(hbase, hardwareId);
+			IDeviceCreateRequest request, IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		Device updated = getDeviceByHardwareId(hbase, hardwareId, cache);
 		if (updated == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
@@ -232,8 +241,14 @@ public class HBaseDevice {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Device getDeviceByHardwareId(ISiteWhereHBaseClient hbase, String hardwareId)
-			throws SiteWhereException {
+	public static Device getDeviceByHardwareId(ISiteWhereHBaseClient hbase, String hardwareId,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		if (cache != null) {
+			IDevice result = cache.getDeviceCache().get(hardwareId);
+			if (result != null) {
+				return DEVICE_HELPER.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+			}
+		}
 		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 		if (deviceId == null) {
 			return null;
@@ -251,7 +266,11 @@ public class HBaseDevice {
 			if (result.size() != 1) {
 				throw new SiteWhereException("Expected one JSON entry for device and found: " + result.size());
 			}
-			return MarshalUtils.unmarshalJson(result.value(), Device.class);
+			Device found = MarshalUtils.unmarshalJson(result.value(), Device.class);
+			if ((cache != null) && (found != null)) {
+				cache.getDeviceCache().put(hardwareId, found);
+			}
+			return found;
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to load device by hardware id.", e);
 		} finally {
@@ -268,16 +287,17 @@ public class HBaseDevice {
 	 * @param hbase
 	 * @param hardwareId
 	 * @param force
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDevice deleteDevice(ISiteWhereHBaseClient hbase, String hardwareId, boolean force)
-			throws SiteWhereException {
+	public static IDevice deleteDevice(ISiteWhereHBaseClient hbase, String hardwareId, boolean force,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 		if (deviceId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
-		Device existing = getDeviceByHardwareId(hbase, hardwareId);
+		Device existing = getDeviceByHardwareId(hbase, hardwareId, cache);
 		existing.setDeleted(true);
 		byte[] primary = getDeviceRowKey(deviceId);
 		if (force) {
@@ -356,17 +376,18 @@ public class HBaseDevice {
 	 * @param hbase
 	 * @param hardwareId
 	 * @param assignmentToken
+	 * @param cache
 	 * @throws SiteWhereException
 	 */
 	public static void setDeviceAssignment(ISiteWhereHBaseClient hbase, String hardwareId,
-			String assignmentToken) throws SiteWhereException {
+			String assignmentToken, IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		String existing = getCurrentAssignmentId(hbase, hardwareId);
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 		}
 
 		// Load object to update assignment token.
-		Device updated = getDeviceByHardwareId(hbase, hardwareId);
+		Device updated = getDeviceByHardwareId(hbase, hardwareId, cache);
 		updated.setAssignmentToken(assignmentToken);
 		byte[] json = MarshalUtils.marshalJson(updated);
 
@@ -397,17 +418,18 @@ public class HBaseDevice {
 	 * 
 	 * @param hbase
 	 * @param hardwareId
+	 * @param cache
 	 * @throws SiteWhereException
 	 */
-	public static void removeDeviceAssignment(ISiteWhereHBaseClient hbase, String hardwareId)
-			throws SiteWhereException {
+	public static void removeDeviceAssignment(ISiteWhereHBaseClient hbase, String hardwareId,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 		if (deviceId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
 		byte[] primary = getDeviceRowKey(deviceId);
 
-		Device updated = getDeviceByHardwareId(hbase, hardwareId);
+		Device updated = getDeviceByHardwareId(hbase, hardwareId, cache);
 		updated.setAssignmentToken(null);
 		byte[] json = MarshalUtils.marshalJson(updated);
 
@@ -432,11 +454,14 @@ public class HBaseDevice {
 	 * 
 	 * @param hbase
 	 * @param hardwareId
+	 * @param criteria
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(ISiteWhereHBaseClient hbase,
-			String hardwareId, ISearchCriteria criteria) throws SiteWhereException {
+			String hardwareId, ISearchCriteria criteria, IDeviceManagementCacheProvider cache)
+			throws SiteWhereException {
 		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 		if (deviceId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
@@ -459,7 +484,7 @@ public class HBaseDevice {
 			}
 			List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 			for (String token : pager.getResults()) {
-				DeviceAssignment assn = HBaseDeviceAssignment.getDeviceAssignment(hbase, token);
+				DeviceAssignment assn = HBaseDeviceAssignment.getDeviceAssignment(hbase, token, cache);
 				results.add(assn);
 			}
 			return new SearchResults<IDeviceAssignment>(results, pager.getTotal());
