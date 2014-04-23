@@ -10,6 +10,10 @@
 package com.sitewhere.hbase.common;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.hbase.KeyValue;
@@ -26,6 +30,7 @@ import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.ISearchCriteria;
 
@@ -135,19 +140,45 @@ public class HBaseUtils {
 	}
 
 	/**
-	 * Get a filtered list of the primary record type.
+	 * Get all matching records, sort them, and get matching pages. TODO: This is not
+	 * efficient since it always processes all records.
 	 * 
 	 * @param hbase
 	 * @param tableName
 	 * @param builder
 	 * @param includeDeleted
+	 * @param clazz
 	 * @param criteria
+	 * @param comparator
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Pager<byte[]> getFilteredList(ISiteWhereHBaseClient hbase, byte[] tableName,
-			IRowKeyBuilder builder, boolean includeDeleted, ISearchCriteria criteria)
-			throws SiteWhereException {
+	@SuppressWarnings("unchecked")
+	public static <I, C> SearchResults<I> getFilteredList(ISiteWhereHBaseClient hbase, byte[] tableName,
+			IRowKeyBuilder builder, boolean includeDeleted, Class<I> intf, Class<C> clazz,
+			ISearchCriteria criteria, Comparator<C> comparator) throws SiteWhereException {
+		List<C> results = getRecordList(hbase, tableName, builder, includeDeleted, clazz);
+		Collections.sort(results, comparator);
+		Pager<I> pager = new Pager<I>(criteria);
+		for (C result : results) {
+			pager.process((I) result);
+		}
+		return new SearchResults<I>(pager.getResults(), pager.getTotal());
+	}
+
+	/**
+	 * Get list of records that match the given criteria.
+	 * 
+	 * @param hbase
+	 * @param tableName
+	 * @param builder
+	 * @param includeDeleted
+	 * @param clazz
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static <T> List<T> getRecordList(ISiteWhereHBaseClient hbase, byte[] tableName,
+			IRowKeyBuilder builder, boolean includeDeleted, Class<T> clazz) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
@@ -157,7 +188,7 @@ public class HBaseUtils {
 			scan.setStopRow(new byte[] { (byte) (builder.getTypeIdentifier() + 1) });
 			scanner = table.getScanner(scan);
 
-			Pager<byte[]> pager = new Pager<byte[]>(criteria);
+			List<T> results = new ArrayList<T>();
 			for (Result result : scanner) {
 				byte[] row = result.getRow();
 
@@ -179,10 +210,10 @@ public class HBaseUtils {
 					}
 				}
 				if ((shouldAdd) && (json != null)) {
-					pager.process(json);
+					results.add(MarshalUtils.unmarshalJson(json, clazz));
 				}
 			}
-			return pager;
+			return results;
 		} catch (IOException e) {
 			throw new SiteWhereException("Error scanning device network rows.", e);
 		} finally {

@@ -11,9 +11,8 @@ package com.sitewhere.hbase.device;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -25,8 +24,6 @@ import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
-import com.sitewhere.hbase.common.MarshalUtils;
-import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
@@ -150,14 +147,15 @@ public class HBaseDeviceGroup {
 	 */
 	public static SearchResults<IDeviceGroup> listDeviceGroups(ISiteWhereHBaseClient hbase,
 			boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
-		Pager<byte[]> matches =
-				HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
-						includeDeleted, criteria);
-		List<IDeviceGroup> response = new ArrayList<IDeviceGroup>();
-		for (byte[] json : matches.getResults()) {
-			response.add(MarshalUtils.unmarshalJson(json, DeviceGroup.class));
-		}
-		return new SearchResults<IDeviceGroup>(response, matches.getTotal());
+		Comparator<DeviceGroup> comparator = new Comparator<DeviceGroup>() {
+
+			public int compare(DeviceGroup a, DeviceGroup b) {
+				return -1 * (a.getCreatedDate().compareTo(b.getCreatedDate()));
+			}
+
+		};
+		return HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
+				includeDeleted, IDeviceGroup.class, DeviceGroup.class, criteria, comparator);
 	}
 
 	/**
@@ -195,6 +193,10 @@ public class HBaseDeviceGroup {
 	 */
 	public static IDeviceGroup deleteDeviceGroup(ISiteWhereHBaseClient hbase, String token, boolean force)
 			throws SiteWhereException {
+		// If actually deleting group, delete all group elements.
+		if (force) {
+			HBaseDeviceGroupElement.deleteElements(hbase, token);
+		}
 		return HBaseUtils.delete(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER,
 				DeviceGroup.class);
 	}

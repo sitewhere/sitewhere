@@ -145,7 +145,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
 			throws SiteWhereException {
-		return HBaseDeviceSpecification.createDeviceSpecification(client, request);
+		return HBaseDeviceSpecification.createDeviceSpecification(client, request, cacheProvider);
 	}
 
 	/*
@@ -157,7 +157,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
-		return HBaseDeviceSpecification.getDeviceSpecificationByToken(client, token);
+		return HBaseDeviceSpecification.getDeviceSpecificationByToken(client, token, cacheProvider);
 	}
 
 	/*
@@ -170,7 +170,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public IDeviceSpecification updateDeviceSpecification(String token,
 			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
-		return HBaseDeviceSpecification.updateDeviceSpecification(client, token, request);
+		return HBaseDeviceSpecification.updateDeviceSpecification(client, token, request, cacheProvider);
 	}
 
 	/*

@@ -134,6 +134,7 @@ public class HBaseDeviceGroupElement {
 	 * @param hbase
 	 * @param groupToken
 	 * @param combinedIds
+	 * @param deleteAll
 	 * @return
 	 * @throws SiteWhereException
 	 */
@@ -166,6 +167,7 @@ public class HBaseDeviceGroupElement {
 						for (byte[] toDelete : combinedIds) {
 							if (Bytes.equals(toDelete, column.getValue())) {
 								shouldAdd = true;
+								break;
 							}
 						}
 					}
@@ -188,6 +190,63 @@ public class HBaseDeviceGroupElement {
 				}
 			}
 			return results;
+		} catch (IOException e) {
+			throw new SiteWhereException("Error scanning device group element rows.", e);
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+			HBaseUtils.closeCleanly(table);
+		}
+	}
+
+	/**
+	 * Deletes all elements for a device group. TODO: There is probably a much more
+	 * efficient method of deleting the records than calling a delete for each.
+	 * 
+	 * @param hbase
+	 * @param groupToken
+	 * @throws SiteWhereException
+	 */
+	public static void deleteElements(ISiteWhereHBaseClient hbase, String groupToken)
+			throws SiteWhereException {
+		HTableInterface table = null;
+		ResultScanner scanner = null;
+		try {
+			table = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			byte[] primary =
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+							DeviceGroupRecordType.DeviceGroupElement.getType());
+			byte[] after =
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
+			Scan scan = new Scan();
+			scan.setStartRow(primary);
+			scan.setStopRow(after);
+			scanner = table.getScanner(scan);
+
+			List<DeleteRecord> matches = new ArrayList<DeleteRecord>();
+			for (Result result : scanner) {
+				byte[] row = result.getRow();
+				byte[] json = null;
+				for (KeyValue column : result.raw()) {
+					byte[] qualifier = column.getQualifier();
+					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
+						json = column.getValue();
+					}
+				}
+				if (json != null) {
+					matches.add(new DeleteRecord(row, json));
+				}
+			}
+			for (DeleteRecord dr : matches) {
+				try {
+					Delete delete = new Delete(dr.getRowkey());
+					table.delete(delete);
+				} catch (IOException e) {
+					LOGGER.warn("Group element delete failed for key: " + dr.getRowkey());
+				}
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Error scanning device group element rows.", e);
 		} finally {
@@ -224,8 +283,7 @@ public class HBaseDeviceGroupElement {
 
 	/**
 	 * Get paged results for listing device group elements. TODO: This is not optimized!
-	 * Getting the correct record count requires a full scan of all elements in the
-	 * group.
+	 * Getting the correct record count requires a full scan of all elements in the group.
 	 * 
 	 * @param hbase
 	 * @param groupToken

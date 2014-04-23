@@ -865,6 +865,11 @@ public class SiteWherePersistence {
 		target.setName(source.getName());
 		target.setDescription(source.getDescription());
 
+		if (source.getRoles() != null) {
+			target.getRoles().clear();
+			target.getRoles().addAll(source.getRoles());
+		}
+
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 		MetadataProvider.copy(source, target);
 	}

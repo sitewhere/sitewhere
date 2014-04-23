@@ -217,6 +217,11 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
 		DBObject created = MongoDeviceSpecification.toDBObject(spec);
 		MongoPersistence.insert(specs, created);
+
+		// Update cache with new data.
+		if (getCacheProvider() != null) {
+			getCacheProvider().getDeviceSpecificationCache().put(uuid, spec);
+		}
 		return MongoDeviceSpecification.fromDBObject(created);
 	}
 
@@ -229,9 +234,19 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
-		DBObject result = getDeviceSpecificationDBObjectByToken(token);
-		if (result != null) {
-			return MongoDeviceSpecification.fromDBObject(result);
+		if (getCacheProvider() != null) {
+			IDeviceSpecification cached = getCacheProvider().getDeviceSpecificationCache().get(token);
+			if (cached != null) {
+				return cached;
+			}
+		}
+		DBObject dbSpecification = getDeviceSpecificationDBObjectByToken(token);
+		if (dbSpecification != null) {
+			IDeviceSpecification result = MongoDeviceSpecification.fromDBObject(dbSpecification);
+			if ((getCacheProvider() != null) && (result != null)) {
+				getCacheProvider().getDeviceSpecificationCache().put(token, result);
+			}
+			return result;
 		}
 		return null;
 	}
@@ -256,6 +271,11 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		BasicDBObject query = new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, token);
 		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
 		MongoPersistence.update(specs, query, updated);
+
+		// Update cache with new data.
+		if (getCacheProvider() != null) {
+			getCacheProvider().getDeviceSpecificationCache().put(token, spec);
+		}
 		return MongoDeviceSpecification.fromDBObject(updated);
 	}
 
@@ -485,9 +505,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		}
 		Device newDevice = SiteWherePersistence.deviceCreateLogic(request);
 
+		// Convert and save device data.
 		DBCollection devices = getMongoClient().getDevicesCollection();
 		DBObject created = MongoDevice.toDBObject(newDevice);
 		MongoPersistence.insert(devices, created);
+
+		// Update cache with new data.
+		if (getCacheProvider() != null) {
+			getCacheProvider().getDeviceCache().put(request.getHardwareId(), newDevice);
+		}
 		return newDevice;
 	}
 
@@ -508,6 +534,11 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		DBCollection devices = getMongoClient().getDevicesCollection();
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 		MongoPersistence.update(devices, query, updated);
+
+		// Update cache with new data.
+		if (getCacheProvider() != null) {
+			getCacheProvider().getDeviceCache().put(hardwareId, updatedDevice);
+		}
 		return MongoDevice.fromDBObject(updated);
 	}
 
@@ -653,6 +684,11 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		DBObject created = MongoDeviceAssignment.toDBObject(newAssignment);
 		MongoPersistence.insert(assignments, created);
 
+		// Update cache with new data.
+		if (getCacheProvider() != null) {
+			getCacheProvider().getDeviceAssignmentCache().put(newAssignment.getToken(), newAssignment);
+		}
+
 		// Update device to point to created assignment.
 		DBCollection devices = getMongoClient().getDevicesCollection();
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
@@ -669,9 +705,19 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-		DBObject match = getDeviceAssignmentDBObjectByToken(token);
-		if (match != null) {
-			return MongoDeviceAssignment.fromDBObject(match);
+		if (getCacheProvider() != null) {
+			IDeviceAssignment cached = getCacheProvider().getDeviceAssignmentCache().get(token);
+			if (cached != null) {
+				return cached;
+			}
+		}
+		DBObject dbAssignment = getDeviceAssignmentDBObjectByToken(token);
+		if (dbAssignment != null) {
+			IDeviceAssignment result = MongoDeviceAssignment.fromDBObject(dbAssignment);
+			if ((getCacheProvider() != null) && (result != null)) {
+				getCacheProvider().getDeviceAssignmentCache().put(token, result);
+			}
+			return result;
 		}
 		return null;
 	}
@@ -707,12 +753,7 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		DBObject device = getDeviceDBObjectByHardwareId(assignment.getDeviceHardwareId());
-		if (device != null) {
-			return MongoDevice.fromDBObject(device);
-		} else {
-			return null;
-		}
+		return getDeviceByHardwareId(assignment.getDeviceHardwareId());
 	}
 
 	/*
@@ -1611,6 +1652,12 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		if (force) {
 			DBCollection groups = getMongoClient().getDeviceGroupsCollection();
 			MongoPersistence.delete(groups, existing);
+
+			// Delete group elements as well.
+			DBCollection elements = getMongoClient().getGroupElementsCollection();
+			BasicDBObject match = new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, token);
+			MongoPersistence.delete(elements, match);
+
 			return MongoDeviceGroup.fromDBObject(existing);
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);

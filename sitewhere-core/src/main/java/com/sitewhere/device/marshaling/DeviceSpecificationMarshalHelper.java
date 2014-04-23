@@ -71,7 +71,8 @@ public class DeviceSpecificationMarshalHelper {
 		return includeAsset;
 	}
 
-	public void setIncludeAsset(boolean includeAsset) {
+	public DeviceSpecificationMarshalHelper setIncludeAsset(boolean includeAsset) {
 		this.includeAsset = includeAsset;
+		return this;
 	}
 }

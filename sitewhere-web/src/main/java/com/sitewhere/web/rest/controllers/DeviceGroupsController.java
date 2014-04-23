@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.device.marshaling.DeviceGroupElementMarshalHelper;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
-import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -162,16 +162,19 @@ public class DeviceGroupsController extends SiteWhereController {
 	@ApiOperation(value = "List elements from a device group")
 	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
+			@ApiParam(value = "Include detailed element information", required = false) @RequestParam(defaultValue = "false") boolean includeDetails,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
+		DeviceGroupElementMarshalHelper helper =
+				new DeviceGroupElementMarshalHelper().setIncludeDetails(includeDetails);
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDeviceGroupElement> results =
 				SiteWhereServer.getInstance().getDeviceManagement().listDeviceGroupElements(groupToken,
 						criteria);
 		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 		for (IDeviceGroupElement elm : results.getResults()) {
-			elmConv.add(DeviceGroupElement.copy(elm));
+			elmConv.add(helper.convert(elm, SiteWhereServer.getInstance().getAssetModuleManager()));
 		}
 		return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
 	}
