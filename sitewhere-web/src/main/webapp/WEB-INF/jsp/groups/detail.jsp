@@ -34,19 +34,21 @@
 					<i class="icon-search sw-button-icon"></i> Filter Results</a>
 				<a id="btn-refresh-elements" class="btn" href="javascript:void(0)">
 					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-add-element" class="btn" href="javascript:void(0)">
+					<i class="icon-plus sw-button-icon"></i> Add Group Element</a>
 			</div>
 		</div>
 		<table id="elements">
 			<colgroup>
+				<col style="width: 45%;"/>
 				<col style="width: 20%;"/>
-				<col style="width: 35%;"/>
-				<col style="width: 35%;"/>
+				<col style="width: 25%;"/>
 				<col style="width: 10%;"/>
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Type</th>
-					<th>Element Id</th>
+					<th>Element</th>
+					<th>Description</th>
 					<th>Roles</th>
 					<th></th>
 				</tr>
@@ -75,7 +77,7 @@
 		elementsDS = new kendo.data.DataSource({
 			transport : {
 				read : {
-					url : "${pageContext.request.contextPath}/api/devicegroups/" + groupToken + "/elements",
+					url : "${pageContext.request.contextPath}/api/devicegroups/" + groupToken + "/elements?includeDetails=true",
 					dataType : "json",
 				}
 			},
@@ -94,7 +96,7 @@
 			dataSource : elementsDS,
             rowTemplate: kendo.template($("#tpl-device-group-element-entry").html()),
             scrollable: true,
-            height: 350,
+            height: 400,
         });
 		
 	    $("#elements-pager").kendoPager({
@@ -127,7 +129,7 @@
 	}
 	
 	/** Loads information for the selected device group */
-	function loadDevice() {
+	function loadDeviceGroup() {
 		$.getJSON("${pageContext.request.contextPath}/api/devicegroups/" + groupToken, 
 			loadGetSuccess, loadGetFailed);
 	}
@@ -135,6 +137,7 @@
     /** Called on successful device group load request */
     function loadGetSuccess(data, status, jqXHR) {
 		var template = kendo.template($("#tpl-device-group-entry").html());
+    	parseDeviceGroupData(data);
 		data.inDetailView = true;
 		$('#device-group-details').html(template(data));
     }

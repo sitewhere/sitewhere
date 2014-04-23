@@ -141,6 +141,30 @@
 	function swZoneDeleteFail(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to delete zone.");
 	}
+
+	/** Delete a device group based on its token */
+	function swDeviceGroupDelete(token, successCallback) {
+		swSuccessCallback = successCallback;
+		swConfirm("Delete Device Group", "Are you sure that you want to delete device group with token '" + token + 
+			"'?", function(result) {
+			if (result) {
+				$.deleteJSON("${pageContext.request.contextPath}/api/devicegroups/"
+					+ token + "?force=true", swDeviceGroupDeleteSuccess, swDeviceGroupDeleteFail);
+			}
+		});
+	}
+
+	/** Handle successful device group delete */
+	function swDeviceGroupDeleteSuccess() {
+		if (swSuccessCallback != null) {
+			swSuccessCallback();
+		}
+	}
+
+	/** Handle failed device group delete */
+	function swDeviceGroupDeleteFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete device group.");
+	}
 	
 	/** Gets a string array as a comma-delimited string */
 	function swArrayAsCommaDelimited(input) {

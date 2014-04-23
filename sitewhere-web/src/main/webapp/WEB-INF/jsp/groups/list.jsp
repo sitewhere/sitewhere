@@ -15,7 +15,7 @@
 	<div class="sw-title-bar-right">
 		<a id="btn-filter-results" class="btn" href="javascript:void(0)">
 			<i class="icon-search sw-button-icon"></i> Filter Results</a>
-		<a id="btn-add-device" class="btn" href="javascript:void(0)">
+		<a id="btn-add-device-group" class="btn" href="javascript:void(0)">
 			<i class="icon-plus sw-button-icon"></i> Add New Device Group</a>
 	</div>
 </div>
@@ -26,8 +26,9 @@
 	<input id="detail-group-token" name="groupToken" type="hidden"/>
 </form>
 
+<%@ include file="../includes/templateRoleEntry.inc"%>
+<%@ include file="../includes/deviceGroupCreateDialog.inc"%>
 <%@ include file="../includes/templateDeviceGroupEntry.inc"%>
-
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
@@ -41,6 +42,35 @@
 		$('#detail-group-token').val(token);
 		$('#view-device-group-detail').submit();
 	}
+	
+	/** Called when 'edit' button on the group entry is pressed */
+	function onDeviceGroupEditClicked(e, token) {
+		var event = e || window.event;
+		event.stopPropagation();
+		dguOpen(token, onDeviceGroupEditComplete)
+	}
+	
+	/** Called when 'delete' button on the group entry is pressed */
+	function onDeviceGroupDeleteClicked(e, token) {
+		var event = e || window.event;
+		event.stopPropagation();
+		swDeviceGroupDelete(token, onDeviceGroupDeleteComplete);
+	}
+   
+    /** Called after a device group is added */
+	function onDeviceGroupAdded() {
+		deviceGroupsDS.read();
+    }
+    
+    /** Called after a device group is edited */
+	function onDeviceGroupEditComplete() {
+		deviceGroupsDS.read();
+    }
+    
+    /** Called after a device group is deleted */
+	function onDeviceGroupDeleteComplete() {
+		deviceGroupsDS.read();
+    }
 	
     $(document).ready(function() {
 		/** Create AJAX datasource for device groups list */
@@ -76,7 +106,11 @@
         $("#pager").kendoPager({
             dataSource: deviceGroupsDS
         });
-   });
+		
+	    $("#btn-add-device-group").click(function(event) {
+	    	dgcOpen(event, onDeviceGroupAdded)
+	    });
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>
