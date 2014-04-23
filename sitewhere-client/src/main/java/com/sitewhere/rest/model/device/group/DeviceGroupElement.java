@@ -12,6 +12,8 @@ package com.sitewhere.rest.model.device.group;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -22,6 +24,7 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceGroupElement implements IDeviceGroupElement {
 
 	/** Parent group token */

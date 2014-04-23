@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.sitewhere.core.SiteWherePersistence;
@@ -1706,12 +1707,13 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 					new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, groupToken).append(
 							MongoDeviceGroupElement.PROP_TYPE, request.getType().name()).append(
 							MongoDeviceGroupElement.PROP_ELEMENT_ID, request.getElementId());
-			DBObject found = getMongoClient().getGroupElementsCollection().findOne(match);
-			if (found != null) {
+			DBCursor found = getMongoClient().getGroupElementsCollection().find(match);
+			while (found.hasNext()) {
+				DBObject current = found.next();
 				WriteResult result =
-						MongoPersistence.delete(getMongoClient().getGroupElementsCollection(), match);
+						MongoPersistence.delete(getMongoClient().getGroupElementsCollection(), current);
 				if (result.getN() > 0) {
-					deleted.add(MongoDeviceGroupElement.fromDBObject(found));
+					deleted.add(MongoDeviceGroupElement.fromDBObject(current));
 				}
 			}
 		}

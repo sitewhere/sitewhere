@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.device.marshaling.DeviceGroupElementMarshalHelper;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
@@ -30,6 +31,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -177,5 +179,63 @@ public class DeviceGroupsController extends SiteWhereController {
 			elmConv.add(helper.convert(elm, SiteWhereServer.getInstance().getAssetModuleManager()));
 		}
 		return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
+	}
+
+	/**
+	 * Add a list of device group elements to an existing group.
+	 * 
+	 * @param groupToken
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "Add elements to a device group")
+	public List<IDeviceGroupElement> addDeviceGroupElements(
+			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
+			@RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
+		DeviceGroupElementMarshalHelper helper =
+				new DeviceGroupElementMarshalHelper().setIncludeDetails(false);
+		List<IDeviceGroupElementCreateRequest> elements =
+				(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
+		List<IDeviceGroupElement> results =
+				SiteWhereServer.getInstance().getDeviceManagement().addDeviceGroupElements(groupToken,
+						elements);
+		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
+		for (IDeviceGroupElement elm : results) {
+			elmConv.add(helper.convert(elm, SiteWhereServer.getInstance().getAssetModuleManager()));
+		}
+		return elmConv;
+	}
+
+	/**
+	 * Delete a list of elements from an existing device group.
+	 * 
+	 * @param groupToken
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.DELETE)
+	@ResponseBody
+	@ApiOperation(value = "Delete elements from a device group")
+	public List<IDeviceGroupElement> deleteDeviceGroupElements(
+			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
+			@RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
+		DeviceGroupElementMarshalHelper helper =
+				new DeviceGroupElementMarshalHelper().setIncludeDetails(false);
+		List<IDeviceGroupElementCreateRequest> elements =
+				(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
+		List<IDeviceGroupElement> results =
+				SiteWhereServer.getInstance().getDeviceManagement().removeDeviceGroupElements(groupToken,
+						elements);
+		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
+		for (IDeviceGroupElement elm : results) {
+			elmConv.add(helper.convert(elm, SiteWhereServer.getInstance().getAssetModuleManager()));
+		}
+		return elmConv;
 	}
 }
