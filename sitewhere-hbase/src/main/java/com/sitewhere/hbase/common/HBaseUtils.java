@@ -32,6 +32,7 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.common.IFilter;
 import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
@@ -147,7 +148,9 @@ public class HBaseUtils {
 	 * @param tableName
 	 * @param builder
 	 * @param includeDeleted
+	 * @param intf
 	 * @param clazz
+	 * @param filter
 	 * @param criteria
 	 * @param comparator
 	 * @return
@@ -155,9 +158,9 @@ public class HBaseUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <I, C> SearchResults<I> getFilteredList(ISiteWhereHBaseClient hbase, byte[] tableName,
-			IRowKeyBuilder builder, boolean includeDeleted, Class<I> intf, Class<C> clazz,
+			IRowKeyBuilder builder, boolean includeDeleted, Class<I> intf, Class<C> clazz, IFilter<C> filter,
 			ISearchCriteria criteria, Comparator<C> comparator) throws SiteWhereException {
-		List<C> results = getRecordList(hbase, tableName, builder, includeDeleted, clazz);
+		List<C> results = getRecordList(hbase, tableName, builder, includeDeleted, clazz, filter);
 		Collections.sort(results, comparator);
 		Pager<I> pager = new Pager<I>(criteria);
 		for (C result : results) {
@@ -174,11 +177,13 @@ public class HBaseUtils {
 	 * @param builder
 	 * @param includeDeleted
 	 * @param clazz
+	 * @param filter
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static <T> List<T> getRecordList(ISiteWhereHBaseClient hbase, byte[] tableName,
-			IRowKeyBuilder builder, boolean includeDeleted, Class<T> clazz) throws SiteWhereException {
+			IRowKeyBuilder builder, boolean includeDeleted, Class<T> clazz, IFilter<T> filter)
+			throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
@@ -210,7 +215,10 @@ public class HBaseUtils {
 					}
 				}
 				if ((shouldAdd) && (json != null)) {
-					results.add(MarshalUtils.unmarshalJson(json, clazz));
+					T instance = MarshalUtils.unmarshalJson(json, clazz);
+					if (!filter.isExcluded(instance)) {
+						results.add(instance);
+					}
 				}
 			}
 			return results;

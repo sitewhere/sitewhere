@@ -1606,7 +1606,7 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		SiteWherePersistence.deviceGroupUpdateLogic(request, group);
 
 		DBObject updated = MongoDeviceGroup.toDBObject(group);
-		
+
 		// Manually copy last index since it's not copied by default.
 		updated.put(MongoDeviceGroup.PROP_LAST_INDEX, match.get(MongoDeviceGroup.PROP_LAST_INDEX));
 
@@ -1637,6 +1637,25 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 			throws SiteWhereException {
 		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
 		DBObject dbCriteria = new BasicDBObject();
+		if (!includeDeleted) {
+			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
+		}
+		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+		return MongoPersistence.search(IDeviceGroup.class, groups, dbCriteria, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang.String
+	 * , boolean, com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
+		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+		DBObject dbCriteria = new BasicDBObject(MongoDeviceGroup.PROP_ROLES, role);
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 		}

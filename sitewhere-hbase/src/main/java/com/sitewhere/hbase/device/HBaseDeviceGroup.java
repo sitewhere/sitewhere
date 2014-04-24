@@ -31,6 +31,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.common.IFilter;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
@@ -154,8 +155,44 @@ public class HBaseDeviceGroup {
 			}
 
 		};
+		IFilter<DeviceGroup> filter = new IFilter<DeviceGroup>() {
+
+			public boolean isExcluded(DeviceGroup item) {
+				return false;
+			}
+		};
 		return HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
-				includeDeleted, IDeviceGroup.class, DeviceGroup.class, criteria, comparator);
+				includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria, comparator);
+	}
+
+	/**
+	 * Get paged {@link IDeviceGroup} results for groups that have a given role based on
+	 * the given search criteria.
+	 * 
+	 * @param role
+	 * @param hbase
+	 * @param includeDeleted
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceGroup> listDeviceGroupsWithRole(ISiteWhereHBaseClient hbase,
+			final String role, boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
+		Comparator<DeviceGroup> comparator = new Comparator<DeviceGroup>() {
+
+			public int compare(DeviceGroup a, DeviceGroup b) {
+				return -1 * (a.getCreatedDate().compareTo(b.getCreatedDate()));
+			}
+
+		};
+		IFilter<DeviceGroup> filter = new IFilter<DeviceGroup>() {
+
+			public boolean isExcluded(DeviceGroup item) {
+				return !item.getRoles().contains(role);
+			}
+		};
+		return HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
+				includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria, comparator);
 	}
 
 	/**

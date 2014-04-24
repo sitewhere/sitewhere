@@ -439,6 +439,12 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
+	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceGroupsWithRole(role, includeDeleted, criteria);
+	}
+
+	@Override
 	public List<IDeviceGroupElement> addDeviceGroupElements(String groupToken,
 			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
 		return delegate.addDeviceGroupElements(groupToken, elements);

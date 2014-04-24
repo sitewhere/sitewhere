@@ -126,6 +126,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	/**
 	 * List all device groups.
 	 * 
+	 * @param role
 	 * @param includeDeleted
 	 * @param page
 	 * @param pageSize
@@ -136,13 +137,22 @@ public class DeviceGroupsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "List all device groups")
 	public ISearchResults<IDeviceGroup> listDeviceGroups(
+			@ApiParam(value = "Role", required = false) @RequestParam(required = false) String role,
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		ISearchResults<IDeviceGroup> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceGroups(includeDeleted, criteria);
+		ISearchResults<IDeviceGroup> results;
+		if (role == null) {
+			results =
+					SiteWhereServer.getInstance().getDeviceManagement().listDeviceGroups(includeDeleted,
+							criteria);
+		} else {
+			results =
+					SiteWhereServer.getInstance().getDeviceManagement().listDeviceGroupsWithRole(role,
+							includeDeleted, criteria);
+		}
 		List<IDeviceGroup> groupsConv = new ArrayList<IDeviceGroup>();
 		for (IDeviceGroup group : results.getResults()) {
 			groupsConv.add(DeviceGroup.copy(group));

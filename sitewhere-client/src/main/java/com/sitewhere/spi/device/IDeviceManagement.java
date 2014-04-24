@@ -718,6 +718,18 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 			throws SiteWhereException;
 
 	/**
+	 * Lists all device groups that have the given role.
+	 * 
+	 * @param role
+	 * @param includeDeleted
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException;
+
+	/**
 	 * Delete a device group.
 	 * 
 	 * @param token

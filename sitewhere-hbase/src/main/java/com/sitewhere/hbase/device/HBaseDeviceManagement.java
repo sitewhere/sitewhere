@@ -913,6 +913,19 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang.String
+	 * , boolean, com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return HBaseDeviceGroup.listDeviceGroupsWithRole(client, role, includeDeleted, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.device.IDeviceManagement#deleteDeviceGroup(java.lang.String,
 	 * boolean)
 	 */

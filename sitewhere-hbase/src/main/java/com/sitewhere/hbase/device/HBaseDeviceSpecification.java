@@ -34,6 +34,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.common.IFilter;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
@@ -190,8 +191,15 @@ public class HBaseDeviceSpecification {
 			}
 
 		};
+		IFilter<DeviceSpecification> filter = new IFilter<DeviceSpecification>() {
+
+			public boolean isExcluded(DeviceSpecification item) {
+				return false;
+			}
+		};
 		return HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
-				includeDeleted, IDeviceSpecification.class, DeviceSpecification.class, criteria, comparator);
+				includeDeleted, IDeviceSpecification.class, DeviceSpecification.class, filter, criteria,
+				comparator);
 	}
 
 	/**
