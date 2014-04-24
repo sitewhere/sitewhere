@@ -146,8 +146,8 @@
 		// Reset roles.
 		geaRolesDS.data(new Array());
 		
-		// Reset form and metadata.
-    	$('#dgc-general-form')[0].reset();
+		// Reset element id field.
+    	$('#gea-element-id').val("");
     	
     	// Select first tab.
 		geaTabs.select(0);

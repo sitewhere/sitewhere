@@ -40,8 +40,8 @@
 		</div>
 		<table id="elements">
 			<colgroup>
-				<col style="width: 45%;"/>
-				<col style="width: 20%;"/>
+				<col style="width: 35%;"/>
+				<col style="width: 30%;"/>
 				<col style="width: 25%;"/>
 				<col style="width: 10%;"/>
 			</colgroup>
