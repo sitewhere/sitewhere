@@ -13,7 +13,7 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
 	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-device" class="btn" href="javascript:void(0)">
+		<a id="btn-edit-device-group" class="btn" href="javascript:void(0)">
 			<i class="icon-pencil sw-button-icon"></i> Edit Device Group</a>
 	</div>
 </div>
@@ -61,6 +61,10 @@
 	</div>
 </div>
 
+<%@ include file="../includes/templateRoleEntry.inc"%>
+<%@ include file="../includes/templateElementRoleEntry.inc"%>
+<%@ include file="../includes/deviceGroupElementAddDialog.inc"%>
+<%@ include file="../includes/deviceGroupCreateDialog.inc"%>
 <%@ include file="../includes/templateDeviceGroupEntry.inc"%>
 <%@ include file="../includes/templateDeviceGroupElementEntry.inc"%>
 <%@ include file="../includes/commonFunctions.inc"%>
@@ -108,6 +112,11 @@
 	    });
 		
 	    $("#btn-edit-device-group").click(function() {
+			dguOpen(groupToken, onDeviceGroupEditComplete);
+	    });
+		
+	    $("#btn-add-element").click(function() {
+			geaOpen(groupToken, onAddElementComplete);
 	    });
 		
 		/** Create the tab strip */
@@ -117,6 +126,16 @@
 		
 		loadDeviceGroup();
 	});
+	
+	/** Called after device group is edited */
+	function onDeviceGroupEditComplete() {
+		loadDeviceGroup();
+	}
+	
+	/** Called after group element is added */
+	function onAddElementComplete() {
+    	elementsDS.read();
+	}
 	
 	/** Parses result records to format data */
 	function parseElementResults(response) {
@@ -145,6 +164,28 @@
 	/** Handle error on getting device group data */
 	function loadGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to load device group data.");
+	}
+	
+	/** Called when a group element is to be deleted */
+	function onDeleteDeviceGroupElement(event, type, elementId) {
+		var toDelete = [{"type": type, "elementId": elementId}];
+		swConfirm("Delete Device Group Element", "Are you sure that you want to delete " + type + " with id " +
+			elementId + "'?", function(result) {
+			if (result) {
+				$.deleteWithInputJSON("${pageContext.request.contextPath}/api/devicegroups/" + groupToken + "/elements", 
+					toDelete, elementDeleteSuccess, elementDeleteFailed);
+			}
+		});
+	}
+    
+    /** Called on successful device group element delete request */
+    function elementDeleteSuccess(data, status, jqXHR) {
+    	elementsDS.read();
+    }
+    
+    /** Called on failed device group element delete request */
+	function elementDeleteFailed(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete device group element.");
 	}
 </script>
 

@@ -1606,6 +1606,9 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		SiteWherePersistence.deviceGroupUpdateLogic(request, group);
 
 		DBObject updated = MongoDeviceGroup.toDBObject(group);
+		
+		// Manually copy last index since it's not copied by default.
+		updated.put(MongoDeviceGroup.PROP_LAST_INDEX, match.get(MongoDeviceGroup.PROP_LAST_INDEX));
 
 		BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
 		MongoPersistence.update(groups, query, updated);

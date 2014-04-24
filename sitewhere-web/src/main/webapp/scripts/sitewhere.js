@@ -48,6 +48,17 @@ $.deleteJSON = function(url, onSuccess, onFail) {
 	});
 }
 
+$.deleteWithInputJSON = function(url, data, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'DELETE',
+		'url' : url,
+		'contentType' : 'application/json',
+		'data' : JSON.stringify(data),
+		'success' : onSuccess,
+		'error' : onFail
+	});
+}
+
 /** Common error handler for AJAX calls */
 function handleError(jqXHR, info) {
 	var respError = jqXHR.getResponseHeader("X-SiteWhere-Error");

@@ -66,7 +66,7 @@
 	var dgcRolesDS;
 	
 	/** List containing roles */
-	var dgcRoles = [];
+	var dgcRoles;
 
 	$(document).ready(function() {
 		
