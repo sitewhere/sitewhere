@@ -9,7 +9,9 @@
  */
 package com.sitewhere.server.search;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -23,15 +25,15 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
  * @author Derek
  */
 public class SearchProviderManager implements ISearchProviderManager {
-	
+
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SearchProviderManager.class);
 
 	/** List of available search providers */
 	private List<ISearchProvider> searchProviders;
 
-	/** Default search provider */
-	private ISearchProvider defaultSearchProvider;
+	/** Map of search providers by id */
+	private Map<String, ISearchProvider> providersById = new HashMap<String, ISearchProvider>();
 
 	/*
 	 * (non-Javadoc)
@@ -41,11 +43,9 @@ public class SearchProviderManager implements ISearchProviderManager {
 	@Override
 	public void start() throws SiteWhereException {
 		LOGGER.info("Search provider manager starting...");
-		if (getSearchProviders().size() > 0) {
-			defaultSearchProvider = getSearchProviders().get(0);
-		}
 		for (ISearchProvider provider : getSearchProviders()) {
 			provider.start();
+			providersById.put(provider.getId(), provider);
 		}
 		LOGGER.info("Search provider manager started.");
 	}
@@ -79,10 +79,11 @@ public class SearchProviderManager implements ISearchProviderManager {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.search.external.ISearchProviderManager#getDefaultSearchProvider()
+	 * com.sitewhere.spi.search.external.ISearchProviderManager#getSearchProvider(java
+	 * .lang.String)
 	 */
 	@Override
-	public ISearchProvider getDefaultSearchProvider() {
-		return defaultSearchProvider;
+	public ISearchProvider getSearchProvider(String id) {
+		return providersById.get(id);
 	}
 }

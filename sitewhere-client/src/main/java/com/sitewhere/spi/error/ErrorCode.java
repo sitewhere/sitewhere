@@ -79,6 +79,9 @@ public enum ErrorCode {
 	/** Invalid device group token */
 	InvalidDeviceGroupToken(525, "Device group not found."),
 
+	/** Invalid search provider id */
+	InvalidSearchProviderId(600, "Search provider not found."),
+
 	/******************
 	 * DEVICE COMMAND *
 	 ******************/

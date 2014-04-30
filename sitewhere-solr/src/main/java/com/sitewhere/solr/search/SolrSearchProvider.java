@@ -14,15 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.MultiMapSolrParams;
+import org.apache.solr.servlet.SolrRequestParsers;
 
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
+import com.sitewhere.solr.SiteWhereSolrFactory;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -39,6 +41,9 @@ public class SolrSearchProvider implements IDeviceEventSearchProvider {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SolrSearchProvider.class);
+
+	/** Id returned for provider */
+	private static final String ID = "solr";
 
 	/** Name returned for provider */
 	private static final String NAME = "Apache Solr Search Provider";
@@ -90,13 +95,13 @@ public class SolrSearchProvider implements IDeviceEventSearchProvider {
 	@Override
 	public List<IDeviceEvent> executeQuery(String query) throws SiteWhereException {
 		try {
+			LOGGER.info("About to execute Solr search with query string: " + query);
 			List<IDeviceEvent> results = new ArrayList<IDeviceEvent>();
-			SolrQuery sq = new SolrQuery(query);
-			QueryResponse response = getSolr().getSolrServer().query(sq);
+			MultiMapSolrParams params = SolrRequestParsers.parseQueryString(query);
+			QueryResponse response = getSolr().getSolrServer().query(params);
 			SolrDocumentList docs = response.getResults();
-			while (docs.iterator().hasNext()) {
-				SolrDocument doc = docs.iterator().next();
-				doc.getFieldNames();
+			for (SolrDocument doc : docs) {
+				results.add(SiteWhereSolrFactory.parseDocument(doc));
 			}
 			return results;
 		} catch (SolrServerException e) {
@@ -127,6 +132,16 @@ public class SolrSearchProvider implements IDeviceEventSearchProvider {
 		} catch (SolrServerException e) {
 			throw new SiteWhereException("Unable to execute 'getLocationsNear' query.", e);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.search.external.ISearchProvider#getId()
+	 */
+	@Override
+	public String getId() {
+		return ID;
 	}
 
 	/*

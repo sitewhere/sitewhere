@@ -28,9 +28,10 @@ public interface ISearchProviderManager extends ISiteWhereLifecycle {
 	public List<ISearchProvider> getSearchProviders();
 
 	/**
-	 * Get the default search provider.
+	 * Get search provider with the given unique id.
 	 * 
+	 * @param id
 	 * @return
 	 */
-	public ISearchProvider getDefaultSearchProvider();
+	public ISearchProvider getSearchProvider(String id);
 }

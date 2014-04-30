@@ -9,11 +9,22 @@
  */
 package com.sitewhere.solr;
 
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 
+import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceEvent;
+import com.sitewhere.rest.model.device.event.DeviceLocation;
+import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -79,6 +90,151 @@ public class SiteWhereSolrFactory {
 		document.addField(ISolrFields.ALERT_LEVEL, alert.getLevel().name());
 		document.addField(ISolrFields.ALERT_SOURCE, alert.getSource().name());
 		return document;
+	}
+
+	/**
+	 * Parses a {@link SolrDocument} into a {@link IDeviceEvent}.
+	 * 
+	 * @param document
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDeviceEvent parseDocument(SolrDocument document) throws SiteWhereException {
+		String type = (String) document.getFieldValue(ISolrFields.EVENT_TYPE);
+		if (type == null) {
+			throw new SiteWhereException("Solr event does not contain an event type indicator.");
+		}
+		SolrEventType eventType = SolrEventType.valueOf(type);
+		switch (eventType) {
+		case Location: {
+			return parseLocationFromDocument(document);
+		}
+		case Measurements: {
+			return parseMeasurementsFromDocument(document);
+		}
+		case Alert: {
+			return parseAlertFromDocument(document);
+		}
+		default: {
+			throw new SiteWhereException("Solr docuemnt contained unknown device event type.");
+		}
+		}
+	}
+
+	/**
+	 * Parse an {@link IDeviceLocation} record from a {@link SolrDocument}.
+	 * 
+	 * @param document
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@SuppressWarnings("unchecked")
+	protected static IDeviceLocation parseLocationFromDocument(SolrDocument document)
+			throws SiteWhereException {
+		DeviceLocation location = new DeviceLocation();
+
+		List<String> latLong = (List<String>) document.get(ISolrFields.LOCATION);
+		if (latLong == null) {
+			throw new SiteWhereException("Invalid location document. No location data stored.");
+		}
+		String[] split = latLong.get(0).split("[,]");
+		location.setLatitude(Double.parseDouble(split[0].trim()));
+		location.setLongitude(Double.parseDouble(split[1].trim()));
+
+		Double elevation = (Double) document.get(ISolrFields.ELEVATION);
+		if (elevation != null) {
+			location.setElevation(elevation);
+		}
+
+		addFieldsFromEventDocument(document, location);
+		return location;
+	}
+
+	/**
+	 * Parse an {@link IDeviceMeasurements} record from a {@link SolrDocument}.
+	 * 
+	 * @param document
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static IDeviceMeasurements parseMeasurementsFromDocument(SolrDocument document)
+			throws SiteWhereException {
+		DeviceMeasurements measurements = new DeviceMeasurements();
+
+		Iterator<String> names = document.getFieldNames().iterator();
+		int mxLength = ISolrFields.MEASUREMENT_PREFIX.length();
+		while (names.hasNext()) {
+			String name = names.next();
+			if (name.startsWith(ISolrFields.MEASUREMENT_PREFIX)) {
+				String metaName = name.substring(mxLength);
+				Double metaValue = (Double) document.get(name);
+				measurements.addOrReplaceMeasurement(metaName, metaValue);
+			}
+		}
+
+		addFieldsFromEventDocument(document, measurements);
+		return measurements;
+	}
+
+	/**
+	 * Parse and {@link IDeviceAlert} record from a {@link SolrDocument}.
+	 * 
+	 * @param document
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static IDeviceAlert parseAlertFromDocument(SolrDocument document) throws SiteWhereException {
+		DeviceAlert alert = new DeviceAlert();
+
+		String alertType = (String) document.get(ISolrFields.ALERT_TYPE);
+		String alertMessage = (String) document.get(ISolrFields.ALERT_MESSAGE);
+		String alertLevelStr = (String) document.get(ISolrFields.ALERT_LEVEL);
+		String alertSourceStr = (String) document.get(ISolrFields.ALERT_SOURCE);
+
+		alert.setType(alertType);
+		alert.setMessage(alertMessage);
+		alert.setLevel(AlertLevel.valueOf(alertLevelStr));
+		alert.setSource(AlertSource.valueOf(alertSourceStr));
+
+		addFieldsFromEventDocument(document, alert);
+		return alert;
+	}
+
+	/**
+	 * Add fields common to all device events.
+	 * 
+	 * @param document
+	 * @param event
+	 * @throws SiteWhereException
+	 */
+	protected static void addFieldsFromEventDocument(SolrDocument document, DeviceEvent event)
+			throws SiteWhereException {
+		String id = (String) document.get(ISolrFields.EVENT_ID);
+		String assignmentToken = (String) document.get(ISolrFields.ASSIGNMENT_TOKEN);
+		String assignmentTypeStr = (String) document.get(ISolrFields.ASSIGNMENT_TYPE);
+		String assetId = (String) document.get(ISolrFields.ASSET_ID);
+		String siteToken = (String) document.get(ISolrFields.SITE_TOKEN);
+		Date eventDate = (Date) document.get(ISolrFields.EVENT_DATE);
+		Date receivedDate = (Date) document.get(ISolrFields.RECEIVED_DATE);
+
+		event.setId(id);
+		event.setDeviceAssignmentToken(assignmentToken);
+		event.setAssignmentType(DeviceAssignmentType.valueOf(assignmentTypeStr));
+		event.setAssetId(assetId);
+		event.setSiteToken(siteToken);
+		event.setEventDate(eventDate);
+		event.setReceivedDate(receivedDate);
+
+		Iterator<String> names = document.getFieldNames().iterator();
+		int metaLength = ISolrFields.META_PREFIX.length();
+		while (names.hasNext()) {
+			String name = names.next();
+			if (name.startsWith(ISolrFields.META_PREFIX)) {
+				String metaName = name.substring(metaLength);
+				String metaValue = (String) document.get(name);
+				event.addOrReplaceMetadata(metaName, metaValue);
+			}
+		}
 	}
 
 	/**

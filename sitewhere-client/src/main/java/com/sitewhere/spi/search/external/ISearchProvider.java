@@ -19,6 +19,13 @@ import com.sitewhere.spi.ISiteWhereLifecycle;
 public interface ISearchProvider extends ISiteWhereLifecycle {
 
 	/**
+	 * Get unique id of search provider.
+	 * 
+	 * @return
+	 */
+	public String getId();
+
+	/**
 	 * Get a human-readable name for the search provider.
 	 * 
 	 * @return

@@ -56,5 +56,6 @@
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.0.0/jackson-jaxrs-json-provider-2.0.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/net/sf/ehcache/ehcache/2.8.1/ehcache-2.8.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/solr/solr-core/4.6.0/solr-core-4.6.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
