@@ -162,6 +162,17 @@ that indicates how event data should be indexed. Solr can then be queried for Si
 features like geospatial searches, faceted result sets, and other complicated searches that make it possible
 to derive more meaning from the event data.
 
+External Search Providers
+-------------------------
+As of version 0.9.5, SiteWhere supports an abstracted view of external search engines that operate on 
+SiteWhere data. External search providers allow the SiteWhere REST services to take advantage of features 
+particular to the underlying search engine while still returning results in a predictable format. 
+For instance, the Solr external search provider allows a user to pass a Solr query string as part of the
+REST call, taking advantage of powerful Solr features while returning a result set in the same format
+SiteWhere uses for searches on its core datastores. This approach allows SiteWhere to enrich the result 
+data if necessary, and presents a single view of the data whether stored in SiteWhere or indexed in an
+engine optimized for adhoc queries.
+
 -------------------
 Provisioning Engine
 -------------------
@@ -283,6 +294,15 @@ Each device is addressable by a unique hardware id that identifies it uniquely i
 itself in the system by providing a hardware id and device specification token. SiteWhere in turn creates a new 
 device record via the APIs and (optionally) creates a placeholder unassociated device assignment (see below) to allow 
 events to be collected for the device. Devices can be manually added via the REST services or via the admin UI.
+	
+Device Groups
+-------------
+Device groups allow multiple related devices or subgroups to be organized into logical units. The groups can
+then be used for performing operations collectively rather than performing them on a per-device basis. 
+Each group can have zero or more roles assigned to it, allowing arbitrary groupings based on application needs.
+Devices may belong to multiple groups and may be assigned zero or more roles within the group. This structure allows
+queries such as "find all devices from the 'heavy-equipment' group that have the role 'leased-equipment' and issue
+a 'getCurrentLocation' command".
 
 Device Assignments
 ------------------
