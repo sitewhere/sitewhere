@@ -11,7 +11,7 @@
 	<groupId>com.sitewhere</groupId>
 	<artifactId>sitewhere</artifactId>
 	<packaging>pom</packaging>
-	<version>0.9.5</version>
+	<version>0.9.6</version>
 	<name>SiteWhere Root</name>
 	<description>SiteWhere M2M Integration Platform</description>
 	<url>http://www.sitewhere.org/</url>
@@ -62,7 +62,7 @@
 	</profiles>
 
 	<properties>
-		<sitewhere.version>0.9.5</sitewhere.version>
+		<sitewhere.version>0.9.6</sitewhere.version>
 		<hbase.version>0.94.12</hbase.version>
 		<hadoop.version>1.0.4</hadoop.version>
 		<mule.version>3.4.0</mule.version>
