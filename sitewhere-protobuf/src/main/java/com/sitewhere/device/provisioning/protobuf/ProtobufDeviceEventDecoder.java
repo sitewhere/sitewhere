@@ -21,8 +21,9 @@ import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Acknowledge;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceAlert;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceLocation;
-import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceMeasurement;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceMeasurements;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Header;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Measurement;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.RegisterDevice;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
@@ -83,17 +84,19 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 				return results;
 			}
 			case DEVICEMEASUREMENT: {
-				DeviceMeasurement measurement = DeviceMeasurement.parseDelimitedFrom(stream);
-				LOGGER.debug("Decoded measurement for: " + measurement.getHardwareId());
+				DeviceMeasurements dm = DeviceMeasurements.parseDelimitedFrom(stream);
+				LOGGER.debug("Decoded measurement for: " + dm.getHardwareId());
 				DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
-				request.addOrReplaceMeasurement(measurement.getMeasurementId(),
-						measurement.getMeasurementValue());
-				if (measurement.hasEventDate()) {
-					request.setEventDate(new Date(measurement.getEventDate()));
+				List<Measurement> measurements = dm.getMeasurementList();
+				for (Measurement current : measurements) {
+					request.addOrReplaceMeasurement(current.getMeasurementId(), current.getMeasurementValue());
+				}
+				if (dm.hasEventDate()) {
+					request.setEventDate(new Date(dm.getEventDate()));
 				} else {
 					request.setEventDate(new Date());
 				}
-				decoded.setHardwareId(measurement.getHardwareId());
+				decoded.setHardwareId(dm.getHardwareId());
 				decoded.setRequest(request);
 				return results;
 			}

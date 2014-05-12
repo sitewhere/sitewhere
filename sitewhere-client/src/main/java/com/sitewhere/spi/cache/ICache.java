@@ -40,6 +40,14 @@ public interface ICache<K, V> {
 	public void put(K key, V value) throws SiteWhereException;
 
 	/**
+	 * Remove an element from the cache.
+	 * 
+	 * @param key
+	 * @throws SiteWhereException
+	 */
+	public void remove(K key) throws SiteWhereException;
+
+	/**
 	 * Get count of elements currently in cache.
 	 * 
 	 * @return

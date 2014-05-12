@@ -1,4 +1,13 @@
 <hardware-assets>
+	<!-- Android -->
+	<hardware-asset id="173" name="Galaxy Tab 3" sku="GTAB3" device="true">
+		<description> This thin, lightweight Android tablet features a 7-inch touch display along with the same familiar interface as other Samsung Galaxy devices, making it easy to use. Use it to quickly browse the web, watch movies, read e-books, or download apps from Google Play.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/android-logo.png</image-url>
+		<property name="manufacturer" value="Samsung"/>
+		<property name="cpu" value="Dual Core Application Processor "/>
+		<property name="sd.size" value="1gb"/>
+	</hardware-asset>
+
 	<!-- Raspberry Pi -->
 	<hardware-asset id="174" name="Raspberry Pi" sku="RPI" device="true">
 		<description>The Raspberry Pi is a credit-card-sized single-board computer developed in the UK by the Raspberry Pi Foundation with the intention of promoting the teaching of basic computer science in schools.</description>

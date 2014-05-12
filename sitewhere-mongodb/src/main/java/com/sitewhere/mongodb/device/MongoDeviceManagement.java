@@ -685,7 +685,7 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		DBObject created = MongoDeviceAssignment.toDBObject(newAssignment);
 		MongoPersistence.insert(assignments, created);
 
-		// Update cache with new data.
+		// Update cache with new assignment data.
 		if (getCacheProvider() != null) {
 			getCacheProvider().getDeviceAssignmentCache().put(newAssignment.getToken(), newAssignment);
 		}
@@ -695,6 +695,12 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
 		device.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, newAssignment.getToken());
 		MongoPersistence.update(devices, query, device);
+
+		// Update cache with new device data.
+		if (getCacheProvider() != null) {
+			Device updated = MongoDevice.fromDBObject(device);
+			getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
+		}
 		return newAssignment;
 	}
 
@@ -789,6 +795,12 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
 		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
 		MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDBObject(assignment));
+
+		// Update cache with new assignment data.
+		if (getCacheProvider() != null) {
+			getCacheProvider().getDeviceAssignmentCache().put(assignment.getToken(), assignment);
+		}
+
 		return MongoDeviceAssignment.fromDBObject(match);
 	}
 
@@ -806,8 +818,14 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
 		MongoPersistence.update(assignments, query, match);
-		DeviceAssignment assignment = MongoDeviceAssignment.fromDBObject(match);
-		return assignment;
+		DeviceAssignment updated = MongoDeviceAssignment.fromDBObject(match);
+
+		// Update cache with new assignment data.
+		if (getCacheProvider() != null) {
+			getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
+		}
+
+		return updated;
 	}
 
 	/*
@@ -826,6 +844,12 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
 		MongoPersistence.update(assignments, query, match);
 		DeviceAssignment updated = MongoDeviceAssignment.fromDBObject(match);
+
+		// Update cache with new assignment data.
+		if (getCacheProvider() != null) {
+			getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
+		}
+
 		return updated;
 	}
 
@@ -857,6 +881,12 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
 		MongoPersistence.update(assignments, query, match);
 
+		// Update cache with new assignment data.
+		if (getCacheProvider() != null) {
+			DeviceAssignment updated = MongoDeviceAssignment.fromDBObject(match);
+			getCacheProvider().getDeviceAssignmentCache().put(updated.getToken(), updated);
+		}
+
 		// Remove device assignment reference.
 		DBCollection devices = getMongoClient().getDevicesCollection();
 		String hardwareId = (String) match.get(MongoDeviceAssignment.PROP_DEVICE_HARDWARE_ID);
@@ -864,6 +894,12 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		deviceMatch.removeField(MongoDevice.PROP_ASSIGNMENT_TOKEN);
 		query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 		MongoPersistence.update(devices, query, deviceMatch);
+
+		// Update cache with new device data.
+		if (getCacheProvider() != null) {
+			Device updated = MongoDevice.fromDBObject(deviceMatch);
+			getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
+		}
 
 		DeviceAssignment assignment = MongoDeviceAssignment.fromDBObject(match);
 		return assignment;

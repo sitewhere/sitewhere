@@ -143,9 +143,14 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Namespace for Raspberry Pi commands */
 	public static final String RASPBERRY_PI_NAMESPACE = "http://raspberrypi/example";
 
+	/** Namespace for Android commands */
+	public static final String ANDROID_NAMESPACE = "http://android/example";
+
 	/** Information for available device specifications */
 	public static final SpecificationDetails[] SPECIFICATION_INFO =
 			{
+					new SpecificationDetails("173", "Android Default",
+							"d2604433-e4eb-419b-97c7-88efe9b2cd41"),
 					new SpecificationDetails("174", "Raspberrry Pi Default",
 							"7dfd6d63-5e8d-4380-be04-fc5c73801dfb"),
 					new SpecificationDetails("175", "MeiTrack MT90 Default",
@@ -336,6 +341,15 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		testEvents.setName("testEvents");
 		testEvents.setDescription("Send a request that results in sample events being returned.");
 		commands.add(getDeviceManagement().createDeviceCommand(spec, testEvents));
+
+		if (spec.getToken().equals("d2604433-e4eb-419b-97c7-88efe9b2cd41")) {
+			DeviceCommandCreateRequest changebg = new DeviceCommandCreateRequest();
+			changebg.setNamespace(ANDROID_NAMESPACE);
+			changebg.setName("changeBackground");
+			changebg.setDescription("Change background color of application.");
+			changebg.getParameters().add(new CommandParameter("color", ParameterType.String, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, changebg));
+		}
 
 		if (spec.getToken().equals("7dfd6d63-5e8d-4380-be04-fc5c73801dfb")) {
 			DeviceCommandCreateRequest hello = new DeviceCommandCreateRequest();

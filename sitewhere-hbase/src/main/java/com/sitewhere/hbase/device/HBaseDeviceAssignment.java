@@ -190,6 +190,11 @@ public class HBaseDeviceAssignment {
 			Put put = new Put(rowkey);
 			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
 			sites.put(put);
+
+			// Make sure that cache is using updated assignment information.
+			if (cache != null) {
+				cache.getDeviceAssignmentCache().put(updated.getToken(), updated);
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to update device assignment metadata.", e);
 		} finally {
@@ -224,6 +229,11 @@ public class HBaseDeviceAssignment {
 			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
 			put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE, stateJson);
 			sites.put(put);
+
+			// Make sure that cache is using updated assignment information.
+			if (cache != null) {
+				cache.getDeviceAssignmentCache().put(updated.getToken(), updated);
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to update device assignment state.", e);
 		} finally {
@@ -258,6 +268,11 @@ public class HBaseDeviceAssignment {
 			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
 			put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS, status.name().getBytes());
 			sites.put(put);
+
+			// Make sure that cache is using updated assignment information.
+			if (cache != null) {
+				cache.getDeviceAssignmentCache().put(updated.getToken(), updated);
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to update device assignment status.", e);
 		} finally {
@@ -297,6 +312,11 @@ public class HBaseDeviceAssignment {
 			put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
 					DeviceAssignmentStatus.Released.name().getBytes());
 			sites.put(put);
+
+			// Make sure that cache is using updated assignment information.
+			if (cache != null) {
+				cache.getDeviceAssignmentCache().put(updated.getToken(), updated);
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to update device assignment status.", e);
 		} finally {

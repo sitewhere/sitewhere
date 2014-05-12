@@ -66,6 +66,16 @@ public class CacheAdapter<K, V> implements ICache<K, V> {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.cache.ICache#remove(java.lang.Object)
+	 */
+	@Override
+	public void remove(K key) throws SiteWhereException {
+		cache.remove(key);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.cache.ICache#getElementCount()
 	 */
 	@Override

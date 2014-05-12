@@ -406,6 +406,11 @@ public class HBaseDevice {
 			put.add(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT, assignmentToken.getBytes());
 			put.add(ISiteWhereHBase.FAMILY_ID, assnHistory, assignmentToken.getBytes());
 			devices.put(put);
+
+			// Make sure that cache is using updated device information.
+			if (cache != null) {
+				cache.getDeviceCache().put(updated.getHardwareId(), updated);
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to set device assignment.", e);
 		} finally {
@@ -442,6 +447,11 @@ public class HBaseDevice {
 			Delete delete = new Delete(primary);
 			delete.deleteColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT);
 			devices.delete(delete);
+
+			// Make sure that cache is using updated device information.
+			if (cache != null) {
+				cache.getDeviceCache().put(updated.getHardwareId(), updated);
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to remove device assignment.", e);
 		} finally {
