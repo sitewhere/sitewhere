@@ -48,10 +48,10 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
+import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.version.IVersion;
 import com.sitewhere.version.VersionHelper;
 
 /**

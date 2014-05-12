@@ -51,6 +51,7 @@ import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
+import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.rest.spring.MappingJackson2HttpMessageConverter;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
@@ -111,6 +112,17 @@ public class SiteWhereClient implements ISiteWhereClient {
 		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache", "debug");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#getSiteWhereVersion()
+	 */
+	@Override
+	public Version getSiteWhereVersion() throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "system/version", HttpMethod.GET, null, Version.class, vars);
 	}
 
 	/*

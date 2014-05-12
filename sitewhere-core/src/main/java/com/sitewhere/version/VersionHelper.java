@@ -10,6 +10,7 @@
 package com.sitewhere.version;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.system.IVersion;
 
 /**
  * Used to access implementation class which is only included after Maven build.
