@@ -23,7 +23,6 @@
 	<classpathentry kind="var" path="M2_REPO/com/codahale/metrics/metrics-healthchecks/3.0.1/metrics-healthchecks-3.0.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.1.1/jackson-core-2.1.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.1.1/jackson-databind-2.1.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.0.4/jackson-annotations-2.0.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/mangofactory/swagger-springmvc/0.5.3/swagger-springmvc-0.5.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/vividsolutions/jts/1.13/jts-1.13.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-annotations_2.9.1/1.2.0/swagger-annotations_2.9.1-1.2.0.jar"/>
@@ -57,5 +56,6 @@
 	<classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/net/sf/ehcache/ehcache/2.8.1/ehcache-2.8.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/solr/solr-core/4.6.0/solr-core-4.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.1.1/jackson-annotations-2.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

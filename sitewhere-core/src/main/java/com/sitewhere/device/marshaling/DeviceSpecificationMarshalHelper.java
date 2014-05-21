@@ -64,6 +64,8 @@ public class DeviceSpecificationMarshalHelper {
 		if (isIncludeAsset()) {
 			spec.setAsset(asset);
 		}
+		spec.setContainerPolicy(source.getContainerPolicy());
+		spec.setDeviceElementSchema(source.getDeviceElementSchema());
 		return spec;
 	}
 

@@ -58,8 +58,16 @@ public class DeviceMarshalHelper {
 	public Device convert(IDevice source, IAssetModuleManager manager) throws SiteWhereException {
 		Device result = new Device();
 		result.setHardwareId(source.getHardwareId());
+		result.setParentHardwareId(source.getParentHardwareId());
 		result.setComments(source.getComments());
 		MetadataProviderEntity.copy(source, result);
+
+		// Copy device element mappings.
+		for (String path : source.getDeviceElementMappings().keySet()) {
+			result.getDeviceElementMappings().put(path, source.getDeviceElementMappings().get(path));
+		}
+
+		// Look up specification information.
 		if (source.getSpecificationToken() != null) {
 			IDeviceSpecification spec =
 					SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(

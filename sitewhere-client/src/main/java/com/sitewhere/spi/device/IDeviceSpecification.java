@@ -10,6 +10,7 @@
 package com.sitewhere.spi.device;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
  * Specifies details about a given type of device.
@@ -40,9 +41,23 @@ public interface IDeviceSpecification extends IMetadataProviderEntity {
 	public String getAssetModuleId();
 
 	/**
-	 * Get id for specification asset type.
+	 * Get unique id within asset module.
 	 * 
 	 * @return
 	 */
 	public String getAssetId();
+
+	/**
+	 * Indicates whether this device contains other devices.
+	 * 
+	 * @return
+	 */
+	public DeviceContainerPolicy getContainerPolicy();
+
+	/**
+	 * Get schema that describes how nested devices are arranged.
+	 * 
+	 * @return
+	 */
+	public IDeviceElementSchema getDeviceElementSchema();
 }

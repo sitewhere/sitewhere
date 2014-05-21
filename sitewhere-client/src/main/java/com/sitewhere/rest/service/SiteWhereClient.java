@@ -15,8 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -494,7 +493,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 */
 	protected String getAuthHeader() {
 		String token = getUsername() + ":" + getPassword();
-		String encoded = DatatypeConverter.printBase64Binary(token.getBytes());
+		String encoded = new String(Base64.encodeBase64(token.getBytes()));
 		return "Basic " + encoded;
 	}
 

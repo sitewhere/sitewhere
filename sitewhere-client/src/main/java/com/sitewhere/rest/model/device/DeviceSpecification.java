@@ -13,7 +13,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
  * Model object for device specification information.
@@ -43,6 +45,12 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
 
 	/** Asset representing device hardware */
 	private HardwareAsset asset;
+
+	/** Device container policy */
+	private DeviceContainerPolicy containerPolicy = DeviceContainerPolicy.Standalone;
+
+	/** Schema that specifies allowable locations of nested devices */
+	private IDeviceElementSchema deviceElementSchema;
 
 	/*
 	 * (non-Javadoc)
@@ -94,6 +102,32 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
 
 	public void setAssetId(String assetId) {
 		this.assetId = assetId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceSpecification#getContainerPolicy()
+	 */
+	public DeviceContainerPolicy getContainerPolicy() {
+		return containerPolicy;
+	}
+
+	public void setContainerPolicy(DeviceContainerPolicy containerPolicy) {
+		this.containerPolicy = containerPolicy;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceSpecification#getDeviceElementSchema()
+	 */
+	public IDeviceElementSchema getDeviceElementSchema() {
+		return deviceElementSchema;
+	}
+
+	public void setDeviceElementSchema(IDeviceElementSchema deviceElementSchema) {
+		this.deviceElementSchema = deviceElementSchema;
 	}
 
 	public String getAssetName() {

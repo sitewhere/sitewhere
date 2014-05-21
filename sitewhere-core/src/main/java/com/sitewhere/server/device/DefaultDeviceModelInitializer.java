@@ -24,6 +24,9 @@ import com.sitewhere.geo.GeoUtils;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.command.CommandParameter;
+import com.sitewhere.rest.model.device.element.DeviceElementSchema;
+import com.sitewhere.rest.model.device.element.DeviceSlot;
+import com.sitewhere.rest.model.device.element.DeviceUnit;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
@@ -45,6 +48,7 @@ import com.sitewhere.server.asset.filesystem.FileSystemDeviceAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -147,14 +151,11 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final String ANDROID_NAMESPACE = "http://android/example";
 
 	/** Information for available device specifications */
-	public static final SpecificationDetails[] SPECIFICATION_INFO =
-			{
-					new SpecificationDetails("173", "Android Default",
-							"d2604433-e4eb-419b-97c7-88efe9b2cd41"),
-					new SpecificationDetails("174", "Raspberrry Pi Default",
-							"7dfd6d63-5e8d-4380-be04-fc5c73801dfb"),
-					new SpecificationDetails("175", "MeiTrack MT90 Default",
-							"82043707-9e3d-441f-bdcc-33cf0f4f7260") };
+	public static final SpecificationDetails[] SPECIFICATION_INFO = {
+			new SpecificationDetails("173", "Android Default", "d2604433-e4eb-419b-97c7-88efe9b2cd41"),
+			new SpecificationDetails("174", "Raspberrry Pi Default", "7dfd6d63-5e8d-4380-be04-fc5c73801dfb"),
+			new SpecificationDetails("175", "MeiTrack MT90 Default", "82043707-9e3d-441f-bdcc-33cf0f4f7260"),
+			new SpecificationDetails("176", "Gateway Default", "75126a52-0607-4cca-b995-df40e73a707b") };
 
 	/** Available device specifications */
 	protected IDeviceSpecification[] deviceSpecifications;
@@ -314,12 +315,48 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setAssetId(details.getAssetId());
 			request.setName(details.getName());
 			request.setToken(details.getUuid());
+
+			// Add fields for gateway.
+			if (details.getUuid().equals("75126a52-0607-4cca-b995-df40e73a707b")) {
+				request.setContainerPolicy(DeviceContainerPolicy.Composite);
+				DeviceElementSchema schema = createDeviceElementSchema();
+				request.setDeviceElementSchema(schema);
+			} else {
+				request.setContainerPolicy(DeviceContainerPolicy.Standalone);
+			}
+
 			IDeviceSpecification spec = getDeviceManagement().createDeviceSpecification(request);
 			createDeviceCommands(spec);
 			results[index] = spec;
 			index++;
 		}
 		return results;
+	}
+
+	/**
+	 * Create a sample schema for a composite device.
+	 * 
+	 * @return
+	 */
+	protected DeviceElementSchema createDeviceElementSchema() {
+		DeviceElementSchema schema = new DeviceElementSchema();
+
+		// Create a bus with two slots.
+		DeviceUnit bus1 = new DeviceUnit();
+		bus1.setPath("bus1");
+		DeviceSlot slot1 = new DeviceSlot();
+		slot1.setPath("slot1");
+		bus1.getDeviceSlots().add(slot1);
+		DeviceSlot slot2 = new DeviceSlot();
+		slot2.setPath("slot2");
+		bus1.getDeviceSlots().add(slot2);
+		schema.getDeviceUnits().add(bus1);
+
+		// Create a top-level slot.
+		DeviceSlot s1 = new DeviceSlot();
+		s1.setPath("slot1");
+		schema.getDeviceSlots().add(s1);
+		return schema;
 	}
 
 	/**

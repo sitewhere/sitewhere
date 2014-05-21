@@ -48,6 +48,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -150,6 +151,20 @@ public class SiteWherePersistence {
 			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
 		}
 		spec.setAssetId(request.getAssetId());
+
+		// Container policy is required.
+		if (request.getContainerPolicy() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		spec.setContainerPolicy(request.getContainerPolicy());
+
+		// If composite container policy, a device element schema is required.
+		if (request.getContainerPolicy() == DeviceContainerPolicy.Composite) {
+			if (request.getDeviceElementSchema() == null) {
+				throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+			}
+			spec.setDeviceElementSchema(request.getDeviceElementSchema());
+		}
 
 		MetadataProvider.copy(request, spec);
 		SiteWherePersistence.initializeEntityMetadata(spec);
