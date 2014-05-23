@@ -29,6 +29,7 @@ import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
+import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -55,6 +56,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandStatus;
@@ -158,12 +160,14 @@ public class SiteWherePersistence {
 		}
 		spec.setContainerPolicy(request.getContainerPolicy());
 
-		// If composite container policy, a device element schema is required.
+		// If composite container policy and no device element schema, create an empty
+		// schema.
 		if (request.getContainerPolicy() == DeviceContainerPolicy.Composite) {
-			if (request.getDeviceElementSchema() == null) {
-				throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+			IDeviceElementSchema schema = request.getDeviceElementSchema();
+			if (schema == null) {
+				schema = new DeviceElementSchema();
 			}
-			spec.setDeviceElementSchema(request.getDeviceElementSchema());
+			spec.setDeviceElementSchema(schema);
 		}
 
 		MetadataProvider.copy(request, spec);
@@ -182,6 +186,18 @@ public class SiteWherePersistence {
 			DeviceSpecification target) throws SiteWhereException {
 		if (request.getName() != null) {
 			target.setName(request.getName());
+		}
+		if (request.getContainerPolicy() != null) {
+			target.setContainerPolicy(request.getContainerPolicy());
+			if (request.getContainerPolicy() == DeviceContainerPolicy.Standalone) {
+				target.setDeviceElementSchema(null);
+			} else {
+				IDeviceElementSchema schema = request.getDeviceElementSchema();
+				if (schema == null) {
+					schema = new DeviceElementSchema();
+				}
+				target.setDeviceElementSchema(schema);
+			}
 		}
 		if (request.getAssetModuleId() != null) {
 			target.setAssetModuleId(request.getAssetModuleId());

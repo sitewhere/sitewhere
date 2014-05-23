@@ -19,6 +19,12 @@
 						</div>
 					</div>
 					<div class="control-group">
+						<label class="control-label" for="spc-container-policy">Type</label>
+						<div class="controls">
+							<select id="spc-container-policy" class="input-xlarge"/></select>
+						</div>
+					</div>
+					<div class="control-group">
 						<label class="control-label" for="spc-asset-module">Asset Provider</label>
 						<div class="controls">
 							<select id="spc-asset-module" class="input-xlarge"/></select>
@@ -73,6 +79,15 @@
 	/** Hardware matches list */
 	var spcHardwareMatches;
 	
+	/** Dropdown for container policies */
+	var spcContainerPolicies;
+	
+	/** Available container policies shown in dropdown */
+    var spcContainerPolicyChoices = [
+		{ text: "Standalone Device", value: "Standalone" },
+		{ text: "Composite Device", value: "Composite" },
+	];
+	
 	/** Used for delayed submit on search */
 	var spcTimeout;
 	var spcLastSearch;
@@ -125,6 +140,14 @@
 		    window.clearTimeout(spcTimeout);
 		    spcTimeout = window.setTimeout(spcHardwareSearchCriteriaUpdated, 300); 
 		});
+
+		/** Create container policies dropdown */
+    	spcContainerPolicies = $("#spc-container-policy").kendoDropDownList({
+    		dataTextField: "text",
+    		dataValueField: "value",
+    	    dataSource: spcContainerPolicyChoices,
+    	    index: 0,
+    	}).data("kendoDropDownList");
 		
         /** Handle create dialog submit */
 		$('#spc-dialog-submit').click(function(event) {
@@ -134,6 +157,7 @@
 			}
 			var specData = {
 				"name": $('#spc-name').val(), 
+				"containerPolicy": $('#spc-container-policy').val(), 
 				"assetModuleId": $('#spc-asset-module').val(), 
 				"assetId": $('#spc-chosen-asset-id').val(), 
 				"metadata": swMetadataAsLookup(spcMetadataDS.data()),
@@ -287,6 +311,9 @@
 		// Reset form and metadata.
 		$('#spc-name').val(data.name);
 		spcMetadataDS.data(swLookupAsMetadata(data.metadata));
+		
+		// Select correct container policy.
+		spcContainerPolicies.value(data.containerPolicy);
 		
 		// Select correct asset module.
 		spcAssetModules.value(data.assetModuleId);
