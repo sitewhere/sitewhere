@@ -340,20 +340,58 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 */
 	protected DeviceElementSchema createDeviceElementSchema() {
 		DeviceElementSchema schema = new DeviceElementSchema();
+		
+		// Create main default bus.
+		DeviceUnit db1 = new DeviceUnit();
+		db1.setName("Default Bus");
+		db1.setPath("default");
+		schema.getDeviceUnits().add(db1);
+		
+		// PCI Bus.
+		DeviceUnit pci = new DeviceUnit();
+		pci.setName("PCI Bus");
+		pci.setPath("pci");
+		DeviceSlot pci1 = new DeviceSlot();
+		pci1.setName("PCI Device 1");
+		pci1.setPath("pci1");
+		DeviceSlot pci2 = new DeviceSlot();
+		pci2.setName("PCI Device 2");
+		pci2.setPath("pci2");
+		pci.getDeviceSlots().add(pci1);
+		pci.getDeviceSlots().add(pci2);
+		db1.getDeviceUnits().add(pci);
+		
+		// Serial ports
+		DeviceUnit serial = new DeviceUnit();
+		serial.setName("Serial Ports");
+		serial.setPath("serial");
+		DeviceSlot ser1 = new DeviceSlot();
+		ser1.setName("COM Port 1");
+		ser1.setPath("com1");
+		DeviceSlot ser2 = new DeviceSlot();
+		ser2.setName("COM Port 2");
+		ser2.setPath("com2");
+		serial.getDeviceSlots().add(ser1);
+		serial.getDeviceSlots().add(ser2);
+		db1.getDeviceUnits().add(serial);
 
 		// Create a bus with two slots.
 		DeviceUnit bus1 = new DeviceUnit();
-		bus1.setPath("bus1");
+		bus1.setName("High Voltage Bus 1");
+		bus1.setPath("hv1");
 		DeviceSlot slot1 = new DeviceSlot();
+		slot1.setName("HV Slot 1");
 		slot1.setPath("slot1");
 		bus1.getDeviceSlots().add(slot1);
 		DeviceSlot slot2 = new DeviceSlot();
+		slot2.setName("HV Slot 2");
 		slot2.setPath("slot2");
 		bus1.getDeviceSlots().add(slot2);
 		schema.getDeviceUnits().add(bus1);
 
 		// Create a top-level slot.
 		DeviceSlot s1 = new DeviceSlot();
+		s1.setName("Always On Port 1");
 		s1.setPath("slot1");
 		schema.getDeviceSlots().add(s1);
 		return schema;

@@ -21,12 +21,33 @@ import com.sitewhere.spi.device.element.IDeviceElement;
 @JsonInclude(Include.NON_NULL)
 public class DeviceElement implements IDeviceElement {
 
-	/** Path name */
+	/** Element name */
+	private String name;
+
+	/** Path relative to parent */
 	private String path;
 
 	public DeviceElement() {
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.element.IDeviceElement#getName()
+	 */
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.element.IDeviceElement#getPath()
+	 */
 	public String getPath() {
 		return path;
 	}

@@ -44,6 +44,69 @@
 	color: #666;
 	padding-left: 3px;
 }
+.sw-device-slot-container {
+	border: 1px solid #ccc;
+	margin-bottom: 15px;
+}
+.sw-device-slot-header {
+	padding: 5px 10px;
+	font-size: 12pt;
+	border-bottom: 1px solid #ccc;
+	background-color: #eee;
+	color: #333;
+	margin-bottom: 10px;
+}
+.sw-device-slot {
+	padding: 5px;
+	border: 1px solid #ccc;
+	background-color: #ffe;
+	margin: 10px;
+}
+.sw-device-slot-path {
+	font-weight: bold;
+	color: #050;
+}
+.sw-device-unit-container {
+	border: 1px solid #999;
+	margin-bottom: 15px;
+}
+.sw-device-unit-header {
+	padding: 5px 10px;
+	font-size: 12pt;
+	border-bottom: 1px solid #ccc;
+	background-color: #ccc;
+	color: #333;
+	margin-bottom: 10px;
+	position: relative;
+}
+.sw-device-unit {
+	padding: 5px;
+	border: 1px solid #ccc;
+	background-color: #ffe;
+	margin-bottom: 10px;
+}
+.sw-device-unit-path {
+	font-weight: bold;
+	font-size: 10pt;
+	color: #050;
+}
+.sw-device-unit-buttons {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+.sw-device-unit-container .sw-device-slot-container {
+	margin: 20px;
+}
+.sw-device-unit-container .sw-device-unit-container {
+	margin: 20px;
+}
+.sw-nodata-container {
+	padding: 10px;
+	font-size: 12pt;
+	text-align: center;
+	margin-top: -5px;
+}
 </style>
 
 <!-- Title Bar -->
@@ -63,6 +126,11 @@
 	<ul>
 		<li class="k-state-active">Commands</li>
 		<li>Code Generation</li>
+<c:choose>
+	<c:when test="${specification.containerPolicy == 'Composite'}">
+		<li>Composition</li>
+	</c:when>
+</c:choose>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
@@ -86,9 +154,24 @@
 					<i class="icon-download-alt sw-button-icon"></i> Download</a>
 			</div>
 		</div>
-		<div id="sw-proto-section" class="protobuf" style="max-height: 450px; overflow-y: auto;">
-		</div>
+		<div id="sw-proto-section" class="protobuf"></div>
 	</div>
+<c:choose>
+	<c:when test="${specification.containerPolicy == 'Composite'}">
+	<div>
+		<div class="k-header sw-button-bar">
+			<div class="sw-button-bar-title">Device Element Schema</div>
+			<div>
+				<a id="btn-add-unit" class="btn" href="javascript:void(0)">
+					<i class="icon-folder-close sw-button-icon"></i> Add Device Unit</a>
+				<a id="btn-add-unit" class="btn" href="javascript:void(0)">
+					<i class="icon-link sw-button-icon"></i> Add Device Slot</a>
+			</div>
+		</div>
+		<div id="sw-composition-section"></div>
+	</div>
+	</c:when>
+</c:choose>
 </div>
 
 <%@ include file="../includes/commandCreateDialog.inc"%>
@@ -100,6 +183,7 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+	// Token for specification being viewed.
 	var specToken = '<c:out value="${specification.token}"/>';
 	
 	$(document).ready(function() {
@@ -128,7 +212,6 @@
 		
 		loadSpecification();
 		loadCommands();
-		
 	});
 	
 	/** Called when edit button on the list entry is pressed */
@@ -171,6 +254,7 @@
 		data.inDetailView = true;
 		$('#specification-details').html(template(data));
 		loadProtobuf();
+		refreshDeviceElementSchema(data, status, jqXHR);
     }
     
 	/** Handle error on getting specification data */
@@ -265,6 +349,66 @@
 			$("#sw-proto-section").html("<pre><code>" + data + "</code></pre>");
 			hljs.highlightBlock(document.getElementById('sw-proto-section').childNodes[0]);
 		});	
+	}
+	
+	/** Reloads specification but only refreshes device element schema. */
+	function reloadDeviceElementSchema() {
+		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, 
+			loadGetSuccess, loadGetFailed);
+	}
+	
+	/** Load HTML for device element schema */
+	function refreshDeviceElementSchema(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+    	var shtml = getUnitHtml(schema, "");
+    	$('#sw-composition-section').html(shtml);
+	}
+	
+	/** Create HTML for a device unit */
+	function getUnitHtml(unit, context) {
+    	var uhtml = "";
+		var slength = unit.deviceSlots.length;
+   		uhtml += "<div class='sw-device-slot-container'>";
+   		uhtml += "<div class='sw-device-slot-header'><i class='icon-link sw-button-icon'></i> Device Slots</div>";
+   		if (slength == 0) {
+       		uhtml += "<div class='sw-nodata-container'<span class='sw-nodata-message'>No Slots Currently Configured</span></div>";
+   		} else {
+    		for (var i = 0; i < slength; i++) {
+    			uhtml += getSlotHtml(unit.deviceSlots[i], context);
+    		}
+   		}
+   		uhtml += "</div>";
+		var ulength = unit.deviceUnits.length;
+   		for (var i = 0; i < ulength; i++) {
+       		var relContext = context + "/" + unit.deviceUnits[i].path;
+       		uhtml += "<div class='sw-device-unit-container sw-list-entry'>";
+       		uhtml += getUnitHeaderHtml(unit.deviceUnits[i], relContext);
+   			uhtml += getUnitHtml(unit.deviceUnits[i], relContext);
+       		uhtml += "</div>";
+   		}
+    	return uhtml;
+	}
+	
+	/** Create HTML for device unit header bar */
+	function getUnitHeaderHtml(unit, relContext) {
+		var uhtml = "<div class='sw-device-unit-header'><i class='icon-folder-close sw-button-icon'></i>" + 
+			unit.name + " (<span class='sw-device-unit-path'>" + 
+			relContext + "</span>)<div class='sw-device-unit-buttons'>" +
+			"<i class='icon-folder-close sw-button-icon sw-action-glyph sw-normal-glyph' style='padding-right: 5px;' title='Add Nested Device Unit'></i>" +
+			"<i class='icon-link sw-button-icon sw-action-glyph sw-normal-glyph' title='Add Device Slot'></i>" +
+			"</div></div>";
+		return uhtml;
+	}
+	
+	/** Create HTML for a device slot */
+	function getSlotHtml(slot, context) {
+		var relContext = context + "/" + slot.path;
+    	var shtml = "<div class='sw-device-slot'><i class='icon-link sw-button-icon' style='padding-right: 5px'></i>" + 
+    		slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)</div>";
+		return shtml;
 	}
 </script>
 

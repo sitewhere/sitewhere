@@ -189,6 +189,9 @@ public class SiteWherePersistence {
 		}
 		if (request.getContainerPolicy() != null) {
 			target.setContainerPolicy(request.getContainerPolicy());
+		}
+		// Only allow schema to be set if new or existing container policy is 'composite'.
+		if (target.getContainerPolicy() == DeviceContainerPolicy.Composite) {
 			if (request.getContainerPolicy() == DeviceContainerPolicy.Standalone) {
 				target.setDeviceElementSchema(null);
 			} else {

@@ -287,6 +287,12 @@ tr.sw-list-entry td {
 	opacity: 1;
 }
 
+.sw-action-glyph:hover.sw-normal-glyph {
+	color: #333;
+	font-size: 16px;
+	opacity: 1;
+}
+
 /** BEGIN Subtable list views such as metadata */
 .sw-sublist-header {
 	background-color: #eee;

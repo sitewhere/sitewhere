@@ -17,6 +17,13 @@ package com.sitewhere.spi.device.element;
 public interface IDeviceElement {
 
 	/**
+	 * Get human-readable name for element.
+	 * 
+	 * @return
+	 */
+	public String getName();
+
+	/**
 	 * Get relative path to element from parent.
 	 * 
 	 * @return
