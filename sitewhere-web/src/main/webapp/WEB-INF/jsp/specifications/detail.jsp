@@ -170,7 +170,7 @@
 			<div>
 				<a id="btn-add-unit" class="btn" href="javascript:void(0)">
 					<i class="icon-folder-close sw-button-icon"></i> Add Device Unit</a>
-				<a id="btn-add-unit" class="btn" href="javascript:void(0)">
+				<a id="btn-add-slot" class="btn" href="javascript:void(0)">
 					<i class="icon-link sw-button-icon"></i> Add Device Slot</a>
 			</div>
 		</div>
@@ -219,6 +219,14 @@
 	    $("#btn-download-protobuf").click(function(e) {
 	        e.preventDefault();
 	        window.location.href = "${pageContext.request.contextPath}/api/specifications/" + specToken + "/spec.proto";
+	    });
+		
+	    $("#btn-add-unit").click(function() {
+	    	addTopLevelUnit();
+	    });
+		
+	    $("#btn-add-slot").click(function() {
+	    	addTopLevelSlot();
 	    });
 		
 		loadSpecification();
@@ -360,6 +368,16 @@
 			$("#sw-proto-section").html("<pre><code>" + data + "</code></pre>");
 			hljs.highlightBlock(document.getElementById('sw-proto-section').childNodes[0]);
 		});	
+	}
+	
+	/** Add a top-level device unit */
+	function addTopLevelSlot() {
+		createSlot("/");
+	}
+	
+	/** Add a top-level device unit */
+	function addTopLevelUnit() {
+		createUnit("/");
 	}
 	
 	/** Open the 'create device slot' dialog */

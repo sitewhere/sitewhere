@@ -294,6 +294,9 @@ function swMetadataAsLookup(metadata) {
 
 /** Given a context path, find the corresponding element in the given schema */
 function swGetDeviceUnitForContext(context, deviceElementSchema) {
+	if (context == "/") {
+		return deviceElementSchema;
+	}
 	var paths = context.split("/");
 	if ((paths.length > 0) && (paths[0].length == 0)) {
 		paths.shift();
@@ -355,11 +358,14 @@ function swRemoveDeviceSlotForContext(context, deviceElementSchema) {
 	if ((paths.length > 0) && (paths[0].length == 0)) {
 		paths.shift();
 	}
+	if (paths.length == 1) {
+		if (swRemoveDeviceSlotForUnit(deviceElementSchema, paths[0])) {
+			return deviceElementSchema;
+		}
+		return null;
+	}
 	var schema = deviceElementSchema;
 	while (true) {
-		if (paths.length == 1) {
-			return null;
-		}
 		var currPath = paths.shift();
 		var ulength = schema.deviceUnits.length;
 		var found = false;
@@ -368,12 +374,8 @@ function swRemoveDeviceSlotForContext(context, deviceElementSchema) {
 				found = true;
 				schema = schema.deviceUnits[i];
 				if (paths.length == 1) {
-					var slength = schema.deviceSlots.length;
-					for (var j = 0; j < slength; j++) {
-						if (schema.deviceSlots[j].path == paths[0]) {
-							schema.deviceSlots.splice(j, 1);
-							return deviceElementSchema;
-						}
+					if (swRemoveDeviceSlotForUnit(schema, paths[0])) {
+						return deviceElementSchema;
 					}
 				}
 				break;
@@ -383,6 +385,18 @@ function swRemoveDeviceSlotForContext(context, deviceElementSchema) {
 			return null;
 		}
 	}
+}
+
+/** Removes a slot from a device unit given the slot path */
+function swRemoveDeviceSlotForUnit(unit, slotPath) {
+	var slength = unit.deviceSlots.length;
+	for (var j = 0; j < slength; j++) {
+		if (unit.deviceSlots[j].path == slotPath) {
+			unit.deviceSlots.splice(j, 1);
+			return true;
+		}
+	}
+	return false;
 }
 
 /** Initializes a map based on site map metadata */
