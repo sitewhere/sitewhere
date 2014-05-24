@@ -61,10 +61,16 @@
 	border: 1px solid #ccc;
 	background-color: #ffe;
 	margin: 10px;
+	position: relative;
 }
 .sw-device-slot-path {
 	font-weight: bold;
 	color: #050;
+}
+.sw-device-slot-buttons {
+	position: absolute;
+	right: 5px;
+	top: 5px;
 }
 .sw-device-unit-container {
 	border: 1px solid #999;
@@ -175,6 +181,8 @@
 </div>
 
 <%@ include file="../includes/commandCreateDialog.inc"%>
+<%@ include file="../includes/deviceSlotCreateDialog.inc"%>
+<%@ include file="../includes/deviceUnitCreateDialog.inc"%>
 <%@ include file="../includes/specificationCreateDialog.inc"%>
 <%@ include file="../includes/templateSpecificationEntry.inc"%>
 <%@ include file="../includes/templateCommandEntry.inc"%>
@@ -185,6 +193,9 @@
 <script>
 	// Token for specification being viewed.
 	var specToken = '<c:out value="${specification.token}"/>';
+
+	// Context used for creating new elements.
+	var elementContext;
 	
 	$(document).ready(function() {
 				
@@ -351,11 +362,113 @@
 		});	
 	}
 	
-	/** Reloads specification but only refreshes device element schema. */
-	function reloadDeviceElementSchema() {
-		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, 
-			loadGetSuccess, loadGetFailed);
+	/** Open the 'create device slot' dialog */
+	function createSlot(context) {
+		elementContext = context;
+		loadSchemaForUpdate(showCreateSlotDialog);
 	}
+	
+	/** Open the 'create device unit' dialog */
+	function createUnit(context) {
+		elementContext = context;
+		loadSchemaForUpdate(showCreateUnitDialog);
+	}
+	
+	/** Delete the given slot */
+	function deleteSlot(context) {
+		elementContext = context;
+		loadSchemaForUpdate(handleDeleteSlot);
+	}
+	
+	/** Delete the given unit */
+	function deleteUnit(context) {
+		elementContext = context;
+		loadSchemaForUpdate(handleDeleteUnit);
+	}
+	
+	/** Reloads specification and routes to a callback that will execute updates. */
+	function loadSchemaForUpdate(callback) {
+		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, 
+				callback, loadGetFailed);
+	}
+    
+    /** Called on successful specification load request */
+    function showCreateSlotDialog(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+		dscOpen(specToken, elementContext, schema, onDeviceSlotCreated);
+    }
+    
+    /** Called on successful specification load request */
+    function showCreateUnitDialog(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+		ducOpen(specToken, elementContext, schema, onDeviceUnitCreated);
+    }
+	
+    /** Delete the given unit */
+	function handleDeleteSlot(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+		swConfirm("Delete Device Slot", "Are you sure that you want to delete the selected device slot?", function(result) {
+			if (result) {
+				var updated = swRemoveDeviceSlotForContext(elementContext, schema);
+				if (updated) {
+					var specData = {
+						"deviceElementSchema": updated, 
+					}
+					$.putJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, 
+						specData, refreshDeviceElementSchema, onDeleteSlotFail);
+				}
+			}
+		});
+	}
+	
+    /** Delete the given unit */
+	function handleDeleteUnit(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+		swConfirm("Delete Device Unit", "Are you sure that you want to delete the selected device unit?", function(result) {
+			if (result) {
+				var updated = swRemoveDeviceUnitForContext(elementContext, schema);
+				if (updated) {
+					var specData = {
+						"deviceElementSchema": updated, 
+					}
+					$.putJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, 
+						specData, refreshDeviceElementSchema, onDeleteUnitFail);
+				}
+			}
+		});
+	}
+    
+	/** Handle failed call to delete device slot */
+	function onDeleteSlotFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete device slot.");
+	}
+   
+	/** Handle failed call to delete device unit */
+	function onDeleteUnitFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete device unit.");
+	}
+    
+    /** Called after a device slot is successfully created */
+    function onDeviceSlotCreated() {
+    	loadSchemaForUpdate(refreshDeviceElementSchema);
+    }
+    
+    /** Called after a device unit is successfully created */
+    function onDeviceUnitCreated() {
+    	loadSchemaForUpdate(refreshDeviceElementSchema);
+    }
 	
 	/** Load HTML for device element schema */
 	function refreshDeviceElementSchema(data, status, jqXHR) {
@@ -395,10 +508,14 @@
 	/** Create HTML for device unit header bar */
 	function getUnitHeaderHtml(unit, relContext) {
 		var uhtml = "<div class='sw-device-unit-header'><i class='icon-folder-close sw-button-icon'></i>" + 
-			unit.name + " (<span class='sw-device-unit-path'>" + 
-			relContext + "</span>)<div class='sw-device-unit-buttons'>" +
-			"<i class='icon-folder-close sw-button-icon sw-action-glyph sw-normal-glyph' style='padding-right: 5px;' title='Add Nested Device Unit'></i>" +
-			"<i class='icon-link sw-button-icon sw-action-glyph sw-normal-glyph' title='Add Device Slot'></i>" +
+			unit.name + " (<span class='sw-device-unit-path'>" + relContext + "</span>)";
+		uhtml += "<div class='sw-device-unit-buttons'>" +
+			"<i class='icon-folder-close sw-button-icon sw-action-glyph sw-normal-glyph' " + 
+			"style='padding-right: 5px;' title='Add Nested Device Unit' onclick=\"createUnit('" + 
+			relContext + "');\"></i>" + "<i class='icon-link sw-button-icon sw-action-glyph sw-normal-glyph' " + 
+			"onclick=\"createSlot('" + relContext + "');\" title='Add Device Slot'></i>" + 
+			"<i class='icon-remove sw-button-icon sw-action-glyph sw-delete-glyph' " + 
+			"onclick=\"deleteUnit('" + relContext + "');\" title='Delete Device Unit'></i>" +
 			"</div></div>";
 		return uhtml;
 	}
@@ -407,7 +524,10 @@
 	function getSlotHtml(slot, context) {
 		var relContext = context + "/" + slot.path;
     	var shtml = "<div class='sw-device-slot'><i class='icon-link sw-button-icon' style='padding-right: 5px'></i>" + 
-    		slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)</div>";
+    		slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
+    	shtml += "<div class='sw-device-slot-buttons'>" +
+			"<i class='icon-remove sw-button-icon sw-action-glyph sw-delete-glyph' " + 
+			"onclick=\"deleteSlot('" + relContext + "');\" title='Delete Device Slot'></i></div></div>";
 		return shtml;
 	}
 </script>

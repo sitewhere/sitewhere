@@ -292,6 +292,99 @@ function swMetadataAsLookup(metadata) {
 	return lookup;
 }
 
+/** Given a context path, find the corresponding element in the given schema */
+function swGetDeviceUnitForContext(context, deviceElementSchema) {
+	var paths = context.split("/");
+	if ((paths.length > 0) && (paths[0].length == 0)) {
+		paths.shift();
+	}
+	var schema = deviceElementSchema;
+	while (true) {
+		if (paths.length == 0) {
+			return schema;
+		}
+		var currPath = paths.shift();
+		var ulength = schema.deviceUnits.length;
+		var found = false;
+		for (var i = 0; i < ulength; i++) {
+			if (schema.deviceUnits[i].path == currPath) {
+				found = true;
+				schema = schema.deviceUnits[i];
+				break;
+			}
+		}
+		if (!found) {
+			return null;
+		}
+	}
+}
+
+/** Given a context path, remove the corresponding unit in the given schema */
+function swRemoveDeviceUnitForContext(context, deviceElementSchema) {
+	var paths = context.split("/");
+	if ((paths.length > 0) && (paths[0].length == 0)) {
+		paths.shift();
+	}
+	var schema = deviceElementSchema;
+	while (true) {
+		if (paths.length == 0) {
+			return deviceElementSchema;
+		}
+		var currPath = paths.shift();
+		var ulength = schema.deviceUnits.length;
+		var found = false;
+		for (var i = 0; i < ulength; i++) {
+			if (schema.deviceUnits[i].path == currPath) {
+				found = true;
+				if (paths.length == 0) {
+					schema.deviceUnits.splice(i, 1)
+				}
+				schema = schema.deviceUnits[i];
+				break;
+			}
+		}
+		if (!found) {
+			return null;
+		}
+	}
+}
+
+/** Given a context path, remove the corresponding slot in the given schema */
+function swRemoveDeviceSlotForContext(context, deviceElementSchema) {
+	var paths = context.split("/");
+	if ((paths.length > 0) && (paths[0].length == 0)) {
+		paths.shift();
+	}
+	var schema = deviceElementSchema;
+	while (true) {
+		if (paths.length == 1) {
+			return null;
+		}
+		var currPath = paths.shift();
+		var ulength = schema.deviceUnits.length;
+		var found = false;
+		for (var i = 0; i < ulength; i++) {
+			if (schema.deviceUnits[i].path == currPath) {
+				found = true;
+				schema = schema.deviceUnits[i];
+				if (paths.length == 1) {
+					var slength = schema.deviceSlots.length;
+					for (var j = 0; j < slength; j++) {
+						if (schema.deviceSlots[j].path == paths[0]) {
+							schema.deviceSlots.splice(j, 1);
+							return deviceElementSchema;
+						}
+					}
+				}
+				break;
+			}
+		}
+		if (!found) {
+			return null;
+		}
+	}
+}
+
 /** Initializes a map based on site map metadata */
 /** TODO: This should be replaced by the sitewhere Leaflet library!! */
 function swInitMapForSite(map, site, tokenToSkip, onLoaded) {

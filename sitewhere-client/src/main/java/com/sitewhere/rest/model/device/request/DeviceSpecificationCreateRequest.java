@@ -10,6 +10,7 @@
 package com.sitewhere.rest.model.device.request;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
@@ -38,7 +39,7 @@ public class DeviceSpecificationCreateRequest extends MetadataProvider implement
 	private DeviceContainerPolicy containerPolicy;
 
 	/** Device element schema for specifications that support nested devices */
-	private IDeviceElementSchema deviceElementSchema;
+	private DeviceElementSchema deviceElementSchema;
 
 	/*
 	 * (non-Javadoc)
@@ -120,7 +121,7 @@ public class DeviceSpecificationCreateRequest extends MetadataProvider implement
 		return deviceElementSchema;
 	}
 
-	public void setDeviceElementSchema(IDeviceElementSchema deviceElementSchema) {
+	public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
 		this.deviceElementSchema = deviceElementSchema;
 	}
 }
