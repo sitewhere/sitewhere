@@ -9,8 +9,11 @@
  */
 package com.sitewhere.spi.device.request;
 
+import java.util.List;
+
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceStatus;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 
 /**
  * Interface for arguments needed to create a device.
@@ -32,6 +35,20 @@ public interface IDeviceCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public String getSpecificationToken();
+
+	/**
+	 * Get the parent hardware id (if nested).
+	 * 
+	 * @return
+	 */
+	public String getParentHardwareId();
+
+	/**
+	 * Get the list of device element mappings.
+	 * 
+	 * @return
+	 */
+	public List<IDeviceElementMapping> getDeviceElementMappings();
 
 	/**
 	 * Get comments associated with device.

@@ -9,6 +9,7 @@
  */
 package com.sitewhere.core;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
+import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
@@ -41,9 +43,11 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
+import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.ILocation;
@@ -51,7 +55,9 @@ import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.DeviceStatus;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
@@ -80,6 +86,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
+import com.sitewhere.spi.device.util.DeviceSpecificationUtils;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
@@ -350,6 +357,16 @@ public class SiteWherePersistence {
 		if (request.getSpecificationToken() != null) {
 			target.setSpecificationToken(request.getSpecificationToken());
 		}
+		if (request.getParentHardwareId() != null) {
+			target.setParentHardwareId(request.getParentHardwareId());
+		}
+		if (request.getDeviceElementMappings() != null) {
+			List<DeviceElementMapping> mappings = new ArrayList<DeviceElementMapping>();
+			for (IDeviceElementMapping mapping : request.getDeviceElementMappings()) {
+				mappings.add(DeviceElementMapping.copy(mapping));
+			}
+			target.setDeviceElementMappings(mappings);
+		}
 		if (request.getComments() != null) {
 			target.setComments(request.getComments());
 		}
@@ -361,6 +378,57 @@ public class SiteWherePersistence {
 			MetadataProvider.copy(request, target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
+	}
+
+	/**
+	 * Encapsulates logic for creating a new {@link IDeviceElementMapping}.
+	 * 
+	 * @param management
+	 * @param hardwareId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDevice deviceElementMappingCreateLogic(IDeviceManagement management, String hardwareId,
+			IDeviceElementMapping request) throws SiteWhereException {
+		IDevice device = management.getDeviceByHardwareId(hardwareId);
+		if (device == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+		}
+		IDevice mapped = management.getDeviceByHardwareId(request.getHardwareId());
+		if (mapped == null) {
+			throw new SiteWhereException("Device referenced by mapping does not exist.");
+		}
+
+		// Verify that requested path is valid on device specification.
+		IDeviceSpecification specification =
+				SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
+						device.getSpecificationToken());
+		DeviceSpecificationUtils.getDeviceSlotByPath(specification, request.getDeviceElementSchemaPath());
+
+		// Verify that there is not an existing mapping for the path.
+		List<IDeviceElementMapping> existing = device.getDeviceElementMappings();
+		List<DeviceElementMapping> newMappings = new ArrayList<DeviceElementMapping>();
+		for (IDeviceElementMapping mapping : existing) {
+			if (mapping.getDeviceElementSchemaPath().equals(request.getDeviceElementSchemaPath())) {
+				throw new SiteWhereSystemException(ErrorCode.DeviceElementPathMappingExists, ErrorLevel.ERROR);
+			}
+			newMappings.add(DeviceElementMapping.copy(mapping));
+		}
+		DeviceElementMapping newMapping = DeviceElementMapping.copy(request);
+		newMappings.add(newMapping);
+
+		// Add parent backreference for nested device.
+		DeviceCreateRequest nested = new DeviceCreateRequest();
+		nested.setParentHardwareId(device.getHardwareId());
+		SiteWhereServer.getInstance().getDeviceManagement().updateDevice(mapped.getHardwareId(), nested);
+
+		// Update device with new mapping.
+		DeviceCreateRequest update = new DeviceCreateRequest();
+		update.setDeviceElementMappings(newMappings);
+		IDevice updated =
+				SiteWhereServer.getInstance().getDeviceManagement().updateDevice(hardwareId, update);
+		return updated;
 	}
 
 	/**

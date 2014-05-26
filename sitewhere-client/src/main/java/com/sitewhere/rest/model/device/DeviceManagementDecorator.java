@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
@@ -166,6 +167,12 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	@Override
 	public ISearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException {
 		return delegate.listUnassignedDevices(criteria);
+	}
+
+	@Override
+	public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
+			throws SiteWhereException {
+		return delegate.createDeviceElementMapping(hardwareId, mapping);
 	}
 
 	@Override

@@ -10,14 +10,15 @@
 
 package com.sitewhere.rest.model.device;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
@@ -38,7 +39,7 @@ public class Device extends MetadataProviderEntity implements IDevice {
 	private String parentHardwareId;
 
 	/** Mappings of {@link IDeviceElementSchema} paths to hardware ids */
-	private Map<String, String> deviceElementMappings = new HashMap<String, String>();
+	private List<DeviceElementMapping> deviceElementMappings = new ArrayList<DeviceElementMapping>();
 
 	/** Comments */
 	private String comments;
@@ -110,11 +111,12 @@ public class Device extends MetadataProviderEntity implements IDevice {
 	 * 
 	 * @see com.sitewhere.spi.device.IDevice#getDeviceElementMappings()
 	 */
-	public Map<String, String> getDeviceElementMappings() {
-		return deviceElementMappings;
+	@SuppressWarnings("unchecked")
+	public List<IDeviceElementMapping> getDeviceElementMappings() {
+		return (List<IDeviceElementMapping>) (List<? extends IDeviceElementMapping>) deviceElementMappings;
 	}
 
-	public void setDeviceElementMappings(Map<String, String> deviceElementMappings) {
+	public void setDeviceElementMappings(List<DeviceElementMapping> deviceElementMappings) {
 		this.deviceElementMappings = deviceElementMappings;
 	}
 

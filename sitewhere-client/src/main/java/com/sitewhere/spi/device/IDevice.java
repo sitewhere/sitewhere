@@ -10,7 +10,7 @@
 
 package com.sitewhere.spi.device;
 
-import java.util.Map;
+import java.util.List;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -49,7 +49,7 @@ public interface IDevice extends IMetadataProviderEntity {
 	 * 
 	 * @return
 	 */
-	public Map<String, String> getDeviceElementMappings();
+	public List<IDeviceElementMapping> getDeviceElementMappings();
 
 	/**
 	 * Get device comments.

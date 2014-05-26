@@ -14,11 +14,13 @@ import org.apache.log4j.Logger;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
+import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceSpecification;
 
 /**
@@ -63,8 +65,8 @@ public class DeviceMarshalHelper {
 		MetadataProviderEntity.copy(source, result);
 
 		// Copy device element mappings.
-		for (String path : source.getDeviceElementMappings().keySet()) {
-			result.getDeviceElementMappings().put(path, source.getDeviceElementMappings().get(path));
+		for (IDeviceElementMapping mapping : source.getDeviceElementMappings()) {
+			result.getDeviceElementMappings().add(DeviceElementMapping.copy(mapping));
 		}
 
 		// Look up specification information.

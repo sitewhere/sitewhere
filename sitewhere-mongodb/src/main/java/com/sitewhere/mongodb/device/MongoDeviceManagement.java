@@ -53,6 +53,7 @@ import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -613,6 +614,19 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
 		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 		return MongoPersistence.search(IDevice.class, devices, query, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(java.lang
+	 * .String, com.sitewhere.spi.device.IDeviceElementMapping)
+	 */
+	@Override
+	public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
+			throws SiteWhereException {
+		return SiteWherePersistence.deviceElementMappingCreateLogic(this, hardwareId, mapping);
 	}
 
 	/*

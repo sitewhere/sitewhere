@@ -213,6 +213,17 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	public ISearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
+	 * Create an {@link IDeviceElementMapping} for a nested device.
+	 * 
+	 * @param hardwareId
+	 * @param mapping
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
+			throws SiteWhereException;
+
+	/**
 	 * Delete an existing device.
 	 * 
 	 * @param hardwareId

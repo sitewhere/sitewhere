@@ -28,6 +28,7 @@ import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -328,6 +329,19 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	public SearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException {
 		return HBaseDevice.listUnassignedDevices(client, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(java.lang
+	 * .String, com.sitewhere.spi.device.IDeviceElementMapping)
+	 */
+	@Override
+	public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
+			throws SiteWhereException {
+		return SiteWherePersistence.deviceElementMappingCreateLogic(this, hardwareId, mapping);
 	}
 
 	/*

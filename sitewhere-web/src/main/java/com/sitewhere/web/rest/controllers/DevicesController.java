@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
+import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
@@ -203,6 +204,27 @@ public class DevicesController extends SiteWhereController {
 			converted.add(helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager()));
 		}
 		return new SearchResults<IDeviceAssignment>(converted, history.getNumResults());
+	}
+
+	/**
+	 * Create a new device element mapping.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Create a new device element mapping")
+	public IDevice addDeviceElementMapping(
+			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+			@RequestBody DeviceElementMapping request) throws SiteWhereException {
+		IDevice updated =
+				SiteWhereServer.getInstance().getDeviceManagement().createDeviceElementMapping(hardwareId,
+						request);
+		DeviceMarshalHelper helper = new DeviceMarshalHelper();
+		helper.setIncludeAsset(false);
+		helper.setIncludeAssignment(false);
+		return helper.convert(updated, SiteWhereServer.getInstance().getAssetModuleManager());
 	}
 
 	/**
