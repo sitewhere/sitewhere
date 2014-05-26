@@ -632,6 +632,18 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(java.lang
+	 * .String, java.lang.String)
+	 */
+	@Override
+	public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
+		return SiteWherePersistence.deviceElementMappingDeleteLogic(this, hardwareId, path);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.lang.String,
 	 * boolean)
 	 */

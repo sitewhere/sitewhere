@@ -44,6 +44,13 @@ public interface IDeviceCreateRequest extends IMetadataProvider {
 	public String getParentHardwareId();
 
 	/**
+	 * Indicates whether parent reference should be removed.
+	 * 
+	 * @return
+	 */
+	public boolean isRemoveParentHardwareId();
+
+	/**
 	 * Get the list of device element mappings.
 	 * 
 	 * @return

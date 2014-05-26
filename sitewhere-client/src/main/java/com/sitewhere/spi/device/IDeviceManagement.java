@@ -224,6 +224,16 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 			throws SiteWhereException;
 
 	/**
+	 * Delete an exising {@link IDeviceElementMapping} from a device.
+	 * 
+	 * @param hardwareId
+	 * @param path
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException;
+
+	/**
 	 * Delete an existing device.
 	 * 
 	 * @param hardwareId

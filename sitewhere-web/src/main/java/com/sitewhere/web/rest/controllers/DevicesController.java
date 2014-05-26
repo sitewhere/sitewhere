@@ -227,6 +227,22 @@ public class DevicesController extends SiteWhereController {
 		return helper.convert(updated, SiteWhereServer.getInstance().getAssetModuleManager());
 	}
 
+	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
+	@ResponseBody
+	@ApiOperation(value = "Delete an existing device element mapping")
+	public IDevice deleteDeviceElementMapping(
+			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+			@ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path)
+			throws SiteWhereException {
+		IDevice updated =
+				SiteWhereServer.getInstance().getDeviceManagement().deleteDeviceElementMapping(hardwareId,
+						path);
+		DeviceMarshalHelper helper = new DeviceMarshalHelper();
+		helper.setIncludeAsset(false);
+		helper.setIncludeAssignment(false);
+		return helper.convert(updated, SiteWhereServer.getInstance().getAssetModuleManager());
+	}
+
 	/**
 	 * List devices that match given criteria.
 	 * 

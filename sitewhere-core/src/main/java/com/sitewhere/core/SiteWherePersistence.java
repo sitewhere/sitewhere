@@ -47,7 +47,6 @@ import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.ILocation;
@@ -357,6 +356,9 @@ public class SiteWherePersistence {
 		if (request.getSpecificationToken() != null) {
 			target.setSpecificationToken(request.getSpecificationToken());
 		}
+		if (request.isRemoveParentHardwareId()) {
+			target.setParentHardwareId(null);
+		}
 		if (request.getParentHardwareId() != null) {
 			target.setParentHardwareId(request.getParentHardwareId());
 		}
@@ -400,10 +402,14 @@ public class SiteWherePersistence {
 			throw new SiteWhereException("Device referenced by mapping does not exist.");
 		}
 
+		// Check whether target device is already parented to another device.
+		if (mapped.getParentHardwareId() != null) {
+			throw new SiteWhereSystemException(ErrorCode.DeviceParentMappingExists, ErrorLevel.ERROR);
+		}
+
 		// Verify that requested path is valid on device specification.
 		IDeviceSpecification specification =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
-						device.getSpecificationToken());
+				management.getDeviceSpecificationByToken(device.getSpecificationToken());
 		DeviceSpecificationUtils.getDeviceSlotByPath(specification, request.getDeviceElementSchemaPath());
 
 		// Verify that there is not an existing mapping for the path.
@@ -411,7 +417,7 @@ public class SiteWherePersistence {
 		List<DeviceElementMapping> newMappings = new ArrayList<DeviceElementMapping>();
 		for (IDeviceElementMapping mapping : existing) {
 			if (mapping.getDeviceElementSchemaPath().equals(request.getDeviceElementSchemaPath())) {
-				throw new SiteWhereSystemException(ErrorCode.DeviceElementPathMappingExists, ErrorLevel.ERROR);
+				throw new SiteWhereSystemException(ErrorCode.DeviceElementMappingExists, ErrorLevel.ERROR);
 			}
 			newMappings.add(DeviceElementMapping.copy(mapping));
 		}
@@ -420,14 +426,59 @@ public class SiteWherePersistence {
 
 		// Add parent backreference for nested device.
 		DeviceCreateRequest nested = new DeviceCreateRequest();
-		nested.setParentHardwareId(device.getHardwareId());
-		SiteWhereServer.getInstance().getDeviceManagement().updateDevice(mapped.getHardwareId(), nested);
+		nested.setParentHardwareId(hardwareId);
+		management.updateDevice(mapped.getHardwareId(), nested);
 
 		// Update device with new mapping.
 		DeviceCreateRequest update = new DeviceCreateRequest();
 		update.setDeviceElementMappings(newMappings);
-		IDevice updated =
-				SiteWhereServer.getInstance().getDeviceManagement().updateDevice(hardwareId, update);
+		IDevice updated = management.updateDevice(hardwareId, update);
+		return updated;
+	}
+
+	/**
+	 * Encapsulates logic for deleting an {@link IDeviceElementMapping}.
+	 * 
+	 * @param management
+	 * @param hardwareId
+	 * @param path
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDevice deviceElementMappingDeleteLogic(IDeviceManagement management, String hardwareId,
+			String path) throws SiteWhereException {
+		IDevice device = management.getDeviceByHardwareId(hardwareId);
+		if (device == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+		}
+
+		// Verify that mapping exists and build list without deleted mapping.
+		List<IDeviceElementMapping> existing = device.getDeviceElementMappings();
+		List<DeviceElementMapping> newMappings = new ArrayList<DeviceElementMapping>();
+		IDeviceElementMapping match = null;
+		for (IDeviceElementMapping mapping : existing) {
+			if (mapping.getDeviceElementSchemaPath().equals(path)) {
+				match = mapping;
+			} else {
+				newMappings.add(DeviceElementMapping.copy(mapping));
+			}
+		}
+		if (match == null) {
+			throw new SiteWhereSystemException(ErrorCode.DeviceElementMappingDoesNotExist, ErrorLevel.ERROR);
+		}
+
+		// Remove parent reference from nested device.
+		IDevice mapped = management.getDeviceByHardwareId(match.getHardwareId());
+		if (mapped != null) {
+			DeviceCreateRequest nested = new DeviceCreateRequest();
+			nested.setRemoveParentHardwareId(true);
+			management.updateDevice(mapped.getHardwareId(), nested);
+		}
+
+		// Update device with new mappings.
+		DeviceCreateRequest update = new DeviceCreateRequest();
+		update.setDeviceElementMappings(newMappings);
+		IDevice updated = management.updateDevice(hardwareId, update);
 		return updated;
 	}
 

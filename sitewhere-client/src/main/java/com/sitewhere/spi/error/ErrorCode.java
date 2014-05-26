@@ -106,15 +106,21 @@ public enum ErrorCode {
 	DeviceCanNotBeDeletedIfAssigned(603, "Device can not be deleted if it is currently assigned."),
 
 	/** Attempting to create a device element mapping for a path that is already mapped */
-	DeviceElementPathMappingExists(610,
+	DeviceElementMappingExists(610,
 			"Device has an existing mapping for the given device element schema path."),
 
-	/** Path references a non-existent slot or a device unit */
-	InvalidDeviceSlotPath(611, "Path does not correspond to a valid device slot."),
+	/** Attempting to refrence a device element mapping that does not exist */
+	DeviceElementMappingDoesNotExist(611, "Device element mapping does not exist."),
 
-	/**********
+	/** Path references a non-existent slot or a device unit */
+	InvalidDeviceSlotPath(612, "Path does not correspond to a valid device slot."),
+
+	/** Attempting to create a device element mapping for a device that is already mapped */
+	DeviceParentMappingExists(613, "Target device is already in use by an existing mapping."),
+
+	/***********
 	 * COMMAND *
-	 **********/
+	 ***********/
 
 	/** Operation assumes device is assigned but no assignment exists */
 	RequiredCommandParameterMissing(650, "Invocation does not specify a parameter marked as required."),

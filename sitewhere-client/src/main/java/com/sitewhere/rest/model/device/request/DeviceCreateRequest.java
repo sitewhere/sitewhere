@@ -31,6 +31,9 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 	/** Parent hardware id (if nested) */
 	private String parentHardwareId;
 
+	/** Indicates whether parent hardware id should be removed */
+	private boolean removeParentHardwareId = false;
+
 	/** List of device element mappings */
 	private List<DeviceElementMapping> deviceElementMappings;
 
@@ -77,6 +80,20 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 
 	public void setParentHardwareId(String parentHardwareId) {
 		this.parentHardwareId = parentHardwareId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.request.IDeviceCreateRequest#isRemoveParentHardwareId()
+	 */
+	public boolean isRemoveParentHardwareId() {
+		return removeParentHardwareId;
+	}
+
+	public void setRemoveParentHardwareId(boolean removeParentHardwareId) {
+		this.removeParentHardwareId = removeParentHardwareId;
 	}
 
 	/*

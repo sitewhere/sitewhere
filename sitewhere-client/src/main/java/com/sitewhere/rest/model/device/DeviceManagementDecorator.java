@@ -176,6 +176,11 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
+	public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
+		return delegate.deleteDeviceElementMapping(hardwareId, path);
+	}
+
+	@Override
 	public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
 		return delegate.deleteDevice(hardwareId, force);
 	}
