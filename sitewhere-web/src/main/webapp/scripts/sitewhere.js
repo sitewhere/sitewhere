@@ -292,6 +292,17 @@ function swMetadataAsLookup(metadata) {
 	return lookup;
 }
 
+/** Create map of slot path to device data */
+function swGetDeviceSlotPathMap(device) {
+	var mappings = device.deviceElementMappings;
+	var len = mappings.length;
+	var map = {};
+	for (var i = 0; i < len; i++) {
+		map[mappings[i].deviceElementSchemaPath] = mappings[i].device;
+	}
+	return map;
+}
+
 /** Given a context path, find the corresponding element in the given schema */
 function swGetDeviceUnitForContext(context, deviceElementSchema) {
 	if (context == "/") {

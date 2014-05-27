@@ -9,6 +9,9 @@
  */
 package com.sitewhere.rest.model.device;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 
 /**
@@ -16,6 +19,7 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceElementMapping implements IDeviceElementMapping {
 
 	/** Path in device element schema being mapped */
@@ -23,6 +27,11 @@ public class DeviceElementMapping implements IDeviceElementMapping {
 
 	/** Hardware id of device being mapped */
 	private String hardwareId;
+
+	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+
+	/** Device info if populated by marshaller */
+	private IDevice device;
 
 	public DeviceElementMapping() {
 	}
@@ -51,6 +60,14 @@ public class DeviceElementMapping implements IDeviceElementMapping {
 
 	public void setHardwareId(String hardwareId) {
 		this.hardwareId = hardwareId;
+	}
+
+	public IDevice getDevice() {
+		return device;
+	}
+
+	public void setDevice(IDevice device) {
+		this.device = device;
 	}
 
 	public static DeviceElementMapping copy(IDeviceElementMapping input) {

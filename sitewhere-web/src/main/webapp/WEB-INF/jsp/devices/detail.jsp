@@ -25,6 +25,11 @@
 <div id="tabs">
 	<ul>
 		<li class="k-state-active">Assignment History</li>
+<c:choose>
+	<c:when test="${specification.containerPolicy == 'Composite'}">
+		<li>Composition</li>
+	</c:when>
+</c:choose>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
@@ -39,6 +44,13 @@
 		<div id="assignments" class="sw-assignment-list"></div>
 		<div id="assignments-pager" class="k-pager-wrap"></div>
 	</div>
+<c:choose>
+	<c:when test="${specification.containerPolicy == 'Composite'}">
+		<div>
+			<div id="sw-composition-section" style="margin-top: 10px;"></div>
+		</div>
+	</c:when>
+</c:choose>
 </div>
 
 <form id="view-assignment-detail" method="get" action="../assignments/detail.html">
@@ -46,17 +58,13 @@
 </form>
 
 <%@ include file="../includes/deviceUpdateDialog.inc"%>	
-
+<%@ include file="../includes/deviceSearchDialog.inc"%>	
 <%@ include file="../includes/assetTemplates.inc"%>	
-
 <%@ include file="../includes/assignmentCreateDialog.inc"%>	
-
 <%@ include file="../includes/assignmentUpdateDialog.inc"%>
-
 <%@ include file="../includes/templateDeviceEntry.inc"%>
-
+<%@ include file="../includes/templateDeviceEntrySmall.inc"%>
 <%@ include file="../includes/templateAssignmentEntry.inc"%>
-
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
@@ -64,6 +72,9 @@
 
 	/** Datasource for assignments */
 	var assignmentsDS;
+	
+	/** Maps device element schema paths to device information */
+	var mappings;
 	
 	
 	/** Called when 'delete assignment' is clicked */
@@ -185,7 +196,7 @@
 	
 	/** Loads information for the selected device */
 	function loadDevice() {
-		$.getJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId, 
+		$.getJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId + "?includeNested=true", 
 			loadGetSuccess, loadGetFailed);
 	}
     
@@ -195,6 +206,9 @@
 		parseDeviceData(data);
 		data.inDetailView = true;
 		$('#device-details').html(template(data));
+		
+		// Update device element mappings information.
+		refreshDeviceElementMappings(data);
     }
     
 	/** Handle error on getting device data */
@@ -205,6 +219,119 @@
 	/** Called after device edit to update banner */
 	function onDeviceEditSuccess() {
 		loadDevice();
+	}
+	
+	/** Add new mapping for the given path */
+	function addMapping(path) {
+		dvsOpen({"path": path}, onMappingDeviceChosen);
+	}
+	
+	/** Called after user chooses a device for mapping */
+	function onMappingDeviceChosen(data, target) {
+		var mapping = {
+			"deviceElementSchemaPath": data.path, 
+			"hardwareId": target, 
+		}
+		$.postJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId + "/mappings", 
+				mapping, onMappingCreateSuccess, onMappingCreateFail);
+	}
+    
+    /** Called on successful call to create mapping */
+    function onMappingCreateSuccess() {
+    	loadDevice();
+    }
+    
+	/** Handle failed call to create mapping */
+	function onMappingCreateFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to create mapping.");
+	}
+	
+	/** Delete an existing device element mapping */
+	function deleteMapping(path) {
+		swConfirm("Delete Device Element Mapping", "Are you sure that you want to delete the device element mapping?", function(result) {
+			if (result) {
+				$.deleteJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId + "/mappings?path=" + path, 
+						onMappingDeleteSuccess, onMappingDeleteFail);
+			}
+		});
+	}
+    
+    /** Called on successful call to delete mapping */
+    function onMappingDeleteSuccess() {
+    	loadDevice();
+    }
+    
+	/** Handle failed call to delete mapping */
+	function onMappingDeleteFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete mapping.");
+	}
+	
+	/** Load HTML for device element mappings */
+	function refreshDeviceElementMappings(device) {
+		mappings = swGetDeviceSlotPathMap(device);
+		var schema = device.specification.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+    	var shtml = getUnitHtml(schema, "");
+    	$('#sw-composition-section').html(shtml);
+	}
+	
+	/** Create HTML for a device unit */
+	function getUnitHtml(unit, context) {
+    	var uhtml = "";
+		var slength = unit.deviceSlots.length;
+   		if (slength > 0) {
+   			uhtml += "<div class='sw-device-slot-container'>";
+   			uhtml += "<div class='sw-device-slot-header'><i class='icon-link sw-button-icon'></i> Device Slots</div>";
+    		for (var i = 0; i < slength; i++) {
+    			uhtml += getSlotHtml(unit.deviceSlots[i], context);
+    		}
+       		uhtml += "</div>";
+   		}
+		var ulength = unit.deviceUnits.length;
+   		for (var i = 0; i < ulength; i++) {
+       		var relContext = context + "/" + unit.deviceUnits[i].path;
+       		uhtml += "<div class='sw-device-unit-container sw-list-entry'>";
+       		uhtml += getUnitHeaderHtml(unit.deviceUnits[i], relContext);
+   			uhtml += getUnitHtml(unit.deviceUnits[i], relContext);
+       		uhtml += "</div>";
+   		}
+    	return uhtml;
+	}
+	
+	/** Create HTML for device unit header bar */
+	function getUnitHeaderHtml(unit, relContext) {
+		var uhtml = "<div class='sw-device-unit-header'><i class='icon-folder-close sw-button-icon'></i>" + 
+			unit.name + " (<span class='sw-device-unit-path'>" + relContext + "</span>)</div>";
+		return uhtml;
+	}
+	
+	/** Create HTML for a device slot */
+	function getSlotHtml(slot, context) {
+		var relContext = context + "/" + slot.path;
+		var mapping = mappings[relContext];
+    	var shtml;
+    	if (mapping) {
+        	shtml = "<div class='sw-device-slot' style='border: 2px solid #006; background-color: #ddf;'>" + 
+        		"<i class='icon-link sw-button-icon' style='padding-right: 5px'></i>" + 
+    			slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
+        	shtml += "<div class='sw-device-slot-buttons'>" + 
+        		"<i class='icon-link sw-button-icon' style='color: #030; margin-right: 1px;'></i>" +      	
+				"<a class='sw-device-slot-mapped-device' href='${pageContext.request.contextPath}/admin/devices/detail.html?hardwareId=" + 
+				mapping.hardwareId + "'>" + mapping.specification.assetName + "</a>" +
+    			"<i class='icon-remove sw-button-icon sw-action-glyph sw-delete-glyph' style='margin-top: -2px;' " + 
+				"onclick=\"deleteMapping('" + relContext + "');\" title='Delete Device Element Mapping'></i>" +
+				"</div></div>";
+    	} else {
+        	shtml = "<div class='sw-device-slot'><i class='icon-link sw-button-icon' style='padding-right: 5px'></i>" + 
+    			slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
+        	shtml += "<div class='sw-device-slot-buttons'>" +
+    			"<i class='icon-plus sw-button-icon sw-action-glyph sw-view-glyph' " + 
+				"onclick=\"addMapping('" + relContext + "');\" title='Add Device Element Mapping'></i>" +
+				"</div></div>";
+    	}
+		return shtml;
 	}
 </script>
 

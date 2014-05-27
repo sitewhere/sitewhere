@@ -61,6 +61,9 @@ public class DeviceSpecificationUtils {
 		String[] segarray = path.split("[/]");
 		Queue<String> segments = new ArrayDeque<String>(Arrays.asList(segarray));
 		IDeviceUnit unit = specification.getDeviceElementSchema();
+		if (unit == null) {
+			return null;
+		}
 		while (segments.size() > 0) {
 			String segment = segments.poll();
 			if (segments.size() > 0) {

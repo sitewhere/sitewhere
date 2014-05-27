@@ -87,13 +87,13 @@
 <!-- Template for assignment row -->
 <script type="text/x-kendo-tmpl" id="tpl-assignment-entry">
 # if (data.status == 'Active') { #
-	<div class="sw-assignment-list-entry sw-assignment-active">
+	<div class="sw-assignment-list-entry sw-list-entry sw-assignment-active">
 		<div class="sw-assignment-active-indicator sw-assignment-status-indicator"></div>
 # } else if (data.status == 'Missing') { #
-	<div class="sw-assignment-list-entry sw-assignment-missing">
+	<div class="sw-assignment-list-entry sw-list-entry sw-assignment-missing">
 		<div class="sw-assignment-missing-indicator sw-assignment-status-indicator"></div>
 # } else { #
-	<div class="sw-assignment-list-entry sw-assignment-released">
+	<div class="sw-assignment-list-entry sw-list-entry sw-assignment-released">
 		<div class="sw-assignment-status-indicator"></div>
 # } #
 # if (data.associatedPerson) { #
@@ -151,13 +151,13 @@
 # } #
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: -2px;">
-				<a class="btn btn-small btn-primary" title="Edit Assignment"
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Assignment" style="color: \\#009;"
 					href="javascript:void(0)" onclick="onEditAssignment(event, '#:token#')">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small btn-danger" title="Delete Assignment" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Assignment" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onDeleteAssignment(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small btn-success" title="View Assignment" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Assignment" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onViewAssignment(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>

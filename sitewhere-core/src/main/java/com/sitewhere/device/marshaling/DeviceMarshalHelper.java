@@ -43,11 +43,17 @@ public class DeviceMarshalHelper {
 	/** Indicates whether device assignment information is to be copied */
 	private boolean includeAssignment = false;
 
+	/** Indicates whether device element mappings should include device details */
+	private boolean includeNested = false;
+
 	/** Helper for marshaling device specification information */
 	private DeviceSpecificationMarshalHelper specificationHelper;
 
 	/** Helper for marshaling device assignement information */
 	private DeviceAssignmentMarshalHelper assignmentHelper;
+
+	/** Helper for marshaling nested devices */
+	private DeviceMarshalHelper nestedHelper;
 
 	/**
 	 * Convert an IDevice SPI object into a model object for marshaling.
@@ -66,7 +72,15 @@ public class DeviceMarshalHelper {
 
 		// Copy device element mappings.
 		for (IDeviceElementMapping mapping : source.getDeviceElementMappings()) {
-			result.getDeviceElementMappings().add(DeviceElementMapping.copy(mapping));
+			DeviceElementMapping cnvMapping = DeviceElementMapping.copy(mapping);
+			if (isIncludeNested()) {
+				IDevice device =
+						SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(
+								mapping.getHardwareId());
+				cnvMapping.setDevice(getNestedHelper().convert(device,
+						SiteWhereServer.getInstance().getAssetModuleManager()));
+			}
+			result.getDeviceElementMappings().add(cnvMapping);
 		}
 
 		// Look up specification information.
@@ -141,6 +155,18 @@ public class DeviceMarshalHelper {
 		return assignmentHelper;
 	}
 
+	/**
+	 * Get helper class for marshaling nested devices.
+	 * 
+	 * @return
+	 */
+	protected DeviceMarshalHelper getNestedHelper() {
+		if (nestedHelper == null) {
+			nestedHelper = new DeviceMarshalHelper();
+		}
+		return nestedHelper;
+	}
+
 	public boolean isIncludeAsset() {
 		return includeAsset;
 	}
@@ -166,5 +192,13 @@ public class DeviceMarshalHelper {
 	public DeviceMarshalHelper setIncludeAssignment(boolean includeAssignment) {
 		this.includeAssignment = includeAssignment;
 		return this;
+	}
+
+	public boolean isIncludeNested() {
+		return includeNested;
+	}
+
+	public void setIncludeNested(boolean includeNested) {
+		this.includeNested = includeNested;
 	}
 }
