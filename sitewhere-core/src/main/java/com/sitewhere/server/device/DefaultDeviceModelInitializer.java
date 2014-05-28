@@ -391,8 +391,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 		// Create a top-level slot.
 		DeviceSlot s1 = new DeviceSlot();
-		s1.setName("Always On Port 1");
-		s1.setPath("slot1");
+		s1.setName("Gateway Port 1");
+		s1.setPath("gw1");
 		schema.getDeviceSlots().add(s1);
 		return schema;
 	}

@@ -33,6 +33,12 @@ public class ProtobufNaming {
 	/** Name of originator field in header */
 	public static final String HEADER_ORIGINATOR_FIELD_NAME = "originator";
 
+	/** Name of nested path field in header */
+	public static final String HEADER_NESTED_PATH_FIELD_NAME = "nestedPath";
+
+	/** Name of nested spec field in header */
+	public static final String HEADER_NESTED_SPEC_FIELD_NAME = "nestedSpec";
+
 	/** Name associated with uuid message */
 	public static final String UUID_MSG_NAME = "Uuid";
 

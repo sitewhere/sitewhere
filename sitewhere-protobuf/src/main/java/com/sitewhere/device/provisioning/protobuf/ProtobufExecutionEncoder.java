@@ -19,6 +19,8 @@ import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.Command
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.Header;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAck;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
 
@@ -38,11 +40,13 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder#encode(com.sitewhere
-	 * .spi.device.command.IDeviceCommandExecution)
+	 * .spi.device.command.IDeviceCommandExecution, com.sitewhere.spi.device.IDevice,
+	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
-	public byte[] encode(IDeviceCommandExecution execution) throws SiteWhereException {
-		byte[] encoded = ProtobufMessageBuilder.createMessage(execution);
+	public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
+			IDeviceAssignment assignment) throws SiteWhereException {
+		byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment);
 		LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 		return encoded;
 	}
@@ -52,10 +56,12 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder#encodeSystemCommand
-	 * (java.lang.Object)
+	 * (java.lang.Object, com.sitewhere.spi.device.IDeviceNestingContext,
+	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
-	public byte[] encodeSystemCommand(Object command) throws SiteWhereException {
+	public byte[] encodeSystemCommand(Object command, IDeviceNestingContext nested,
+			IDeviceAssignment assignment) throws SiteWhereException {
 		if (command instanceof RegistrationAck) {
 			try {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();

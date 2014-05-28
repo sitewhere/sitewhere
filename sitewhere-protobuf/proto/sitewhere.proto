@@ -65,6 +65,8 @@ message Device {
 	message Header {
 		required Command command = 1;
 		optional string originator = 2;
+		optional string nestedPath = 3;
+		optional string nestedSpec = 4;
 	}
 
 	// Enumeration of registation state responses.

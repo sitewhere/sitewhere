@@ -18,6 +18,7 @@ import org.fusesource.mqtt.client.QoS;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
 
@@ -102,13 +103,13 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliver(com.sitewhere
-	 * .spi.device.IDeviceAssignment,
+	 * .spi.device.IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation, byte[])
 	 */
 	@Override
-	public void deliver(IDeviceAssignment assignment, IDeviceCommandInvocation invocation, byte[] encoded)
-			throws SiteWhereException {
-		String commandTopic = getCommandTopicPrefix() + assignment.getDeviceHardwareId();
+	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
+			IDeviceCommandInvocation invocation, byte[] encoded) throws SiteWhereException {
+		String commandTopic = getCommandTopicPrefix() + nested.getGateway().getHardwareId();
 		try {
 			LOGGER.debug("About to publish command message to topic: " + commandTopic);
 			connection.publish(commandTopic, encoded, QoS.AT_LEAST_ONCE, false);
@@ -123,11 +124,13 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliverSystemCommand
-	 * (java.lang.String, byte[])
+	 * (com.sitewhere.spi.device.IDeviceNestingContext,
+	 * com.sitewhere.spi.device.IDeviceAssignment, byte[])
 	 */
 	@Override
-	public void deliverSystemCommand(String hardwareId, byte[] encoded) throws SiteWhereException {
-		String systemTopic = getSystemTopicPrefix() + hardwareId;
+	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
+			byte[] encoded) throws SiteWhereException {
+		String systemTopic = getSystemTopicPrefix() + nested.getGateway().getHardwareId();
 		try {
 			LOGGER.debug("About to publish system message to topic: " + systemTopic);
 			connection.publish(systemTopic, encoded, QoS.AT_LEAST_ONCE, false);

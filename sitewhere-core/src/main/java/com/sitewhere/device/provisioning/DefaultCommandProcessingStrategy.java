@@ -13,9 +13,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.device.provisioning.NestedDeviceSupport.NestedDeviceInformation;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -50,11 +53,19 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 		if (command != null) {
 			IDeviceCommandExecution execution =
 					provisioning.getCommandExecutionBuilder().createExecution(command, invocation);
-			byte[] encoded = provisioning.getCommandExecutionEncoder().encode(execution);
 			List<IDeviceAssignment> assignments =
 					provisioning.getCommandTargetResolver().resolveTargets(invocation);
 			for (IDeviceAssignment assignment : assignments) {
-				provisioning.getCommandDeliveryProvider().deliver(assignment, invocation, encoded);
+				IDevice device =
+						SiteWhereServer.getInstance().getDeviceManagement().getDeviceForAssignment(assignment);
+				if (device == null) {
+					throw new SiteWhereException("Targeted assignment references device that does not exist.");
+				}
+
+				NestedDeviceInformation nested = NestedDeviceSupport.calculateNestedDeviceInformation(device);
+				byte[] encoded =
+						provisioning.getCommandExecutionEncoder().encode(execution, nested, assignment);
+				provisioning.getCommandDeliveryProvider().deliver(nested, assignment, invocation, encoded);
 			}
 		} else {
 			throw new SiteWhereException("Invalid command referenced from invocation.");
@@ -72,8 +83,17 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	@Override
 	public void deliverSystemCommand(IDeviceProvisioning provisioning, String hardwareId, Object command)
 			throws SiteWhereException {
-		byte[] encoded = provisioning.getCommandExecutionEncoder().encodeSystemCommand(command);
-		provisioning.getCommandDeliveryProvider().deliverSystemCommand(hardwareId, encoded);
+		IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+		IDevice device = management.getDeviceByHardwareId(hardwareId);
+		if (device == null) {
+			throw new SiteWhereException("Targeted assignment references device that does not exist.");
+		}
+		IDeviceAssignment assignment = management.getCurrentDeviceAssignment(device);
+
+		NestedDeviceInformation nested = NestedDeviceSupport.calculateNestedDeviceInformation(device);
+		byte[] encoded =
+				provisioning.getCommandExecutionEncoder().encodeSystemCommand(command, nested, assignment);
+		provisioning.getCommandDeliveryProvider().deliverSystemCommand(nested, assignment, encoded);
 	}
 
 	/*
