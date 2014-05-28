@@ -345,6 +345,16 @@ tr.sw-list-entry td {
 	vertical-align: middle;
 }
 
+.sw-hoverlink {
+	color: #333;
+}
+
+.sw-list-entry:hover .sw-hoverlink {
+    font-weight: bold;
+    color: #009;
+    text-decoration: underline;	
+}
+
 .sw-list-entry:hover .sw-action-glyph {
 	opacity: 0.5;
 }
@@ -355,25 +365,21 @@ tr.sw-list-entry td {
 
 .sw-action-glyph:hover.sw-delete-glyph {
 	color: #c00;
-	font-size: 16px;
 	opacity: 1;
 }
 
 .sw-action-glyph:hover.sw-edit-glyph {
 	color: #00f;
-	font-size: 16px;
 	opacity: 1;
 }
 
 .sw-action-glyph:hover.sw-view-glyph {
 	color: #060;
-	font-size: 16px;
 	opacity: 1;
 }
 
 .sw-action-glyph:hover.sw-normal-glyph {
 	color: #333;
-	font-size: 16px;
 	opacity: 1;
 }
 
