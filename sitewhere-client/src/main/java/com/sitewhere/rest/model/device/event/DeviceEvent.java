@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
@@ -35,6 +36,9 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
 
 	/** Unqiue id for event */
 	private String id;
+
+	/** Event type indicator */
+	private DeviceEventType eventType;
 
 	/** Site token */
 	private String siteToken;
@@ -57,6 +61,10 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
 	/** Date event was received */
 	private Date receivedDate;
 
+	public DeviceEvent(DeviceEventType type) {
+		this.eventType = type;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -68,6 +76,19 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.IDeviceEvent#getEventType()
+	 */
+	public DeviceEventType getEventType() {
+		return eventType;
+	}
+
+	public void setEventType(DeviceEventType eventType) {
+		this.eventType = eventType;
 	}
 
 	/*

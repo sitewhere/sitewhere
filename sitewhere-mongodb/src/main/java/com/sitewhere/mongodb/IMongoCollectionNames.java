@@ -41,23 +41,8 @@ public interface IMongoCollectionNames {
 	/** Default collection name for SiteWhere device assignments */
 	public static final String DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME = "assignments";
 
-	/** Default collection name for SiteWhere measurements */
-	public static final String DEFAULT_MEASUREMENTS_COLLECTION_NAME = "measurements";
-
-	/** Default collection name for SiteWhere locations */
-	public static final String DEFAULT_LOCATIONS_COLLECTION_NAME = "locations";
-
-	/** Default collection name for SiteWhere alerts */
-	public static final String DEFAULT_ALERTS_COLLECTION_NAME = "alerts";
-
-	/** Default collection name for SiteWhere command invocations */
-	public static final String DEFAULT_INVOCATIONS_COLLECTION_NAME = "invocations";
-
-	/** Default collection name for SiteWhere command responses */
-	public static final String DEFAULT_RESPONSES_COLLECTION_NAME = "responses";
-
-	/** Default collection name for SiteWhere device state change events */
-	public static final String DEFAULT_STATE_CHANGES_COLLECTION_NAME = "statechanges";
+	/** Default collection name for SiteWhere events */
+	public static final String DEFAULT_EVENTS_COLLECTION_NAME = "events";
 
 	/** Default collection name for SiteWhere users */
 	public static final String DEFAULT_USERS_COLLECTION_NAME = "users";

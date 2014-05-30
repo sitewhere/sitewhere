@@ -12,6 +12,7 @@ package com.sitewhere.rest.model.device.event;
 
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 
 /**
@@ -35,6 +36,10 @@ public class DeviceAlert extends DeviceEvent implements IDeviceAlert {
 
 	/** Alert message */
 	private String message;
+
+	public DeviceAlert() {
+		super(DeviceEventType.Alert);
+	}
 
 	/*
 	 * (non-Javadoc)

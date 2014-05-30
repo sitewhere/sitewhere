@@ -15,6 +15,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
@@ -31,6 +32,10 @@ public class DeviceMeasurements extends DeviceEvent implements IDeviceMeasuremen
 
 	/** Holder for measurements */
 	private MeasurementsProvider measurementsMetadata = new MeasurementsProvider();
+
+	public DeviceMeasurements() {
+		super(DeviceEventType.Measurements);
+	}
 
 	/*
 	 * (non-Javadoc)
