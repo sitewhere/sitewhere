@@ -22,7 +22,6 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceSpecification;
-import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
  * Used to load or save device specification data to MongoDB.
@@ -126,7 +125,7 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 		if (schemaBytes != null) {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
-				IDeviceElementSchema schema = mapper.readValue(schemaBytes, DeviceElementSchema.class);
+				DeviceElementSchema schema = mapper.readValue(schemaBytes, DeviceElementSchema.class);
 				target.setDeviceElementSchema(schema);
 			} catch (Throwable e) {
 				LOGGER.error("Unable to unmarshal device element schema from MongoDB persistence.", e);

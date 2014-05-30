@@ -271,7 +271,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * .request.IDeviceCreateRequest)
 	 */
 	public IDevice createDevice(IDeviceCreateRequest device) throws SiteWhereException {
-		return HBaseDevice.createDevice(client, device);
+		return HBaseDevice.createDevice(client, device, cacheProvider);
 	}
 
 	/*

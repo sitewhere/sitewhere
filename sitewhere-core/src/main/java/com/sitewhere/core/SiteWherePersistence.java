@@ -173,7 +173,7 @@ public class SiteWherePersistence {
 			if (schema == null) {
 				schema = new DeviceElementSchema();
 			}
-			spec.setDeviceElementSchema(schema);
+			spec.setDeviceElementSchema((DeviceElementSchema) schema);
 		}
 
 		MetadataProvider.copy(request, spec);
@@ -205,7 +205,7 @@ public class SiteWherePersistence {
 				if (schema == null) {
 					schema = new DeviceElementSchema();
 				}
-				target.setDeviceElementSchema(schema);
+				target.setDeviceElementSchema((DeviceElementSchema) schema);
 			}
 		}
 		if (request.getAssetModuleId() != null) {

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -50,7 +51,7 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
 	private DeviceContainerPolicy containerPolicy = DeviceContainerPolicy.Standalone;
 
 	/** Schema that specifies allowable locations of nested devices */
-	private IDeviceElementSchema deviceElementSchema;
+	private DeviceElementSchema deviceElementSchema;
 
 	/*
 	 * (non-Javadoc)
@@ -126,7 +127,7 @@ public class DeviceSpecification extends MetadataProviderEntity implements IDevi
 		return deviceElementSchema;
 	}
 
-	public void setDeviceElementSchema(IDeviceElementSchema deviceElementSchema) {
+	public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
 		this.deviceElementSchema = deviceElementSchema;
 	}
 
