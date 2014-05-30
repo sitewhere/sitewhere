@@ -376,6 +376,17 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException;
 
 	/**
+	 * List all events for the given assignment that meet the search criteria.
+	 * 
+	 * @param assignmentToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
 	 * Add measurements for a given device assignment.
 	 * 
 	 * @param assignmentToken

@@ -85,6 +85,21 @@ public class HBaseDeviceEvent {
 	private static final long ROW_IN_MS = (1 << 24);
 
 	/**
+	 * List measurements associated with an assignment based on the given criteria.
+	 * 
+	 * @param hbase
+	 * @param assnToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceEvent> listDeviceEvents(ISiteWhereHBaseClient hbase, String assnToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		Pager<EventMatch> matches = getEventRowsForAssignment(hbase, assnToken, null, criteria);
+		return convertMatches(matches);
+	}
+
+	/**
 	 * Create a new device measurements entry for an assignment.
 	 * 
 	 * @param hbase
@@ -720,7 +735,7 @@ public class HBaseDeviceEvent {
 				Map<byte[], byte[]> cells = current.getFamilyMap(ISiteWhereHBase.FAMILY_ID);
 				for (byte[] qual : cells.keySet()) {
 					byte[] value = cells.get(qual);
-					if ((qual.length > 3) && (qual[3] == eventType.getType())) {
+					if ((qual.length > 3) && ((eventType == null) || (qual[3] == eventType.getType()))) {
 						Date eventDate = getDateForEventKeyValue(current.getRow(), qual);
 						if ((criteria.getStartDate() != null) && (eventDate.before(criteria.getStartDate()))) {
 							continue;

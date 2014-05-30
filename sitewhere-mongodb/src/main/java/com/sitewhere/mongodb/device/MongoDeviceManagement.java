@@ -978,6 +978,38 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceEvents(java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
+		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
+		BasicDBObject sort =
+				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
+						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
+
+		DBCursor cursor = events.find(query).sort(sort);
+		List<IDeviceEvent> matches = new ArrayList<IDeviceEvent>();
+		SearchResults<IDeviceEvent> results = new SearchResults<IDeviceEvent>(matches);
+		try {
+			results.setNumResults(cursor.count());
+			while (cursor.hasNext()) {
+				DBObject match = cursor.next();
+				matches.add(MongoPersistence.unmarshalEvent(match));
+			}
+		} finally {
+			cursor.close();
+		}
+		return results;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(com.sitewhere.
 	 * spi.device.IDeviceAssignment,

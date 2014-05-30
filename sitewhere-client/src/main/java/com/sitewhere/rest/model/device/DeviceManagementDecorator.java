@@ -258,6 +258,12 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
+	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceEvents(assignmentToken, criteria);
+	}
+
+	@Override
 	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
 			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException {
 		return delegate.addDeviceMeasurements(assignmentToken, measurements, updateState);

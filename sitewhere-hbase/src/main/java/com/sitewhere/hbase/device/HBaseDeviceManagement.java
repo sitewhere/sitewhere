@@ -515,6 +515,15 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		return HBaseDeviceEvent.getDeviceEvent(client, id);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceEvents(java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return HBaseDeviceEvent.listDeviceEvents(client, assignmentToken, criteria);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
