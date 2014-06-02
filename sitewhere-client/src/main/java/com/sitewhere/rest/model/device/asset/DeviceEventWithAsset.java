@@ -19,6 +19,7 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.asset.IDeviceEventWithAsset;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
@@ -128,6 +129,16 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
 	@Override
 	public String getId() {
 		return getWrapped().getId();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.IDeviceEvent#getEventType()
+	 */
+	@Override
+	public DeviceEventType getEventType() {
+		return getWrapped().getEventType();
 	}
 
 	/*

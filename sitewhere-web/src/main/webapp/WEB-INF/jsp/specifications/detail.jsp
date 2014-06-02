@@ -63,6 +63,11 @@
 	<ul>
 		<li class="k-state-active">Commands</li>
 		<li>Code Generation</li>
+<c:choose>
+	<c:when test="${specification.containerPolicy == 'Composite'}">
+		<li>Composition</li>
+	</c:when>
+</c:choose>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
@@ -86,12 +91,29 @@
 					<i class="icon-download-alt sw-button-icon"></i> Download</a>
 			</div>
 		</div>
-		<div id="sw-proto-section" class="protobuf" style="max-height: 450px; overflow-y: auto;">
-		</div>
+		<div id="sw-proto-section" class="protobuf"></div>
 	</div>
+<c:choose>
+	<c:when test="${specification.containerPolicy == 'Composite'}">
+	<div>
+		<div class="k-header sw-button-bar">
+			<div class="sw-button-bar-title">Device Element Schema</div>
+			<div>
+				<a id="btn-add-unit" class="btn" href="javascript:void(0)">
+					<i class="icon-folder-close sw-button-icon"></i> Add Device Unit</a>
+				<a id="btn-add-slot" class="btn" href="javascript:void(0)">
+					<i class="icon-link sw-button-icon"></i> Add Device Slot</a>
+			</div>
+		</div>
+		<div id="sw-composition-section"></div>
+	</div>
+	</c:when>
+</c:choose>
 </div>
 
 <%@ include file="../includes/commandCreateDialog.inc"%>
+<%@ include file="../includes/deviceSlotCreateDialog.inc"%>
+<%@ include file="../includes/deviceUnitCreateDialog.inc"%>
 <%@ include file="../includes/specificationCreateDialog.inc"%>
 <%@ include file="../includes/templateSpecificationEntry.inc"%>
 <%@ include file="../includes/templateCommandEntry.inc"%>
@@ -100,7 +122,11 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+	// Token for specification being viewed.
 	var specToken = '<c:out value="${specification.token}"/>';
+
+	// Context used for creating new elements.
+	var elementContext;
 	
 	$(document).ready(function() {
 				
@@ -126,9 +152,16 @@
 	        window.location.href = "${pageContext.request.contextPath}/api/specifications/" + specToken + "/spec.proto";
 	    });
 		
+	    $("#btn-add-unit").click(function() {
+	    	addTopLevelUnit();
+	    });
+		
+	    $("#btn-add-slot").click(function() {
+	    	addTopLevelSlot();
+	    });
+		
 		loadSpecification();
 		loadCommands();
-		
 	});
 	
 	/** Called when edit button on the list entry is pressed */
@@ -171,6 +204,7 @@
 		data.inDetailView = true;
 		$('#specification-details').html(template(data));
 		loadProtobuf();
+		refreshDeviceElementSchema(data, status, jqXHR);
     }
     
 	/** Handle error on getting specification data */
@@ -265,6 +299,185 @@
 			$("#sw-proto-section").html("<pre><code>" + data + "</code></pre>");
 			hljs.highlightBlock(document.getElementById('sw-proto-section').childNodes[0]);
 		});	
+	}
+	
+	/** Add a top-level device unit */
+	function addTopLevelSlot() {
+		createSlot("/");
+	}
+	
+	/** Add a top-level device unit */
+	function addTopLevelUnit() {
+		createUnit("/");
+	}
+	
+	/** Open the 'create device slot' dialog */
+	function createSlot(context) {
+		elementContext = context;
+		loadSchemaForUpdate(showCreateSlotDialog);
+	}
+	
+	/** Open the 'create device unit' dialog */
+	function createUnit(context) {
+		elementContext = context;
+		loadSchemaForUpdate(showCreateUnitDialog);
+	}
+	
+	/** Delete the given slot */
+	function deleteSlot(context) {
+		elementContext = context;
+		loadSchemaForUpdate(handleDeleteSlot);
+	}
+	
+	/** Delete the given unit */
+	function deleteUnit(context) {
+		elementContext = context;
+		loadSchemaForUpdate(handleDeleteUnit);
+	}
+	
+	/** Reloads specification and routes to a callback that will execute updates. */
+	function loadSchemaForUpdate(callback) {
+		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, 
+				callback, loadGetFailed);
+	}
+    
+    /** Called on successful specification load request */
+    function showCreateSlotDialog(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+		dscOpen(specToken, elementContext, schema, onDeviceSlotCreated);
+    }
+    
+    /** Called on successful specification load request */
+    function showCreateUnitDialog(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+		ducOpen(specToken, elementContext, schema, onDeviceUnitCreated);
+    }
+	
+    /** Delete the given unit */
+	function handleDeleteSlot(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+		swConfirm("Delete Device Slot", "Are you sure that you want to delete the selected device slot?", function(result) {
+			if (result) {
+				var updated = swRemoveDeviceSlotForContext(elementContext, schema);
+				if (updated) {
+					var specData = {
+						"deviceElementSchema": updated, 
+					}
+					$.putJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, 
+						specData, refreshDeviceElementSchema, onDeleteSlotFail);
+				}
+			}
+		});
+	}
+	
+    /** Delete the given unit */
+	function handleDeleteUnit(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+		swConfirm("Delete Device Unit", "Are you sure that you want to delete the selected device unit?", function(result) {
+			if (result) {
+				var updated = swRemoveDeviceUnitForContext(elementContext, schema);
+				if (updated) {
+					var specData = {
+						"deviceElementSchema": updated, 
+					}
+					$.putJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, 
+						specData, refreshDeviceElementSchema, onDeleteUnitFail);
+				}
+			}
+		});
+	}
+    
+	/** Handle failed call to delete device slot */
+	function onDeleteSlotFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete device slot.");
+	}
+   
+	/** Handle failed call to delete device unit */
+	function onDeleteUnitFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete device unit.");
+	}
+    
+    /** Called after a device slot is successfully created */
+    function onDeviceSlotCreated() {
+    	loadSchemaForUpdate(refreshDeviceElementSchema);
+    }
+    
+    /** Called after a device unit is successfully created */
+    function onDeviceUnitCreated() {
+    	loadSchemaForUpdate(refreshDeviceElementSchema);
+    }
+	
+	/** Load HTML for device element schema */
+	function refreshDeviceElementSchema(data, status, jqXHR) {
+		var schema = data.deviceElementSchema;
+		if (!schema) {
+			return;
+		}
+    	var shtml = getUnitHtml(schema, "");
+    	$('#sw-composition-section').html(shtml);
+	}
+	
+	/** Create HTML for a device unit */
+	function getUnitHtml(unit, context) {
+    	var uhtml = "";
+		var slength = unit.deviceSlots.length;
+   		uhtml += "<div class='sw-device-slot-container'>";
+   		uhtml += "<div class='sw-device-slot-header'><i class='icon-link sw-button-icon'></i> Device Slots</div>";
+   		if (slength == 0) {
+       		uhtml += "<div class='sw-nodata-container'<span class='sw-nodata-message'>No Slots Currently Configured</span></div>";
+   		} else {
+    		for (var i = 0; i < slength; i++) {
+    			uhtml += getSlotHtml(unit.deviceSlots[i], context);
+    		}
+   		}
+   		uhtml += "</div>";
+		var ulength = unit.deviceUnits.length;
+   		for (var i = 0; i < ulength; i++) {
+       		var relContext = context + "/" + unit.deviceUnits[i].path;
+       		uhtml += "<div class='sw-device-unit-container sw-list-entry'>";
+       		uhtml += getUnitHeaderHtml(unit.deviceUnits[i], relContext);
+   			uhtml += getUnitHtml(unit.deviceUnits[i], relContext);
+       		uhtml += "</div>";
+   		}
+    	return uhtml;
+	}
+	
+	/** Create HTML for device unit header bar */
+	function getUnitHeaderHtml(unit, relContext) {
+		var uhtml = "<div class='sw-device-unit-header'><i class='icon-folder-close sw-button-icon'></i>" + 
+			unit.name + " (<span class='sw-device-unit-path'>" + relContext + "</span>)";
+		uhtml += "<div class='sw-device-unit-buttons'>" +
+			"<i class='icon-folder-close sw-button-icon sw-action-glyph sw-normal-glyph' " + 
+			"style='padding-right: 5px;' title='Add Nested Device Unit' onclick=\"createUnit('" + 
+			relContext + "');\"></i>" + "<i class='icon-link sw-button-icon sw-action-glyph sw-normal-glyph' " + 
+			"onclick=\"createSlot('" + relContext + "');\" title='Add Device Slot'></i>" + 
+			"<i class='icon-remove sw-button-icon sw-action-glyph sw-delete-glyph' " + 
+			"onclick=\"deleteUnit('" + relContext + "');\" title='Delete Device Unit'></i>" +
+			"</div></div>";
+		return uhtml;
+	}
+	
+	/** Create HTML for a device slot */
+	function getSlotHtml(slot, context) {
+		var relContext = context + "/" + slot.path;
+    	var shtml = "<div class='sw-device-slot'><i class='icon-link sw-button-icon' style='padding-right: 5px'></i>" + 
+    		slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
+    	shtml += "<div class='sw-device-slot-buttons'>" +
+			"<i class='icon-remove sw-button-icon sw-action-glyph sw-delete-glyph' " + 
+			"onclick=\"deleteSlot('" + relContext + "');\" title='Delete Device Slot'></i></div></div>";
+		return shtml;
 	}
 </script>
 

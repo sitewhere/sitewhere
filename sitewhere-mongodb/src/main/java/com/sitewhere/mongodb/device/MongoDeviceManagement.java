@@ -18,6 +18,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -53,12 +54,14 @@ import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -147,32 +150,12 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 				new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, 1), new BasicDBObject("unique", true));
 		getMongoClient().getDeviceAssignmentsCollection().ensureIndex(
 				new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getDeviceAssignmentsCollection().ensureIndex(
-				new BasicDBObject("lastLocation.latLong", "2d").append("lastLocation.eventDate", -1));
-		getMongoClient().getLocationsCollection().ensureIndex(
-				new BasicDBObject(MongoDeviceLocation.PROP_LATLONG, "2d").append(
-						MongoDeviceEvent.PROP_EVENT_DATE, -1));
-		getMongoClient().getLocationsCollection().ensureIndex(
+		getMongoClient().getEventsCollection().ensureIndex(
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
-						MongoDeviceEvent.PROP_EVENT_DATE, -1));
-		getMongoClient().getMeasurementsCollection().ensureIndex(
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
-						MongoDeviceEvent.PROP_EVENT_DATE, -1));
-		getMongoClient().getAlertsCollection().ensureIndex(
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
-						MongoDeviceEvent.PROP_EVENT_DATE, -1));
-		getMongoClient().getInvocationsCollection().ensureIndex(
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
-						MongoDeviceEvent.PROP_EVENT_DATE, -1));
-		getMongoClient().getResponsesCollection().ensureIndex(
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
-						MongoDeviceEvent.PROP_EVENT_DATE, -1));
-		getMongoClient().getResponsesCollection().ensureIndex(
-				new BasicDBObject(MongoDeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, 1).append(
-						MongoDeviceEvent.PROP_EVENT_DATE, -1));
-		getMongoClient().getStateChangesCollection().ensureIndex(
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
-						MongoDeviceEvent.PROP_EVENT_DATE, -1));
+						MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
+		getMongoClient().getEventsCollection().ensureIndex(
+				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, 1).append(
+						MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
 		getMongoClient().getDeviceGroupsCollection().ensureIndex(
 				new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, 1), new BasicDBObject("unique", true));
 		getMongoClient().getDeviceGroupsCollection().ensureIndex(
@@ -618,6 +601,31 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(java.lang
+	 * .String, com.sitewhere.spi.device.IDeviceElementMapping)
+	 */
+	@Override
+	public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
+			throws SiteWhereException {
+		return SiteWherePersistence.deviceElementMappingCreateLogic(this, hardwareId, mapping);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(java.lang
+	 * .String, java.lang.String)
+	 */
+	@Override
+	public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
+		return SiteWherePersistence.deviceElementMappingDeleteLogic(this, hardwareId, path);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.device.IDeviceManagement#deleteDevice(java.lang.String,
 	 * boolean)
 	 */
@@ -955,6 +963,54 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceEventById(java.lang.String)
+	 */
+	@Override
+	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
+		DBObject searchById = new BasicDBObject("_id", new ObjectId(id));
+		DBObject found = getMongoClient().getEventsCollection().findOne(searchById);
+		if (found == null) {
+			return null;
+		}
+		return MongoPersistence.unmarshalEvent(found);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceEvents(java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
+		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
+		BasicDBObject sort =
+				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
+						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
+
+		DBCursor cursor = events.find(query).sort(sort);
+		List<IDeviceEvent> matches = new ArrayList<IDeviceEvent>();
+		SearchResults<IDeviceEvent> results = new SearchResults<IDeviceEvent>(matches);
+		try {
+			results.setNumResults(cursor.count());
+			while (cursor.hasNext()) {
+				DBObject match = cursor.next();
+				matches.add(MongoPersistence.unmarshalEvent(match));
+			}
+		} finally {
+			cursor.close();
+		}
+		return results;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(com.sitewhere.
 	 * spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest, boolean)
@@ -966,9 +1022,9 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		DeviceMeasurements measurements =
 				SiteWherePersistence.deviceMeasurementsCreateLogic(request, assignment);
 
-		DBCollection measurementColl = getMongoClient().getMeasurementsCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject mObject = MongoDeviceMeasurements.toDBObject(measurements, false);
-		MongoPersistence.insert(measurementColl, mObject);
+		MongoPersistence.insert(events, mObject);
 
 		// Update assignment state if requested.
 		measurements = MongoDeviceMeasurements.fromDBObject(mObject, false);
@@ -991,13 +1047,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public SearchResults<IDeviceMeasurements> listDeviceMeasurements(String token,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection measurementColl = getMongoClient().getMeasurementsCollection();
-		BasicDBObject query = new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, token);
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, token).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceMeasurements.class, measurementColl, query, sort, criteria);
+		return MongoPersistence.search(IDeviceMeasurements.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1010,13 +1068,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection measurements = getMongoClient().getMeasurementsCollection();
-		BasicDBObject query = new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken);
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceMeasurements.class, measurements, query, sort, criteria);
+		return MongoPersistence.search(IDeviceMeasurements.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1031,9 +1091,9 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
 
-		DBCollection locationsColl = getMongoClient().getLocationsCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject locObject = MongoDeviceLocation.toDBObject(location, false);
-		MongoPersistence.insert(locationsColl, locObject);
+		MongoPersistence.insert(events, locObject);
 
 		// Update assignment state if requested.
 		location = MongoDeviceLocation.fromDBObject(locObject, false);
@@ -1056,14 +1116,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection locationsColl = getMongoClient().getLocationsCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query =
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceLocation.class, locationsColl, query, sort, criteria);
+		return MongoPersistence.search(IDeviceLocation.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1076,13 +1137,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection locationsColl = getMongoClient().getLocationsCollection();
-		BasicDBObject query = new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken);
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceLocation.class, locationsColl, query, sort, criteria);
+		return MongoPersistence.search(IDeviceLocation.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1094,14 +1157,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection locationsColl = getMongoClient().getLocationsCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query = new BasicDBObject();
 		query.put(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, new BasicDBObject("$in", assignmentTokens));
+		query.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceLocation.class, locationsColl, query, sort, criteria);
+		return MongoPersistence.search(IDeviceLocation.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1116,9 +1180,9 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceAlert alert = SiteWherePersistence.deviceAlertCreateLogic(assignment, request);
 
-		DBCollection alertsColl = getMongoClient().getAlertsCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject alertObject = MongoDeviceAlert.toDBObject(alert, false);
-		MongoPersistence.insert(alertsColl, alertObject);
+		MongoPersistence.insert(events, alertObject);
 
 		// Update assignment state if requested.
 		alert = MongoDeviceAlert.fromDBObject(alertObject, false);
@@ -1140,14 +1204,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public SearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection alerts = getMongoClient().getAlertsCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query =
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceAlert.class, alerts, query, sort, criteria);
+		return MongoPersistence.search(IDeviceAlert.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1160,13 +1225,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public SearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection alerts = getMongoClient().getAlertsCollection();
-		BasicDBObject query = new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken);
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceAlert.class, alerts, query, sort, criteria);
+		return MongoPersistence.search(IDeviceAlert.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1184,54 +1251,10 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		DeviceCommandInvocation ci =
 				SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command, request);
 
-		DBCollection invocations = getMongoClient().getInvocationsCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject ciObject = MongoDeviceCommandInvocation.toDBObject(ci);
-		MongoPersistence.insert(invocations, ciObject);
+		MongoPersistence.insert(events, ciObject);
 		return MongoDeviceCommandInvocation.fromDBObject(ciObject);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceEventById(java.lang.String)
-	 */
-	@Override
-	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
-		// TODO: This is a brute force way of searching to abstract out the fact that all
-		// events are in separate collections. Eventually, there just needs to be a single
-		// collection and an event type indocator.
-		IDeviceEvent result = null;
-		result =
-				MongoPersistence.get(id, IDeviceMeasurements.class,
-						getMongoClient().getMeasurementsCollection());
-		if (result == null) {
-			result =
-					MongoPersistence.get(id, IDeviceLocation.class, getMongoClient().getLocationsCollection());
-		}
-		if (result == null) {
-			result = MongoPersistence.get(id, IDeviceAlert.class, getMongoClient().getAlertsCollection());
-		}
-		if (result == null) {
-			result =
-					MongoPersistence.get(id, IDeviceCommandInvocation.class,
-							getMongoClient().getInvocationsCollection());
-		}
-		if (result == null) {
-			result =
-					MongoPersistence.get(id, IDeviceCommandResponse.class,
-							getMongoClient().getResponsesCollection());
-		}
-		if (result == null) {
-			result =
-					MongoPersistence.get(id, IDeviceStateChange.class,
-							getMongoClient().getStateChangesCollection());
-		}
-		if (result == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceEventId, ErrorLevel.ERROR,
-					HttpServletResponse.SC_NOT_FOUND);
-		}
-		return result;
 	}
 
 	/*
@@ -1244,14 +1267,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection invocations = getMongoClient().getInvocationsCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query =
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceCommandInvocation.class, invocations, query, sort, criteria);
+		return MongoPersistence.search(IDeviceCommandInvocation.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1264,13 +1288,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection invocations = getMongoClient().getInvocationsCollection();
-		BasicDBObject query = new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken);
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceCommandInvocation.class, invocations, query, sort, criteria);
+		return MongoPersistence.search(IDeviceCommandInvocation.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1283,13 +1309,14 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
 			throws SiteWhereException {
-		DBCollection responses = getMongoClient().getResponsesCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query =
-				new BasicDBObject(MongoDeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, invocationId);
+				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name()).append(
+						MongoDeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, invocationId);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceCommandResponse.class, responses, query, sort);
+		return MongoPersistence.search(IDeviceCommandResponse.class, events, query, sort);
 	}
 
 	/*
@@ -1306,9 +1333,9 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		DeviceCommandResponse response =
 				SiteWherePersistence.deviceCommandResponseCreateLogic(assignment, request);
 
-		DBCollection responses = getMongoClient().getResponsesCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject dbresponse = MongoDeviceCommandResponse.toDBObject(response);
-		MongoPersistence.insert(responses, dbresponse);
+		MongoPersistence.insert(events, dbresponse);
 		return MongoDeviceCommandResponse.fromDBObject(dbresponse);
 	}
 
@@ -1322,14 +1349,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection responses = getMongoClient().getResponsesCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query =
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceCommandResponse.class, responses, query, sort, criteria);
+		return MongoPersistence.search(IDeviceCommandResponse.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1342,13 +1370,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection responses = getMongoClient().getResponsesCollection();
-		BasicDBObject query = new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken);
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceCommandResponse.class, responses, query, sort, criteria);
+		return MongoPersistence.search(IDeviceCommandResponse.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1364,9 +1394,9 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceStateChange state = SiteWherePersistence.deviceStateChangeCreateLogic(assignment, request);
 
-		DBCollection states = getMongoClient().getStateChangesCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject dbstate = MongoDeviceStateChange.toDBObject(state);
-		MongoPersistence.insert(states, dbstate);
+		MongoPersistence.insert(events, dbstate);
 		return MongoDeviceStateChange.fromDBObject(dbstate);
 	}
 
@@ -1380,14 +1410,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection states = getMongoClient().getStateChangesCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query =
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceStateChange.class, states, query, sort, criteria);
+		return MongoPersistence.search(IDeviceStateChange.class, events, query, sort, criteria);
 	}
 
 	/*
@@ -1400,13 +1431,15 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection states = getMongoClient().getStateChangesCollection();
-		BasicDBObject query = new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken);
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
-		return MongoPersistence.search(IDeviceStateChange.class, states, query, sort, criteria);
+		return MongoPersistence.search(IDeviceStateChange.class, events, query, sort, criteria);
 	}
 
 	/*

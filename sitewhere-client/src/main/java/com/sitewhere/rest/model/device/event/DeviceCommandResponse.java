@@ -12,6 +12,7 @@ package com.sitewhere.rest.model.device.event;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 
 /**
@@ -34,6 +35,10 @@ public class DeviceCommandResponse extends DeviceEvent implements IDeviceCommand
 
 	/** Data sent for response */
 	private String response;
+
+	public DeviceCommandResponse() {
+		super(DeviceEventType.CommandResponse);
+	}
 
 	/*
 	 * (non-Javadoc)

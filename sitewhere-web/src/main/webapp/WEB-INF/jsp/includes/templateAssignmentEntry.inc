@@ -87,13 +87,13 @@
 <!-- Template for assignment row -->
 <script type="text/x-kendo-tmpl" id="tpl-assignment-entry">
 # if (data.status == 'Active') { #
-	<div class="sw-assignment-list-entry sw-assignment-active">
+	<div class="sw-assignment-list-entry sw-list-entry sw-assignment-active">
 		<div class="sw-assignment-active-indicator sw-assignment-status-indicator"></div>
 # } else if (data.status == 'Missing') { #
-	<div class="sw-assignment-list-entry sw-assignment-missing">
+	<div class="sw-assignment-list-entry sw-list-entry sw-assignment-missing">
 		<div class="sw-assignment-missing-indicator sw-assignment-status-indicator"></div>
 # } else { #
-	<div class="sw-assignment-list-entry sw-assignment-released">
+	<div class="sw-assignment-list-entry sw-list-entry sw-assignment-released">
 		<div class="sw-assignment-status-indicator"></div>
 # } #
 # if (data.associatedPerson) { #
@@ -151,13 +151,13 @@
 # } #
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: -2px;">
-				<a class="btn btn-small btn-primary" title="Edit Assignment"
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Assignment" style="color: \\#009;"
 					href="javascript:void(0)" onclick="onEditAssignment(event, '#:token#')">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small btn-danger" title="Delete Assignment" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Assignment" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onDeleteAssignment(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small btn-success" title="View Assignment" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Assignment" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onViewAssignment(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>
@@ -169,7 +169,12 @@
 				style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 				<span class="label label-info sw-assignment-list-entry-logo-tag">Device</span>
 			</div>
-			<p class="sw-assignment-list-entry-heading ellipsis" title="#:device.assetName#">#:device.assetName#</p>
+			<p class="sw-assignment-list-entry-heading ellipsis" title="#:device.assetName#">
+				<a title="#:device.assetName#" class="sw-action-glyph sw-primary-glyph" 
+					style="color: \\#009;" href="/sitewhere/admin/devices/detail.html?hardwareId=#:device.hardwareId#">
+					<i class="icon-external-link icon-white" title="Open Device"></i></a>
+				<span title="#:device.assetName#">#:device.assetName#</span>
+			</p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 40px;">Id:</span><span title="#:device.hardwareId#">#:device.hardwareId#</span></p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 40px;">Info:</span><span title="#:device.comments#">#:device.comments#</span></p>
 		</div>
@@ -182,25 +187,53 @@
 # } #
 # if (data.associatedPerson) { #
 		<div>
-			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedPerson.name#">#:associatedPerson.name#</p>
+			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedPerson.name#">
+# if (data.inDetailView == null) { #
+				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
+					href="/sitewhere/admin/assignments/detail.html?token=#:token#">
+					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+# } #
+				#:associatedPerson.name#
+			</p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 45px;">Email:</span><span title="#:associatedPerson.emailAddress#">#:associatedPerson.emailAddress#</span></p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 45px;">Roles:</span><span title="#:swArrayAsCommaDelimited(associatedPerson.roles)#">#:swArrayAsCommaDelimited(associatedPerson.roles)#</span></p>
 		</div>
 # } else if (data.associatedHardware) { #
 		<div>
-			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedHardware.name#">#:associatedHardware.name#</p>
+			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedHardware.name#">
+# if (data.inDetailView == null) { #
+				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
+					href="/sitewhere/admin/assignments/detail.html?token=#:token#">
+					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+# } #
+				#:associatedHardware.name#
+			</p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">SKU:</span><span title="#:associatedHardware.sku#">#:associatedHardware.sku#</span></p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">Info:</span><span title="#:associatedHardware.description#">#:associatedHardware.description#</span></p>
 		</div>
 # } else if (data.associatedLocation) { #
 		<div>
-			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedLocation.name#">#:associatedLocation.name#</p>
+			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedLocation.name#">
+# if (data.inDetailView == null) { #
+				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
+					href="/sitewhere/admin/assignments/detail.html?token=#:token#">
+					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+# } #
+				#:associatedLocation.name#
+			</p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">Lat:</span><span title="#:associatedLocation.latitude#">#:associatedLocation.latitude#</span></p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 35px;">Long:</span><span title="#:associatedLocation.longitude#">#:associatedLocation.longitude#</span></p>
 		</div>
 # } else if (data.assignmentType == 'Unassociated') { #
 		<div>
-			<p class="sw-assignment-list-entry-heading ellipsis">Unassociated Device</p>
+			<p class="sw-assignment-list-entry-heading ellipsis">
+# if (data.inDetailView == null) { #
+				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
+					href="/sitewhere/admin/assignments/detail.html?token=#:token#">
+					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+# } #
+				Unassociated Device
+			</p>
 		</div>
 # } #
 	</div>

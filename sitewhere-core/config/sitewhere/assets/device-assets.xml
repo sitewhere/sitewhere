@@ -27,6 +27,15 @@
 		<property name="two.way.audio" value="false"/>
 	</hardware-asset>
 	
+	<!-- Gateway -->
+	<hardware-asset id="176" name="Gateway Device" sku="GW1" device="true">
+		<description>Sample gateway for testing nested device configurations.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/raspberry-pi.jpg</image-url>
+		<property name="manufacturer" value="Intel"/>
+		<property name="weight" value="1.000"/>
+		<property name="slot.count" value="16"/>
+	</hardware-asset>
+	
 	<!-- Ekahau tags and sensors -->
 	<hardware-asset id="200" name="Ekahau A4 Tag" sku="EA4" device="true">
 		<description>A4 Wi-Fi tags act as small computers that transmit data to the Ekahau Vision server which determines asset location and status, displayed in the Vision software interface.</description>

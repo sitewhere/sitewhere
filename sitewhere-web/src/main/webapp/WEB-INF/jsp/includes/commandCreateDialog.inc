@@ -108,7 +108,7 @@
 		{ text: "String", datatype: "String" },
 		{ text: "Double", datatype: "Double" },
 		{ text: "Float", datatype: "Float" },
-		{ text: "Boolean", datatype: "Boolean" },
+		{ text: "Boolean", datatype: "Bool" },
 		{ text: "Int32", datatype: "Int32" },
 		{ text: "Int64", datatype: "Int64" },
 		{ text: "UInt32", datatype: "UInt32" },

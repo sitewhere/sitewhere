@@ -19,6 +19,7 @@ import com.mongodb.DBObject;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
@@ -30,6 +31,9 @@ public class MongoDeviceEvent {
 
 	/** Event id for events nested in other objects */
 	public static final String PROP_NESTED_ID = "eventId";
+
+	/** Event type indicator */
+	public static final String PROP_EVENT_TYPE = "eventType";
 
 	/** Property for site token */
 	public static final String PROP_SITE_TOKEN = "siteToken";
@@ -63,6 +67,7 @@ public class MongoDeviceEvent {
 		if (isNested) {
 			target.append(PROP_NESTED_ID, source.getId());
 		}
+		target.append(PROP_EVENT_TYPE, source.getEventType().name());
 		target.append(PROP_SITE_TOKEN, source.getSiteToken());
 		target.append(PROP_DEVICE_ASSIGNMENT_TOKEN, source.getDeviceAssignmentToken());
 		target.append(PROP_DEVICE_ASSIGNMENT_TYPE, source.getAssignmentType().name());
@@ -83,6 +88,7 @@ public class MongoDeviceEvent {
 	 */
 	public static void fromDBObject(DBObject source, DeviceEvent target, boolean isNested) {
 		ObjectId id = (ObjectId) source.get("_id");
+		String eventType = (String) source.get(PROP_EVENT_TYPE);
 		String siteToken = (String) source.get(PROP_SITE_TOKEN);
 		String assignmentToken = (String) source.get(PROP_DEVICE_ASSIGNMENT_TOKEN);
 		String assignmentType = (String) source.get(PROP_DEVICE_ASSIGNMENT_TYPE);
@@ -96,6 +102,9 @@ public class MongoDeviceEvent {
 		}
 		if (isNested) {
 			target.setId((String) source.get(PROP_NESTED_ID));
+		}
+		if (eventType != null) {
+			target.setEventType(DeviceEventType.valueOf(eventType));
 		}
 		target.setSiteToken(siteToken);
 		target.setDeviceAssignmentToken(assignmentToken);

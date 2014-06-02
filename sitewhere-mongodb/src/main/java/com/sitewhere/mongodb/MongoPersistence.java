@@ -19,8 +19,18 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
+import com.sitewhere.mongodb.device.MongoDeviceAlert;
+import com.sitewhere.mongodb.device.MongoDeviceCommandInvocation;
+import com.sitewhere.mongodb.device.MongoDeviceCommandResponse;
+import com.sitewhere.mongodb.device.MongoDeviceEvent;
+import com.sitewhere.mongodb.device.MongoDeviceLocation;
+import com.sitewhere.mongodb.device.MongoDeviceMeasurement;
+import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
+import com.sitewhere.mongodb.device.MongoDeviceStateChange;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.DeviceEventType;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 
@@ -198,5 +208,51 @@ public class MongoPersistence {
 			dateClause.append("$lte", criteria.getEndDate());
 		}
 		query.put(dateField, dateClause);
+	}
+
+	/**
+	 * Given a {@link DBObject} that contains event information, unmarhal it to the
+	 * correct type.
+	 * 
+	 * @param found
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDeviceEvent unmarshalEvent(DBObject found) throws SiteWhereException {
+		String type = (String) found.get(MongoDeviceEvent.PROP_EVENT_TYPE);
+		if (type == null) {
+			throw new SiteWhereException("Event matched but did not contain event type field.");
+		}
+		DeviceEventType eventType = DeviceEventType.valueOf(type);
+		if (eventType == null) {
+			throw new SiteWhereException("Event type not recognized: " + type);
+		}
+
+		switch (eventType) {
+		case Measurements: {
+			return MongoDeviceMeasurements.fromDBObject(found, false);
+		}
+		case Measurement: {
+			return MongoDeviceMeasurement.fromDBObject(found, false);
+		}
+		case Location: {
+			return MongoDeviceLocation.fromDBObject(found, false);
+		}
+		case Alert: {
+			return MongoDeviceAlert.fromDBObject(found, false);
+		}
+		case CommandInvocation: {
+			return MongoDeviceCommandInvocation.fromDBObject(found);
+		}
+		case CommandResponse: {
+			return MongoDeviceCommandResponse.fromDBObject(found);
+		}
+		case StateChange: {
+			return MongoDeviceStateChange.fromDBObject(found);
+		}
+		default: {
+			throw new SiteWhereException("Event type not handled: " + type);
+		}
+		}
 	}
 }

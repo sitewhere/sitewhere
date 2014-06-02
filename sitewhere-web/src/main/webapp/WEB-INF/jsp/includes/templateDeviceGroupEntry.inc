@@ -56,7 +56,7 @@
 
 <!-- Device specification list item template -->
 <script type="text/x-kendo-tmpl" id="tpl-device-group-entry">
-	<div class="sw-groups-list-entry gradient-bg">
+	<div class="sw-groups-list-entry gradient-bg sw-list-entry">
 		<div class="sw-groups-list-entry-logowrapper"
 			style="background-image: url(${pageContext.request.contextPath}/img/devicegroup.png); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-groups-list-entry-logo-tag">Device Group</span>
@@ -66,13 +66,13 @@
 			<p class="ellipsis"><span class="sw-groups-list-entry-label">Updated:</span> #= formattedDate(updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: 3px;">
-				<a class="btn btn-small btn-primary" title="Edit Device Group" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Device Group" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onDeviceGroupEditClicked(event, '#:token#');">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small btn-danger" title="Delete Device Group" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Device Group" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onDeviceGroupDeleteClicked(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small btn-success" title="View Device Group" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Device Group" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onDeviceGroupOpenClicked(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>

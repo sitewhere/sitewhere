@@ -48,10 +48,10 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
+import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.version.IVersion;
 import com.sitewhere.version.VersionHelper;
 
 /**
@@ -72,6 +72,9 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 
 	/** File name for SiteWhere server config file */
 	public static final String SERVER_CONFIG_FILE_NAME = "sitewhere-server.xml";
+
+	/** Contains version information */
+	private IVersion version;
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
@@ -122,6 +125,15 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	 */
 	public static ApplicationContext getServerSpringContext() {
 		return SERVER_SPRING_CONTEXT;
+	}
+
+	/**
+	 * Get version information.
+	 * 
+	 * @return
+	 */
+	public IVersion getVersion() {
+		return version;
 	}
 
 	/**
@@ -332,7 +344,7 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		initializeSearchProviderManagement();
 
 		// Print version information.
-		IVersion version = VersionHelper.getVersion();
+		this.version = VersionHelper.getVersion();
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server");
 		messages.add("");

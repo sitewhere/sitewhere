@@ -55,6 +55,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -176,6 +177,31 @@ public class AssignmentsController extends SiteWhereController {
 		helper.setIncludeDevice(true);
 		helper.setIncludeSite(true);
 		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+	}
+
+	/**
+	 * List all device events for an assignment that match the given criteria.
+	 * 
+	 * @param token
+	 * @param page
+	 * @param pageSize
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/events", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List all events for device assignment")
+	public ISearchResults<IDeviceEvent> listEvents(
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+			throws SiteWhereException {
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+		return SiteWhereServer.getInstance().getDeviceManagement().listDeviceEvents(token, criteria);
 	}
 
 	/**

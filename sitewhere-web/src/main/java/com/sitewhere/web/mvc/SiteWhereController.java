@@ -234,7 +234,10 @@ public class SiteWhereController {
 				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
 				IDevice device = management.getDeviceByHardwareId(hardwareId);
 				if (device != null) {
+					IDeviceSpecification specification =
+							management.getDeviceSpecificationByToken(device.getSpecificationToken());
 					data.put("device", device);
+					data.put("specification", specification);
 					return new ModelAndView("devices/detail", data);
 				}
 				return showError("Device for hardware id '" + hardwareId + "' not found.");

@@ -34,6 +34,7 @@ import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
+import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -42,6 +43,14 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  * @author Derek Adams
  */
 public interface ISiteWhereClient {
+
+	/**
+	 * Get SiteWhere version information.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public Version getSiteWhereVersion() throws SiteWhereException;
 
 	/**
 	 * Create a new site.

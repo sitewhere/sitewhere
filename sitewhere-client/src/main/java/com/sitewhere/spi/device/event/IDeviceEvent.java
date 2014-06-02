@@ -30,6 +30,13 @@ public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent
 	public String getId();
 
 	/**
+	 * Get event type indicator.
+	 * 
+	 * @return
+	 */
+	public DeviceEventType getEventType();
+
+	/**
 	 * Get token for site the event pertains to.
 	 * 
 	 * @return

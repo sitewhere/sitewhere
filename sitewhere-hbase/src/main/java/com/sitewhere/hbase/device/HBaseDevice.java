@@ -75,11 +75,12 @@ public class HBaseDevice {
 	 * 
 	 * @param hbase
 	 * @param request
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDevice createDevice(ISiteWhereHBaseClient hbase, IDeviceCreateRequest request)
-			throws SiteWhereException {
+	public static IDevice createDevice(ISiteWhereHBaseClient hbase, IDeviceCreateRequest request,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		Long existing = IdManager.getInstance().getDeviceKeys().getValue(request.getHardwareId());
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DuplicateHardwareId, ErrorLevel.ERROR,
@@ -90,7 +91,7 @@ public class HBaseDevice {
 		IdManager.getInstance().getDeviceKeys().create(request.getHardwareId(), inverse);
 
 		Device device = SiteWherePersistence.deviceCreateLogic(request);
-		return putDeviceJson(hbase, device);
+		return putDeviceJson(hbase, device, cache);
 	}
 
 	/**
@@ -110,7 +111,7 @@ public class HBaseDevice {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
 		SiteWherePersistence.deviceUpdateLogic(request, updated);
-		return putDeviceJson(hbase, updated);
+		return putDeviceJson(hbase, updated, cache);
 	}
 
 	/**
@@ -207,10 +208,12 @@ public class HBaseDevice {
 	 * 
 	 * @param hbase
 	 * @param device
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Device putDeviceJson(ISiteWhereHBaseClient hbase, Device device) throws SiteWhereException {
+	public static Device putDeviceJson(ISiteWhereHBaseClient hbase, Device device,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		Long value = IdManager.getInstance().getDeviceKeys().getValue(device.getHardwareId());
 		if (value == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
@@ -224,6 +227,9 @@ public class HBaseDevice {
 			Put put = new Put(primary);
 			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
 			devices.put(put);
+			if (cache != null) {
+				cache.getDeviceCache().put(device.getHardwareId(), device);
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to put device data.", e);
 		} finally {

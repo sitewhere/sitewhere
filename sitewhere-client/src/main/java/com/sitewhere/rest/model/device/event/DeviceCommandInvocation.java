@@ -19,6 +19,7 @@ import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -61,6 +62,10 @@ public class DeviceCommandInvocation extends DeviceEvent implements IDeviceComma
 
 	/** HTML representation of invocation */
 	private String asHtml;
+
+	public DeviceCommandInvocation() {
+		super(DeviceEventType.CommandInvocation);
+	}
 
 	/*
 	 * (non-Javadoc)

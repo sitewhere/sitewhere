@@ -7,8 +7,12 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.util.List;
+
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.spi.device.DeviceStatus;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 
 /**
@@ -23,6 +27,15 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 
 	/** Device specification token */
 	private String specificationToken;
+
+	/** Parent hardware id (if nested) */
+	private String parentHardwareId;
+
+	/** Indicates whether parent hardware id should be removed */
+	private boolean removeParentHardwareId = false;
+
+	/** List of device element mappings */
+	private List<DeviceElementMapping> deviceElementMappings;
 
 	/** Comments */
 	private String comments;
@@ -54,6 +67,48 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 
 	public void setSpecificationToken(String specificationToken) {
 		this.specificationToken = specificationToken;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getParentHardwareId()
+	 */
+	public String getParentHardwareId() {
+		return parentHardwareId;
+	}
+
+	public void setParentHardwareId(String parentHardwareId) {
+		this.parentHardwareId = parentHardwareId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.request.IDeviceCreateRequest#isRemoveParentHardwareId()
+	 */
+	public boolean isRemoveParentHardwareId() {
+		return removeParentHardwareId;
+	}
+
+	public void setRemoveParentHardwareId(boolean removeParentHardwareId) {
+		this.removeParentHardwareId = removeParentHardwareId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.request.IDeviceCreateRequest#getDeviceElementMappings()
+	 */
+	@SuppressWarnings("unchecked")
+	public List<IDeviceElementMapping> getDeviceElementMappings() {
+		return (List<IDeviceElementMapping>) (List<? extends IDeviceElementMapping>) deviceElementMappings;
+	}
+
+	public void setDeviceElementMappings(List<DeviceElementMapping> deviceElementMappings) {
+		this.deviceElementMappings = deviceElementMappings;
 	}
 
 	/*

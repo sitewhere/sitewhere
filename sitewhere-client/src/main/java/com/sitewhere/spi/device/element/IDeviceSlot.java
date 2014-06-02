@@ -1,5 +1,5 @@
 /*
- * IVersion.java 
+ * IDeviceSlot.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,26 +7,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.version;
+package com.sitewhere.spi.device.element;
+
+import com.sitewhere.spi.device.IDevice;
 
 /**
- * Interface for getting version information.
+ * Available position where an {@link IDevice} may be inserted into a parent device.
  * 
  * @author Derek
  */
-public interface IVersion {
-
-	/**
-	 * Gets the Maven version identifier.
-	 * 
-	 * @return
-	 */
-	public String getVersionIdentifier();
-
-	/**
-	 * Gets the build timestamp.
-	 * 
-	 * @return
-	 */
-	public String getBuildTimestamp();
+public interface IDeviceSlot extends IDeviceElement {
 }

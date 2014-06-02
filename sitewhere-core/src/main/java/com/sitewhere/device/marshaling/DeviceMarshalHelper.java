@@ -14,11 +14,13 @@ import org.apache.log4j.Logger;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
+import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceSpecification;
 
 /**
@@ -41,11 +43,17 @@ public class DeviceMarshalHelper {
 	/** Indicates whether device assignment information is to be copied */
 	private boolean includeAssignment = false;
 
+	/** Indicates whether device element mappings should include device details */
+	private boolean includeNested = false;
+
 	/** Helper for marshaling device specification information */
 	private DeviceSpecificationMarshalHelper specificationHelper;
 
 	/** Helper for marshaling device assignement information */
 	private DeviceAssignmentMarshalHelper assignmentHelper;
+
+	/** Helper for marshaling nested devices */
+	private DeviceMarshalHelper nestedHelper;
 
 	/**
 	 * Convert an IDevice SPI object into a model object for marshaling.
@@ -58,8 +66,24 @@ public class DeviceMarshalHelper {
 	public Device convert(IDevice source, IAssetModuleManager manager) throws SiteWhereException {
 		Device result = new Device();
 		result.setHardwareId(source.getHardwareId());
+		result.setParentHardwareId(source.getParentHardwareId());
 		result.setComments(source.getComments());
 		MetadataProviderEntity.copy(source, result);
+
+		// Copy device element mappings.
+		for (IDeviceElementMapping mapping : source.getDeviceElementMappings()) {
+			DeviceElementMapping cnvMapping = DeviceElementMapping.copy(mapping);
+			if (isIncludeNested()) {
+				IDevice device =
+						SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(
+								mapping.getHardwareId());
+				cnvMapping.setDevice(getNestedHelper().convert(device,
+						SiteWhereServer.getInstance().getAssetModuleManager()));
+			}
+			result.getDeviceElementMappings().add(cnvMapping);
+		}
+
+		// Look up specification information.
 		if (source.getSpecificationToken() != null) {
 			IDeviceSpecification spec =
 					SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
@@ -131,6 +155,18 @@ public class DeviceMarshalHelper {
 		return assignmentHelper;
 	}
 
+	/**
+	 * Get helper class for marshaling nested devices.
+	 * 
+	 * @return
+	 */
+	protected DeviceMarshalHelper getNestedHelper() {
+		if (nestedHelper == null) {
+			nestedHelper = new DeviceMarshalHelper();
+		}
+		return nestedHelper;
+	}
+
 	public boolean isIncludeAsset() {
 		return includeAsset;
 	}
@@ -156,5 +192,13 @@ public class DeviceMarshalHelper {
 	public DeviceMarshalHelper setIncludeAssignment(boolean includeAssignment) {
 		this.includeAssignment = includeAssignment;
 		return this;
+	}
+
+	public boolean isIncludeNested() {
+		return includeNested;
+	}
+
+	public void setIncludeNested(boolean includeNested) {
+		this.includeNested = includeNested;
 	}
 }

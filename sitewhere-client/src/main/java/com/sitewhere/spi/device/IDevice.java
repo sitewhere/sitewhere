@@ -10,7 +10,10 @@
 
 package com.sitewhere.spi.device;
 
+import java.util.List;
+
 import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
  * Interface for a SiteWhere device.
@@ -32,6 +35,21 @@ public interface IDevice extends IMetadataProviderEntity {
 	 * @return
 	 */
 	public String getSpecificationToken();
+
+	/**
+	 * If contained by a parent device, returns the parent hardware id.
+	 * 
+	 * @return
+	 */
+	public String getParentHardwareId();
+
+	/**
+	 * Gets mappings of {@link IDeviceElementSchema} paths to hardware ids for nested
+	 * devices.
+	 * 
+	 * @return
+	 */
+	public List<IDeviceElementMapping> getDeviceElementMappings();
 
 	/**
 	 * Get device comments.

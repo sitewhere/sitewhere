@@ -28,6 +28,7 @@ import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
+import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -270,7 +271,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * .request.IDeviceCreateRequest)
 	 */
 	public IDevice createDevice(IDeviceCreateRequest device) throws SiteWhereException {
-		return HBaseDevice.createDevice(client, device);
+		return HBaseDevice.createDevice(client, device, cacheProvider);
 	}
 
 	/*
@@ -328,6 +329,31 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	public SearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException {
 		return HBaseDevice.listUnassignedDevices(client, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceElementMapping(java.lang
+	 * .String, com.sitewhere.spi.device.IDeviceElementMapping)
+	 */
+	@Override
+	public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
+			throws SiteWhereException {
+		return SiteWherePersistence.deviceElementMappingCreateLogic(this, hardwareId, mapping);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteDeviceElementMapping(java.lang
+	 * .String, java.lang.String)
+	 */
+	@Override
+	public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException {
+		return SiteWherePersistence.deviceElementMappingDeleteLogic(this, hardwareId, path);
 	}
 
 	/*
@@ -487,6 +513,15 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	@Override
 	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
 		return HBaseDeviceEvent.getDeviceEvent(client, id);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceEvents(java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return HBaseDeviceEvent.listDeviceEvents(client, assignmentToken, criteria);
 	}
 
 	/*

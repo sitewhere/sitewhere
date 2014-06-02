@@ -77,7 +77,7 @@
 
 <!-- Device list item template -->
 <script type="text/x-kendo-tmpl" id="tpl-device-entry">
-	<div class="sw-device-list-entry gradient-bg">
+	<div class="sw-device-list-entry gradient-bg sw-list-entry">
 		<div class="sw-device-list-entry-logowrapper"
 			style="background-image: url(#:specification.asset.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-device-list-entry-logo-tag">Device</span>
@@ -87,13 +87,13 @@
 			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">Updated:</span> #= formattedDate(updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: -2px;">
-				<a class="btn btn-small btn-primary" title="Edit Device" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Device" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onDeviceEditClicked(event, '#:hardwareId#');">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small btn-danger" title="Delete Device" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Device" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onDeviceDeleteClicked(event, '#:hardwareId#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small btn-success" title="View Device" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Device" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onDeviceOpenClicked(event, '#:hardwareId#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>
@@ -106,13 +106,23 @@
 				<img class="sw-device-list-entry-logo" src="#:assignment.assetImageUrl#"/>
 				<span class="label label-info sw-device-list-entry-logo-tag">Asset</span>
 			</div>
-			<p class="sw-device-list-entry-heading ellipsis"><span title="#:assignment.assetName#">#:assignment.assetName#</span></p>
+			<p class="sw-device-list-entry-heading ellipsis">
+				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
+					href="/sitewhere/admin/assignments/detail.html?token=#:assignment.token#">
+					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+				<span title="#:assignment.assetName#">#:assignment.assetName#</span>
+			</p>
 # } else { #
 			<div class="sw-device-list-entry-logowrapper">
 				<img class="sw-device-list-entry-logo" src="#:specification.asset.imageUrl#"/>
 				<span class="label label-info sw-device-list-entry-logo-tag">Unassociated</span>
 			</div>
-			<p class="sw-device-list-entry-heading ellipsis">Unassociated Device</p>
+			<p class="sw-device-list-entry-heading ellipsis">
+				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
+					href="/sitewhere/admin/assignments/detail.html?token=#:assignment.token#">
+					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+				Unassociated Device
+			</p>
 # } #
 			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">Assigned:</span> #= formattedDate(assignment.activeDate) #</p>
 # if (assignment.status == 'Active') { #
@@ -155,8 +165,17 @@
 		</div>
 # } #
 		<div>
-			<p class="sw-device-list-entry-heading ellipsis"><span title="#:specification.asset.name#">#:specification.asset.name#</span></p>
-			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">Id:</span><span title="#:hardwareId#">#:hardwareId#</span></p>
+			<p class="sw-device-list-entry-heading ellipsis">
+# if (data.inDetailView == null) { #
+				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
+					href="/sitewhere/admin/devices/detail.html?hardwareId=#:hardwareId#">
+					<i class="icon-external-link icon-white" title="Open Device"></i></a>
+# } #
+				<span title="#:specification.asset.name#">#:specification.asset.name#</span>
+			</p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">Id:</span>
+				<span title="#:hardwareId#">#:hardwareId#</span>
+			</p>
 			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">Spec:</span><span title="#:specification.name#">#:specification.name#</span></p>
 		</div>
 	</div>

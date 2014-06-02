@@ -292,6 +292,124 @@ function swMetadataAsLookup(metadata) {
 	return lookup;
 }
 
+/** Create map of slot path to device data */
+function swGetDeviceSlotPathMap(device) {
+	var mappings = device.deviceElementMappings;
+	var len = mappings.length;
+	var map = {};
+	for (var i = 0; i < len; i++) {
+		map[mappings[i].deviceElementSchemaPath] = mappings[i].device;
+	}
+	return map;
+}
+
+/** Given a context path, find the corresponding element in the given schema */
+function swGetDeviceUnitForContext(context, deviceElementSchema) {
+	if (context == "/") {
+		return deviceElementSchema;
+	}
+	var paths = context.split("/");
+	if ((paths.length > 0) && (paths[0].length == 0)) {
+		paths.shift();
+	}
+	var schema = deviceElementSchema;
+	while (true) {
+		if (paths.length == 0) {
+			return schema;
+		}
+		var currPath = paths.shift();
+		var ulength = schema.deviceUnits.length;
+		var found = false;
+		for (var i = 0; i < ulength; i++) {
+			if (schema.deviceUnits[i].path == currPath) {
+				found = true;
+				schema = schema.deviceUnits[i];
+				break;
+			}
+		}
+		if (!found) {
+			return null;
+		}
+	}
+}
+
+/** Given a context path, remove the corresponding unit in the given schema */
+function swRemoveDeviceUnitForContext(context, deviceElementSchema) {
+	var paths = context.split("/");
+	if ((paths.length > 0) && (paths[0].length == 0)) {
+		paths.shift();
+	}
+	var schema = deviceElementSchema;
+	while (true) {
+		if (paths.length == 0) {
+			return deviceElementSchema;
+		}
+		var currPath = paths.shift();
+		var ulength = schema.deviceUnits.length;
+		var found = false;
+		for (var i = 0; i < ulength; i++) {
+			if (schema.deviceUnits[i].path == currPath) {
+				found = true;
+				if (paths.length == 0) {
+					schema.deviceUnits.splice(i, 1)
+				}
+				schema = schema.deviceUnits[i];
+				break;
+			}
+		}
+		if (!found) {
+			return null;
+		}
+	}
+}
+
+/** Given a context path, remove the corresponding slot in the given schema */
+function swRemoveDeviceSlotForContext(context, deviceElementSchema) {
+	var paths = context.split("/");
+	if ((paths.length > 0) && (paths[0].length == 0)) {
+		paths.shift();
+	}
+	if (paths.length == 1) {
+		if (swRemoveDeviceSlotForUnit(deviceElementSchema, paths[0])) {
+			return deviceElementSchema;
+		}
+		return null;
+	}
+	var schema = deviceElementSchema;
+	while (true) {
+		var currPath = paths.shift();
+		var ulength = schema.deviceUnits.length;
+		var found = false;
+		for (var i = 0; i < ulength; i++) {
+			if (schema.deviceUnits[i].path == currPath) {
+				found = true;
+				schema = schema.deviceUnits[i];
+				if (paths.length == 1) {
+					if (swRemoveDeviceSlotForUnit(schema, paths[0])) {
+						return deviceElementSchema;
+					}
+				}
+				break;
+			}
+		}
+		if (!found) {
+			return null;
+		}
+	}
+}
+
+/** Removes a slot from a device unit given the slot path */
+function swRemoveDeviceSlotForUnit(unit, slotPath) {
+	var slength = unit.deviceSlots.length;
+	for (var j = 0; j < slength; j++) {
+		if (unit.deviceSlots[j].path == slotPath) {
+			unit.deviceSlots.splice(j, 1);
+			return true;
+		}
+	}
+	return false;
+}
+
 /** Initializes a map based on site map metadata */
 /** TODO: This should be replaced by the sitewhere Leaflet library!! */
 function swInitMapForSite(map, site, tokenToSkip, onLoaded) {

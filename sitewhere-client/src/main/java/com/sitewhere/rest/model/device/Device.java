@@ -10,11 +10,16 @@
 
 package com.sitewhere.rest.model.device;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceElementMapping;
+import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
  * Model object for device information.
@@ -29,6 +34,12 @@ public class Device extends MetadataProviderEntity implements IDevice {
 
 	/** Specification token */
 	private String specificationToken;
+
+	/** Parent hardware id (if nested) */
+	private String parentHardwareId;
+
+	/** Mappings of {@link IDeviceElementSchema} paths to hardware ids */
+	private List<DeviceElementMapping> deviceElementMappings = new ArrayList<DeviceElementMapping>();
 
 	/** Comments */
 	private String comments;
@@ -80,6 +91,33 @@ public class Device extends MetadataProviderEntity implements IDevice {
 
 	public void setSpecificationToken(String specificationToken) {
 		this.specificationToken = specificationToken;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDevice#getParentHardwareId()
+	 */
+	public String getParentHardwareId() {
+		return parentHardwareId;
+	}
+
+	public void setParentHardwareId(String parentHardwareId) {
+		this.parentHardwareId = parentHardwareId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDevice#getDeviceElementMappings()
+	 */
+	@SuppressWarnings("unchecked")
+	public List<IDeviceElementMapping> getDeviceElementMappings() {
+		return (List<IDeviceElementMapping>) (List<? extends IDeviceElementMapping>) deviceElementMappings;
+	}
+
+	public void setDeviceElementMappings(List<DeviceElementMapping> deviceElementMappings) {
+		this.deviceElementMappings = deviceElementMappings;
 	}
 
 	/*

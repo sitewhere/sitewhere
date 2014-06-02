@@ -10,6 +10,8 @@
 package com.sitewhere.spi.device.request;
 
 import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.device.DeviceContainerPolicy;
+import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
 /**
  * Interface for arguments needed to create a device specification.
@@ -45,4 +47,18 @@ public interface IDeviceSpecificationCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public String getToken();
+
+	/**
+	 * Get container policy.
+	 * 
+	 * @return
+	 */
+	public DeviceContainerPolicy getContainerPolicy();
+
+	/**
+	 * Get {@link IDeviceElementSchema} for locating nested devices.
+	 * 
+	 * @return
+	 */
+	public IDeviceElementSchema getDeviceElementSchema();
 }

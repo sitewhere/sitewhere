@@ -9,7 +9,7 @@
  */
 package com.sitewhere;
 
-import com.sitewhere.version.IVersion;
+import com.sitewhere.spi.system.IVersion;
 
 /**
  * Used as basis for generating version information. This file is modified by the Maven build process so that

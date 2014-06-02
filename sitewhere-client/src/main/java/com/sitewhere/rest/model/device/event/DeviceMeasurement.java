@@ -9,6 +9,7 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 
 /**
@@ -26,6 +27,10 @@ public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement
 
 	/** Measurement value */
 	private Double value;
+
+	public DeviceMeasurement() {
+		super(DeviceEventType.Measurement);
+	}
 
 	/*
 	 * (non-Javadoc)

@@ -56,7 +56,7 @@
 
 <!-- Device specification list item template -->
 <script type="text/x-kendo-tmpl" id="tpl-specification-entry">
-	<div class="sw-spec-list-entry gradient-bg">
+	<div class="sw-spec-list-entry gradient-bg sw-list-entry">
 		<div class="sw-spec-list-entry-logowrapper"
 			style="background-image: url(#:asset.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-spec-list-entry-logo-tag">Specification</span>
@@ -66,13 +66,13 @@
 			<p class="ellipsis"><span class="sw-spec-list-entry-label">Updated:</span> #= formattedDate(updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: 3px;">
-				<a class="btn btn-small btn-primary" title="Edit Specification" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Specification" style="color: \\#009;"  
 					href="javascript:void(0)" onclick="onSpecificationEditClicked(event, '#:token#');">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small btn-danger" title="Delete Specification" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Specification" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onSpecificationDeleteClicked(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small btn-success" title="View Specification" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Specification" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onSpecificationOpenClicked(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>

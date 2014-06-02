@@ -80,23 +80,8 @@ public class SiteWhereMongoClient implements InitializingBean {
 	private String groupElementsCollectionName =
 			IMongoCollectionNames.DEFAULT_DEVICE_GROUP_ELEMENTS_COLLECTION_NAME;
 
-	/** Injected name used for measurements collection */
-	private String measurementsCollectionName = IMongoCollectionNames.DEFAULT_MEASUREMENTS_COLLECTION_NAME;
-
-	/** Injected name used for locations collection */
-	private String locationsCollectionName = IMongoCollectionNames.DEFAULT_LOCATIONS_COLLECTION_NAME;
-
-	/** Injected name used for alerts collection */
-	private String alertsCollectionName = IMongoCollectionNames.DEFAULT_ALERTS_COLLECTION_NAME;
-
-	/** Injected name used for command invocations collection */
-	private String invocationsCollectionName = IMongoCollectionNames.DEFAULT_INVOCATIONS_COLLECTION_NAME;
-
-	/** Injected name used for command responses collection */
-	private String responsesCollectionName = IMongoCollectionNames.DEFAULT_RESPONSES_COLLECTION_NAME;
-
-	/** Injected name used for device state change events collection */
-	private String stateChangesCollectionName = IMongoCollectionNames.DEFAULT_STATE_CHANGES_COLLECTION_NAME;
+	/** Injected name used for events collection */
+	private String eventsCollectionName = IMongoCollectionNames.DEFAULT_EVENTS_COLLECTION_NAME;
 
 	/** Injected name used for users collection */
 	private String usersCollectionName = IMongoCollectionNames.DEFAULT_USERS_COLLECTION_NAME;
@@ -131,17 +116,7 @@ public class SiteWhereMongoClient implements InitializingBean {
 		messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
 		messages.add("Sites collection name: " + getSitesCollectionName());
 		messages.add("Zones collection name: " + getZonesCollectionName());
-		messages.add("");
-		messages.add("-------------------");
-		messages.add("-- Device Events --");
-		messages.add("-------------------");
-		messages.add("Measurements collection name: " + getMeasurementsCollectionName());
-		messages.add("Locations collection name: " + getLocationsCollectionName());
-		messages.add("Alerts collection name: " + getAlertsCollectionName());
-		messages.add("Invocations collection name: " + getInvocationsCollectionName());
-		messages.add("Responses collection name: " + getResponsesCollectionName());
-		messages.add("State Changes collection name: " + getStateChangesCollectionName());
-		messages.add("");
+		messages.add("Events collection name: " + getEventsCollectionName());
 		messages.add("");
 		messages.add("---------------------");
 		messages.add("-- User Management --");
@@ -197,28 +172,8 @@ public class SiteWhereMongoClient implements InitializingBean {
 		return getSiteWhereDatabase().getCollection(getGroupElementsCollectionName());
 	}
 
-	public DBCollection getMeasurementsCollection() {
-		return getSiteWhereDatabase().getCollection(getMeasurementsCollectionName());
-	}
-
-	public DBCollection getLocationsCollection() {
-		return getSiteWhereDatabase().getCollection(getLocationsCollectionName());
-	}
-
-	public DBCollection getAlertsCollection() {
-		return getSiteWhereDatabase().getCollection(getAlertsCollectionName());
-	}
-
-	public DBCollection getInvocationsCollection() {
-		return getSiteWhereDatabase().getCollection(getInvocationsCollectionName());
-	}
-
-	public DBCollection getResponsesCollection() {
-		return getSiteWhereDatabase().getCollection(getResponsesCollectionName());
-	}
-
-	public DBCollection getStateChangesCollection() {
-		return getSiteWhereDatabase().getCollection(getStateChangesCollectionName());
+	public DBCollection getEventsCollection() {
+		return getSiteWhereDatabase().getCollection(getEventsCollectionName());
 	}
 
 	public DBCollection getUsersCollection() {
@@ -317,52 +272,12 @@ public class SiteWhereMongoClient implements InitializingBean {
 		this.zonesCollectionName = zonesCollectionName;
 	}
 
-	public String getMeasurementsCollectionName() {
-		return measurementsCollectionName;
+	public String getEventsCollectionName() {
+		return eventsCollectionName;
 	}
 
-	public void setMeasurementsCollectionName(String measurementsCollectionName) {
-		this.measurementsCollectionName = measurementsCollectionName;
-	}
-
-	public String getLocationsCollectionName() {
-		return locationsCollectionName;
-	}
-
-	public void setLocationsCollectionName(String locationsCollectionName) {
-		this.locationsCollectionName = locationsCollectionName;
-	}
-
-	public String getAlertsCollectionName() {
-		return alertsCollectionName;
-	}
-
-	public void setAlertsCollectionName(String alertsCollectionName) {
-		this.alertsCollectionName = alertsCollectionName;
-	}
-
-	public String getInvocationsCollectionName() {
-		return invocationsCollectionName;
-	}
-
-	public void setInvocationsCollectionName(String invocationsCollectionName) {
-		this.invocationsCollectionName = invocationsCollectionName;
-	}
-
-	public String getResponsesCollectionName() {
-		return responsesCollectionName;
-	}
-
-	public void setResponsesCollectionName(String responsesCollectionName) {
-		this.responsesCollectionName = responsesCollectionName;
-	}
-
-	public String getStateChangesCollectionName() {
-		return stateChangesCollectionName;
-	}
-
-	public void setStateChangesCollectionName(String stateChangesCollectionName) {
-		this.stateChangesCollectionName = stateChangesCollectionName;
+	public void setEventsCollectionName(String eventsCollectionName) {
+		this.eventsCollectionName = eventsCollectionName;
 	}
 
 	public String getUsersCollectionName() {

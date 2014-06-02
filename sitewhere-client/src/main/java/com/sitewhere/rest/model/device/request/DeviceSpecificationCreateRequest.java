@@ -10,6 +10,9 @@
 package com.sitewhere.rest.model.device.request;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.device.element.DeviceElementSchema;
+import com.sitewhere.spi.device.DeviceContainerPolicy;
+import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 
 /**
@@ -29,8 +32,14 @@ public class DeviceSpecificationCreateRequest extends MetadataProvider implement
 	/** Asset id */
 	private String assetId;
 
-	/** Specfication id (Optional) */
+	/** Specification id (Optional) */
 	private String token;
+
+	/** Indicates if device instances can contain nested devices */
+	private DeviceContainerPolicy containerPolicy;
+
+	/** Device element schema for specifications that support nested devices */
+	private DeviceElementSchema deviceElementSchema;
 
 	/*
 	 * (non-Javadoc)
@@ -85,5 +94,34 @@ public class DeviceSpecificationCreateRequest extends MetadataProvider implement
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#getContainerPolicy
+	 * ()
+	 */
+	public DeviceContainerPolicy getContainerPolicy() {
+		return containerPolicy;
+	}
+
+	public void setContainerPolicy(DeviceContainerPolicy containerPolicy) {
+		this.containerPolicy = containerPolicy;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
+	 * getDeviceElementSchema()
+	 */
+	public IDeviceElementSchema getDeviceElementSchema() {
+		return deviceElementSchema;
+	}
+
+	public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
+		this.deviceElementSchema = deviceElementSchema;
 	}
 }

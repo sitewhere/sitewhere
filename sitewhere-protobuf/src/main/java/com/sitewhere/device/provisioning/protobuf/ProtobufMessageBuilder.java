@@ -19,6 +19,8 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 
@@ -34,13 +36,17 @@ public class ProtobufMessageBuilder {
 	private static Logger LOGGER = Logger.getLogger(ProtobufMessageBuilder.class);
 
 	/**
-	 * Create a protobuf message for an {@link IDeviceCommandExecution}.
+	 * Create a protobuf message for an {@link IDeviceCommandExecution} targeted at the
+	 * given {@link IDeviceAssignment}.
 	 * 
 	 * @param execution
+	 * @param nested
+	 * @param assignment
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static byte[] createMessage(IDeviceCommandExecution execution) throws SiteWhereException {
+	public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
+			IDeviceAssignment assignment) throws SiteWhereException {
 		IDeviceSpecification specification =
 				SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
 						execution.getCommand().getSpecificationToken());
@@ -68,6 +74,16 @@ public class ProtobufMessageBuilder {
 			headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_COMMAND_FIELD_NAME), enumValue);
 			headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_ORIGINATOR_FIELD_NAME),
 					execution.getInvocation().getId());
+
+			if (nested.getNested() != null) {
+				LOGGER.debug("Targeting nested device with specification: "
+						+ nested.getNested().getSpecificationToken() + " at path " + nested.getPath());
+				headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_PATH_FIELD_NAME),
+						nested.getPath());
+				headBuilder.setField(header.findFieldByName(ProtobufNaming.HEADER_NESTED_SPEC_FIELD_NAME),
+						nested.getNested().getSpecificationToken());
+			}
+
 			DynamicMessage hmessage = headBuilder.build();
 			LOGGER.debug("Header:\n" + hmessage.toString());
 			hmessage.writeDelimitedTo(out);

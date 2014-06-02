@@ -99,15 +99,28 @@ public enum ErrorCode {
 	/** Operation assumes device is assigned but no assignment exists */
 	DeviceNotAssigned(601, "Device is not currently assigned."),
 
-	/** Operation assumes device is assigned but no assignment exists */
+	/** Attempting to change the hardware id of an existing device */
 	DeviceHardwareIdCanNotBeChanged(602, "Device hardware id can not be updated."),
 
-	/** Operation assumes device is assigned but no assignment exists */
+	/** Attempting to delete a device that is currently assigned */
 	DeviceCanNotBeDeletedIfAssigned(603, "Device can not be deleted if it is currently assigned."),
 
-	/**********
+	/** Attempting to create a device element mapping for a path that is already mapped */
+	DeviceElementMappingExists(610,
+			"Device has an existing mapping for the given device element schema path."),
+
+	/** Attempting to refrence a device element mapping that does not exist */
+	DeviceElementMappingDoesNotExist(611, "Device element mapping does not exist."),
+
+	/** Path references a non-existent slot or a device unit */
+	InvalidDeviceSlotPath(612, "Path does not correspond to a valid device slot."),
+
+	/** Attempting to create a device element mapping for a device that is already mapped */
+	DeviceParentMappingExists(613, "Target device is already in use by an existing mapping."),
+
+	/***********
 	 * COMMAND *
-	 **********/
+	 ***********/
 
 	/** Operation assumes device is assigned but no assignment exists */
 	RequiredCommandParameterMissing(650, "Invocation does not specify a parameter marked as required."),

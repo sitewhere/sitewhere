@@ -12,6 +12,7 @@ package com.sitewhere.rest.model.device.event;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
@@ -37,6 +38,10 @@ public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange
 
 	/** New state */
 	private String newState;
+
+	public DeviceStateChange() {
+		super(DeviceEventType.StateChange);
+	}
 
 	/** Data associated with the state change */
 	private Map<String, String> data = new HashMap<String, String>();

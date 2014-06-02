@@ -12,6 +12,7 @@ package com.sitewhere.spi.device.provisioning;
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -22,23 +23,26 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 public interface ICommandDeliveryProvider extends ISiteWhereLifecycle {
 
 	/**
-	 * Deliver the given encoded invocation. The device assignment and invocation details
+	 * Deliver the given encoded invocation. The device, assignment and invocation details
 	 * are included since they may contain metadata important to the delivery mechanism.
 	 * 
+	 * @param nested
 	 * @param assignment
 	 * @param invocation
 	 * @param encoded
 	 * @throws SiteWhereException
 	 */
-	public void deliver(IDeviceAssignment assignment, IDeviceCommandInvocation invocation, byte[] encoded)
-			throws SiteWhereException;
+	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
+			IDeviceCommandInvocation invocation, byte[] encoded) throws SiteWhereException;
 
 	/**
 	 * Delivers a system command.
 	 * 
-	 * @param hardwareId
+	 * @param nested
+	 * @param assignment
 	 * @param encoded
 	 * @throws SiteWhereException
 	 */
-	public void deliverSystemCommand(String hardwareId, byte[] encoded) throws SiteWhereException;
+	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
+			byte[] encoded) throws SiteWhereException;
 }

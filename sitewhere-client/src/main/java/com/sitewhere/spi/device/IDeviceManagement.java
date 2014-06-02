@@ -213,6 +213,27 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	public ISearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
+	 * Create an {@link IDeviceElementMapping} for a nested device.
+	 * 
+	 * @param hardwareId
+	 * @param mapping
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDevice createDeviceElementMapping(String hardwareId, IDeviceElementMapping mapping)
+			throws SiteWhereException;
+
+	/**
+	 * Delete an exising {@link IDeviceElementMapping} from a device.
+	 * 
+	 * @param hardwareId
+	 * @param path
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDevice deleteDeviceElementMapping(String hardwareId, String path) throws SiteWhereException;
+
+	/**
 	 * Delete an existing device.
 	 * 
 	 * @param hardwareId
@@ -353,6 +374,17 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * @throws SiteWhereException
 	 */
 	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException;
+
+	/**
+	 * List all events for the given assignment that meet the search criteria.
+	 * 
+	 * @param assignmentToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**
 	 * Add measurements for a given device assignment.

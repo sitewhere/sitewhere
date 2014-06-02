@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
+import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
@@ -88,13 +89,15 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(defaultValue = "true") boolean includeSpecification,
 			@ApiParam(value = "Include assignment if associated", required = false) @RequestParam(defaultValue = "true") boolean includeAssignment,
-			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset)
+			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
+			@ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested)
 			throws SiteWhereException {
 		IDevice result = assertDeviceByHardwareId(hardwareId);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeSpecification(includeSpecification);
 		helper.setIncludeAsset(includeAsset);
 		helper.setIncludeAssignment(includeAssignment);
+		helper.setIncludeNested(includeNested);
 		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
 	}
 
@@ -203,6 +206,43 @@ public class DevicesController extends SiteWhereController {
 			converted.add(helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager()));
 		}
 		return new SearchResults<IDeviceAssignment>(converted, history.getNumResults());
+	}
+
+	/**
+	 * Create a new device element mapping.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Create a new device element mapping")
+	public IDevice addDeviceElementMapping(
+			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+			@RequestBody DeviceElementMapping request) throws SiteWhereException {
+		IDevice updated =
+				SiteWhereServer.getInstance().getDeviceManagement().createDeviceElementMapping(hardwareId,
+						request);
+		DeviceMarshalHelper helper = new DeviceMarshalHelper();
+		helper.setIncludeAsset(false);
+		helper.setIncludeAssignment(false);
+		return helper.convert(updated, SiteWhereServer.getInstance().getAssetModuleManager());
+	}
+
+	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
+	@ResponseBody
+	@ApiOperation(value = "Delete an existing device element mapping")
+	public IDevice deleteDeviceElementMapping(
+			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+			@ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path)
+			throws SiteWhereException {
+		IDevice updated =
+				SiteWhereServer.getInstance().getDeviceManagement().deleteDeviceElementMapping(hardwareId,
+						path);
+		DeviceMarshalHelper helper = new DeviceMarshalHelper();
+		helper.setIncludeAsset(false);
+		helper.setIncludeAssignment(false);
+		return helper.convert(updated, SiteWhereServer.getInstance().getAssetModuleManager());
 	}
 
 	/**

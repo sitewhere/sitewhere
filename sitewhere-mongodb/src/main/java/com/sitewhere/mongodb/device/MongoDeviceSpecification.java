@@ -9,12 +9,18 @@
  */
 package com.sitewhere.mongodb.device;
 
+import org.apache.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.element.DeviceElementSchema;
+import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDeviceSpecification;
 
 /**
@@ -23,6 +29,9 @@ import com.sitewhere.spi.device.IDeviceSpecification;
  * @author dadams
  */
 public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecification> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(MongoDeviceSpecification.class);
 
 	/** Property for unique token */
 	public static final String PROP_TOKEN = "token";
@@ -35,6 +44,12 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 
 	/** Property for asset id */
 	public static final String PROP_ASSET_ID = "assetId";
+
+	/** Property for container policy */
+	public static final String PROP_CONTAINER_POLICY = "containerPolicy";
+
+	/** Property for device element schema */
+	public static final String PROP_DEVICE_ELEMENT_SCHEMA = "deviceElementSchema";
 
 	/*
 	 * (non-Javadoc)
@@ -67,8 +82,20 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 		target.append(PROP_NAME, source.getName());
 		target.append(PROP_ASSET_MODULE_ID, source.getAssetModuleId());
 		target.append(PROP_ASSET_ID, source.getAssetId());
+		target.append(PROP_CONTAINER_POLICY, source.getContainerPolicy().name());
 		MongoSiteWhereEntity.toDBObject(source, target);
 		MongoMetadataProvider.toDBObject(source, target);
+
+		// Marshal device element schema as JSON.
+		if (source.getDeviceElementSchema() != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				byte[] schemaJson = mapper.writeValueAsBytes(source.getDeviceElementSchema());
+				target.append(PROP_DEVICE_ELEMENT_SCHEMA, schemaJson);
+			} catch (JsonProcessingException e) {
+				LOGGER.error("Unable to marshal device element schema for MongoDB persistence.", e);
+			}
+		}
 	}
 
 	/**
@@ -82,11 +109,29 @@ public class MongoDeviceSpecification implements MongoConverter<IDeviceSpecifica
 		String name = (String) source.get(PROP_NAME);
 		String assetModuleId = (String) source.get(PROP_ASSET_MODULE_ID);
 		String assetId = (String) source.get(PROP_ASSET_ID);
+		String containerPolicy = (String) source.get(PROP_CONTAINER_POLICY);
+		byte[] schemaBytes = (byte[]) source.get(PROP_DEVICE_ELEMENT_SCHEMA);
 
 		target.setToken(token);
 		target.setName(name);
 		target.setAssetModuleId(assetModuleId);
 		target.setAssetId(assetId);
+
+		if (containerPolicy != null) {
+			target.setContainerPolicy(DeviceContainerPolicy.valueOf(containerPolicy));
+		}
+
+		// Unmarshal device element schema.
+		if (schemaBytes != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				DeviceElementSchema schema = mapper.readValue(schemaBytes, DeviceElementSchema.class);
+				target.setDeviceElementSchema(schema);
+			} catch (Throwable e) {
+				LOGGER.error("Unable to unmarshal device element schema from MongoDB persistence.", e);
+			}
+		}
+
 		MongoSiteWhereEntity.fromDBObject(source, target);
 		MongoMetadataProvider.fromDBObject(source, target);
 	}

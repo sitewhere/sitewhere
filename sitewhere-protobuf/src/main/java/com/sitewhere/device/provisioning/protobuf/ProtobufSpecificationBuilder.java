@@ -130,6 +130,14 @@ public class ProtobufSpecificationBuilder {
 				DescriptorProtos.FieldDescriptorProto.newBuilder().setName(
 						ProtobufNaming.HEADER_ORIGINATOR_FIELD_NAME).setNumber(2).setType(Type.TYPE_STRING);
 		builder.addField(originator.build());
+		DescriptorProtos.FieldDescriptorProto.Builder path =
+				DescriptorProtos.FieldDescriptorProto.newBuilder().setName(
+						ProtobufNaming.HEADER_NESTED_PATH_FIELD_NAME).setNumber(3).setType(Type.TYPE_STRING);
+		builder.addField(path.build());
+		DescriptorProtos.FieldDescriptorProto.Builder target =
+				DescriptorProtos.FieldDescriptorProto.newBuilder().setName(
+						ProtobufNaming.HEADER_NESTED_SPEC_FIELD_NAME).setNumber(4).setType(Type.TYPE_STRING);
+		builder.addField(target.build());
 		return builder.build();
 	}
 

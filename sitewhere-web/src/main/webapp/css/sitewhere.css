@@ -135,6 +135,86 @@
 	min-width: 70px;
 }
 
+.sw-device-slot-container {
+	border: 1px solid #ccc;
+	margin-bottom: 15px;
+}
+.sw-device-slot-header {
+	padding: 5px 10px;
+	font-size: 12pt;
+	border-bottom: 1px solid #ccc;
+	background-color: #eee;
+	color: #333;
+	margin-bottom: 10px;
+}
+.sw-device-slot {
+	padding: 5px;
+	border: 1px solid #ccc;
+	background-color: #ffe;
+	margin: 10px;
+	position: relative;
+}
+.sw-device-slot-path {
+	font-weight: bold;
+	color: #050;
+}
+.sw-device-slot-buttons {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+.sw-device-slot-mapped-device {
+	font-weight: bold;
+	color: #060;
+	margin-right: 10px;
+	font-size: 12pt;
+	line-height: 1;
+}
+.sw-device-unit-container {
+	border: 1px solid #999;
+	margin-bottom: 15px;
+}
+.sw-device-unit-header {
+	padding: 5px 10px;
+	font-size: 12pt;
+	border-bottom: 1px solid #ccc;
+	background-color: #ccc;
+	color: #333;
+	margin-bottom: 10px;
+	position: relative;
+}
+.sw-device-unit-header i {
+	padding-right: 6px;
+}
+.sw-device-unit {
+	padding: 5px;
+	border: 1px solid #ccc;
+	background-color: #ffe;
+	margin-bottom: 10px;
+}
+.sw-device-unit-path {
+	font-weight: bold;
+	font-size: 10pt;
+	color: #050;
+}
+.sw-device-unit-buttons {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+.sw-device-unit-container .sw-device-slot-container {
+	margin: 20px;
+}
+.sw-device-unit-container .sw-device-unit-container {
+	margin: 20px;
+}
+.sw-nodata-container {
+	padding: 10px;
+	font-size: 12pt;
+	text-align: center;
+	margin-top: -5px;
+}
+
 .btn-sw-success { 
 	background-color: hsl(126, 100%, 21%) !important; 
 	background-repeat: repeat-x; 
@@ -265,25 +345,41 @@ tr.sw-list-entry td {
 	vertical-align: middle;
 }
 
+.sw-hoverlink {
+	color: #333;
+}
+
+.sw-list-entry:hover .sw-hoverlink {
+    font-weight: bold;
+    color: #009;
+    text-decoration: underline;	
+}
+
 .sw-list-entry:hover .sw-action-glyph {
 	opacity: 0.5;
 }
 
+.sw-list-entry:hover .sw-primary-glyph {
+	opacity: 1;
+}
+
 .sw-action-glyph:hover.sw-delete-glyph {
 	color: #c00;
-	font-size: 16px;
 	opacity: 1;
 }
 
 .sw-action-glyph:hover.sw-edit-glyph {
 	color: #00f;
-	font-size: 16px;
 	opacity: 1;
 }
 
 .sw-action-glyph:hover.sw-view-glyph {
 	color: #060;
-	font-size: 16px;
+	opacity: 1;
+}
+
+.sw-action-glyph:hover.sw-normal-glyph {
+	color: #333;
 	opacity: 1;
 }
 
