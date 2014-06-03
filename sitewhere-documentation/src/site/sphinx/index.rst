@@ -8,8 +8,9 @@
    overview
    architecture
    installation
-   cloud
+   userguide
    configuration
    integration
    development
+   cloud
    tutorials
