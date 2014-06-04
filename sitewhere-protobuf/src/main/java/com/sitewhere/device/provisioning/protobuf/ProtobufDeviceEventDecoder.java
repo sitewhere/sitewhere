@@ -59,7 +59,9 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder {
 			Header header = SiteWhere.Header.parseDelimitedFrom(stream);
 			List<IDecodedDeviceEventRequest> results = new ArrayList<IDecodedDeviceEventRequest>();
 			DecodedDeviceEventRequest decoded = new DecodedDeviceEventRequest();
-			decoded.setOriginator(header.getOriginator());
+			if (header.hasOriginator()) {
+				decoded.setOriginator(header.getOriginator());
+			}
 			results.add(decoded);
 			switch (header.getCommand()) {
 			case REGISTER: {
