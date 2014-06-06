@@ -55,36 +55,75 @@ the system:
    :align: left
 
 Each entry has icons on the right side that allow the given site to be edited, deleted,
-or opened. Clicking the *edit* icon opens the *Edit Site* dialog. The *Site Details* tab 
-contains basic information about the site including a short name,
-description, and URL for an image representing the site. 
+or opened. Clicking the *edit* icon opens the *Edit Site* dialog. 
+
+Edit Site - Site Details Tab
+****************************
+
+The *site details* tab includes basic information about a site.
 
 .. image:: /_static/images/userguide/site-edit-details.png
    :width: 100%
    :alt: Edit Site - Site Details
    :align: left
 
-The *Map Information* tab allows a map to be associated with the site. 
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Site Name            | Human-readable name that provides a short description  |
+|                      | of the site.                                           |
++----------------------+--------------------------------------------------------+
+| Site Description     | A longer description of the site which is shown in the |
+|                      | sites list page and available via the REST services.   |
++----------------------+--------------------------------------------------------+
+| Image URL            | URL that points to an image that is associated with    |
+|                      | the site. This image is shown in the sites list page   |
+|                      | and may be used by applications as a visual indicator  |
+|                      | of which site is being shown.                          |
++----------------------+--------------------------------------------------------+
+
+Edit Site - Map Information Tab
+*******************************
+
 Not all sites involve location data, so the map information is optional. 
 For sites that do need to display geospatial data, the map association 
 allows a given map, latitude, longitude, and zoom level to be 
 associated with a site. When viewing location data for a site, the map specified for
 the site is the default used for visualizations. 
 
-.. image:: /_static/images/userguide/site-edit-map.png
-   :width: 100%
-   :alt: Edit Site - Map Information
-   :align: left
-
 Rather than manually typing the latitude, longitude, and zoom level for
 a map, the information may be specified interactively by clicking
 *Choose location and zoom on map*. This option presents a map which
 can be manipulated via drag-and-drop to choose the default map settings.
 
+.. image:: /_static/images/userguide/site-edit-map.png
+   :width: 100%
+   :alt: Edit Site - Map Information
+   :align: left
+
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Map Type             | Allows the map visualization style to be chosen. The   |
+|                      | list of available options currently includes           |
+|                      | MapQuest for standard maps and GeoServer for floor     |
+|                      | plans and other custom maps.                           |
++----------------------+--------------------------------------------------------+
+| Center Latitude      | Latitude coordinate of the default map center.         |
++----------------------+--------------------------------------------------------+
+| Center Longitude     | Longitude coordinate of the default map center.        |
++----------------------+--------------------------------------------------------+
+| Zoom Level           | Zoom level setting as interpreted by the underlying    |
+|                      | map technology.                                        |
++----------------------+--------------------------------------------------------+
+
 .. image:: /_static/images/userguide/site-edit-map-set.png
    :width: 100%
    :alt: Edit Site - Interactive Map Selection
    :align: left
+
+Edit Site - Metadata Tab
+************************
 
 As with most SiteWhere data, each site may have arbitrary metadata associated
 with it. This allows sites to be tailored for application-specific functionality.

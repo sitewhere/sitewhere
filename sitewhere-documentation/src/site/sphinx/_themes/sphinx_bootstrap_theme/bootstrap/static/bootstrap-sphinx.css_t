@@ -36,6 +36,14 @@ div.highlight {
 
 .section h3 {
 	font-size: 16pt;
+	border-bottom: 1px solid #EEE;
+}
+
+.section h4 {
+	font-size: 14pt;
+	border-bottom: 1px solid #EEE;
+	padding-top: 10px;
+	margin-bottom: 15px;
 }
 
 .sw-nav-content {
