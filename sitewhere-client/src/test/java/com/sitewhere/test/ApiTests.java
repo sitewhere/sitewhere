@@ -26,6 +26,7 @@ import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.rest.service.SiteWhereClient;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
@@ -58,6 +59,13 @@ public class ApiTests {
 	@Before
 	public void setup() {
 		this.client = new SiteWhereClient();
+	}
+
+	@Test
+	public void testConnectivity() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		Version version = client.getSiteWhereVersion();
+		System.out.println("SiteWhere version is " + version.getVersionIdentifier() + ".");
 	}
 
 	@Test
