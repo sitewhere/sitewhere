@@ -23,19 +23,19 @@ div.highlight {
 }
 
 .section h1 {
-	font-size: 24pt;
+	font-size: 26pt;
 	border-bottom: 1px solid #DDD;
 	padding-bottom: 5px;
 }
 
 .section h2 {
-	font-size: 18pt;
+	font-size: 20pt;
 	border-bottom: 1px solid #DDD;
 	padding-bottom: 5px;
 }
 
 .section h3 {
-	font-size: 16pt;
+	font-size: 18pt;
 	border-bottom: 1px solid #EEE;
 }
 
@@ -75,6 +75,22 @@ div.highlight {
 .section > img {
 	margin-top: 15px;
 	margin-bottom: 35px;
+}
+
+.toc-backref {
+	color: inherit;
+}
+
+.toc-backref:hover {
+	color: inherit;
+	cursor: hand;
+	text-decoration: none;
+}
+
+.contents.topic {
+	background-color: #f0f0f0;
+	border: 1px solid #999;
+	color: #555;
 }
 
 .toctree-wrapper {

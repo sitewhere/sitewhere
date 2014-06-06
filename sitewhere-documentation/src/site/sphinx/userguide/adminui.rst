@@ -10,6 +10,8 @@ you would access the admin console via:
 
 	http://localhost:8080/sitewhere/admin/
 
+.. contents::
+
 ----------
 Logging In
 ----------
@@ -55,7 +57,13 @@ the system:
    :align: left
 
 Each entry has icons on the right side that allow the given site to be edited, deleted,
-or opened. Clicking the *edit* icon opens the *Edit Site* dialog. 
+or opened. 
+
+Creating and Editing Sites
+--------------------------
+To create a new site, click on the **Add New Site** button at the top of the site list
+page. For an existing site, click the edit icon at the right side of the site entry.
+The following sections cover information needed to create or edit a site.
 
 Edit Site - Site Details Tab
 ****************************
