@@ -21,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,7 +52,6 @@ import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
-import com.sitewhere.rest.spring.MappingJackson2HttpMessageConverter;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -98,10 +98,19 @@ public class SiteWhereClient implements ISiteWhereClient {
 		}
 		this.client = new RestTemplate();
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-		converters.add(new MappingJackson2HttpMessageConverter());
+		addMessageConverters(converters);
 		client.setMessageConverters(converters);
 		client.setErrorHandler(new SiteWhereErrorHandler());
 		this.baseUrl = url;
+	}
+
+	/**
+	 * Allow subclasses to override converters used for the {@link RestTemplate}.
+	 * 
+	 * @param converters
+	 */
+	protected void addMessageConverters(List<HttpMessageConverter<?>> converters) {
+		converters.add(new MappingJackson2HttpMessageConverter());
 	}
 
 	/**
