@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.sitewhere</groupId>
 		<artifactId>sitewhere</artifactId>
-		<version>0.9.6</version>
+		<version>0.9.5</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -61,9 +61,11 @@
 			<plugin>
 				<groupId>org.tomdz.maven</groupId>
 				<artifactId>sphinx-maven-plugin</artifactId>
-				<version>1.0.1</version>
+				<version>1.0.3</version>
 				<configuration>
 					<outputDirectory>${project.build.directory}/docs</outputDirectory>
+					<fork>true</fork>
+					<argLine>-Xmx256m -XX:MaxPermSize=256m</argLine>
 				</configuration>
 				<executions>
 					<execution>
