@@ -20,6 +20,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.ResourceAccessException;
@@ -73,6 +74,9 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/** Default REST password */
 	private static final String DEFAULT_PASSWORD = "password";
 
+	/** Default connection timeout in milliseconds */
+	private static final int DEFAULT_CONNECT_TIMEOUT = 3 * 1000;
+
 	/** Indicates whether to write debug information to the console */
 	private static final boolean DEBUG_ENABLED = true;
 
@@ -89,7 +93,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	private String password = DEFAULT_PASSWORD;
 
 	public SiteWhereClient() {
-		this(DEFAULT_BASE_URL, DEFAULT_USERNAME, DEFAULT_PASSWORD);
+		this(DEFAULT_BASE_URL, DEFAULT_USERNAME, DEFAULT_PASSWORD, DEFAULT_CONNECT_TIMEOUT);
 	}
 
 	public SiteWhereClient(String url, String username, String password) {
@@ -97,6 +101,21 @@ public class SiteWhereClient implements ISiteWhereClient {
 			enableDebugging();
 		}
 		this.client = new RestTemplate();
+		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
+		addMessageConverters(converters);
+		client.setMessageConverters(converters);
+		client.setErrorHandler(new SiteWhereErrorHandler());
+		this.baseUrl = url;
+	}
+
+	public SiteWhereClient(String url, String username, String password, int connectTimeoutMs) {
+		if (DEBUG_ENABLED) {
+			enableDebugging();
+		}
+		this.client = new RestTemplate();
+		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+		factory.setConnectTimeout(connectTimeoutMs);
+		client.setRequestFactory(factory);
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
 		addMessageConverters(converters);
 		client.setMessageConverters(converters);
