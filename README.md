@@ -1,4 +1,4 @@
-![SiteWhere] (http://www.sitewhere.org/sites/default/files/sitewhere_0.png)
+![SiteWhere] (http://www.sitewhere.org/sites/default/files/sitewhere.png)
 
 SiteWhere Open Source M2M Integration Platform
 ----------------------------------------------
