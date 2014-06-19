@@ -65,11 +65,18 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	public IRegistrationManager getRegistrationManager();
 
 	/**
+	 * Get the strategy for moving decoded events into the inbound chain.
+	 * 
+	 * @return
+	 */
+	public IInboundProcessingStrategy getInboundProcessingStrategy();
+
+	/**
 	 * Get the list of processors that bring device event data into the system.
 	 * 
 	 * @return
 	 */
-	public List<IDeviceEventProcessor> getDeviceEventProcessors();
+	public List<IInboundEventProcessor> getInboundEventProcessors();
 
 	/**
 	 * Deliver a command invocation.

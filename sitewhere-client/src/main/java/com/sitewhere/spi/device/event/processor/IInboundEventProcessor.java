@@ -23,7 +23,7 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
 /**
- * Allows intereseted entities to interact with SiteWhere inbound event processing.
+ * Allows interested entities to interact with SiteWhere inbound event processing.
  * 
  * @author Derek
  */

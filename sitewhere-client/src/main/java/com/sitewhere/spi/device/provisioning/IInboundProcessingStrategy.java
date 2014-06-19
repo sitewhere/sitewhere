@@ -1,5 +1,5 @@
 /*
- * ICommandEventReceiver.java 
+ * IInboundProcessingStrategy.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,24 +9,23 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
-import java.util.concurrent.BlockingQueue;
-
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 
 /**
- * Handles receipt of device event information from an underlying transport.
+ * Provides a strategy for moving decoded events from an {@link IInboundEventProcessor}
+ * onto the {@link IInboundEventProcessorChain}.
  * 
  * @author Derek
  */
-public interface IDeviceEventReceiver extends ISiteWhereLifecycle {
+public interface IInboundProcessingStrategy extends ISiteWhereLifecycle {
 
 	/**
-	 * Gets access to a queue of (still encoded) messages becoming available from the
-	 * underlying transport.
+	 * Submit a decoded event for processing.
 	 * 
-	 * @return
+	 * @param event
 	 * @throws SiteWhereException
 	 */
-	public BlockingQueue<byte[]> getEncodedMessages() throws SiteWhereException;
+	public void submit(IDecodedDeviceEventRequest event) throws SiteWhereException;
 }

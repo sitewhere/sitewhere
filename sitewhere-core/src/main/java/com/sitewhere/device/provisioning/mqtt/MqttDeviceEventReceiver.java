@@ -23,15 +23,15 @@ import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.provisioning.IDeviceEventReceiver;
+import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 
 /**
- * Implementation of {@link IDeviceEventReceiver} that subscribes to an MQTT topic and
+ * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT topic and
  * pulls the message contents into SiteWhere for processing.
  * 
  * @author Derek
  */
-public class MqttDeviceEventReceiver implements IDeviceEventReceiver {
+public class MqttDeviceEventReceiver implements IInboundEventReceiver {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttDeviceEventReceiver.class);
@@ -175,7 +175,7 @@ public class MqttDeviceEventReceiver implements IDeviceEventReceiver {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IDeviceEventReceiver#getEncodedMessages()
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEncodedMessages()
 	 */
 	public BlockingQueue<byte[]> getEncodedMessages() {
 		return encodedMessages;

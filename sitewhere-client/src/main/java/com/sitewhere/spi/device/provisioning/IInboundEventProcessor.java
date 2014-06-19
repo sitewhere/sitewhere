@@ -17,9 +17,8 @@ import com.sitewhere.spi.ISiteWhereLifecycle;
  * Agent that decodes device events an submits them
  * 
  * @author Derek
- * 
  */
-public interface IDeviceEventProcessor extends ISiteWhereLifecycle {
+public interface IInboundEventProcessor extends ISiteWhereLifecycle {
 
 	/**
 	 * Set the device event decoder.
@@ -29,9 +28,16 @@ public interface IDeviceEventProcessor extends ISiteWhereLifecycle {
 	public void setDeviceEventDecoder(IDeviceEventDecoder decoder);
 
 	/**
-	 * Set the list of event receivers that use this processor.
+	 * Set the strategy for submitting inbound events into the bus.
+	 * 
+	 * @param strategy
+	 */
+	public void setInboundProcessingStrategy(IInboundProcessingStrategy strategy);
+
+	/**
+	 * Set the list of {@link IInboundEventReceiver} that feed this processor.
 	 * 
 	 * @param receivers
 	 */
-	public void setDeviceEventReceivers(List<IDeviceEventReceiver> receivers);
+	public void setInboundEventReceivers(List<IInboundEventReceiver> receivers);
 }
