@@ -992,7 +992,8 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
 
-		DBCursor cursor = events.find(query).sort(sort);
+		int offset = Math.max(0, criteria.getPageNumber() - 1) * criteria.getPageSize();
+		DBCursor cursor = events.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
 		List<IDeviceEvent> matches = new ArrayList<IDeviceEvent>();
 		SearchResults<IDeviceEvent> results = new SearchResults<IDeviceEvent>(matches);
 		try {

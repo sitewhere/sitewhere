@@ -154,7 +154,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	 */
 	protected void handleLinkResponseToInvocation(String originator, String eventId,
 			IDeviceAssignment assignment) throws SiteWhereException {
-		if (originator != null) {
+		if ((originator != null) && (!originator.isEmpty())) {
 			DeviceCommandResponseCreateRequest response = new DeviceCommandResponseCreateRequest();
 			response.setOriginatingEventId(originator);
 			response.setResponseEventId(eventId);
