@@ -20,9 +20,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
-import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
 
 /**
@@ -37,18 +40,38 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BlockingQueueInboundProcessingStrategy.class);
 
-	/** Maximum size of pending request queue */
-	private static final int MAX_PENDING_REQUEST_QUEUE_SIZE = 1000;
+	/** Maximum size of queues */
+	private static final int MAX_QUEUE_SIZE = 1000;
 
-	/** Number of threads used for event processing (for all receivers) */
+	/** Number of threads used for event processing (for each event type) */
 	private static final int EVENT_PROCESSOR_THREAD_COUNT = 2;
 
-	/** Blocking queue of pending event creation requests from receivers */
-	private BlockingQueue<IDecodedDeviceEventRequest> pendingRequests =
-			new ArrayBlockingQueue<IDecodedDeviceEventRequest>(MAX_PENDING_REQUEST_QUEUE_SIZE);
+	/** Blocking queue of pending registration requests from receivers */
+	private BlockingQueue<IDecodedDeviceEventRequest> registrations =
+			new ArrayBlockingQueue<IDecodedDeviceEventRequest>(MAX_QUEUE_SIZE);
 
-	/** Thread pool for submitting decoded events */
-	private ExecutorService processorThreadPool;
+	/** Blocking queue of pending device command responses from receivers */
+	private BlockingQueue<IDecodedDeviceEventRequest> commandResponses =
+			new ArrayBlockingQueue<IDecodedDeviceEventRequest>(MAX_QUEUE_SIZE);
+
+	/** Blocking queue of pending device measurements from receivers */
+	private BlockingQueue<IDecodedDeviceEventRequest> measurements =
+			new ArrayBlockingQueue<IDecodedDeviceEventRequest>(MAX_QUEUE_SIZE);
+
+	/** Blocking queue of pending device locations from receivers */
+	private BlockingQueue<IDecodedDeviceEventRequest> locations =
+			new ArrayBlockingQueue<IDecodedDeviceEventRequest>(MAX_QUEUE_SIZE);
+
+	/** Blocking queue of pending device locations from receivers */
+	private BlockingQueue<IDecodedDeviceEventRequest> alerts =
+			new ArrayBlockingQueue<IDecodedDeviceEventRequest>(MAX_QUEUE_SIZE);
+
+	/** Thread pools for processors */
+	private ExecutorService registrationsPool;
+	private ExecutorService commandResponsesPool;
+	private ExecutorService measurementsPool;
+	private ExecutorService locationsPool;
+	private ExecutorService alertsPool;
 
 	/*
 	 * (non-Javadoc)
@@ -69,22 +92,48 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		if (processorThreadPool != null) {
-			processorThreadPool.shutdown();
+		if (registrationsPool != null) {
+			registrationsPool.shutdown();
+		}
+		if (commandResponsesPool != null) {
+			commandResponsesPool.shutdown();
+		}
+		if (measurementsPool != null) {
+			measurementsPool.shutdown();
+		}
+		if (locationsPool != null) {
+			locationsPool.shutdown();
+		}
+		if (alertsPool != null) {
+			alertsPool.shutdown();
 		}
 	}
 
 	/**
-	 * Create threads that will process {@link IDeviceEventCreateRequest} requests for all
-	 * receivers.
+	 * Create thread pools for processing inbound messages.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void startEventProcessorThreads() throws SiteWhereException {
-		LOGGER.info("Initializing " + EVENT_PROCESSOR_THREAD_COUNT + " device event processors...");
-		processorThreadPool = Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT);
+		registrationsPool = Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT);
 		for (int i = 0; i < EVENT_PROCESSOR_THREAD_COUNT; i++) {
-			processorThreadPool.execute(new EventProcessor());
+			registrationsPool.execute(new RegistrationMessageProcessor(registrations));
+		}
+		commandResponsesPool = Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT);
+		for (int i = 0; i < EVENT_PROCESSOR_THREAD_COUNT; i++) {
+			commandResponsesPool.execute(new CommandResponseMessageProcessor(commandResponses));
+		}
+		measurementsPool = Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT);
+		for (int i = 0; i < EVENT_PROCESSOR_THREAD_COUNT; i++) {
+			measurementsPool.execute(new MeasurementsMessageProcessor(measurements));
+		}
+		locationsPool = Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT);
+		for (int i = 0; i < EVENT_PROCESSOR_THREAD_COUNT; i++) {
+			locationsPool.execute(new LocationsMessageProcessor(locations));
+		}
+		alertsPool = Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT);
+		for (int i = 0; i < EVENT_PROCESSOR_THREAD_COUNT; i++) {
+			alertsPool.execute(new AlertsMessageProcessor(alerts));
 		}
 	}
 
@@ -92,25 +141,180 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy#submit(com.sitewhere
-	 * .spi.device.provisioning.IDecodedDeviceEventRequest)
+	 * com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy#processRegistration
+	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void submit(IDecodedDeviceEventRequest event) throws SiteWhereException {
-		pendingRequests.offer(event);
+	public void processRegistration(IDecodedDeviceEventRequest request) throws SiteWhereException {
+		registrations.offer(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy#
+	 * processDeviceCommandResponse
+	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
+	 */
+	@Override
+	public void processDeviceCommandResponse(IDecodedDeviceEventRequest request) throws SiteWhereException {
+		commandResponses.offer(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy#
+	 * processDeviceMeasurements
+	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
+	 */
+	@Override
+	public void processDeviceMeasurements(IDecodedDeviceEventRequest request) throws SiteWhereException {
+		measurements.offer(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy#processDeviceLocation
+	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
+	 */
+	@Override
+	public void processDeviceLocation(IDecodedDeviceEventRequest request) throws SiteWhereException {
+		locations.offer(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy#processDeviceAlert
+	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
+	 */
+	@Override
+	public void processDeviceAlert(IDecodedDeviceEventRequest request) throws SiteWhereException {
+		alerts.offer(request);
 	}
 
 	/**
-	 * Thread that processes events being decoded from {@link IInboundEventReceiver}
-	 * threads.
+	 * Processor for {@link IDeviceRegistrationRequest}.
 	 * 
 	 * @author Derek
 	 */
-	private class EventProcessor implements Runnable {
+	private class RegistrationMessageProcessor extends BlockingMessageProcessor {
+
+		public RegistrationMessageProcessor(BlockingQueue<IDecodedDeviceEventRequest> queue) {
+			super(queue, "registration");
+		}
+
+		@Override
+		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
+			SiteWhereServer.getInstance().getInboundEventProcessorChain().onRegistrationRequest(
+					request.getHardwareId(), request.getOriginator(),
+					((IDeviceRegistrationRequest) request.getRequest()));
+		}
+	}
+
+	/**
+	 * Processor for {@link IDeviceCommandResponseCreateRequest}.
+	 * 
+	 * @author Derek
+	 */
+	private class CommandResponseMessageProcessor extends BlockingMessageProcessor {
+
+		public CommandResponseMessageProcessor(BlockingQueue<IDecodedDeviceEventRequest> queue) {
+			super(queue, "command response");
+		}
+
+		@Override
+		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
+			SiteWhereServer.getInstance().getInboundEventProcessorChain().onDeviceCommandResponseRequest(
+					request.getHardwareId(), request.getOriginator(),
+					((IDeviceCommandResponseCreateRequest) request.getRequest()));
+		}
+	}
+
+	/**
+	 * Processor for {@link IDeviceMeasurementsCreateRequest}.
+	 * 
+	 * @author Derek
+	 */
+	private class MeasurementsMessageProcessor extends BlockingMessageProcessor {
+
+		public MeasurementsMessageProcessor(BlockingQueue<IDecodedDeviceEventRequest> queue) {
+			super(queue, "measurements");
+		}
+
+		@Override
+		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
+			SiteWhereServer.getInstance().getInboundEventProcessorChain().onDeviceMeasurementsCreateRequest(
+					request.getHardwareId(), request.getOriginator(),
+					((IDeviceMeasurementsCreateRequest) request.getRequest()));
+		}
+	}
+
+	/**
+	 * Processor for {@link IDeviceLocationCreateRequest}.
+	 * 
+	 * @author Derek
+	 */
+	private class LocationsMessageProcessor extends BlockingMessageProcessor {
+
+		public LocationsMessageProcessor(BlockingQueue<IDecodedDeviceEventRequest> queue) {
+			super(queue, "location");
+		}
+
+		@Override
+		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
+			SiteWhereServer.getInstance().getInboundEventProcessorChain().onDeviceLocationCreateRequest(
+					request.getHardwareId(), request.getOriginator(),
+					((IDeviceLocationCreateRequest) request.getRequest()));
+		}
+	}
+
+	/**
+	 * Processor for {@link IDeviceAlertCreateRequest}.
+	 * 
+	 * @author Derek
+	 */
+	private class AlertsMessageProcessor extends BlockingMessageProcessor {
+
+		public AlertsMessageProcessor(BlockingQueue<IDecodedDeviceEventRequest> queue) {
+			super(queue, "alert");
+		}
+
+		@Override
+		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
+			SiteWhereServer.getInstance().getInboundEventProcessorChain().onDeviceAlertCreateRequest(
+					request.getHardwareId(), request.getOriginator(),
+					((IDeviceAlertCreateRequest) request.getRequest()));
+		}
+	}
+
+	/**
+	 * Blocking thread that processes messages of a given type from a queue.
+	 * 
+	 * @author Derek
+	 * 
+	 * @param <T>
+	 */
+	private abstract class BlockingMessageProcessor implements Runnable {
+
+		/** Queue where messages are placed */
+		private BlockingQueue<IDecodedDeviceEventRequest> queue;
+
+		/** Label used for messages */
+		private String label;
+
+		public BlockingMessageProcessor(BlockingQueue<IDecodedDeviceEventRequest> queue, String label) {
+			this.queue = queue;
+			this.label = label;
+		}
 
 		@Override
 		public void run() {
-			LOGGER.info("Started inbound event processor thread.");
+			LOGGER.info("Started " + label + " message processor thread.");
 
 			// Event creation APIs expect an authenticated user in order to check
 			// permissions and log who creates events. When called in this context, the
@@ -122,23 +326,24 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 				SecurityContextHolder.getContext().setAuthentication(
 						SiteWhereServer.getSystemAuthentication());
 			} catch (SiteWhereException e) {
-				throw new RuntimeException(
-						"Unable to use system authentication for inbound event processor thread.", e);
+				throw new RuntimeException("Unable to use system authentication for inbound device " + label
+						+ " event processor thread.", e);
 			}
 			while (true) {
 				try {
-					IDecodedDeviceEventRequest decoded = pendingRequests.take();
-					LOGGER.debug("Device event processor thread picked up request.");
-					SiteWhereServer.getInstance().getInboundEventProcessorChain().onDecodedDeviceEventRequest(
-							decoded);
+					IDecodedDeviceEventRequest message = queue.take();
+					LOGGER.debug("Device " + label + " event processor thread picked up request.");
+					sendToInboundChain(message);
 				} catch (SiteWhereException e) {
-					LOGGER.error("Error processing inbound event request.", e);
+					LOGGER.error("Error processing device " + label + " event request.", e);
 				} catch (InterruptedException e) {
-					LOGGER.warn("Device event processor thread interrupted.", e);
+					LOGGER.warn("Device " + label + " event processor thread interrupted.", e);
 				} catch (Throwable e) {
-					LOGGER.error("Unhandled exception in device event processing.", e);
+					LOGGER.error("Unhandled exception in device " + label + " event processing.", e);
 				}
 			}
 		}
+
+		public abstract void sendToInboundChain(IDecodedDeviceEventRequest message) throws SiteWhereException;
 	}
 }

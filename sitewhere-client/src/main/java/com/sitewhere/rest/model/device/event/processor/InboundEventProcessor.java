@@ -16,7 +16,6 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
 /**
  * Default implementation of {@link IInboundEventProcessor} interface with nothing
@@ -42,17 +41,6 @@ public class InboundEventProcessor implements IInboundEventProcessor {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
-	 * onDecodedDeviceEventRequest
-	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
-	 */
-	@Override
-	public void onDecodedDeviceEventRequest(IDecodedDeviceEventRequest request) throws SiteWhereException {
 	}
 
 	/*

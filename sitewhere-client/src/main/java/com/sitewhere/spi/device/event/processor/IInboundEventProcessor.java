@@ -16,11 +16,9 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
 /**
  * Allows interested entities to interact with SiteWhere inbound event processing.
@@ -28,14 +26,6 @@ import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
  * @author Derek
  */
 public interface IInboundEventProcessor extends ISiteWhereLifecycle {
-
-	/**
-	 * Handles inbound {@link IDeviceEventCreateRequest} requests.
-	 * 
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void onDecodedDeviceEventRequest(IDecodedDeviceEventRequest request) throws SiteWhereException;
 
 	/**
 	 * Called when a {@link IDeviceRegistrationRequest} is received.

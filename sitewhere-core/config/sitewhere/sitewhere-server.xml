@@ -130,9 +130,9 @@
 	<bean id="protobufEventDecoder"
 		class="com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder"/>
 
-	<!-- Device event processor for protobuf messages over MQTT -->
-	<bean id="protbufEventProcessor"
-		class="com.sitewhere.device.provisioning.DefaultInboundEventProcessor"
+	<!-- Device event source for protobuf messages over MQTT -->
+	<bean id="protbufEventSource"
+		class="com.sitewhere.device.provisioning.DefaultInboundEventSource"
 	>
 		<property name="deviceEventDecoder" ref="protobufEventDecoder"/>
 		<property name="inboundEventReceivers">
@@ -158,9 +158,9 @@
 	<bean id="jsonEventDecoder"
 		class="com.sitewhere.device.provisioning.decoders.JsonBatchEventDecoder"/>
 
-	<!-- Device event processor for protobuf messages over MQTT -->
-	<bean id="jsonEventProcessor"
-		class="com.sitewhere.device.provisioning.DefaultInboundEventProcessor"
+	<!-- Device event source for JSON messages over MQTT -->
+	<bean id="jsonEventSource"
+		class="com.sitewhere.device.provisioning.DefaultInboundEventSource"
 	>
 		<property name="deviceEventDecoder" ref="jsonEventDecoder"/>
 		<property name="inboundEventReceivers">
@@ -187,10 +187,10 @@
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
 		<property name="registrationManager" ref="protobufRegistrationManager"/>
-		<property name="inboundEventProcessors">
+		<property name="inboundEventSources">
 			<list>
-				<ref bean="protbufEventProcessor"/>
-				<ref bean="jsonEventProcessor"/>
+				<ref bean="protbufEventSource"/>
+				<ref bean="jsonEventSource"/>
 			</list>
 		</property>
 	</bean>

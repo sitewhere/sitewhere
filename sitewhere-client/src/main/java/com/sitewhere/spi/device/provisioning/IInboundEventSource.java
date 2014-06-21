@@ -14,11 +14,12 @@ import java.util.List;
 import com.sitewhere.spi.ISiteWhereLifecycle;
 
 /**
- * Agent that decodes device events an submits them
+ * Entity that receives events from one or more {@link IInboundEventReceiver}, decodes
+ * them, and forwards them for processing.
  * 
  * @author Derek
  */
-public interface IInboundEventProcessor extends ISiteWhereLifecycle {
+public interface IInboundEventSource extends ISiteWhereLifecycle {
 
 	/**
 	 * Set the device event decoder.

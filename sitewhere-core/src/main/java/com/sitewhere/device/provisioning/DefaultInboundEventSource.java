@@ -18,21 +18,26 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
-import com.sitewhere.spi.device.provisioning.IInboundEventProcessor;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
+import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
 
 /**
- * Default implementation of {@link IInboundEventProcessor}.
+ * Default implementation of {@link IInboundEventSource}.
  * 
  * @author Derek
  */
-public class DefaultInboundEventProcessor implements IInboundEventProcessor {
+public class DefaultInboundEventSource implements IInboundEventSource {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultInboundEventProcessor.class);
+	private static Logger LOGGER = Logger.getLogger(DefaultInboundEventSource.class);
 
 	/** Device event decoder */
 	private IDeviceEventDecoder deviceEventDecoder;
@@ -53,15 +58,15 @@ public class DefaultInboundEventProcessor implements IInboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Starting device event processing...");
+		LOGGER.info("Starting device event source...");
 		if (getInboundProcessingStrategy() == null) {
 			setInboundProcessingStrategy(SiteWhereServer.getInstance().getDeviceProvisioning().getInboundProcessingStrategy());
 		}
 		if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
-			throw new SiteWhereException("No inbound event receivers registered for event processor.");
+			throw new SiteWhereException("No inbound event receivers registered for event source.");
 		}
 		startEventReceiverThreads();
-		LOGGER.info("Started device event processing.");
+		LOGGER.info("Started device event source.");
 	}
 
 	/**
@@ -78,7 +83,7 @@ public class DefaultInboundEventProcessor implements IInboundEventProcessor {
 				receiverThreadPool.execute(new EventReceiverProcessor(receiver));
 			}
 		} else {
-			LOGGER.warn("No device event receivers configured for processor!");
+			LOGGER.warn("No device event receivers configured for event source!");
 		}
 	}
 
@@ -98,21 +103,34 @@ public class DefaultInboundEventProcessor implements IInboundEventProcessor {
 
 		@Override
 		public void run() {
-			LOGGER.info("Started device provisioning receiver thread.");
+			LOGGER.info("Started device event receiver thread.");
 			while (true) {
 				try {
 					byte[] message = receiver.getEncodedMessages().take();
 					LOGGER.debug("Device event receiver thread picked up event.");
 					List<IDecodedDeviceEventRequest> requests = getDeviceEventDecoder().decode(message);
 					if (requests != null) {
-						for (IDecodedDeviceEventRequest request : requests) {
-							getInboundProcessingStrategy().submit(request);
+						for (IDecodedDeviceEventRequest decoded : requests) {
+							if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
+								getInboundProcessingStrategy().processRegistration(decoded);
+							} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
+								getInboundProcessingStrategy().processDeviceCommandResponse(decoded);
+							} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
+								getInboundProcessingStrategy().processDeviceMeasurements(decoded);
+							} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
+								getInboundProcessingStrategy().processDeviceLocation(decoded);
+							} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
+								getInboundProcessingStrategy().processDeviceAlert(decoded);
+							} else {
+								LOGGER.error("Decoded device event request could not be routed: "
+										+ decoded.getRequest().getClass().getName());
+							}
 						}
 					}
 				} catch (SiteWhereException e) {
 					LOGGER.error("Event receiver thread unable to decode event request.", e);
 				} catch (InterruptedException e) {
-					LOGGER.warn("Device event receiver thread interrupted.", e);
+					LOGGER.warn("Event receiver thread interrupted.", e);
 				} catch (Throwable e) {
 					LOGGER.error("Unhandled exception in device event decoding.", e);
 				}
@@ -127,14 +145,14 @@ public class DefaultInboundEventProcessor implements IInboundEventProcessor {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopped MQTT inbound event processing.");
+		LOGGER.info("Stopped inbound event source.");
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IInboundEventProcessor#setDeviceEventDecoder
+	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#setDeviceEventDecoder
 	 * (com.sitewhere.spi.device.provisioning.IDeviceEventDecoder)
 	 */
 	public void setDeviceEventDecoder(IDeviceEventDecoder deviceEventDecoder) {
@@ -148,8 +166,8 @@ public class DefaultInboundEventProcessor implements IInboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IInboundEventProcessor#
-	 * setInboundProcessingStrategy
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#setInboundProcessingStrategy
 	 * (com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy)
 	 */
 	public void setInboundProcessingStrategy(IInboundProcessingStrategy inboundProcessingStrategy) {
@@ -164,7 +182,7 @@ public class DefaultInboundEventProcessor implements IInboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IInboundEventProcessor#setInboundEventReceivers
+	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#setInboundEventReceivers
 	 * (java.util.List)
 	 */
 	public void setInboundEventReceivers(List<IInboundEventReceiver> inboundEventReceivers) {

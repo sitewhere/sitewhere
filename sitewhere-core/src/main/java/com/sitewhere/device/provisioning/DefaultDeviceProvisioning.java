@@ -22,7 +22,7 @@ import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
-import com.sitewhere.spi.device.provisioning.IInboundEventProcessor;
+import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
 
@@ -58,8 +58,8 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	private IInboundProcessingStrategy inboundProcessingStrategy =
 			new BlockingQueueInboundProcessingStrategy();
 
-	/** Configured list of inbound event processors */
-	private List<IInboundEventProcessor> inboundEventProcessors = new ArrayList<IInboundEventProcessor>();
+	/** Configured list of inbound event sources */
+	private List<IInboundEventSource> inboundEventSources = new ArrayList<IInboundEventSource>();
 
 	/*
 	 * (non-Javadoc)
@@ -112,9 +112,9 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 		}
 		getInboundProcessingStrategy().start();
 
-		// Start device event processors.
-		if (getInboundEventProcessors() != null) {
-			for (IInboundEventProcessor processor : getInboundEventProcessors()) {
+		// Start device event sources.
+		if (getInboundEventSources() != null) {
+			for (IInboundEventSource processor : getInboundEventSources()) {
 				processor.start();
 			}
 		}
@@ -161,9 +161,9 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 			getInboundProcessingStrategy().stop();
 		}
 
-		// Stop inbound event processors.
-		if (getInboundEventProcessors() != null) {
-			for (IInboundEventProcessor processor : getInboundEventProcessors()) {
+		// Stop inbound event sources.
+		if (getInboundEventSources() != null) {
+			for (IInboundEventSource processor : getInboundEventSources()) {
 				processor.stop();
 			}
 		}
@@ -303,14 +303,13 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getInboundEventProcessors
-	 * ()
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getInboundEventSources()
 	 */
-	public List<IInboundEventProcessor> getInboundEventProcessors() {
-		return inboundEventProcessors;
+	public List<IInboundEventSource> getInboundEventSources() {
+		return inboundEventSources;
 	}
 
-	public void setInboundEventProcessors(List<IInboundEventProcessor> inboundEventProcessors) {
-		this.inboundEventProcessors = inboundEventProcessors;
+	public void setInboundEventSources(List<IInboundEventSource> inboundEventSources) {
+		this.inboundEventSources = inboundEventSources;
 	}
 }

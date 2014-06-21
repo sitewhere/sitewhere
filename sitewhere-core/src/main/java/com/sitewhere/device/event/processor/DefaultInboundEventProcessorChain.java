@@ -22,7 +22,6 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 
 /**
  * Default implementation of {@link IInboundEventProcessorChain} interface.
@@ -63,43 +62,6 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 			processor.stop();
 		}
 		LOGGER.info("Inbound event processor chain stopped.");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
-	 * onDecodedDeviceEventRequest
-	 * (com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest)
-	 */
-	@Override
-	public void onDecodedDeviceEventRequest(IDecodedDeviceEventRequest decoded) throws SiteWhereException {
-		for (IInboundEventProcessor processor : getProcessors()) {
-			try {
-				processor.onDecodedDeviceEventRequest(decoded);
-				if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
-					onRegistrationRequest(decoded.getHardwareId(), decoded.getOriginator(),
-							(IDeviceRegistrationRequest) decoded.getRequest());
-				} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
-					onDeviceCommandResponseRequest(decoded.getHardwareId(), decoded.getOriginator(),
-							(IDeviceCommandResponseCreateRequest) decoded.getRequest());
-				} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
-					onDeviceMeasurementsCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
-							(IDeviceMeasurementsCreateRequest) decoded.getRequest());
-				} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
-					onDeviceLocationCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
-							(IDeviceLocationCreateRequest) decoded.getRequest());
-				} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
-					onDeviceAlertCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
-							(IDeviceAlertCreateRequest) decoded.getRequest());
-				} else {
-					LOGGER.error("Decoded device event request could not be routed: "
-							+ decoded.getRequest().getClass().getName());
-				}
-			} catch (SiteWhereException e) {
-				LOGGER.error(e);
-			}
-		}
 	}
 
 	/*

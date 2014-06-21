@@ -72,11 +72,11 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	public IInboundProcessingStrategy getInboundProcessingStrategy();
 
 	/**
-	 * Get the list of processors that bring device event data into the system.
+	 * Get the list of sources that bring device event data into the system.
 	 * 
 	 * @return
 	 */
-	public List<IInboundEventProcessor> getInboundEventProcessors();
+	public List<IInboundEventSource> getInboundEventSources();
 
 	/**
 	 * Deliver a command invocation.

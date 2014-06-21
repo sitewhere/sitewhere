@@ -12,20 +12,57 @@ package com.sitewhere.spi.device.provisioning;
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 
 /**
- * Provides a strategy for moving decoded events from an {@link IInboundEventProcessor}
- * onto the {@link IInboundEventProcessorChain}.
+ * Provides a strategy for moving decoded events from an {@link IInboundEventSource} onto
+ * the {@link IInboundEventProcessorChain}.
  * 
  * @author Derek
  */
 public interface IInboundProcessingStrategy extends ISiteWhereLifecycle {
 
 	/**
-	 * Submit a decoded event for processing.
+	 * Process an {@link IDeviceRegistrationRequest}.
 	 * 
-	 * @param event
+	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void submit(IDecodedDeviceEventRequest event) throws SiteWhereException;
+	public void processRegistration(IDecodedDeviceEventRequest request) throws SiteWhereException;
+
+	/**
+	 * Process an {@link IDeviceCommandResponseCreateRequest}.
+	 * 
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void processDeviceCommandResponse(IDecodedDeviceEventRequest request) throws SiteWhereException;
+
+	/**
+	 * Process an {@link IDeviceMeasurementsCreateRequest}.
+	 * 
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void processDeviceMeasurements(IDecodedDeviceEventRequest request) throws SiteWhereException;
+
+	/**
+	 * Process an {@link IDeviceLocationCreateRequest}.
+	 * 
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void processDeviceLocation(IDecodedDeviceEventRequest request) throws SiteWhereException;
+
+	/**
+	 * Process an {@link IDeviceAlertCreateRequest}.
+	 * 
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void processDeviceAlert(IDecodedDeviceEventRequest request) throws SiteWhereException;
 }
