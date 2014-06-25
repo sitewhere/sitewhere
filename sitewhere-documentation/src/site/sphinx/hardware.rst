@@ -12,4 +12,4 @@ event facilities supported by SiteWhere.
 .. toctree::
    :maxdepth: 3
 
-   hardware/android
+   hardware/android/android

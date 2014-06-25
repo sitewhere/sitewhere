@@ -5,11 +5,22 @@
 * Sphinx stylesheet -- Twitter Bootstrap theme.
 */
 
+div.highlight pre {
+	border: none;
+}
+
 div.highlight {
 	max-height: 350px;
 	overflow-y: scroll;
 	margin-top: 25px;
 	margin-bottom: 25px;
+	border: 1px solid #ccc;
+}
+
+div.highlight-java div.highlight {
+	display: block;
+	width: 100%;
+	max-height: 500px;
 }
 
 .navbar-inverse .brand {
@@ -22,6 +33,15 @@ div.highlight {
 	left: -27px;
 }
 
+ol li {
+  list-style-type: decimal;
+  display: list-item;
+}
+
+ol li img {
+	padding-bottom: 15px;
+}
+  
 .section h1 {
 	font-size: 26pt;
 	border-bottom: 1px solid #DDD;

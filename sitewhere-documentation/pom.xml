@@ -38,6 +38,20 @@
 												<include name="apidocs/**"/>
 											</fileset>
 										</copy>
+										<copy todir="${project.basedir}/../deploy/docs/android/framework">
+											<fileset
+												dir="${project.basedir}/../../sitewhere-android/SiteWhereFrameworkLibrary/target/site"
+											>
+												<include name="apidocs/**"/>
+											</fileset>
+										</copy>
+										<copy todir="${project.basedir}/../deploy/docs/android/mqtt">
+											<fileset
+												dir="${project.basedir}/../../sitewhere-android/SiteWhereMQTTLibrary/target/site"
+											>
+												<include name="apidocs/**"/>
+											</fileset>
+										</copy>
 										<zip destfile="${project.basedir}/../deploy/docs.zip"
 											basedir="${project.basedir}/../deploy/docs"/>
 										<delete dir="${project.basedir}/../deploy/docs" quiet="true"/>
