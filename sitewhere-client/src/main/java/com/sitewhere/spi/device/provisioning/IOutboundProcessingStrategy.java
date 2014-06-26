@@ -20,6 +20,5 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
  * 
  * @author Derek
  */
-public interface IOutboundProcessingStrategy extends ISiteWhereLifecycle {
-
+public interface IOutboundProcessingStrategy extends ISiteWhereLifecycle, IOutboundEventProcessor {
 }

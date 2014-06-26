@@ -22,11 +22,6 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
-import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
  * Default implementation of {@link IOutboundEventProcessorChain} interface.
@@ -98,37 +93,15 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeMeasurements
-	 * (java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
-	 */
-	@Override
-	public void beforeMeasurements(String assignmentToken, IDeviceMeasurementsCreateRequest request)
-			throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					processor.beforeMeasurements(assignmentToken, request);
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterMeasurements
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onMeasurements
 	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
-	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.afterMeasurements(measurements);
+					processor.onMeasurements(measurements);
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
@@ -140,17 +113,15 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeLocation
-	 * (java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onLocation(com
+	 * .sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
-	public void beforeLocation(String assignmentToken, IDeviceLocationCreateRequest request)
-			throws SiteWhereException {
+	public void onLocation(IDeviceLocation location) throws SiteWhereException {
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.beforeLocation(assignmentToken, request);
+					processor.onLocation(location);
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
@@ -162,15 +133,15 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterLocation(
-	 * com.sitewhere.spi.device.event.IDeviceLocation)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.sitewhere
+	 * .spi.device.event.IDeviceAlert)
 	 */
 	@Override
-	public void afterLocation(IDeviceLocation location) throws SiteWhereException {
+	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.afterLocation(location);
+					processor.onAlert(alert);
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
@@ -182,75 +153,15 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeAlert(java
-	 * .lang.String, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
-	 */
-	@Override
-	public void beforeAlert(String assignmentToken, IDeviceAlertCreateRequest request)
-			throws SiteWhereException {
-		for (IOutboundEventProcessor processor : getProcessors()) {
-			try {
-				processor.beforeAlert(assignmentToken, request);
-			} catch (SiteWhereException e) {
-				LOGGER.error(e);
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterAlert(com
-	 * .sitewhere.spi.device.event.IDeviceAlert)
-	 */
-	@Override
-	public void afterAlert(IDeviceAlert alert) throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					processor.afterAlert(alert);
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-	 * beforeCommandInvocation(java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
-	 */
-	@Override
-	public void beforeCommandInvocation(String assignmentToken, IDeviceCommandInvocationCreateRequest request)
-			throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					processor.beforeCommandInvocation(assignmentToken, request);
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterCommandInvocation
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandInvocation
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.afterCommandInvocation(invocation);
+					processor.onCommandInvocation(invocation);
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
@@ -262,37 +173,15 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeCommandResponse
-	 * (java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
-	 */
-	@Override
-	public void beforeCommandResponse(String assignmentToken, IDeviceCommandResponseCreateRequest request)
-			throws SiteWhereException {
-		if (isProcessingEnabled()) {
-			for (IOutboundEventProcessor processor : getProcessors()) {
-				try {
-					processor.beforeCommandResponse(assignmentToken, request);
-				} catch (SiteWhereException e) {
-					LOGGER.error(e);
-				}
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterCommandResponse
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandResponse
 	 * (com.sitewhere.spi.device.event.IDeviceCommandResponse)
 	 */
 	@Override
-	public void afterCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.afterCommandResponse(response);
+					processor.onCommandResponse(response);
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}

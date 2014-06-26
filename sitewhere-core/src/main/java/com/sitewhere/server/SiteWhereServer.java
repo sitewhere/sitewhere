@@ -27,7 +27,7 @@ import org.springframework.core.io.FileSystemResource;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
-import com.sitewhere.device.event.processor.DeviceEventProcessorDecorator;
+import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
@@ -286,8 +286,13 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		verifyDeviceModel();
 
 		// Enable provisioning.
-		outboundEventProcessorChain.setProcessingEnabled(true);
-		inboundEventProcessorChain.start();
+		if (outboundEventProcessorChain != null) {
+			outboundEventProcessorChain.start();
+			outboundEventProcessorChain.setProcessingEnabled(true);
+		}
+		if (inboundEventProcessorChain != null) {
+			inboundEventProcessorChain.start();
+		}
 		deviceProvisioning.start();
 	}
 
@@ -325,14 +330,14 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		// Initialize Spring.
 		initializeSpringContext();
 
+		// Initialize device provisioning.
+		initializeDeviceProvisioning();
+
 		// Initialize device management.
 		initializeDeviceManagement();
 
 		// Initialize processing chain for inbound events.
 		initializeInboundEventProcessorChain();
-
-		// Initialize device provisioning.
-		initializeDeviceProvisioning();
 
 		// Initialize user management.
 		initializeUserManagement();
@@ -408,8 +413,7 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		try {
 			outboundEventProcessorChain =
 					(IOutboundEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
-			deviceManagement =
-					new DeviceEventProcessorDecorator(deviceManagement, outboundEventProcessorChain);
+			deviceManagement = new OutboundProcessingStrategyDecorator(deviceManagement);
 			LOGGER.info("Event processor chain found with "
 					+ outboundEventProcessorChain.getProcessors().size() + " processors.");
 		} catch (NoSuchBeanDefinitionException e) {

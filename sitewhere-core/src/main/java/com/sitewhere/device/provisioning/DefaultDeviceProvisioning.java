@@ -24,6 +24,7 @@ import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
+import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
 
 /**
@@ -60,6 +61,9 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 	/** Configured list of inbound event sources */
 	private List<IInboundEventSource> inboundEventSources = new ArrayList<IInboundEventSource>();
+
+	/** Configured outbound processing strategy */
+	private IOutboundProcessingStrategy outboundProcessingStrategy = new DirectOutboundProcessingStrategy();
 
 	/*
 	 * (non-Javadoc)
@@ -311,5 +315,20 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 	public void setInboundEventSources(List<IInboundEventSource> inboundEventSources) {
 		this.inboundEventSources = inboundEventSources;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getOutboundProcessingStrategy
+	 * ()
+	 */
+	public IOutboundProcessingStrategy getOutboundProcessingStrategy() {
+		return outboundProcessingStrategy;
+	}
+
+	public void setOutboundProcessingStrategy(IOutboundProcessingStrategy outboundProcessingStrategy) {
+		this.outboundProcessingStrategy = outboundProcessingStrategy;
 	}
 }

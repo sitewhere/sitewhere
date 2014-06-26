@@ -16,11 +16,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
  * Allows intereseted entities to interact with SiteWhere outbound event processing.
@@ -30,32 +25,12 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 
 	/**
-	 * Executes code before saving device measurements.
-	 * 
-	 * @param assignment
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void beforeMeasurements(String assignment, IDeviceMeasurementsCreateRequest request)
-			throws SiteWhereException;
-
-	/**
 	 * Executes code after device measurements have been successfully saved.
 	 * 
 	 * @param measurements
 	 * @throws SiteWhereException
 	 */
-	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException;
-
-	/**
-	 * Executes code before saving device location.
-	 * 
-	 * @param assignment
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void beforeLocation(String assignment, IDeviceLocationCreateRequest request)
-			throws SiteWhereException;
+	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException;
 
 	/**
 	 * Executes code after device location has been successfully saved.
@@ -63,16 +38,7 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @param location
 	 * @throws SiteWhereException
 	 */
-	public void afterLocation(IDeviceLocation location) throws SiteWhereException;
-
-	/**
-	 * Executes code before saving device alert.
-	 * 
-	 * @param assignment
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void beforeAlert(String assignment, IDeviceAlertCreateRequest request) throws SiteWhereException;
+	public void onLocation(IDeviceLocation location) throws SiteWhereException;
 
 	/**
 	 * Executes code after device alert has been successfully saved.
@@ -80,17 +46,7 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @param location
 	 * @throws SiteWhereException
 	 */
-	public void afterAlert(IDeviceAlert alert) throws SiteWhereException;
-
-	/**
-	 * Executes code before saving device command invocation.
-	 * 
-	 * @param assignment
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void beforeCommandInvocation(String assignment, IDeviceCommandInvocationCreateRequest request)
-			throws SiteWhereException;
+	public void onAlert(IDeviceAlert alert) throws SiteWhereException;
 
 	/**
 	 * Executes code after device command invocation has been successfully saved.
@@ -98,17 +54,7 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @param invocation
 	 * @throws SiteWhereException
 	 */
-	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
-
-	/**
-	 * Executes code before saving a device response.
-	 * 
-	 * @param assignment
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	public void beforeCommandResponse(String assignment, IDeviceCommandResponseCreateRequest request)
-			throws SiteWhereException;
+	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
 
 	/**
 	 * Executes code after device command response has been successfully saved.
@@ -116,5 +62,5 @@ public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
 	 * @param response
 	 * @throws SiteWhereException
 	 */
-	public void afterCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
+	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
 }

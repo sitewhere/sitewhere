@@ -68,10 +68,10 @@ public class DefaultProvisioningEventProcessor extends OutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
-	 * afterCommandInvocation(com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+	 * onCommandInvocation(com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		try {
 			queue.put(invocation);
 		} catch (InterruptedException e) {

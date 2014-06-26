@@ -79,6 +79,13 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	public List<IInboundEventSource> getInboundEventSources();
 
 	/**
+	 * Get the strategy for moving processed events into the outbound chain.
+	 * 
+	 * @return
+	 */
+	public IOutboundProcessingStrategy getOutboundProcessingStrategy();
+
+	/**
 	 * Deliver a command invocation.
 	 * 
 	 * @param invocation

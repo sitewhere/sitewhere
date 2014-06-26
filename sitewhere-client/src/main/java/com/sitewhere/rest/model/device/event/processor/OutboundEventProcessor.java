@@ -16,11 +16,6 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
-import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
  * Default implementation of {@link IOutboundEventProcessor}.
@@ -51,117 +46,54 @@ public class OutboundEventProcessor implements IOutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeMeasurements
-	 * (java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
-	 */
-	@Override
-	public void beforeMeasurements(String assignmentToken, IDeviceMeasurementsCreateRequest request)
-			throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterMeasurements
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onMeasurements
 	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
-	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeLocation
-	 * (java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onLocation(com
+	 * .sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
-	public void beforeLocation(String assignmentToken, IDeviceLocationCreateRequest request)
-			throws SiteWhereException {
+	public void onLocation(IDeviceLocation location) throws SiteWhereException {
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterLocation(
-	 * com.sitewhere.spi.device.event.IDeviceLocation)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.sitewhere
+	 * .spi.device.event.IDeviceAlert)
 	 */
 	@Override
-	public void afterLocation(IDeviceLocation location) throws SiteWhereException {
+	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeAlert(java
-	 * .lang.String, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
-	 */
-	@Override
-	public void beforeAlert(String assignmentToken, IDeviceAlertCreateRequest request)
-			throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterAlert(com
-	 * .sitewhere.spi.device.event.IDeviceAlert)
-	 */
-	@Override
-	public void afterAlert(IDeviceAlert alert) throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
-	 * beforeCommandInvocation(java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
-	 */
-	@Override
-	public void beforeCommandInvocation(String assignmentToken, IDeviceCommandInvocationCreateRequest request)
-			throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterCommandInvocation
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandInvocation
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void afterCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#beforeCommandResponse
-	 * (java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
-	 */
-	@Override
-	public void beforeCommandResponse(String assignment, IDeviceCommandResponseCreateRequest request)
-			throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#afterCommandResponse
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandResponse
 	 * (com.sitewhere.spi.device.event.IDeviceCommandResponse)
 	 */
 	@Override
-	public void afterCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
 	}
 }

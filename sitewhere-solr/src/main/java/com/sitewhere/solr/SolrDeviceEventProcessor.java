@@ -90,11 +90,12 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
-	 * afterMeasurements(com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * @see
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#onMeasurements
+	 * (com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
-	public void afterMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
 		SolrInputDocument document = SiteWhereSolrFactory.createDocumentFromMeasurements(measurements);
 		try {
 			queue.put(document);
@@ -107,11 +108,11 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#afterLocation
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#onLocation
 	 * (com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
-	public void afterLocation(IDeviceLocation location) throws SiteWhereException {
+	public void onLocation(IDeviceLocation location) throws SiteWhereException {
 		SolrInputDocument document = SiteWhereSolrFactory.createDocumentFromLocation(location);
 		try {
 			queue.put(document);
@@ -124,11 +125,11 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#afterAlert
-	 * (com.sitewhere.spi.device.event.IDeviceAlert)
+	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#onAlert(
+	 * com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
-	public void afterAlert(IDeviceAlert alert) throws SiteWhereException {
+	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
 		SolrInputDocument document = SiteWhereSolrFactory.createDocumentFromAlert(alert);
 		try {
 			queue.put(document);
