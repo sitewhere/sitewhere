@@ -143,8 +143,10 @@ that if you open the *project.properties* file, there are now references to the 
 
 With the projects added, the SiteWhere Android framework elements may be used in your project.
 
-Intoduction to Framework Concepts
----------------------------------
+
+------------------------------------
+ Introduction to Framework Concepts
+------------------------------------
 When the Android application starts, a main activity is launched to present an interface to the user. 
 The SiteWhere libraries provide classes that extend the base Android  
 `Activity <http://developer.android.com/reference/android/app/Activity.html>`_ class and 
@@ -153,14 +155,17 @@ device needs to communicate with SiteWhere.
 
 Currently, there are two base classes that provide different levels of functionality:
 
-:`SiteWhereActivity <../../android/framework/apidocs/com/sitewhere/android/SiteWhereActivity.html>`_: Contains the
-	base logic for connecting to an underlying message service (defaulting to MQTT) in order to send events to
+`SiteWhereActivity <../../android/framework/apidocs/com/sitewhere/android/SiteWhereActivity.html>`_ 
+---------------------------------------------------------------------------------------------------
+	Contains the base logic for connecting to an underlying message service (defaulting to MQTT) in order to send events to
 	and receive commands from SiteWhere. This class only deals in sending binary data between the application
 	and SiteWhere, so it will not work out-of-the-box since SiteWhere defaults to using messages encoded with
 	Google Protocol Buffers. This base class is useful for implementing custom protocols between an Android
 	application and SiteWhere.
-:`SiteWhereProtobufActivity <../../android/framework/apidocs/com/sitewhere/android/protobuf/SiteWhereProtobufActivity.html>`_: Extends
-	functionality from SiteWhereActivity to include support for encoding/decoding messages using the standard
+
+`SiteWhereProtobufActivity <../../android/framework/apidocs/com/sitewhere/android/protobuf/SiteWhereProtobufActivity.html>`_
+---------------------------------------------------------------------------------------------------
+	Extends functionality from SiteWhereActivity to include support for encoding/decoding messages using the standard
 	SiteWhere `proto <https://github.com/reveal-technologies/sitewhere/blob/master/sitewhere-protobuf/proto/sitewhere.proto>`_
 	file. This base class offers methods that wrap common SiteWhere actions such as sending events to the server
 	and receiving commands from the server. It also has basic support for round-trip self registration. Most 
@@ -171,31 +176,34 @@ defers to talking to a `Service <http://developer.android.com/reference/android/
 interfaces. This adds a level of indirection that allows the messaging layer to be swapped without affecting
 the application code. The default service implementation is:
 
-:`MqttService <../android/mqtt/apidocs/com/sitewhere/android/mqtt/MqttService.html>`_: Provides connectivity to
-    SiteWhere via an MQTT broker by using the `Fuse MQTT Client <http://mqtt-client.fusesource.org/>`_ over a
-    TCP/IP connection. Connectivity parameters for the MqttService are provided by a configuration object that
-    is passed to the `Intent <http://developer.android.com/reference/android/content/Intent.html>`_
-    used to start the service. The SiteWhere example application detects whether the configuration
-    has been set and, in cases where it is missing, displays a connectivity wizard to set and verify the 
-    values. The service automatically handles reconnecting if the network becomes inaccessible and provides
-    hooks for notifying the parent application when SiteWhere connectivity changes. It is important to note that,
-    since the MQTT functionality is running as a service, the connection to SiteWhere remains in place even when
-    the application that started it is not running. The periodic "keep-alive" ping messages sent from client to
-    MQTT broker have been configured to be sent infrequently to allow the network hardware on the device to 
-    conserve power.
+`MqttService <../android/mqtt/apidocs/com/sitewhere/android/mqtt/MqttService.html>`_
+---------------------------------------------------------------------------------------------------
+	Provides connectivity to SiteWhere via an MQTT broker by using the 
+	`Fuse MQTT Client <http://mqtt-client.fusesource.org/>`_ over a TCP/IP connection. 
+	Connectivity parameters for the MqttService are provided by a configuration object that
+	is passed to the `Intent <http://developer.android.com/reference/android/content/Intent.html>`_
+	used to start the service. The SiteWhere example application detects whether the configuration
+	has been set and, in cases where it is missing, displays a connectivity wizard to set and verify the 
+	values. The service automatically handles reconnecting if the network becomes inaccessible and provides
+	hooks for notifying the parent application when SiteWhere connectivity changes. It is important to note that,
+	since the MQTT functionality is running as a service, the connection to SiteWhere remains in place even when
+	the application that started it is not running. The periodic "keep-alive" ping messages sent from client to
+	MQTT broker have been configured to be sent infrequently to allow the network hardware on the device to 
+	conserve power.
 
 .. warning:: The MQTT library requires network access, so make sure to add the necessary permissions. The
 	Android manifest shown later in the document provides an example of doing this.
 
-Building the Application
-------------------------
+--------------------------
+ Building the Application
+--------------------------
 Building a SiteWhere application is straightforward since most of the low-level details are taken
 care of by the framework. Start by creating a base Java package for the code by clicking 
 the *src* folder and choosing **New > Package** from the menu. The package name should be the same as the
 one specified when creating the project.
 
 Create a Main Activity
-**********************
+----------------------
 
 Next, create the main activity that will be displayed when the application starts. For this example, the activity
 will extend SiteWhereProtobufActivity so that it works with the default SiteWhere configuration. 
@@ -206,7 +214,7 @@ will extend SiteWhereProtobufActivity so that it works with the default SiteWher
    :align: left
 
 Add Code for Connecting to SiteWhere
-************************************
+------------------------------------
 Once the activity has been created, very little code is required to get a basic application up and running.
 The code below illustrates a simple activity that connects to SiteWhere over MQTT and registers the device
 for sending events and receiving commands. Note that most of the heavy lifting is taken care of by the framework.
@@ -219,7 +227,7 @@ for sending events and receiving commands. Note that most of the heavy lifting i
 	instance on Amazon EC2 and use the public IP address for the instance as the MQTT broker hostname.
 
 Add Declarations in Android Manifest
-************************************
+------------------------------------
 To create an application that can be built and executed on a device, a few more artifacts need to be added. The
 standard *AndroidManifest.xml* needs to be edited to include the new activity and reference the MQTT service
 provided by the framework.
@@ -228,7 +236,7 @@ provided by the framework.
    :language: xml
 
 Add Files for Layout and Internationalization
-*********************************************
+---------------------------------------------
 In the *res/layout* folder, add a file named *main.xml* with the following content. It provides the layout
 for the main screen shown in the application.
 
@@ -241,7 +249,7 @@ In the *res/values* folder, edit the file named *strings.xml* and replace it wit
    :language: xml
 
 Run the Application
-*******************
+-------------------
 Now that all of the pieces are in place for a basic application, the next step is to execute the code.
 ADT allows you to execute applications in an emulator or directly on a device. Their developer guide to 
 `building in Eclipse <http://developer.android.com/tools/building/building-eclipse.html>`_ gives details
@@ -262,8 +270,9 @@ An example of what you might see is shown below:
    :alt: Eclipse DDMS Perspective
    :align: left
 
-Automatic Device Registration
-*****************************
+-------------------------------
+ Automatic Device Registration
+-------------------------------
 One of the key actions taken in the example code is the call to *registerDevice()*:
 
 .. code-block:: java

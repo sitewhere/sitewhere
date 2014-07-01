@@ -5,6 +5,14 @@
 * Sphinx stylesheet -- Twitter Bootstrap theme.
 */
 
+body {
+	color: #333333;
+}
+
+p {
+	line-height: 1.65em;
+}
+
 div.highlight pre {
 	border: none;
 }
@@ -15,6 +23,10 @@ div.highlight {
 	margin-top: 25px;
 	margin-bottom: 25px;
 	border: 1px solid #ccc;
+}
+
+blockquote {
+	font-size: inherit;
 }
 
 div.highlight-java div.highlight {
@@ -39,7 +51,8 @@ ol li {
 }
 
 ol li img {
-	padding-bottom: 15px;
+	padding-top: 25px;
+	padding-bottom: 25px;
 }
   
 .section h1 {
@@ -52,18 +65,19 @@ ol li img {
 	font-size: 20pt;
 	border-bottom: 1px solid #DDD;
 	padding-bottom: 5px;
+	margin-top: 30px;
 }
 
 .section h3 {
 	font-size: 18pt;
-	border-bottom: 1px solid #EEE;
+	margin-top: 30px;
 }
 
 .section h4 {
 	font-size: 14pt;
-	border-bottom: 1px solid #EEE;
 	padding-top: 10px;
 	margin-bottom: 15px;
+	margin-top: 15px;
 }
 
 .sw-nav-content {
@@ -108,9 +122,13 @@ ol li img {
 }
 
 .contents.topic {
-	background-color: #f0f0f0;
-	border: 1px solid #999;
+	background-color: #f5f5f5;
+	border: 1px solid #ccc;
 	color: #555;
+}
+
+.contents.topic a {
+	font-weight: bold;
 }
 
 .toctree-wrapper {

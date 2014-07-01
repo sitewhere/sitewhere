@@ -10,7 +10,8 @@ you would access the admin console via:
 
 	http://localhost:8080/sitewhere/admin/
 
-.. contents::
+.. contents:: Contents
+   :local:
 
 ----------
 Logging In

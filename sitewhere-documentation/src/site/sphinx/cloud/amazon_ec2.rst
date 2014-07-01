@@ -161,6 +161,10 @@ a nice overview of how to do exactly that here:
 
 	http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html
 	
+The Unix username for logging in to the instance is *admin* and the authentication uses
+the public key associated when the instance was launched. If you assigned a pass phrase
+when creating the key, your client may ask for the phrase on login.
+	
 Now that you can connect to your cloud instance, the first thing to do is obtain root access so you can crash it!
 To swap to root privileges enter:
 
