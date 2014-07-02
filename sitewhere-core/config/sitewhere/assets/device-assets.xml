@@ -30,10 +30,22 @@
 	<!-- Gateway -->
 	<hardware-asset id="176" name="Gateway Device" sku="GW1" device="true">
 		<description>Sample gateway for testing nested device configurations.</description>
-		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/raspberry-pi.jpg</image-url>
-		<property name="manufacturer" value="Intel"/>
-		<property name="weight" value="1.000"/>
-		<property name="slot.count" value="16"/>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/gateway.gif</image-url>
+		<property name="manufacturer" value="Advantech"/>
+	</hardware-asset>
+	
+	<!-- Arduino -->
+	<hardware-asset id="180" name="Arduino Uno" sku="UNO" device="true">
+		<description>The Arduino Uno is a microcontroller board based on the ATmega328.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/arduino/uno.jpg</image-url>
+		<property name="manufacturer" value="Arduino"/>
+		<property name="operating.voltage" value="5V"/>
+	</hardware-asset>
+	<hardware-asset id="181" name="Arduino Mega 2560" sku="M2560" device="true">
+		<description>The Arduino Mega 2560 is a microcontroller board based on the ATmega2560.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/arduino/mega2560.jpg</image-url>
+		<property name="manufacturer" value="Arduino"/>
+		<property name="operating.voltage" value="5V"/>
 	</hardware-asset>
 	
 	<!-- Ekahau tags and sensors -->

@@ -150,9 +150,13 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Namespace for Android commands */
 	public static final String ANDROID_NAMESPACE = "http://android/example";
 
+	/** Namespace for Arduino commands */
+	public static final String ARDUINO_NAMESPACE = "http://arduino/example";
+
 	/** Information for available device specifications */
 	public static final SpecificationDetails[] SPECIFICATION_INFO = {
 			new SpecificationDetails("173", "Android Default", "d2604433-e4eb-419b-97c7-88efe9b2cd41"),
+			new SpecificationDetails("181", "Arduino Mega Default", "417b36a8-21ef-4196-a8fe-cc756f994d0b"),
 			new SpecificationDetails("174", "Raspberrry Pi Default", "7dfd6d63-5e8d-4380-be04-fc5c73801dfb"),
 			new SpecificationDetails("175", "MeiTrack MT90 Default", "82043707-9e3d-441f-bdcc-33cf0f4f7260"),
 			new SpecificationDetails("176", "Gateway Default", "75126a52-0607-4cca-b995-df40e73a707b") };
@@ -340,13 +344,13 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 */
 	protected DeviceElementSchema createDeviceElementSchema() {
 		DeviceElementSchema schema = new DeviceElementSchema();
-		
+
 		// Create main default bus.
 		DeviceUnit db1 = new DeviceUnit();
 		db1.setName("Default Bus");
 		db1.setPath("default");
 		schema.getDeviceUnits().add(db1);
-		
+
 		// PCI Bus.
 		DeviceUnit pci = new DeviceUnit();
 		pci.setName("PCI Bus");
@@ -360,7 +364,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		pci.getDeviceSlots().add(pci1);
 		pci.getDeviceSlots().add(pci2);
 		db1.getDeviceUnits().add(pci);
-		
+
 		// Serial ports
 		DeviceUnit serial = new DeviceUnit();
 		serial.setName("Serial Ports");
@@ -424,6 +428,15 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			changebg.setDescription("Change background color of application.");
 			changebg.getParameters().add(new CommandParameter("color", ParameterType.String, true));
 			commands.add(getDeviceManagement().createDeviceCommand(spec, changebg));
+		}
+
+		if (spec.getToken().equals("417b36a8-21ef-4196-a8fe-cc756f994d0b")) {
+			DeviceCommandCreateRequest serprtln = new DeviceCommandCreateRequest();
+			serprtln.setNamespace(ARDUINO_NAMESPACE);
+			serprtln.setName("serialPrintln");
+			serprtln.setDescription("Print a messgae to the serial output.");
+			serprtln.getParameters().add(new CommandParameter("message", ParameterType.String, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, serprtln));
 		}
 
 		if (spec.getToken().equals("7dfd6d63-5e8d-4380-be04-fc5c73801dfb")) {
