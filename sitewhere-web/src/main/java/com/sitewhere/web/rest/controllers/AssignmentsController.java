@@ -240,13 +240,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			@ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds)
 			throws SiteWhereException {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 		ISearchResults<IDeviceMeasurements> measurements =
 				SiteWhereServer.getInstance().getDeviceManagement().listDeviceMeasurements(token, criteria);
 		ChartBuilder builder = new ChartBuilder();
-		return builder.process(measurements.getResults());
+		return builder.process(measurements.getResults(), measurementIds);
 	}
 
 	/**

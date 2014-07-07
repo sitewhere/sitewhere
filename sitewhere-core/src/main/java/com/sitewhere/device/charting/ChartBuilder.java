@@ -10,6 +10,7 @@
 package com.sitewhere.device.charting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,8 +38,12 @@ public class ChartBuilder {
 	 * @param matches
 	 * @return
 	 */
-	public List<IChartSeries<Double>> process(List<IDeviceMeasurements> matches) {
+	public List<IChartSeries<Double>> process(List<IDeviceMeasurements> matches, String[] measurementIds) {
 		seriesByMeasurementName = new HashMap<String, IChartSeries<Double>>();
+		List<String> mxids = null;
+		if ((measurementIds != null) && (measurementIds.length > 0)) {
+			mxids = Arrays.asList(measurementIds);
+		}
 
 		// Add all measurements.
 		for (IDeviceMeasurements measurements : matches) {
@@ -49,8 +54,10 @@ public class ChartBuilder {
 		// Sort entries by date.
 		List<IChartSeries<Double>> results = new ArrayList<IChartSeries<Double>>();
 		for (IChartSeries<Double> series : seriesByMeasurementName.values()) {
-			Collections.sort(series.getEntries());
-			results.add(series);
+			if ((mxids == null) || (mxids.contains(series.getMeasurementId()))) {
+				Collections.sort(series.getEntries());
+				results.add(series);
+			}
 		}
 		return results;
 	}

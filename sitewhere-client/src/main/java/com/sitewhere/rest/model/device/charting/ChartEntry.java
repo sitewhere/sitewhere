@@ -11,6 +11,8 @@ package com.sitewhere.rest.model.device.charting;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.charting.IChartEntry;
 
 /**
@@ -46,6 +48,7 @@ public class ChartEntry<T> implements IChartEntry<T> {
 	 * @see com.sitewhere.spi.device.charting.IChartEntry#getMeasurementDate()
 	 */
 	@Override
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getMeasurementDate() {
 		return measurementDate;
 	}
