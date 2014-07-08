@@ -101,6 +101,8 @@ public class SiteWhereClient implements ISiteWhereClient {
 			enableDebugging();
 		}
 		this.client = new RestTemplate();
+		this.username = username;
+		this.password = password;
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
 		addMessageConverters(converters);
 		client.setMessageConverters(converters);
@@ -113,6 +115,8 @@ public class SiteWhereClient implements ISiteWhereClient {
 			enableDebugging();
 		}
 		this.client = new RestTemplate();
+		this.username = username;
+		this.password = password;
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 		factory.setConnectTimeout(connectTimeoutMs);
 		client.setRequestFactory(factory);
