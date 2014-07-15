@@ -18,6 +18,12 @@ import com.sitewhere.spi.system.IVersion;
  */
 public class Version implements IVersion {
 
+	/** Full edition */
+	private String edition;
+
+	/** Edition identifier */
+	private String editionIdentifier;
+
 	/** Version identifier */
 	private String versionIdentifier;
 
@@ -27,6 +33,37 @@ public class Version implements IVersion {
 	public Version() {
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.system.IVersion#getEdition()
+	 */
+	public String getEdition() {
+		return edition;
+	}
+
+	public void setEdition(String edition) {
+		this.edition = edition;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.system.IVersion#getEditionIdentifier()
+	 */
+	public String getEditionIdentifier() {
+		return editionIdentifier;
+	}
+
+	public void setEditionIdentifier(String editionIdentifier) {
+		this.editionIdentifier = editionIdentifier;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.system.IVersion#getVersionIdentifier()
+	 */
 	public String getVersionIdentifier() {
 		return versionIdentifier;
 	}
@@ -35,6 +72,11 @@ public class Version implements IVersion {
 		this.versionIdentifier = versionIdentifier;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.system.IVersion#getBuildTimestamp()
+	 */
 	public String getBuildTimestamp() {
 		return buildTimestamp;
 	}

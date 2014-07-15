@@ -351,7 +351,7 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		// Print version information.
 		this.version = VersionHelper.getVersion();
 		List<String> messages = new ArrayList<String>();
-		messages.add("SiteWhere Server");
+		messages.add("SiteWhere Server " + version.getEdition());
 		messages.add("");
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
 		messages.add("");

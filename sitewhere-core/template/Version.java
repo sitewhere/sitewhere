@@ -12,8 +12,8 @@ package com.sitewhere;
 import com.sitewhere.spi.system.IVersion;
 
 /**
- * Used as basis for generating version information. This file is modified by the Maven build process so that
- * the correct values exist in the compiled classes.
+ * Used as basis for generating version information. This file is modified by the Maven
+ * build process so that the correct values exist in the compiled classes.
  * 
  * @author Derek
  */
@@ -28,7 +28,25 @@ public class Version implements IVersion {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.IVersion#getVersionIdentifier()
+	 * @see com.sitewhere.spi.system.IVersion#getEdition()
+	 */
+	public String getEdition() {
+		return "Community Edition";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.system.IVersion#getEditionIdentifier()
+	 */
+	public String getEditionIdentifier() {
+		return "CE";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.system.IVersion#getVersionIdentifier()
 	 */
 	public String getVersionIdentifier() {
 		return VERSION_IDENTIFIER;
@@ -37,7 +55,7 @@ public class Version implements IVersion {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.IVersion#getBuildTimestamp()
+	 * @see com.sitewhere.spi.system.IVersion#getBuildTimestamp()
 	 */
 	public String getBuildTimestamp() {
 		return BUILD_TIMESTAMP;

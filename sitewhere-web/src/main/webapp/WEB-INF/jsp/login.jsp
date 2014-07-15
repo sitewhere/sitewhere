@@ -88,9 +88,9 @@ $(document).ready(function() {
 		<div style="height: 10px;"></div>
 		<div class="sw-footer">
 			<span style="position: absolute; right: 10px; color: #999;">
-				${version.versionIdentifier}.${version.buildTimestamp}
+				${version.versionIdentifier}.${version.buildTimestamp} (${version.editionIdentifier})
 			</span>
-			Copyright © 2013-2014 Reveal Technologies, LLC.
+			Copyright © 2009-2014 Reveal Technologies, LLC.
 		</div>
 	</div>
 </body>
