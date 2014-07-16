@@ -15,7 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.mule.util.StringMessageUtils;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.FileSystemResource;
 
 import com.codahale.metrics.MetricRegistry;
@@ -326,6 +329,7 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	 */
 	public void create() throws SiteWhereException {
 		LOGGER.info("Initializing SiteWhere server components.");
+		this.version = VersionHelper.getVersion();
 
 		// Initialize Spring.
 		initializeSpringContext();
@@ -349,7 +353,6 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		initializeSearchProviderManagement();
 
 		// Print version information.
-		this.version = VersionHelper.getVersion();
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server " + version.getEdition());
 		messages.add("");
@@ -582,9 +585,18 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	 */
 	protected ApplicationContext loadServerApplicationContext(File configFile) throws SiteWhereException {
 		GenericApplicationContext context = new GenericApplicationContext();
+
+		// Plug in custom property source.
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
+		MapPropertySource source = new MapPropertySource("sitewhere", properties);
+		context.getEnvironment().getPropertySources().addLast(source);
+
+		// Read context from XML configuration file.
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
 		reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
 		reader.loadBeanDefinitions(new FileSystemResource(configFile));
+
 		context.refresh();
 		return context;
 	}

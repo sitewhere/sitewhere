@@ -5,6 +5,8 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd"
 >
+	<!-- Import beans specific to the given edition -->
+	<import resource="sitewhere-edition-${sitewhere.edition}.xml"/>
 
 	<!-- #################################### -->
 	<!-- # SERVICE PROVIDER IMPLEMENTATIONS # -->
@@ -38,7 +40,7 @@
 
 	<!-- Provides connectivity to Solr for components that need it -->
 	<bean id="solrConfig" class="com.sitewhere.solr.SiteWhereSolrConfiguration">
-		<property name="solrServerUrl" value="http://192.168.37.128:8983/solr/sitewhere"/>
+		<property name="solrServerUrl" value="http://localhost:8983/solr/SiteWhere"/>
 	</bean>
 
 	<!-- ############################ -->
