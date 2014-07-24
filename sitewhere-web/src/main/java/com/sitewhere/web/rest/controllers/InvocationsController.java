@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -52,7 +52,7 @@ public class InvocationsController extends SiteWhereController {
 	public IDeviceCommandInvocation getDeviceCommandInvocation(
 			@ApiParam(value = "Unique id", required = true) @PathVariable String id)
 			throws SiteWhereException {
-		IDeviceEvent found = SiteWhereServer.getInstance().getDeviceManagement().getDeviceEventById(id);
+		IDeviceEvent found = SiteWhere.getServer().getDeviceManagement().getDeviceEventById(id);
 		if (!(found instanceof IDeviceCommandInvocation)) {
 			throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 		}
@@ -73,7 +73,7 @@ public class InvocationsController extends SiteWhereController {
 	public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
 			@ApiParam(value = "Unique id", required = true) @PathVariable String id)
 			throws SiteWhereException {
-		IDeviceEvent found = SiteWhereServer.getInstance().getDeviceManagement().getDeviceEventById(id);
+		IDeviceEvent found = SiteWhere.getServer().getDeviceManagement().getDeviceEventById(id);
 		if (!(found instanceof IDeviceCommandInvocation)) {
 			throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
 		}
@@ -82,7 +82,7 @@ public class InvocationsController extends SiteWhereController {
 		helper.setIncludeCommand(true);
 		DeviceCommandInvocation converted = helper.convert(invocation);
 		ISearchResults<IDeviceCommandResponse> responses =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandInvocationResponses(
+				SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocationResponses(
 						found.getId());
 		return DeviceInvocationSummaryBuilder.build(converted, responses.getResults());
 	}
@@ -100,6 +100,6 @@ public class InvocationsController extends SiteWhereController {
 	public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(
 			@ApiParam(value = "Invocation id", required = true) @PathVariable String id)
 			throws SiteWhereException {
-		return SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandInvocationResponses(id);
+		return SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocationResponses(id);
 	}
 }

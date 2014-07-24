@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -58,8 +58,7 @@ public class AuthoritiesController extends SiteWhereController {
 	@ApiOperation(value = "Create a new authority")
 	public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input)
 			throws SiteWhereException {
-		IGrantedAuthority auth = SiteWhereServer.getInstance().getUserManagement()
-				.createGrantedAuthority(input);
+		IGrantedAuthority auth = SiteWhere.getServer().getUserManagement().createGrantedAuthority(input);
 		return GrantedAuthority.copy(auth);
 	}
 
@@ -76,8 +75,7 @@ public class AuthoritiesController extends SiteWhereController {
 	public GrantedAuthority getAuthorityByName(
 			@ApiParam(value = "Authority name", required = true) @PathVariable String name)
 			throws SiteWhereException {
-		IGrantedAuthority auth = SiteWhereServer.getInstance().getUserManagement()
-				.getGrantedAuthorityByName(name);
+		IGrantedAuthority auth = SiteWhere.getServer().getUserManagement().getGrantedAuthorityByName(name);
 		if (auth == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidAuthority, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);
@@ -99,8 +97,8 @@ public class AuthoritiesController extends SiteWhereController {
 			throws SiteWhereException {
 		List<GrantedAuthority> authsConv = new ArrayList<GrantedAuthority>();
 		GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
-		List<IGrantedAuthority> auths = SiteWhereServer.getInstance().getUserManagement()
-				.listGrantedAuthorities(criteria);
+		List<IGrantedAuthority> auths =
+				SiteWhere.getServer().getUserManagement().listGrantedAuthorities(criteria);
 		for (IGrantedAuthority auth : auths) {
 			authsConv.add(GrantedAuthority.copy(auth));
 		}

@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.security.LoginManager;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -91,7 +91,7 @@ public class SiteWhereController {
 		if (siteToken != null) {
 			try {
 				Map<String, Object> data = createBaseData();
-				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+				IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
 				ISite site = management.getSiteByToken(siteToken);
 				if (site != null) {
 					data.put("site", site);
@@ -117,13 +117,12 @@ public class SiteWhereController {
 		if (token != null) {
 			try {
 				Map<String, Object> data = createBaseData();
-				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+				IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
 				IDeviceAssignment assignment = management.getDeviceAssignmentByToken(token);
 				if (assignment != null) {
 					DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
 					helper.setIncludeDevice(true);
-					assignment =
-							helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager());
+					assignment = helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
 					data.put("assignment", assignment);
 					return new ModelAndView("assignments/detail", data);
 				}
@@ -147,7 +146,7 @@ public class SiteWhereController {
 		if (token != null) {
 			try {
 				Map<String, Object> data = createBaseData();
-				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+				IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
 				IDeviceAssignment assignment = management.getDeviceAssignmentByToken(token);
 				if (assignment != null) {
 					data.put("assignment", assignment);
@@ -189,7 +188,7 @@ public class SiteWhereController {
 		if (token != null) {
 			try {
 				Map<String, Object> data = createBaseData();
-				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+				IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
 				IDeviceSpecification spec = management.getDeviceSpecificationByToken(token);
 				if (spec != null) {
 					data.put("specification", spec);
@@ -231,7 +230,7 @@ public class SiteWhereController {
 		if (hardwareId != null) {
 			try {
 				Map<String, Object> data = createBaseData();
-				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+				IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
 				IDevice device = management.getDeviceByHardwareId(hardwareId);
 				if (device != null) {
 					IDeviceSpecification specification =
@@ -276,7 +275,7 @@ public class SiteWhereController {
 		if (groupToken != null) {
 			try {
 				Map<String, Object> data = createBaseData();
-				IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+				IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
 				IDeviceGroup group = management.getDeviceGroup(groupToken);
 				if (group != null) {
 					data.put("group", group);

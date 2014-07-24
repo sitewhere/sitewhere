@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
@@ -59,7 +59,7 @@ public class AssetsController extends SiteWhereController {
 			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria)
 			throws SiteWhereException {
 		List<? extends IAsset> found =
-				SiteWhereServer.getInstance().getAssetModuleManager().search(assetModuleId, criteria);
+				SiteWhere.getServer().getAssetModuleManager().search(assetModuleId, criteria);
 		SearchResults<? extends IAsset> results = new SearchResults(found);
 		return results;
 	}
@@ -79,8 +79,7 @@ public class AssetsController extends SiteWhereController {
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
 			throws SiteWhereException {
-		IAsset result =
-				SiteWhereServer.getInstance().getAssetModuleManager().getAssetById(assetModuleId, assetId);
+		IAsset result = SiteWhere.getServer().getAssetModuleManager().getAssetById(assetModuleId, assetId);
 		return result;
 	}
 
@@ -94,7 +93,7 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	public List<AssetModule> listAssetModules() throws SiteWhereException {
 		List<AssetModule> amConverted = new ArrayList<AssetModule>();
-		List<IAssetModule<?>> modules = SiteWhereServer.getInstance().getAssetModuleManager().getModules();
+		List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().getModules();
 		for (IAssetModule<?> module : modules) {
 			amConverted.add(AssetModule.copy(module));
 		}
@@ -111,7 +110,7 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	public List<AssetModule> listDeviceAssetModules() throws SiteWhereException {
 		List<AssetModule> amConverted = new ArrayList<AssetModule>();
-		List<IAssetModule<?>> modules = SiteWhereServer.getInstance().getAssetModuleManager().getModules();
+		List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().getModules();
 		for (IAssetModule<?> module : modules) {
 			if (module.getAssetType() == AssetType.Device) {
 				amConverted.add(AssetModule.copy(module));
@@ -129,8 +128,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules/refresh", method = RequestMethod.POST)
 	@ResponseBody
 	public List<CommandResponse> refreshModules() throws SiteWhereException {
-		List<ICommandResponse> responses =
-				SiteWhereServer.getInstance().getAssetModuleManager().refreshModules();
+		List<ICommandResponse> responses = SiteWhere.getServer().getAssetModuleManager().refreshModules();
 		List<CommandResponse> converted = new ArrayList<CommandResponse>();
 		for (ICommandResponse response : responses) {
 			converted.add(CommandResponse.copy(response));

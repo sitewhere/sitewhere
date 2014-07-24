@@ -14,7 +14,7 @@ import java.util.List;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
@@ -54,8 +54,8 @@ public class ProtobufSpecificationBuilder {
 	public static DescriptorProtos.DescriptorProto createSpecificationMessage(
 			IDeviceSpecification specification) throws SiteWhereException {
 		List<IDeviceCommand> commands =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommands(
-						specification.getToken(), false);
+				SiteWhere.getServer().getDeviceManagement().listDeviceCommands(specification.getToken(),
+						false);
 		DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
 		builder.setName(ProtobufNaming.getSpecificationIdentifier(specification));
 		builder.addEnumType(createCommandsEnum(commands));

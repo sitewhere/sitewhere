@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
@@ -210,7 +211,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 
 		@Override
 		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
-			SiteWhereServer.getInstance().getInboundEventProcessorChain().onRegistrationRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain().onRegistrationRequest(
 					request.getHardwareId(), request.getOriginator(),
 					((IDeviceRegistrationRequest) request.getRequest()));
 		}
@@ -229,7 +230,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 
 		@Override
 		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
-			SiteWhereServer.getInstance().getInboundEventProcessorChain().onDeviceCommandResponseRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceCommandResponseRequest(
 					request.getHardwareId(), request.getOriginator(),
 					((IDeviceCommandResponseCreateRequest) request.getRequest()));
 		}
@@ -248,7 +249,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 
 		@Override
 		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
-			SiteWhereServer.getInstance().getInboundEventProcessorChain().onDeviceMeasurementsCreateRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceMeasurementsCreateRequest(
 					request.getHardwareId(), request.getOriginator(),
 					((IDeviceMeasurementsCreateRequest) request.getRequest()));
 		}
@@ -267,7 +268,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 
 		@Override
 		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
-			SiteWhereServer.getInstance().getInboundEventProcessorChain().onDeviceLocationCreateRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceLocationCreateRequest(
 					request.getHardwareId(), request.getOriginator(),
 					((IDeviceLocationCreateRequest) request.getRequest()));
 		}
@@ -286,7 +287,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 
 		@Override
 		public void sendToInboundChain(IDecodedDeviceEventRequest request) throws SiteWhereException {
-			SiteWhereServer.getInstance().getInboundEventProcessorChain().onDeviceAlertCreateRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceAlertCreateRequest(
 					request.getHardwareId(), request.getOriginator(),
 					((IDeviceAlertCreateRequest) request.getRequest()));
 		}

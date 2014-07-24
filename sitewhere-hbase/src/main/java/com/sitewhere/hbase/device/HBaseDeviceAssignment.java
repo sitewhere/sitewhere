@@ -20,6 +20,7 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -30,7 +31,6 @@ import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -133,8 +133,7 @@ public class HBaseDeviceAssignment {
 		if (cache != null) {
 			IDeviceAssignment result = cache.getDeviceAssignmentCache().get(token);
 			if (result != null) {
-				return ASSIGNMENT_HELPER.convert(result,
-						SiteWhereServer.getInstance().getAssetModuleManager());
+				return ASSIGNMENT_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
 			}
 		}
 		byte[] rowkey = IdManager.getInstance().getAssignmentKeys().getValue(token);

@@ -11,9 +11,9 @@ package com.sitewhere.device.event.processor;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.event.processor.InboundEventProcessor;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
@@ -53,7 +53,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	@Override
 	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
 			throws SiteWhereException {
-		SiteWhereServer.getInstance().getDeviceProvisioning().getRegistrationManager().handleDeviceRegistration(
+		SiteWhere.getServer().getDeviceProvisioning().getRegistrationManager().handleDeviceRegistration(
 				request);
 	}
 
@@ -68,8 +68,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-		SiteWhereServer.getInstance().getDeviceManagement().addDeviceCommandResponse(assignment.getToken(),
-				request);
+		SiteWhere.getServer().getDeviceManagement().addDeviceCommandResponse(assignment.getToken(), request);
 	}
 
 	/*
@@ -84,8 +83,8 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
 		IDeviceMeasurements measurements =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceMeasurements(
-						assignment.getToken(), request, true);
+				SiteWhere.getServer().getDeviceManagement().addDeviceMeasurements(assignment.getToken(),
+						request, true);
 		handleLinkResponseToInvocation(originator, measurements.getId(), assignment);
 	}
 
@@ -101,8 +100,8 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 			IDeviceLocationCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
 		IDeviceLocation location =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceLocation(assignment.getToken(),
-						request, true);
+				SiteWhere.getServer().getDeviceManagement().addDeviceLocation(assignment.getToken(), request,
+						true);
 		handleLinkResponseToInvocation(originator, location.getId(), assignment);
 	}
 
@@ -118,8 +117,8 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
 		IDeviceAlert alert =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceAlert(assignment.getToken(),
-						request, true);
+				SiteWhere.getServer().getDeviceManagement().addDeviceAlert(assignment.getToken(), request,
+						true);
 		handleLinkResponseToInvocation(originator, alert.getId(), assignment);
 	}
 
@@ -131,15 +130,14 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	 * @throws SiteWhereException
 	 */
 	protected IDeviceAssignment getCurrentAssignment(String hardwareId) throws SiteWhereException {
-		IDevice device =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(hardwareId);
+		IDevice device = SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(hardwareId);
 		if (device == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
 		if (device.getAssignmentToken() == null) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
 		}
-		return SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentByToken(
+		return SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentByToken(
 				device.getAssignmentToken());
 	}
 
@@ -158,8 +156,8 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 			DeviceCommandResponseCreateRequest response = new DeviceCommandResponseCreateRequest();
 			response.setOriginatingEventId(originator);
 			response.setResponseEventId(eventId);
-			SiteWhereServer.getInstance().getDeviceManagement().addDeviceCommandResponse(
-					assignment.getToken(), response);
+			SiteWhere.getServer().getDeviceManagement().addDeviceCommandResponse(assignment.getToken(),
+					response);
 		}
 	}
 }

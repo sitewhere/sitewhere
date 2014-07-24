@@ -13,8 +13,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.provisioning.NestedDeviceSupport.NestedDeviceInformation;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -48,7 +48,7 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 			throws SiteWhereException {
 		LOGGER.debug("Command processing strategy handling invocation.");
 		IDeviceCommand command =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceCommandByToken(
+				SiteWhere.getServer().getDeviceManagement().getDeviceCommandByToken(
 						invocation.getCommandToken());
 		if (command != null) {
 			IDeviceCommandExecution execution =
@@ -57,7 +57,7 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 					provisioning.getCommandTargetResolver().resolveTargets(invocation);
 			for (IDeviceAssignment assignment : assignments) {
 				IDevice device =
-						SiteWhereServer.getInstance().getDeviceManagement().getDeviceForAssignment(assignment);
+						SiteWhere.getServer().getDeviceManagement().getDeviceForAssignment(assignment);
 				if (device == null) {
 					throw new SiteWhereException("Targeted assignment references device that does not exist.");
 				}
@@ -83,7 +83,7 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	@Override
 	public void deliverSystemCommand(IDeviceProvisioning provisioning, String hardwareId, Object command)
 			throws SiteWhereException {
-		IDeviceManagement management = SiteWhereServer.getInstance().getDeviceManagement();
+		IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
 		IDevice device = management.getDeviceByHardwareId(hardwareId);
 		if (device == null) {
 			throw new SiteWhereException("Targeted assignment references device that does not exist.");

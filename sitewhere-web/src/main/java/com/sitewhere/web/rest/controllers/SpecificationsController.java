@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 import com.sitewhere.device.provisioning.protobuf.SpecificationProtoBuilder;
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
@@ -35,7 +36,6 @@ import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAsset;
@@ -71,17 +71,17 @@ public class SpecificationsController extends SiteWhereController {
 	public IDeviceSpecification createDeviceSpecification(
 			@RequestBody DeviceSpecificationCreateRequest request) throws SiteWhereException {
 		IAsset asset =
-				SiteWhereServer.getInstance().getAssetModuleManager().getAssetById(
-						request.getAssetModuleId(), request.getAssetId());
+				SiteWhere.getServer().getAssetModuleManager().getAssetById(request.getAssetModuleId(),
+						request.getAssetId());
 		if (asset == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);
 		}
 		IDeviceSpecification result =
-				SiteWhereServer.getInstance().getDeviceManagement().createDeviceSpecification(request);
+				SiteWhere.getServer().getDeviceManagement().createDeviceSpecification(request);
 		DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
 		helper.setIncludeAsset(true);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class SpecificationsController extends SiteWhereController {
 		IDeviceSpecification result = assertDeviceSpecificationByToken(token);
 		DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
 		helper.setIncludeAsset(includeAsset);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -157,10 +157,10 @@ public class SpecificationsController extends SiteWhereController {
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceSpecificationCreateRequest request) throws SiteWhereException {
 		IDeviceSpecification result =
-				SiteWhereServer.getInstance().getDeviceManagement().updateDeviceSpecification(token, request);
+				SiteWhere.getServer().getDeviceManagement().updateDeviceSpecification(token, request);
 		DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
 		helper.setIncludeAsset(true);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -184,13 +184,12 @@ public class SpecificationsController extends SiteWhereController {
 			throws SiteWhereException {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDeviceSpecification> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceSpecifications(includeDeleted,
-						criteria);
+				SiteWhere.getServer().getDeviceManagement().listDeviceSpecifications(includeDeleted, criteria);
 		DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
 		helper.setIncludeAsset(includeAsset);
 		List<IDeviceSpecification> specsConv = new ArrayList<IDeviceSpecification>();
 		for (IDeviceSpecification device : results.getResults()) {
-			specsConv.add(helper.convert(device, SiteWhereServer.getInstance().getAssetModuleManager()));
+			specsConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		Collections.sort(specsConv, new Comparator<IDeviceSpecification>() {
 			public int compare(IDeviceSpecification o1, IDeviceSpecification o2) {
@@ -216,10 +215,10 @@ public class SpecificationsController extends SiteWhereController {
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
 		IDeviceSpecification result =
-				SiteWhereServer.getInstance().getDeviceManagement().deleteDeviceSpecification(token, force);
+				SiteWhere.getServer().getDeviceManagement().deleteDeviceSpecification(token, force);
 		DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
 		helper.setIncludeAsset(true);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -236,7 +235,7 @@ public class SpecificationsController extends SiteWhereController {
 			@RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
 		IDeviceSpecification spec = assertDeviceSpecificationByToken(token);
 		IDeviceCommand result =
-				SiteWhereServer.getInstance().getDeviceManagement().createDeviceCommand(spec, request);
+				SiteWhere.getServer().getDeviceManagement().createDeviceCommand(spec, request);
 		return result;
 	}
 
@@ -248,7 +247,7 @@ public class SpecificationsController extends SiteWhereController {
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted)
 			throws SiteWhereException {
 		List<IDeviceCommand> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommands(token, includeDeleted);
+				SiteWhere.getServer().getDeviceManagement().listDeviceCommands(token, includeDeleted);
 		Collections.sort(results, new Comparator<IDeviceCommand>() {
 			public int compare(IDeviceCommand o1, IDeviceCommand o2) {
 				if (o1.getName().equals(o2.getName())) {
@@ -276,7 +275,7 @@ public class SpecificationsController extends SiteWhereController {
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted)
 			throws SiteWhereException {
 		List<IDeviceCommand> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommands(token, includeDeleted);
+				SiteWhere.getServer().getDeviceManagement().listDeviceCommands(token, includeDeleted);
 		Collections.sort(results, new Comparator<IDeviceCommand>() {
 			public int compare(IDeviceCommand o1, IDeviceCommand o2) {
 				if ((o1.getNamespace() == null) && (o2.getNamespace() != null)) {
@@ -317,7 +316,7 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	protected IDeviceSpecification assertDeviceSpecificationByToken(String token) throws SiteWhereException {
 		IDeviceSpecification result =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(token);
+				SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(token);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

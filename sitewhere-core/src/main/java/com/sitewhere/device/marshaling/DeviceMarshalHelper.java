@@ -11,11 +11,11 @@ package com.sitewhere.device.marshaling;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
@@ -75,10 +75,10 @@ public class DeviceMarshalHelper {
 			DeviceElementMapping cnvMapping = DeviceElementMapping.copy(mapping);
 			if (isIncludeNested()) {
 				IDevice device =
-						SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(
+						SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(
 								mapping.getHardwareId());
 				cnvMapping.setDevice(getNestedHelper().convert(device,
-						SiteWhereServer.getInstance().getAssetModuleManager()));
+						SiteWhere.getServer().getAssetModuleManager()));
 			}
 			result.getDeviceElementMappings().add(cnvMapping);
 		}
@@ -86,7 +86,7 @@ public class DeviceMarshalHelper {
 		// Look up specification information.
 		if (source.getSpecificationToken() != null) {
 			IDeviceSpecification spec =
-					SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
+					SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(
 							source.getSpecificationToken());
 			if (spec == null) {
 				throw new SiteWhereException("Device references non-existent specification.");
@@ -96,7 +96,7 @@ public class DeviceMarshalHelper {
 			} else {
 				result.setSpecificationToken(source.getSpecificationToken());
 				HardwareAsset asset =
-						(HardwareAsset) SiteWhereServer.getInstance().getAssetModuleManager().getAssetById(
+						(HardwareAsset) SiteWhere.getServer().getAssetModuleManager().getAssetById(
 								spec.getAssetModuleId(), spec.getAssetId());
 				if (asset != null) {
 					result.setAssetId(asset.getId());
@@ -111,8 +111,7 @@ public class DeviceMarshalHelper {
 			if (includeAssignment) {
 				try {
 					IDeviceAssignment assignment =
-							SiteWhereServer.getInstance().getDeviceManagement().getCurrentDeviceAssignment(
-									source);
+							SiteWhere.getServer().getDeviceManagement().getCurrentDeviceAssignment(source);
 					if (assignment == null) {
 						throw new SiteWhereException("Device contains an invalid assignment reference.");
 					}

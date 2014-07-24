@@ -9,6 +9,8 @@
  */
 package com.sitewhere.spi.system;
 
+import com.sitewhere.spi.server.ISiteWhereServer;
+
 /**
  * Interface for getting version information.
  * 
@@ -43,4 +45,11 @@ public interface IVersion {
 	 * @return
 	 */
 	public String getBuildTimestamp();
+
+	/**
+	 * Get edition-specific server class that implements {@link ISiteWhereServer}.
+	 * 
+	 * @return
+	 */
+	public Class<? extends ISiteWhereServer> getServerClass();
 }

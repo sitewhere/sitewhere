@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -60,7 +60,7 @@ public class DefaultInboundEventSource implements IInboundEventSource {
 	public void start() throws SiteWhereException {
 		LOGGER.info("Starting device event source...");
 		if (getInboundProcessingStrategy() == null) {
-			setInboundProcessingStrategy(SiteWhereServer.getInstance().getDeviceProvisioning().getInboundProcessingStrategy());
+			setInboundProcessingStrategy(SiteWhere.getServer().getDeviceProvisioning().getInboundProcessingStrategy());
 		}
 		if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
 			throw new SiteWhereException("No inbound event receivers registered for event source.");

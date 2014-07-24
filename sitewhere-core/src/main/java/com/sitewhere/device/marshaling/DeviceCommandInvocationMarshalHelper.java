@@ -14,10 +14,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -73,7 +73,7 @@ public class DeviceCommandInvocationMarshalHelper {
 			DeviceCommand command = commandsByToken.get(source.getCommandToken());
 			if (command == null) {
 				IDeviceCommand found =
-						SiteWhereServer.getInstance().getDeviceManagement().getDeviceCommandByToken(
+						SiteWhere.getServer().getDeviceManagement().getDeviceCommandByToken(
 								source.getCommandToken());
 				if (found == null) {
 					LOGGER.warn("Device invocation references a non-existent command token.");

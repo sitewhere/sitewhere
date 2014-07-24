@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
 import com.wordnik.swagger.annotations.Api;
@@ -34,6 +34,6 @@ public class SystemController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get version information")
 	public IVersion getVersion() throws SiteWhereException {
-		return SiteWhereServer.getInstance().getVersion();
+		return SiteWhere.getServer().getVersion();
 	}
 }

@@ -11,10 +11,10 @@ package com.sitewhere.web.rest.view;
 
 import java.util.List;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -58,7 +58,7 @@ public class DeviceInvocationSummaryBuilder {
 			rsp.setDate(response.getEventDate());
 			if (response.getResponseEventId() != null) {
 				IDeviceEvent event =
-						SiteWhereServer.getInstance().getDeviceManagement().getDeviceEventById(
+						SiteWhere.getServer().getDeviceManagement().getDeviceEventById(
 								response.getResponseEventId());
 				rsp.setDescription(getDeviceEventDescription(event));
 			} else if (response.getResponse() != null) {

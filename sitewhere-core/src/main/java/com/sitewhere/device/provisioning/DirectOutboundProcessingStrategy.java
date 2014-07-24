@@ -9,7 +9,7 @@
  */
 package com.sitewhere.device.provisioning;
 
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -54,7 +54,7 @@ public class DirectOutboundProcessingStrategy implements IOutboundProcessingStra
 	 */
 	@Override
 	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
-		SiteWhereServer.getInstance().getOutboundEventProcessorChain().onMeasurements(measurements);
+		SiteWhere.getServer().getOutboundEventProcessorChain().onMeasurements(measurements);
 	}
 
 	/*
@@ -66,7 +66,7 @@ public class DirectOutboundProcessingStrategy implements IOutboundProcessingStra
 	 */
 	@Override
 	public void onLocation(IDeviceLocation location) throws SiteWhereException {
-		SiteWhereServer.getInstance().getOutboundEventProcessorChain().onLocation(location);
+		SiteWhere.getServer().getOutboundEventProcessorChain().onLocation(location);
 	}
 
 	/*
@@ -78,7 +78,7 @@ public class DirectOutboundProcessingStrategy implements IOutboundProcessingStra
 	 */
 	@Override
 	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
-		SiteWhereServer.getInstance().getOutboundEventProcessorChain().onAlert(alert);
+		SiteWhere.getServer().getOutboundEventProcessorChain().onAlert(alert);
 	}
 
 	/*
@@ -90,7 +90,7 @@ public class DirectOutboundProcessingStrategy implements IOutboundProcessingStra
 	 */
 	@Override
 	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		SiteWhereServer.getInstance().getOutboundEventProcessorChain().onCommandInvocation(invocation);
+		SiteWhere.getServer().getOutboundEventProcessorChain().onCommandInvocation(invocation);
 	}
 
 	/*
@@ -102,6 +102,6 @@ public class DirectOutboundProcessingStrategy implements IOutboundProcessingStra
 	 */
 	@Override
 	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
-		SiteWhereServer.getInstance().getOutboundEventProcessorChain().onCommandResponse(response);
+		SiteWhere.getServer().getOutboundEventProcessorChain().onCommandResponse(response);
 	}
 }

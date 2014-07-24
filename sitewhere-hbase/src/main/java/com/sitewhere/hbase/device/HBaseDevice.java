@@ -27,6 +27,7 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -38,7 +39,6 @@ import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
@@ -252,7 +252,7 @@ public class HBaseDevice {
 		if (cache != null) {
 			IDevice result = cache.getDeviceCache().get(hardwareId);
 			if (result != null) {
-				return DEVICE_HELPER.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+				return DEVICE_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
 			}
 		}
 		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);

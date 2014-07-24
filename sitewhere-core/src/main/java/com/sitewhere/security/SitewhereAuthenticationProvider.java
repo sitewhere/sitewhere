@@ -19,7 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -42,10 +42,9 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 			if (input instanceof UsernamePasswordAuthenticationToken) {
 				String username = (String) input.getPrincipal();
 				String password = (String) input.getCredentials();
-				IUser user = SiteWhereServer.getInstance().getUserManagement()
-						.authenticate(username, password);
-				List<IGrantedAuthority> auths = SiteWhereServer.getInstance().getUserManagement()
-						.getGrantedAuthorities(user.getUsername());
+				IUser user = SiteWhere.getServer().getUserManagement().authenticate(username, password);
+				List<IGrantedAuthority> auths =
+						SiteWhere.getServer().getUserManagement().getGrantedAuthorities(user.getUsername());
 				SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 				return new SitewhereAuthentication(details, password);
 			} else if (input instanceof SitewhereAuthentication) {
@@ -62,7 +61,9 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.security.providers.AuthenticationProvider#supports(java.lang.Class)
+	 * @see
+	 * org.springframework.security.providers.AuthenticationProvider#supports(java.lang
+	 * .Class)
 	 */
 	@SuppressWarnings("rawtypes")
 	public boolean supports(Class clazz) {

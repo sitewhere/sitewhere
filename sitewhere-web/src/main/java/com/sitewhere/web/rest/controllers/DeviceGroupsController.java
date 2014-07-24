@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.marshaling.DeviceGroupElementMarshalHelper;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -60,7 +60,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@ApiOperation(value = "Create a new device group")
 	public IDeviceGroup createDeviceGroup(@RequestBody DeviceGroupCreateRequest request)
 			throws SiteWhereException {
-		IDeviceGroup result = SiteWhereServer.getInstance().getDeviceManagement().createDeviceGroup(request);
+		IDeviceGroup result = SiteWhere.getServer().getDeviceManagement().createDeviceGroup(request);
 		return DeviceGroup.copy(result);
 	}
 
@@ -77,7 +77,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	public IDeviceGroup getDeviceGroupByToken(
 			@ApiParam(value = "Unique token that identifies group", required = true) @PathVariable String groupToken)
 			throws SiteWhereException {
-		IDeviceGroup group = SiteWhereServer.getInstance().getDeviceManagement().getDeviceGroup(groupToken);
+		IDeviceGroup group = SiteWhere.getServer().getDeviceManagement().getDeviceGroup(groupToken);
 		if (group == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 		}
@@ -99,7 +99,7 @@ public class DeviceGroupsController extends SiteWhereController {
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@RequestBody DeviceGroupCreateRequest request) throws SiteWhereException {
 		IDeviceGroup group =
-				SiteWhereServer.getInstance().getDeviceManagement().updateDeviceGroup(groupToken, request);
+				SiteWhere.getServer().getDeviceManagement().updateDeviceGroup(groupToken, request);
 		return DeviceGroup.copy(group);
 	}
 
@@ -118,8 +118,7 @@ public class DeviceGroupsController extends SiteWhereController {
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		IDeviceGroup group =
-				SiteWhereServer.getInstance().getDeviceManagement().deleteDeviceGroup(groupToken, force);
+		IDeviceGroup group = SiteWhere.getServer().getDeviceManagement().deleteDeviceGroup(groupToken, force);
 		return DeviceGroup.copy(group);
 	}
 
@@ -145,12 +144,10 @@ public class DeviceGroupsController extends SiteWhereController {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDeviceGroup> results;
 		if (role == null) {
-			results =
-					SiteWhereServer.getInstance().getDeviceManagement().listDeviceGroups(includeDeleted,
-							criteria);
+			results = SiteWhere.getServer().getDeviceManagement().listDeviceGroups(includeDeleted, criteria);
 		} else {
 			results =
-					SiteWhereServer.getInstance().getDeviceManagement().listDeviceGroupsWithRole(role,
+					SiteWhere.getServer().getDeviceManagement().listDeviceGroupsWithRole(role,
 							includeDeleted, criteria);
 		}
 		List<IDeviceGroup> groupsConv = new ArrayList<IDeviceGroup>();
@@ -182,11 +179,10 @@ public class DeviceGroupsController extends SiteWhereController {
 				new DeviceGroupElementMarshalHelper().setIncludeDetails(includeDetails);
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDeviceGroupElement> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceGroupElements(groupToken,
-						criteria);
+				SiteWhere.getServer().getDeviceManagement().listDeviceGroupElements(groupToken, criteria);
 		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 		for (IDeviceGroupElement elm : results.getResults()) {
-			elmConv.add(helper.convert(elm, SiteWhereServer.getInstance().getAssetModuleManager()));
+			elmConv.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
 	}
@@ -211,11 +207,10 @@ public class DeviceGroupsController extends SiteWhereController {
 		List<IDeviceGroupElementCreateRequest> elements =
 				(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
 		List<IDeviceGroupElement> results =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceGroupElements(groupToken,
-						elements);
+				SiteWhere.getServer().getDeviceManagement().addDeviceGroupElements(groupToken, elements);
 		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 		for (IDeviceGroupElement elm : results) {
-			elmConv.add(helper.convert(elm, SiteWhereServer.getInstance().getAssetModuleManager()));
+			elmConv.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		return elmConv;
 	}
@@ -240,11 +235,10 @@ public class DeviceGroupsController extends SiteWhereController {
 		List<IDeviceGroupElementCreateRequest> elements =
 				(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
 		List<IDeviceGroupElement> results =
-				SiteWhereServer.getInstance().getDeviceManagement().removeDeviceGroupElements(groupToken,
-						elements);
+				SiteWhere.getServer().getDeviceManagement().removeDeviceGroupElements(groupToken, elements);
 		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
 		for (IDeviceGroupElement elm : results) {
-			elmConv.add(helper.convert(elm, SiteWhereServer.getInstance().getAssetModuleManager()));
+			elmConv.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		return elmConv;
 	}

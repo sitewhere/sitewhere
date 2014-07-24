@@ -11,13 +11,13 @@ package com.sitewhere.device.provisioning.protobuf;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAck;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckError;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckState;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
@@ -57,13 +57,12 @@ public class ProtobufRegistrationManager implements IRegistrationManager {
 	public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
 		LOGGER.debug("Handling device registration request.");
 		IDevice device =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(
-						request.getHardwareId());
+				SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
 		RegistrationAckState state =
 				(device == null) ? RegistrationAckState.NEW_REGISTRATION
 						: RegistrationAckState.ALREADY_REGISTERED;
 		IDeviceSpecification specification =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
+				SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(
 						request.getSpecificationToken());
 		// Create device if it does not already exist.
 		if (device == null) {
@@ -72,22 +71,21 @@ public class ProtobufRegistrationManager implements IRegistrationManager {
 				RegistrationAck ack =
 						RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
 								RegistrationAckError.INVALID_SPECIFICATION).build();
-				SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(
-						request.getHardwareId(), ack);
+				SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(),
+						ack);
 				return;
 			}
 			DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 			deviceCreate.setHardwareId(request.getHardwareId());
 			deviceCreate.setSpecificationToken(request.getSpecificationToken());
 			deviceCreate.setComments("Device created by on-demand registration.");
-			device = SiteWhereServer.getInstance().getDeviceManagement().createDevice(deviceCreate);
+			device = SiteWhere.getServer().getDeviceManagement().createDevice(deviceCreate);
 		} else if (!device.getSpecificationToken().equals(request.getSpecificationToken())) {
 			// TODO: Is this an error or a valid use case?
 			RegistrationAck ack =
 					RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
 							RegistrationAckError.INVALID_SPECIFICATION).build();
-			SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(
-					request.getHardwareId(), ack);
+			SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(), ack);
 			return;
 		}
 		// Make sure device is assigned.
@@ -96,8 +94,8 @@ public class ProtobufRegistrationManager implements IRegistrationManager {
 				RegistrationAck ack =
 						RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
 								RegistrationAckError.SITE_TOKEN_REQUIRED).build();
-				SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(
-						request.getHardwareId(), ack);
+				SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(),
+						ack);
 				return;
 			}
 			LOGGER.debug("Handling unassigned device for registration.");
@@ -105,11 +103,10 @@ public class ProtobufRegistrationManager implements IRegistrationManager {
 			assnCreate.setSiteToken(getAutoAssignSiteToken());
 			assnCreate.setDeviceHardwareId(device.getHardwareId());
 			assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
-			SiteWhereServer.getInstance().getDeviceManagement().createDeviceAssignment(assnCreate);
+			SiteWhere.getServer().getDeviceManagement().createDeviceAssignment(assnCreate);
 		}
 		RegistrationAck ack = RegistrationAck.newBuilder().setState(state).build();
-		SiteWhereServer.getInstance().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(),
-				ack);
+		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(), ack);
 	}
 
 	/*
@@ -123,8 +120,7 @@ public class ProtobufRegistrationManager implements IRegistrationManager {
 		if (isAutoAssignSite()) {
 			if (getAutoAssignSiteToken() == null) {
 				ISearchResults<ISite> sites =
-						SiteWhereServer.getInstance().getDeviceManagement().listSites(
-								new SearchCriteria(1, 1));
+						SiteWhere.getServer().getDeviceManagement().listSites(new SearchCriteria(1, 1));
 				if (sites.getResults().isEmpty()) {
 					throw new SiteWhereException(
 							"Registration manager configured for auto-assign site, but no sites were found.");
@@ -132,8 +128,7 @@ public class ProtobufRegistrationManager implements IRegistrationManager {
 				setAutoAssignSiteToken(sites.getResults().get(0).getToken());
 			} else {
 				ISite site =
-						SiteWhereServer.getInstance().getDeviceManagement().getSiteByToken(
-								getAutoAssignSiteToken());
+						SiteWhere.getServer().getDeviceManagement().getSiteByToken(getAutoAssignSiteToken());
 				if (site == null) {
 					throw new SiteWhereException(
 							"Registration manager auto assignment site token is invalid.");

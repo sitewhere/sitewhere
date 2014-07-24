@@ -11,6 +11,7 @@ package com.sitewhere.device.marshaling;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
@@ -18,7 +19,6 @@ import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.Site;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetModuleManager;
@@ -89,13 +89,12 @@ public class DeviceAssignmentMarshalHelper {
 		}
 		result.setSiteToken(source.getSiteToken());
 		if (isIncludeSite()) {
-			ISite site = SiteWhereServer.getInstance().getDeviceManagement().getSiteForAssignment(source);
+			ISite site = SiteWhere.getServer().getDeviceManagement().getSiteForAssignment(source);
 			result.setSite(Site.copy(site));
 		}
 		result.setDeviceHardwareId(source.getDeviceHardwareId());
 		if (isIncludeDevice()) {
-			IDevice device =
-					SiteWhereServer.getInstance().getDeviceManagement().getDeviceForAssignment(source);
+			IDevice device = SiteWhere.getServer().getDeviceManagement().getDeviceForAssignment(source);
 			if (device != null) {
 				result.setDevice(getDeviceHelper().convert(device, manager));
 			} else {

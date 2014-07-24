@@ -11,10 +11,10 @@ package com.sitewhere.device.marshaling;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
@@ -60,7 +60,7 @@ public class DeviceGroupElementMarshalHelper {
 			switch (source.getType()) {
 			case Device: {
 				IDevice device =
-						SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(
+						SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(
 								source.getElementId());
 				if (device != null) {
 					Device inflated = deviceHelper.convert(device, manager);
@@ -72,8 +72,7 @@ public class DeviceGroupElementMarshalHelper {
 			}
 			case Group: {
 				IDeviceGroup group =
-						SiteWhereServer.getInstance().getDeviceManagement().getDeviceGroup(
-								source.getElementId());
+						SiteWhere.getServer().getDeviceManagement().getDeviceGroup(source.getElementId());
 				if (group != null) {
 					DeviceGroup inflated = DeviceGroup.copy(group);
 					result.setDeviceGroup(inflated);

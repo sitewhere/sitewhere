@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.external.SearchProvider;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -49,7 +49,7 @@ public class SearchController extends SiteWhereController {
 	@ApiOperation(value = "Get list of available search providers")
 	public List<ISearchProvider> listSearchProviders() throws SiteWhereException {
 		List<ISearchProvider> providers =
-				SiteWhereServer.getInstance().getSearchProviderManager().getSearchProviders();
+				SiteWhere.getServer().getSearchProviderManager().getSearchProviders();
 		List<ISearchProvider> converted = new ArrayList<ISearchProvider>();
 		for (ISearchProvider provider : providers) {
 			converted.add(SearchProvider.copy(provider));
@@ -64,7 +64,7 @@ public class SearchController extends SiteWhereController {
 			@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 			HttpServletRequest request) throws SiteWhereException {
 		ISearchProvider provider =
-				SiteWhereServer.getInstance().getSearchProviderManager().getSearchProvider(providerId);
+				SiteWhere.getServer().getSearchProviderManager().getSearchProvider(providerId);
 		if (provider == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -48,7 +48,7 @@ public class ProtobufMessageBuilder {
 	public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
 			IDeviceAssignment assignment) throws SiteWhereException {
 		IDeviceSpecification specification =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceSpecificationByToken(
+				SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(
 						execution.getCommand().getSpecificationToken());
 		DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(specification);
 		LOGGER.debug("Using the following specification proto:\n" + fdproto.toString());

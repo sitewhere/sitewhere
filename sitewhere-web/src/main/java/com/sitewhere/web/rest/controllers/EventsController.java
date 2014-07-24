@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.wordnik.swagger.annotations.Api;
@@ -44,6 +44,6 @@ public class EventsController extends SiteWhereController {
 	public IDeviceEvent getEventById(
 			@ApiParam(value = "Event id", required = true) @PathVariable String eventId)
 			throws SiteWhereException {
-		return SiteWhereServer.getInstance().getDeviceManagement().getDeviceEventById(eventId);
+		return SiteWhere.getServer().getDeviceManagement().getDeviceEventById(eventId);
 	}
 }

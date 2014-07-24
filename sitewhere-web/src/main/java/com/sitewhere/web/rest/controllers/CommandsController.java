@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -54,7 +54,7 @@ public class CommandsController extends SiteWhereController {
 	public IDeviceCommand updateDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
-		return SiteWhereServer.getInstance().getDeviceManagement().updateDeviceCommand(token, request);
+		return SiteWhere.getServer().getDeviceManagement().updateDeviceCommand(token, request);
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class CommandsController extends SiteWhereController {
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		return SiteWhereServer.getInstance().getDeviceManagement().deleteDeviceCommand(token, force);
+		return SiteWhere.getServer().getDeviceManagement().deleteDeviceCommand(token, force);
 	}
 
 	/**
@@ -97,8 +97,7 @@ public class CommandsController extends SiteWhereController {
 	 * @throws SiteWhereException
 	 */
 	protected IDeviceCommand assertDeviceCommandByToken(String token) throws SiteWhereException {
-		IDeviceCommand result =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceCommandByToken(token);
+		IDeviceCommand result = SiteWhere.getServer().getDeviceManagement().getDeviceCommandByToken(token);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

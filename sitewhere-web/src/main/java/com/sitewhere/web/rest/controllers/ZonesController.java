@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IZone;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -40,7 +40,7 @@ public class ZonesController extends SiteWhereController {
 	public Zone getZone(
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken)
 			throws SiteWhereException {
-		IZone found = SiteWhereServer.getInstance().getDeviceManagement().getZone(zoneToken);
+		IZone found = SiteWhere.getServer().getDeviceManagement().getZone(zoneToken);
 		return Zone.copy(found);
 	}
 
@@ -57,7 +57,7 @@ public class ZonesController extends SiteWhereController {
 	public Zone updateZone(
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 			@RequestBody ZoneCreateRequest request) throws SiteWhereException {
-		IZone zone = SiteWhereServer.getInstance().getDeviceManagement().updateZone(zoneToken, request);
+		IZone zone = SiteWhere.getServer().getDeviceManagement().updateZone(zoneToken, request);
 		return Zone.copy(zone);
 	}
 
@@ -75,7 +75,7 @@ public class ZonesController extends SiteWhereController {
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		IZone deleted = SiteWhereServer.getInstance().getDeviceManagement().deleteZone(zoneToken, force);
+		IZone deleted = SiteWhere.getServer().getDeviceManagement().deleteZone(zoneToken, force);
 		return Zone.copy(deleted);
 	}
 }

@@ -36,8 +36,6 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
-import com.sitewhere.server.metrics.DeviceManagementMetricsDecorator;
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
@@ -49,6 +47,7 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
+import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
@@ -58,17 +57,14 @@ import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.version.VersionHelper;
 
 /**
- * Singleton SiteWhere server instance.
+ * Implementation of {@link ISiteWhereServer} for community edition.
  * 
  * @author Derek Adams
  */
-public class SiteWhereServer implements ISiteWhereLifecycle {
+public class SiteWhereServer implements ISiteWhereServer {
 
 	/** Private logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereServer.class);
-
-	/** Singleton server instance */
-	private static SiteWhereServer SINGLETON;
 
 	/** Spring context for server */
 	public static ApplicationContext SERVER_SPRING_CONTEXT;
@@ -110,18 +106,6 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 	private HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
 
 	/**
-	 * Get the singleton server instance.
-	 * 
-	 * @return
-	 */
-	public static synchronized SiteWhereServer getInstance() {
-		if (SINGLETON == null) {
-			SINGLETON = new SiteWhereServer();
-		}
-		return SINGLETON;
-	}
-
-	/**
 	 * Get Spring application context for Atlas server objects.
 	 * 
 	 * @return
@@ -130,100 +114,100 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		return SERVER_SPRING_CONTEXT;
 	}
 
-	/**
-	 * Get version information.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getVersion()
 	 */
 	public IVersion getVersion() {
 		return version;
 	}
 
-	/**
-	 * Get the user management implementation.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getUserManagement()
 	 */
 	public IUserManagement getUserManagement() {
 		return userManagement;
 	}
 
-	/**
-	 * Get the device management implementation.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceManagement()
 	 */
 	public IDeviceManagement getDeviceManagement() {
 		return deviceManagement;
 	}
 
-	/**
-	 * Get the configured device management cache provider implementation.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceManagementCacheProvider()
 	 */
 	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider() {
 		return deviceManagementCacheProvider;
 	}
 
-	/**
-	 * Get the inbound event processor chain.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getInboundEventProcessorChain()
 	 */
 	public IInboundEventProcessorChain getInboundEventProcessorChain() {
 		return inboundEventProcessorChain;
 	}
 
-	/**
-	 * Get the outbound event processor chain.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getOutboundEventProcessorChain()
 	 */
 	public IOutboundEventProcessorChain getOutboundEventProcessorChain() {
 		return outboundEventProcessorChain;
 	}
 
-	/**
-	 * Get the device provisioning implementation.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceProvisioning()
 	 */
 	public IDeviceProvisioning getDeviceProvisioning() {
 		return deviceProvisioning;
 	}
 
-	/**
-	 * Get the asset modules manager instance.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetModuleManager()
 	 */
 	public IAssetModuleManager getAssetModuleManager() {
 		return assetModuleManager;
 	}
 
-	/**
-	 * Get the search provider manager implementation.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getSearchProviderManager()
 	 */
 	public ISearchProviderManager getSearchProviderManager() {
 		return searchProviderManager;
 	}
 
-	/**
-	 * Get the metrics registry.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getMetricRegistry()
 	 */
 	public MetricRegistry getMetricRegistry() {
 		return metricRegistry;
 	}
 
-	/**
-	 * Get the health check registry.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getHealthCheckRegistry()
 	 */
 	public HealthCheckRegistry getHealthCheckRegistry() {
 		return healthCheckRegistry;
@@ -322,12 +306,12 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		getSearchProviderManager().stop();
 	}
 
-	/**
-	 * Create the server.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @throws SiteWhereException
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#initialize()
 	 */
-	public void create() throws SiteWhereException {
+	public void initialize() throws SiteWhereException {
 		LOGGER.info("Initializing SiteWhere server components.");
 		this.version = VersionHelper.getVersion();
 
@@ -397,31 +381,46 @@ public class SiteWhereServer implements ISiteWhereLifecycle {
 		try {
 			IDeviceManagement deviceManagementImpl =
 					(IDeviceManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
-			deviceManagement = new DeviceManagementMetricsDecorator(deviceManagementImpl);
+			this.deviceManagement = configureDeviceManagement(deviceManagementImpl);
 
-			// Inject cache provider.
-			if (getDeviceManagementCacheProvider() != null) {
-				if (deviceManagementImpl instanceof ICachingDeviceManagement) {
-					((ICachingDeviceManagement) deviceManagementImpl).setCacheProvider(getDeviceManagementCacheProvider());
-					LOGGER.info("Device management implementation is using configured cache provider.");
-				} else {
-					LOGGER.info("Device management implementation not using cache provider.");
-				}
-			}
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No device management implementation configured.");
+		}
+	}
+
+	/**
+	 * Configure device management implementation by injecting configured options or
+	 * wrapping to add functionality.
+	 * 
+	 * @param wrapped
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IDeviceManagement configureDeviceManagement(IDeviceManagement management)
+			throws SiteWhereException {
+
+		// Inject cache provider if available.
+		if (getDeviceManagementCacheProvider() != null) {
+			if (management instanceof ICachingDeviceManagement) {
+				((ICachingDeviceManagement) management).setCacheProvider(getDeviceManagementCacheProvider());
+				LOGGER.info("Device management implementation is using configured cache provider.");
+			} else {
+				LOGGER.info("Device management implementation not using cache provider.");
+			}
 		}
 
 		// If device event processor chain is defined, use it.
 		try {
 			outboundEventProcessorChain =
 					(IOutboundEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
-			deviceManagement = new OutboundProcessingStrategyDecorator(deviceManagement);
+			management = new OutboundProcessingStrategyDecorator(management);
 			LOGGER.info("Event processor chain found with "
 					+ outboundEventProcessorChain.getProcessors().size() + " processors.");
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No outbound event processor chain found in configuration file.");
 		}
+
+		return management;
 	}
 
 	/**

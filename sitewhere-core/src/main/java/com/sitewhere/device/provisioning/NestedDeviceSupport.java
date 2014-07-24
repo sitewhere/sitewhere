@@ -9,7 +9,7 @@
  */
 package com.sitewhere.device.provisioning;
 
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -42,7 +42,7 @@ public class NestedDeviceSupport {
 
 		// Resolve parent and verify it exists.
 		IDevice parent =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(
+				SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(
 						target.getParentHardwareId());
 		if (parent == null) {
 			throw new SiteWhereException("Parent device reference points to device that does not exist.");

@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -70,7 +70,7 @@ public class UsersController extends SiteWhereController {
 		if (input.getStatus() == null) {
 			input.setStatus(AccountStatus.Active);
 		}
-		IUser user = SiteWhereServer.getInstance().getUserManagement().createUser(input);
+		IUser user = SiteWhere.getServer().getUserManagement().createUser(input);
 		return User.copy(user);
 	}
 
@@ -88,7 +88,7 @@ public class UsersController extends SiteWhereController {
 	public User updateUser(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@RequestBody UserCreateRequest input) throws SiteWhereException {
-		IUser user = SiteWhereServer.getInstance().getUserManagement().updateUser(username, input);
+		IUser user = SiteWhere.getServer().getUserManagement().updateUser(username, input);
 		return User.copy(user);
 	}
 
@@ -106,7 +106,7 @@ public class UsersController extends SiteWhereController {
 	public User getUserByUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
 			throws SiteWhereException {
-		IUser user = SiteWhereServer.getInstance().getUserManagement().getUserByUsername(username);
+		IUser user = SiteWhere.getServer().getUserManagement().getUserByUsername(username);
 		if (user == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);
@@ -130,7 +130,7 @@ public class UsersController extends SiteWhereController {
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		IUser user = SiteWhereServer.getInstance().getUserManagement().deleteUser(username, force);
+		IUser user = SiteWhere.getServer().getUserManagement().deleteUser(username, force);
 		return User.copy(user);
 	}
 
@@ -148,8 +148,8 @@ public class UsersController extends SiteWhereController {
 	public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
 			throws SiteWhereException {
-		List<IGrantedAuthority> matches = SiteWhereServer.getInstance().getUserManagement()
-				.getGrantedAuthorities(username);
+		List<IGrantedAuthority> matches =
+				SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
 		List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
 		for (IGrantedAuthority auth : matches) {
 			converted.add(GrantedAuthority.copy(auth));
@@ -174,7 +174,7 @@ public class UsersController extends SiteWhereController {
 		List<User> usersConv = new ArrayList<User>();
 		UserSearchCriteria criteria = new UserSearchCriteria();
 		criteria.setIncludeDeleted(includeDeleted);
-		List<IUser> users = SiteWhereServer.getInstance().getUserManagement().listUsers(criteria);
+		List<IUser> users = SiteWhere.getServer().getUserManagement().listUsers(criteria);
 		for (IUser user : users) {
 			usersConv.add(User.copy(user));
 		}

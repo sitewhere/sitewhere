@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
@@ -40,8 +40,8 @@ public class SpecificationProtoBuilder {
 			throws SiteWhereException {
 		StringBuffer buffer = new StringBuffer();
 		List<IDeviceCommand> commands =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommands(
-						specification.getToken(), false);
+				SiteWhere.getServer().getDeviceManagement().listDeviceCommands(specification.getToken(),
+						false);
 		generateProto(specification, commands, buffer);
 		return buffer.toString();
 	}

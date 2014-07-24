@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -39,7 +40,6 @@ import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
@@ -81,7 +81,7 @@ public class SitesController extends SiteWhereController {
 	@ApiOperation(value = "Create a new site")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
 	public Site createSite(@RequestBody SiteCreateRequest input) throws SiteWhereException {
-		ISite site = SiteWhereServer.getInstance().getDeviceManagement().createSite(input);
+		ISite site = SiteWhere.getServer().getDeviceManagement().createSite(input);
 		return Site.copy(site);
 	}
 
@@ -98,7 +98,7 @@ public class SitesController extends SiteWhereController {
 	public Site getSiteByToken(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken)
 			throws SiteWhereException {
-		ISite site = SiteWhereServer.getInstance().getDeviceManagement().getSiteByToken(siteToken);
+		ISite site = SiteWhere.getServer().getDeviceManagement().getSiteByToken(siteToken);
 		if (site == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 		}
@@ -119,7 +119,7 @@ public class SitesController extends SiteWhereController {
 	public Site updateSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@RequestBody SiteCreateRequest request) throws SiteWhereException {
-		ISite site = SiteWhereServer.getInstance().getDeviceManagement().updateSite(siteToken, request);
+		ISite site = SiteWhere.getServer().getDeviceManagement().updateSite(siteToken, request);
 		return Site.copy(site);
 	}
 
@@ -139,7 +139,7 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		ISite site = SiteWhereServer.getInstance().getDeviceManagement().deleteSite(siteToken, force);
+		ISite site = SiteWhere.getServer().getDeviceManagement().deleteSite(siteToken, force);
 		return Site.copy(site);
 	}
 
@@ -157,7 +157,7 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		return SiteWhereServer.getInstance().getDeviceManagement().listSites(criteria);
+		return SiteWhere.getServer().getDeviceManagement().listSites(criteria);
 	}
 
 	/**
@@ -180,12 +180,11 @@ public class SitesController extends SiteWhereController {
 			throws SiteWhereException {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 		ISearchResults<IDeviceMeasurements> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceMeasurementsForSite(siteToken,
-						criteria);
+				SiteWhere.getServer().getDeviceManagement().listDeviceMeasurementsForSite(siteToken, criteria);
 
 		// Marshal with asset info since multiple assignments might match.
 		List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
-		IAssetModuleManager assets = SiteWhereServer.getInstance().getAssetModuleManager();
+		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
 		for (IDeviceMeasurements result : results.getResults()) {
 			wrapped.add(new DeviceMeasurementsWithAsset(result, assets));
 		}
@@ -212,12 +211,11 @@ public class SitesController extends SiteWhereController {
 			throws SiteWhereException {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 		ISearchResults<IDeviceLocation> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceLocationsForSite(siteToken,
-						criteria);
+				SiteWhere.getServer().getDeviceManagement().listDeviceLocationsForSite(siteToken, criteria);
 
 		// Marshal with asset info since multiple assignments might match.
 		List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
-		IAssetModuleManager assets = SiteWhereServer.getInstance().getAssetModuleManager();
+		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
 		for (IDeviceLocation result : results.getResults()) {
 			wrapped.add(new DeviceLocationWithAsset(result, assets));
 		}
@@ -244,12 +242,11 @@ public class SitesController extends SiteWhereController {
 			throws SiteWhereException {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 		ISearchResults<IDeviceAlert> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceAlertsForSite(siteToken,
-						criteria);
+				SiteWhere.getServer().getDeviceManagement().listDeviceAlertsForSite(siteToken, criteria);
 
 		// Marshal with asset info since multiple assignments might match.
 		List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
-		IAssetModuleManager assets = SiteWhereServer.getInstance().getAssetModuleManager();
+		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
 		for (IDeviceAlert result : results.getResults()) {
 			wrapped.add(new DeviceAlertWithAsset(result, assets));
 		}
@@ -276,12 +273,12 @@ public class SitesController extends SiteWhereController {
 			throws SiteWhereException {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 		ISearchResults<IDeviceCommandInvocation> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandInvocationsForSite(
-						siteToken, criteria);
+				SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocationsForSite(siteToken,
+						criteria);
 
 		// Marshal with asset info since multiple assignments might match.
 		List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
-		IAssetModuleManager assets = SiteWhereServer.getInstance().getAssetModuleManager();
+		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
 		for (IDeviceCommandInvocation result : results.getResults()) {
 			wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
 		}
@@ -308,12 +305,12 @@ public class SitesController extends SiteWhereController {
 			throws SiteWhereException {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 		ISearchResults<IDeviceCommandResponse> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceCommandResponsesForSite(
-						siteToken, criteria);
+				SiteWhere.getServer().getDeviceManagement().listDeviceCommandResponsesForSite(siteToken,
+						criteria);
 
 		// Marshal with asset info since multiple assignments might match.
 		List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
-		IAssetModuleManager assets = SiteWhereServer.getInstance().getAssetModuleManager();
+		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
 		for (IDeviceCommandResponse result : results.getResults()) {
 			wrapped.add(new DeviceCommandResponseWithAsset(result, assets));
 		}
@@ -340,12 +337,11 @@ public class SitesController extends SiteWhereController {
 			throws SiteWhereException {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 		ISearchResults<IDeviceStateChange> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDeviceStateChangesForSite(siteToken,
-						criteria);
+				SiteWhere.getServer().getDeviceManagement().listDeviceStateChangesForSite(siteToken, criteria);
 
 		// Marshal with asset info since multiple assignments might match.
 		List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
-		IAssetModuleManager assets = SiteWhereServer.getInstance().getAssetModuleManager();
+		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
 		for (IDeviceStateChange result : results.getResults()) {
 			wrapped.add(new DeviceStateChangeWithAsset(result, assets));
 		}
@@ -372,15 +368,14 @@ public class SitesController extends SiteWhereController {
 			throws SiteWhereException {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDeviceAssignment> matches =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentsForSite(siteToken,
-						criteria);
+				SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentsForSite(siteToken, criteria);
 		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
 		helper.setIncludeAsset(includeAsset);
 		helper.setIncludeDevice(includeDevice);
 		helper.setIncludeSite(includeSite);
 		List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 		for (IDeviceAssignment assignment : matches.getResults()) {
-			converted.add(helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager()));
+			converted.add(helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
 	}
@@ -398,11 +393,11 @@ public class SitesController extends SiteWhereController {
 	public Zone createZone(
 			@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
 			@RequestBody ZoneCreateRequest request) throws SiteWhereException {
-		ISite site = SiteWhereServer.getInstance().getDeviceManagement().getSiteByToken(siteToken);
+		ISite site = SiteWhere.getServer().getDeviceManagement().getSiteByToken(siteToken);
 		if (site == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 		}
-		IZone zone = SiteWhereServer.getInstance().getDeviceManagement().createZone(site, request);
+		IZone zone = SiteWhere.getServer().getDeviceManagement().createZone(site, request);
 		return Zone.copy(zone);
 	}
 
@@ -421,6 +416,6 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		return SiteWhereServer.getInstance().getDeviceManagement().listZones(siteToken, criteria);
+		return SiteWhere.getServer().getDeviceManagement().listZones(siteToken, criteria);
 	}
 }

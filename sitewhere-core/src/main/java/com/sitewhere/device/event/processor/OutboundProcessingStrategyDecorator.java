@@ -9,9 +9,9 @@
  */
 package com.sitewhere.device.event.processor;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.rest.model.device.DeviceManagementDecorator;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -42,7 +42,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	private IOutboundProcessingStrategy outbound;
 
 	public OutboundProcessingStrategyDecorator(IDeviceManagement delegate) {
-		this(delegate, SiteWhereServer.getInstance().getDeviceProvisioning().getOutboundProcessingStrategy());
+		this(delegate, SiteWhere.getServer().getDeviceProvisioning().getOutboundProcessingStrategy());
 	}
 
 	public OutboundProcessingStrategyDecorator(IDeviceManagement delegate,

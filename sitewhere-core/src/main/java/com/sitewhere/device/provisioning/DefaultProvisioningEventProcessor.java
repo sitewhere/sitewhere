@@ -16,8 +16,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
@@ -92,7 +92,7 @@ public class DefaultProvisioningEventProcessor extends OutboundEventProcessor {
 					IDeviceCommandInvocation invocation = queue.take();
 					try {
 						LOGGER.debug("Provisioning processor thread picked up invocation.");
-						SiteWhereServer.getInstance().getDeviceProvisioning().deliverCommand(invocation);
+						SiteWhere.getServer().getDeviceProvisioning().deliverCommand(invocation);
 					} catch (SiteWhereException e) {
 						LOGGER.error("Exception thrown in provisioning operation.", e);
 					} catch (Throwable e) {

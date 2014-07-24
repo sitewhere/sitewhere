@@ -61,15 +61,6 @@
 		<url-pattern>/adminapi/*</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>metrics</servlet-name>
-		<servlet-class>com.codahale.metrics.servlets.MetricsServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>metrics</servlet-name>
-		<url-pattern>/metrics/*</url-pattern>
-	</servlet-mapping>
-
 	<filter>
 		<filter-name>hiddenHttpMethodFilter</filter-name>
 		<filter-class>com.sitewhere.web.rest.MethodOverrideFilter</filter-class>
@@ -122,9 +113,5 @@
 	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-	
-	<listener>
-		<listener-class>com.sitewhere.web.metrics.SiteWhereMetricsContextListener</listener-class>
 	</listener>
 </web-app>

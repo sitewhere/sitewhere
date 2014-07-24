@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -33,7 +34,6 @@ import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateReq
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
@@ -69,11 +69,11 @@ public class DevicesController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Create a new device")
 	public IDevice createDevice(@RequestBody DeviceCreateRequest request) throws SiteWhereException {
-		IDevice result = SiteWhereServer.getInstance().getDeviceManagement().createDevice(request);
+		IDevice result = SiteWhere.getServer().getDeviceManagement().createDevice(request);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(false);
 		helper.setIncludeAssignment(false);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class DevicesController extends SiteWhereController {
 		helper.setIncludeAsset(includeAsset);
 		helper.setIncludeAssignment(includeAssignment);
 		helper.setIncludeNested(includeNested);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -117,12 +117,11 @@ public class DevicesController extends SiteWhereController {
 	public IDevice updateDevice(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceCreateRequest request) throws SiteWhereException {
-		IDevice result =
-				SiteWhereServer.getInstance().getDeviceManagement().updateDevice(hardwareId, request);
+		IDevice result = SiteWhere.getServer().getDeviceManagement().updateDevice(hardwareId, request);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(true);
 		helper.setIncludeAssignment(true);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -138,11 +137,11 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		IDevice result = SiteWhereServer.getInstance().getDeviceManagement().deleteDevice(hardwareId, force);
+		IDevice result = SiteWhere.getServer().getDeviceManagement().deleteDevice(hardwareId, force);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(true);
 		helper.setIncludeAssignment(true);
-		return helper.convert(result, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -163,7 +162,7 @@ public class DevicesController extends SiteWhereController {
 			throws SiteWhereException {
 		IDevice device = assertDeviceByHardwareId(hardwareId);
 		IDeviceAssignment assignment =
-				SiteWhereServer.getInstance().getDeviceManagement().getCurrentDeviceAssignment(device);
+				SiteWhere.getServer().getDeviceManagement().getCurrentDeviceAssignment(device);
 		if (assignment == null) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.INFO,
 					HttpServletResponse.SC_NOT_FOUND);
@@ -172,7 +171,7 @@ public class DevicesController extends SiteWhereController {
 		helper.setIncludeAsset(includeAsset);
 		helper.setIncludeDevice(includeDevice);
 		helper.setIncludeSite(includeSite);
-		return helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -195,15 +194,14 @@ public class DevicesController extends SiteWhereController {
 			throws SiteWhereException {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDeviceAssignment> history =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentHistory(hardwareId,
-						criteria);
+				SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentHistory(hardwareId, criteria);
 		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
 		helper.setIncludeAsset(includeAsset);
 		helper.setIncludeDevice(includeDevice);
 		helper.setIncludeSite(includeSite);
 		List<IDeviceAssignment> converted = new ArrayList<IDeviceAssignment>();
 		for (IDeviceAssignment assignment : history.getResults()) {
-			converted.add(helper.convert(assignment, SiteWhereServer.getInstance().getAssetModuleManager()));
+			converted.add(helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		return new SearchResults<IDeviceAssignment>(converted, history.getNumResults());
 	}
@@ -221,12 +219,11 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceElementMapping request) throws SiteWhereException {
 		IDevice updated =
-				SiteWhereServer.getInstance().getDeviceManagement().createDeviceElementMapping(hardwareId,
-						request);
+				SiteWhere.getServer().getDeviceManagement().createDeviceElementMapping(hardwareId, request);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(false);
 		helper.setIncludeAssignment(false);
-		return helper.convert(updated, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
@@ -237,12 +234,11 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path)
 			throws SiteWhereException {
 		IDevice updated =
-				SiteWhereServer.getInstance().getDeviceManagement().deleteDeviceElementMapping(hardwareId,
-						path);
+				SiteWhere.getServer().getDeviceManagement().deleteDeviceElementMapping(hardwareId, path);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(false);
 		helper.setIncludeAssignment(false);
-		return helper.convert(updated, SiteWhereServer.getInstance().getAssetModuleManager());
+		return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -263,14 +259,14 @@ public class DevicesController extends SiteWhereController {
 			throws SiteWhereException {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDevice> results =
-				SiteWhereServer.getInstance().getDeviceManagement().listDevices(includeDeleted, criteria);
+				SiteWhere.getServer().getDeviceManagement().listDevices(includeDeleted, criteria);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(true);
 		helper.setIncludeSpecification(includeSpecification);
 		helper.setIncludeAssignment(includeAssignment);
 		List<IDevice> devicesConv = new ArrayList<IDevice>();
 		for (IDevice device : results.getResults()) {
-			devicesConv.add(helper.convert(device, SiteWhereServer.getInstance().getAssetModuleManager()));
+			devicesConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		return new SearchResults<IDevice>(devicesConv, results.getNumResults());
 	}
@@ -312,8 +308,8 @@ public class DevicesController extends SiteWhereController {
 		}
 
 		IDeviceEventBatchResponse response =
-				SiteWhereServer.getInstance().getDeviceManagement().addDeviceEventBatch(
-						device.getAssignmentToken(), batch);
+				SiteWhere.getServer().getDeviceManagement().addDeviceEventBatch(device.getAssignmentToken(),
+						batch);
 		return response;
 	}
 
@@ -332,14 +328,14 @@ public class DevicesController extends SiteWhereController {
 			throws SiteWhereException {
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDevice> devices =
-				SiteWhereServer.getInstance().getDeviceManagement().listUnassignedDevices(criteria);
+				SiteWhere.getServer().getDeviceManagement().listUnassignedDevices(criteria);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(false);
 		helper.setIncludeAssignment(false);
 
 		List<IDevice> devicesConv = new ArrayList<IDevice>();
 		for (IDevice device : devices.getResults()) {
-			devicesConv.add(helper.convert(device, SiteWhereServer.getInstance().getAssetModuleManager()));
+			devicesConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		return new SearchResults<IDevice>(devicesConv, devices.getNumResults());
 	}
@@ -352,8 +348,7 @@ public class DevicesController extends SiteWhereController {
 	 * @throws SiteWhereException
 	 */
 	protected IDevice assertDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-		IDevice result =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceByHardwareId(hardwareId);
+		IDevice result = SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(hardwareId);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

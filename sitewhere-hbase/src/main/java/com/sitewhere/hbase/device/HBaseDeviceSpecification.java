@@ -20,6 +20,7 @@ import org.apache.hadoop.hbase.client.Increment;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -31,7 +32,6 @@ import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IFilter;
@@ -139,8 +139,7 @@ public class HBaseDeviceSpecification {
 		if (cache != null) {
 			IDeviceSpecification result = cache.getDeviceSpecificationCache().get(token);
 			if (result != null) {
-				return SPECIFICATION_HELPER.convert(result,
-						SiteWhereServer.getInstance().getAssetModuleManager());
+				return SPECIFICATION_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
 			}
 		}
 		DeviceSpecification found =

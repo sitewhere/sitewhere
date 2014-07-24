@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -44,7 +44,7 @@ public class DefaultCommandTargetResolver implements ICommandTargetResolver {
 			throws SiteWhereException {
 		LOGGER.debug("Resolving target for invocation.");
 		IDeviceAssignment assignment =
-				SiteWhereServer.getInstance().getDeviceManagement().getDeviceAssignmentByToken(
+				SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentByToken(
 						invocation.getDeviceAssignmentToken());
 		List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 		results.add(assignment);
