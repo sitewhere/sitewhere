@@ -20,6 +20,7 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
+import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IUserManagement;
 
@@ -43,6 +44,13 @@ public interface ISiteWhereServer extends ISiteWhereLifecycle {
 	 * @return
 	 */
 	public IVersion getVersion();
+
+	/**
+	 * Get tracer for debug operations.
+	 * 
+	 * @return
+	 */
+	public ITracer getTracer();
 
 	/**
 	 * Get the user management implementation.

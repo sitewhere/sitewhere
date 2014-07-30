@@ -26,8 +26,10 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -48,6 +50,7 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
  * HBase specifics for dealing with SiteWhere devices.
@@ -55,6 +58,9 @@ import com.sitewhere.spi.search.ISearchCriteria;
  * @author Derek
  */
 public class HBaseDevice {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(HBaseDevice.class);
 
 	/** Length of device identifier (subset of 8 byte long) */
 	public static final int DEVICE_IDENTIFIER_LENGTH = 4;
@@ -81,6 +87,7 @@ public class HBaseDevice {
 	 */
 	public static IDevice createDevice(ISiteWhereHBaseClient hbase, IDeviceCreateRequest request,
 			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApi, "createDevice (HBase)", LOGGER);
 		Long existing = IdManager.getInstance().getDeviceKeys().getValue(request.getHardwareId());
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DuplicateHardwareId, ErrorLevel.ERROR,
@@ -91,7 +98,9 @@ public class HBaseDevice {
 		IdManager.getInstance().getDeviceKeys().create(request.getHardwareId(), inverse);
 
 		Device device = SiteWherePersistence.deviceCreateLogic(request);
-		return putDeviceJson(hbase, device, cache);
+		IDevice retval = putDeviceJson(hbase, device, cache);
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -106,12 +115,15 @@ public class HBaseDevice {
 	 */
 	public static IDevice updateDevice(ISiteWhereHBaseClient hbase, String hardwareId,
 			IDeviceCreateRequest request, IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApi, "updateDevice (HBase)", LOGGER);
 		Device updated = getDeviceByHardwareId(hbase, hardwareId, cache);
 		if (updated == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
 		SiteWherePersistence.deviceUpdateLogic(request, updated);
-		return putDeviceJson(hbase, updated, cache);
+		IDevice retval = putDeviceJson(hbase, updated, cache);
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -125,12 +137,15 @@ public class HBaseDevice {
 	 */
 	public static SearchResults<IDevice> listDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApi, "listDevices (HBase)", LOGGER);
 		Pager<byte[]> matches = getFilteredDevices(hbase, includeDeleted, false, criteria);
 		List<IDevice> response = new ArrayList<IDevice>();
 		for (byte[] json : matches.getResults()) {
 			response.add(MarshalUtils.unmarshalJson(json, Device.class));
 		}
-		return new SearchResults<IDevice>(response, matches.getTotal());
+		SearchResults<IDevice> retval = new SearchResults<IDevice>(response, matches.getTotal());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -143,12 +158,15 @@ public class HBaseDevice {
 	 */
 	public static SearchResults<IDevice> listUnassignedDevices(ISiteWhereHBaseClient hbase,
 			ISearchCriteria criteria) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApi, "listUnassignedDevices (HBase)", LOGGER);
 		Pager<byte[]> matches = getFilteredDevices(hbase, false, true, criteria);
 		List<IDevice> response = new ArrayList<IDevice>();
 		for (byte[] json : matches.getResults()) {
 			response.add(MarshalUtils.unmarshalJson(json, Device.class));
 		}
-		return new SearchResults<IDevice>(response, matches.getTotal());
+		SearchResults<IDevice> retval = new SearchResults<IDevice>(response, matches.getTotal());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -249,6 +267,7 @@ public class HBaseDevice {
 	 */
 	public static Device getDeviceByHardwareId(ISiteWhereHBaseClient hbase, String hardwareId,
 			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApi, "getDeviceByHardwareId (HBase)", LOGGER);
 		if (cache != null) {
 			IDevice result = cache.getDeviceCache().get(hardwareId);
 			if (result != null) {
@@ -257,6 +276,7 @@ public class HBaseDevice {
 		}
 		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 		if (deviceId == null) {
+			Tracer.info("Device not found for hardware id.", LOGGER);
 			return null;
 		}
 
@@ -281,6 +301,7 @@ public class HBaseDevice {
 			throw new SiteWhereException("Unable to load device by hardware id.", e);
 		} finally {
 			HBaseUtils.closeCleanly(devices);
+			Tracer.pop(LOGGER);
 		}
 	}
 

@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -45,6 +47,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -59,6 +62,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "", description = "Operations related to SiteWhere devices.")
 public class DevicesController extends SiteWhereController {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(DevicesController.class);
+
 	/**
 	 * Create a device.
 	 * 
@@ -69,11 +75,14 @@ public class DevicesController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Create a new device")
 	public IDevice createDevice(@RequestBody DeviceCreateRequest request) throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "createDevice", LOGGER);
 		IDevice result = SiteWhere.getServer().getDeviceManagement().createDevice(request);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(false);
 		helper.setIncludeAssignment(false);
-		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		IDevice retval = helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -92,13 +101,16 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
 			@ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested)
 			throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "getDeviceByHardwareId", LOGGER);
 		IDevice result = assertDeviceByHardwareId(hardwareId);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeSpecification(includeSpecification);
 		helper.setIncludeAsset(includeAsset);
 		helper.setIncludeAssignment(includeAssignment);
 		helper.setIncludeNested(includeNested);
-		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		IDevice retval = helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -117,11 +129,14 @@ public class DevicesController extends SiteWhereController {
 	public IDevice updateDevice(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceCreateRequest request) throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "updateDevice", LOGGER);
 		IDevice result = SiteWhere.getServer().getDeviceManagement().updateDevice(hardwareId, request);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(true);
 		helper.setIncludeAssignment(true);
-		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		IDevice retval = helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -137,11 +152,14 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "deleteDevice", LOGGER);
 		IDevice result = SiteWhere.getServer().getDeviceManagement().deleteDevice(hardwareId, force);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(true);
 		helper.setIncludeAssignment(true);
-		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		IDevice retval = helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -160,6 +178,7 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 			@ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "true") boolean includeSite)
 			throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "getDeviceCurrentAssignment", LOGGER);
 		IDevice device = assertDeviceByHardwareId(hardwareId);
 		IDeviceAssignment assignment =
 				SiteWhere.getServer().getDeviceManagement().getCurrentDeviceAssignment(device);
@@ -171,7 +190,9 @@ public class DevicesController extends SiteWhereController {
 		helper.setIncludeAsset(includeAsset);
 		helper.setIncludeDevice(includeDevice);
 		helper.setIncludeSite(includeSite);
-		return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
+		IDeviceAssignment retval = helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -192,6 +213,7 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "listDeviceAssignmentHistory", LOGGER);
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDeviceAssignment> history =
 				SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentHistory(hardwareId, criteria);
@@ -203,7 +225,10 @@ public class DevicesController extends SiteWhereController {
 		for (IDeviceAssignment assignment : history.getResults()) {
 			converted.add(helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager()));
 		}
-		return new SearchResults<IDeviceAssignment>(converted, history.getNumResults());
+		ISearchResults<IDeviceAssignment> retval =
+				new SearchResults<IDeviceAssignment>(converted, history.getNumResults());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -218,12 +243,15 @@ public class DevicesController extends SiteWhereController {
 	public IDevice addDeviceElementMapping(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceElementMapping request) throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "addDeviceElementMapping", LOGGER);
 		IDevice updated =
 				SiteWhere.getServer().getDeviceManagement().createDeviceElementMapping(hardwareId, request);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(false);
 		helper.setIncludeAssignment(false);
-		return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+		IDevice retval = helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
@@ -233,12 +261,15 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path)
 			throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "deleteDeviceElementMapping", LOGGER);
 		IDevice updated =
 				SiteWhere.getServer().getDeviceManagement().deleteDeviceElementMapping(hardwareId, path);
 		DeviceMarshalHelper helper = new DeviceMarshalHelper();
 		helper.setIncludeAsset(false);
 		helper.setIncludeAssignment(false);
-		return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+		IDevice retval = helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -257,6 +288,7 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "listDevices", LOGGER);
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDevice> results =
 				SiteWhere.getServer().getDeviceManagement().listDevices(includeDeleted, criteria);
@@ -268,7 +300,9 @@ public class DevicesController extends SiteWhereController {
 		for (IDevice device : results.getResults()) {
 			devicesConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
 		}
-		return new SearchResults<IDevice>(devicesConv, results.getNumResults());
+		ISearchResults<IDevice> retval = new SearchResults<IDevice>(devicesConv, results.getNumResults());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**
@@ -285,6 +319,7 @@ public class DevicesController extends SiteWhereController {
 	public IDeviceEventBatchResponse addDeviceEventBatch(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceEventBatch batch) throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "addDeviceEventBatch", LOGGER);
 		IDevice device = assertDeviceByHardwareId(hardwareId);
 		if (device.getAssignmentToken() == null) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceNotAssigned, ErrorLevel.ERROR);
@@ -310,6 +345,7 @@ public class DevicesController extends SiteWhereController {
 		IDeviceEventBatchResponse response =
 				SiteWhere.getServer().getDeviceManagement().addDeviceEventBatch(device.getAssignmentToken(),
 						batch);
+		Tracer.pop(LOGGER);
 		return response;
 	}
 
@@ -326,6 +362,7 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
+		Tracer.push(TracerCategory.WebService, "listUnassignedDevices", LOGGER);
 		SearchCriteria criteria = new SearchCriteria(page, pageSize);
 		ISearchResults<IDevice> devices =
 				SiteWhere.getServer().getDeviceManagement().listUnassignedDevices(criteria);
@@ -337,7 +374,9 @@ public class DevicesController extends SiteWhereController {
 		for (IDevice device : devices.getResults()) {
 			devicesConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
 		}
-		return new SearchResults<IDevice>(devicesConv, devices.getNumResults());
+		ISearchResults<IDevice> retval = new SearchResults<IDevice>(devicesConv, devices.getNumResults());
+		Tracer.pop(LOGGER);
+		return retval;
 	}
 
 	/**

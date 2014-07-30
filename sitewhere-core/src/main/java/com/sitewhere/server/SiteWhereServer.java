@@ -36,6 +36,7 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
+import com.sitewhere.server.debug.LoggerTracer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
@@ -48,6 +49,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
+import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
@@ -74,6 +76,9 @@ public class SiteWhereServer implements ISiteWhereServer {
 
 	/** Contains version information */
 	private IVersion version;
+
+	/** Provides hierarchical tracing for debugging */
+	private ITracer tracer;
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
@@ -121,6 +126,15 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 */
 	public IVersion getVersion() {
 		return version;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTracer()
+	 */
+	public ITracer getTracer() {
+		return tracer;
 	}
 
 	/*
@@ -318,6 +332,9 @@ public class SiteWhereServer implements ISiteWhereServer {
 		// Initialize Spring.
 		initializeSpringContext();
 
+		// Initialize tracer.
+		initializeTracer();
+
 		// Initialize device provisioning.
 		initializeDeviceProvisioning();
 
@@ -364,6 +381,21 @@ public class SiteWhereServer implements ISiteWhereServer {
 	}
 
 	/**
+	 * Initialize debug tracing implementation.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeTracer() throws SiteWhereException {
+		try {
+			this.tracer = (ITracer) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_TRACER);
+			LOGGER.info("Tracer implementation using: " + tracer.getClass().getName());
+		} catch (NoSuchBeanDefinitionException e) {
+			LOGGER.info("No custom tracer configured. Using standard logger.");
+			this.tracer = new LoggerTracer();
+		}
+	}
+
+	/**
 	 * Initialize device management implementation and associated decorators.
 	 * 
 	 * @throws SiteWhereException
@@ -373,6 +405,8 @@ public class SiteWhereServer implements ISiteWhereServer {
 		try {
 			this.deviceManagementCacheProvider =
 					(IDeviceManagementCacheProvider) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER);
+			LOGGER.info("Device management cache provider using: "
+					+ deviceManagementCacheProvider.getClass().getName());
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No device management cache provider configured. Caching disabled.");
 		}
@@ -382,6 +416,8 @@ public class SiteWhereServer implements ISiteWhereServer {
 			IDeviceManagement deviceManagementImpl =
 					(IDeviceManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
 			this.deviceManagement = configureDeviceManagement(deviceManagementImpl);
+			LOGGER.info("Device management implementation using: "
+					+ deviceManagementImpl.getClass().getName());
 
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No device management implementation configured.");
