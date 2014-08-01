@@ -271,12 +271,14 @@ public class HBaseDevice {
 		if (cache != null) {
 			IDevice result = cache.getDeviceCache().get(hardwareId);
 			if (result != null) {
+				Tracer.pop(LOGGER);
 				return DEVICE_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
 			}
 		}
 		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 		if (deviceId == null) {
 			Tracer.info("Device not found for hardware id.", LOGGER);
+			Tracer.pop(LOGGER);
 			return null;
 		}
 

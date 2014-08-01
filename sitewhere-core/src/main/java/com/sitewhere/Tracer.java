@@ -24,6 +24,26 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class Tracer {
 
 	/**
+	 * Starts tracing.
+	 * 
+	 * @param category
+	 * @param message
+	 * @param logger
+	 */
+	public static void start(TracerCategory category, String message, Logger logger) {
+		SiteWhere.getServer().getTracer().start(category, message, logger);
+	}
+
+	/**
+	 * Stops tracing.
+	 * 
+	 * @param logger
+	 */
+	public static void stop(Logger logger) {
+		SiteWhere.getServer().getTracer().stop(logger);
+	}
+
+	/**
 	 * Pushes another level into the trace stack.
 	 * 
 	 * @param category

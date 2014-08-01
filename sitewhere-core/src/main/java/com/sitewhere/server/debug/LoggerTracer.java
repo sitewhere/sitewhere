@@ -35,6 +35,27 @@ public class LoggerTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.debug.ITracer#start(com.sitewhere.spi.server.debug.
+	 * TracerCategory, java.lang.String, org.apache.log4j.Logger)
+	 */
+	@Override
+	public void start(TracerCategory category, String message, Logger logger) {
+		push(category, message, logger);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.debug.ITracer#stop(org.apache.log4j.Logger)
+	 */
+	@Override
+	public void stop(Logger logger) {
+		pop(logger);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.debug.ITracer#push(com.sitewhere.spi.server.debug.
 	 * TracerCategory, java.lang.String, org.apache.log4j.Logger)
 	 */

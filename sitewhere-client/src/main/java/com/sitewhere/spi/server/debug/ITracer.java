@@ -22,6 +22,22 @@ import org.apache.log4j.Logger;
 public interface ITracer {
 
 	/**
+	 * Start tracing.
+	 * 
+	 * @param category
+	 * @param message
+	 * @param logger
+	 */
+	public void start(TracerCategory category, String message, Logger logger);
+
+	/**
+	 * Stop tracing.
+	 * 
+	 * @param logger
+	 */
+	public void stop(Logger logger);
+
+	/**
 	 * Pushes another level into the trace stack.
 	 * 
 	 * @param category
