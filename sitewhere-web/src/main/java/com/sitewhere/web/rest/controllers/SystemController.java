@@ -9,13 +9,16 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -30,10 +33,18 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @Api(value = "", description = "Operations related to SiteWhere system management.")
 public class SystemController extends SiteWhereController {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(SystemController.class);
+
 	@RequestMapping(value = "/version", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get version information")
 	public IVersion getVersion() throws SiteWhereException {
-		return SiteWhere.getServer().getVersion();
+		Tracer.start(TracerCategory.RestApiCall, "getVersion", LOGGER);
+		try {
+			return SiteWhere.getServer().getVersion();
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 }

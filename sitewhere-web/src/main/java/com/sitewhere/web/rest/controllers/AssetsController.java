@@ -12,6 +12,7 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -28,6 +30,7 @@ import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -41,6 +44,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/assets")
 @Api(value = "", description = "Operations related to SiteWhere assets.")
 public class AssetsController extends SiteWhereController {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(AssetsController.class);
 
 	/**
 	 * Search for assets in an {@link IAssetModule} that meet the given criteria.
@@ -58,9 +64,11 @@ public class AssetsController extends SiteWhereController {
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria)
 			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "searchAssets", LOGGER);
 		List<? extends IAsset> found =
 				SiteWhere.getServer().getAssetModuleManager().search(assetModuleId, criteria);
 		SearchResults<? extends IAsset> results = new SearchResults(found);
+		Tracer.stop(LOGGER);
 		return results;
 	}
 
@@ -79,8 +87,12 @@ public class AssetsController extends SiteWhereController {
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
 			throws SiteWhereException {
-		IAsset result = SiteWhere.getServer().getAssetModuleManager().getAssetById(assetModuleId, assetId);
-		return result;
+		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetModuleManager().getAssetById(assetModuleId, assetId);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -92,12 +104,17 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules", method = RequestMethod.GET)
 	@ResponseBody
 	public List<AssetModule> listAssetModules() throws SiteWhereException {
-		List<AssetModule> amConverted = new ArrayList<AssetModule>();
-		List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().getModules();
-		for (IAssetModule<?> module : modules) {
-			amConverted.add(AssetModule.copy(module));
+		Tracer.start(TracerCategory.RestApiCall, "listAssetModules", LOGGER);
+		try {
+			List<AssetModule> amConverted = new ArrayList<AssetModule>();
+			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().getModules();
+			for (IAssetModule<?> module : modules) {
+				amConverted.add(AssetModule.copy(module));
+			}
+			return amConverted;
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return amConverted;
 	}
 
 	/**
@@ -109,14 +126,19 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules/devices", method = RequestMethod.GET)
 	@ResponseBody
 	public List<AssetModule> listDeviceAssetModules() throws SiteWhereException {
-		List<AssetModule> amConverted = new ArrayList<AssetModule>();
-		List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().getModules();
-		for (IAssetModule<?> module : modules) {
-			if (module.getAssetType() == AssetType.Device) {
-				amConverted.add(AssetModule.copy(module));
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceAssetModules", LOGGER);
+		try {
+			List<AssetModule> amConverted = new ArrayList<AssetModule>();
+			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().getModules();
+			for (IAssetModule<?> module : modules) {
+				if (module.getAssetType() == AssetType.Device) {
+					amConverted.add(AssetModule.copy(module));
+				}
 			}
+			return amConverted;
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return amConverted;
 	}
 
 	/**
@@ -128,11 +150,16 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules/refresh", method = RequestMethod.POST)
 	@ResponseBody
 	public List<CommandResponse> refreshModules() throws SiteWhereException {
-		List<ICommandResponse> responses = SiteWhere.getServer().getAssetModuleManager().refreshModules();
-		List<CommandResponse> converted = new ArrayList<CommandResponse>();
-		for (ICommandResponse response : responses) {
-			converted.add(CommandResponse.copy(response));
+		Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
+		try {
+			List<ICommandResponse> responses = SiteWhere.getServer().getAssetModuleManager().refreshModules();
+			List<CommandResponse> converted = new ArrayList<CommandResponse>();
+			for (ICommandResponse response : responses) {
+				converted.add(CommandResponse.copy(response));
+			}
+			return converted;
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return converted;
 	}
 }

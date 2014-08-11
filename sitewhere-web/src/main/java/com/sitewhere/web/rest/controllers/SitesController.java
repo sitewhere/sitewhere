@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -55,6 +57,7 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -69,6 +72,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "", description = "Operations related to SiteWhere sites.")
 public class SitesController extends SiteWhereController {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(SitesController.class);
+
 	/**
 	 * Create a new site.
 	 * 
@@ -81,8 +87,13 @@ public class SitesController extends SiteWhereController {
 	@ApiOperation(value = "Create a new site")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
 	public Site createSite(@RequestBody SiteCreateRequest input) throws SiteWhereException {
-		ISite site = SiteWhere.getServer().getDeviceManagement().createSite(input);
-		return Site.copy(site);
+		Tracer.start(TracerCategory.RestApiCall, "createSite", LOGGER);
+		try {
+			ISite site = SiteWhere.getServer().getDeviceManagement().createSite(input);
+			return Site.copy(site);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -98,11 +109,16 @@ public class SitesController extends SiteWhereController {
 	public Site getSiteByToken(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken)
 			throws SiteWhereException {
-		ISite site = SiteWhere.getServer().getDeviceManagement().getSiteByToken(siteToken);
-		if (site == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+		Tracer.start(TracerCategory.RestApiCall, "getSiteByToken", LOGGER);
+		try {
+			ISite site = SiteWhere.getServer().getDeviceManagement().getSiteByToken(siteToken);
+			if (site == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+			}
+			return Site.copy(site);
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return Site.copy(site);
 	}
 
 	/**
@@ -119,8 +135,13 @@ public class SitesController extends SiteWhereController {
 	public Site updateSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@RequestBody SiteCreateRequest request) throws SiteWhereException {
-		ISite site = SiteWhere.getServer().getDeviceManagement().updateSite(siteToken, request);
-		return Site.copy(site);
+		Tracer.start(TracerCategory.RestApiCall, "updateSite", LOGGER);
+		try {
+			ISite site = SiteWhere.getServer().getDeviceManagement().updateSite(siteToken, request);
+			return Site.copy(site);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -139,8 +160,13 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		ISite site = SiteWhere.getServer().getDeviceManagement().deleteSite(siteToken, force);
-		return Site.copy(site);
+		Tracer.start(TracerCategory.RestApiCall, "deleteSiteByToken", LOGGER);
+		try {
+			ISite site = SiteWhere.getServer().getDeviceManagement().deleteSite(siteToken, force);
+			return Site.copy(site);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -156,8 +182,13 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
-		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		return SiteWhere.getServer().getDeviceManagement().listSites(criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listSites", LOGGER);
+		try {
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			return SiteWhere.getServer().getDeviceManagement().listSites(criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -178,17 +209,24 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		ISearchResults<IDeviceMeasurements> results =
-				SiteWhere.getServer().getDeviceManagement().listDeviceMeasurementsForSite(siteToken, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceMeasurementsForSite", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceMeasurements> results =
+					SiteWhere.getServer().getDeviceManagement().listDeviceMeasurementsForSite(siteToken,
+							criteria);
 
-		// Marshal with asset info since multiple assignments might match.
-		List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
-		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
-		for (IDeviceMeasurements result : results.getResults()) {
-			wrapped.add(new DeviceMeasurementsWithAsset(result, assets));
+			// Marshal with asset info since multiple assignments might match.
+			List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
+			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			for (IDeviceMeasurements result : results.getResults()) {
+				wrapped.add(new DeviceMeasurementsWithAsset(result, assets));
+			}
+			return new SearchResults<IDeviceMeasurements>(wrapped, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<IDeviceMeasurements>(wrapped, results.getNumResults());
 	}
 
 	/**
@@ -209,17 +247,24 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		ISearchResults<IDeviceLocation> results =
-				SiteWhere.getServer().getDeviceManagement().listDeviceLocationsForSite(siteToken, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceLocationsForSite", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceLocation> results =
+					SiteWhere.getServer().getDeviceManagement().listDeviceLocationsForSite(siteToken,
+							criteria);
 
-		// Marshal with asset info since multiple assignments might match.
-		List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
-		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
-		for (IDeviceLocation result : results.getResults()) {
-			wrapped.add(new DeviceLocationWithAsset(result, assets));
+			// Marshal with asset info since multiple assignments might match.
+			List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
+			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			for (IDeviceLocation result : results.getResults()) {
+				wrapped.add(new DeviceLocationWithAsset(result, assets));
+			}
+			return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<IDeviceLocation>(wrapped, results.getNumResults());
 	}
 
 	/**
@@ -240,17 +285,23 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		ISearchResults<IDeviceAlert> results =
-				SiteWhere.getServer().getDeviceManagement().listDeviceAlertsForSite(siteToken, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceAlertsForSite", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceAlert> results =
+					SiteWhere.getServer().getDeviceManagement().listDeviceAlertsForSite(siteToken, criteria);
 
-		// Marshal with asset info since multiple assignments might match.
-		List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
-		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
-		for (IDeviceAlert result : results.getResults()) {
-			wrapped.add(new DeviceAlertWithAsset(result, assets));
+			// Marshal with asset info since multiple assignments might match.
+			List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
+			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			for (IDeviceAlert result : results.getResults()) {
+				wrapped.add(new DeviceAlertWithAsset(result, assets));
+			}
+			return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<IDeviceAlert>(wrapped, results.getNumResults());
 	}
 
 	/**
@@ -271,18 +322,24 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		ISearchResults<IDeviceCommandInvocation> results =
-				SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocationsForSite(siteToken,
-						criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandInvocationsForSite", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceCommandInvocation> results =
+					SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocationsForSite(
+							siteToken, criteria);
 
-		// Marshal with asset info since multiple assignments might match.
-		List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
-		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
-		for (IDeviceCommandInvocation result : results.getResults()) {
-			wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
+			// Marshal with asset info since multiple assignments might match.
+			List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
+			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			for (IDeviceCommandInvocation result : results.getResults()) {
+				wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
+			}
+			return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<IDeviceCommandInvocation>(wrapped, results.getNumResults());
 	}
 
 	/**
@@ -303,18 +360,24 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		ISearchResults<IDeviceCommandResponse> results =
-				SiteWhere.getServer().getDeviceManagement().listDeviceCommandResponsesForSite(siteToken,
-						criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandResponsesForSite", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceCommandResponse> results =
+					SiteWhere.getServer().getDeviceManagement().listDeviceCommandResponsesForSite(siteToken,
+							criteria);
 
-		// Marshal with asset info since multiple assignments might match.
-		List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
-		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
-		for (IDeviceCommandResponse result : results.getResults()) {
-			wrapped.add(new DeviceCommandResponseWithAsset(result, assets));
+			// Marshal with asset info since multiple assignments might match.
+			List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
+			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			for (IDeviceCommandResponse result : results.getResults()) {
+				wrapped.add(new DeviceCommandResponseWithAsset(result, assets));
+			}
+			return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<IDeviceCommandResponse>(wrapped, results.getNumResults());
 	}
 
 	/**
@@ -335,17 +398,24 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		ISearchResults<IDeviceStateChange> results =
-				SiteWhere.getServer().getDeviceManagement().listDeviceStateChangesForSite(siteToken, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceStateChangesForSite", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceStateChange> results =
+					SiteWhere.getServer().getDeviceManagement().listDeviceStateChangesForSite(siteToken,
+							criteria);
 
-		// Marshal with asset info since multiple assignments might match.
-		List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
-		IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
-		for (IDeviceStateChange result : results.getResults()) {
-			wrapped.add(new DeviceStateChangeWithAsset(result, assets));
+			// Marshal with asset info since multiple assignments might match.
+			List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
+			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			for (IDeviceStateChange result : results.getResults()) {
+				wrapped.add(new DeviceStateChangeWithAsset(result, assets));
+			}
+			return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<IDeviceStateChange>(wrapped, results.getNumResults());
 	}
 
 	/**
@@ -366,18 +436,24 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
-		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		ISearchResults<IDeviceAssignment> matches =
-				SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentsForSite(siteToken, criteria);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(includeAsset);
-		helper.setIncludeDevice(includeDevice);
-		helper.setIncludeSite(includeSite);
-		List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
-		for (IDeviceAssignment assignment : matches.getResults()) {
-			converted.add(helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager()));
+		Tracer.start(TracerCategory.RestApiCall, "findAssignmentsForSite", LOGGER);
+		try {
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			ISearchResults<IDeviceAssignment> matches =
+					SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentsForSite(siteToken,
+							criteria);
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(includeAsset);
+			helper.setIncludeDevice(includeDevice);
+			helper.setIncludeSite(includeSite);
+			List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
+			for (IDeviceAssignment assignment : matches.getResults()) {
+				converted.add(helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager()));
+			}
+			return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
 	}
 
 	/**
@@ -393,12 +469,17 @@ public class SitesController extends SiteWhereController {
 	public Zone createZone(
 			@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
 			@RequestBody ZoneCreateRequest request) throws SiteWhereException {
-		ISite site = SiteWhere.getServer().getDeviceManagement().getSiteByToken(siteToken);
-		if (site == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+		Tracer.start(TracerCategory.RestApiCall, "createZone", LOGGER);
+		try {
+			ISite site = SiteWhere.getServer().getDeviceManagement().getSiteByToken(siteToken);
+			if (site == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+			}
+			IZone zone = SiteWhere.getServer().getDeviceManagement().createZone(site, request);
+			return Zone.copy(zone);
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		IZone zone = SiteWhere.getServer().getDeviceManagement().createZone(site, request);
-		return Zone.copy(zone);
 	}
 
 	/**
@@ -415,7 +496,12 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
-		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		return SiteWhere.getServer().getDeviceManagement().listZones(siteToken, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listZonesForSite", LOGGER);
+		try {
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			return SiteWhere.getServer().getDeviceManagement().listZones(siteToken, criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 }

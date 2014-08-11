@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -34,6 +36,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -51,6 +54,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "", description = "Operations related to SiteWhere users.")
 public class UsersController extends SiteWhereController {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(UsersController.class);
+
 	/**
 	 * Create a new user.
 	 * 
@@ -63,15 +69,20 @@ public class UsersController extends SiteWhereController {
 	@ApiOperation(value = "Create a new user")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
 	public User createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
-		if ((input.getUsername() == null) || (input.getPassword() == null) || (input.getFirstName() == null)
-				|| (input.getLastName() == null)) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
+		Tracer.start(TracerCategory.RestApiCall, "createUser", LOGGER);
+		try {
+			if ((input.getUsername() == null) || (input.getPassword() == null)
+					|| (input.getFirstName() == null) || (input.getLastName() == null)) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidUserInformation, ErrorLevel.ERROR);
+			}
+			if (input.getStatus() == null) {
+				input.setStatus(AccountStatus.Active);
+			}
+			IUser user = SiteWhere.getServer().getUserManagement().createUser(input);
+			return User.copy(user);
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		if (input.getStatus() == null) {
-			input.setStatus(AccountStatus.Active);
-		}
-		IUser user = SiteWhere.getServer().getUserManagement().createUser(input);
-		return User.copy(user);
 	}
 
 	/**
@@ -88,8 +99,13 @@ public class UsersController extends SiteWhereController {
 	public User updateUser(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@RequestBody UserCreateRequest input) throws SiteWhereException {
-		IUser user = SiteWhere.getServer().getUserManagement().updateUser(username, input);
-		return User.copy(user);
+		Tracer.start(TracerCategory.RestApiCall, "updateUser", LOGGER);
+		try {
+			IUser user = SiteWhere.getServer().getUserManagement().updateUser(username, input);
+			return User.copy(user);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -106,12 +122,17 @@ public class UsersController extends SiteWhereController {
 	public User getUserByUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
 			throws SiteWhereException {
-		IUser user = SiteWhere.getServer().getUserManagement().getUserByUsername(username);
-		if (user == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
-					HttpServletResponse.SC_NOT_FOUND);
+		Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
+		try {
+			IUser user = SiteWhere.getServer().getUserManagement().getUserByUsername(username);
+			if (user == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
+						HttpServletResponse.SC_NOT_FOUND);
+			}
+			return User.copy(user);
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return User.copy(user);
 	}
 
 	/**
@@ -130,8 +151,13 @@ public class UsersController extends SiteWhereController {
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		IUser user = SiteWhere.getServer().getUserManagement().deleteUser(username, force);
-		return User.copy(user);
+		Tracer.start(TracerCategory.RestApiCall, "deleteUserByUsername", LOGGER);
+		try {
+			IUser user = SiteWhere.getServer().getUserManagement().deleteUser(username, force);
+			return User.copy(user);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -148,13 +174,18 @@ public class UsersController extends SiteWhereController {
 	public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
 			throws SiteWhereException {
-		List<IGrantedAuthority> matches =
-				SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
-		List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
-		for (IGrantedAuthority auth : matches) {
-			converted.add(GrantedAuthority.copy(auth));
+		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
+		try {
+			List<IGrantedAuthority> matches =
+					SiteWhere.getServer().getUserManagement().getGrantedAuthorities(username);
+			List<GrantedAuthority> converted = new ArrayList<GrantedAuthority>();
+			for (IGrantedAuthority auth : matches) {
+				converted.add(GrantedAuthority.copy(auth));
+			}
+			return new SearchResults<GrantedAuthority>(converted);
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<GrantedAuthority>(converted);
 	}
 
 	/**
@@ -171,14 +202,19 @@ public class UsersController extends SiteWhereController {
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
 			throws SiteWhereException {
-		List<User> usersConv = new ArrayList<User>();
-		UserSearchCriteria criteria = new UserSearchCriteria();
-		criteria.setIncludeDeleted(includeDeleted);
-		List<IUser> users = SiteWhere.getServer().getUserManagement().listUsers(criteria);
-		for (IUser user : users) {
-			usersConv.add(User.copy(user));
+		Tracer.start(TracerCategory.RestApiCall, "listUsers", LOGGER);
+		try {
+			List<User> usersConv = new ArrayList<User>();
+			UserSearchCriteria criteria = new UserSearchCriteria();
+			criteria.setIncludeDeleted(includeDeleted);
+			List<IUser> users = SiteWhere.getServer().getUserManagement().listUsers(criteria);
+			for (IUser user : users) {
+				usersConv.add(User.copy(user));
+			}
+			SearchResults<User> results = new SearchResults<User>(usersConv);
+			return results;
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		SearchResults<User> results = new SearchResults<User>(usersConv);
-		return results;
 	}
 }

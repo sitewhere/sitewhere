@@ -11,6 +11,7 @@ package com.sitewhere.web.rest.controllers;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -39,6 +42,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/commands")
 @Api(value = "", description = "Operations related to SiteWhere device commands.")
 public class CommandsController extends SiteWhereController {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(CommandsController.class);
 
 	/**
 	 * Update an existing device command.
@@ -54,7 +60,12 @@ public class CommandsController extends SiteWhereController {
 	public IDeviceCommand updateDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
-		return SiteWhere.getServer().getDeviceManagement().updateDeviceCommand(token, request);
+		Tracer.start(TracerCategory.RestApiCall, "updateDeviceCommand", LOGGER);
+		try {
+			return SiteWhere.getServer().getDeviceManagement().updateDeviceCommand(token, request);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -68,7 +79,12 @@ public class CommandsController extends SiteWhereController {
 	@ApiOperation(value = "Get a device command by unique token")
 	public IDeviceCommand getDeviceCommandByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token) throws SiteWhereException {
-		return assertDeviceCommandByToken(token);
+		Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandByToken", LOGGER);
+		try {
+			return assertDeviceCommandByToken(token);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -86,7 +102,12 @@ public class CommandsController extends SiteWhereController {
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		return SiteWhere.getServer().getDeviceManagement().deleteDeviceCommand(token, force);
+		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceCommand", LOGGER);
+		try {
+			return SiteWhere.getServer().getDeviceManagement().deleteDeviceCommand(token, force);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**

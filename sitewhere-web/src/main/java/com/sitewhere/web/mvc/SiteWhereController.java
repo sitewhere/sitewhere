@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -26,6 +27,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.version.VersionHelper;
 
 /**
@@ -46,9 +48,14 @@ public class SiteWhereController {
 	 */
 	@RequestMapping("/")
 	public ModelAndView login() {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("version", VersionHelper.getVersion());
-		return new ModelAndView("login", data);
+		Tracer.start(TracerCategory.AdminUserInterface, "login", LOGGER);
+		try {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("version", VersionHelper.getVersion());
+			return new ModelAndView("login", data);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -58,10 +65,15 @@ public class SiteWhereController {
 	 */
 	@RequestMapping("/loginFailed")
 	public ModelAndView loginFailed() {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("version", VersionHelper.getVersion());
-		data.put("loginFailed", true);
-		return new ModelAndView("login", data);
+		Tracer.start(TracerCategory.AdminUserInterface, "loginFailed", LOGGER);
+		try {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("version", VersionHelper.getVersion());
+			data.put("loginFailed", true);
+			return new ModelAndView("login", data);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -71,12 +83,17 @@ public class SiteWhereController {
 	 */
 	@RequestMapping("/sites/list")
 	public ModelAndView listSites() {
+		Tracer.start(TracerCategory.AdminUserInterface, "listSites", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData();
-			return new ModelAndView("sites/list", data);
-		} catch (SiteWhereException e) {
-			LOGGER.error(e);
-			return showError(e.getMessage());
+			try {
+				Map<String, Object> data = createBaseData();
+				return new ModelAndView("sites/list", data);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		} finally {
+			Tracer.stop(LOGGER);
 		}
 	}
 

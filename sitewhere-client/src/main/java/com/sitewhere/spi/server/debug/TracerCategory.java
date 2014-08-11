@@ -16,13 +16,16 @@ package com.sitewhere.spi.server.debug;
  */
 public enum TracerCategory {
 
-	/** Denotes a web service entry point */
-	WebService,
+	/** Category for admin user interface access */
+	AdminUserInterface,
 
-	/** Denotes a call to the core device management API */
-	DeviceManagementApi,
+	/** Category for REST API invocations */
+	RestApiCall,
 
-	/** Denotes a data store entry point */
+	/** Category for core device management API invocations */
+	DeviceManagementApiCall,
+
+	/** Category for underlying datastore functionality */
 	DataStore,
 
 	/** Indicates no category specified */

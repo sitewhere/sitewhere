@@ -9,6 +9,7 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -32,6 +35,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "", description = "Operations related to SiteWhere device events.")
 public class EventsController extends SiteWhereController {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(EventsController.class);
+
 	/**
 	 * Used by AJAX calls to find an event by unique id.
 	 * 
@@ -44,6 +50,11 @@ public class EventsController extends SiteWhereController {
 	public IDeviceEvent getEventById(
 			@ApiParam(value = "Event id", required = true) @PathVariable String eventId)
 			throws SiteWhereException {
-		return SiteWhere.getServer().getDeviceManagement().getDeviceEventById(eventId);
+		Tracer.start(TracerCategory.RestApiCall, "getEventById", LOGGER);
+		try {
+			return SiteWhere.getServer().getDeviceManagement().getDeviceEventById(eventId);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 }

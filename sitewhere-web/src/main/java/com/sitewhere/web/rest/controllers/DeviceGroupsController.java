@@ -12,6 +12,7 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.device.marshaling.DeviceGroupElementMarshalHelper;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
@@ -35,6 +37,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -49,6 +52,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "", description = "Operations related to SiteWhere device groups.")
 public class DeviceGroupsController extends SiteWhereController {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(DeviceGroupsController.class);
+
 	/**
 	 * Create a device group.
 	 * 
@@ -60,8 +66,13 @@ public class DeviceGroupsController extends SiteWhereController {
 	@ApiOperation(value = "Create a new device group")
 	public IDeviceGroup createDeviceGroup(@RequestBody DeviceGroupCreateRequest request)
 			throws SiteWhereException {
-		IDeviceGroup result = SiteWhere.getServer().getDeviceManagement().createDeviceGroup(request);
-		return DeviceGroup.copy(result);
+		Tracer.start(TracerCategory.RestApiCall, "createDeviceGroup", LOGGER);
+		try {
+			IDeviceGroup result = SiteWhere.getServer().getDeviceManagement().createDeviceGroup(request);
+			return DeviceGroup.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -77,11 +88,16 @@ public class DeviceGroupsController extends SiteWhereController {
 	public IDeviceGroup getDeviceGroupByToken(
 			@ApiParam(value = "Unique token that identifies group", required = true) @PathVariable String groupToken)
 			throws SiteWhereException {
-		IDeviceGroup group = SiteWhere.getServer().getDeviceManagement().getDeviceGroup(groupToken);
-		if (group == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
+		Tracer.start(TracerCategory.RestApiCall, "getDeviceGroupByToken", LOGGER);
+		try {
+			IDeviceGroup group = SiteWhere.getServer().getDeviceManagement().getDeviceGroup(groupToken);
+			if (group == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
+			}
+			return DeviceGroup.copy(group);
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return DeviceGroup.copy(group);
 	}
 
 	/**
@@ -98,9 +114,14 @@ public class DeviceGroupsController extends SiteWhereController {
 	public IDeviceGroup updateDeviceGroup(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@RequestBody DeviceGroupCreateRequest request) throws SiteWhereException {
-		IDeviceGroup group =
-				SiteWhere.getServer().getDeviceManagement().updateDeviceGroup(groupToken, request);
-		return DeviceGroup.copy(group);
+		Tracer.start(TracerCategory.RestApiCall, "updateDeviceGroup", LOGGER);
+		try {
+			IDeviceGroup group =
+					SiteWhere.getServer().getDeviceManagement().updateDeviceGroup(groupToken, request);
+			return DeviceGroup.copy(group);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -118,8 +139,14 @@ public class DeviceGroupsController extends SiteWhereController {
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		IDeviceGroup group = SiteWhere.getServer().getDeviceManagement().deleteDeviceGroup(groupToken, force);
-		return DeviceGroup.copy(group);
+		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceGroup", LOGGER);
+		try {
+			IDeviceGroup group =
+					SiteWhere.getServer().getDeviceManagement().deleteDeviceGroup(groupToken, force);
+			return DeviceGroup.copy(group);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -141,20 +168,26 @@ public class DeviceGroupsController extends SiteWhereController {
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
-		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		ISearchResults<IDeviceGroup> results;
-		if (role == null) {
-			results = SiteWhere.getServer().getDeviceManagement().listDeviceGroups(includeDeleted, criteria);
-		} else {
-			results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceGroupsWithRole(role,
-							includeDeleted, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroups", LOGGER);
+		try {
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			ISearchResults<IDeviceGroup> results;
+			if (role == null) {
+				results =
+						SiteWhere.getServer().getDeviceManagement().listDeviceGroups(includeDeleted, criteria);
+			} else {
+				results =
+						SiteWhere.getServer().getDeviceManagement().listDeviceGroupsWithRole(role,
+								includeDeleted, criteria);
+			}
+			List<IDeviceGroup> groupsConv = new ArrayList<IDeviceGroup>();
+			for (IDeviceGroup group : results.getResults()) {
+				groupsConv.add(DeviceGroup.copy(group));
+			}
+			return new SearchResults<IDeviceGroup>(groupsConv, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		List<IDeviceGroup> groupsConv = new ArrayList<IDeviceGroup>();
-		for (IDeviceGroup group : results.getResults()) {
-			groupsConv.add(DeviceGroup.copy(group));
-		}
-		return new SearchResults<IDeviceGroup>(groupsConv, results.getNumResults());
 	}
 
 	/**
@@ -175,16 +208,21 @@ public class DeviceGroupsController extends SiteWhereController {
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
 			throws SiteWhereException {
-		DeviceGroupElementMarshalHelper helper =
-				new DeviceGroupElementMarshalHelper().setIncludeDetails(includeDetails);
-		SearchCriteria criteria = new SearchCriteria(page, pageSize);
-		ISearchResults<IDeviceGroupElement> results =
-				SiteWhere.getServer().getDeviceManagement().listDeviceGroupElements(groupToken, criteria);
-		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
-		for (IDeviceGroupElement elm : results.getResults()) {
-			elmConv.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroupElements", LOGGER);
+		try {
+			DeviceGroupElementMarshalHelper helper =
+					new DeviceGroupElementMarshalHelper().setIncludeDetails(includeDetails);
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			ISearchResults<IDeviceGroupElement> results =
+					SiteWhere.getServer().getDeviceManagement().listDeviceGroupElements(groupToken, criteria);
+			List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
+			for (IDeviceGroupElement elm : results.getResults()) {
+				elmConv.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
+			}
+			return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<IDeviceGroupElement>(elmConv, results.getNumResults());
 	}
 
 	/**
@@ -202,17 +240,22 @@ public class DeviceGroupsController extends SiteWhereController {
 	public List<IDeviceGroupElement> addDeviceGroupElements(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
-		DeviceGroupElementMarshalHelper helper =
-				new DeviceGroupElementMarshalHelper().setIncludeDetails(false);
-		List<IDeviceGroupElementCreateRequest> elements =
-				(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
-		List<IDeviceGroupElement> results =
-				SiteWhere.getServer().getDeviceManagement().addDeviceGroupElements(groupToken, elements);
-		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
-		for (IDeviceGroupElement elm : results) {
-			elmConv.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
+		Tracer.start(TracerCategory.RestApiCall, "addDeviceGroupElements", LOGGER);
+		try {
+			DeviceGroupElementMarshalHelper helper =
+					new DeviceGroupElementMarshalHelper().setIncludeDetails(false);
+			List<IDeviceGroupElementCreateRequest> elements =
+					(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
+			List<IDeviceGroupElement> results =
+					SiteWhere.getServer().getDeviceManagement().addDeviceGroupElements(groupToken, elements);
+			List<IDeviceGroupElement> retval = new ArrayList<IDeviceGroupElement>();
+			for (IDeviceGroupElement elm : results) {
+				retval.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
+			}
+			return retval;
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return elmConv;
 	}
 
 	/**
@@ -230,16 +273,22 @@ public class DeviceGroupsController extends SiteWhereController {
 	public List<IDeviceGroupElement> deleteDeviceGroupElements(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
-		DeviceGroupElementMarshalHelper helper =
-				new DeviceGroupElementMarshalHelper().setIncludeDetails(false);
-		List<IDeviceGroupElementCreateRequest> elements =
-				(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
-		List<IDeviceGroupElement> results =
-				SiteWhere.getServer().getDeviceManagement().removeDeviceGroupElements(groupToken, elements);
-		List<IDeviceGroupElement> elmConv = new ArrayList<IDeviceGroupElement>();
-		for (IDeviceGroupElement elm : results) {
-			elmConv.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
+		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceGroupElements", LOGGER);
+		try {
+			DeviceGroupElementMarshalHelper helper =
+					new DeviceGroupElementMarshalHelper().setIncludeDetails(false);
+			List<IDeviceGroupElementCreateRequest> elements =
+					(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
+			List<IDeviceGroupElement> results =
+					SiteWhere.getServer().getDeviceManagement().removeDeviceGroupElements(groupToken,
+							elements);
+			List<IDeviceGroupElement> retval = new ArrayList<IDeviceGroupElement>();
+			for (IDeviceGroupElement elm : results) {
+				retval.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
+			}
+			return retval;
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return elmConv;
 	}
 }

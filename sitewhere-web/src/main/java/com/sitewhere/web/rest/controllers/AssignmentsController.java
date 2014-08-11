@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.Tracer;
 import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
@@ -62,6 +64,7 @@ import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -76,6 +79,9 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "", description = "Operations related to SiteWhere device assignments.")
 public class AssignmentsController extends SiteWhereController {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(AssignmentsController.class);
+
 	/**
 	 * Used by AJAX calls to create a device assignment.
 	 * 
@@ -87,30 +93,35 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Create a new device assignment")
 	public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request)
 			throws SiteWhereException {
-		if (StringUtils.isEmpty(request.getDeviceHardwareId())) {
-			throw new SiteWhereException("Hardware id required.");
-		}
-		if (StringUtils.isEmpty(request.getSiteToken())) {
-			throw new SiteWhereException("Site token required.");
-		}
-		if (request.getAssignmentType() == null) {
-			throw new SiteWhereException("Assignment type required.");
-		}
-		if (request.getAssignmentType() != DeviceAssignmentType.Unassociated) {
-			if (request.getAssetModuleId() == null) {
-				throw new SiteWhereException("Asset module id required.");
+		Tracer.start(TracerCategory.RestApiCall, "createDeviceAssignment", LOGGER);
+		try {
+			if (StringUtils.isEmpty(request.getDeviceHardwareId())) {
+				throw new SiteWhereException("Hardware id required.");
 			}
-			if (request.getAssetId() == null) {
-				throw new SiteWhereException("Asset id required.");
+			if (StringUtils.isEmpty(request.getSiteToken())) {
+				throw new SiteWhereException("Site token required.");
 			}
+			if (request.getAssignmentType() == null) {
+				throw new SiteWhereException("Assignment type required.");
+			}
+			if (request.getAssignmentType() != DeviceAssignmentType.Unassociated) {
+				if (request.getAssetModuleId() == null) {
+					throw new SiteWhereException("Asset module id required.");
+				}
+				if (request.getAssetId() == null) {
+					throw new SiteWhereException("Asset id required.");
+				}
+			}
+			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
+			IDeviceAssignment created = management.createDeviceAssignment(request);
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(created, SiteWhere.getServer().getAssetModuleManager());
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
-		IDeviceAssignment created = management.createDeviceAssignment(request);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(true);
-		helper.setIncludeDevice(true);
-		helper.setIncludeSite(true);
-		return helper.convert(created, SiteWhere.getServer().getAssetModuleManager());
 	}
 
 	/**
@@ -126,12 +137,17 @@ public class AssignmentsController extends SiteWhereController {
 	public DeviceAssignment getDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		IDeviceAssignment assignment = assureAssignment(token);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(true);
-		helper.setIncludeDevice(true);
-		helper.setIncludeSite(true);
-		return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.start(TracerCategory.RestApiCall, "getDeviceAssignment", LOGGER);
+		try {
+			IDeviceAssignment assignment = assureAssignment(token);
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -148,13 +164,18 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
 			throws SiteWhereException {
-		IDeviceAssignment assignment =
-				SiteWhere.getServer().getDeviceManagement().deleteDeviceAssignment(token, force);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(true);
-		helper.setIncludeDevice(true);
-		helper.setIncludeSite(true);
-		return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceAssignment", LOGGER);
+		try {
+			IDeviceAssignment assignment =
+					SiteWhere.getServer().getDeviceManagement().deleteDeviceAssignment(token, force);
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -169,13 +190,19 @@ public class AssignmentsController extends SiteWhereController {
 	public DeviceAssignment updateDeviceAssignmentMetadata(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@RequestBody MetadataProvider metadata) throws SiteWhereException {
-		IDeviceAssignment result =
-				SiteWhere.getServer().getDeviceManagement().updateDeviceAssignmentMetadata(token, metadata);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(true);
-		helper.setIncludeDevice(true);
-		helper.setIncludeSite(true);
-		return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.start(TracerCategory.RestApiCall, "updateDeviceAssignmentMetadata", LOGGER);
+		try {
+			IDeviceAssignment result =
+					SiteWhere.getServer().getDeviceManagement().updateDeviceAssignmentMetadata(token,
+							metadata);
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -199,8 +226,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		return SiteWhere.getServer().getDeviceManagement().listDeviceEvents(token, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listEvents", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			return SiteWhere.getServer().getDeviceManagement().listDeviceEvents(token, criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -220,8 +253,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		return SiteWhere.getServer().getDeviceManagement().listDeviceMeasurements(token, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listMeasurements", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			return SiteWhere.getServer().getDeviceManagement().listDeviceMeasurements(token, criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -242,11 +281,17 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			@ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		ISearchResults<IDeviceMeasurements> measurements =
-				SiteWhere.getServer().getDeviceManagement().listDeviceMeasurements(token, criteria);
-		ChartBuilder builder = new ChartBuilder();
-		return builder.process(measurements.getResults(), measurementIds);
+		Tracer.start(TracerCategory.RestApiCall, "listMeasurementsAsChartSeries", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceMeasurements> measurements =
+					SiteWhere.getServer().getDeviceManagement().listDeviceMeasurements(token, criteria);
+			ChartBuilder builder = new ChartBuilder();
+			return builder.process(measurements.getResults(), measurementIds);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -266,9 +311,15 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Update state", required = false) @RequestParam(defaultValue = "true") boolean updateState)
 			throws SiteWhereException {
-		IDeviceMeasurements result =
-				SiteWhere.getServer().getDeviceManagement().addDeviceMeasurements(token, input, updateState);
-		return DeviceMeasurements.copy(result);
+		Tracer.start(TracerCategory.RestApiCall, "createMeasurements", LOGGER);
+		try {
+			IDeviceMeasurements result =
+					SiteWhere.getServer().getDeviceManagement().addDeviceMeasurements(token, input,
+							updateState);
+			return DeviceMeasurements.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -288,8 +339,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		return SiteWhere.getServer().getDeviceManagement().listDeviceLocations(token, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listLocations", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			return SiteWhere.getServer().getDeviceManagement().listDeviceLocations(token, criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -309,9 +366,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Update state", required = false) @RequestParam(defaultValue = "true") boolean updateState)
 			throws SiteWhereException {
-		IDeviceLocation result =
-				SiteWhere.getServer().getDeviceManagement().addDeviceLocation(token, input, updateState);
-		return DeviceLocation.copy(result);
+		Tracer.start(TracerCategory.RestApiCall, "createLocation", LOGGER);
+		try {
+			IDeviceLocation result =
+					SiteWhere.getServer().getDeviceManagement().addDeviceLocation(token, input, updateState);
+			return DeviceLocation.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -331,8 +393,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		return SiteWhere.getServer().getDeviceManagement().listDeviceAlerts(token, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listAlerts", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			return SiteWhere.getServer().getDeviceManagement().listDeviceAlerts(token, criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -352,9 +420,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Update state", required = false) @RequestParam(defaultValue = "true") boolean updateState)
 			throws SiteWhereException {
-		IDeviceAlert result =
-				SiteWhere.getServer().getDeviceManagement().addDeviceAlert(token, input, updateState);
-		return DeviceAlert.copy(result);
+		Tracer.start(TracerCategory.RestApiCall, "createAlert", LOGGER);
+		try {
+			IDeviceAlert result =
+					SiteWhere.getServer().getDeviceManagement().addDeviceAlert(token, input, updateState);
+			return DeviceAlert.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -372,18 +445,23 @@ public class AssignmentsController extends SiteWhereController {
 			@RequestBody DeviceCommandInvocationCreateRequest request,
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		if (request.getInitiator() == null) {
-			throw new SiteWhereException("Command initiator is required.");
+		Tracer.start(TracerCategory.RestApiCall, "createCommandInvocation", LOGGER);
+		try {
+			if (request.getInitiator() == null) {
+				throw new SiteWhereException("Command initiator is required.");
+			}
+			if (request.getTarget() == null) {
+				throw new SiteWhereException("Command target is required.");
+			}
+			IDeviceCommand command = assureDeviceCommand(request.getCommandToken());
+			IDeviceCommandInvocation result =
+					SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(token, command,
+							request);
+			DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
+			return helper.convert(result);
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		if (request.getTarget() == null) {
-			throw new SiteWhereException("Command target is required.");
-		}
-		IDeviceCommand command = assureDeviceCommand(request.getCommandToken());
-		IDeviceCommandInvocation result =
-				SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(token, command,
-						request);
-		DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
-		return helper.convert(result);
 	}
 
 	/**
@@ -404,16 +482,22 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		ISearchResults<IDeviceCommandInvocation> matches =
-				SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocations(token, criteria);
-		DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
-		helper.setIncludeCommand(includeCommand);
-		List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
-		for (IDeviceCommandInvocation invocation : matches.getResults()) {
-			converted.add(helper.convert(invocation));
+		Tracer.start(TracerCategory.RestApiCall, "listCommandInvocations", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceCommandInvocation> matches =
+					SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocations(token, criteria);
+			DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
+			helper.setIncludeCommand(includeCommand);
+			List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
+			for (IDeviceCommandInvocation invocation : matches.getResults()) {
+				converted.add(helper.convert(invocation));
+			}
+			return new SearchResults<IDeviceCommandInvocation>(converted);
+		} finally {
+			Tracer.stop(LOGGER);
 		}
-		return new SearchResults<IDeviceCommandInvocation>(converted);
 	}
 
 	/**
@@ -430,9 +514,14 @@ public class AssignmentsController extends SiteWhereController {
 	public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		IDeviceStateChange result =
-				SiteWhere.getServer().getDeviceManagement().addDeviceStateChange(token, input);
-		return DeviceStateChange.copy(result);
+		Tracer.start(TracerCategory.RestApiCall, "createStateChange", LOGGER);
+		try {
+			IDeviceStateChange result =
+					SiteWhere.getServer().getDeviceManagement().addDeviceStateChange(token, input);
+			return DeviceStateChange.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -452,8 +541,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		return SiteWhere.getServer().getDeviceManagement().listDeviceStateChanges(token, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listStateChanges", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			return SiteWhere.getServer().getDeviceManagement().listDeviceStateChanges(token, criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -470,9 +565,14 @@ public class AssignmentsController extends SiteWhereController {
 	public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		IDeviceCommandResponse result =
-				SiteWhere.getServer().getDeviceManagement().addDeviceCommandResponse(token, input);
-		return DeviceCommandResponse.copy(result);
+		Tracer.start(TracerCategory.RestApiCall, "createCommandResponse", LOGGER);
+		try {
+			IDeviceCommandResponse result =
+					SiteWhere.getServer().getDeviceManagement().addDeviceCommandResponse(token, input);
+			return DeviceCommandResponse.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -492,8 +592,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-		return SiteWhere.getServer().getDeviceManagement().listDeviceCommandResponses(token, criteria);
+		Tracer.start(TracerCategory.RestApiCall, "listCommandResponses", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			return SiteWhere.getServer().getDeviceManagement().listDeviceCommandResponses(token, criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -509,13 +615,18 @@ public class AssignmentsController extends SiteWhereController {
 	public DeviceAssignment endDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
-		IDeviceAssignment updated = management.endDeviceAssignment(token);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(true);
-		helper.setIncludeDevice(true);
-		helper.setIncludeSite(true);
-		return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.start(TracerCategory.RestApiCall, "endDeviceAssignment", LOGGER);
+		try {
+			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
+			IDeviceAssignment updated = management.endDeviceAssignment(token);
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**
@@ -531,14 +642,19 @@ public class AssignmentsController extends SiteWhereController {
 	public DeviceAssignment missingDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
 			throws SiteWhereException {
-		IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
-		IDeviceAssignment updated =
-				management.updateDeviceAssignmentStatus(token, DeviceAssignmentStatus.Missing);
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
-		helper.setIncludeAsset(true);
-		helper.setIncludeDevice(true);
-		helper.setIncludeSite(true);
-		return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+		Tracer.start(TracerCategory.RestApiCall, "missingDeviceAssignment", LOGGER);
+		try {
+			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
+			IDeviceAssignment updated =
+					management.updateDeviceAssignmentStatus(token, DeviceAssignmentStatus.Missing);
+			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 
 	/**

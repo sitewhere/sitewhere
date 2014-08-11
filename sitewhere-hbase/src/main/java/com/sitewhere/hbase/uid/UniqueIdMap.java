@@ -24,7 +24,9 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.log4j.Logger;
 
+import com.sitewhere.Tracer;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
@@ -36,6 +38,9 @@ import com.sitewhere.spi.SiteWhereException;
  * @author Derek
  */
 public abstract class UniqueIdMap<N, V> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(UniqueIdMap.class);
 
 	/** Qualifier for columns containing values */
 	public static final byte[] VALUE_QUAL = Bytes.toBytes("value");
@@ -271,11 +276,14 @@ public abstract class UniqueIdMap<N, V> {
 	public V getValue(N name) throws SiteWhereException {
 		V result = nameToValue.get(name);
 		if (result == null) {
+			Tracer.info("Id value for '" + name + "' not cached. Loading from table.", LOGGER);
 			result = getValueFromTable(name);
 			if (result != null) {
 				nameToValue.put(name, result);
 				valueToName.put(result, name);
 			}
+		} else {
+			Tracer.info("Id value for '" + name + "' was cached.", LOGGER);
 		}
 		return result;
 	}
