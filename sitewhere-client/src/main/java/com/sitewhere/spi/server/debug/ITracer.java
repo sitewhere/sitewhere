@@ -38,6 +38,14 @@ public interface ITracer {
 	public void stop(Logger logger);
 
 	/**
+	 * Returns output from trace as HTML. Implementations can throw an
+	 * {@link UnsupportedOperationException} if they are stateless.
+	 * 
+	 * @return
+	 */
+	public String asHtml() throws UnsupportedOperationException;
+
+	/**
 	 * Pushes another level into the trace stack.
 	 * 
 	 * @param category

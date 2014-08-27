@@ -56,6 +56,16 @@ public class LoggerTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.debug.ITracer#asHtml()
+	 */
+	@Override
+	public String asHtml() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.debug.ITracer#push(com.sitewhere.spi.server.debug.
 	 * TracerCategory, java.lang.String, org.apache.log4j.Logger)
 	 */
