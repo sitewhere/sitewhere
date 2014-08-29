@@ -3,8 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd"
->
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+           
 	<!-- Import beans specific to the given edition -->
 	<import resource="sitewhere-edition-${sitewhere.edition}.xml"/>
 
@@ -47,15 +47,13 @@
 	<!-- # INBOUND EVENT PROCESSING # -->
 	<!-- ############################ -->
 
-	<!-- Takes inbound device events and stores them using device management 
-		SPI calls -->
+	<!-- Takes inbound device events and stores them using device management SPI calls -->
 	<bean id="eventStorageProcessor"
 		class="com.sitewhere.device.event.processor.DefaultEventStorageProcessor"/>
 
 	<!-- Inbound event processor chain configuration -->
 	<bean id="inboundProcessorChain"
-		class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain"
-	>
+		class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
 		<property name="processors">
 			<list>
 				<ref bean="eventStorageProcessor"/>
@@ -83,14 +81,11 @@
 
 	<!-- Outbound event processor chain configuration -->
 	<bean id="outboundProcessorChain"
-		class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain"
-	>
+		class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain">
 		<property name="processors">
 			<list>
 				<ref bean="provisioningEventProcessor"/>
-				<!--  
-				<ref bean="solrDeviceEventProcessor"/>
-				-->
+				<!-- <ref bean="solrDeviceEventProcessor"/> -->
 				<ref bean="hazelcastDeviceEventProcessor"/>
 			</list>
 		</property>
@@ -108,8 +103,7 @@
 
 	<!-- Delivery provider that publishes commands to MQTT topics -->
 	<bean id="mqttDeliveryProvider"
-		class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider"
-	>
+		class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="commandTopicPrefix" value="SiteWhere/commands/"/>
@@ -118,11 +112,9 @@
 
 	<!-- GOOGLE PROTOCOL BUFFER INBOUND PROCESSING -->
 
-	<!-- Device event receiver that monitors an MQTT topic for events (protobuf 
-		format) -->
+	<!-- Device event receiver that monitors an MQTT topic for events (protobuf format) -->
 	<bean id="protobufMqttEventReceiver"
-		class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver"
-	>
+		class="com.sitewhere.device.provisioning.receivers.mqtt.MqttInboundEventReceiver">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="topic" value="SiteWhere/input/protobuf"/>
@@ -134,8 +126,7 @@
 
 	<!-- Device event source for protobuf messages over MQTT -->
 	<bean id="protbufEventSource"
-		class="com.sitewhere.device.provisioning.DefaultInboundEventSource"
-	>
+		class="com.sitewhere.device.provisioning.DefaultInboundEventSource">
 		<property name="deviceEventDecoder" ref="protobufEventDecoder"/>
 		<property name="inboundEventReceivers">
 			<list>
@@ -146,11 +137,9 @@
 
 	<!-- JSON BATCH INBOUND PROCESSING -->
 
-	<!-- Device event receiver that monitors an MQTT topic for events (JSON 
-		batch format) -->
+	<!-- Device event receiver that monitors an MQTT topic for events (JSON batch format) -->
 	<bean id="jsonMqttEventReceiver"
-		class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver"
-	>
+		class="com.sitewhere.device.provisioning.receivers.mqtt.MqttInboundEventReceiver">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="topic" value="SiteWhere/input/jsonbatch"/>
@@ -162,8 +151,7 @@
 
 	<!-- Device event source for JSON messages over MQTT -->
 	<bean id="jsonEventSource"
-		class="com.sitewhere.device.provisioning.DefaultInboundEventSource"
-	>
+		class="com.sitewhere.device.provisioning.DefaultInboundEventSource">
 		<property name="deviceEventDecoder" ref="jsonEventDecoder"/>
 		<property name="inboundEventReceivers">
 			<list>
@@ -172,20 +160,43 @@
 		</property>
 	</bean>
 
+	<!-- SOCKET EVENT DEBUGGING -->
+
+	<!-- Device event receiver that pulls event data from a server socket -->
+	<bean id="socketEventReceiver"
+		class="com.sitewhere.device.provisioning.receivers.socket.SocketInboundEventReceiver">
+		<property name="port" value="8484"/>
+		<property name="numThreads" value="5"/>
+		<property name="handler" value="com.sitewhere.ee.devices.laipac.S911BLInterationHandler"/>
+	</bean>
+
+	<!-- Logs event payload for debugging -->
+	<bean id="loggerEventDecoder"
+		class="com.sitewhere.device.provisioning.decoders.PayloadLoggerEventDecoder"/>
+
+	<!-- Device event source for debugging socket requests -->
+	<bean id="socketEventSource"
+		class="com.sitewhere.device.provisioning.DefaultInboundEventSource">
+		<property name="deviceEventDecoder" ref="loggerEventDecoder"/>
+		<property name="inboundEventReceivers">
+			<list>
+				<ref bean="socketEventReceiver"/>
+			</list>
+		</property>
+	</bean>
+
 	<!-- REGISTRATION -->
 
 	<!-- Manages registration of new devices in the system -->
 	<bean id="protobufRegistrationManager"
-		class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager"
-	>
+		class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager">
 		<property name="allowNewDevices" value="true"/>
 		<property name="autoAssignSite" value="true"/>
 	</bean>
 
 	<!-- Configures device provisioning -->
 	<bean id="deviceProvisioning"
-		class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning"
-	>
+		class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
 		<property name="registrationManager" ref="protobufRegistrationManager"/>
@@ -193,6 +204,7 @@
 			<list>
 				<ref bean="protbufEventSource"/>
 				<ref bean="jsonEventSource"/>
+				<ref bean="socketEventSource"/>
 			</list>
 		</property>
 	</bean>
@@ -208,8 +220,7 @@
 
 	<!-- Default file system hardware asset module -->
 	<bean id="deviceModelInitializer"
-		class="com.sitewhere.server.device.DefaultDeviceModelInitializer"
-	>
+		class="com.sitewhere.server.device.DefaultDeviceModelInitializer">
 		<property name="initializeIfNoConsole" value="Yes"/>
 	</bean>
 
@@ -226,9 +237,7 @@
 	<bean id="searchProviderManager" class="com.sitewhere.server.search.SearchProviderManager">
 		<property name="searchProviders">
 			<list>
-				<!--  
-				<ref bean="solrSearchProvider"/>
-				-->
+				<!-- <ref bean="solrSearchProvider"/> -->
 			</list>
 		</property>
 	</bean>

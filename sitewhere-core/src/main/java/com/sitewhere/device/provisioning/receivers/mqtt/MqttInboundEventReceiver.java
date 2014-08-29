@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.provisioning.mqtt;
+package com.sitewhere.device.provisioning.receivers.mqtt;
 
 import java.net.URISyntaxException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -31,10 +31,10 @@ import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
  * 
  * @author Derek
  */
-public class MqttDeviceEventReceiver implements IInboundEventReceiver {
+public class MqttInboundEventReceiver implements IInboundEventReceiver {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MqttDeviceEventReceiver.class);
+	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
 
 	/** Maximum number of backlogged messages before blocking */
 	private static final int MAX_MESSAGE_BACKLOG = 1000;
