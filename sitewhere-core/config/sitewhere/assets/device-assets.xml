@@ -102,4 +102,11 @@
 		<property name="senses.temperature" value="false"/>
 		<property name="senses.humidity" value="true"/>
 	</hardware-asset>
+	
+	<!-- Laipac -->
+	<hardware-asset id="300" name="S911 Bracelet Locator HC" sku="S911HC" device="true">
+		<description>S911 Bracelet Locator HC (Healthcare) can be used to provide location of the patients, physicians, nurses, and police on duty and assist patients unable to communicate due to issues of injury, health or age.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/laipac/laipac-s-911bl.png</image-url>
+		<property name="manufacturer" value="Laipac"/>
+	</hardware-asset>
 </hardware-assets>

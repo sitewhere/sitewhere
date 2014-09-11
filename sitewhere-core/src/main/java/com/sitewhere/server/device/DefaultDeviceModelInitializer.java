@@ -153,13 +153,17 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Namespace for Arduino commands */
 	public static final String ARDUINO_NAMESPACE = "http://arduino/example";
 
+	/** Specification token for Laipac S-911 BL */
+	public static final String LAIPAC_S911_SPEC_TOKEN = "fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910";
+
 	/** Information for available device specifications */
 	public static final SpecificationDetails[] SPECIFICATION_INFO = {
 			new SpecificationDetails("173", "Android Default", "d2604433-e4eb-419b-97c7-88efe9b2cd41"),
 			new SpecificationDetails("181", "Arduino Mega Default", "417b36a8-21ef-4196-a8fe-cc756f994d0b"),
 			new SpecificationDetails("174", "Raspberrry Pi Default", "7dfd6d63-5e8d-4380-be04-fc5c73801dfb"),
 			new SpecificationDetails("175", "MeiTrack MT90 Default", "82043707-9e3d-441f-bdcc-33cf0f4f7260"),
-			new SpecificationDetails("176", "Gateway Default", "75126a52-0607-4cca-b995-df40e73a707b") };
+			new SpecificationDetails("176", "Gateway Default", "75126a52-0607-4cca-b995-df40e73a707b"),
+			new SpecificationDetails("300", "Laipac S-911 BL Default", LAIPAC_S911_SPEC_TOKEN) };
 
 	/** Available device specifications */
 	protected IDeviceSpecification[] deviceSpecifications;
