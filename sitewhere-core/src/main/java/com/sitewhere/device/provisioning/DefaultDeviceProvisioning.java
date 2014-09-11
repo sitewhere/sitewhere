@@ -60,7 +60,7 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 			new BlockingQueueInboundProcessingStrategy();
 
 	/** Configured list of inbound event sources */
-	private List<IInboundEventSource> inboundEventSources = new ArrayList<IInboundEventSource>();
+	private List<IInboundEventSource<?>> inboundEventSources = new ArrayList<IInboundEventSource<?>>();
 
 	/** Configured outbound processing strategy */
 	private IOutboundProcessingStrategy outboundProcessingStrategy = new DirectOutboundProcessingStrategy();
@@ -118,7 +118,7 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 		// Start device event sources.
 		if (getInboundEventSources() != null) {
-			for (IInboundEventSource processor : getInboundEventSources()) {
+			for (IInboundEventSource<?> processor : getInboundEventSources()) {
 				processor.start();
 			}
 		}
@@ -167,7 +167,7 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 		// Stop inbound event sources.
 		if (getInboundEventSources() != null) {
-			for (IInboundEventSource processor : getInboundEventSources()) {
+			for (IInboundEventSource<?> processor : getInboundEventSources()) {
 				processor.stop();
 			}
 		}
@@ -309,11 +309,11 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getInboundEventSources()
 	 */
-	public List<IInboundEventSource> getInboundEventSources() {
+	public List<IInboundEventSource<?>> getInboundEventSources() {
 		return inboundEventSources;
 	}
 
-	public void setInboundEventSources(List<IInboundEventSource> inboundEventSources) {
+	public void setInboundEventSources(List<IInboundEventSource<?>> inboundEventSources) {
 		this.inboundEventSources = inboundEventSources;
 	}
 

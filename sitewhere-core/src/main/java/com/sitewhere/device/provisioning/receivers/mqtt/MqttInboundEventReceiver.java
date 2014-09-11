@@ -31,7 +31,7 @@ import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
  * 
  * @author Derek
  */
-public class MqttInboundEventReceiver implements IInboundEventReceiver {
+public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);

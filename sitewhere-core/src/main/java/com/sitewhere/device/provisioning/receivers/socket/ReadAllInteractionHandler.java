@@ -23,7 +23,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class ReadAllInteractionHandler implements ISocketInteractionHandler {
+public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte[]> {
 
 	/*
 	 * (non-Javadoc)

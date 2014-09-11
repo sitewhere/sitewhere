@@ -26,7 +26,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
  * 
  * @author Derek
  */
-public class PayloadLoggerEventDecoder implements IDeviceEventDecoder {
+public class PayloadLoggerEventDecoder implements IDeviceEventDecoder<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(PayloadLoggerEventDecoder.class);
@@ -34,7 +34,8 @@ public class PayloadLoggerEventDecoder implements IDeviceEventDecoder {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IDeviceEventDecoder#decode(byte[])
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceEventDecoder#decode(java.lang.Object)
 	 */
 	@Override
 	public List<IDecodedDeviceEventRequest> decode(byte[] payload) throws SiteWhereException {

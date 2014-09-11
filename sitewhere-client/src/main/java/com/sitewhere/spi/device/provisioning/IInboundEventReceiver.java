@@ -19,7 +19,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public interface IInboundEventReceiver extends ISiteWhereLifecycle {
+public interface IInboundEventReceiver<T> extends ISiteWhereLifecycle {
 
 	/**
 	 * Gets access to a queue of (still encoded) messages becoming available from the
@@ -28,5 +28,5 @@ public interface IInboundEventReceiver extends ISiteWhereLifecycle {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public BlockingQueue<byte[]> getEncodedMessages() throws SiteWhereException;
+	public BlockingQueue<T> getEncodedMessages() throws SiteWhereException;
 }

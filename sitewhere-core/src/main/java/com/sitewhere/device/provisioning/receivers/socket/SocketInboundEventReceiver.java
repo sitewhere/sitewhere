@@ -24,7 +24,7 @@ import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
  * 
  * @author Derek
  */
-public class SocketInboundEventReceiver implements IInboundEventReceiver {
+public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SocketInboundEventReceiver.class);
@@ -60,7 +60,7 @@ public class SocketInboundEventReceiver implements IInboundEventReceiver {
 	private ServerProcessingThread processing;
 
 	/** Queue used to hold messages that are ready for processing */
-	private BlockingQueue<byte[]> queue = new ArrayBlockingQueue<byte[]>(DEFAULT_MAX_QUEUED_REQUESTS);
+	private BlockingQueue<T> queue = new ArrayBlockingQueue<T>(DEFAULT_MAX_QUEUED_REQUESTS);
 
 	/*
 	 * (non-Javadoc)
@@ -116,7 +116,7 @@ public class SocketInboundEventReceiver implements IInboundEventReceiver {
 	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEncodedMessages()
 	 */
 	@Override
-	public BlockingQueue<byte[]> getEncodedMessages() throws SiteWhereException {
+	public BlockingQueue<T> getEncodedMessages() throws SiteWhereException {
 		return queue;
 	}
 
@@ -180,14 +180,15 @@ public class SocketInboundEventReceiver implements IInboundEventReceiver {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected ISocketInteractionHandler createHandlerInstance() throws SiteWhereException {
+	@SuppressWarnings("unchecked")
+	protected ISocketInteractionHandler<T> createHandlerInstance() throws SiteWhereException {
 		try {
 			Class<?> clazz = Class.forName(getHandler());
 			if (!(ISocketInteractionHandler.class.isAssignableFrom(clazz))) {
 				throw new SiteWhereException(
 						"Socket interaction handler does not implement required interface.");
 			}
-			return (ISocketInteractionHandler) clazz.newInstance();
+			return (ISocketInteractionHandler<T>) clazz.newInstance();
 		} catch (ClassNotFoundException e) {
 			throw new SiteWhereException(e);
 		} catch (InstantiationException e) {

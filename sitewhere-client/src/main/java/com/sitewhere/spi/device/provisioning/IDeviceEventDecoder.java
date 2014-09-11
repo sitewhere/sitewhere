@@ -18,15 +18,14 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public interface IDeviceEventDecoder {
+public interface IDeviceEventDecoder<T> {
 
 	/**
-	 * Decodes a binary payload into one or more {@link IDecodedDeviceEventRequest}
-	 * objects.
+	 * Decodes a payload into one or more {@link IDecodedDeviceEventRequest} objects.
 	 * 
 	 * @param payload
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<IDecodedDeviceEventRequest> decode(byte[] payload) throws SiteWhereException;
+	public List<IDecodedDeviceEventRequest> decode(T payload) throws SiteWhereException;
 }

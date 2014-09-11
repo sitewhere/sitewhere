@@ -18,8 +18,10 @@ import com.sitewhere.spi.SiteWhereException;
  * Interface for handling socket communication with a remote device.
  * 
  * @author Derek
+ * 
+ * @param <T>
  */
-public interface ISocketInteractionHandler {
+public interface ISocketInteractionHandler<T> {
 
 	/**
 	 * Delegates processing of socket information. Commands parsed from the socket should
@@ -29,5 +31,5 @@ public interface ISocketInteractionHandler {
 	 * @param queue
 	 * @throws SiteWhereException
 	 */
-	public void process(Socket socket, BlockingQueue<byte[]> queue) throws SiteWhereException;
+	public void process(Socket socket, BlockingQueue<T> queue) throws SiteWhereException;
 }

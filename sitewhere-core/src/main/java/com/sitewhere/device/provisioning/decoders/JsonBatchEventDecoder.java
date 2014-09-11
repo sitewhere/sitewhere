@@ -31,7 +31,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
  * 
  * @author Derek
  */
-public class JsonBatchEventDecoder implements IDeviceEventDecoder {
+public class JsonBatchEventDecoder implements IDeviceEventDecoder<byte[]> {
 
 	/** Used to map data into an object based on JSON parsing */
 	private ObjectMapper mapper = new ObjectMapper();
@@ -39,7 +39,8 @@ public class JsonBatchEventDecoder implements IDeviceEventDecoder {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IDeviceEventDecoder#decode(byte[])
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceEventDecoder#decode(java.lang.Object)
 	 */
 	@Override
 	public List<IDecodedDeviceEventRequest> decode(byte[] payload) throws SiteWhereException {

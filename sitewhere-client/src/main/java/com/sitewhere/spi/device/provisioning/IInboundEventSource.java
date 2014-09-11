@@ -19,14 +19,14 @@ import com.sitewhere.spi.ISiteWhereLifecycle;
  * 
  * @author Derek
  */
-public interface IInboundEventSource extends ISiteWhereLifecycle {
+public interface IInboundEventSource<T> extends ISiteWhereLifecycle {
 
 	/**
 	 * Set the device event decoder.
 	 * 
 	 * @param decoder
 	 */
-	public void setDeviceEventDecoder(IDeviceEventDecoder decoder);
+	public void setDeviceEventDecoder(IDeviceEventDecoder<T> decoder);
 
 	/**
 	 * Set the strategy for submitting inbound events into the bus.
@@ -40,5 +40,5 @@ public interface IInboundEventSource extends ISiteWhereLifecycle {
 	 * 
 	 * @param receivers
 	 */
-	public void setInboundEventReceivers(List<IInboundEventReceiver> receivers);
+	public void setInboundEventReceivers(List<IInboundEventReceiver<T>> receivers);
 }

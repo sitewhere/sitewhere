@@ -34,19 +34,19 @@ import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
  * 
  * @author Derek
  */
-public class DefaultInboundEventSource implements IInboundEventSource {
+public class InboundEventSource<T> implements IInboundEventSource<T> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultInboundEventSource.class);
+	private static Logger LOGGER = Logger.getLogger(InboundEventSource.class);
 
 	/** Device event decoder */
-	private IDeviceEventDecoder deviceEventDecoder;
+	private IDeviceEventDecoder<T> deviceEventDecoder;
 
 	/** Inbound event processing strategy */
 	private IInboundProcessingStrategy inboundProcessingStrategy;
 
 	/** List of {@link IInboundEventReceiver} that supply this processor */
-	private List<IInboundEventReceiver> inboundEventReceivers = new ArrayList<IInboundEventReceiver>();
+	private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
 
 	/** Thread pool for event receivers */
 	private ExecutorService receiverThreadPool;
@@ -78,7 +78,7 @@ public class DefaultInboundEventSource implements IInboundEventSource {
 		if (getInboundEventReceivers().size() > 0) {
 			LOGGER.info("Initializing " + getInboundEventReceivers().size() + " device event receivers...");
 			receiverThreadPool = Executors.newFixedThreadPool(getInboundEventReceivers().size());
-			for (IInboundEventReceiver receiver : getInboundEventReceivers()) {
+			for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
 				receiver.start();
 				receiverThreadPool.execute(new EventReceiverProcessor(receiver));
 			}
@@ -95,9 +95,9 @@ public class DefaultInboundEventSource implements IInboundEventSource {
 	private class EventReceiverProcessor implements Runnable {
 
 		/** Receiver being monitored */
-		private IInboundEventReceiver receiver;
+		private IInboundEventReceiver<T> receiver;
 
-		public EventReceiverProcessor(IInboundEventReceiver receiver) {
+		public EventReceiverProcessor(IInboundEventReceiver<T> receiver) {
 			this.receiver = receiver;
 		}
 
@@ -106,7 +106,7 @@ public class DefaultInboundEventSource implements IInboundEventSource {
 			LOGGER.info("Started device event receiver thread.");
 			while (true) {
 				try {
-					byte[] message = receiver.getEncodedMessages().take();
+					T message = receiver.getEncodedMessages().take();
 					LOGGER.debug("Device event receiver thread picked up event.");
 					List<IDecodedDeviceEventRequest> requests = getDeviceEventDecoder().decode(message);
 					if (requests != null) {
@@ -155,11 +155,11 @@ public class DefaultInboundEventSource implements IInboundEventSource {
 	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#setDeviceEventDecoder
 	 * (com.sitewhere.spi.device.provisioning.IDeviceEventDecoder)
 	 */
-	public void setDeviceEventDecoder(IDeviceEventDecoder deviceEventDecoder) {
+	public void setDeviceEventDecoder(IDeviceEventDecoder<T> deviceEventDecoder) {
 		this.deviceEventDecoder = deviceEventDecoder;
 	}
 
-	public IDeviceEventDecoder getDeviceEventDecoder() {
+	public IDeviceEventDecoder<T> getDeviceEventDecoder() {
 		return deviceEventDecoder;
 	}
 
@@ -185,11 +185,11 @@ public class DefaultInboundEventSource implements IInboundEventSource {
 	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#setInboundEventReceivers
 	 * (java.util.List)
 	 */
-	public void setInboundEventReceivers(List<IInboundEventReceiver> inboundEventReceivers) {
+	public void setInboundEventReceivers(List<IInboundEventReceiver<T>> inboundEventReceivers) {
 		this.inboundEventReceivers = inboundEventReceivers;
 	}
 
-	public List<IInboundEventReceiver> getInboundEventReceivers() {
+	public List<IInboundEventReceiver<T>> getInboundEventReceivers() {
 		return inboundEventReceivers;
 	}
 }
