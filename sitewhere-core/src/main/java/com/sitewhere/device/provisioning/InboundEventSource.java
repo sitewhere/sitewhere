@@ -33,6 +33,8 @@ import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
  * Default implementation of {@link IInboundEventSource}.
  * 
  * @author Derek
+ * 
+ * @param <T>
  */
 public class InboundEventSource<T> implements IInboundEventSource<T> {
 

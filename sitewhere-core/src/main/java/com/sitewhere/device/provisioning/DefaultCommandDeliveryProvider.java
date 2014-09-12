@@ -14,15 +14,16 @@ import org.apache.log4j.Logger;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
-import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
 
 /**
- * Default implementation of {@link ICommandDeliveryProvider} interface.
+ * Default implementation of {@link ICommandDeliveryProvider} interface that transmits
+ * binary data stored in a byte array.
  * 
  * @author Derek
  */
-public class DefaultCommandDeliveryProvider implements ICommandDeliveryProvider {
+public class DefaultCommandDeliveryProvider implements ICommandDeliveryProvider<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultCommandDeliveryProvider.class);
@@ -33,11 +34,11 @@ public class DefaultCommandDeliveryProvider implements ICommandDeliveryProvider 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliver(com.sitewhere
 	 * .spi.device.IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation, byte[])
+	 * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object)
 	 */
 	@Override
 	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandInvocation invocation, byte[] encoded) throws SiteWhereException {
+			IDeviceCommandExecution execution, byte[] encoded) throws SiteWhereException {
 		LOGGER.info("Invoked default command delivery provider with command invocation.");
 	}
 

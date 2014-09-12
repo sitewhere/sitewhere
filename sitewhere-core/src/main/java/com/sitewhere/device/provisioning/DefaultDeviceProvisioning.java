@@ -16,14 +16,12 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
-import com.sitewhere.spi.device.provisioning.ICommandExecutionBuilder;
-import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
-import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
+import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
 
@@ -37,21 +35,6 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultDeviceProvisioning.class);
 
-	/** Configured command execution builder */
-	private ICommandExecutionBuilder commandExecutionBuilder = new DefaultCommandExecutionBuilder();
-
-	/** Configured command execution encoder */
-	private ICommandExecutionEncoder commandExecutionEncoder;
-
-	/** Configured command target resolver */
-	private ICommandTargetResolver commandTargetResolver = new DefaultCommandTargetResolver();
-
-	/** Configured command delivery provider */
-	private ICommandDeliveryProvider commandDeliveryProvider = new DefaultCommandDeliveryProvider();
-
-	/** Configured command processing strategy */
-	private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
-
 	/** Configured registration manager */
 	private IRegistrationManager registrationManager;
 
@@ -62,8 +45,17 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	/** Configured list of inbound event sources */
 	private List<IInboundEventSource<?>> inboundEventSources = new ArrayList<IInboundEventSource<?>>();
 
+	/** Configured command processing strategy */
+	private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
+
 	/** Configured outbound processing strategy */
 	private IOutboundProcessingStrategy outboundProcessingStrategy = new DirectOutboundProcessingStrategy();
+
+	/** Configured outbound command router */
+	private IOutboundCommandRouter outboundCommandRouter;
+
+	/** Configured list of inbound event sources */
+	private List<IOutboundCommandAgent<?>> outboundCommandAgents = new ArrayList<IOutboundCommandAgent<?>>();
 
 	/*
 	 * (non-Javadoc)
@@ -74,39 +66,29 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	public void start() throws SiteWhereException {
 		LOGGER.info("Starting device provisioning...");
 
-		// Start command execution builder.
-		if (getCommandExecutionBuilder() == null) {
-			throw new SiteWhereException("No command execution builder configured for provisioning.");
-		}
-		getCommandExecutionBuilder().start();
-
-		// Start command execution encoder.
-		if (getCommandExecutionEncoder() == null) {
-			throw new SiteWhereException("No command execution encoder configured for provisioning.");
-		}
-		getCommandExecutionEncoder().start();
-
-		// Start command target resolver.
-		if (getCommandTargetResolver() == null) {
-			throw new SiteWhereException("No command target resolver configured for provisioning.");
-		}
-		getCommandTargetResolver().start();
-
-		// Start command delivery provider.
-		if (getCommandDeliveryProvider() == null) {
-			throw new SiteWhereException("No command delivery provider configured for provisioning.");
-		}
-		getCommandDeliveryProvider().start();
-
 		// Start command processing strategy.
 		if (getCommandProcessingStrategy() == null) {
 			throw new SiteWhereException("No command processing strategy configured for provisioning.");
 		}
 		getCommandProcessingStrategy().start();
 
+		// Start command agents.
+		if (getOutboundCommandAgents() != null) {
+			for (IOutboundCommandAgent<?> agent : getOutboundCommandAgents()) {
+				agent.start();
+			}
+		}
+
+		// Start outbound command router.
+		if (getOutboundCommandRouter() == null) {
+			throw new SiteWhereException("No command router for provisioning.");
+		}
+		getOutboundCommandRouter().initialize(getOutboundCommandAgents());
+		getOutboundCommandRouter().start();
+
 		// Start registration manager.
 		if (getRegistrationManager() == null) {
-			throw new SiteWhereException("No regsitration manager configured for provisioning.");
+			throw new SiteWhereException("No registration manager configured for provisioning.");
 		}
 		getRegistrationManager().start();
 
@@ -135,29 +117,16 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	public void stop() throws SiteWhereException {
 		LOGGER.info("Stopping device provisioning...");
 
-		// Stop command execution builder.
-		if (getCommandExecutionBuilder() != null) {
-			getCommandExecutionBuilder().stop();
-		}
-
-		// Stop command execution encoder.
-		if (getCommandExecutionEncoder() != null) {
-			getCommandExecutionEncoder().stop();
-		}
-
-		// Stop command target resolver.
-		if (getCommandTargetResolver() != null) {
-			getCommandTargetResolver().stop();
-		}
-
-		// Stop command delivery provider.
-		if (getCommandDeliveryProvider() != null) {
-			getCommandDeliveryProvider().stop();
-		}
-
 		// Stop command processing strategy.
 		if (getCommandProcessingStrategy() != null) {
 			getCommandProcessingStrategy().stop();
+		}
+
+		// Start command agents.
+		if (getOutboundCommandAgents() != null) {
+			for (IOutboundCommandAgent<?> agent : getOutboundCommandAgents()) {
+				agent.stop();
+			}
 		}
 
 		// Stop inbound processing strategy.
@@ -203,69 +172,10 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandExecutionBuilder
-	 * ()
-	 */
-	public ICommandExecutionBuilder getCommandExecutionBuilder() {
-		return commandExecutionBuilder;
-	}
-
-	public void setCommandExecutionBuilder(ICommandExecutionBuilder commandExecutionBuilder) {
-		this.commandExecutionBuilder = commandExecutionBuilder;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandExecutionEncoder
-	 * ()
-	 */
-	public ICommandExecutionEncoder getCommandExecutionEncoder() {
-		return commandExecutionEncoder;
-	}
-
-	public void setCommandExecutionEncoder(ICommandExecutionEncoder commandExecutionEncoder) {
-		this.commandExecutionEncoder = commandExecutionEncoder;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandTargetResolver
-	 * ()
-	 */
-	public ICommandTargetResolver getCommandTargetResolver() {
-		return commandTargetResolver;
-	}
-
-	public void setCommandTargetResolver(ICommandTargetResolver commandTargetResolver) {
-		this.commandTargetResolver = commandTargetResolver;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandDeliveryProvider
-	 * ()
-	 */
-	public ICommandDeliveryProvider getCommandDeliveryProvider() {
-		return commandDeliveryProvider;
-	}
-
-	public void setCommandDeliveryProvider(ICommandDeliveryProvider commandDeliveryProvider) {
-		this.commandDeliveryProvider = commandDeliveryProvider;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
 	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandProcessingStrategy
 	 * ()
 	 */
+	@Override
 	public ICommandProcessingStrategy getCommandProcessingStrategy() {
 		return commandProcessingStrategy;
 	}
@@ -330,5 +240,35 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 	public void setOutboundProcessingStrategy(IOutboundProcessingStrategy outboundProcessingStrategy) {
 		this.outboundProcessingStrategy = outboundProcessingStrategy;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getOutboundCommandRouter
+	 * ()
+	 */
+	public IOutboundCommandRouter getOutboundCommandRouter() {
+		return outboundCommandRouter;
+	}
+
+	public void setOutboundCommandRouter(IOutboundCommandRouter outboundCommandRouter) {
+		this.outboundCommandRouter = outboundCommandRouter;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getOutboundCommandAgents
+	 * ()
+	 */
+	public List<IOutboundCommandAgent<?>> getOutboundCommandAgents() {
+		return outboundCommandAgents;
+	}
+
+	public void setOutboundCommandAgents(List<IOutboundCommandAgent<?>> outboundCommandAgents) {
+		this.outboundCommandAgents = outboundCommandAgents;
 	}
 }

@@ -95,21 +95,6 @@
 	<!-- # DEVICE PROVISIONING # -->
 	<!-- ####################### -->
 
-	<!-- OUTBOUND PROCESSING -->
-
-	<!-- Encodes device commands using Google Protocol Buffers -->
-	<bean id="protobufExecutionEncoder"
-		class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
-
-	<!-- Delivery provider that publishes commands to MQTT topics -->
-	<bean id="mqttDeliveryProvider"
-		class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
-		<property name="hostname" value="localhost"/>
-		<property name="port" value="1883"/>
-		<property name="commandTopicPrefix" value="SiteWhere/commands/"/>
-		<property name="systemTopicPrefix" value="SiteWhere/system/"/>
-	</bean>
-
 	<!-- GOOGLE PROTOCOL BUFFER INBOUND PROCESSING -->
 
 	<!-- Device event receiver that monitors an MQTT topic for events (protobuf format) -->
@@ -186,17 +171,48 @@
 		<property name="autoAssignSite" value="true"/>
 	</bean>
 
+	<!-- OUTBOUND PROCESSING -->
+
+	<!-- Encodes device commands using Google Protocol Buffers -->
+	<bean id="protobufExecutionEncoder"
+		class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
+
+	<!-- Delivery provider that publishes commands to MQTT topics -->
+	<bean id="mqttDeliveryProvider"
+		class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
+		<property name="hostname" value="localhost"/>
+		<property name="port" value="1883"/>
+		<property name="commandTopicPrefix" value="SiteWhere/commands/"/>
+		<property name="systemTopicPrefix" value="SiteWhere/system/"/>
+	</bean>
+
+	<!-- Agent that encodes and delivers protobuf messages over MQTT -->
+	<bean id="defaultCommandAgent"
+		class="com.sitewhere.device.provisioning.BinaryOutboundCommandAgent">
+		<property name="agentId" value="default"/>
+		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
+		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
+	</bean>
+
+	<!-- Router that sends commands via a single agent -->
+	<bean id="router"
+		class="com.sitewhere.device.provisioning.SingleChoiceCommandRouter"/>
+
 	<!-- Configures device provisioning -->
 	<bean id="deviceProvisioning"
 		class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
-		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
-		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
 		<property name="registrationManager" ref="protobufRegistrationManager"/>
 		<property name="inboundEventSources">
 			<list>
 				<ref bean="protbufEventSource"/>
 				<ref bean="jsonEventSource"/>
 				<ref bean="socketEventSource"/>
+			</list>
+		</property>
+		<property name="outboundCommandRouter" ref="router"/>
+		<property name="outboundCommandAgents">
+			<list>
+				<ref bean="defaultCommandAgent"/>
 			</list>
 		</property>
 	</bean>

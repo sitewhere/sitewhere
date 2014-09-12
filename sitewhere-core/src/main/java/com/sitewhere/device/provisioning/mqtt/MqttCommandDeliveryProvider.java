@@ -19,7 +19,7 @@ import org.fusesource.mqtt.client.QoS;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
-import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
 
 /**
@@ -28,7 +28,7 @@ import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
  * 
  * @author Derek
  */
-public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
+public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttCommandDeliveryProvider.class);
@@ -104,11 +104,11 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider {
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliver(com.sitewhere
 	 * .spi.device.IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation, byte[])
+	 * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object)
 	 */
 	@Override
 	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandInvocation invocation, byte[] encoded) throws SiteWhereException {
+			IDeviceCommandExecution execution, byte[] encoded) throws SiteWhereException {
 		String commandTopic = getCommandTopicPrefix() + nested.getGateway().getHardwareId();
 		try {
 			LOGGER.debug("About to publish command message to topic: " + commandTopic);

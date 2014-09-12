@@ -23,46 +23,11 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 
 	/**
-	 * Gets the configured command execution builder.
+	 * Get the list of sources that bring device event data into the system.
 	 * 
 	 * @return
 	 */
-	public ICommandExecutionBuilder getCommandExecutionBuilder();
-
-	/**
-	 * Gets the configured command execution encoder.
-	 * 
-	 * @return
-	 */
-	public ICommandExecutionEncoder getCommandExecutionEncoder();
-
-	/**
-	 * Gets the configured command target resolver.
-	 * 
-	 * @return
-	 */
-	public ICommandTargetResolver getCommandTargetResolver();
-
-	/**
-	 * Gets the configured command delivery provider.
-	 * 
-	 * @return
-	 */
-	public ICommandDeliveryProvider getCommandDeliveryProvider();
-
-	/**
-	 * Get the configured command processing strategy.
-	 * 
-	 * @return
-	 */
-	public ICommandProcessingStrategy getCommandProcessingStrategy();
-
-	/**
-	 * Get the configured registration manager.
-	 * 
-	 * @return
-	 */
-	public IRegistrationManager getRegistrationManager();
+	public List<IInboundEventSource<?>> getInboundEventSources();
 
 	/**
 	 * Get the strategy for moving decoded events into the inbound chain.
@@ -72,11 +37,11 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	public IInboundProcessingStrategy getInboundProcessingStrategy();
 
 	/**
-	 * Get the list of sources that bring device event data into the system.
+	 * Get the configured registration manager.
 	 * 
 	 * @return
 	 */
-	public List<IInboundEventSource<?>> getInboundEventSources();
+	public IRegistrationManager getRegistrationManager();
 
 	/**
 	 * Get the strategy for moving processed events into the outbound chain.
@@ -84,6 +49,27 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	 * @return
 	 */
 	public IOutboundProcessingStrategy getOutboundProcessingStrategy();
+
+	/**
+	 * Get the command processing strategy.
+	 * 
+	 * @return
+	 */
+	public ICommandProcessingStrategy getCommandProcessingStrategy();
+
+	/**
+	 * Get the router that chooses which agent will process a command.
+	 * 
+	 * @return
+	 */
+	public IOutboundCommandRouter getOutboundCommandRouter();
+
+	/**
+	 * Get the list of command agents that can deliver commands to devices.
+	 * 
+	 * @return
+	 */
+	public List<IOutboundCommandAgent<?>> getOutboundCommandAgents();
 
 	/**
 	 * Deliver a command invocation.

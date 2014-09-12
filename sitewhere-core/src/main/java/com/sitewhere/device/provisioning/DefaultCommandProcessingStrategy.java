@@ -14,15 +14,17 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.device.provisioning.NestedDeviceSupport.NestedDeviceInformation;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.provisioning.ICommandExecutionBuilder;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
+import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 
 /**
@@ -34,6 +36,12 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultCommandProcessingStrategy.class);
+
+	/** Configured command target resolver */
+	private ICommandTargetResolver commandTargetResolver = new DefaultCommandTargetResolver();
+
+	/** Configured command execution builder */
+	private ICommandExecutionBuilder commandExecutionBuilder = new DefaultCommandExecutionBuilder();
 
 	/*
 	 * (non-Javadoc)
@@ -52,9 +60,8 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 						invocation.getCommandToken());
 		if (command != null) {
 			IDeviceCommandExecution execution =
-					provisioning.getCommandExecutionBuilder().createExecution(command, invocation);
-			List<IDeviceAssignment> assignments =
-					provisioning.getCommandTargetResolver().resolveTargets(invocation);
+					getCommandExecutionBuilder().createExecution(command, invocation);
+			List<IDeviceAssignment> assignments = getCommandTargetResolver().resolveTargets(invocation);
 			for (IDeviceAssignment assignment : assignments) {
 				IDevice device =
 						SiteWhere.getServer().getDeviceManagement().getDeviceForAssignment(assignment);
@@ -62,10 +69,8 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 					throw new SiteWhereException("Targeted assignment references device that does not exist.");
 				}
 
-				NestedDeviceInformation nested = NestedDeviceSupport.calculateNestedDeviceInformation(device);
-				byte[] encoded =
-						provisioning.getCommandExecutionEncoder().encode(execution, nested, assignment);
-				provisioning.getCommandDeliveryProvider().deliver(nested, assignment, invocation, encoded);
+				IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device);
+				provisioning.getOutboundCommandRouter().routeCommand(execution, nesting, assignment);
 			}
 		} else {
 			throw new SiteWhereException("Invalid command referenced from invocation.");
@@ -89,11 +94,8 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 			throw new SiteWhereException("Targeted assignment references device that does not exist.");
 		}
 		IDeviceAssignment assignment = management.getCurrentDeviceAssignment(device);
-
-		NestedDeviceInformation nested = NestedDeviceSupport.calculateNestedDeviceInformation(device);
-		byte[] encoded =
-				provisioning.getCommandExecutionEncoder().encodeSystemCommand(command, nested, assignment);
-		provisioning.getCommandDeliveryProvider().deliverSystemCommand(nested, assignment, encoded);
+		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device);
+		provisioning.getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment);
 	}
 
 	/*
@@ -104,6 +106,18 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	@Override
 	public void start() throws SiteWhereException {
 		LOGGER.info("Started command processing strategy.");
+
+		// Start command execution builder.
+		if (getCommandExecutionBuilder() == null) {
+			throw new SiteWhereException("No command execution builder configured for provisioning.");
+		}
+		getCommandExecutionBuilder().start();
+
+		// Start command target resolver.
+		if (getCommandTargetResolver() == null) {
+			throw new SiteWhereException("No command target resolver configured for provisioning.");
+		}
+		getCommandTargetResolver().start();
 	}
 
 	/*
@@ -114,5 +128,31 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	@Override
 	public void stop() throws SiteWhereException {
 		LOGGER.info("Stopped command processing strategy");
+
+		// Stop command execution builder.
+		if (getCommandExecutionBuilder() != null) {
+			getCommandExecutionBuilder().stop();
+		}
+
+		// Stop command target resolver.
+		if (getCommandTargetResolver() != null) {
+			getCommandTargetResolver().stop();
+		}
+	}
+
+	public ICommandTargetResolver getCommandTargetResolver() {
+		return commandTargetResolver;
+	}
+
+	public void setCommandTargetResolver(ICommandTargetResolver commandTargetResolver) {
+		this.commandTargetResolver = commandTargetResolver;
+	}
+
+	public ICommandExecutionBuilder getCommandExecutionBuilder() {
+		return commandExecutionBuilder;
+	}
+
+	public void setCommandExecutionBuilder(ICommandExecutionBuilder commandExecutionBuilder) {
+		this.commandExecutionBuilder = commandExecutionBuilder;
 	}
 }

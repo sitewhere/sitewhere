@@ -21,6 +21,13 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 public interface ICommandProcessingStrategy extends ISiteWhereLifecycle {
 
 	/**
+	 * Get the {@link ICommandTargetResolver} implementation.
+	 * 
+	 * @return
+	 */
+	public ICommandTargetResolver getCommandTargetResolver();
+
+	/**
 	 * Send a command using the given provisioning implementation.
 	 * 
 	 * @param provisioning

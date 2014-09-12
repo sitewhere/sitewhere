@@ -30,7 +30,7 @@ import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
  * 
  * @author Derek
  */
-public class ProtobufExecutionEncoder implements ICommandExecutionEncoder {
+public class ProtobufExecutionEncoder implements ICommandExecutionEncoder<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ProtobufExecutionEncoder.class);

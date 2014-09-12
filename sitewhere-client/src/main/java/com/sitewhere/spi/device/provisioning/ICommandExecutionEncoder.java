@@ -19,11 +19,15 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
  * Encodes an {@link IDeviceCommandExecution} into a format that can be transmitted.
  * 
  * @author Derek
+ * 
+ * @param <T>
+ *            format for encoded command. Must be compatible with the
+ *            {@link ICommandDeliveryProvider} that will deliver the command.
  */
-public interface ICommandExecutionEncoder extends ISiteWhereLifecycle {
+public interface ICommandExecutionEncoder<T> extends ISiteWhereLifecycle {
 
 	/**
-	 * Encodes a command execution as a byte array.
+	 * Encodes a command execution.
 	 * 
 	 * @param command
 	 * @param nested
@@ -31,11 +35,11 @@ public interface ICommandExecutionEncoder extends ISiteWhereLifecycle {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
+	public T encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
 			IDeviceAssignment assignment) throws SiteWhereException;
 
 	/**
-	 * Encodes a SiteWhere system command as a byte array.
+	 * Encodes a SiteWhere system command.
 	 * 
 	 * @param command
 	 * @param nested
@@ -43,6 +47,6 @@ public interface ICommandExecutionEncoder extends ISiteWhereLifecycle {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] encodeSystemCommand(Object command, IDeviceNestingContext nested,
-			IDeviceAssignment assignment) throws SiteWhereException;
+	public T encodeSystemCommand(Object command, IDeviceNestingContext nested, IDeviceAssignment assignment)
+			throws SiteWhereException;
 }

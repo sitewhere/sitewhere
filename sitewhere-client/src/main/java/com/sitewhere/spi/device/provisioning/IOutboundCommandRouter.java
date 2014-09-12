@@ -1,5 +1,5 @@
 /*
- * ICommandDeliveryProvider.java 
+ * IOutboundCommandRouter.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,6 +9,8 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
+import java.util.List;
+
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -16,36 +18,39 @@ import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 
 /**
- * Handles delivery of encoded command information on an underlying transport.
+ * Routes commands to one or more {@link IOutboundCommandAgent} implementations.
  * 
  * @author Derek
- * 
- * @param <T>
- *            type of data that was encoded by the {@link ICommandExecutionEncoder}/
  */
-public interface ICommandDeliveryProvider<T> extends ISiteWhereLifecycle {
+public interface IOutboundCommandRouter extends ISiteWhereLifecycle {
 
 	/**
-	 * Deliver the given encoded invocation. The device, assignment and invocation details
-	 * are included since they may contain metadata important to the delivery mechanism.
+	 * Initialize the router with agent information.
 	 * 
-	 * @param nested
-	 * @param assignment
+	 * @param agents
+	 * @throws SiteWhereException
+	 */
+	public void initialize(List<IOutboundCommandAgent<?>> agents) throws SiteWhereException;
+
+	/**
+	 * Route a command to one of the available agents.
+	 * 
 	 * @param execution
-	 * @param encoded
+	 * @param nesting
+	 * @param assignment
 	 * @throws SiteWhereException
 	 */
-	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution, T encoded) throws SiteWhereException;
+	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
+			IDeviceAssignment assignment) throws SiteWhereException;
 
 	/**
-	 * Delivers a system command.
+	 * Route a system command to one of the available agents.
 	 * 
-	 * @param nested
+	 * @param command
+	 * @param nesting
 	 * @param assignment
-	 * @param encoded
 	 * @throws SiteWhereException
 	 */
-	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, T encoded)
+	public void routeSystemCommand(Object command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
 			throws SiteWhereException;
 }
