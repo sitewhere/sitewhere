@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
@@ -30,7 +31,7 @@ public interface IOutboundCommandRouter extends ISiteWhereLifecycle {
 	 * @param agents
 	 * @throws SiteWhereException
 	 */
-	public void initialize(List<IOutboundCommandAgent<?>> agents) throws SiteWhereException;
+	public void initialize(List<IOutboundCommandAgent<?, ?>> agents) throws SiteWhereException;
 
 	/**
 	 * Route a command to one of the available agents.
@@ -38,10 +39,11 @@ public interface IOutboundCommandRouter extends ISiteWhereLifecycle {
 	 * @param execution
 	 * @param nesting
 	 * @param assignment
+	 * @param device
 	 * @throws SiteWhereException
 	 */
 	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException;
+			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
 
 	/**
 	 * Route a system command to one of the available agents.
@@ -49,8 +51,9 @@ public interface IOutboundCommandRouter extends ISiteWhereLifecycle {
 	 * @param command
 	 * @param nesting
 	 * @param assignment
+	 * @param device
 	 * @throws SiteWhereException
 	 */
-	public void routeSystemCommand(Object command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
-			throws SiteWhereException;
+	public void routeSystemCommand(Object command, IDeviceNestingContext nesting,
+			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
 }

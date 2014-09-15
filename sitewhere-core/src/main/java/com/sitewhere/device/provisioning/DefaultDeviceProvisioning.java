@@ -55,7 +55,8 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	private IOutboundCommandRouter outboundCommandRouter;
 
 	/** Configured list of inbound event sources */
-	private List<IOutboundCommandAgent<?>> outboundCommandAgents = new ArrayList<IOutboundCommandAgent<?>>();
+	private List<IOutboundCommandAgent<?, ?>> outboundCommandAgents =
+			new ArrayList<IOutboundCommandAgent<?, ?>>();
 
 	/*
 	 * (non-Javadoc)
@@ -74,7 +75,7 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 		// Start command agents.
 		if (getOutboundCommandAgents() != null) {
-			for (IOutboundCommandAgent<?> agent : getOutboundCommandAgents()) {
+			for (IOutboundCommandAgent<?, ?> agent : getOutboundCommandAgents()) {
 				agent.start();
 			}
 		}
@@ -124,7 +125,7 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 
 		// Start command agents.
 		if (getOutboundCommandAgents() != null) {
-			for (IOutboundCommandAgent<?> agent : getOutboundCommandAgents()) {
+			for (IOutboundCommandAgent<?, ?> agent : getOutboundCommandAgents()) {
 				agent.stop();
 			}
 		}
@@ -264,11 +265,11 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getOutboundCommandAgents
 	 * ()
 	 */
-	public List<IOutboundCommandAgent<?>> getOutboundCommandAgents() {
+	public List<IOutboundCommandAgent<?, ?>> getOutboundCommandAgents() {
 		return outboundCommandAgents;
 	}
 
-	public void setOutboundCommandAgents(List<IOutboundCommandAgent<?>> outboundCommandAgents) {
+	public void setOutboundCommandAgents(List<IOutboundCommandAgent<?, ?>> outboundCommandAgents) {
 		this.outboundCommandAgents = outboundCommandAgents;
 	}
 }

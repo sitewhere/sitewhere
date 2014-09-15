@@ -22,8 +22,10 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
  * 
  * @param <T>
  *            type of data that was encoded by the {@link ICommandExecutionEncoder}/
+ * @param <P>
+ *            parameters specific to the delivery provider
  */
-public interface ICommandDeliveryProvider<T> extends ISiteWhereLifecycle {
+public interface ICommandDeliveryProvider<T, P> extends ISiteWhereLifecycle {
 
 	/**
 	 * Deliver the given encoded invocation. The device, assignment and invocation details
@@ -33,10 +35,11 @@ public interface ICommandDeliveryProvider<T> extends ISiteWhereLifecycle {
 	 * @param assignment
 	 * @param execution
 	 * @param encoded
+	 * @param parameters
 	 * @throws SiteWhereException
 	 */
 	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution, T encoded) throws SiteWhereException;
+			IDeviceCommandExecution execution, T encoded, P parameters) throws SiteWhereException;
 
 	/**
 	 * Delivers a system command.
@@ -44,8 +47,9 @@ public interface ICommandDeliveryProvider<T> extends ISiteWhereLifecycle {
 	 * @param nested
 	 * @param assignment
 	 * @param encoded
+	 * @param parameters
 	 * @throws SiteWhereException
 	 */
-	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, T encoded)
-			throws SiteWhereException;
+	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, T encoded,
+			P parameters) throws SiteWhereException;
 }

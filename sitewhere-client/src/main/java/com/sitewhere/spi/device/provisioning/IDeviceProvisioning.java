@@ -69,7 +69,7 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	 * 
 	 * @return
 	 */
-	public List<IOutboundCommandAgent<?>> getOutboundCommandAgents();
+	public List<IOutboundCommandAgent<?, ?>> getOutboundCommandAgents();
 
 	/**
 	 * Deliver a command invocation.

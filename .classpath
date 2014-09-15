@@ -12,6 +12,7 @@
 	<classpathentry kind="src" path="sitewhere-mule/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-protobuf/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-solr/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-twilio/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-web/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
@@ -53,5 +54,7 @@
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/apache/solr/solr-core/4.6.0/solr-core-4.6.0.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.1.1/jackson-annotations-2.1.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast/3.1.5/hazelcast-3.1.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/twilio/sdk/twilio-java-sdk/3.4.5/twilio-java-sdk-3.4.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpcore/4.3/httpcore-4.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

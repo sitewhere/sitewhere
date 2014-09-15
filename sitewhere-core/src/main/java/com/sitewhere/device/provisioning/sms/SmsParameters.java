@@ -1,5 +1,5 @@
 /*
- * BinaryOutboundCommandAgent.java 
+ * SmsParameters.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -7,15 +7,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.provisioning;
-
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+package com.sitewhere.device.provisioning.sms;
 
 /**
- * Implementation of {@link IOutboundCommandAgent} that encodes and delivers messages that
- * are strings.
+ * Parameters needed to send an SMS message.
  * 
  * @author Derek
  */
-public class BinaryOutboundCommandAgent extends OutboundCommandAgent<byte[]> {
+public class SmsParameters {
+
+	public SmsParameters() {
+	}
 }

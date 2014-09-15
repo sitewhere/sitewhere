@@ -12,6 +12,7 @@ package com.sitewhere.device.provisioning;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
@@ -30,7 +31,7 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	private static Logger LOGGER = Logger.getLogger(SingleChoiceCommandRouter.class);
 
 	/** Agent that will deliver all commands */
-	private IOutboundCommandAgent<?> agent;
+	private IOutboundCommandAgent<?, ?> agent;
 
 	/*
 	 * (non-Javadoc)
@@ -39,12 +40,12 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	 * com.sitewhere.spi.device.provisioning.IOutboundCommandRouter#routeCommand(com.sitewhere
 	 * .spi.device.command.IDeviceCommandExecution,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
+	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
 	 */
 	@Override
 	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException {
-		agent.deliverCommand(execution, nesting, assignment);
+			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
+		agent.deliverCommand(execution, nesting, assignment, device);
 	}
 
 	/*
@@ -53,12 +54,12 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.IOutboundCommandRouter#routeSystemCommand
 	 * (java.lang.Object, com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
+	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
 	 */
 	@Override
-	public void routeSystemCommand(Object command, IDeviceNestingContext nesting, IDeviceAssignment assignment)
-			throws SiteWhereException {
-		agent.deliverSystemCommand(command, nesting, assignment);
+	public void routeSystemCommand(Object command, IDeviceNestingContext nesting,
+			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
+		agent.deliverSystemCommand(command, nesting, assignment, device);
 	}
 
 	/*

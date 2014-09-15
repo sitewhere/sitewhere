@@ -23,7 +23,7 @@ import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 public abstract class OutboundCommandRouter implements IOutboundCommandRouter {
 
 	/** List of agents serviced by the router */
-	private List<IOutboundCommandAgent<?>> agents;
+	private List<IOutboundCommandAgent<?, ?>> agents;
 
 	/*
 	 * (non-Javadoc)
@@ -51,11 +51,11 @@ public abstract class OutboundCommandRouter implements IOutboundCommandRouter {
 	 * .List)
 	 */
 	@Override
-	public void initialize(List<IOutboundCommandAgent<?>> agents) throws SiteWhereException {
+	public void initialize(List<IOutboundCommandAgent<?, ?>> agents) throws SiteWhereException {
 		this.agents = agents;
 	}
 
-	public List<IOutboundCommandAgent<?>> getAgents() {
+	public List<IOutboundCommandAgent<?, ?>> getAgents() {
 		return agents;
 	}
 }

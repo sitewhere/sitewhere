@@ -67,7 +67,7 @@
 
 	<!-- Hands off command invocations to provisioning for processing -->
 	<bean id="provisioningEventProcessor"
-		class="com.sitewhere.device.provisioning.DefaultProvisioningEventProcessor"/>
+		class="com.sitewhere.device.provisioning.ProvisioningEventProcessor"/>
 
 	<!-- Broadcasts SiteWhere state over Hazelcast -->
 	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
@@ -99,7 +99,7 @@
 
 	<!-- Device event receiver that monitors an MQTT topic for events (protobuf format) -->
 	<bean id="protobufMqttEventReceiver"
-		class="com.sitewhere.device.provisioning.receivers.mqtt.MqttInboundEventReceiver">
+		class="com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="topic" value="SiteWhere/input/protobuf"/>
@@ -124,7 +124,7 @@
 
 	<!-- Device event receiver that monitors an MQTT topic for events (JSON batch format) -->
 	<bean id="jsonMqttEventReceiver"
-		class="com.sitewhere.device.provisioning.receivers.mqtt.MqttInboundEventReceiver">
+		class="com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="topic" value="SiteWhere/input/jsonbatch"/>
@@ -132,7 +132,7 @@
 
 	<!-- Decodes device event messages using Jackson/JSON -->
 	<bean id="jsonEventDecoder"
-		class="com.sitewhere.device.provisioning.decoders.JsonBatchEventDecoder"/>
+		class="com.sitewhere.device.provisioning.json.JsonBatchEventDecoder"/>
 
 	<!-- Device event source for JSON messages over MQTT -->
 	<bean id="jsonEventSource"
@@ -188,7 +188,7 @@
 
 	<!-- Agent that encodes and delivers protobuf messages over MQTT -->
 	<bean id="defaultCommandAgent"
-		class="com.sitewhere.device.provisioning.BinaryOutboundCommandAgent">
+		class="com.sitewhere.device.provisioning.mqtt.MqttOutboundCommandAgent">
 		<property name="agentId" value="default"/>
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>

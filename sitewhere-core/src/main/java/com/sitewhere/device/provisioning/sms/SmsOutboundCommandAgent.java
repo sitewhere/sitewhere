@@ -7,16 +7,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.provisioning;
+package com.sitewhere.device.provisioning.sms;
 
+import com.sitewhere.device.provisioning.OutboundCommandAgent;
+import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
 
 /**
  * Implementation of {@link IOutboundCommandAgent} that encodes and delivers messages that
- * are strings.
+ * are strings and {@link ICommandDeliveryProvider} requires {@link SmsParameters}.
  * 
  * @author Derek
- * 
  */
-public class StringOutboundCommandAgent extends OutboundCommandAgent<String> {
+public class SmsOutboundCommandAgent extends OutboundCommandAgent<String, SmsParameters> {
 }

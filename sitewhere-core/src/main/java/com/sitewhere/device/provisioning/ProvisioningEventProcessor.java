@@ -27,10 +27,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public class DefaultProvisioningEventProcessor extends OutboundEventProcessor {
+public class ProvisioningEventProcessor extends OutboundEventProcessor {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DefaultProvisioningEventProcessor.class);
+	private static Logger LOGGER = Logger.getLogger(ProvisioningEventProcessor.class);
 
 	/** Number of invocations to buffer before blocking calls */
 	private static final int BUFFER_SIZE = 100;

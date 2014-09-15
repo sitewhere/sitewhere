@@ -7,7 +7,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.provisioning.receivers.mqtt;
+package com.sitewhere.device.provisioning.mqtt;
 
 import java.net.URISyntaxException;
 import java.util.concurrent.ArrayBlockingQueue;

@@ -28,7 +28,7 @@ import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
  * 
  * @author Derek
  */
-public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byte[]> {
+public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byte[], MqttParameters> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttCommandDeliveryProvider.class);
@@ -108,7 +108,8 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	 */
 	@Override
 	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution, byte[] encoded) throws SiteWhereException {
+			IDeviceCommandExecution execution, byte[] encoded, MqttParameters params)
+			throws SiteWhereException {
 		String commandTopic = getCommandTopicPrefix() + nested.getGateway().getHardwareId();
 		try {
 			LOGGER.debug("About to publish command message to topic: " + commandTopic);
@@ -129,7 +130,7 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	 */
 	@Override
 	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			byte[] encoded) throws SiteWhereException {
+			byte[] encoded, MqttParameters params) throws SiteWhereException {
 		String systemTopic = getSystemTopicPrefix() + nested.getGateway().getHardwareId();
 		try {
 			LOGGER.debug("About to publish system message to topic: " + systemTopic);

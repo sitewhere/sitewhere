@@ -3,7 +3,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential.
  */
-package com.sitewhere.device.provisioning.receivers.socket;
+package com.sitewhere.device.provisioning.socket;
 
 import java.io.IOException;
 import java.net.ServerSocket;

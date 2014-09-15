@@ -11,6 +11,7 @@ package com.sitewhere.spi.device.provisioning;
 
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
@@ -23,7 +24,7 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
  * 
  * @param <T>
  */
-public interface IOutboundCommandAgent<T> extends ISiteWhereLifecycle {
+public interface IOutboundCommandAgent<T, P> extends ISiteWhereLifecycle {
 
 	/**
 	 * Get unique identifier for agent.
@@ -40,11 +41,18 @@ public interface IOutboundCommandAgent<T> extends ISiteWhereLifecycle {
 	public ICommandExecutionEncoder<T> getCommandExecutionEncoder();
 
 	/**
+	 * Get the configured command delivery parameter extractor.
+	 * 
+	 * @return
+	 */
+	public ICommandDeliveryParameterExtractor<P> getCommandDeliveryParameterExtractor();
+
+	/**
 	 * Gets the configured command delivery provider.
 	 * 
 	 * @return
 	 */
-	public ICommandDeliveryProvider<T> getCommandDeliveryProvider();
+	public ICommandDeliveryProvider<T, P> getCommandDeliveryProvider();
 
 	/**
 	 * Deliver a command.
@@ -52,10 +60,11 @@ public interface IOutboundCommandAgent<T> extends ISiteWhereLifecycle {
 	 * @param execution
 	 * @param nesting
 	 * @param assignment
+	 * @param device
 	 * @throws SiteWhereException
 	 */
 	public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException;
+			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
 
 	/**
 	 * Deliver a system command.
@@ -63,8 +72,9 @@ public interface IOutboundCommandAgent<T> extends ISiteWhereLifecycle {
 	 * @param command
 	 * @param nesting
 	 * @param assignment
+	 * @param device
 	 * @throws SiteWhereException
 	 */
 	public void deliverSystemCommand(Object command, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment) throws SiteWhereException;
+			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
 }
