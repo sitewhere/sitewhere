@@ -12,11 +12,18 @@ message SiteWhere {
 		required Command command = 1;
 		optional string originator = 2;
 	}
+	
+	// A single piece of metadata.
+	message Metadata {
+		required string name = 1;
+		required string value = 2;
+	}
 
 	// Register a device with SiteWhere.
 	message RegisterDevice {
 		required string hardwareId = 1;
 		required string specificationToken = 2;
+		repeated Metadata metadata = 3;
 	}
 
 	// Acknowledge previous command.
@@ -44,8 +51,8 @@ message SiteWhere {
 	
 	// A single measurement.
 	message Measurement {
-		required string measurementId = 2;
-		required double measurementValue = 3;
+		required string measurementId = 1;
+		required double measurementValue = 2;
 	}
 
 	// Event message for device measurements.

@@ -12,162 +12,67 @@ package com.sitewhere.device.provisioning.protobuf;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.device.provisioning.RegistrationManager;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAck;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckError;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckState;
-import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
-import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
-import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.DeviceAssignmentType;
-import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceSpecification;
-import com.sitewhere.spi.device.ISite;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
-import com.sitewhere.spi.search.ISearchResults;
 
 /**
  * Google Protocol Buffer implementation of {@link IRegistrationManager}.
  * 
  * @author Derek
  */
-public class ProtobufRegistrationManager implements IRegistrationManager {
+public class ProtobufRegistrationManager extends RegistrationManager {
 
 	/** Static logger instance */
+	@SuppressWarnings("unused")
 	private static Logger LOGGER = Logger.getLogger(ProtobufRegistrationManager.class);
-
-	/** Indicates if new devices can register with the system */
-	private boolean allowNewDevices;
-
-	/** Indicates if devices can be auto-assigned if no site token is passed */
-	private boolean autoAssignSite;
-
-	/** Token used if autoAssignSite is enabled */
-	private String autoAssignSiteToken;
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IRegistrationManager#handleDeviceRegistration
-	 * (com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
+	 * com.sitewhere.device.provisioning.RegistrationManager#sendRegistrationAck(java.
+	 * lang.String, boolean)
 	 */
 	@Override
-	public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
-		LOGGER.debug("Handling device registration request.");
-		IDevice device =
-				SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(request.getHardwareId());
+	protected void sendRegistrationAck(String hardwareId, boolean newRegistration) throws SiteWhereException {
 		RegistrationAckState state =
-				(device == null) ? RegistrationAckState.NEW_REGISTRATION
+				(newRegistration) ? RegistrationAckState.NEW_REGISTRATION
 						: RegistrationAckState.ALREADY_REGISTERED;
-		IDeviceSpecification specification =
-				SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(
-						request.getSpecificationToken());
-		// Create device if it does not already exist.
-		if (device == null) {
-			LOGGER.debug("Creating new device as part of registration.");
-			if (specification == null) {
-				RegistrationAck ack =
-						RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
-								RegistrationAckError.INVALID_SPECIFICATION).build();
-				SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(),
-						ack);
-				return;
-			}
-			DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
-			deviceCreate.setHardwareId(request.getHardwareId());
-			deviceCreate.setSpecificationToken(request.getSpecificationToken());
-			deviceCreate.setComments("Device created by on-demand registration.");
-			device = SiteWhere.getServer().getDeviceManagement().createDevice(deviceCreate);
-		} else if (!device.getSpecificationToken().equals(request.getSpecificationToken())) {
-			// TODO: Is this an error or a valid use case?
-			RegistrationAck ack =
-					RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
-							RegistrationAckError.INVALID_SPECIFICATION).build();
-			SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(), ack);
-			return;
-		}
-		// Make sure device is assigned.
-		if (device.getAssignmentToken() == null) {
-			if (!isAutoAssignSite()) {
-				RegistrationAck ack =
-						RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
-								RegistrationAckError.SITE_TOKEN_REQUIRED).build();
-				SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(),
-						ack);
-				return;
-			}
-			LOGGER.debug("Handling unassigned device for registration.");
-			DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
-			assnCreate.setSiteToken(getAutoAssignSiteToken());
-			assnCreate.setDeviceHardwareId(device.getHardwareId());
-			assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
-			SiteWhere.getServer().getDeviceManagement().createDeviceAssignment(assnCreate);
-		}
 		RegistrationAck ack = RegistrationAck.newBuilder().setState(state).build();
-		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(request.getHardwareId(), ack);
+		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, ack);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see
+	 * com.sitewhere.device.provisioning.RegistrationManager#sendInvalidSpecification(
+	 * java.lang.String)
 	 */
 	@Override
-	public void start() throws SiteWhereException {
-		LOGGER.info("Device registration manager starting.");
-		if (isAutoAssignSite()) {
-			if (getAutoAssignSiteToken() == null) {
-				ISearchResults<ISite> sites =
-						SiteWhere.getServer().getDeviceManagement().listSites(new SearchCriteria(1, 1));
-				if (sites.getResults().isEmpty()) {
-					throw new SiteWhereException(
-							"Registration manager configured for auto-assign site, but no sites were found.");
-				}
-				setAutoAssignSiteToken(sites.getResults().get(0).getToken());
-			} else {
-				ISite site =
-						SiteWhere.getServer().getDeviceManagement().getSiteByToken(getAutoAssignSiteToken());
-				if (site == null) {
-					throw new SiteWhereException(
-							"Registration manager auto assignment site token is invalid.");
-				}
-			}
-		}
+	protected void sendInvalidSpecification(String hardwareId) throws SiteWhereException {
+		RegistrationAck ack =
+				RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
+						RegistrationAckError.INVALID_SPECIFICATION).build();
+		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, ack);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see
+	 * com.sitewhere.device.provisioning.RegistrationManager#sendSiteTokenRequired(java
+	 * .lang.String)
 	 */
 	@Override
-	public void stop() throws SiteWhereException {
-		LOGGER.info("Device registration manager stopping.");
-	}
-
-	public boolean isAllowNewDevices() {
-		return allowNewDevices;
-	}
-
-	public void setAllowNewDevices(boolean allowNewDevices) {
-		this.allowNewDevices = allowNewDevices;
-	}
-
-	public boolean isAutoAssignSite() {
-		return autoAssignSite;
-	}
-
-	public void setAutoAssignSite(boolean autoAssignSite) {
-		this.autoAssignSite = autoAssignSite;
-	}
-
-	public String getAutoAssignSiteToken() {
-		return autoAssignSiteToken;
-	}
-
-	public void setAutoAssignSiteToken(String autoAssignSiteToken) {
-		this.autoAssignSiteToken = autoAssignSiteToken;
+	protected void sendSiteTokenRequired(String hardwareId) throws SiteWhereException {
+		RegistrationAck ack =
+				RegistrationAck.newBuilder().setState(RegistrationAckState.REGISTRATION_ERROR).setErrorType(
+						RegistrationAckError.SITE_TOKEN_REQUIRED).build();
+		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, ack);
 	}
 }

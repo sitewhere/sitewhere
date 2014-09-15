@@ -24,6 +24,7 @@ import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Devi
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.DeviceMeasurements;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Header;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Measurement;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.Metadata;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.SiteWhere.RegisterDevice;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
@@ -71,6 +72,10 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 				request.setHardwareId(register.getHardwareId());
 				request.setSpecificationToken(register.getSpecificationToken());
+				List<Metadata> metadata = register.getMetadataList();
+				for (Metadata meta : metadata) {
+					request.addOrReplaceMetadata(meta.getName(), meta.getValue());
+				}
 				request.setReplyTo(null);
 				decoded.setHardwareId(register.getHardwareId());
 				decoded.setRequest(request);
