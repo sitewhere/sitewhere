@@ -1,5 +1,5 @@
 /*
- * SingleChoiceCommandRouter.java 
+ * SpecificationMappingCommandRouter.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,9 +9,8 @@
  */
 package com.sitewhere.device.provisioning;
 
-import java.util.Iterator;
-
-import org.apache.log4j.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
@@ -22,18 +21,15 @@ import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 
 /**
- * Implementation of {@link IOutboundCommandRouter} that assumes a single
- * {@link IOutboundCommandAgent} is available and delivers commands to it.
+ * Implementation of {@link IOutboundCommandRouter} that maps specification ids to
+ * {@link IOutboundCommandAgent} ids and routes accordingly.
  * 
  * @author Derek
  */
-public class SingleChoiceCommandRouter extends OutboundCommandRouter {
+public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SingleChoiceCommandRouter.class);
-
-	/** Agent that will deliver all commands */
-	private IOutboundCommandAgent<?, ?> agent;
+	/** Map of specification tokens to command agent ids */
+	private Map<String, String> mappings = new HashMap<String, String>();
 
 	/*
 	 * (non-Javadoc)
@@ -47,6 +43,7 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	@Override
 	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
+		IOutboundCommandAgent<?, ?> agent = getAgentForDevice(device);
 		agent.deliverCommand(execution, nesting, assignment, device);
 	}
 
@@ -61,34 +58,36 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	@Override
 	public void routeSystemCommand(Object command, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
+		IOutboundCommandAgent<?, ?> agent = getAgentForDevice(device);
 		agent.deliverSystemCommand(command, nesting, assignment, device);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get {@link IOutboundCommandAgent} for device based on specification token
+	 * associated with the device.
 	 * 
-	 * @see com.sitewhere.device.provisioning.OutboundCommandRouter#start()
+	 * @param device
+	 * @return
+	 * @throws SiteWhereException
 	 */
-	@Override
-	public void start() throws SiteWhereException {
-		LOGGER.info("Starting single choice command router...");
-		super.start();
-		if (getAgents().size() != 1) {
-			throw new SiteWhereException("Expected exactly one agent for command routing but found "
-					+ getAgents().size() + ".");
+	protected IOutboundCommandAgent<?, ?> getAgentForDevice(IDevice device) throws SiteWhereException {
+		String specToken = device.getSpecificationToken();
+		String agentId = mappings.get(specToken);
+		if (agentId == null) {
+			throw new SiteWhereException("No command agent mapping for specification: " + specToken);
 		}
-		Iterator<IOutboundCommandAgent<?, ?>> it = getAgents().values().iterator();
-		this.agent = it.next();
+		IOutboundCommandAgent<?, ?> agent = getAgents().get(agentId);
+		if (agent == null) {
+			throw new SiteWhereException("Mapping exists, but no agent found for agent id: " + agentId);
+		}
+		return agent;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.provisioning.OutboundCommandRouter#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		super.stop();
-		LOGGER.info("Stopped single choice command router.");
+	public Map<String, String> getMappings() {
+		return mappings;
+	}
+
+	public void setMappings(Map<String, String> mappings) {
+		this.mappings = mappings;
 	}
 }

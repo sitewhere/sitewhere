@@ -194,9 +194,15 @@
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
 	</bean>
 
-	<!-- Router that sends commands via a single agent -->
+	<!-- Router that maps specification tokens to agent ids for encoding/delivery -->
 	<bean id="router"
-		class="com.sitewhere.device.provisioning.SingleChoiceCommandRouter"/>
+		class="com.sitewhere.device.provisioning.SpecificationMappingCommandRouter">
+		<property name="mappings">
+			<map>
+				<entry key="fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910" value="default"/>
+			</map>
+		</property>
+	</bean>
 
 	<!-- Configures device provisioning -->
 	<bean id="deviceProvisioning"

@@ -9,7 +9,9 @@
  */
 package com.sitewhere.device.provisioning;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
@@ -23,7 +25,8 @@ import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 public abstract class OutboundCommandRouter implements IOutboundCommandRouter {
 
 	/** List of agents serviced by the router */
-	private List<IOutboundCommandAgent<?, ?>> agents;
+	private Map<String, IOutboundCommandAgent<?, ?>> agents =
+			new HashMap<String, IOutboundCommandAgent<?, ?>>();
 
 	/*
 	 * (non-Javadoc)
@@ -51,11 +54,16 @@ public abstract class OutboundCommandRouter implements IOutboundCommandRouter {
 	 * .List)
 	 */
 	@Override
-	public void initialize(List<IOutboundCommandAgent<?, ?>> agents) throws SiteWhereException {
-		this.agents = agents;
+	public void initialize(List<IOutboundCommandAgent<?, ?>> agentList) throws SiteWhereException {
+		this.agents.clear();
+
+		// Create map of agents by id.
+		for (IOutboundCommandAgent<?, ?> agent : agentList) {
+			agents.put(agent.getAgentId(), agent);
+		}
 	}
 
-	public List<IOutboundCommandAgent<?, ?>> getAgents() {
+	public Map<String, IOutboundCommandAgent<?, ?>> getAgents() {
 		return agents;
 	}
 }

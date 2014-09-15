@@ -1,5 +1,5 @@
 /*
- * NullParameters.java 
+ * MqttParameters.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
