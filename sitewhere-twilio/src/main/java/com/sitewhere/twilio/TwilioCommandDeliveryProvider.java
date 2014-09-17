@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.Logger;
 
 import com.sitewhere.device.provisioning.sms.SmsParameters;
 import com.sitewhere.spi.SiteWhereException;
@@ -34,11 +35,17 @@ import com.twilio.sdk.resource.instance.Account;
  */
 public class TwilioCommandDeliveryProvider implements ICommandDeliveryProvider<String, SmsParameters> {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(TwilioCommandDeliveryProvider.class);
+
 	/** Account SID */
 	private String accountSid;
 
 	/** Auth token */
 	private String authToken;
+
+	/** Phone number to send command from */
+	private String fromPhoneNumber;
 
 	/** Client for Twilio REST calls */
 	private TwilioRestClient twilio;
@@ -61,6 +68,8 @@ public class TwilioCommandDeliveryProvider implements ICommandDeliveryProvider<S
 		}
 		this.twilio = new TwilioRestClient(getAccountSid(), getAuthToken());
 		this.account = twilio.getAccount();
+		LOGGER.info("Twilio delivery provider started. Calls will originate from " + getFromPhoneNumber()
+				+ ".");
 	}
 
 	/*
@@ -85,6 +94,8 @@ public class TwilioCommandDeliveryProvider implements ICommandDeliveryProvider<S
 	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
 			IDeviceCommandExecution execution, String encoded, SmsParameters params)
 			throws SiteWhereException {
+		LOGGER.info("Delivering SMS command to " + params.getSmsPhoneNumber() + ".");
+		sendSms(encoded, getFromPhoneNumber(), params.getSmsPhoneNumber());
 	}
 
 	/*
@@ -98,6 +109,7 @@ public class TwilioCommandDeliveryProvider implements ICommandDeliveryProvider<S
 	@Override
 	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
 			String encoded, SmsParameters params) throws SiteWhereException {
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -135,5 +147,13 @@ public class TwilioCommandDeliveryProvider implements ICommandDeliveryProvider<S
 
 	public void setAuthToken(String authToken) {
 		this.authToken = authToken;
+	}
+
+	public String getFromPhoneNumber() {
+		return fromPhoneNumber;
+	}
+
+	public void setFromPhoneNumber(String fromPhoneNumber) {
+		this.fromPhoneNumber = fromPhoneNumber;
 	}
 }

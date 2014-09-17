@@ -16,6 +16,14 @@ package com.sitewhere.device.provisioning.sms;
  */
 public class SmsParameters {
 
-	public SmsParameters() {
+	/** SMS phone number */
+	private String smsPhoneNumber;
+
+	public String getSmsPhoneNumber() {
+		return smsPhoneNumber;
+	}
+
+	public void setSmsPhoneNumber(String smsPhoneNumber) {
+		this.smsPhoneNumber = smsPhoneNumber;
 	}
 }

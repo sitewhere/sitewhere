@@ -614,9 +614,11 @@ public class SiteWhereServer implements ISiteWhereServer {
 	}
 
 	/**
-	 * Load the springified server configuration.
+	 * Load application context from file.
 	 * 
+	 * @param configFile
 	 * @return
+	 * @throws SiteWhereException
 	 */
 	protected ApplicationContext loadServerApplicationContext(File configFile) throws SiteWhereException {
 		GenericApplicationContext context = new GenericApplicationContext();
@@ -624,6 +626,7 @@ public class SiteWhereServer implements ISiteWhereServer {
 		// Plug in custom property source.
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
+
 		MapPropertySource source = new MapPropertySource("sitewhere", properties);
 		context.getEnvironment().getPropertySources().addLast(source);
 
