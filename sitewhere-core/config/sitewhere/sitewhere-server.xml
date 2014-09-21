@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:sw="http://www.sitewhere.com/schema/sitewhere"
 	xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
-           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd">
            
 	<!-- Load property values for substitution -->
-	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties" />
-           
-	<!-- Import beans specific to the given edition -->
-	<import resource="sitewhere-edition-${sitewhere.edition}.xml"/>
+	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"/>
+	
+	<!-- ########################### -->
+	<!-- # SITEWHERE CONFIGURATION # -->
+	<!-- ########################### -->
+	<sw:configuration>
+		
+		<!-- ########################### -->
+		<!-- # DATASTORE CONFIGURATION # -->
+		<!-- ########################### -->
+		<sw:datastore>
+		
+			<!-- Default MongoDB Datastore -->
+			<sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
+		
+			<!-- Default HBase Datastore -->
+			<!--  
+			<sw:hbase-datastore quorum="localhost"/>
+			-->
+			
+			<!-- Improves performance by using EHCache to store device management entities -->
+			<sw:ehcache-device-management-cache/>
 
-	<!-- #################################### -->
-	<!-- # SERVICE PROVIDER IMPLEMENTATIONS # -->
-	<!-- #################################### -->
+		</sw:datastore>
 
-	<!-- Leave uncommented to use MongoDB datastore -->
-	<import resource="sitewhere-mongodb.xml"/>
-
-	<!-- Uncomment to use HBase datastore -->
-	<!-- <import resource="sitewhere-hbase.xml"/> -->
-
-	<!-- #################################### -->
-	<!-- # DEVICE MANAGEMENT CACHE PROVIDER # -->
-	<!-- #################################### -->
-
-	<!-- Uses EHCache to cache device mangament entities -->
-	<bean id="deviceManagementCacheProvider" class="com.sitewhere.ehcache.DeviceManagementCacheProvider"/>
+	</sw:configuration>
 
 	<!-- ########################### -->
 	<!-- # HAZELCAST CONFIGURATION # -->
@@ -52,12 +58,10 @@
 	<!-- ############################ -->
 
 	<!-- Takes inbound device events and stores them using device management SPI calls -->
-	<bean id="eventStorageProcessor"
-		class="com.sitewhere.device.event.processor.DefaultEventStorageProcessor"/>
+	<bean id="eventStorageProcessor" class="com.sitewhere.device.event.processor.DefaultEventStorageProcessor"/>
 
 	<!-- Inbound event processor chain configuration -->
-	<bean id="inboundProcessorChain"
-		class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
+	<bean id="inboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
 		<property name="processors">
 			<list>
 				<ref bean="eventStorageProcessor"/>
@@ -70,8 +74,7 @@
 	<!-- ############################# -->
 
 	<!-- Hands off command invocations to provisioning for processing -->
-	<bean id="provisioningEventProcessor"
-		class="com.sitewhere.device.provisioning.ProvisioningEventProcessor"/>
+	<bean id="provisioningEventProcessor" class="com.sitewhere.device.provisioning.ProvisioningEventProcessor"/>
 
 	<!-- Broadcasts SiteWhere state over Hazelcast -->
 	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
@@ -84,8 +87,7 @@
 	</bean>
 
 	<!-- Outbound event processor chain configuration -->
-	<bean id="outboundProcessorChain"
-		class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain">
+	<bean id="outboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain">
 		<property name="processors">
 			<list>
 				<ref bean="provisioningEventProcessor"/>
@@ -102,20 +104,17 @@
 	<!-- GOOGLE PROTOCOL BUFFER INBOUND PROCESSING -->
 
 	<!-- Device event receiver that monitors an MQTT topic for events (protobuf format) -->
-	<bean id="protobufMqttEventReceiver"
-		class="com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver">
+	<bean id="protobufMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="topic" value="SiteWhere/input/protobuf"/>
 	</bean>
 
 	<!-- Decodes device event messages using Google Protocol Buffers -->
-	<bean id="protobufEventDecoder"
-		class="com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder"/>
+	<bean id="protobufEventDecoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder"/>
 
 	<!-- Device event source for protobuf messages over MQTT -->
-	<bean id="protbufEventSource"
-		class="com.sitewhere.device.provisioning.BinaryInboundEventSource">
+	<bean id="protbufEventSource" class="com.sitewhere.device.provisioning.BinaryInboundEventSource">
 		<property name="deviceEventDecoder" ref="protobufEventDecoder"/>
 		<property name="inboundEventReceivers">
 			<list>
@@ -127,20 +126,17 @@
 	<!-- JSON BATCH INBOUND PROCESSING -->
 
 	<!-- Device event receiver that monitors an MQTT topic for events (JSON batch format) -->
-	<bean id="jsonMqttEventReceiver"
-		class="com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver">
+	<bean id="jsonMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="topic" value="SiteWhere/input/jsonbatch"/>
 	</bean>
 
 	<!-- Decodes device event messages using Jackson/JSON -->
-	<bean id="jsonEventDecoder"
-		class="com.sitewhere.device.provisioning.json.JsonBatchEventDecoder"/>
+	<bean id="jsonEventDecoder" class="com.sitewhere.device.provisioning.json.JsonBatchEventDecoder"/>
 
 	<!-- Device event source for JSON messages over MQTT -->
-	<bean id="jsonEventSource"
-		class="com.sitewhere.device.provisioning.BinaryInboundEventSource">
+	<bean id="jsonEventSource" class="com.sitewhere.device.provisioning.BinaryInboundEventSource">
 		<property name="deviceEventDecoder" ref="jsonEventDecoder"/>
 		<property name="inboundEventReceivers">
 			<list>
@@ -169,8 +165,7 @@
 	<!-- REGISTRATION -->
 
 	<!-- Manages registration of new devices in the system -->
-	<bean id="protobufRegistrationManager"
-		class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager">
+	<bean id="protobufRegistrationManager" class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager">
 		<property name="allowNewDevices" value="true"/>
 		<property name="autoAssignSite" value="true"/>
 	</bean>
@@ -178,12 +173,10 @@
 	<!-- OUTBOUND PROCESSING -->
 
 	<!-- Encodes device commands using Google Protocol Buffers -->
-	<bean id="protobufExecutionEncoder"
-		class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
+	<bean id="protobufExecutionEncoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
 
 	<!-- Delivery provider that publishes commands to MQTT topics -->
-	<bean id="mqttDeliveryProvider"
-		class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
+	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
 		<property name="commandTopicPrefix" value="SiteWhere/commands/"/>
@@ -191,8 +184,7 @@
 	</bean>
 
 	<!-- Agent that encodes and delivers protobuf messages over MQTT -->
-	<bean id="defaultCommandAgent"
-		class="com.sitewhere.device.provisioning.mqtt.MqttOutboundCommandAgent">
+	<bean id="defaultCommandAgent" class="com.sitewhere.device.provisioning.mqtt.MqttOutboundCommandAgent">
 		<property name="agentId" value="default"/>
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
@@ -202,8 +194,7 @@
 	<bean id="laipacExecutionEncoder" class="com.sitewhere.ee.devices.laipac.LaipacCommandEncoder"/>
 
 	<!-- Extracts SMS parameters for Laipac devices -->
-	<bean id="laipacExtractor"
-		class="com.sitewhere.ee.devices.laipac.LaipacSmsParameterExtractor"/>
+	<bean id="laipacExtractor" class="com.sitewhere.ee.devices.laipac.LaipacSmsParameterExtractor"/>
 
 	<!-- Delivery provider sends commands via Twilio SMS -->
 	<bean id="twilioDeliveryProvider" class="com.sitewhere.twilio.TwilioCommandDeliveryProvider">
@@ -213,8 +204,7 @@
 	</bean>
 
 	<!-- Agent that encodes and delivers Laipac commands via SMS -->
-	<bean id="laipacCommandAgent"
-		class="com.sitewhere.device.provisioning.sms.SmsOutboundCommandAgent">
+	<bean id="laipacCommandAgent" class="com.sitewhere.device.provisioning.sms.SmsOutboundCommandAgent">
 		<property name="agentId" value="laipac"/>
 		<property name="commandExecutionEncoder" ref="laipacExecutionEncoder"/>
 		<property name="commandDeliveryParameterExtractor" ref="laipacExtractor"/>
@@ -222,8 +212,7 @@
 	</bean>
 
 	<!-- Router that maps specification tokens to agent ids for encoding/delivery -->
-	<bean id="router"
-		class="com.sitewhere.device.provisioning.SpecificationMappingCommandRouter">
+	<bean id="router" class="com.sitewhere.device.provisioning.SpecificationMappingCommandRouter">
 		<property name="mappings">
 			<map>
 				<entry key="417b36a8-21ef-4196-a8fe-cc756f994d0b" value="default"/>
@@ -233,8 +222,7 @@
 	</bean>
 
 	<!-- Configures device provisioning -->
-	<bean id="deviceProvisioning"
-		class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
+	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
 		<property name="registrationManager" ref="protobufRegistrationManager"/>
 		<property name="inboundEventSources">
 			<list>
@@ -262,8 +250,7 @@
 	</bean>
 
 	<!-- Default file system hardware asset module -->
-	<bean id="deviceModelInitializer"
-		class="com.sitewhere.server.device.DefaultDeviceModelInitializer">
+	<bean id="deviceModelInitializer" class="com.sitewhere.server.device.DefaultDeviceModelInitializer">
 		<property name="initializeIfNoConsole" value="Yes"/>
 	</bean>
 
@@ -290,5 +277,8 @@
 	<!-- ############################## -->
 
 	<import resource="assets/sitewhere-assets.xml"/>
+           
+	<!-- Import beans specific to the given edition -->
+	<import resource="sitewhere-edition-${sitewhere.edition}.xml"/>
 
 </beans>
