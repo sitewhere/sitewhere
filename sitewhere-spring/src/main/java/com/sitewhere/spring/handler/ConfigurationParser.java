@@ -41,6 +41,9 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 			if (IConfigurationElements.DATASTORE.equals(section.getLocalName())) {
 				new DatastoreParser().parse(section, context);
 			}
+			if (IConfigurationElements.INBOUND_PROCESSING_CHAIN.equals(section.getLocalName())) {
+				new InboundProcessingChainParser().parse(section, context);
+			}
 		}
 		return null;
 	}

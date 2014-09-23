@@ -6,19 +6,57 @@
 	<xsd:import namespace="http://www.springframework.org/schema/beans"
 		schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"/>
 
-	<xsd:element name="configuration" type="configurationType"></xsd:element>
+	<xsd:element name="configuration" type="configurationType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides configuration information for a SiteWhere server instance.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
 
 	<xsd:complexType name="configurationType">
 		<xsd:sequence>
-			<xsd:element name="datastore" type="datastoreType" minOccurs="0" maxOccurs="1"></xsd:element>
+			<xsd:element name="datastore" type="datastoreType" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Provides information about how SiteWhere data is to be persisted
+						and how the core device and user management service provider interfaces are
+						implemented. Caching of persisted data is also configured in this section.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType"
+				minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						A chain of processors through which all inbound device information
+						is passed. Each processor handles some piece of processing and passes information on
+						to the next.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="datastoreType">
 		<xsd:sequence>
 			<xsd:choice>
-				<xsd:element name="mongo-datastore" type="mongoDatastoreType"></xsd:element>
-				<xsd:element name="hbase-datastore" type="hbaseDatastoreType"></xsd:element>
+				<xsd:element name="mongo-datastore" type="mongoDatastoreType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Datastore that includes MongoDB connectivity along with device
+							management and user mangemement implementations.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="hbase-datastore" type="hbaseDatastoreType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Datastore that includes HBase connectivity along with device
+							management and user mangemement implementations.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 			</xsd:choice>
 			<xsd:choice minOccurs="0" maxOccurs="1">
 				<xsd:element name="ehcache-device-management-cache" type="ehcacheDeviceManagementCacheType"/>
@@ -36,7 +74,35 @@
 		<xsd:attribute name="quorum" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="ehcacheDeviceManagementCacheType">
+	<xsd:complexType name="ehcacheDeviceManagementCacheType"/>
+
+	<xsd:complexType name="inboundProcessingChainType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="inbound-event-processor" type="inboundProcessorReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom inbound event processor implementation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="default-event-storage-processor" type="defaultEventStorageProcessorType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Provides standard behavior of storing SiteWhere events via
+							service provider interfaces. If this event processor is not enabled, data will not
+							be stored or otherwise processed by SiteWhere.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
 	</xsd:complexType>
+
+	<xsd:complexType name="inboundProcessorReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="defaultEventStorageProcessorType"/>
 
 </xsd:schema>

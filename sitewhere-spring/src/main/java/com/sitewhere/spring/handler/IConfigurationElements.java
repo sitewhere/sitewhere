@@ -25,9 +25,6 @@ public interface IConfigurationElements {
 	/** Constant for section providing datastore information */
 	public static final String DATASTORE = "datastore";
 
-	/** Constant for section providing MongoDB datastore information */
-	public static final String MONGO_DATASTORE = "mongo-datastore";
-
-	/** Constant for section providing Apache HBase datastore information */
-	public static final String HBASE_DATASTORE = "hbase-datastore";
+	/** Constant for section providing inbound processing chain information */
+	public static final String INBOUND_PROCESSING_CHAIN = "inbound-processing-chain";
 }

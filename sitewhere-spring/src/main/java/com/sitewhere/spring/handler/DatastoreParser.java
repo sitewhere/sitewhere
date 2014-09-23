@@ -39,7 +39,7 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 		List<Element> dsChildren = DomUtils.getChildElements(element);
 		for (Element child : dsChildren) {
-			DatastoreElements type = DatastoreElements.getByLocalName(child.getLocalName());
+			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
 				throw new RuntimeException("Unknown datastore element: " + child.getLocalName());
 			}
@@ -149,7 +149,7 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	 * 
 	 * @author Derek
 	 */
-	public static enum DatastoreElements {
+	public static enum Elements {
 
 		/** Mongo datastore and service providers */
 		Mongo("mongo-datastore"),
@@ -163,12 +163,12 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		/** Event code */
 		private String localName;
 
-		private DatastoreElements(String localName) {
+		private Elements(String localName) {
 			this.localName = localName;
 		}
 
-		public static DatastoreElements getByLocalName(String localName) {
-			for (DatastoreElements value : DatastoreElements.values()) {
+		public static Elements getByLocalName(String localName) {
+			for (Elements value : Elements.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}

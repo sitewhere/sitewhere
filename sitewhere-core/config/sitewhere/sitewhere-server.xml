@@ -32,6 +32,16 @@
 			<sw:ehcache-device-management-cache/>
 
 		</sw:datastore>
+		
+		<!-- ############################ -->
+		<!-- # INBOUND PROCESSING CHAIN # -->
+		<!-- ############################ -->
+		<sw:inbound-processing-chain>
+			
+			<!-- Store events and delegate to registration manager -->
+			<sw:default-event-storage-processor/>
+			
+		</sw:inbound-processing-chain>
 
 	</sw:configuration>
 
@@ -51,22 +61,6 @@
 	<!-- Provides connectivity to Solr for components that need it -->
 	<bean id="solrConfig" class="com.sitewhere.solr.SiteWhereSolrConfiguration">
 		<property name="solrServerUrl" value="http://localhost:8983/solr/SiteWhere"/>
-	</bean>
-
-	<!-- ############################ -->
-	<!-- # INBOUND EVENT PROCESSING # -->
-	<!-- ############################ -->
-
-	<!-- Takes inbound device events and stores them using device management SPI calls -->
-	<bean id="eventStorageProcessor" class="com.sitewhere.device.event.processor.DefaultEventStorageProcessor"/>
-
-	<!-- Inbound event processor chain configuration -->
-	<bean id="inboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain">
-		<property name="processors">
-			<list>
-				<ref bean="eventStorageProcessor"/>
-			</list>
-		</property>
 	</bean>
 
 	<!-- ############################# -->
