@@ -35,6 +35,16 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType"
+				minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						A chain of processors through which all outbound device events are
+						passed. Each processor handles some piece of processing and passes information on to
+						the next.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -104,5 +114,33 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="defaultEventStorageProcessorType"/>
+
+	<xsd:complexType name="outboundProcessingChainType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="outbound-event-processor" type="outboundProcessorReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom outbound event processor implementation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="provisioning-event-processor" type="provisioningEventProcessorType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Hands off outbound device command events to the provisioning
+							subsystem. If this event processor is not configured, no commands will be sent to
+							devices.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="outboundProcessorReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="provisioningEventProcessorType"/>
 
 </xsd:schema>

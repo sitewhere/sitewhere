@@ -42,6 +42,19 @@
 			<sw:default-event-storage-processor/>
 			
 		</sw:inbound-processing-chain>
+		
+		<!-- ############################# -->
+		<!-- # OUTBOUND PROCESSING CHAIN # -->
+		<!-- ############################# -->
+		<sw:outbound-processing-chain>
+		
+			<!-- Routes commands for provisioning -->
+			<sw:provisioning-event-processor/>
+			
+			<!-- Send outbound device events over Hazelcast -->
+			<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
+		
+		</sw:outbound-processing-chain>
 
 	</sw:configuration>
 
@@ -67,9 +80,6 @@
 	<!-- # OUTBOUND EVENT PROCESSING # -->
 	<!-- ############################# -->
 
-	<!-- Hands off command invocations to provisioning for processing -->
-	<bean id="provisioningEventProcessor" class="com.sitewhere.device.provisioning.ProvisioningEventProcessor"/>
-
 	<!-- Broadcasts SiteWhere state over Hazelcast -->
 	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
 		<property name="configuration" ref="hazelcastConfig"/>
@@ -78,17 +88,6 @@
 	<!-- Indexes SiteWhere events in Solr -->
 	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
 		<property name="solr" ref="solrConfig"/>
-	</bean>
-
-	<!-- Outbound event processor chain configuration -->
-	<bean id="outboundProcessorChain" class="com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain">
-		<property name="processors">
-			<list>
-				<ref bean="provisioningEventProcessor"/>
-				<!-- <ref bean="solrDeviceEventProcessor"/> -->
-				<ref bean="hazelcastDeviceEventProcessor"/>
-			</list>
-		</property>
 	</bean>
 
 	<!-- ####################### -->

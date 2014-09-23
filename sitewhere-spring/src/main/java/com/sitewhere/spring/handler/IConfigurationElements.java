@@ -27,4 +27,7 @@ public interface IConfigurationElements {
 
 	/** Constant for section providing inbound processing chain information */
 	public static final String INBOUND_PROCESSING_CHAIN = "inbound-processing-chain";
+
+	/** Constant for section providing outbound processing chain information */
+	public static final String OUTBOUND_PROCESSING_CHAIN = "outbound-processing-chain";
 }
