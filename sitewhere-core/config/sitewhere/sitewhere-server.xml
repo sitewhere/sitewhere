@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd">
+           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd?a=1234">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"/>
@@ -75,7 +75,10 @@
 			
 			<!-- Device command routing -->
 			<sw:command-routing>
-				<sw:command-router ref="router"/>
+				<sw:specification-mapping-router>
+					<sw:mapping specification="417b36a8-21ef-4196-a8fe-cc756f994d0b" agent="default"/>
+					<sw:mapping specification="fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910" agent="laipac"/>
+				</sw:specification-mapping-router>
 			</sw:command-routing>
 			
 			<!-- Outbound command agents -->
@@ -232,16 +235,6 @@
 		<property name="commandExecutionEncoder" ref="laipacExecutionEncoder"/>
 		<property name="commandDeliveryParameterExtractor" ref="laipacExtractor"/>
 		<property name="commandDeliveryProvider" ref="twilioDeliveryProvider"/>
-	</bean>
-
-	<!-- Router that maps specification tokens to agent ids for encoding/delivery -->
-	<bean id="router" class="com.sitewhere.device.provisioning.SpecificationMappingCommandRouter">
-		<property name="mappings">
-			<map>
-				<entry key="417b36a8-21ef-4196-a8fe-cc756f994d0b" value="default"/>
-				<entry key="fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910" value="laipac"/>
-			</map>
-		</property>
 	</bean>
 
 	<!-- ##################### -->

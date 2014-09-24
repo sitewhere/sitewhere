@@ -11,11 +11,16 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+
+import com.sitewhere.device.provisioning.SpecificationMappingCommandRouter;
 
 /**
  * Parse elements related to command routing.
@@ -42,6 +47,9 @@ public class CommandRoutingParser {
 			case CommandRouter: {
 				return parseCommandRouterReference(child, context);
 			}
+			case SpecificationMappingRouter: {
+				return parseSpecificationMappingRouter(child, context);
+			}
 			}
 		}
 		return null;
@@ -63,6 +71,33 @@ public class CommandRoutingParser {
 	}
 
 	/**
+	 * Parse the configuration for a {@link SpecificationMappingCommandRouter}.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected BeanDefinition parseSpecificationMappingRouter(Element element, ParserContext context) {
+		BeanDefinitionBuilder router =
+				BeanDefinitionBuilder.rootBeanDefinition(SpecificationMappingCommandRouter.class);
+		ManagedMap<String, String> map = new ManagedMap<String, String>();
+		List<Element> mappings = DomUtils.getChildElementsByTagName(element, "mapping");
+		for (Element mapping : mappings) {
+			Attr token = mapping.getAttributeNode("specification");
+			if (token == null) {
+				throw new RuntimeException("Specification mapping missing specification token.");
+			}
+			Attr agent = mapping.getAttributeNode("agent");
+			if (agent == null) {
+				throw new RuntimeException("Specification mapping missing agent id.");
+			}
+			map.put(token.getValue(), agent.getValue());
+		}
+		router.addPropertyValue("mappings", map);
+		return router.getBeanDefinition();
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -70,7 +105,10 @@ public class CommandRoutingParser {
 	public static enum Elements {
 
 		/** Command router reference */
-		CommandRouter("command-router");
+		CommandRouter("command-router"),
+
+		/** Specification command router */
+		SpecificationMappingRouter("specification-mapping-router");
 
 		/** Event code */
 		private String localName;

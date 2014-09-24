@@ -236,12 +236,38 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
+				<xsd:element name="specification-mapping-router" type="specificationMappingRouterType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Command router that distributes commands to agents based on a
+							mapping of specification token to command agent id.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="commandRouterReferenceType">
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="specificationMappingRouterType">
+		<xsd:sequence>
+			<xsd:element name="mapping" type="specificationMappingRouterMappingType"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>
+						Mapping of a specification token to an agent id.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="specificationMappingRouterMappingType">
+		<xsd:attribute name="specification" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="agent" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="commandAgentsType">
