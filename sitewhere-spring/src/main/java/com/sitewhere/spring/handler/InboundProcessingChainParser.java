@@ -97,7 +97,7 @@ public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
-	 * Status code for AVRMC message.
+	 * Expected child elements.
 	 * 
 	 * @author Derek
 	 */

@@ -45,6 +45,15 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="provisioning" type="provisioningType" minOccurs="0"
+				maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Provisioning includes receiving inbound event data and registering
+						devices as well as routing, encoding, and delivering device commands.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -141,6 +150,116 @@
 	<xsd:complexType name="outboundProcessorReferenceType">
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
+
 	<xsd:complexType name="provisioningEventProcessorType"/>
+
+	<xsd:complexType name="provisioningType">
+		<xsd:sequence>
+			<xsd:element name="event-sources" type="eventSourcesType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Event sources receive and decode events so that they may be
+						processed by SiteWhere.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="registration" type="registrationType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Registration elements define how inbound registration events are
+						used to register devices.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="command-routing" type="commandRoutingType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Command routing determines which agent is used for processing a
+						given command invocation.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="command-agents" type="commandAgentsType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Command agents process command invocation events, encoding them
+						then delivering them to devices.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="eventSourcesType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="event-source" type="eventSourceReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom event source implementation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="eventSourceReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="registrationType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="1" maxOccurs="1">
+				<xsd:element name="registration-manager" type="registrationManagerReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom registration manager implementation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="registrationManagerReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="commandRoutingType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="1" maxOccurs="1">
+				<xsd:element name="command-router" type="commandRouterReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom command router implementation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="commandRouterReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="commandAgentsType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="command-agent" type="commandAgentReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom command agent implementation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="commandAgentReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
 
 </xsd:schema>

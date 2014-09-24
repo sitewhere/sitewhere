@@ -40,7 +40,7 @@
 			
 			<!-- Store events and delegate to registration manager -->
 			<sw:default-event-storage-processor/>
-			
+
 		</sw:inbound-processing-chain>
 		
 		<!-- ############################# -->
@@ -53,8 +53,38 @@
 			
 			<!-- Send outbound device events over Hazelcast -->
 			<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
-		
+
 		</sw:outbound-processing-chain>
+		
+		<!-- ####################### -->
+		<!-- # DEVICE PROVISIONING # -->
+		<!-- ####################### -->
+		<sw:provisioning>
+		
+			<!-- Inbound event sources -->
+			<sw:event-sources>
+				<sw:event-source ref="protbufEventSource"/>
+				<sw:event-source ref="jsonEventSource"/>
+				<sw:event-source ref="socketEventSource"/>
+			</sw:event-sources>
+			
+			<!-- Device registration -->
+			<sw:registration>
+				<sw:registration-manager ref="protobufRegistrationManager"/>
+			</sw:registration>
+			
+			<!-- Device command routing -->
+			<sw:command-routing>
+				<sw:command-router ref="router"/>
+			</sw:command-routing>
+			
+			<!-- Outbound command agents -->
+			<sw:command-agents>
+				<sw:command-agent ref="defaultCommandAgent"/>
+				<sw:command-agent ref="laipacCommandAgent"/>
+			</sw:command-agents>
+
+		</sw:provisioning>
 
 	</sw:configuration>
 
@@ -211,25 +241,6 @@
 				<entry key="417b36a8-21ef-4196-a8fe-cc756f994d0b" value="default"/>
 				<entry key="fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910" value="laipac"/>
 			</map>
-		</property>
-	</bean>
-
-	<!-- Configures device provisioning -->
-	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
-		<property name="registrationManager" ref="protobufRegistrationManager"/>
-		<property name="inboundEventSources">
-			<list>
-				<ref bean="protbufEventSource"/>
-				<ref bean="jsonEventSource"/>
-				<ref bean="socketEventSource"/>
-			</list>
-		</property>
-		<property name="outboundCommandRouter" ref="router"/>
-		<property name="outboundCommandAgents">
-			<list>
-				<ref bean="defaultCommandAgent"/>
-				<ref bean="laipacCommandAgent"/>
-			</list>
 		</property>
 	</bean>
 

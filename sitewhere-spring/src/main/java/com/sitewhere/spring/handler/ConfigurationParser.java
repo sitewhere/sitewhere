@@ -33,21 +33,78 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 	 */
 	@Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		List<Element> sections = DomUtils.getChildElements(element);
-		for (Element section : sections) {
-			if (!IConfigurationElements.SITEWHERE_NS.equals(section.getNamespaceURI())) {
+		List<Element> children = DomUtils.getChildElements(element);
+		for (Element child : children) {
+			if (!IConfigurationElements.SITEWHERE_NS.equals(child.getNamespaceURI())) {
 				continue;
 			}
-			if (IConfigurationElements.DATASTORE.equals(section.getLocalName())) {
-				new DatastoreParser().parse(section, context);
+			Elements type = Elements.getByLocalName(child.getLocalName());
+			if (type == null) {
+				throw new RuntimeException("Unknown configuration element: " + child.getLocalName());
 			}
-			if (IConfigurationElements.INBOUND_PROCESSING_CHAIN.equals(section.getLocalName())) {
-				new InboundProcessingChainParser().parse(section, context);
+			switch (type) {
+			case Datastore: {
+				new DatastoreParser().parse(child, context);
+				break;
 			}
-			if (IConfigurationElements.OUTBOUND_PROCESSING_CHAIN.equals(section.getLocalName())) {
-				new OutboundProcessingChainParser().parse(section, context);
+			case InboundProcessingChain: {
+				new InboundProcessingChainParser().parse(child, context);
+				break;
+			}
+			case OutboundProcessingChain: {
+				new OutboundProcessingChainParser().parse(child, context);
+				break;
+			}
+			case Provisioning: {
+				new ProvisioningParser().parse(child, context);
+				break;
+			}
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Expected child elements.
+	 * 
+	 * @author Derek
+	 */
+	public static enum Elements {
+
+		/** Datastore */
+		Datastore("datastore"),
+
+		/** Inbound processing chain */
+		InboundProcessingChain("inbound-processing-chain"),
+
+		/** Outbound processing chain */
+		OutboundProcessingChain("outbound-processing-chain"),
+
+		/** Provisioning */
+		Provisioning("provisioning");
+
+		/** Event code */
+		private String localName;
+
+		private Elements(String localName) {
+			this.localName = localName;
+		}
+
+		public static Elements getByLocalName(String localName) {
+			for (Elements value : Elements.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
 	}
 }

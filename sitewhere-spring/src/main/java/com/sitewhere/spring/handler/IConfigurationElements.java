@@ -21,13 +21,4 @@ public interface IConfigurationElements {
 
 	/** Constant for top-level configuration element */
 	public static final String CONFIGURATION = "configuration";
-
-	/** Constant for section providing datastore information */
-	public static final String DATASTORE = "datastore";
-
-	/** Constant for section providing inbound processing chain information */
-	public static final String INBOUND_PROCESSING_CHAIN = "inbound-processing-chain";
-
-	/** Constant for section providing outbound processing chain information */
-	public static final String OUTBOUND_PROCESSING_CHAIN = "outbound-processing-chain";
 }
