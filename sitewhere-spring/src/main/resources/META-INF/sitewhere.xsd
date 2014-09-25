@@ -190,6 +190,7 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<!-- Contains information about inbound event sources -->
 	<xsd:complexType name="eventSourcesType">
 		<xsd:sequence>
 			<xsd:choice minOccurs="0" maxOccurs="unbounded">
@@ -200,13 +201,48 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
+				<xsd:element name="mqtt-event-source" type="mqttEventSourceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Event source that pulls messages from a single MQTT event
+							reciever and decodes them.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<!-- Reference to an event source defined in Spring beans -->
 	<xsd:complexType name="eventSourceReferenceType">
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
+
+	<!-- Event source that pulls binary information from an MQTT topic and decodes it -->
+	<xsd:complexType name="mqttEventSourceType">
+		<xsd:sequence>
+			<xsd:element name="decoder" type="eventDecoderReferenceType">
+				<xsd:annotation>
+					<xsd:documentation>
+						References a custom event decoder implementation.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="mqtt-inbound-attributes"/>
+	</xsd:complexType>
+
+	<!-- Reference to an event decoder defined as a Spring bean -->
+	<xsd:complexType name="eventDecoderReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- Attributes used for inbound MQTT processing -->
+	<xsd:attributeGroup name="mqtt-inbound-attributes">
+		<xsd:attribute name="hostname" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="port" type="xsd:int"></xsd:attribute>
+		<xsd:attribute name="topic" type="xsd:string"></xsd:attribute>
+	</xsd:attributeGroup>
 
 	<xsd:complexType name="registrationType">
 		<xsd:sequence>

@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd?a=12">
+           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd?a=1235">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"/>
@@ -63,8 +63,19 @@
 		
 			<!-- Inbound event sources -->
 			<sw:event-sources>
-				<sw:event-source ref="protbufEventSource"/>
-				<sw:event-source ref="jsonEventSource"/>
+
+				<!-- Event source for protobuf messages over MQTT -->
+				<sw:mqtt-event-source hostname="localhost" port="1883"
+					topic="SiteWhere/input/protobuf">
+					<sw:decoder ref="protobufEventDecoder"/>
+				</sw:mqtt-event-source>
+
+				<!-- Event source for JSON messages over MQTT -->
+				<sw:mqtt-event-source hostname="localhost" port="1883"
+					topic="SiteWhere/input/jsonbatch">
+					<sw:decoder ref="jsonEventDecoder"/>
+				</sw:mqtt-event-source>
+
 				<sw:event-source ref="socketEventSource"/>
 			</sw:event-sources>
 			
@@ -138,47 +149,13 @@
 
 	<!-- GOOGLE PROTOCOL BUFFER INBOUND PROCESSING -->
 
-	<!-- Device event receiver that monitors an MQTT topic for events (protobuf format) -->
-	<bean id="protobufMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver">
-		<property name="hostname" value="localhost"/>
-		<property name="port" value="1883"/>
-		<property name="topic" value="SiteWhere/input/protobuf"/>
-	</bean>
-
 	<!-- Decodes device event messages using Google Protocol Buffers -->
 	<bean id="protobufEventDecoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder"/>
 
-	<!-- Device event source for protobuf messages over MQTT -->
-	<bean id="protbufEventSource" class="com.sitewhere.device.provisioning.BinaryInboundEventSource">
-		<property name="deviceEventDecoder" ref="protobufEventDecoder"/>
-		<property name="inboundEventReceivers">
-			<list>
-				<ref bean="protobufMqttEventReceiver"/>
-			</list>
-		</property>
-	</bean>
-
 	<!-- JSON BATCH INBOUND PROCESSING -->
-
-	<!-- Device event receiver that monitors an MQTT topic for events (JSON batch format) -->
-	<bean id="jsonMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver">
-		<property name="hostname" value="localhost"/>
-		<property name="port" value="1883"/>
-		<property name="topic" value="SiteWhere/input/jsonbatch"/>
-	</bean>
 
 	<!-- Decodes device event messages using Jackson/JSON -->
 	<bean id="jsonEventDecoder" class="com.sitewhere.device.provisioning.json.JsonBatchEventDecoder"/>
-
-	<!-- Device event source for JSON messages over MQTT -->
-	<bean id="jsonEventSource" class="com.sitewhere.device.provisioning.BinaryInboundEventSource">
-		<property name="deviceEventDecoder" ref="jsonEventDecoder"/>
-		<property name="inboundEventReceivers">
-			<list>
-				<ref bean="jsonMqttEventReceiver"/>
-			</list>
-		</property>
-	</bean>
 
 	<!-- SOCKET EVENT DEBUGGING -->
 
