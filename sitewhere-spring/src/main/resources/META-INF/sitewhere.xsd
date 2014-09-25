@@ -15,13 +15,22 @@
 	</xsd:element>
 
 	<xsd:complexType name="configurationType">
-		<xsd:sequence>
+		<xsd:all>
 			<xsd:element name="datastore" type="datastoreType" minOccurs="0" maxOccurs="1">
 				<xsd:annotation>
 					<xsd:documentation>
 						Provides information about how SiteWhere data is to be persisted
 						and how the core device and user management service provider interfaces are
 						implemented. Caching of persisted data is also configured in this section.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="provisioning" type="provisioningType" minOccurs="0"
+				maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Provisioning includes receiving inbound event data and registering
+						devices as well as routing, encoding, and delivering device commands.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -45,16 +54,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="provisioning" type="provisioningType" minOccurs="0"
-				maxOccurs="1">
-				<xsd:annotation>
-					<xsd:documentation>
-						Provisioning includes receiving inbound event data and registering
-						devices as well as routing, encoding, and delivering device commands.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
+		</xsd:all>
 	</xsd:complexType>
 
 	<xsd:complexType name="datastoreType">

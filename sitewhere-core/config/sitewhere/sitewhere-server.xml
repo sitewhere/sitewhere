@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd?a=1235">
+           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd?a=1236">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"/>
@@ -32,29 +32,6 @@
 			<sw:ehcache-device-management-cache/>
 
 		</sw:datastore>
-		
-		<!-- ############################ -->
-		<!-- # INBOUND PROCESSING CHAIN # -->
-		<!-- ############################ -->
-		<sw:inbound-processing-chain>
-			
-			<!-- Store events and delegate to registration manager -->
-			<sw:default-event-storage-processor/>
-
-		</sw:inbound-processing-chain>
-		
-		<!-- ############################# -->
-		<!-- # OUTBOUND PROCESSING CHAIN # -->
-		<!-- ############################# -->
-		<sw:outbound-processing-chain>
-		
-			<!-- Routes commands for provisioning -->
-			<sw:provisioning-event-processor/>
-			
-			<!-- Send outbound device events over Hazelcast -->
-			<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
-
-		</sw:outbound-processing-chain>
 		
 		<!-- ####################### -->
 		<!-- # DEVICE PROVISIONING # -->
@@ -108,6 +85,29 @@
 			</sw:command-agents>
 
 		</sw:provisioning>
+		
+		<!-- ############################ -->
+		<!-- # INBOUND PROCESSING CHAIN # -->
+		<!-- ############################ -->
+		<sw:inbound-processing-chain>
+			
+			<!-- Store events and delegate to registration manager -->
+			<sw:default-event-storage-processor/>
+
+		</sw:inbound-processing-chain>
+		
+		<!-- ############################# -->
+		<!-- # OUTBOUND PROCESSING CHAIN # -->
+		<!-- ############################# -->
+		<sw:outbound-processing-chain>
+		
+			<!-- Routes commands for provisioning -->
+			<sw:provisioning-event-processor/>
+			
+			<!-- Send outbound device events over Hazelcast -->
+			<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
+
+		</sw:outbound-processing-chain>
 
 	</sw:configuration>
 
