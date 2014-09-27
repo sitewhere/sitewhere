@@ -306,6 +306,7 @@
 		<xsd:attribute name="agent" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
+	<!-- Enumerates available command agent choices -->
 	<xsd:complexType name="commandAgentsType">
 		<xsd:sequence>
 			<xsd:choice minOccurs="0" maxOccurs="unbounded">
@@ -327,10 +328,38 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<!-- References command agent defined in a Spring bean -->
 	<xsd:complexType name="commandAgentReferenceType">
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
+	<!-- Command agent that delivers commands via MQTT -->
+	<xsd:complexType name="mqttCommandAgentType">
+		<xsd:sequence>
+			<xsd:element name="encoder" type="commandExecutionEncoderReferenceType">
+				<xsd:annotation>
+					<xsd:documentation>
+						References a custom command execution encoder implementation.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
+				<xsd:annotation>
+					<xsd:documentation>
+						References a custom command delivery parameter extractor
+						implementation that extracts MQTT delivery information from the
+						device.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="agentId" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="accountSid" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="authToken" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="fromPhoneNumber" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Command agent that delivers commands via Twilio SMS message -->
 	<xsd:complexType name="twilioCommandAgentType">
 		<xsd:sequence>
 			<xsd:element name="encoder" type="commandExecutionEncoderReferenceType">
@@ -354,34 +383,6 @@
 		<xsd:attribute name="accountSid" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="authToken" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="fromPhoneNumber" type="xsd:string"></xsd:attribute>
-	</xsd:complexType>
-
-	<xsd:complexType name="commandAgentType">
-		<xsd:sequence>
-			<xsd:element name="encoder" type="commandExecutionEncoderReferenceType">
-				<xsd:annotation>
-					<xsd:documentation>
-						References a custom command execution encoder implementation.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="0" name="parameter-extractor"
-				type="commandDeliveryParameterExtractorReferenceType">
-				<xsd:annotation>
-					<xsd:documentation>
-						References a custom command delivery parameter extractor
-						implementation.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="delivery-provider" type="commandDeliveryProviderReferenceType">
-				<xsd:annotation>
-					<xsd:documentation>
-						References a custom command delivery provider implementation.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="commandExecutionEncoderReferenceType">

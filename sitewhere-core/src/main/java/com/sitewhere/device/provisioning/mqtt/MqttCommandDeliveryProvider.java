@@ -39,26 +39,11 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	/** Default port if not set from Spring */
 	public static final int DEFAULT_PORT = 1883;
 
-	/** Default command topic */
-	public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
-
-	/** Default system topic */
-	public static final String DEFAULT_SYSTEM_TOPIC = "SiteWhere/system/%s";
-
 	/** Host name */
 	private String hostname = DEFAULT_HOSTNAME;
 
 	/** Port */
 	private int port = DEFAULT_PORT;
-
-	/** Command topic prefix */
-	private String commandTopic = DEFAULT_COMMAND_TOPIC;
-
-	/** System topic prefix */
-	private String systemTopic = DEFAULT_SYSTEM_TOPIC;
-
-	/** Indicates whether to use a fallback topic if no 'reply to' found */
-	private boolean useFallbackTopic = true;
 
 	/** MQTT client */
 	private MQTT mqtt;
@@ -110,10 +95,9 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
 			IDeviceCommandExecution execution, byte[] encoded, MqttParameters params)
 			throws SiteWhereException {
-		String topic = String.format(getCommandTopic(), nested.getGateway().getHardwareId());
 		try {
-			LOGGER.debug("About to publish command message to topic: " + topic);
-			connection.publish(topic, encoded, QoS.AT_LEAST_ONCE, false);
+			LOGGER.debug("About to publish command message to topic: " + params.getCommandTopic());
+			connection.publish(params.getCommandTopic(), encoded, QoS.AT_LEAST_ONCE, false);
 			LOGGER.debug("Command published.");
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
@@ -131,10 +115,9 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	@Override
 	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
 			byte[] encoded, MqttParameters params) throws SiteWhereException {
-		String topic = String.format(getSystemTopic(), nested.getGateway().getHardwareId());
 		try {
-			LOGGER.debug("About to publish system message to topic: " + topic);
-			connection.publish(topic, encoded, QoS.AT_LEAST_ONCE, false);
+			LOGGER.debug("About to publish system message to topic: " + params.getSystemTopic());
+			connection.publish(params.getSystemTopic(), encoded, QoS.AT_LEAST_ONCE, false);
 			LOGGER.debug("Command published.");
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
@@ -155,29 +138,5 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 
 	public void setPort(int port) {
 		this.port = port;
-	}
-
-	public boolean isUseFallbackTopic() {
-		return useFallbackTopic;
-	}
-
-	public void setUseFallbackTopic(boolean useFallbackTopic) {
-		this.useFallbackTopic = useFallbackTopic;
-	}
-
-	public String getCommandTopic() {
-		return commandTopic;
-	}
-
-	public void setCommandTopic(String commandTopic) {
-		this.commandTopic = commandTopic;
-	}
-
-	public String getSystemTopic() {
-		return systemTopic;
-	}
-
-	public void setSystemTopic(String systemTopic) {
-		this.systemTopic = systemTopic;
 	}
 }

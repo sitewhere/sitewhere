@@ -9,12 +9,6 @@
  */
 package com.sitewhere.device.provisioning.mqtt;
 
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
-import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor;
-
 /**
  * Parameters that are needed for interacting with MQTT.
  * 
@@ -22,29 +16,25 @@ import com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor;
  */
 public class MqttParameters {
 
-	/**
-	 * Implementation of {@link ICommandDeliveryParameterExtractor} that returns
-	 * {@link MqttParameters}.
-	 * 
-	 * @author Derek
-	 */
-	public static class Extractor implements ICommandDeliveryParameterExtractor<MqttParameters> {
+	/** MQTT topic for sending commands */
+	private String commandTopic;
 
-		/** Value to be returned */
-		private MqttParameters parameters = new MqttParameters();
+	/** MQTT topic for sending system messages */
+	private String systemTopic;
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor#
-		 * extractDeliveryParameters(com.sitewhere.spi.device.IDevice,
-		 * com.sitewhere.spi.device.IDeviceAssignment,
-		 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
-		 */
-		@Override
-		public MqttParameters extractDeliveryParameters(IDevice device, IDeviceAssignment assignment,
-				IDeviceCommandExecution execution) throws SiteWhereException {
-			return parameters;
-		}
+	public String getCommandTopic() {
+		return commandTopic;
+	}
+
+	public void setCommandTopic(String commandTopic) {
+		this.commandTopic = commandTopic;
+	}
+
+	public String getSystemTopic() {
+		return systemTopic;
+	}
+
+	public void setSystemTopic(String systemTopic) {
+		this.systemTopic = systemTopic;
 	}
 }

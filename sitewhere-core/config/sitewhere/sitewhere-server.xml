@@ -191,14 +191,19 @@
 	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
-		<property name="commandTopic" value="SiteWhere/commands/%s"/>
-		<property name="systemTopic" value="SiteWhere/system/%s"/>
+	</bean>
+
+	<!-- Parameter extractor that determines outbound MQTT topics -->
+	<bean id="mqttParameterExtractor" class="com.sitewhere.device.provisioning.mqtt.MqttParameterExtractor">
+		<property name="commandTopicExpr" value="SiteWhere/commands/%s"/>
+		<property name="systemTopicExpr" value="SiteWhere/system/%s"/>
 	</bean>
 
 	<!-- Agent that encodes and delivers protobuf messages over MQTT -->
 	<bean id="defaultCommandAgent" class="com.sitewhere.device.provisioning.mqtt.MqttOutboundCommandAgent">
 		<property name="agentId" value="default"/>
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
+		<property name="commandDeliveryParameterExtractor" ref="mqttParameterExtractor"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
 	</bean>
 

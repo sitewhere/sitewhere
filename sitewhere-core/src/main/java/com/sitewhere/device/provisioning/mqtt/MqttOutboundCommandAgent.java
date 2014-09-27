@@ -10,7 +10,6 @@
 package com.sitewhere.device.provisioning.mqtt;
 
 import com.sitewhere.device.provisioning.OutboundCommandAgent;
-import com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
 
 /**
@@ -21,17 +20,7 @@ import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
  */
 public class MqttOutboundCommandAgent extends OutboundCommandAgent<byte[], MqttParameters> {
 
-	/** Placeholder for extractor */
-	private ICommandDeliveryParameterExtractor<MqttParameters> extractor = new MqttParameters.Extractor();
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.device.provisioning.OutboundCommandAgent#
-	 * getCommandDeliveryParameterExtractor()
-	 */
-	@Override
-	public ICommandDeliveryParameterExtractor<MqttParameters> getCommandDeliveryParameterExtractor() {
-		return extractor;
+	public MqttOutboundCommandAgent() {
+		setCommandDeliveryParameterExtractor(new MqttParameterExtractor());
 	}
 }
