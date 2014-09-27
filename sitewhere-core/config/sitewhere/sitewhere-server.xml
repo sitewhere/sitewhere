@@ -194,7 +194,7 @@
 	</bean>
 
 	<!-- Parameter extractor that determines outbound MQTT topics -->
-	<bean id="mqttParameterExtractor" class="com.sitewhere.device.provisioning.mqtt.MqttParameterExtractor">
+	<bean id="mqttParameterExtractor" class="com.sitewhere.device.provisioning.mqtt.HardwareIdMqttParameterExtractor">
 		<property name="commandTopicExpr" value="SiteWhere/commands/%s"/>
 		<property name="systemTopicExpr" value="SiteWhere/system/%s"/>
 	</bean>

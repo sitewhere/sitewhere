@@ -21,6 +21,6 @@ import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
 public class MqttOutboundCommandAgent extends OutboundCommandAgent<byte[], MqttParameters> {
 
 	public MqttOutboundCommandAgent() {
-		setCommandDeliveryParameterExtractor(new MqttParameterExtractor());
+		setCommandDeliveryParameterExtractor(new HardwareIdMqttParameterExtractor());
 	}
 }

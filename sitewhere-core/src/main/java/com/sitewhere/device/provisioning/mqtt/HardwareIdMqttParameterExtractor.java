@@ -22,7 +22,7 @@ import com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor;
  * 
  * @author Derek
  */
-public class MqttParameterExtractor implements ICommandDeliveryParameterExtractor<MqttParameters> {
+public class HardwareIdMqttParameterExtractor implements ICommandDeliveryParameterExtractor<MqttParameters> {
 
 	/** Default command topic */
 	public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
