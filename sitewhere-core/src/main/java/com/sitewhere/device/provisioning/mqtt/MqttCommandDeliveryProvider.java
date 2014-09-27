@@ -39,11 +39,11 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	/** Default port if not set from Spring */
 	public static final int DEFAULT_PORT = 1883;
 
-	/** Prefix for command topic */
-	public static final String DEFAULT_COMMAND_PREFIX = "SiteWhere/command/";
+	/** Default command topic */
+	public static final String DEFAULT_COMMAND_TOPIC = "SiteWhere/command/%s";
 
-	/** Prefix for system command topic */
-	public static final String DEFAULT_SYSTEM_PREFIX = "SiteWhere/system/";
+	/** Default system topic */
+	public static final String DEFAULT_SYSTEM_TOPIC = "SiteWhere/system/%s";
 
 	/** Host name */
 	private String hostname = DEFAULT_HOSTNAME;
@@ -52,10 +52,10 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	private int port = DEFAULT_PORT;
 
 	/** Command topic prefix */
-	private String commandTopicPrefix = DEFAULT_COMMAND_PREFIX;
+	private String commandTopic = DEFAULT_COMMAND_TOPIC;
 
 	/** System topic prefix */
-	private String systemTopicPrefix = DEFAULT_SYSTEM_PREFIX;
+	private String systemTopic = DEFAULT_SYSTEM_TOPIC;
 
 	/** Indicates whether to use a fallback topic if no 'reply to' found */
 	private boolean useFallbackTopic = true;
@@ -110,10 +110,10 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
 			IDeviceCommandExecution execution, byte[] encoded, MqttParameters params)
 			throws SiteWhereException {
-		String commandTopic = getCommandTopicPrefix() + nested.getGateway().getHardwareId();
+		String topic = String.format(getCommandTopic(), nested.getGateway().getHardwareId());
 		try {
-			LOGGER.debug("About to publish command message to topic: " + commandTopic);
-			connection.publish(commandTopic, encoded, QoS.AT_LEAST_ONCE, false);
+			LOGGER.debug("About to publish command message to topic: " + topic);
+			connection.publish(topic, encoded, QoS.AT_LEAST_ONCE, false);
 			LOGGER.debug("Command published.");
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
@@ -131,10 +131,10 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	@Override
 	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
 			byte[] encoded, MqttParameters params) throws SiteWhereException {
-		String systemTopic = getSystemTopicPrefix() + nested.getGateway().getHardwareId();
+		String topic = String.format(getSystemTopic(), nested.getGateway().getHardwareId());
 		try {
-			LOGGER.debug("About to publish system message to topic: " + systemTopic);
-			connection.publish(systemTopic, encoded, QoS.AT_LEAST_ONCE, false);
+			LOGGER.debug("About to publish system message to topic: " + topic);
+			connection.publish(topic, encoded, QoS.AT_LEAST_ONCE, false);
 			LOGGER.debug("Command published.");
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
@@ -165,19 +165,19 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 		this.useFallbackTopic = useFallbackTopic;
 	}
 
-	public String getCommandTopicPrefix() {
-		return commandTopicPrefix;
+	public String getCommandTopic() {
+		return commandTopic;
 	}
 
-	public void setCommandTopicPrefix(String commandTopicPrefix) {
-		this.commandTopicPrefix = commandTopicPrefix;
+	public void setCommandTopic(String commandTopic) {
+		this.commandTopic = commandTopic;
 	}
 
-	public String getSystemTopicPrefix() {
-		return systemTopicPrefix;
+	public String getSystemTopic() {
+		return systemTopic;
 	}
 
-	public void setSystemTopicPrefix(String systemTopicPrefix) {
-		this.systemTopicPrefix = systemTopicPrefix;
+	public void setSystemTopic(String systemTopic) {
+		this.systemTopic = systemTopic;
 	}
 }

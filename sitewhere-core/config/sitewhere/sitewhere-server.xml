@@ -191,8 +191,8 @@
 	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
 		<property name="hostname" value="localhost"/>
 		<property name="port" value="1883"/>
-		<property name="commandTopicPrefix" value="SiteWhere/commands/"/>
-		<property name="systemTopicPrefix" value="SiteWhere/system/"/>
+		<property name="commandTopic" value="SiteWhere/commands/%s"/>
+		<property name="systemTopic" value="SiteWhere/system/%s"/>
 	</bean>
 
 	<!-- Agent that encodes and delivers protobuf messages over MQTT -->
