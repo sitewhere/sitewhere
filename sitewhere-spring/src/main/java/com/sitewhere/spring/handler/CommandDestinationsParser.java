@@ -21,7 +21,12 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.device.provisioning.mqtt.HardwareIdMqttParameterExtractor;
+import com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider;
+import com.sitewhere.device.provisioning.mqtt.MqttCommandDestination;
+import com.sitewhere.device.provisioning.mqtt.MqttParameters;
 import com.sitewhere.device.provisioning.sms.SmsCommandDestination;
+import com.sitewhere.device.provisioning.sms.SmsParameters;
 import com.sitewhere.spi.device.provisioning.ICommandDestination;
 
 /**
@@ -55,6 +60,7 @@ public class CommandDestinationsParser {
 				break;
 			}
 			case MqttCommandDestination: {
+				result.add(parseMqttCommandDestination(child, context));
 				break;
 			}
 			case TwilioCommandDestination: {
@@ -82,6 +88,60 @@ public class CommandDestinationsParser {
 	}
 
 	/**
+	 * Parse the MQTT command destination configuration and create beans necessary for
+	 * implementation.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseMqttCommandDestination(Element element, ParserContext context) {
+		BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDestination.class);
+		addCommonAttributes(mqtt, element, context);
+
+		// Add encoder reference.
+		addEncoderReference(mqtt, element, context);
+
+		// Add MQTT command delivery provider bean.
+		AbstractBeanDefinition delivery = createMqttDeliveryProvider(element);
+		String deliveryName = nameGenerator.generateBeanName(delivery, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(deliveryName, delivery);
+		mqtt.addPropertyReference("commandDeliveryProvider", deliveryName);
+
+		// Locate parameter extractor reference.
+		if (!addParameterExtractor(mqtt, element, context, MqttParameters.class)) {
+			throw new RuntimeException("Parameter extractor required but not specified.");
+		}
+
+		return mqtt.getBeanDefinition();
+	}
+
+	/**
+	 * Create MQTT command delivery provider from XML element.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createMqttDeliveryProvider(Element element) {
+		BeanDefinitionBuilder mqtt =
+				BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDeliveryProvider.class);
+
+		Attr hostname = element.getAttributeNode("hostname");
+		if (hostname == null) {
+			throw new RuntimeException("MQTT hostname attribute not provided.");
+		}
+		mqtt.addPropertyValue("hostname", hostname.getValue());
+
+		Attr port = element.getAttributeNode("port");
+		if (port == null) {
+			throw new RuntimeException("MQTT port attribute not provided.");
+		}
+		mqtt.addPropertyValue("port", port.getValue());
+
+		return mqtt.getBeanDefinition();
+	}
+
+	/**
 	 * Parse the Twilio command destination configuration and create beans necessary for
 	 * implementation.
 	 * 
@@ -91,11 +151,10 @@ public class CommandDestinationsParser {
 	 */
 	protected AbstractBeanDefinition parseTwilioCommandDestination(Element element, ParserContext context) {
 		BeanDefinitionBuilder sms = BeanDefinitionBuilder.rootBeanDefinition(SmsCommandDestination.class);
-		Attr destinationId = element.getAttributeNode("destinationId");
-		if (destinationId == null) {
-			throw new RuntimeException("Command destination does not contain destinationId attribute.");
-		}
-		sms.addPropertyValue("destinationId", destinationId.getValue());
+		addCommonAttributes(sms, element, context);
+
+		// Add encoder reference.
+		addEncoderReference(sms, element, context);
 
 		// Add Twilio command delivery provider bean.
 		AbstractBeanDefinition twilioDef = createTwilioDeliveryProvider(element);
@@ -103,27 +162,10 @@ public class CommandDestinationsParser {
 		context.getRegistry().registerBeanDefinition(twilioName, twilioDef);
 		sms.addPropertyReference("commandDeliveryProvider", twilioName);
 
-		// Locate encoder reference.
-		Element encoder = DomUtils.getChildElementByTagName(element, "encoder");
-		if (encoder == null) {
-			throw new RuntimeException("Command encoder required but not specified.");
-		}
-		Attr ref = encoder.getAttributeNode("ref");
-		if (ref == null) {
-			throw new RuntimeException("Command encoder ref required but not specified.");
-		}
-		sms.addPropertyReference("commandExecutionEncoder", ref.getValue());
-
 		// Locate parameter extractor reference.
-		Element extractor = DomUtils.getChildElementByTagName(element, "parameter-extractor");
-		if (extractor == null) {
+		if (!addParameterExtractor(sms, element, context, SmsParameters.class)) {
 			throw new RuntimeException("Parameter extractor required but not specified.");
 		}
-		Attr pref = extractor.getAttributeNode("ref");
-		if (pref == null) {
-			throw new RuntimeException("Parameter extractor ref required but not specified.");
-		}
-		sms.addPropertyReference("commandDeliveryParameterExtractor", pref.getValue());
 
 		return sms.getBeanDefinition();
 	}
@@ -157,6 +199,96 @@ public class CommandDestinationsParser {
 		twilio.addPropertyValue("fromPhoneNumber", fromPhoneNumber.getValue());
 
 		return twilio.getBeanDefinition();
+	}
+
+	/**
+	 * Add attributes common to all command destinations.
+	 * 
+	 * @param builder
+	 * @param element
+	 * @param context
+	 */
+	protected void addCommonAttributes(BeanDefinitionBuilder builder, Element element, ParserContext context) {
+		Attr destinationId = element.getAttributeNode("destinationId");
+		if (destinationId == null) {
+			throw new RuntimeException("Command destination does not contain destinationId attribute.");
+		}
+		builder.addPropertyValue("destinationId", destinationId.getValue());
+	}
+
+	/**
+	 * Add encoder reference.
+	 * 
+	 * @param builder
+	 * @param element
+	 * @param context
+	 */
+	protected void addEncoderReference(BeanDefinitionBuilder builder, Element element, ParserContext context) {
+		Element encoder = DomUtils.getChildElementByTagName(element, "encoder");
+		if (encoder == null) {
+			throw new RuntimeException("Command encoder required but not specified.");
+		}
+		Attr ref = encoder.getAttributeNode("ref");
+		if (ref == null) {
+			throw new RuntimeException("Command encoder ref required but not specified.");
+		}
+		builder.addPropertyReference("commandExecutionEncoder", ref.getValue());
+	}
+
+	/**
+	 * Add parameter extractor beans.
+	 * 
+	 * @param builder
+	 * @param element
+	 * @param context
+	 * @param paramType
+	 * @return
+	 */
+	protected boolean addParameterExtractor(BeanDefinitionBuilder builder, Element element,
+			ParserContext context, Class<?> paramType) {
+		// Locate parameter extractor reference.
+		Element extractor = DomUtils.getChildElementByTagName(element, "parameter-extractor");
+		if (extractor != null) {
+			Attr pref = extractor.getAttributeNode("ref");
+			if (pref == null) {
+				throw new RuntimeException("Parameter extractor ref required but not specified.");
+			}
+			builder.addPropertyReference("commandDeliveryParameterExtractor", pref.getValue());
+			return true;
+		}
+		if (paramType == MqttParameters.class) {
+			extractor = DomUtils.getChildElementByTagName(element, "hardware-id-topic-extractor");
+			if (extractor != null) {
+				AbstractBeanDefinition xref = createHardwareIdMqttParameterExtractor(extractor);
+				String xname = nameGenerator.generateBeanName(xref, context.getRegistry());
+				context.getRegistry().registerBeanDefinition(xname, xref);
+				builder.addPropertyReference("commandDeliveryParameterExtractor", xname);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Create hardware id MQTT parameter extractor.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createHardwareIdMqttParameterExtractor(Element element) {
+		BeanDefinitionBuilder extractor =
+				BeanDefinitionBuilder.rootBeanDefinition(HardwareIdMqttParameterExtractor.class);
+
+		Attr commandTopicExpr = element.getAttributeNode("commandTopicExpr");
+		if (commandTopicExpr != null) {
+			extractor.addPropertyValue("commandTopicExpr", commandTopicExpr.getValue());
+		}
+
+		Attr systemTopicExpr = element.getAttributeNode("systemTopicExpr");
+		if (systemTopicExpr != null) {
+			extractor.addPropertyValue("systemTopicExpr", systemTopicExpr.getValue());
+		}
+		return extractor.getBeanDefinition();
 	}
 
 	/**

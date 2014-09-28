@@ -194,26 +194,6 @@
 	<!-- Encodes device commands using Google Protocol Buffers -->
 	<bean id="protobufExecutionEncoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
 
-	<!-- Delivery provider that publishes commands to MQTT topics -->
-	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
-		<property name="hostname" value="localhost"/>
-		<property name="port" value="1883"/>
-	</bean>
-
-	<!-- Parameter extractor that determines outbound MQTT topics -->
-	<bean id="mqttParameterExtractor" class="com.sitewhere.device.provisioning.mqtt.HardwareIdMqttParameterExtractor">
-		<property name="commandTopicExpr" value="SiteWhere/commands/%s"/>
-		<property name="systemTopicExpr" value="SiteWhere/system/%s"/>
-	</bean>
-
-	<!-- Agent that encodes and delivers protobuf messages over MQTT -->
-	<bean id="defaultCommandAgent" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDestination">
-		<property name="destinationId" value="mqtt2"/>
-		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
-		<property name="commandDeliveryParameterExtractor" ref="mqttParameterExtractor"/>
-		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
-	</bean>
-
 	<!-- Encodes Laipac device commands into SMS messages -->
 	<bean id="laipacExecutionEncoder" class="com.sitewhere.ee.devices.laipac.LaipacCommandEncoder"/>
 
