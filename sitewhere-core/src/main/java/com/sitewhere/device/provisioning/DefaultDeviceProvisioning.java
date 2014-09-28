@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.provisioning.ICommandDestination;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
@@ -161,10 +162,10 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#deliverSystemCommand(
-	 * java.lang.String, java.lang.Object)
+	 * java.lang.String, com.sitewhere.spi.device.command.ISystemCommand)
 	 */
 	@Override
-	public void deliverSystemCommand(String hardwareId, Object command) throws SiteWhereException {
+	public void deliverSystemCommand(String hardwareId, ISystemCommand command) throws SiteWhereException {
 		getCommandProcessingStrategy().deliverSystemCommand(this, hardwareId, command);
 	}
 

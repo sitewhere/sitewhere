@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -86,5 +87,5 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	 * @param command
 	 * @throws SiteWhereException
 	 */
-	public void deliverSystemCommand(String hardwareId, Object command) throws SiteWhereException;
+	public void deliverSystemCommand(String hardwareId, ISystemCommand command) throws SiteWhereException;
 }

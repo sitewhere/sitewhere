@@ -17,6 +17,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.provisioning.ICommandDestination;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 
@@ -52,11 +53,12 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.IOutboundCommandRouter#routeSystemCommand
-	 * (java.lang.Object, com.sitewhere.spi.device.IDeviceNestingContext,
+	 * (com.sitewhere.spi.device.command.ISystemCommand,
+	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
 	 */
 	@Override
-	public void routeSystemCommand(Object command, IDeviceNestingContext nesting,
+	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
 		ICommandDestination<?, ?> destination = getDestinationForDevice(device);
 		destination.deliverSystemCommand(command, nesting, assignment, device);

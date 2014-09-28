@@ -14,6 +14,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.device.command.ISystemCommand;
 
 /**
  * Encodes an {@link IDeviceCommandExecution} into a format that can be transmitted.
@@ -47,6 +48,6 @@ public interface ICommandExecutionEncoder<T> extends ISiteWhereLifecycle {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public T encodeSystemCommand(Object command, IDeviceNestingContext nested, IDeviceAssignment assignment)
-			throws SiteWhereException;
+	public T encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
+			IDeviceAssignment assignment) throws SiteWhereException;
 }

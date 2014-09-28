@@ -11,6 +11,7 @@ package com.sitewhere.spi.device.provisioning;
 
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -45,6 +46,6 @@ public interface ICommandProcessingStrategy extends ISiteWhereLifecycle {
 	 * @param command
 	 * @throws SiteWhereException
 	 */
-	public void deliverSystemCommand(IDeviceProvisioning provisioning, String hardwareId, Object command)
-			throws SiteWhereException;
+	public void deliverSystemCommand(IDeviceProvisioning provisioning, String hardwareId,
+			ISystemCommand command) throws SiteWhereException;
 }

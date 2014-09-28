@@ -17,6 +17,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.device.command.ISystemCommand;
 
 /**
  * Routes commands to one or more {@link ICommandDestination} implementations.
@@ -54,6 +55,6 @@ public interface IOutboundCommandRouter extends ISiteWhereLifecycle {
 	 * @param device
 	 * @throws SiteWhereException
 	 */
-	public void routeSystemCommand(Object command, IDeviceNestingContext nesting,
+	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
 }

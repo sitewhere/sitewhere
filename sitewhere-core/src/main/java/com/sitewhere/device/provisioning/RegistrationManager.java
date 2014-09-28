@@ -12,6 +12,8 @@ package com.sitewhere.device.provisioning;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.rest.model.device.command.RegistrationAckCommand;
+import com.sitewhere.rest.model.device.command.RegistrationFailureCommand;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -20,6 +22,8 @@ import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.command.RegistrationFailureReason;
+import com.sitewhere.spi.device.command.RegistrationSuccessReason;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
 import com.sitewhere.spi.search.ISearchResults;
@@ -29,7 +33,7 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public abstract class RegistrationManager implements IRegistrationManager {
+public class RegistrationManager implements IRegistrationManager {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(RegistrationManager.class);
@@ -102,8 +106,12 @@ public abstract class RegistrationManager implements IRegistrationManager {
 	 * @param newRegistration
 	 * @throws SiteWhereException
 	 */
-	protected abstract void sendRegistrationAck(String hardwareId, boolean newRegistration)
-			throws SiteWhereException;
+	protected void sendRegistrationAck(String hardwareId, boolean newRegistration) throws SiteWhereException {
+		RegistrationAckCommand command = new RegistrationAckCommand();
+		command.setReason((newRegistration) ? RegistrationSuccessReason.NewRegistration
+				: RegistrationSuccessReason.AlreadyRegistered);
+		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, command);
+	}
 
 	/**
 	 * Send a message indicating invalid specification id or one that does not match
@@ -112,7 +120,11 @@ public abstract class RegistrationManager implements IRegistrationManager {
 	 * @param hardwareId
 	 * @throws SiteWhereException
 	 */
-	protected abstract void sendInvalidSpecification(String hardwareId) throws SiteWhereException;
+	protected void sendInvalidSpecification(String hardwareId) throws SiteWhereException {
+		RegistrationFailureCommand command = new RegistrationFailureCommand();
+		command.setReason(RegistrationFailureReason.InvalidSpecificationToken);
+		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, command);
+	}
 
 	/**
 	 * Send information indicating a site token must be passed (if not auto-assigned).
@@ -120,7 +132,11 @@ public abstract class RegistrationManager implements IRegistrationManager {
 	 * @param hardwareId
 	 * @throws SiteWhereException
 	 */
-	protected abstract void sendSiteTokenRequired(String hardwareId) throws SiteWhereException;
+	protected void sendSiteTokenRequired(String hardwareId) throws SiteWhereException {
+		RegistrationFailureCommand command = new RegistrationFailureCommand();
+		command.setReason(RegistrationFailureReason.SiteTokenRequired);
+		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, command);
+	}
 
 	/*
 	 * (non-Javadoc)

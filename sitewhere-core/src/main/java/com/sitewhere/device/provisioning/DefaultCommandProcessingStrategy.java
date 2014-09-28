@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionBuilder;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
@@ -83,11 +84,11 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy#deliverSystemCommand
 	 * (com.sitewhere.spi.device.provisioning.IDeviceProvisioning, java.lang.String,
-	 * java.lang.Object)
+	 * com.sitewhere.spi.device.command.ISystemCommand)
 	 */
 	@Override
-	public void deliverSystemCommand(IDeviceProvisioning provisioning, String hardwareId, Object command)
-			throws SiteWhereException {
+	public void deliverSystemCommand(IDeviceProvisioning provisioning, String hardwareId,
+			ISystemCommand command) throws SiteWhereException {
 		IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
 		IDevice device = management.getDeviceByHardwareId(hardwareId);
 		if (device == null) {

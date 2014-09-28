@@ -16,10 +16,11 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
-import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
 import com.sitewhere.spi.device.provisioning.ICommandDestination;
+import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
 
 /**
  * Default implementation of {@link ICommandDestination}.
@@ -69,11 +70,12 @@ public class CommandDestination<T, P> implements ICommandDestination<T, P> {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandDestination#deliverSystemCommand(
-	 * java.lang.Object, com.sitewhere.spi.device.IDeviceNestingContext,
+	 * com.sitewhere.spi.device.command.ISystemCommand,
+	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
 	 */
 	@Override
-	public void deliverSystemCommand(Object command, IDeviceNestingContext nesting,
+	public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
 		T encoded = getCommandExecutionEncoder().encodeSystemCommand(command, nesting, assignment);
 		P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(device, assignment, null);
@@ -97,7 +99,8 @@ public class CommandDestination<T, P> implements ICommandDestination<T, P> {
 
 		// Start command execution encoder.
 		if (getCommandDeliveryParameterExtractor() == null) {
-			throw new SiteWhereException("No command delivery parameter extractor configured for destination.");
+			throw new SiteWhereException(
+					"No command delivery parameter extractor configured for destination.");
 		}
 
 		// Start command delivery provider.

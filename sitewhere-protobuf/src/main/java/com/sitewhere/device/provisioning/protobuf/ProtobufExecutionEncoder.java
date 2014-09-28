@@ -18,10 +18,15 @@ import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.Command;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.Header;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAck;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckError;
+import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckState;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.device.command.IRegistrationAckCommand;
+import com.sitewhere.spi.device.command.IRegistrationFailureCommand;
+import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
 
 /**
@@ -56,26 +61,69 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder<byte[]
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder#encodeSystemCommand
-	 * (java.lang.Object, com.sitewhere.spi.device.IDeviceNestingContext,
+	 * (com.sitewhere.spi.device.command.ISystemCommand,
+	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
-	public byte[] encodeSystemCommand(Object command, IDeviceNestingContext nested,
+	public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
 			IDeviceAssignment assignment) throws SiteWhereException {
-		if (command instanceof RegistrationAck) {
-			try {
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				Header header = Header.newBuilder().setCommand(Command.REGISTER_ACK).build();
-				header.writeDelimitedTo(out);
-
-				((RegistrationAck) command).writeDelimitedTo(out);
-				out.close();
-				return out.toByteArray();
-			} catch (IOException e) {
-				throw new SiteWhereException("Unable to marshal regsiter ack to protobuf.", e);
+		switch (command.getType()) {
+		case RegistrationAck: {
+			IRegistrationAckCommand ack = (IRegistrationAckCommand) command;
+			RegistrationAck.Builder builder = RegistrationAck.newBuilder();
+			switch (ack.getReason()) {
+			case AlreadyRegistered: {
+				builder.setState(RegistrationAckState.ALREADY_REGISTERED);
+				break;
 			}
+			case NewRegistration: {
+				builder.setState(RegistrationAckState.NEW_REGISTRATION);
+				break;
+			}
+			}
+			return encodeRegistrationAck(builder.build());
+		}
+		case RegistrationFailure: {
+			IRegistrationFailureCommand fail = (IRegistrationFailureCommand) command;
+			RegistrationAck.Builder builder = RegistrationAck.newBuilder();
+			builder.setState(RegistrationAckState.REGISTRATION_ERROR);
+			builder.setErrorMessage(fail.getErrorMessage());
+			switch (fail.getReason()) {
+			case InvalidSpecificationToken: {
+				builder.setErrorType(RegistrationAckError.INVALID_SPECIFICATION);
+				break;
+			}
+			case SiteTokenRequired: {
+				builder.setErrorType(RegistrationAckError.SITE_TOKEN_REQUIRED);
+				break;
+			}
+			}
+			return encodeRegistrationAck(builder.build());
+		}
 		}
 		throw new SiteWhereException("Unable to encode command: " + command.getClass().getName());
+	}
+
+	/**
+	 * Encode {@link RegistrationAck} as a byte array.
+	 * 
+	 * @param ack
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected byte[] encodeRegistrationAck(RegistrationAck ack) throws SiteWhereException {
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			Header header = Header.newBuilder().setCommand(Command.REGISTER_ACK).build();
+			header.writeDelimitedTo(out);
+
+			((RegistrationAck) ack).writeDelimitedTo(out);
+			out.close();
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to marshal regsiter ack to protobuf.", e);
+		}
 	}
 
 	/*

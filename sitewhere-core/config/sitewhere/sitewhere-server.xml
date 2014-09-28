@@ -58,7 +58,7 @@
 			
 			<!-- Device registration -->
 			<sw:registration>
-				<sw:registration-manager ref="protobufRegistrationManager"/>
+				<sw:registration-manager ref="registrationManager"/>
 			</sw:registration>
 			
 			<!-- Device command routing -->
@@ -184,7 +184,7 @@
 	<!-- REGISTRATION -->
 
 	<!-- Manages registration of new devices in the system -->
-	<bean id="protobufRegistrationManager" class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager">
+	<bean id="registrationManager" class="com.sitewhere.device.provisioning.RegistrationManager">
 		<property name="allowNewDevices" value="true"/>
 		<property name="autoAssignSite" value="true"/>
 	</bean>

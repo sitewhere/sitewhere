@@ -15,6 +15,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.device.command.ISystemCommand;
 
 /**
  * Delivers commands to devices by encoding the commands, finding the list of target
@@ -75,6 +76,6 @@ public interface ICommandDestination<T, P> extends ISiteWhereLifecycle {
 	 * @param device
 	 * @throws SiteWhereException
 	 */
-	public void deliverSystemCommand(Object command, IDeviceNestingContext nesting,
+	public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
 }
