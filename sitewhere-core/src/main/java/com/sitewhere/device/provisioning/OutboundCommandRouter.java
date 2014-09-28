@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+import com.sitewhere.spi.device.provisioning.ICommandDestination;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 
 /**
@@ -24,9 +24,9 @@ import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
  */
 public abstract class OutboundCommandRouter implements IOutboundCommandRouter {
 
-	/** List of agents serviced by the router */
-	private Map<String, IOutboundCommandAgent<?, ?>> agents =
-			new HashMap<String, IOutboundCommandAgent<?, ?>>();
+	/** List of destinations serviced by the router */
+	private Map<String, ICommandDestination<?, ?>> destinations =
+			new HashMap<String, ICommandDestination<?, ?>>();
 
 	/*
 	 * (non-Javadoc)
@@ -54,16 +54,16 @@ public abstract class OutboundCommandRouter implements IOutboundCommandRouter {
 	 * .List)
 	 */
 	@Override
-	public void initialize(List<IOutboundCommandAgent<?, ?>> agentList) throws SiteWhereException {
-		this.agents.clear();
+	public void initialize(List<ICommandDestination<?, ?>> destinationList) throws SiteWhereException {
+		this.destinations.clear();
 
-		// Create map of agents by id.
-		for (IOutboundCommandAgent<?, ?> agent : agentList) {
-			agents.put(agent.getAgentId(), agent);
+		// Create map of destinations by id.
+		for (ICommandDestination<?, ?> destination : destinationList) {
+			destinations.put(destination.getDestinationId(), destination);
 		}
 	}
 
-	public Map<String, IOutboundCommandAgent<?, ?>> getAgents() {
-		return agents;
+	public Map<String, ICommandDestination<?, ?>> getDestinations() {
+		return destinations;
 	}
 }

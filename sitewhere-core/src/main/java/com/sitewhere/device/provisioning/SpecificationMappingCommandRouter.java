@@ -17,18 +17,18 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+import com.sitewhere.spi.device.provisioning.ICommandDestination;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 
 /**
  * Implementation of {@link IOutboundCommandRouter} that maps specification ids to
- * {@link IOutboundCommandAgent} ids and routes accordingly.
+ * {@link ICommandDestination} ids and routes accordingly.
  * 
  * @author Derek
  */
 public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 
-	/** Map of specification tokens to command agent ids */
+	/** Map of specification tokens to command destination ids */
 	private Map<String, String> mappings = new HashMap<String, String>();
 
 	/*
@@ -43,8 +43,8 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	@Override
 	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
-		IOutboundCommandAgent<?, ?> agent = getAgentForDevice(device);
-		agent.deliverCommand(execution, nesting, assignment, device);
+		ICommandDestination<?, ?> destination = getDestinationForDevice(device);
+		destination.deliverCommand(execution, nesting, assignment, device);
 	}
 
 	/*
@@ -58,29 +58,30 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	@Override
 	public void routeSystemCommand(Object command, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
-		IOutboundCommandAgent<?, ?> agent = getAgentForDevice(device);
-		agent.deliverSystemCommand(command, nesting, assignment, device);
+		ICommandDestination<?, ?> destination = getDestinationForDevice(device);
+		destination.deliverSystemCommand(command, nesting, assignment, device);
 	}
 
 	/**
-	 * Get {@link IOutboundCommandAgent} for device based on specification token
-	 * associated with the device.
+	 * Get {@link ICommandDestination} for device based on specification token associated
+	 * with the device.
 	 * 
 	 * @param device
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected IOutboundCommandAgent<?, ?> getAgentForDevice(IDevice device) throws SiteWhereException {
+	protected ICommandDestination<?, ?> getDestinationForDevice(IDevice device) throws SiteWhereException {
 		String specToken = device.getSpecificationToken();
-		String agentId = mappings.get(specToken);
-		if (agentId == null) {
-			throw new SiteWhereException("No command agent mapping for specification: " + specToken);
+		String destinationId = mappings.get(specToken);
+		if (destinationId == null) {
+			throw new SiteWhereException("No command destination mapping for specification: " + specToken);
 		}
-		IOutboundCommandAgent<?, ?> agent = getAgents().get(agentId);
-		if (agent == null) {
-			throw new SiteWhereException("Mapping exists, but no agent found for agent id: " + agentId);
+		ICommandDestination<?, ?> destination = getDestinations().get(destinationId);
+		if (destination == null) {
+			throw new SiteWhereException("Mapping exists, but no destination found for destination id: "
+					+ destinationId);
 		}
-		return agent;
+		return destination;
 	}
 
 	public Map<String, String> getMappings() {

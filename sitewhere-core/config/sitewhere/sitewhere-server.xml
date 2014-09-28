@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd?a=1236">
+           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd?a=1357">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"/>
@@ -64,25 +64,32 @@
 			<!-- Device command routing -->
 			<sw:command-routing>
 				<sw:specification-mapping-router>
-					<sw:mapping specification="417b36a8-21ef-4196-a8fe-cc756f994d0b" agent="default"/>
-					<sw:mapping specification="fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910" agent="laipac"/>
+					<sw:mapping specification="417b36a8-21ef-4196-a8fe-cc756f994d0b"
+						destination="default"/>
+					<sw:mapping specification="fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910"
+						destination="laipac"/>
 				</sw:specification-mapping-router>
 			</sw:command-routing>
 			
-			<!-- Outbound command agents -->
-			<sw:command-agents>
-			
-				<!-- Command agent defined with Spring beans -->
-				<sw:command-agent ref="defaultCommandAgent"/>
+			<!-- Outbound command destinations -->
+			<sw:command-destinations>
+
+				<!-- Delivers commands via MQTT -->
+				<sw:mqtt-command-destination destinationId="default"
+					hostname="localhost" port="1883">
+					<sw:encoder ref="protobufExecutionEncoder"/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
 				
 				<!-- Delivers commands via Twilio SMS messages -->
-				<sw:twilio-command-agent agentId="laipac" accountSid="${twilio.account.sid}"
-					authToken="${twilio.auth.token}" fromPhoneNumber="${twilio.from.phone.number}">
+				<sw:twilio-command-destination destinationId="laipac"
+					accountSid="${twilio.account.sid}" authToken="${twilio.auth.token}" fromPhoneNumber="${twilio.from.phone.number}">
 					<sw:encoder ref="laipacExecutionEncoder"/>
 					<sw:parameter-extractor ref="laipacExtractor"/>
-				</sw:twilio-command-agent>
+				</sw:twilio-command-destination>
 
-			</sw:command-agents>
+			</sw:command-destinations>
 
 		</sw:provisioning>
 		
@@ -200,8 +207,8 @@
 	</bean>
 
 	<!-- Agent that encodes and delivers protobuf messages over MQTT -->
-	<bean id="defaultCommandAgent" class="com.sitewhere.device.provisioning.mqtt.MqttOutboundCommandAgent">
-		<property name="agentId" value="default"/>
+	<bean id="defaultCommandAgent" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDestination">
+		<property name="destinationId" value="mqtt2"/>
 		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
 		<property name="commandDeliveryParameterExtractor" ref="mqttParameterExtractor"/>
 		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>

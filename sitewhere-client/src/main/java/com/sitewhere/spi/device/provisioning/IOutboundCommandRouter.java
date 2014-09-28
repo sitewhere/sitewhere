@@ -19,22 +19,22 @@ import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 
 /**
- * Routes commands to one or more {@link IOutboundCommandAgent} implementations.
+ * Routes commands to one or more {@link ICommandDestination} implementations.
  * 
  * @author Derek
  */
 public interface IOutboundCommandRouter extends ISiteWhereLifecycle {
 
 	/**
-	 * Initialize the router with agent information.
+	 * Initialize the router with destination information.
 	 * 
-	 * @param agents
+	 * @param destinations
 	 * @throws SiteWhereException
 	 */
-	public void initialize(List<IOutboundCommandAgent<?, ?>> agents) throws SiteWhereException;
+	public void initialize(List<ICommandDestination<?, ?>> destinations) throws SiteWhereException;
 
 	/**
-	 * Route a command to one of the available agents.
+	 * Route a command to one of the available destinations.
 	 * 
 	 * @param execution
 	 * @param nesting
@@ -46,7 +46,7 @@ public interface IOutboundCommandRouter extends ISiteWhereLifecycle {
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
 
 	/**
-	 * Route a system command to one of the available agents.
+	 * Route a system command to one of the available destinations.
 	 * 
 	 * @param command
 	 * @param nesting

@@ -58,18 +58,18 @@ public interface IDeviceProvisioning extends ISiteWhereLifecycle {
 	public ICommandProcessingStrategy getCommandProcessingStrategy();
 
 	/**
-	 * Get the router that chooses which agent will process a command.
+	 * Get the router that chooses which destination will process a command.
 	 * 
 	 * @return
 	 */
 	public IOutboundCommandRouter getOutboundCommandRouter();
 
 	/**
-	 * Get the list of command agents that can deliver commands to devices.
+	 * Get the list of command destinations that can deliver commands to devices.
 	 * 
 	 * @return
 	 */
-	public List<IOutboundCommandAgent<?, ?>> getOutboundCommandAgents();
+	public List<ICommandDestination<?, ?>> getCommandDestinations();
 
 	/**
 	 * Deliver a command invocation.

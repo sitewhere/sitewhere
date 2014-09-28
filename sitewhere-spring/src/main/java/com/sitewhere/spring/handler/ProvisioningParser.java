@@ -62,9 +62,9 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 				provisioning.addPropertyValue("outboundCommandRouter", router);
 				break;
 			}
-			case CommandAgents: {
-				ManagedList<?> agents = parseCommandAgents(child, context);
-				provisioning.addPropertyValue("outboundCommandAgents", agents);
+			case CommandDestinations: {
+				ManagedList<?> destinations = parseCommandDestinations(child, context);
+				provisioning.addPropertyValue("commandDestinations", destinations);
 				break;
 			}
 			}
@@ -108,14 +108,14 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
-	 * Parse the list of command agents.
+	 * Parse the list of command destinations.
 	 * 
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected ManagedList<?> parseCommandAgents(Element element, ParserContext context) {
-		return new CommandAgentsParser().parse(element, context);
+	protected ManagedList<?> parseCommandDestinations(Element element, ParserContext context) {
+		return new CommandDestinationsParser().parse(element, context);
 	}
 
 	/**
@@ -134,8 +134,8 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 		/** Command routing configuration */
 		CommandRouting("command-routing"),
 
-		/** Command agents list */
-		CommandAgents("command-agents");
+		/** Command destinations list */
+		CommandDestinations("command-destinations");
 
 		/** Event code */
 		private String localName;

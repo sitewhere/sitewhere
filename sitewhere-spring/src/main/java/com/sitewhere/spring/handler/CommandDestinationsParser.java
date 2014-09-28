@@ -1,5 +1,5 @@
 /*
- * CommandAgentsParser.java 
+ * CommandDestinationsParser.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -21,21 +21,21 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.device.provisioning.sms.SmsOutboundCommandAgent;
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+import com.sitewhere.device.provisioning.sms.SmsCommandDestination;
+import com.sitewhere.spi.device.provisioning.ICommandDestination;
 
 /**
- * Parses the list of {@link IOutboundCommandAgent} elements used in provisioning.
+ * Parses the list of {@link ICommandDestination} elements used in provisioning.
  * 
  * @author Derek
  */
-public class CommandAgentsParser {
+public class CommandDestinationsParser {
 
 	/** Used to generate unique names for nested beans */
 	private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
 
 	/**
-	 * Parse the list of command agents.
+	 * Parse the list of command destinations.
 	 * 
 	 * @param element
 	 * @param context
@@ -47,15 +47,18 @@ public class CommandAgentsParser {
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
-				throw new RuntimeException("Unknown command agent element: " + child.getLocalName());
+				throw new RuntimeException("Unknown command destination element: " + child.getLocalName());
 			}
 			switch (type) {
-			case CommandAgent: {
-				result.add(parseCommandAgentReference(child, context));
+			case CommandDestination: {
+				result.add(parseCommandDestinationReference(child, context));
 				break;
 			}
-			case TwilioCommandAgent: {
-				result.add(parseTwilioCommandAgent(child, context));
+			case MqttCommandDestination: {
+				break;
+			}
+			case TwilioCommandDestination: {
+				result.add(parseTwilioCommandDestination(child, context));
 				break;
 			}
 			}
@@ -64,35 +67,35 @@ public class CommandAgentsParser {
 	}
 
 	/**
-	 * Parse a command agent reference.
+	 * Parse a command destination reference.
 	 * 
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected RuntimeBeanReference parseCommandAgentReference(Element element, ParserContext context) {
+	protected RuntimeBeanReference parseCommandDestinationReference(Element element, ParserContext context) {
 		Attr ref = element.getAttributeNode("ref");
 		if (ref != null) {
 			return new RuntimeBeanReference(ref.getValue());
 		}
-		throw new RuntimeException("Command agent reference not contain ref attribute.");
+		throw new RuntimeException("Command destination reference not contain ref attribute.");
 	}
 
 	/**
-	 * Parse the Twilio command agent configuration and create beans necessary for
+	 * Parse the Twilio command destination configuration and create beans necessary for
 	 * implementation.
 	 * 
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition parseTwilioCommandAgent(Element element, ParserContext context) {
-		BeanDefinitionBuilder sms = BeanDefinitionBuilder.rootBeanDefinition(SmsOutboundCommandAgent.class);
-		Attr agentId = element.getAttributeNode("agentId");
-		if (agentId == null) {
-			throw new RuntimeException("Command agent does not contain agentId attribute.");
+	protected AbstractBeanDefinition parseTwilioCommandDestination(Element element, ParserContext context) {
+		BeanDefinitionBuilder sms = BeanDefinitionBuilder.rootBeanDefinition(SmsCommandDestination.class);
+		Attr destinationId = element.getAttributeNode("destinationId");
+		if (destinationId == null) {
+			throw new RuntimeException("Command destination does not contain destinationId attribute.");
 		}
-		sms.addPropertyValue("agentId", agentId.getValue());
+		sms.addPropertyValue("destinationId", destinationId.getValue());
 
 		// Add Twilio command delivery provider bean.
 		AbstractBeanDefinition twilioDef = createTwilioDeliveryProvider(element);
@@ -163,11 +166,14 @@ public class CommandAgentsParser {
 	 */
 	public static enum Elements {
 
-		/** Command agent */
-		CommandAgent("command-agent"),
+		/** Command destination */
+		CommandDestination("command-destination"),
 
-		/** Twilio command agent */
-		TwilioCommandAgent("twilio-command-agent");
+		/** MQTT command destination */
+		MqttCommandDestination("mqtt-command-destination"),
+
+		/** Twilio command destination */
+		TwilioCommandDestination("twilio-command-destination");
 
 		/** Event code */
 		private String localName;

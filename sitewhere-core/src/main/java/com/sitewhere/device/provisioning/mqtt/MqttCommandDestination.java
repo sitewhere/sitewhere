@@ -1,5 +1,5 @@
 /*
- * MqttOutboundCommandAgent.java 
+ * MqttCommandDestination.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,18 +9,18 @@
  */
 package com.sitewhere.device.provisioning.mqtt;
 
-import com.sitewhere.device.provisioning.OutboundCommandAgent;
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+import com.sitewhere.device.provisioning.CommandDestination;
+import com.sitewhere.spi.device.provisioning.ICommandDestination;
 
 /**
- * Implementation of {@link IOutboundCommandAgent} that encodes and delivers messages that
+ * Implementation of {@link ICommandDestination} that encodes and delivers messages that
  * are byte arrays.
  * 
  * @author Derek
  */
-public class MqttOutboundCommandAgent extends OutboundCommandAgent<byte[], MqttParameters> {
+public class MqttCommandDestination extends CommandDestination<byte[], MqttParameters> {
 
-	public MqttOutboundCommandAgent() {
+	public MqttCommandDestination() {
 		setCommandDeliveryParameterExtractor(new HardwareIdMqttParameterExtractor());
 	}
 }

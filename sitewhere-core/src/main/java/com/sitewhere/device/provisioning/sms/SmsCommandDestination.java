@@ -1,5 +1,5 @@
 /*
- * StringOutboundCommandAgent.java 
+ * SmsCommandDestination.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -9,15 +9,15 @@
  */
 package com.sitewhere.device.provisioning.sms;
 
-import com.sitewhere.device.provisioning.OutboundCommandAgent;
+import com.sitewhere.device.provisioning.CommandDestination;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+import com.sitewhere.spi.device.provisioning.ICommandDestination;
 
 /**
- * Implementation of {@link IOutboundCommandAgent} that encodes and delivers messages that
+ * Implementation of {@link ICommandDestination} that encodes and delivers messages that
  * are strings and {@link ICommandDeliveryProvider} requires {@link SmsParameters}.
  * 
  * @author Derek
  */
-public class SmsOutboundCommandAgent extends OutboundCommandAgent<String, SmsParameters> {
+public class SmsCommandDestination extends CommandDestination<String, SmsParameters> {
 }

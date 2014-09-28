@@ -1,5 +1,5 @@
 /*
- * IOutboundCommandAgent.java 
+ * ICommandDestination.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -24,14 +24,14 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
  * 
  * @param <T>
  */
-public interface IOutboundCommandAgent<T, P> extends ISiteWhereLifecycle {
+public interface ICommandDestination<T, P> extends ISiteWhereLifecycle {
 
 	/**
-	 * Get unique identifier for agent.
+	 * Get unique identifier for destination.
 	 * 
 	 * @return
 	 */
-	public String getAgentId();
+	public String getDestinationId();
 
 	/**
 	 * Gets the configured command execution encoder.

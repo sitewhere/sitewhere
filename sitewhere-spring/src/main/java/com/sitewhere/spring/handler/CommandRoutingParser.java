@@ -87,11 +87,11 @@ public class CommandRoutingParser {
 			if (token == null) {
 				throw new RuntimeException("Specification mapping missing specification token.");
 			}
-			Attr agent = mapping.getAttributeNode("agent");
-			if (agent == null) {
-				throw new RuntimeException("Specification mapping missing agent id.");
+			Attr destination = mapping.getAttributeNode("destination");
+			if (destination == null) {
+				throw new RuntimeException("Specification mapping missing destination id.");
 			}
-			map.put(token.getValue(), agent.getValue());
+			map.put(token.getValue(), destination.getValue());
 		}
 		router.addPropertyValue("mappings", map);
 		return router.getBeanDefinition();

@@ -179,11 +179,11 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="command-agents" type="commandAgentsType">
+			<xsd:element name="command-destinations" type="commandDestinationsType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Command agents process command invocation events, encoding them
-						then delivering them to devices.
+						Command destinations process command invocation events, encoding
+						them then delivering them to devices.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -303,38 +303,50 @@
 
 	<xsd:complexType name="specificationMappingRouterMappingType">
 		<xsd:attribute name="specification" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="agent" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="destination" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
 	<!-- Enumerates available command agent choices -->
-	<xsd:complexType name="commandAgentsType">
+	<xsd:complexType name="commandDestinationsType">
 		<xsd:sequence>
 			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element name="command-agent" type="commandAgentReferenceType">
+				<xsd:element name="command-destination" type="commandDestinationReferenceType">
 					<xsd:annotation>
 						<xsd:documentation>
-							References a custom command agent implementation.
+							References a custom command destination implementation.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element name="twilio-command-agent" type="twilioCommandAgentType">
+				<xsd:element name="mqtt-command-destination" type="mqttCommandDestinationType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Agent that delivers commands via Twilio SMS messages.
+							Destination that delivers commands via MQTT.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="twilio-command-destination" type="twilioCommandDestinationType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Destination that delivers commands via Twilio SMS messages.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	<!-- Attributes common to all command destinations -->
+	<xsd:attributeGroup name="command-destination-attributes">
+		<xsd:attribute name="destinationId" type="xsd:string"></xsd:attribute>
+	</xsd:attributeGroup>
 
-	<!-- References command agent defined in a Spring bean -->
-	<xsd:complexType name="commandAgentReferenceType">
+	<!-- References command destination defined in a Spring bean -->
+	<xsd:complexType name="commandDestinationReferenceType">
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
-	<!-- Command agent that delivers commands via MQTT -->
-	<xsd:complexType name="mqttCommandAgentType">
+	<!-- Command destination that delivers commands via MQTT -->
+	<xsd:complexType name="mqttCommandDestinationType">
 		<xsd:sequence>
 			<xsd:element name="encoder" type="commandExecutionEncoderReferenceType">
 				<xsd:annotation>
@@ -343,24 +355,39 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
-				<xsd:annotation>
-					<xsd:documentation>
-						References a custom command delivery parameter extractor
-						implementation that extracts MQTT delivery information from the
-						device.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:choice minOccurs="0">
+				<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom command delivery parameter extractor
+							implementation that extracts MQTT delivery information from the
+							device.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="hardware-id-topic-extractor" type="hardwareIdMqttParameterExtractorType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Substitutes device hardware id into expressions to determine the
+							outbound topics to which MQTT messages will be sent.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
 		</xsd:sequence>
-		<xsd:attribute name="agentId" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="accountSid" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="authToken" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="fromPhoneNumber" type="xsd:string"></xsd:attribute>
+		<xsd:attributeGroup ref="command-destination-attributes"/>
+		<xsd:attribute name="hostname" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="port" type="xsd:int"></xsd:attribute>
 	</xsd:complexType>
 
-	<!-- Command agent that delivers commands via Twilio SMS message -->
-	<xsd:complexType name="twilioCommandAgentType">
+	<!-- MQTT parameter extractor that substitutes device hardware id into expressions -->
+	<xsd:complexType name="hardwareIdMqttParameterExtractorType">
+		<xsd:attribute name="commandTopicExpr" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="systemTopicExpr" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Command destination that delivers commands via Twilio SMS message -->
+	<xsd:complexType name="twilioCommandDestinationType">
 		<xsd:sequence>
 			<xsd:element name="encoder" type="commandExecutionEncoderReferenceType">
 				<xsd:annotation>
@@ -379,7 +406,7 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-		<xsd:attribute name="agentId" type="xsd:string"></xsd:attribute>
+		<xsd:attributeGroup ref="command-destination-attributes"/>
 		<xsd:attribute name="accountSid" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="authToken" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="fromPhoneNumber" type="xsd:string"></xsd:attribute>

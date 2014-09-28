@@ -16,11 +16,11 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.provisioning.ICommandDestination;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
@@ -54,9 +54,8 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	/** Configured outbound command router */
 	private IOutboundCommandRouter outboundCommandRouter;
 
-	/** Configured list of inbound event sources */
-	private List<IOutboundCommandAgent<?, ?>> outboundCommandAgents =
-			new ArrayList<IOutboundCommandAgent<?, ?>>();
+	/** Configured list of command destinations */
+	private List<ICommandDestination<?, ?>> commandDestinations = new ArrayList<ICommandDestination<?, ?>>();
 
 	/*
 	 * (non-Javadoc)
@@ -73,10 +72,10 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 		}
 		getCommandProcessingStrategy().start();
 
-		// Start command agents.
-		if (getOutboundCommandAgents() != null) {
-			for (IOutboundCommandAgent<?, ?> agent : getOutboundCommandAgents()) {
-				agent.start();
+		// Start command destinations.
+		if (getCommandDestinations() != null) {
+			for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
+				destination.start();
 			}
 		}
 
@@ -84,7 +83,7 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 		if (getOutboundCommandRouter() == null) {
 			throw new SiteWhereException("No command router for provisioning.");
 		}
-		getOutboundCommandRouter().initialize(getOutboundCommandAgents());
+		getOutboundCommandRouter().initialize(getCommandDestinations());
 		getOutboundCommandRouter().start();
 
 		// Start registration manager.
@@ -123,10 +122,10 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 			getCommandProcessingStrategy().stop();
 		}
 
-		// Start command agents.
-		if (getOutboundCommandAgents() != null) {
-			for (IOutboundCommandAgent<?, ?> agent : getOutboundCommandAgents()) {
-				agent.stop();
+		// Start command destinations.
+		if (getCommandDestinations() != null) {
+			for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
+				destination.stop();
 			}
 		}
 
@@ -262,14 +261,13 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getOutboundCommandAgents
-	 * ()
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandDestinations()
 	 */
-	public List<IOutboundCommandAgent<?, ?>> getOutboundCommandAgents() {
-		return outboundCommandAgents;
+	public List<ICommandDestination<?, ?>> getCommandDestinations() {
+		return commandDestinations;
 	}
 
-	public void setOutboundCommandAgents(List<IOutboundCommandAgent<?, ?>> outboundCommandAgents) {
-		this.outboundCommandAgents = outboundCommandAgents;
+	public void setCommandDestinations(List<ICommandDestination<?, ?>> commandDestinations) {
+		this.commandDestinations = commandDestinations;
 	}
 }

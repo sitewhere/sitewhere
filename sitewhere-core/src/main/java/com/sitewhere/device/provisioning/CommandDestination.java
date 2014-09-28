@@ -1,5 +1,5 @@
 /*
- * OutboundCommandAgent.java 
+ * CommandDestination.java 
  * --------------------------------------------------------------------------------------
  * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
  *
@@ -19,22 +19,22 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+import com.sitewhere.spi.device.provisioning.ICommandDestination;
 
 /**
- * Default implementation of {@link IOutboundCommandAgent}.
+ * Default implementation of {@link ICommandDestination}.
  * 
  * @author Derek
  * 
  * @param <T>
  */
-public class OutboundCommandAgent<T, P> implements IOutboundCommandAgent<T, P> {
+public class CommandDestination<T, P> implements ICommandDestination<T, P> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(OutboundCommandAgent.class);
+	private static Logger LOGGER = Logger.getLogger(CommandDestination.class);
 
-	/** Unique agent id */
-	private String agentId;
+	/** Unique destination id */
+	private String destinationId;
 
 	/** Configured command execution encoder */
 	private ICommandExecutionEncoder<T> commandExecutionEncoder;
@@ -49,8 +49,8 @@ public class OutboundCommandAgent<T, P> implements IOutboundCommandAgent<T, P> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IOutboundCommandAgent#deliverCommand(com.
-	 * sitewhere.spi.device.command.IDeviceCommandExecution,
+	 * com.sitewhere.spi.device.provisioning.ICommandDestination#deliverCommand(com.sitewhere
+	 * .spi.device.command.IDeviceCommandExecution,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
 	 */
@@ -68,9 +68,9 @@ public class OutboundCommandAgent<T, P> implements IOutboundCommandAgent<T, P> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IOutboundCommandAgent#deliverSystemCommand
-	 * (java.lang.Object, com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment)
+	 * com.sitewhere.spi.device.provisioning.ICommandDestination#deliverSystemCommand(
+	 * java.lang.Object, com.sitewhere.spi.device.IDeviceNestingContext,
+	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
 	 */
 	@Override
 	public void deliverSystemCommand(Object command, IDeviceNestingContext nesting,
@@ -87,22 +87,22 @@ public class OutboundCommandAgent<T, P> implements IOutboundCommandAgent<T, P> {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Starting command agent...");
+		LOGGER.info("Starting command destination...");
 
 		// Start command execution encoder.
 		if (getCommandExecutionEncoder() == null) {
-			throw new SiteWhereException("No command execution encoder configured for agent.");
+			throw new SiteWhereException("No command execution encoder configured for destination.");
 		}
 		getCommandExecutionEncoder().start();
 
 		// Start command execution encoder.
 		if (getCommandDeliveryParameterExtractor() == null) {
-			throw new SiteWhereException("No command delivery parameter extractor configured for agent.");
+			throw new SiteWhereException("No command delivery parameter extractor configured for destination.");
 		}
 
 		// Start command delivery provider.
 		if (getCommandDeliveryProvider() == null) {
-			throw new SiteWhereException("No command delivery provider configured for agent.");
+			throw new SiteWhereException("No command delivery provider configured for destination.");
 		}
 		getCommandDeliveryProvider().start();
 	}
@@ -114,7 +114,7 @@ public class OutboundCommandAgent<T, P> implements IOutboundCommandAgent<T, P> {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopping command agent...");
+		LOGGER.info("Stopping command destination...");
 
 		// Stop command execution encoder.
 		if (getCommandExecutionEncoder() != null) {
@@ -130,21 +130,21 @@ public class OutboundCommandAgent<T, P> implements IOutboundCommandAgent<T, P> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IOutboundCommandAgent#getAgentId()
+	 * @see com.sitewhere.spi.device.provisioning.ICommandDestination#getDestinationId()
 	 */
-	public String getAgentId() {
-		return agentId;
+	public String getDestinationId() {
+		return destinationId;
 	}
 
-	public void setAgentId(String agentId) {
-		this.agentId = agentId;
+	public void setDestinationId(String destinationId) {
+		this.destinationId = destinationId;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IOutboundCommandAgent#getCommandExecutionEncoder
+	 * com.sitewhere.spi.device.provisioning.ICommandDestination#getCommandExecutionEncoder
 	 * ()
 	 */
 	public ICommandExecutionEncoder<T> getCommandExecutionEncoder() {
@@ -158,7 +158,7 @@ public class OutboundCommandAgent<T, P> implements IOutboundCommandAgent<T, P> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IOutboundCommandAgent#
+	 * @see com.sitewhere.spi.device.provisioning.ICommandDestination#
 	 * getCommandDeliveryParameterExtractor()
 	 */
 	public ICommandDeliveryParameterExtractor<P> getCommandDeliveryParameterExtractor() {
@@ -174,7 +174,7 @@ public class OutboundCommandAgent<T, P> implements IOutboundCommandAgent<T, P> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IOutboundCommandAgent#getCommandDeliveryProvider
+	 * com.sitewhere.spi.device.provisioning.ICommandDestination#getCommandDeliveryProvider
 	 * ()
 	 */
 	public ICommandDeliveryProvider<T, P> getCommandDeliveryProvider() {

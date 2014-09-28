@@ -18,12 +18,12 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.device.provisioning.IOutboundCommandAgent;
+import com.sitewhere.spi.device.provisioning.ICommandDestination;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 
 /**
  * Implementation of {@link IOutboundCommandRouter} that assumes a single
- * {@link IOutboundCommandAgent} is available and delivers commands to it.
+ * {@link ICommandDestination} is available and delivers commands to it.
  * 
  * @author Derek
  */
@@ -32,8 +32,8 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SingleChoiceCommandRouter.class);
 
-	/** Agent that will deliver all commands */
-	private IOutboundCommandAgent<?, ?> agent;
+	/** Destinations that will deliver all commands */
+	private ICommandDestination<?, ?> destination;
 
 	/*
 	 * (non-Javadoc)
@@ -47,7 +47,7 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	@Override
 	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
-		agent.deliverCommand(execution, nesting, assignment, device);
+		destination.deliverCommand(execution, nesting, assignment, device);
 	}
 
 	/*
@@ -61,7 +61,7 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	@Override
 	public void routeSystemCommand(Object command, IDeviceNestingContext nesting,
 			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
-		agent.deliverSystemCommand(command, nesting, assignment, device);
+		destination.deliverSystemCommand(command, nesting, assignment, device);
 	}
 
 	/*
@@ -73,12 +73,12 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	public void start() throws SiteWhereException {
 		LOGGER.info("Starting single choice command router...");
 		super.start();
-		if (getAgents().size() != 1) {
-			throw new SiteWhereException("Expected exactly one agent for command routing but found "
-					+ getAgents().size() + ".");
+		if (getDestinations().size() != 1) {
+			throw new SiteWhereException("Expected exactly one destination for command routing but found "
+					+ getDestinations().size() + ".");
 		}
-		Iterator<IOutboundCommandAgent<?, ?>> it = getAgents().values().iterator();
-		this.agent = it.next();
+		Iterator<ICommandDestination<?, ?>> it = getDestinations().values().iterator();
+		this.destination = it.next();
 	}
 
 	/*
