@@ -86,6 +86,12 @@ public class RegistrationManager implements IRegistrationManager {
 				sendSiteTokenRequired(request.getHardwareId());
 				return;
 			}
+			if (isAutoAssignSite() && (getAutoAssignSiteToken() == null)) {
+				updateAutoAssignToFirstSite();
+				if (getAutoAssignSiteToken() == null) {
+					throw new SiteWhereException("Unable to register device. No sites are configured.");
+				}
+			}
 			LOGGER.debug("Handling unassigned device for registration.");
 			DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
 			assnCreate.setSiteToken(getAutoAssignSiteToken());
@@ -146,13 +152,7 @@ public class RegistrationManager implements IRegistrationManager {
 		LOGGER.info("Device registration manager starting.");
 		if (isAutoAssignSite()) {
 			if (getAutoAssignSiteToken() == null) {
-				ISearchResults<ISite> sites =
-						SiteWhere.getServer().getDeviceManagement().listSites(new SearchCriteria(1, 1));
-				if (sites.getResults().isEmpty()) {
-					throw new SiteWhereException(
-							"Registration manager configured for auto-assign site, but no sites were found.");
-				}
-				setAutoAssignSiteToken(sites.getResults().get(0).getToken());
+				updateAutoAssignToFirstSite();
 			} else {
 				ISite site =
 						SiteWhere.getServer().getDeviceManagement().getSiteByToken(getAutoAssignSiteToken());
@@ -161,6 +161,22 @@ public class RegistrationManager implements IRegistrationManager {
 							"Registration manager auto assignment site token is invalid.");
 				}
 			}
+		}
+	}
+
+	/**
+	 * Update token for auto-assigned site to first site in list.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void updateAutoAssignToFirstSite() throws SiteWhereException {
+		ISearchResults<ISite> sites =
+				SiteWhere.getServer().getDeviceManagement().listSites(new SearchCriteria(1, 1));
+		if (sites.getResults().isEmpty()) {
+			LOGGER.warn("Registration manager configured for auto-assign site, but no sites were found.");
+			setAutoAssignSiteToken(null);
+		} else {
+			setAutoAssignSiteToken(sites.getResults().get(0).getToken());
 		}
 	}
 

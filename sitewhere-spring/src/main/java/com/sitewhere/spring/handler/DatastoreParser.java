@@ -18,6 +18,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.server.device.DefaultDeviceModelInitializer;
+import com.sitewhere.server.user.DefaultUserModelInitializer;
 
 /**
  * Parses configuration data for the SiteWhere datastore section.
@@ -52,6 +54,14 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 			}
 			case EHCacheDeviceManagementCache: {
 				parseEHCacheDeviceManagementCache(child, context);
+				break;
+			}
+			case DefaultDeviceModelInitializer: {
+				parseDefaultDeviceModelInitializer(child, context);
+				break;
+			}
+			case DefaultUserModelInitializer: {
+				parseDefaultUserModelInitializer(child, context);
 				break;
 			}
 			}
@@ -143,6 +153,40 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse configuration for default device model initializer.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseDefaultDeviceModelInitializer(Element element, ParserContext context) {
+		BeanDefinitionBuilder init =
+				BeanDefinitionBuilder.rootBeanDefinition(DefaultDeviceModelInitializer.class);
+		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
+		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
+			init.addPropertyValue("initializeIfNoConsole", "true");
+		}
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER,
+				init.getBeanDefinition());
+	}
+
+	/**
+	 * Parse configuration for default user model initializer.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseDefaultUserModelInitializer(Element element, ParserContext context) {
+		BeanDefinitionBuilder init =
+				BeanDefinitionBuilder.rootBeanDefinition(DefaultUserModelInitializer.class);
+		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
+		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
+			init.addPropertyValue("initializeIfNoConsole", "true");
+		}
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER,
+				init.getBeanDefinition());
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -156,7 +200,13 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		HBase("hbase-datastore"),
 
 		/** EHCache device mananagement cache provider */
-		EHCacheDeviceManagementCache("ehcache-device-management-cache");
+		EHCacheDeviceManagementCache("ehcache-device-management-cache"),
+
+		/** Creates sample data if no device data is present */
+		DefaultDeviceModelInitializer("default-device-model-initializer"),
+
+		/** Creates sample data if no device data is present */
+		DefaultUserModelInitializer("default-user-model-initializer");
 
 		/** Event code */
 		private String localName;

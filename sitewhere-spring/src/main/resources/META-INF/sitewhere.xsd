@@ -88,20 +88,47 @@
 			<xsd:choice minOccurs="0" maxOccurs="1">
 				<xsd:element name="ehcache-device-management-cache" type="ehcacheDeviceManagementCacheType"/>
 			</xsd:choice>
+			<xsd:element minOccurs="0" name="default-device-model-initializer" type="defaultDeviceModelInitializerType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Initializes device model with data if database is empty.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" name="default-user-model-initializer" type="defaultUserModelInitializerType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Initializes user model with data if database is empty.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<!-- Configuration data for a MongoDB datastore -->
 	<xsd:complexType name="mongoDatastoreType">
 		<xsd:attribute name="hostname" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="port" type="xsd:int"></xsd:attribute>
 		<xsd:attribute name="databaseName" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
-
+	
+	<!-- Configuration data for an HBase datastore -->
 	<xsd:complexType name="hbaseDatastoreType">
 		<xsd:attribute name="quorum" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
+	<!-- Configuration data for EHCache cache provider -->
 	<xsd:complexType name="ehcacheDeviceManagementCacheType"/>
+	
+	<!-- Creates default device model data -->
+	<xsd:complexType name="defaultDeviceModelInitializerType">
+		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Creates default user model data -->
+	<xsd:complexType name="defaultUserModelInitializerType">
+		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+	</xsd:complexType>
 
 	<xsd:complexType name="inboundProcessingChainType">
 		<xsd:sequence>
