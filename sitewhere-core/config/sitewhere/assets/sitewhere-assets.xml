@@ -48,7 +48,7 @@
 		/> </bean> -->
 
 	<!-- Asset module manager configuration -->
-	<bean id="assetModuleManager" class="com.sitewhere.server.asset.AssetModuleManager">
+	<bean id="assets" class="com.sitewhere.server.asset.AssetModuleManager">
 		<property name="modules">
 			<list>
 				<ref bean="fileDeviceModule"/>

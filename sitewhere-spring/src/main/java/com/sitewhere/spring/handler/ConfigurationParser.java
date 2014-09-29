@@ -57,6 +57,10 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 				new ProvisioningParser().parse(child, context);
 				break;
 			}
+			case AssetManagement: {
+				new AssetManagementParser().parse(child, context);
+				break;
+			}
 			}
 		}
 		return null;
@@ -79,7 +83,10 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 		OutboundProcessingChain("outbound-processing-chain"),
 
 		/** Provisioning */
-		Provisioning("provisioning");
+		Provisioning("provisioning"),
+
+		/** Asset management */
+		AssetManagement("asset-management");
 
 		/** Event code */
 		private String localName;

@@ -16,7 +16,7 @@
 
 	<xsd:complexType name="configurationType">
 		<xsd:all>
-			<xsd:element name="datastore" type="datastoreType" minOccurs="0" maxOccurs="1">
+			<xsd:element name="datastore" type="datastoreType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Provides information about how SiteWhere data is to be persisted
@@ -25,8 +25,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="provisioning" type="provisioningType" minOccurs="0"
-				maxOccurs="1">
+			<xsd:element name="provisioning" type="provisioningType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Provisioning includes receiving inbound event data and registering
@@ -35,7 +34,7 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType"
-				minOccurs="0" maxOccurs="1">
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						A chain of processors through which all inbound device information
@@ -45,12 +44,21 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType"
-				minOccurs="0" maxOccurs="1">
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						A chain of processors through which all outbound device events are
 						passed. Each processor handles some piece of processing and passes information on to
 						the next.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="asset-management" type="assetManagementType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies details related to the asset management subsystem
+						including the asset manager implementation and the list of asset modules that should
+						be used for device assignments.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -422,6 +430,75 @@
 
 	<xsd:complexType name="commandDeliveryProviderReferenceType">
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Specifies asset management features -->
+	<xsd:complexType name="assetManagementType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="asset-module" type="assetModuleReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom asset module implementation.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="filesystem-device-asset-module" type="fileSystemDeviceAssetModuleType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Configures a filesystem device asset module instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="filesystem-hardware-asset-module" type="fileSystemHardwareAssetModuleType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Configures a filesystem hardware asset module instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="filesystem-person-asset-module" type="fileSystemPersonAssetModuleType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Configures a filesystem person asset module instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Reference to an asset module defined in a Spring bean -->
+	<xsd:complexType name="assetModuleReferenceType">
+		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Configures an instance of a filesystem device asset module -->
+	<xsd:complexType name="fileSystemDeviceAssetModuleType">
+		<xsd:complexContent>
+			<xsd:extension base="fileSystemAssetModuleType"></xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Configures an instance of a filesystem hardware asset module -->
+	<xsd:complexType name="fileSystemHardwareAssetModuleType">
+		<xsd:complexContent>
+			<xsd:extension base="fileSystemAssetModuleType"></xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Configures an instance of a filesystem person asset module -->
+	<xsd:complexType name="fileSystemPersonAssetModuleType">
+		<xsd:complexContent>
+			<xsd:extension base="fileSystemAssetModuleType"></xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Common configuration for filesystem asset modules -->
+	<xsd:complexType name="fileSystemAssetModuleType">
+		<xsd:attribute name="moduleId" type="xsd:string" use="optional"/>
+		<xsd:attribute name="moduleName" type="xsd:string" use="optional"/>
+		<xsd:attribute name="filename" type="xsd:string" use="optional"/>
 	</xsd:complexType>
 
 </xsd:schema>
