@@ -1,13 +1,10 @@
 /*
- * $Id$
- * --------------------------------------------------------------------------------------
- * Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com
+ * Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com
  *
  * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package com.sitewhere.server;
 
 import java.io.BufferedReader;
@@ -359,7 +356,7 @@ public class SiteWhereServer implements ISiteWhereServer {
 		messages.add("");
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
 		messages.add("");
-		messages.add("Copyright (c) 2013-2014 Reveal Technologies, LLC");
+		messages.add("Copyright (c) 2009-2014 SiteWhere, LLC");
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 		LOGGER.info("\n" + message + "\n");
 	}

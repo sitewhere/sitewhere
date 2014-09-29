@@ -1,20 +1,21 @@
-<!-- Copyright (c) Reveal Technologies, LLC. All rights reserved. http://www.reveal-tech.com 
+<!-- 
+	Copyright (c) SiteWhere, LLC. All rights reserved. http://www.sitewhere.com 
 	The software in this package is published under the terms of the CPAL v1.0 
 	license, a copy of which has been included with this distribution in the 
-	LICENSE.txt file. -->
+	LICENSE.txt file. 
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/maven-v4_0_0.xsd"
->
+                      http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.sitewhere</groupId>
 	<artifactId>sitewhere</artifactId>
 	<packaging>pom</packaging>
 	<version>0.9.7</version>
-	<name>SiteWhere Root</name>
-	<description>SiteWhere M2M Integration Platform</description>
-	<url>http://www.sitewhere.org/</url>
+	<name>SiteWhere</name>
+	<description>SiteWhere Open Source Framework for the Internet of Things</description>
+	<url>http://www.sitewhere.com/</url>
 
 	<profiles>
 		<profile>
@@ -92,7 +93,7 @@
 		<developer>
 			<id>derekadams</id>
 			<name>Derek Adams</name>
-			<email>derek.adams@reveal-tech.com</email>
+			<email>derek.adams@sitewhere.com</email>
 		</developer>
 	</developers>
 	<issueManagement>
@@ -100,8 +101,8 @@
 		<url>https://sitewhere.atlassian.net</url>
 	</issueManagement>
 	<organization>
-		<name>Reveal Technologies, LLC.</name>
-		<url>http://www.reveal-tech.com/</url>
+		<name>SiteWhere, LLC.</name>
+		<url>http://www.sitewhere.com/</url>
 	</organization>
 
 	<distributionManagement>
