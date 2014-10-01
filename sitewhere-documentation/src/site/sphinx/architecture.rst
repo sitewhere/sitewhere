@@ -24,18 +24,18 @@ more detail.
 
 Web Application Container
 -------------------------
-SiteWhere is deployed as a *Web Appliction Archive (WAR)* file and is designed to run in a web container.
+SiteWhere is deployed as a Web Appliction Archive (WAR) file and is designed to run in a web container.
 The WAR file itself is not self-sufficient since most of the library dependencies are not packaged in the
 WAR. The process of building and deploying updated versions of the WAR is much faster without including
 the 50+ MB of library dependencies. As a result, you will need to use the packaged version of SiteWhere
 server, which is just a standard Tomcat 7 install with the extra libraries and some extra configuration 
 files added. If you want to run SiteWhere in another application container, you will need to make sure the
-classpath contains all of the files in the **${sitewhere_home}/sitewhere** folder.
+classpath contains all of the files in the **sitewhere** folder.
 
 Datastores
 ----------
 When storing and retrieving data, SiteWhere never deals directly with a database. Instead, the system defines
-*Service Provider Interfaces (SPIs)* for the data operations it needs to operate and expects datastore 
+Service Provider Interfaces (SPIs) for the data operations it needs to operate and expects datastore 
 implementations to comply with the required interfaces. The two core interfaces that a datastore needs
 to implement are:
 
@@ -55,16 +55,16 @@ in the configuration guide.
 
 Asset Modules
 -------------
-In SiteWhere terminology, an *asset* represents extra information that provides context about a device. Every
-device references a *device specification* that indicates the type of hardware the device is using. The 
+In SiteWhere terminology, an asset represents extra information that provides context about a device. Every
+device references a device specification that indicates the type of hardware the device is using. The 
 specification is in turn associated with an asset type which gives detailed information about the device.
 The asset type includes things like a human-readable name, description, SKU, URL for a product image, and any number of
 other properties that enhance the understanding of the hardware. Assets are also used to provide information
-about entities that are associated with devices. For instance a *person asset* may be associated with a badge.
-A *hardware asset* may indicate the type of vehicle a location device is attached to.
+about entities that are associated with devices. For instance a person asset may be associated with a badge.
+A hardware asset may indicate the type of vehicle a location device is attached to.
 
-Rather than hard-coding a schema for assets in the system, SiteWhere defines *SPIs* for general asset types and
-allows *asset modules* to be plugged in to provide asset definitions. This allows existing identity managment
+Rather than hard-coding a schema for assets in the system, SiteWhere defines SPIs for general asset types and
+allows asset modules to be plugged in to provide asset definitions. This allows existing identity managment
 systems to be used in providing a list of available person assets. It also allows product catalog systems to 
 be used in defining available hardware assets. SiteWhere uses asset modules in a read-only manner and only 
 ever references entities based on a unique id understood by the underlying asset module. Maintaining the list
@@ -75,7 +75,7 @@ REST Services
 -------------
 Most of the core functionality related to the SiteWhere APIs is accessible externally via REST services. Using the
 services, an external entity can create, view, update, or delete entities in the system. The services can also 
-interact with subsystems such as asset management. All REST calls are subject to authentication and use *Spring Security*
+interact with subsystems such as asset management. All REST calls are subject to authentication and use Spring Security
 to verify that the user is authorized for the operation. Currently the system uses basic authentication over an
 unencrypted pipe, so the data is not secure. Data can be secured by changing communication to use basic auth over SSL,
 which is considered a reasonable approach for sending REST data securely. This will become the default setup as 
@@ -85,7 +85,7 @@ SiteWhere includes a working version of `Swagger <http://swagger.wordnik.com/>`_
 the REST services. Using the Swagger interface, you can interactively execute REST calls against a running SiteWhere
 server and view the JSON responses. The default Swagger URL for a server is:
 
-	*http://sitewhere.hostname/sitewhere/*
+	http://sitewhere.hostname/sitewhere/
 	
 where **sitewhere.hostname** is the hostname of the server running SiteWhere.
 
@@ -95,7 +95,7 @@ SiteWhere includes an HTML5 administrative application that can be used to set u
 information from devices. The application offers the following features:
 
 :Manage site information:
-	*Sites* are a coarse-grained constructs used for grouping related devices. They are very useful for location-based
+	Sites are a coarse-grained constructs used for grouping related devices. They are very useful for location-based
 	processing because each site can have map information associated with it. The admin UI allows sites to be created,
 	updated, viewed, and deleted. It also allows the type of map, initial location and zoom level to be associated
 	so that visualizations have a map on which to display markers. A SiteWhere `Leaflet <http://leafletjs.com/>`_ 
@@ -122,7 +122,7 @@ information from devices. The application offers the following features:
 	Devices may be assigned to assets using the administrative UI. The interface dynamically queries the 
 	asset management modules to allow the user to browse the underlying assets and associate them with devices.
 	Existing assignments can have their assignment state changed from the interface to mark them as missing or 
-	to end the assignment so that the device can be reassigned to another asset. For each *device assignment*,
+	to end the assignment so that the device can be reassigned to another asset. For each device assignment,
 	the user can view detailed records of all events that occurred during the assignment.
 	
 :Emulate events from an assignment:
@@ -164,7 +164,7 @@ to derive more meaning from the event data.
 
 External Search Providers
 -------------------------
-As of version 0.9.5, SiteWhere supports an abstracted view of external search engines that operate on 
+SiteWhere supports an abstracted view of external search engines that operate on 
 SiteWhere data. External search providers allow the SiteWhere REST services to take advantage of features 
 particular to the underlying search engine while still returning results in a predictable format. 
 For instance, the Solr external search provider allows a user to pass a Solr query string as part of the
@@ -182,10 +182,10 @@ or otherwise enabling a device. Provisioning in SiteWhere involves a few key ele
 
 :Registration of new or existing devices:
 	SiteWhere has services and API calls for creating new devices, but it is often preferable to have devices
-	self-register. In that case, the device provides a unique *hardware id* and a *specification token* to the
+	self-register. In that case, the device provides a unique hardware id and a specification token to the
 	system which in turns creates a new device record that can start accepting events. SiteWhere assumes that
 	each device will have a unique id in the system so it can be independently addressed. The specification 
-	token passed at startup indicates the type of hardware the device is using and references a *device specification*
+	token passed at startup indicates the type of hardware the device is using and references a device specification
 	that already exists in the system. Devices send a registration event when they boot or connect to the network
 	and SiteWhere either creates a new device record or finds an existing one. SiteWhere returns a response message
 	to the device indicating the registration status.
@@ -198,8 +198,8 @@ or otherwise enabling a device. Provisioning in SiteWhere involves a few key ele
 	various transports and use various methods of decoding events.
 	
 :Delivery of commands to connected devices:
-	Each device registered with SiteWhere has an associated *device specification* which is tied to the type
-	of hardware running on the device. Each device specification has a list of *commands* that can be executed
+	Each device registered with SiteWhere has an associated device specification which is tied to the type
+	of hardware running on the device. Each device specification has a list of commands that can be executed
 	against devices with that specification. SiteWhere allows any number of commands to be added for a specification
 	and each command can carry any number of arguments. The commands and arguments can be added via the administrative
 	user interface or via REST calls. When commands are executed, they travel through a pipeline that encodes them
@@ -272,7 +272,7 @@ the hardware including name, description, image URL, etc.
 	A device specification contains a list of commands that may be invoked by SiteWhere on the device. Commands can be 
 	added, updated, viewed, and deleted in the admin UI or via the REST services. It is perfectly acceptable for two 
 	device specifications to point to the same asset type, but have a different set of commands, reflecting different 
-	configurations (or *profiles*) of the given device.
+	configurations of the given device.
 
 :Device Command Invocations:
 	SiteWhere provides APIs for invoking commands on a device based on the list available in its device specification.
@@ -281,8 +281,8 @@ the hardware including name, description, image URL, etc.
 	
 :Device Command Responses:
 	After a device processes a command invocation, it may return a response to SiteWhere. Command invocation messages
-	carry an *originator* event id that can be sent back with any responses to tie responses back to the event that
-	they are responding to. SiteWhere provides a simple *ack* event that acknowledges receipt of an event. Devices can
+	carry an originator event id that can be sent back with any responses to tie responses back to the event that
+	they are responding to. SiteWhere provides a simple ack event that acknowledges receipt of an event. Devices can
 	also return locations, measurements, or alerts in responses to commands and use the originator id to associate
 	those with a command as well. From an API perspective, a user can list the responses for a given command (any
 	number of responses can be associated) and act on the responses to initiate other actions.
@@ -308,10 +308,10 @@ Device Assignments
 ------------------
 Events are not logged directly against devices, since a given device may serve in a number of contexts. For instance,
 a visitor badge may be assigned to a new person every day. Rather than intermingle event data from all the people a 
-badge has been assigned to, the concept of a *device assignment* allows events to be associated with the asset they
+badge has been assigned to, the concept of a device assignment allows events to be associated with the asset they
 relate to. A device assignment is an association between a device, a site, and (optionally) a related asset. Some
-assignments do not specify an asset and are referred to as **unassociated**. A real-world example of this is a
-vending machine that has wireless connectivity to report inventory. The device *is* the asset, so there is no need
+assignments do not specify an asset and are referred to as 'unassociated'. A real-world example of this is a
+vending machine that has wireless connectivity to report inventory. The device **is** the asset, so there is no need
 to associate an external asset.
 
 :Current Device State:
@@ -323,10 +323,10 @@ to associate an external asset.
 	to request an update of the data.
 
 :Assignment Status Indicator:
-	Each device assignment also holds a status of the assignment itself. By default, an assignment is marked *active* 
-	immediately after it is created. Using the REST services or admin UI, the status can be changed to *missing* if the
+	Each device assignment also holds a status of the assignment itself. By default, an assignment is marked 'active' 
+	immediately after it is created. Using the REST services or admin UI, the status can be changed to 'missing' if the
 	device or associated asset have been reported missing. Processing logic can be altered for missing assignments. The
-	assignment status is updated to *released* when an assignment is terminiated. This indicates the device is no longer 
+	assignment status is updated to 'released' when an assignment is terminiated. This indicates the device is no longer 
 	assigned and may be reassigned.
 	
 Device Events

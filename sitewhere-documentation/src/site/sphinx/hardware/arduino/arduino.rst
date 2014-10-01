@@ -62,9 +62,9 @@ The libraries are available on GitHub in both source and packaged forms at:
 
 	https://github.com/reveal-technologies/sitewhere-arduino
 	
-The latest stable code is always available in the *master* branch. The libraries are available in
+The latest stable code is always available in the **master** branch. The libraries are available in
 zip archive format for easy installation into the Arduino IDE. Download both the
-*SiteWhere.zip* and *PubSubClient.zip* archives from the root of the repository. The PubSubClient
+**SiteWhere.zip** and **PubSubClient.zip** archives from the root of the repository. The PubSubClient
 library is an open source MQTT library for Arduino available here:
 
 	https://github.com/knolleary/pubsubclient
@@ -124,9 +124,9 @@ the default value of 1883:
 
 Device Identification
 ---------------------
-Each device communicating with SiteWhere needs a unique identifier referred to as a *hardware id*.
+Each device communicating with SiteWhere needs a unique identifier referred to as a hardware id.
 Also, SiteWhere needs to understand the type of hardware it is communicating with, which is 
-indicated by a *specification token* passed on registration. Device specifications may be created
+indicated by a specification token passed on registration. Device specifications may be created
 via the administrative console or via REST services. When a device self-registers, SiteWhere
 uses the hardware id and device specification to create a new device instance in the system.
 
@@ -168,7 +168,7 @@ the device with SiteWhere. If you are using hardware other than the standard Eth
 need to update the connection code to work with the specifics of your hardware. The general pattern is:
 
 1) Get a network connection (e.g. get an IP address from DHCP).
-2) Connect to MQTT broker (taken care of by *connect()* method in PubSubClient).
+2) Connect to MQTT broker (taken care of by **connect()** method in PubSubClient).
 3) Subscribe to MQTT topics for receiving commands from SiteWhere.
 4) Send a regsitration request to either regsiter or confirm registration before sending data.
 
@@ -198,7 +198,7 @@ need to update the connection code to work with the specifics of your hardware. 
 
 Responding to Registration
 --------------------------
-After handling device registration, SiteWhere sends a *registration acknowledgement (ack)* back
+After handling device registration, SiteWhere sends a registration acknowledgement (ack) back
 to the device, indicating the registration status. If no device with the given hardware id
 existed before the current registration, SiteWhere will create one and indicate this was a new reqistration.
 Otherwise, SiteWhere will indicate that an existing registration is being used. If there are
@@ -238,7 +238,7 @@ Processing Events
 -----------------
 The primary intent of this example is to send a mocked event to SiteWhere at a given interval. Now that
 the device is connected and registered, the SiteWhere event APIs can be used to easily send data to the
-server. The event processing takes place in the main processing *loop()* function and should be guarded
+server. The event processing takes place in the main processing **loop()** function and should be guarded
 by a flag that only allows interactions once registration has completed:
 
 .. code-block:: c
@@ -258,7 +258,7 @@ by a flag that only allows interactions once registration has completed:
 The first statement calls the logic on the PubSubClient that will handle inbound processing callbacks for 
 commands from SiteWhere. The rest of the code verifies that the device is registered, limits code execution
 to a given time interval, then sends a mocked alert event to SiteWhere. The alert will be recorded to the device
-that was previously registered based on hardware id. In addition to the *sw_alert()* function, there are 
+that was previously registered based on hardware id. In addition to the **sw_alert()** function, there are 
 others for sending locations, measurements, and other data to SiteWhere. See the
 `library header files <https://github.com/reveal-technologies/sitewhere-arduino/blob/master/SiteWhere/sitewhere.h>`_ 
 for a complete list.

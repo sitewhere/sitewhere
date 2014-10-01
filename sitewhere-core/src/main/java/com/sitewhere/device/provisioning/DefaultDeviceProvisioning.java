@@ -35,7 +35,7 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	private static Logger LOGGER = Logger.getLogger(DefaultDeviceProvisioning.class);
 
 	/** Configured registration manager */
-	private IRegistrationManager registrationManager;
+	private IRegistrationManager registrationManager = new RegistrationManager();
 
 	/** Configured inbound processing strategy */
 	private IInboundProcessingStrategy inboundProcessingStrategy =

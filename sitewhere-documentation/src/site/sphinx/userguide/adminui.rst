@@ -4,9 +4,8 @@
 SiteWhere is distributed with an HTML5 administrative console application that provides an
 easy way to create and maintain SiteWhere data without having to do everything via the REST 
 services. The administrative console (often refered to as the admin console or admin ui) is
-available as part of any standalone or cloud install of SiteWhere and is usually accessible
-via the URL *{SITEWHERE_HOST}/sitewhere/admin*. For instance, in a default local installation
-you would access the admin console via:
+available as part of any standalone or cloud install of SiteWhere. In a default local installation
+the admin console is accessible via:
 
 	http://localhost:8080/sitewhere/admin/
 
@@ -33,7 +32,7 @@ on the default data populated at system startup. The default username and passwo
 	
 The login credentials authenticate against the SiteWhere user model, which is populated
 with a single default user account upon the first system startup. User accounts can be
-added or updated by clicking on the *Users* tab at the top of the admin console application.
+added or updated by clicking on the **Users** tab at the top of the admin console application.
 
 --------------
 Managing Sites
@@ -69,7 +68,7 @@ The following sections cover information needed to create or edit a site.
 Edit Site - Site Details Tab
 ****************************
 
-The *site details* tab includes basic information about a site.
+The **Site Details** tab includes basic information about a site.
 
 .. image:: /_static/images/userguide/site-edit-details.png
    :width: 100%
@@ -102,7 +101,7 @@ the site is the default used for visualizations.
 
 Rather than manually typing the latitude, longitude, and zoom level for
 a map, the information may be specified interactively by clicking
-*Choose location and zoom on map*. This option presents a map which
+**Choose location and zoom on map**. This option presents a map which
 can be manipulated via drag-and-drop to choose the default map settings.
 
 .. image:: /_static/images/userguide/site-edit-map.png

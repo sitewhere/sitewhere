@@ -49,7 +49,7 @@ Create Project Using New Project Wizard
 ---------------------------------------
 Once the development environment is installed, a new project should be created for your
 SiteWhere Android application. Click **File > New > Android Application Project** to open 
-the *New Android Application* wizard as shown below:
+the **New Android Application** wizard as shown below:
 
 .. image:: /_static/images/hardware/android/new-application.png
    :width: 100%
@@ -63,16 +63,16 @@ for your application and click **Next**.
 			The intent is to release future versions to support compatibility with older runtimes when time
 			allows.
 			
-On the next page of the wizard, uncheck the *Create custom launcher icon* and *Create activity* checkboxes.
+On the next page of the wizard, uncheck the **Create custom launcher icon** and **Create activity** checkboxes.
 
 .. image:: /_static/images/hardware/android/new-application-2.png
    :width: 100%
    :alt: New Android Application Wizard
    :align: left
 
-Click **Finish** to create the new application. The Eclipse workspace should show the *Java* perspective 
-with the newly created project displayed in the *Package Explorer* pane. You may have to close the 
-welcome screen or manually change over to the *Java* perspective. The screen should look like the one
+Click **Finish** to create the new application. The Eclipse workspace should show the **Java** perspective 
+with the newly created project displayed in the **Package Explorer** pane. You may have to close the 
+welcome screen or manually change over to the **Java** perspective. The screen should look like the one
 below:
 
 .. image:: /_static/images/hardware/android/new-application-3.png
@@ -104,13 +104,13 @@ To import the SiteWhere Android library projects:
    is the branch that is the exact match for the SiteWhere instance it will be 
    communicating with. Higher numbered branches should be backward compatible with 
    older SiteWhere servers. 
-5) Click **Next** to move to the next step in the wizard, the *Local Destination* panel.
+5) Click **Next** to move to the next step in the wizard, the **Local Destination** panel.
    You can usually leave the destination values as the defaults unless you have a different location you would 
    rather store the imported repository. 
 6) Click **Next** to move to the next step in the wizard, where you will
    choose how to import the Eclipse projects contained in the repository. 
-7) Choose **Import existing projects**, using the default *Working Directory* (which should be the 
-   location specified in the *Local Destination* panel).
+7) Choose **Import existing projects**, using the default **Working Directory** (which should be the 
+   location specified in the **Local Destination** panel).
 8) Click **Next** to move to the **Import Projects** panel.
 9) Choose to import the projects that end with **Library** as shown below:
 
@@ -124,8 +124,8 @@ To import the SiteWhere Android library projects:
 Reference SiteWhere Libraries from New Project
 ----------------------------------------------
 In order to use the SiteWhere Android libraries, your new project must include the libraries on its classpath.
-Open the properties for the project you created earlier in *Package Explorer* and choose **Android**
-in the list of sections on the left. At the bottom of the panel in the *Library* group, 
+Open the properties for the project you created earlier in **Package Explorer** and choose **Android**
+in the list of sections on the left. At the bottom of the panel in the **Library** group, 
 click the **Add...** button to add references to the SiteWhere libraries as shown below:
 
 .. image:: /_static/images/hardware/android/reference-projects.png
@@ -134,7 +134,7 @@ click the **Add...** button to add references to the SiteWhere libraries as show
    :align: center
 
 Click **OK** to apply the changes and your resulting workspace should look something like the image below. Note
-that if you open the *project.properties* file, there are now references to the SiteWhere libraries.
+that if you open the **project.properties** file, there are now references to the SiteWhere libraries.
 
 .. image:: /_static/images/hardware/android/after-reference-projects.png
    :width: 100%
@@ -222,14 +222,14 @@ for sending events and receiving commands. Note that most of the heavy lifting i
 .. literalinclude:: ExampleActivity.java
    :language: java
 
-.. warning:: You will need to update the MQTT broker location (set in the *onCreate()* method) to point to
+.. warning:: You will need to update the MQTT broker location (set in the **onCreate()** method) to point to
 	a publicly available SiteWhere MQTT broker. The easiest method for this is to start up a SiteWhere
 	instance on Amazon EC2 and use the public IP address for the instance as the MQTT broker hostname.
 
 Add Declarations in Android Manifest
 ------------------------------------
 To create an application that can be built and executed on a device, a few more artifacts need to be added. The
-standard *AndroidManifest.xml* needs to be edited to include the new activity and reference the MQTT service
+standard **AndroidManifest.xml** needs to be edited to include the new activity and reference the MQTT service
 provided by the framework.
 
 .. literalinclude:: AndroidManifest.xml
@@ -237,13 +237,13 @@ provided by the framework.
 
 Add Files for Layout and Internationalization
 ---------------------------------------------
-In the *res/layout* folder, add a file named *main.xml* with the following content. It provides the layout
+In the **res/layout** folder, add a file named **main.xml** with the following content. It provides the layout
 for the main screen shown in the application.
 
 .. literalinclude:: main.xml
    :language: xml
 
-In the *res/values* folder, edit the file named *strings.xml* and replace it with the following content.
+In the **res/values** folder, edit the file named **strings.xml** and replace it with the following content.
 
 .. literalinclude:: strings.xml
    :language: xml
@@ -260,7 +260,7 @@ on both methods. If you debug the application on a device, you will see output s
    :alt: Debug Application on a Device
    :align: left
 
-Once the application is running on the device, you can swap to the *DDMS* perspective to view a realtime 
+Once the application is running on the device, you can swap to the **DDMS** perspective to view a realtime 
 log of what is happening on the device. Looking at the messages for the SiteWhere example application
 shows detailed information about the application connecting to and communicating with the MQTT broker.
 An example of what you might see is shown below:
@@ -273,7 +273,7 @@ An example of what you might see is shown below:
 -------------------------------
  Automatic Device Registration
 -------------------------------
-One of the key actions taken in the example code is the call to *registerDevice()*:
+One of the key actions taken in the example code is the call to **registerDevice()**:
 
 .. code-block:: java
    :emphasize-lines: 4
@@ -292,9 +292,9 @@ device wants to register (or verify registration) with the system. The two key p
 passed in the call are the unique device id (in this case the one discovered from the phone itself) 
 and the token for the device specification (which tells SiteWhere what type of hardware it is talking to).
 SiteWhere checks whether there is a device with the given hardware id and, if not, creates one
-dynamically. When creating the device, it also creates an *unassociated assignment* which allows the 
+dynamically. When creating the device, it also creates an unassociated assignment which allows the 
 device to start receiving events without needing to be associated with an asset. Sitewhere responds to
-the device registration request with a *registration ack* which is sent back to the device. The code
+the device registration request with a registration ack which is sent back to the device. The code
 that processes the ack is shown below:
 
 .. code-block:: java
