@@ -9,7 +9,6 @@
    architecture
    installation
    userguide
-   configuration
    hardware
    integration
    development

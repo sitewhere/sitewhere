@@ -1,6 +1,6 @@
-==================================
- SiteWhere Administrative Console
-==================================
+========================
+ Administrative Console
+========================
 SiteWhere is distributed with an HTML5 administrative console application that provides an
 easy way to create and maintain SiteWhere data without having to do everything via the REST 
 services. The administrative console (often refered to as the admin console or admin ui) is

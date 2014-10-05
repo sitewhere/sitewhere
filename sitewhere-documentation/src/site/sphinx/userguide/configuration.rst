@@ -1,6 +1,6 @@
-=========================
- SiteWhere Configuration
-=========================
+======================
+ System Configuration
+======================
 SiteWhere uses a hierarchy of `Spring <http://projects.spring.io/spring-framework/>`_ XML files as
 its configuration mechanism. When the SiteWhere server starts, one of the first steps is to bootstrap
 the core system components by loading the *conf/sitewhere/sitewhere-server.xml* file.

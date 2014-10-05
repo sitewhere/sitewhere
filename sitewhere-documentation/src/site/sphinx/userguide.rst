@@ -5,6 +5,6 @@
 .. toctree::
    :maxdepth: 3
 
+   userguide/installation
+   userguide/configuration
    userguide/adminui
-   userguide/sites
-   userguide/specifications
