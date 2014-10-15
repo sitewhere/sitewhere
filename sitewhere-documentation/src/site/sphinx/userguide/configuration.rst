@@ -163,7 +163,7 @@ Device Management Cache Providers
 ---------------------------------
 Many elements of the device data model do not change often and can benefit from a caching implementation.
 SiteWhere offers a service provider interface 
-`IDeviceManagementCacheProvider <apidocs/com/sitewhere/spi/device/IDeviceManagementCacheProvider.html>`_
+`IDeviceManagementCacheProvider <../apidocs/com/sitewhere/spi/device/IDeviceManagementCacheProvider.html>`_
 which may be implemented to provide caching capabilities that use an external cache provider.
 SiteWhere offers a default device management cache implementation based on `Ehcache <http://ehcache.org/>`_
 which can be configured as shown below:
@@ -195,11 +195,11 @@ destination will be used to deliver the command payload.
 Event Sources
 -------------
 Event sources are responsible for bringing data into SiteWhere. All event sources implement the
-`IInboundEventSource <apidocs/com/sitewhere/spi/device/provisioning/IInboundEventSource.html>`_
+`IInboundEventSource <../apidocs/com/sitewhere/spi/device/provisioning/IInboundEventSource.html>`_
 interface and are composed of one or more **event receivers** (implementing 
-`IInboundEventReceiver <apidocs/com/sitewhere/spi/device/provisioning/IInboundEventReceiver.html>`_) 
+`IInboundEventReceiver <../apidocs/com/sitewhere/spi/device/provisioning/IInboundEventReceiver.html>`_) 
 and a single **event decoder** (implementing 
-`IDeviceEventDecoder <apidocs/com/sitewhere/spi/device/provisioning/IDeviceEventDecoder.html>`_).
+`IDeviceEventDecoder <../apidocs/com/sitewhere/spi/device/provisioning/IDeviceEventDecoder.html>`_).
 Event receivers take care of dealing with protocols for gathering data. The data is then processed
 by the event decoder in order to create SiteWhere events which provide a common representation of
 the device data so it can be processed by the inbound processing chain.
@@ -228,13 +228,13 @@ decode the message payload into SiteWhere events.
 Command Destinations
 --------------------
 Command destinations are responsible for delivering commands to devices. All command destinations implement the
-`ICommandDestination <apidocs/com/sitewhere/spi/device/provisioning/ICommandDestination.html>`_
+`ICommandDestination <../apidocs/com/sitewhere/spi/device/provisioning/ICommandDestination.html>`_
 interface and are composed of a **command encoder** (implementing 
-`ICommandExecutionEncoder <apidocs/com/sitewhere/spi/device/provisioning/ICommandExecutionEncoder.html>`_),
+`ICommandExecutionEncoder <../apidocs/com/sitewhere/spi/device/provisioning/ICommandExecutionEncoder.html>`_),
 a **parameter extractor** (implementing
-`ICommandDeliveryParameterExtractor <apidocs/com/sitewhere/spi/device/provisioning/ICommandDeliveryParameterExtractor.html>`_),
+`ICommandDeliveryParameterExtractor <../apidocs/com/sitewhere/spi/device/provisioning/ICommandDeliveryParameterExtractor.html>`_),
 and a **delivery provider** (implementing 
-`ICommandDeliveryProvider <apidocs/com/sitewhere/spi/device/provisioning/ICommandDeliveryProvider.html>`_).
+`ICommandDeliveryProvider <../apidocs/com/sitewhere/spi/device/provisioning/ICommandDeliveryProvider.html>`_).
 The command encoder is used to convert the command payload into a format understood by the device. The parameter
 extractor pulls information needed for delivering the message to the delivery provider (e.g. for an SMS provider,
 the extractor may pull the SMS phone number for the device from device metadata). The delivery provider takes 
@@ -290,17 +290,17 @@ messages will be sent from).
 				
 The account SID, auth token, and sending phone number are all pieces of data related to the Twilio account.
 The parameter extractor implementation should be one that supplies parameters of type 
-`SmsParameters <apidocs/com/sitewhere/spi/device/provisioning/sms/SmsParameters.html>`_ which is used
-by the delivery provider to determine the SMS phone number to deliver the command to.
+SmsParameters which is used by the delivery provider to determine the SMS phone number 
+to deliver the command to.
 
 ------------------------
 Inbound Processing Chain
 ------------------------
 After data has been converted into SiteWhere device events by event sources, the default provisioning 
-implementation (`DefaultDeviceProvisioning <apidocs/com/sitewhere/spi/device/provisioning/DefaultDeviceProvisioning.html>`_)
+implementation (DefaultDeviceProvisioning.html)
 queues up events to be processed by the **inbound processing chain**. The chain is a series of
 **inbound event processors** (implementing 
-`IInboundEventProcessor <apidocs/com/sitewhere/spi/device/event/processor/IInboundEventProcessor.html>`_)
+`IInboundEventProcessor <../apidocs/com/sitewhere/spi/device/event/processor/IInboundEventProcessor.html>`_)
 that each handle the inbound events in series. New inbound event processors can be added to the chain to augment
 the existing functionality. For instance, a metrics processor could keep count of events processed per second. 
 
@@ -334,7 +334,7 @@ In the default provisioning implementation, each time an event is saved via the 
 service provider interfaces, the outbound event processing chain is invoked. In the same way the 
 inbound processing chain acts on unsaved inbound event data, the oubound processing chain acts on 
 data that has been successfully persisted to the datastore. Each **outbound event processor** (implementing 
-`IOutboundEventProcessor <apidocs/com/sitewhere/spi/device/event/processor/IOutboundEventProcessor.html>`_)
+`IOutboundEventProcessor <../apidocs/com/sitewhere/spi/device/event/processor/IOutboundEventProcessor.html>`_)
 is executed in series. New outbound event processors can be added to the chain to augment existing
 functionality. For instance, SiteWhere has an event processor for sending all outbound events to
 Hazelcast subscribers, allowing external clients to act on the events.
@@ -367,3 +367,83 @@ default configuration is shown below:
 This example also shows the addition of a custom outbound event processor which references a Spring bean
 defined elsewhere in the configuration. Events will be passed to the custom processor after they have
 been processed by the provisioning processor.
+
+Broadcasting Events via Hazelcast
+---------------------------------
+SiteWhere has support for broadcasting events over `Hazelcast <http://hazelcast.com/>`_ topics, making it
+easy to share events with external agents. To enable Hazelcast broadcasting, declare the following beans
+in the configuration file anywhere outside of the *<sw:configuration>* block:
+
+.. code-block:: xml
+   
+		<!-- Provides access to a local Hazelcast instance for SiteWhere -->
+		<bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
+			<property name="configFileName" value="hazelcast.xml"/>
+		</bean>
+		
+		<!-- Broadcasts SiteWhere state over Hazelcast -->
+		<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
+			<property name="configuration" ref="hazelcastConfig"/>
+		</bean>
+
+Note that the Hazelcast event processor references a **hazelcast.xml** configuration file. This file
+(located in the same directory as the primary configuration file) may be used to configure Hazelcast options.
+Once the beans have been declared, they may be referenced as part of the outbound processing chain to
+enable broadcasting of events.
+
+.. code-block:: xml
+   :emphasize-lines: 7
+   
+		<sw:outbound-processing-chain>
+		
+			<!-- Routes commands for provisioning -->
+			<sw:provisioning-event-processor/>
+			
+			<!-- Send outbound device events over Hazelcast -->
+			<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
+
+		</sw:outbound-processing-chain>
+
+To consume events from the Hazelcast topics, listen on the topic names as defined in 
+`ISiteWhereHazelcast <../apidocs/com/sitewhere/spi/server/hazelcast/ISiteWhereHazelcast.html>`_.
+
+Sending Events to Apache Solr
+-----------------------------
+SiteWhere supports forwarding events to `Apache Solr <http://lucene.apache.org/solr/>`_ to leverage
+the sophisticated search and analytics features it provides. The Solr outbound event processor uses
+the `Solrj <https://cwiki.apache.org/confluence/display/solr/Using+SolrJ>`_ library to send each
+outbound event to a Solr instance. The events are stored using a custom SiteWhere document schema,
+allowing event data to be indexed based on its type. For instance, location events are stored with
+geospatial indexes to allow efficient location searches. To enable the Solr event processor, the 
+following beans must be added to the configuration file anywhere outside of the *<sw:configuration>* block:
+
+.. code-block:: xml
+   
+		<!-- Provides connectivity to Solr for components that need it -->
+		<bean id="solrConfig" class="com.sitewhere.solr.SiteWhereSolrConfiguration">
+			<property name="solrServerUrl" value="http://localhost:8983/solr/SiteWhere"/>
+		</bean>
+			
+		<!-- Indexes SiteWhere events in Solr -->
+		<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
+			<property name="solr" ref="solrConfig"/>
+		</bean>
+
+The **solrServerUrl** parameter needs to point to the Solr core being used for SiteWhere data. To
+add the bean to the outbound processing chain, reference it as shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 7
+   
+		<sw:outbound-processing-chain>
+		
+			<!-- Routes commands for provisioning -->
+			<sw:provisioning-event-processor/>
+			
+			<!-- Send outbound device events to Solr -->
+			<sw:outbound-event-processor ref="solrDeviceEventProcessor"/>
+
+		</sw:outbound-processing-chain>
+
+Note that on system startup, the event processor attempts to ping the Solr server to verify the 
+settings are correct. If the ping fails, server startup will fail.

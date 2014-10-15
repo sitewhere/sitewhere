@@ -66,5 +66,25 @@ standalone server.
 ----------------------------
 Installing a Virtual Machine
 ----------------------------
-Beginning with the 0.9.7 release, SiteWhere is available as a VMware virtual machine. Download the virual machine from
-the `downloads <http://www.sitewhere.org/downloads>`_ page on the community site and import it into your VMware installation.
+Beginning with the 0.9.7 release, SiteWhere is available as a VMware virtual machine. Download the VM from
+the `downloads <http://www.sitewhere.org/downloads>`_ page on the community site and unzip the archive. From the VMware
+workstation interface, choose **Open a Virtual Machine** and navigate to the location where the archive was unzipped.
+
+.. image:: /_static/images/userguide/vmware-open.png
+   :width: 100%
+   :alt: Open a VMware Virtual Machine
+   :align: left
+
+The virtual machine will be added to your library and is ready to use. Power on the virtual machine and, after 
+the initial boot sequence, a login screen should appear as shown below. Choose the **SiteWhere** user and enter 
+**admin** for the password.
+
+.. image:: /_static/images/userguide/vm-login.png
+   :width: 60%
+   :alt: Log in to the Virtual Machine
+   :align: center
+
+Using the Virtual Machine
+-------------------------
+The VM is pre-configured with SiteWhere Community Edition, a MongoDB database instance, a HiveMQ MQTT broker,
+and Apache Solr for handling analytics.
