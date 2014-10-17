@@ -168,11 +168,11 @@ EXHIBIT A. Common Public Attribution License Version 1.0.
 
     Software distributed under the License is distributed on an “AS IS” basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
 
-    The Original Code is Reveal Technologies LLC SiteWhere.
+    The Original Code is SiteWhere.
 
     The Original Developer is not the Initial Developer and is __________. If left blank, the Original Developer is the Initial Developer.
 
-    The Initial Developer of the Original Code is Reveal Technologies LLC. All portions of the code are Copyright (c) 2013 Reveal Technologies LLC. All Rights Reserved.
+    The Initial Developer of the Original Code is SiteWhere LLC. All portions of the code are Copyright (c) 2014 SiteWhere LLC. All Rights Reserved.
 
     Contributor ______________________.
 
@@ -184,11 +184,11 @@ EXHIBIT A. Common Public Attribution License Version 1.0.
 
 EXHIBIT B. Attribution Information
 
-    Attribution Copyright Notice: Copyright (c) Reveal Technologies, LLC.
+    Attribution Copyright Notice: Copyright (c) SiteWhere, LLC.
 
     Attribution Phrase (not exceeding 10 words): Powered by SiteWhere
 
-    Attribution URL: http://www.reveal-tech.com
+    Attribution URL: http://www.sitewhere.com
 
     Graphic Image as provided in the Covered Code, if any.
 
