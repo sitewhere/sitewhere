@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.system;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.spi.server.ISiteWhereServer;
 
 /**
@@ -49,5 +50,6 @@ public interface IVersion {
 	 * 
 	 * @return
 	 */
+	@JsonIgnore
 	public Class<? extends ISiteWhereServer> getServerClass();
 }
