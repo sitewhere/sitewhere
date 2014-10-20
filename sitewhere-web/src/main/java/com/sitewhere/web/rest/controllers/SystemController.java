@@ -28,7 +28,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
  */
 @Controller
 @RequestMapping(value = "/system")
-@Api(value = "", description = "Operations related to SiteWhere system management.")
+@Api(value = "system", description = "Operations related to SiteWhere system management.")
 public class SystemController extends SiteWhereController {
 
 	/** Static logger instance */

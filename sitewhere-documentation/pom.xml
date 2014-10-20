@@ -1,6 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
->
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.sitewhere</groupId>
@@ -13,6 +12,33 @@
 	<packaging>jar</packaging>
 	<name>SiteWhere Documentation</name>
 	<profiles>
+		<profile>
+			<id>raml</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.3.2</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<mainClass>com.sitewhere.documentation.SiteWhereRamlGenerator</mainClass>
+							<arguments>
+								<argument>http://sitewhere-aws/sitewhere/api/api-docs.json</argument>
+								<argument>${project.build.directory}/sitewhere.raml</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>withdocs</id>
 			<build>
@@ -40,20 +66,17 @@
 										</copy>
 										<copy todir="${project.basedir}/../deploy/docs/android/framework">
 											<fileset
-												dir="${project.basedir}/../../sitewhere-android/SiteWhereFrameworkLibrary/target/site"
-											>
+												dir="${project.basedir}/../../sitewhere-android/SiteWhereFrameworkLibrary/target/site">
 												<include name="apidocs/**"/>
 											</fileset>
 										</copy>
 										<copy todir="${project.basedir}/../deploy/docs/android/mqtt">
 											<fileset
-												dir="${project.basedir}/../../sitewhere-android/SiteWhereMQTTLibrary/target/site"
-											>
+												dir="${project.basedir}/../../sitewhere-android/SiteWhereMQTTLibrary/target/site">
 												<include name="apidocs/**"/>
 											</fileset>
 										</copy>
-										<zip destfile="${project.basedir}/../deploy/docs.zip"
-											basedir="${project.basedir}/../deploy/docs"/>
+										<zip destfile="${project.basedir}/../deploy/docs.zip" basedir="${project.basedir}/../deploy/docs"/>
 										<delete dir="${project.basedir}/../deploy/docs" quiet="true"/>
 									</target>
 								</configuration>
@@ -68,8 +91,21 @@
 		</profile>
 	</profiles>
 
+	<repositories>
+		<repository>
+			<id>snapshots</id>
+			<url>https://nexus.softwaremill.com/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
+		<dependency>
+			<groupId>com._8x8.cloud.swagger2raml</groupId>
+			<artifactId>swagger2raml</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>

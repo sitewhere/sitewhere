@@ -40,7 +40,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  */
 @Controller
 @RequestMapping(value = "/assets")
-@Api(value = "", description = "Operations related to SiteWhere assets.")
+@Api(value = "assets", description = "Operations related to SiteWhere assets.")
 public class AssetsController extends SiteWhereController {
 
 	/** Static logger instance */

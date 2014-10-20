@@ -37,7 +37,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  */
 @Controller
 @RequestMapping(value = "/invocations")
-@Api(value = "", description = "Operations related to SiteWhere command invocations.")
+@Api(value = "invocations", description = "Operations related to SiteWhere command invocations.")
 public class InvocationsController extends SiteWhereController {
 
 	/** Static logger instance */

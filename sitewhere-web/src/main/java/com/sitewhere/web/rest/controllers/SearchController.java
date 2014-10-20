@@ -42,7 +42,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  */
 @Controller
 @RequestMapping(value = "/search")
-@Api(value = "", description = "Operations related to external search providers.")
+@Api(value = "search", description = "Operations related to external search providers.")
 public class SearchController extends SiteWhereController {
 
 	/** Static logger instance */

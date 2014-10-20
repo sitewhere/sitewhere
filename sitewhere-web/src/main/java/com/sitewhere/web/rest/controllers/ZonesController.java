@@ -23,6 +23,7 @@ import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -33,6 +34,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  */
 @Controller
 @RequestMapping(value = "/zones")
+@Api(value = "zones", description = "Operations related to SiteWhere zones")
 public class ZonesController extends SiteWhereController {
 
 	/** Static logger instance */

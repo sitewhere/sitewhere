@@ -57,7 +57,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  */
 @Controller
 @RequestMapping(value = "/devices")
-@Api(value = "", description = "Operations related to SiteWhere devices.")
+@Api(value = "devices", description = "Operations related to SiteWhere devices.")
 public class DevicesController extends SiteWhereController {
 
 	/** Static logger instance */

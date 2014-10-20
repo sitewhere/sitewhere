@@ -47,7 +47,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  */
 @Controller
 @RequestMapping(value = "/devicegroups")
-@Api(value = "", description = "Operations related to SiteWhere device groups.")
+@Api(value = "devicegroups", description = "Operations related to SiteWhere device groups.")
 public class DeviceGroupsController extends SiteWhereController {
 
 	/** Static logger instance */
