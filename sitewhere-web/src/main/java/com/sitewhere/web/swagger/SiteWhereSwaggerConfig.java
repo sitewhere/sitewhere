@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
+import com.sitewhere.version.VersionHelper;
 import com.wordnik.swagger.model.ApiInfo;
 
 /**
@@ -63,9 +64,10 @@ public class SiteWhereSwaggerConfig {
 	@Bean
 	public SwaggerSpringMvcPlugin customImplementation() {
 		ApiInfo apiInfo =
-				new ApiInfo(API_TITLE, API_DESCRIPTION, null, API_CONTACT_EMAIL, API_LICENSE_TYPE,
-						API_LICENSE_URL);
+				new ApiInfo(API_TITLE + " (" + VersionHelper.getVersion().getVersionIdentifier() + " "
+						+ VersionHelper.getVersion().getEditionIdentifier() + ")", API_DESCRIPTION, null,
+						API_CONTACT_EMAIL, API_LICENSE_TYPE, API_LICENSE_URL);
 		return new SwaggerSpringMvcPlugin(this.springSwaggerConfig).pathProvider(pathProvider).apiInfo(
-				apiInfo);
+				apiInfo).apiVersion(VersionHelper.getVersion().getVersionIdentifier());
 	}
 }

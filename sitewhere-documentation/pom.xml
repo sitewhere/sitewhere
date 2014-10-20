@@ -31,7 +31,7 @@
 						<configuration>
 							<mainClass>com.sitewhere.documentation.SiteWhereRamlGenerator</mainClass>
 							<arguments>
-								<argument>http://sitewhere-aws/sitewhere/api/api-docs.json</argument>
+								<argument>http://localhost:8080/sitewhere/api/api-docs</argument>
 								<argument>${project.build.directory}/sitewhere.raml</argument>
 							</arguments>
 						</configuration>
