@@ -62,6 +62,16 @@ public class Tracer {
 	}
 
 	/**
+	 * Store or log a debug message.
+	 * 
+	 * @param message
+	 * @param logger
+	 */
+	public static void debug(String message, Logger logger) {
+		SiteWhere.getServer().getTracer().debug(message, logger);
+	}
+
+	/**
 	 * Store or log an informational message.
 	 * 
 	 * @param message

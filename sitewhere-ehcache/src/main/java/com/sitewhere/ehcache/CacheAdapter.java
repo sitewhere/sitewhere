@@ -7,11 +7,14 @@
  */
 package com.sitewhere.ehcache;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.cache.CacheType;
 import com.sitewhere.spi.cache.ICache;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 
@@ -29,11 +32,33 @@ public class CacheAdapter<K, V> implements ICache<K, V> {
 	/** Static logger instance */
 	// private static Logger LOGGER = Logger.getLogger(CacheAdapter.class);
 
+	/** Cache type */
+	private CacheType type;
+
 	/** Wrapped cache */
 	private Ehcache cache;
 
-	public CacheAdapter(Ehcache cache) {
+	/** Counts to number of requests */
+	private AtomicLong requestCount;
+
+	/** Counts the number of hits */
+	private AtomicLong hitCount;
+
+	public CacheAdapter(CacheType type, Ehcache cache) {
+		this.type = type;
 		this.cache = cache;
+		this.requestCount = new AtomicLong();
+		this.hitCount = new AtomicLong();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.cache.ICache#getType()
+	 */
+	@Override
+	public CacheType getType() {
+		return type;
 	}
 
 	/*
@@ -44,10 +69,12 @@ public class CacheAdapter<K, V> implements ICache<K, V> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public V get(K key) throws SiteWhereException {
+		requestCount.incrementAndGet();
 		Element match = cache.get(key);
 		if (match == null) {
 			return null;
 		}
+		hitCount.incrementAndGet();
 		return (V) match.getObjectValue();
 	}
 
@@ -79,5 +106,25 @@ public class CacheAdapter<K, V> implements ICache<K, V> {
 	@Override
 	public int getElementCount() throws SiteWhereException {
 		return cache.getSize();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.cache.ICache#getRequestCount()
+	 */
+	@Override
+	public long getRequestCount() throws SiteWhereException {
+		return requestCount.get();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.cache.ICache#getHitCount()
+	 */
+	@Override
+	public long getHitCount() throws SiteWhereException {
+		return hitCount.get();
 	}
 }

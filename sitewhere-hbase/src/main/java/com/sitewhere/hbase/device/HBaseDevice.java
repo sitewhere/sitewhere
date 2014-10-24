@@ -349,6 +349,9 @@ public class HBaseDevice {
 					Delete delete = new Delete(primary);
 					devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 					devices.delete(delete);
+					if (cache != null) {
+						cache.getDeviceCache().remove(hardwareId);
+					}
 				} catch (IOException e) {
 					throw new SiteWhereException("Unable to delete device.", e);
 				} finally {
@@ -366,6 +369,9 @@ public class HBaseDevice {
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 					devices.put(put);
+					if (cache != null) {
+						cache.getDeviceCache().remove(hardwareId);
+					}
 				} catch (IOException e) {
 					throw new SiteWhereException("Unable to set deleted flag for device.", e);
 				} finally {
@@ -383,11 +389,18 @@ public class HBaseDevice {
 	 * 
 	 * @param hbase
 	 * @param hardwareId
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static String getCurrentAssignmentId(ISiteWhereHBaseClient hbase, String hardwareId)
-			throws SiteWhereException {
+	public static String getCurrentAssignmentId(ISiteWhereHBaseClient hbase, String hardwareId,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		if (cache != null) {
+			IDevice result = cache.getDeviceCache().get(hardwareId);
+			if (result != null) {
+				return result.getAssignmentToken();
+			}
+		}
 		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 		if (deviceId == null) {
 			return null;
@@ -428,7 +441,7 @@ public class HBaseDevice {
 			String assignmentToken, IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "setDeviceAssignment (HBase)", LOGGER);
 		try {
-			String existing = getCurrentAssignmentId(hbase, hardwareId);
+			String existing = getCurrentAssignmentId(hbase, hardwareId, cache);
 			if (existing != null) {
 				throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 			}

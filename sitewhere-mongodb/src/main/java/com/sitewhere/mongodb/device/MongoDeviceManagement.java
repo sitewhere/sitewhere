@@ -776,12 +776,7 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		DBObject site = getSiteDBObjectByToken(assignment.getSiteToken());
-		if (site != null) {
-			return MongoSite.fromDBObject(site);
-		} else {
-			return null;
-		}
+		return getSiteByToken(assignment.getSiteToken());
 	}
 
 	/*
@@ -1466,7 +1461,6 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public ISite updateSite(String token, ISiteCreateRequest request) throws SiteWhereException {
-		DBCollection sites = getMongoClient().getSitesCollection();
 		DBObject match = getSiteDBObjectByToken(token);
 		if (match == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
@@ -1478,8 +1472,12 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 
 		DBObject updated = MongoSite.toDBObject(site);
 
+		DBCollection sites = getMongoClient().getSitesCollection();
 		BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, token);
 		MongoPersistence.update(sites, query, updated);
+		if (getCacheProvider() != null) {
+			getCacheProvider().getSiteCache().put(token, site);
+		}
 		return MongoSite.fromDBObject(updated);
 	}
 
@@ -1490,9 +1488,9 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public ISite getSiteByToken(String token) throws SiteWhereException {
-		DBObject result = getSiteDBObjectByToken(token);
-		if (result != null) {
-			return MongoSite.fromDBObject(result);
+		DBObject dbSite = getSiteDBObjectByToken(token);
+		if (dbSite != null) {
+			return MongoSite.fromDBObject(dbSite);
 		}
 		return null;
 	}
@@ -1509,12 +1507,18 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		if (force) {
 			DBCollection sites = getMongoClient().getSitesCollection();
 			MongoPersistence.delete(sites, existing);
+			if (getCacheProvider() != null) {
+				getCacheProvider().getSiteCache().remove(siteToken);
+			}
 			return MongoSite.fromDBObject(existing);
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, siteToken);
 			DBCollection sites = getMongoClient().getSitesCollection();
 			MongoPersistence.update(sites, query, existing);
+			if (getCacheProvider() != null) {
+				getCacheProvider().getSiteCache().remove(siteToken);
+			}
 			return MongoSite.fromDBObject(existing);
 		}
 	}
@@ -1527,9 +1531,19 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getSiteDBObjectByToken(String token) throws SiteWhereException {
+		if (getCacheProvider() != null) {
+			ISite cached = getCacheProvider().getSiteCache().get(token);
+			if (cached != null) {
+				return MongoSite.toDBObject(cached);
+			}
+		}
 		DBCollection sites = getMongoClient().getSitesCollection();
 		BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, token);
 		DBObject result = sites.findOne(query);
+		if ((getCacheProvider() != null) && (result != null)) {
+			ISite site = MongoSite.fromDBObject(result);
+			getCacheProvider().getSiteCache().put(token, site);
+		}
 		return result;
 	}
 

@@ -15,7 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.rest.model.cache.CacheInformation;
+import com.sitewhere.rest.model.cache.CacheSummary;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.cache.ICache;
+import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.wordnik.swagger.annotations.Api;
@@ -44,5 +48,52 @@ public class SystemController extends SiteWhereController {
 		} finally {
 			Tracer.stop(LOGGER);
 		}
+	}
+
+	/**
+	 * Get a summary of statistics for caches.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/cachesummary", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get a summary of cache statistics")
+	public CacheSummary getCacheSummary() throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getCacheSummary", LOGGER);
+		try {
+			CacheSummary summary = new CacheSummary();
+			IDeviceManagementCacheProvider provider =
+					SiteWhere.getServer().getDeviceManagementCacheProvider();
+			if (provider != null) {
+				summary.getCaches().add(getCacheInformation(provider.getSiteCache()));
+				summary.getCaches().add(getCacheInformation(provider.getDeviceSpecificationCache()));
+				summary.getCaches().add(getCacheInformation(provider.getDeviceCache()));
+				summary.getCaches().add(getCacheInformation(provider.getDeviceAssignmentCache()));
+			}
+			return summary;
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Extract information from cache.
+	 * 
+	 * @param cache
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected CacheInformation getCacheInformation(ICache<?, ?> cache) throws SiteWhereException {
+		CacheInformation info = new CacheInformation();
+		info.setCacheType(cache.getType());
+		info.setRequestCount(cache.getRequestCount());
+		info.setHitCount(cache.getHitCount());
+		if (cache.getRequestCount() > 0) {
+			info.setHitRatio((double) cache.getHitCount() / (double) cache.getRequestCount());
+		} else {
+			info.setHitRatio(0);
+		}
+		return info;
 	}
 }

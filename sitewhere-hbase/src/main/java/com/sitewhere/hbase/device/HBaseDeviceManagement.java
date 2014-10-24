@@ -300,7 +300,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * .spi.device.IDevice)
 	 */
 	public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
-		String token = HBaseDevice.getCurrentAssignmentId(client, device.getHardwareId());
+		String token = HBaseDevice.getCurrentAssignmentId(client, device.getHardwareId(), cacheProvider);
 		if (token == null) {
 			return null;
 		}
@@ -417,7 +417,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * .device.IDeviceAssignment)
 	 */
 	public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		return HBaseSite.getSiteByToken(client, assignment.getSiteToken());
+		return HBaseSite.getSiteByToken(client, assignment.getSiteToken(), cacheProvider);
 	}
 
 	/*
@@ -513,8 +513,11 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 		return HBaseDeviceEvent.getDeviceEvent(client, id);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceEvents(java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceEvents(java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
@@ -806,7 +809,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
-		return HBaseSite.deleteSite(client, siteToken, force);
+		return HBaseSite.deleteSite(client, siteToken, force, cacheProvider);
 	}
 
 	/*
@@ -817,7 +820,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public ISite updateSite(String siteToken, ISiteCreateRequest request) throws SiteWhereException {
-		return HBaseSite.updateSite(client, siteToken, request);
+		return HBaseSite.updateSite(client, siteToken, request, cacheProvider);
 	}
 
 	/*
@@ -827,7 +830,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	@Override
 	public ISite getSiteByToken(String token) throws SiteWhereException {
-		return HBaseSite.getSiteByToken(client, token);
+		return HBaseSite.getSiteByToken(client, token, cacheProvider);
 	}
 
 	/*

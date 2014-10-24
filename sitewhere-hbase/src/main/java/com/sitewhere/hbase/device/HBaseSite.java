@@ -27,7 +27,9 @@ import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.filter.WritableByteArrayComparable;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.log4j.Logger;
 
+import com.sitewhere.Tracer;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
@@ -42,12 +44,14 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
  * HBase specifics for dealing with SiteWhere sites.
@@ -55,6 +59,9 @@ import com.sitewhere.spi.search.ISearchCriteria;
  * @author Derek
  */
 public class HBaseSite {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(HBaseSite.class);
 
 	/** Length of site identifier (subset of 8 byte long) */
 	public static final int SITE_IDENTIFIER_LENGTH = 2;
@@ -111,29 +118,48 @@ public class HBaseSite {
 	 * 
 	 * @param hbase
 	 * @param token
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site getSiteByToken(ISiteWhereHBaseClient hbase, String token) throws SiteWhereException {
-		Long siteId = IdManager.getInstance().getSiteKeys().getValue(token);
-		if (siteId == null) {
-			return null;
-		}
-		byte[] primary = getPrimaryRowkey(siteId);
-		HTableInterface sites = null;
+	public static Site getSiteByToken(ISiteWhereHBaseClient hbase, String token,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "getSiteByToken (HBase)", LOGGER);
 		try {
-			sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
-			Get get = new Get(primary);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
-			Result result = sites.get(get);
-			if (result.size() != 1) {
-				throw new SiteWhereException("Expected one JSON entry for site and found: " + result.size());
+			if (cache != null) {
+				ISite result = cache.getSiteCache().get(token);
+				if (result != null) {
+					Tracer.info("Returning cached Site.", LOGGER);
+					return Site.copy(result);
+				}
 			}
-			return MarshalUtils.unmarshalJson(result.value(), Site.class);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to load site by token.", e);
+			Long siteId = IdManager.getInstance().getSiteKeys().getValue(token);
+			if (siteId == null) {
+				return null;
+			}
+			byte[] primary = getPrimaryRowkey(siteId);
+			HTableInterface sites = null;
+			try {
+				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				Get get = new Get(primary);
+				get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+				Result result = sites.get(get);
+				if (result.size() != 1) {
+					throw new SiteWhereException("Expected one JSON entry for site and found: "
+							+ result.size());
+				}
+				Site site = MarshalUtils.unmarshalJson(result.value(), Site.class);
+				if (cache != null) {
+					cache.getSiteCache().put(token, site);
+				}
+				return site;
+			} catch (IOException e) {
+				throw new SiteWhereException("Unable to load site by token.", e);
+			} finally {
+				HBaseUtils.closeCleanly(sites);
+			}
 		} finally {
-			HBaseUtils.closeCleanly(sites);
+			Tracer.pop(LOGGER);
 		}
 	}
 
@@ -143,12 +169,13 @@ public class HBaseSite {
 	 * @param hbase
 	 * @param token
 	 * @param request
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site updateSite(ISiteWhereHBaseClient hbase, String token, ISiteCreateRequest request)
-			throws SiteWhereException {
-		Site updated = getSiteByToken(hbase, token);
+	public static Site updateSite(ISiteWhereHBaseClient hbase, String token, ISiteCreateRequest request,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		Site updated = getSiteByToken(hbase, token, cache);
 		if (updated == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 		}
@@ -166,6 +193,9 @@ public class HBaseSite {
 			Put put = new Put(rowkey);
 			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
 			sites.put(put);
+			if (cache != null) {
+				cache.getSiteCache().put(token, updated);
+			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to update site.", e);
 		} finally {
@@ -306,12 +336,13 @@ public class HBaseSite {
 	 * @param hbase
 	 * @param token
 	 * @param force
+	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site deleteSite(ISiteWhereHBaseClient hbase, String token, boolean force)
-			throws SiteWhereException {
-		Site existing = getSiteByToken(hbase, token);
+	public static Site deleteSite(ISiteWhereHBaseClient hbase, String token, boolean force,
+			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+		Site existing = getSiteByToken(hbase, token, cache);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 		}
@@ -326,6 +357,9 @@ public class HBaseSite {
 				Delete delete = new Delete(rowkey);
 				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				sites.delete(delete);
+				if (cache != null) {
+					cache.getSiteCache().remove(token);
+				}
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to delete site.", e);
 			} finally {
@@ -342,6 +376,9 @@ public class HBaseSite {
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				sites.put(put);
+				if (cache != null) {
+					cache.getSiteCache().remove(token);
+				}
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to set deleted flag for site.", e);
 			} finally {

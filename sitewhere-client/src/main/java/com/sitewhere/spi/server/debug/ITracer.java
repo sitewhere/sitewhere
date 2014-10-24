@@ -60,6 +60,14 @@ public interface ITracer {
 	public void pop(Logger logger);
 
 	/**
+	 * Store or log a debug message.
+	 * 
+	 * @param message
+	 * @param logger
+	 */
+	public void debug(String message, Logger logger);
+
+	/**
 	 * Store or log an informational message.
 	 * 
 	 * @param message

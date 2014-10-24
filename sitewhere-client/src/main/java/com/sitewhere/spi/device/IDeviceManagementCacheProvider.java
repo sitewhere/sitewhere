@@ -19,6 +19,14 @@ import com.sitewhere.spi.cache.ICache;
 public interface IDeviceManagementCacheProvider extends ISiteWhereLifecycle {
 
 	/**
+	 * Gets cache mapping site tokens to {@link ISite} objects.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ICache<String, ISite> getSiteCache() throws SiteWhereException;
+
+	/**
 	 * Gets cache mapping specification tokens for {@link IDeviceSpecification} objects.
 	 * 
 	 * @return

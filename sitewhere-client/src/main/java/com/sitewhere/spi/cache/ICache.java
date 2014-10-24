@@ -10,7 +10,7 @@ package com.sitewhere.spi.cache;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
- * Interface for a cache that stores objects by and id.
+ * Interface for a cache that stores objects by id.
  * 
  * @author Derek
  * 
@@ -18,6 +18,13 @@ import com.sitewhere.spi.SiteWhereException;
  * @param <V>
  */
 public interface ICache<K, V> {
+
+	/**
+	 * Get the cache type.
+	 * 
+	 * @return
+	 */
+	public CacheType getType();
 
 	/**
 	 * Get value based on a given key.
@@ -52,4 +59,20 @@ public interface ICache<K, V> {
 	 * @throws SiteWhereException
 	 */
 	public int getElementCount() throws SiteWhereException;
+
+	/**
+	 * Get the number of requests made to the cache.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public long getRequestCount() throws SiteWhereException;
+
+	/**
+	 * Get the number of cache hits.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public long getHitCount() throws SiteWhereException;
 }

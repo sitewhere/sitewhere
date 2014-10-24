@@ -15,11 +15,13 @@ import net.sf.ehcache.config.Configuration;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.cache.CacheType;
 import com.sitewhere.spi.cache.ICache;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.ISite;
 
 /**
  * Implementation of {@link IDeviceManagementCacheProvider} that uses EHCache for caching.
@@ -30,6 +32,9 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(DeviceManagementCacheProvider.class);
+
+	/** Cache id for site cache */
+	public static final String SITE_CACHE_ID = "sitewhere-site-cache";
 
 	/** Cache id for device specification cache */
 	public static final String DEVICE_SPECIFICATION_CACHE_ID = "sitewhere-device-specification-cache";
@@ -45,6 +50,9 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 
 	/** Default max time to live */
 	public static final int DEFAULT_MAX_TTL = 30;
+
+	/** Cache for site data */
+	private CacheAdapter<String, ISite> siteCache;
 
 	/** Cache for device data */
 	private CacheAdapter<String, IDeviceSpecification> deviceSpecificationCache;
@@ -71,17 +79,23 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 		config.setDefaultCacheConfiguration(cacheConfig);
 		CacheManager manager = CacheManager.create(config);
 
+		// Create site cache.
+		Ehcache site = manager.addCacheIfAbsent(SITE_CACHE_ID);
+		siteCache = new CacheAdapter<String, ISite>(CacheType.SiteCache, site);
+
 		// Create device specification cache.
 		Ehcache dsc = manager.addCacheIfAbsent(DEVICE_SPECIFICATION_CACHE_ID);
-		deviceSpecificationCache = new CacheAdapter<String, IDeviceSpecification>(dsc);
+		deviceSpecificationCache =
+				new CacheAdapter<String, IDeviceSpecification>(CacheType.DeviceSpecificationCache, dsc);
 
 		// Create device cache.
 		Ehcache dc = manager.addCacheIfAbsent(DEVICE_CACHE_ID);
-		deviceCache = new CacheAdapter<String, IDevice>(dc);
+		deviceCache = new CacheAdapter<String, IDevice>(CacheType.DeviceCache, dc);
 
 		// Create device assignment cache.
 		Ehcache dac = manager.addCacheIfAbsent(DEVICE_ASSIGNMENT_CACHE_ID);
-		deviceAssignmentCache = new CacheAdapter<String, IDeviceAssignment>(dac);
+		deviceAssignmentCache =
+				new CacheAdapter<String, IDeviceAssignment>(CacheType.DeviceAssignmentCache, dac);
 
 		LOGGER.info("Started EHCache device management cache provider.");
 	}
@@ -93,6 +107,16 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagementCacheProvider#getSiteCache()
+	 */
+	@Override
+	public ICache<String, ISite> getSiteCache() throws SiteWhereException {
+		return siteCache;
 	}
 
 	/*

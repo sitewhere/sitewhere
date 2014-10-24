@@ -77,7 +77,7 @@ public class HBaseDeviceAssignment {
 		if (siteId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 		}
-		String existing = HBaseDevice.getCurrentAssignmentId(hbase, request.getDeviceHardwareId());
+		String existing = HBaseDevice.getCurrentAssignmentId(hbase, request.getDeviceHardwareId(), cache);
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 		}
