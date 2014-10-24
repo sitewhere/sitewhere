@@ -33,7 +33,7 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
-import com.sitewhere.server.debug.LoggerTracer;
+import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
@@ -387,8 +387,8 @@ public class SiteWhereServer implements ISiteWhereServer {
 			this.tracer = (ITracer) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_TRACER);
 			LOGGER.info("Tracer implementation using: " + tracer.getClass().getName());
 		} catch (NoSuchBeanDefinitionException e) {
-			LOGGER.info("No custom tracer configured. Using standard logger.");
-			this.tracer = new LoggerTracer();
+			LOGGER.info("No Tracer implementation configured.");
+			this.tracer = new NullTracer();
 		}
 	}
 
