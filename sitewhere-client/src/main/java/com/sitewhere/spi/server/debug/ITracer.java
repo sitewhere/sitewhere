@@ -36,6 +36,20 @@ public interface ITracer {
 	public void stop(Logger logger);
 
 	/**
+	 * Indicates if the tracer is enabled.
+	 * 
+	 * @return
+	 */
+	public boolean isEnabled();
+
+	/**
+	 * Enables or disables the tracer.
+	 * 
+	 * @param enabled
+	 */
+	public void setEnabled(boolean enabled);
+
+	/**
 	 * Returns output from trace as HTML. Implementations can throw an
 	 * {@link UnsupportedOperationException} if they are stateless.
 	 * 

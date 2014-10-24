@@ -21,6 +21,9 @@ import com.sitewhere.spi.server.debug.TracerCategory;
  */
 public class NullTracer implements ITracer {
 
+	/** Enablement indicator */
+	private boolean enabled = true;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -38,6 +41,24 @@ public class NullTracer implements ITracer {
 	 */
 	@Override
 	public void stop(Logger logger) {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.debug.ITracer#isEnabled()
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.debug.ITracer#setEnabled(boolean)
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	/*

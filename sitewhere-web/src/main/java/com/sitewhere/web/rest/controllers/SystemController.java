@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
@@ -20,10 +21,12 @@ import com.sitewhere.rest.model.cache.CacheSummary;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICache;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
+import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 /**
  * Controller for system operations.
@@ -95,5 +98,25 @@ public class SystemController extends SiteWhereController {
 			info.setHitRatio(0);
 		}
 		return info;
+	}
+
+	/**
+	 * Set enablement of {@link ITracer} implementation.
+	 * 
+	 * @param enabled
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/tracer", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Set tracer enablement")
+	public void setTracerEnablement(
+			@ApiParam(value = "Enable tracer implementation", required = false) @RequestParam(defaultValue = "true") boolean enabled)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "setTracerEnablement", LOGGER);
+		try {
+			Tracer.setEnabled(enabled);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
 	}
 }

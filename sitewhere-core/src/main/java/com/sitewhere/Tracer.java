@@ -42,6 +42,15 @@ public class Tracer {
 	}
 
 	/**
+	 * Set enablement of tracer implementation.
+	 * 
+	 * @param enabled
+	 */
+	public static void setEnabled(boolean enabled) {
+		SiteWhere.getServer().getTracer().setEnabled(enabled);
+	}
+
+	/**
 	 * Pushes another level into the trace stack.
 	 * 
 	 * @param category

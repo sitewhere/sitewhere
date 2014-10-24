@@ -30,6 +30,9 @@ public class LoggerTracer implements ITracer {
 	/** Default logging level */
 	private Level defaultLevel = Level.INFO;
 
+	/** Indicates whether tracer is enabled */
+	private boolean enabled = true;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -54,6 +57,27 @@ public class LoggerTracer implements ITracer {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.debug.ITracer#isEnabled()
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.debug.ITracer#setEnabled(boolean)
+	 */
+	public void setEnabled(boolean enabled) {
+		if (this.enabled != enabled) {
+			this.enabled = enabled;
+			pushMessages.clear();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.debug.ITracer#asHtml()
 	 */
 	@Override
@@ -69,8 +93,10 @@ public class LoggerTracer implements ITracer {
 	 */
 	@Override
 	public void push(TracerCategory category, String message, Logger logger) {
-		logger.log(defaultLevel, "Started: " + category.toString() + ": " + message);
-		pushMessages.offer(message);
+		if (enabled) {
+			logger.log(defaultLevel, "Started: " + category.toString() + ": " + message);
+			pushMessages.offer(message);
+		}
 	}
 
 	/*
@@ -80,9 +106,11 @@ public class LoggerTracer implements ITracer {
 	 */
 	@Override
 	public void pop(Logger logger) {
-		String last = pushMessages.pollLast();
-		if (last != null) {
-			logger.log(defaultLevel, "Finished: " + last);
+		if (enabled) {
+			String last = pushMessages.pollLast();
+			if (last != null) {
+				logger.log(defaultLevel, "Finished: " + last);
+			}
 		}
 	}
 
@@ -94,7 +122,9 @@ public class LoggerTracer implements ITracer {
 	 */
 	@Override
 	public void debug(String message, Logger logger) {
-		logger.debug(message);
+		if (enabled) {
+			logger.debug(message);
+		}
 	}
 
 	/*
@@ -105,7 +135,9 @@ public class LoggerTracer implements ITracer {
 	 */
 	@Override
 	public void info(String message, Logger logger) {
-		logger.info(message);
+		if (enabled) {
+			logger.info(message);
+		}
 	}
 
 	/*
@@ -116,7 +148,9 @@ public class LoggerTracer implements ITracer {
 	 */
 	@Override
 	public void warn(String message, Throwable error, Logger logger) {
-		logger.warn(message, error);
+		if (enabled) {
+			logger.warn(message, error);
+		}
 	}
 
 	/*
@@ -127,7 +161,9 @@ public class LoggerTracer implements ITracer {
 	 */
 	@Override
 	public void error(String message, Throwable error, Logger logger) {
-		logger.error(message, error);
+		if (enabled) {
+			logger.error(message, error);
+		}
 	}
 
 	/*
@@ -138,6 +174,8 @@ public class LoggerTracer implements ITracer {
 	 */
 	@Override
 	public void timing(String message, long delta, TimeUnit unit, Logger logger) {
-		logger.info("Timing: " + message + " (" + delta + "  " + unit.toString() + ")");
+		if (enabled) {
+			logger.info("Timing: " + message + " (" + delta + "  " + unit.toString() + ")");
+		}
 	}
 }
