@@ -274,14 +274,15 @@ public abstract class UniqueIdMap<N, V> {
 	public V getValue(N name) throws SiteWhereException {
 		V result = nameToValue.get(name);
 		if (result == null) {
-			Tracer.debug("Id value for '" + name + "' not cached. Loading from table.", LOGGER);
+			Tracer.debug("Id value for " + keyIndicator.name() + " '" + name
+					+ "' not cached. Loading from table.", LOGGER);
 			result = getValueFromTable(name);
 			if (result != null) {
 				nameToValue.put(name, result);
 				valueToName.put(result, name);
 			}
 		} else {
-			Tracer.debug("Id value for '" + name + "' was cached.", LOGGER);
+			Tracer.debug("Id value for " + keyIndicator.name() + " '" + name + "' was cached.", LOGGER);
 		}
 		return result;
 	}

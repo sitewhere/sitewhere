@@ -51,6 +51,16 @@ public class Tracer {
 	}
 
 	/**
+	 * Get an HTML representation of the tracer output.
+	 * 
+	 * @return
+	 * @throws UnsupportedOperationException
+	 */
+	public static String asHtml() throws UnsupportedOperationException {
+		return SiteWhere.getServer().getTracer().asHtml();
+	}
+
+	/**
 	 * Pushes another level into the trace stack.
 	 * 
 	 * @param category
