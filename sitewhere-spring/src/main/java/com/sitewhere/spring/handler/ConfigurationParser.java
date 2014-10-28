@@ -33,7 +33,7 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
-			if (!IConfigurationElements.SITEWHERE_NS.equals(child.getNamespaceURI())) {
+			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
 				continue;
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());

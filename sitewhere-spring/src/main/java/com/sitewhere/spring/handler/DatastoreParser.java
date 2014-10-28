@@ -12,6 +12,7 @@ import java.util.List;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
@@ -39,6 +40,18 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 		List<Element> dsChildren = DomUtils.getChildElements(element);
 		for (Element child : dsChildren) {
+			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+				NamespaceHandler nested =
+						context.getReaderContext().getNamespaceHandlerResolver().resolve(
+								child.getNamespaceURI());
+				if (nested != null) {
+					nested.parse(child, context);
+					continue;
+				} else {
+					throw new RuntimeException("Invalid nested element found in 'datastore' section: "
+							+ element.toString());
+				}
+			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
 				throw new RuntimeException("Unknown datastore element: " + child.getLocalName());

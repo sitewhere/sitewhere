@@ -14,8 +14,11 @@ package com.sitewhere.spring.handler;
  */
 public interface IConfigurationElements {
 
-	/** SiteWhere namespace */
-	public static final String SITEWHERE_NS = "http://www.sitewhere.com/schema/sitewhere";
+	/** SiteWhere community edition namespace */
+	public static final String SITEWHERE_COMMUNITY_NS = "http://www.sitewhere.com/schema/sitewhere/ce";
+
+	/** SiteWhere enterprise edition namespace */
+	public static final String SITEWHERE_ENTERPRISE_NS = "http://www.sitewhere.com/schema/sitewhere/ee";
 
 	/** Constant for top-level configuration element */
 	public static final String CONFIGURATION = "configuration";

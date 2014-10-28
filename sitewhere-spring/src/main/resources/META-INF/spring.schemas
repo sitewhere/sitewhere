@@ -1,2 +1,3 @@
-http\://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd=META-INF/sitewhere.xsd
-http\://www.sitewhere.com/schema/sitewhere/0.9.7/sitewhere.xsd=META-INF/sitewhere.xsd
+http\://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd=META-INF/sitewhere.xsd
+http\://www.sitewhere.com/schema/sitewhere/ce/1.0.0/sitewhere.xsd=META-INF/sitewhere.xsd
+http\://www.sitewhere.com/schema/sitewhere/ce/current/sitewhere.xsd=META-INF/sitewhere.xsd

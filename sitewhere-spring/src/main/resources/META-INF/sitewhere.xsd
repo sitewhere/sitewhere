@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="http://www.sitewhere.com/schema/sitewhere" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:beans="http://www.springframework.org/schema/beans" targetNamespace="http://www.sitewhere.com/schema/sitewhere"
+<xsd:schema xmlns="http://www.sitewhere.com/schema/sitewhere/ce" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:beans="http://www.springframework.org/schema/beans" targetNamespace="http://www.sitewhere.com/schema/sitewhere/ce"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<xsd:import namespace="http://www.springframework.org/schema/beans"
@@ -67,24 +67,7 @@
 
 	<xsd:complexType name="datastoreType">
 		<xsd:sequence>
-			<xsd:choice>
-				<xsd:element name="mongo-datastore" type="mongoDatastoreType">
-					<xsd:annotation>
-						<xsd:documentation>
-							Datastore that includes MongoDB connectivity along with device
-							management and user mangemement implementations.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element name="hbase-datastore" type="hbaseDatastoreType">
-					<xsd:annotation>
-						<xsd:documentation>
-							Datastore that includes HBase connectivity along with device
-							management and user mangemement implementations.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-			</xsd:choice>
+			<xsd:element ref="abstract-datastore"/>
 			<xsd:choice minOccurs="0" maxOccurs="1">
 				<xsd:element name="ehcache-device-management-cache" type="ehcacheDeviceManagementCacheType"/>
 			</xsd:choice>
@@ -105,16 +88,41 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
+	<xsd:element name="abstract-datastore" abstract="true" type="abstractDatastoreType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for datastore elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common datastore information -->
+	<xsd:complexType name="abstractDatastoreType"/>
+
 	<!-- Configuration data for a MongoDB datastore -->
+	<xsd:element name="mongo-datastore" type="mongoDatastoreType"
+		substitutionGroup="abstract-datastore">
+	</xsd:element>
 	<xsd:complexType name="mongoDatastoreType">
-		<xsd:attribute name="hostname" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="port" type="xsd:int"></xsd:attribute>
-		<xsd:attribute name="databaseName" type="xsd:string"></xsd:attribute>
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attribute name="hostname" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="port" type="xsd:int"></xsd:attribute>
+				<xsd:attribute name="databaseName" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 	
 	<!-- Configuration data for an HBase datastore -->
+	<xsd:element name="hbase-datastore" type="hbaseDatastoreType"
+		substitutionGroup="abstract-datastore"/>
 	<xsd:complexType name="hbaseDatastoreType">
-		<xsd:attribute name="quorum" type="xsd:string"></xsd:attribute>
+		<xsd:complexContent>
+			<xsd:extension base="abstractDatastoreType">
+				<xsd:attribute name="quorum" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Configuration data for EHCache cache provider -->
