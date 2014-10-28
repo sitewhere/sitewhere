@@ -115,7 +115,7 @@ public class HBaseDevice {
 	 */
 	public static IDevice updateDevice(ISiteWhereHBaseClient hbase, String hardwareId,
 			IDeviceCreateRequest request, IDeviceManagementCacheProvider cache) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDevice (HBase)", LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDevice (HBase) " + hardwareId, LOGGER);
 		try {
 			Device updated = getDeviceByHardwareId(hbase, hardwareId, cache);
 			if (updated == null) {
@@ -273,12 +273,13 @@ public class HBaseDevice {
 	 */
 	public static Device getDeviceByHardwareId(ISiteWhereHBaseClient hbase, String hardwareId,
 			IDeviceManagementCacheProvider cache) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceByHardwareId (HBase)", LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceByHardwareId (HBase) " + hardwareId,
+				LOGGER);
 		try {
 			if (cache != null) {
 				IDevice result = cache.getDeviceCache().get(hardwareId);
 				if (result != null) {
-					Tracer.info("Returning cached Device.", LOGGER);
+					Tracer.info("Returning cached device.", LOGGER);
 					return DEVICE_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
 				}
 			}
@@ -331,7 +332,7 @@ public class HBaseDevice {
 	 */
 	public static IDevice deleteDevice(ISiteWhereHBaseClient hbase, String hardwareId, boolean force,
 			IDeviceManagementCacheProvider cache) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDevice (HBase)", LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDevice (HBase) " + hardwareId, LOGGER);
 		try {
 			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
@@ -395,36 +396,43 @@ public class HBaseDevice {
 	 */
 	public static String getCurrentAssignmentId(ISiteWhereHBaseClient hbase, String hardwareId,
 			IDeviceManagementCacheProvider cache) throws SiteWhereException {
-		if (cache != null) {
-			IDevice result = cache.getDeviceCache().get(hardwareId);
-			if (result != null) {
-				return result.getAssignmentToken();
-			}
-		}
-		Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
-		if (deviceId == null) {
-			return null;
-		}
-		byte[] primary = getDeviceRowKey(deviceId);
-
-		HTableInterface devices = null;
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "getCurrentAssignmentId (HBase) " + hardwareId,
+				LOGGER);
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
-			Get get = new Get(primary);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT);
-			Result result = devices.get(get);
-			if (result.isEmpty()) {
-				return null;
-			} else if (result.size() == 1) {
-				return new String(result.value());
-			} else {
-				throw new SiteWhereException("Expected one current assignment entry for device and found: "
-						+ result.size());
+			if (cache != null) {
+				IDevice result = cache.getDeviceCache().get(hardwareId);
+				if (result != null) {
+					Tracer.info("Returning cached device assignment token.", LOGGER);
+					return result.getAssignmentToken();
+				}
 			}
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to load current device assignment value.", e);
+			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
+			if (deviceId == null) {
+				return null;
+			}
+			byte[] primary = getDeviceRowKey(deviceId);
+
+			HTableInterface devices = null;
+			try {
+				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				Get get = new Get(primary);
+				get.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT);
+				Result result = devices.get(get);
+				if (result.isEmpty()) {
+					return null;
+				} else if (result.size() == 1) {
+					return new String(result.value());
+				} else {
+					throw new SiteWhereException(
+							"Expected one current assignment entry for device and found: " + result.size());
+				}
+			} catch (IOException e) {
+				throw new SiteWhereException("Unable to load current device assignment value.", e);
+			} finally {
+				HBaseUtils.closeCleanly(devices);
+			}
 		} finally {
-			HBaseUtils.closeCleanly(devices);
+			Tracer.pop(LOGGER);
 		}
 	}
 
@@ -439,7 +447,8 @@ public class HBaseDevice {
 	 */
 	public static void setDeviceAssignment(ISiteWhereHBaseClient hbase, String hardwareId,
 			String assignmentToken, IDeviceManagementCacheProvider cache) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "setDeviceAssignment (HBase)", LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "setDeviceAssignment (HBase) " + hardwareId,
+				LOGGER);
 		try {
 			String existing = getCurrentAssignmentId(hbase, hardwareId, cache);
 			if (existing != null) {
@@ -491,7 +500,8 @@ public class HBaseDevice {
 	 */
 	public static void removeDeviceAssignment(ISiteWhereHBaseClient hbase, String hardwareId,
 			IDeviceManagementCacheProvider cache) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "removeDeviceAssignment (HBase)", LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "removeDeviceAssignment (HBase) " + hardwareId,
+				LOGGER);
 		try {
 			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
@@ -540,7 +550,8 @@ public class HBaseDevice {
 	public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(ISiteWhereHBaseClient hbase,
 			String hardwareId, ISearchCriteria criteria, IDeviceManagementCacheProvider cache)
 			throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceAssignmentHistory (HBase)", LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceAssignmentHistory (HBase) "
+				+ hardwareId, LOGGER);
 		try {
 			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
