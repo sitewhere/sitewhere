@@ -7,11 +7,21 @@
  */
 package com.sitewhere.hbase.common;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sitewhere.Tracer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.debug.TracerCategory;
 
 public class MarshalUtils {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(MarshalUtils.class);
+
+	/** Singleton object mapper for JSON marshaling */
+	private static ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
 	 * Marshal an object to a JSON string.
@@ -21,11 +31,13 @@ public class MarshalUtils {
 	 * @throws SiteWhereException
 	 */
 	public static byte[] marshalJson(Object object) throws SiteWhereException {
-		ObjectMapper mapper = new ObjectMapper();
+		Tracer.push(TracerCategory.DataStore, "marshalJson", LOGGER);
 		try {
-			return mapper.writeValueAsBytes(object);
+			return MAPPER.writeValueAsBytes(object);
 		} catch (JsonProcessingException e) {
 			throw new SiteWhereException("Could not marshal device as JSON.", e);
+		} finally {
+			Tracer.pop(LOGGER);
 		}
 	}
 
@@ -38,11 +50,13 @@ public class MarshalUtils {
 	 * @throws SiteWhereException
 	 */
 	public static <T> T unmarshalJson(byte[] json, Class<T> type) throws SiteWhereException {
-		ObjectMapper mapper = new ObjectMapper();
+		Tracer.push(TracerCategory.DataStore, "unmarshalJson", LOGGER);
 		try {
-			return mapper.readValue(json, type);
+			return MAPPER.readValue(json, type);
 		} catch (Throwable e) {
 			throw new SiteWhereException("Unable to parse JSON.", e);
+		} finally {
+			Tracer.pop(LOGGER);
 		}
 	}
 }
