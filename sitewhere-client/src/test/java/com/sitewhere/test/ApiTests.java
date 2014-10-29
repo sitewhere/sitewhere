@@ -36,6 +36,7 @@ import com.sitewhere.spi.error.ErrorCode;
  * 
  * @author dadams
  */
+@SuppressWarnings("deprecation")
 public class ApiTests {
 
 	/** Device specification id used in tests */

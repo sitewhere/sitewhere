@@ -45,11 +45,29 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 	/** Cache id for device assignment cache */
 	public static final String DEVICE_ASSIGNMENT_CACHE_ID = "sitewhere-device-assignment-cache";
 
-	/** Default max cache entries */
-	public static final int DEFAULT_MAX_ENTRIES = 500;
+	/** Max number of entries in site cache */
+	public long siteCacheMaxEntries = 50;
 
-	/** Default max time to live */
-	public static final int DEFAULT_MAX_TTL = 30;
+	/** Max number of entries in specification cache */
+	public long deviceSpecificationCacheMaxEntries = 100;
+
+	/** Max number of entries in device cache */
+	public long deviceCacheMaxEntries = 1000;
+
+	/** Max number of entries in assignment cache */
+	public long deviceAssignmentCacheMaxEntries = 1000;
+
+	/** Time to live (seconds) for site entries */
+	public long siteCacheTtl = 300;
+
+	/** Time to live (seconds) for specification entries */
+	public long deviceSpecificationCacheTtl = 300;
+
+	/** Time to live (seconds) for device entries */
+	public long deviceCacheTtl = 60;
+
+	/** Time to live (seconds) for assignment entries */
+	public long deviceAssignmentCacheTtl = 60;
 
 	/** Cache for site data */
 	private CacheAdapter<String, ISite> siteCache;
@@ -74,30 +92,53 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 
 		Configuration config = new Configuration();
 		CacheConfiguration cacheConfig = new CacheConfiguration();
-		cacheConfig.setMaxEntriesLocalHeap(DEFAULT_MAX_ENTRIES);
-		cacheConfig.setTimeToLiveSeconds(DEFAULT_MAX_TTL);
+		cacheConfig.setMaxEntriesLocalHeap(100);
+		cacheConfig.setTimeToLiveSeconds(60);
 		config.setDefaultCacheConfiguration(cacheConfig);
 		CacheManager manager = CacheManager.create(config);
 
 		// Create site cache.
-		Ehcache site = manager.addCacheIfAbsent(SITE_CACHE_ID);
-		siteCache = new CacheAdapter<String, ISite>(CacheType.SiteCache, site);
+		siteCache =
+				createCache(manager, ISite.class, SITE_CACHE_ID, CacheType.SiteCache,
+						getSiteCacheMaxEntries(), getSiteCacheTtl());
 
 		// Create device specification cache.
-		Ehcache dsc = manager.addCacheIfAbsent(DEVICE_SPECIFICATION_CACHE_ID);
 		deviceSpecificationCache =
-				new CacheAdapter<String, IDeviceSpecification>(CacheType.DeviceSpecificationCache, dsc);
+				createCache(manager, IDeviceSpecification.class, DEVICE_SPECIFICATION_CACHE_ID,
+						CacheType.DeviceSpecificationCache, getDeviceSpecificationCacheMaxEntries(),
+						getDeviceSpecificationCacheTtl());
 
 		// Create device cache.
-		Ehcache dc = manager.addCacheIfAbsent(DEVICE_CACHE_ID);
-		deviceCache = new CacheAdapter<String, IDevice>(CacheType.DeviceCache, dc);
+		deviceCache =
+				createCache(manager, IDevice.class, DEVICE_CACHE_ID, CacheType.DeviceCache,
+						getDeviceCacheMaxEntries(), getDeviceCacheTtl());
 
 		// Create device assignment cache.
-		Ehcache dac = manager.addCacheIfAbsent(DEVICE_ASSIGNMENT_CACHE_ID);
 		deviceAssignmentCache =
-				new CacheAdapter<String, IDeviceAssignment>(CacheType.DeviceAssignmentCache, dac);
+				createCache(manager, IDeviceAssignment.class, DEVICE_ASSIGNMENT_CACHE_ID,
+						CacheType.DeviceAssignmentCache, getDeviceAssignmentCacheMaxEntries(),
+						getDeviceAssignmentCacheTtl());
+	}
 
-		LOGGER.info("Started EHCache device management cache provider.");
+	/**
+	 * Create a cache with the given characteristics.
+	 * 
+	 * @param manager
+	 * @param clazz
+	 * @param cacheId
+	 * @param type
+	 * @param maxEntries
+	 * @param ttl
+	 * @return
+	 */
+	protected <T> CacheAdapter<String, T> createCache(CacheManager manager, Class<T> clazz, String cacheId,
+			CacheType type, long maxEntries, long ttl) {
+		Ehcache ehcache = manager.addCacheIfAbsent(cacheId);
+		ehcache.getCacheConfiguration().setMaxEntriesLocalHeap(maxEntries);
+		ehcache.getCacheConfiguration().setTimeToLiveSeconds(ttl);
+		CacheAdapter<String, T> cache = new CacheAdapter<String, T>(type, ehcache);
+		LOGGER.info(type.name() + " created (entries: " + maxEntries + ", ttl: " + ttl + ").");
+		return cache;
 	}
 
 	/*
@@ -150,5 +191,69 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 	@Override
 	public ICache<String, IDeviceAssignment> getDeviceAssignmentCache() throws SiteWhereException {
 		return deviceAssignmentCache;
+	}
+
+	public long getSiteCacheMaxEntries() {
+		return siteCacheMaxEntries;
+	}
+
+	public void setSiteCacheMaxEntries(long siteCacheMaxEntries) {
+		this.siteCacheMaxEntries = siteCacheMaxEntries;
+	}
+
+	public long getDeviceSpecificationCacheMaxEntries() {
+		return deviceSpecificationCacheMaxEntries;
+	}
+
+	public void setDeviceSpecificationCacheMaxEntries(long deviceSpecificationCacheMaxEntries) {
+		this.deviceSpecificationCacheMaxEntries = deviceSpecificationCacheMaxEntries;
+	}
+
+	public long getDeviceCacheMaxEntries() {
+		return deviceCacheMaxEntries;
+	}
+
+	public void setDeviceCacheMaxEntries(long deviceCacheMaxEntries) {
+		this.deviceCacheMaxEntries = deviceCacheMaxEntries;
+	}
+
+	public long getDeviceAssignmentCacheMaxEntries() {
+		return deviceAssignmentCacheMaxEntries;
+	}
+
+	public void setDeviceAssignmentCacheMaxEntries(long deviceAssignmentCacheMaxEntries) {
+		this.deviceAssignmentCacheMaxEntries = deviceAssignmentCacheMaxEntries;
+	}
+
+	public long getSiteCacheTtl() {
+		return siteCacheTtl;
+	}
+
+	public void setSiteCacheTtl(long siteCacheTtl) {
+		this.siteCacheTtl = siteCacheTtl;
+	}
+
+	public long getDeviceSpecificationCacheTtl() {
+		return deviceSpecificationCacheTtl;
+	}
+
+	public void setDeviceSpecificationCacheTtl(long deviceSpecificationCacheTtl) {
+		this.deviceSpecificationCacheTtl = deviceSpecificationCacheTtl;
+	}
+
+	public long getDeviceCacheTtl() {
+		return deviceCacheTtl;
+	}
+
+	public void setDeviceCacheTtl(long deviceCacheTtl) {
+		this.deviceCacheTtl = deviceCacheTtl;
+	}
+
+	public long getDeviceAssignmentCacheTtl() {
+		return deviceAssignmentCacheTtl;
+	}
+
+	public void setDeviceAssignmentCacheTtl(long deviceAssignmentCacheTtl) {
+		this.deviceAssignmentCacheTtl = deviceAssignmentCacheTtl;
 	}
 }
