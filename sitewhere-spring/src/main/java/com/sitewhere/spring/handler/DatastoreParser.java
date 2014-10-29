@@ -49,7 +49,7 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 					continue;
 				} else {
 					throw new RuntimeException("Invalid nested element found in 'datastore' section: "
-							+ element.toString());
+							+ child.toString());
 				}
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
