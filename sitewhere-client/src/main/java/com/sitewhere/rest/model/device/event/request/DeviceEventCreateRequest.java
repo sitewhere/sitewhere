@@ -25,6 +25,9 @@ public class DeviceEventCreateRequest extends MetadataProvider implements IDevic
 	/** Date event occurred */
 	private Date eventDate;
 
+	/** Indicates whether device assignment state should be updated */
+	private boolean updateState = true;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -37,5 +40,19 @@ public class DeviceEventCreateRequest extends MetadataProvider implements IDevic
 
 	public void setEventDate(Date eventDate) {
 		this.eventDate = eventDate;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#isUpdateState()
+	 */
+	public boolean isUpdateState() {
+		return updateState;
+	}
+
+	public void setUpdateState(boolean updateState) {
+		this.updateState = updateState;
 	}
 }

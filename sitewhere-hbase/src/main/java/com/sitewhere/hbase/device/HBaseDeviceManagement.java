@@ -465,7 +465,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 */
 	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
 			throws SiteWhereException {
-		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this, true);
+		return SiteWherePersistence.deviceEventBatchLogic(assignmentToken, batch, this);
 	}
 
 	/*
@@ -530,14 +530,13 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceMeasurements(java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest, boolean)
+	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
 	 */
 	@Override
 	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
-			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException {
+			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceMeasurements(client, assignment, measurements, updateState,
-				cacheProvider);
+		return HBaseDeviceEvent.createDeviceMeasurements(client, assignment, measurements, cacheProvider);
 	}
 
 	/*
@@ -570,13 +569,13 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceLocation(java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest, boolean)
+	 * com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
 	@Override
-	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
-			boolean updateState) throws SiteWhereException {
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
+			throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceLocation(client, assignment, request, updateState, cacheProvider);
+		return HBaseDeviceEvent.createDeviceLocation(client, assignment, request, cacheProvider);
 	}
 
 	/*
@@ -621,13 +620,13 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.IDeviceManagement#addDeviceAlert(java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest, boolean)
+	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
-	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
-			boolean updateState) throws SiteWhereException {
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
+			throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceAlert(client, assignment, request, updateState, cacheProvider);
+		return HBaseDeviceEvent.createDeviceAlert(client, assignment, request, cacheProvider);
 	}
 
 	/*

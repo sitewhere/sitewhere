@@ -390,12 +390,11 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * 
 	 * @param assignmentToken
 	 * @param measurements
-	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
-			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException;
+			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException;
 
 	/**
 	 * Gets device measurement entries for an assignment based on criteria.
@@ -424,12 +423,11 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * 
 	 * @param assignmentToken
 	 * @param request
-	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
-			boolean updateState) throws SiteWhereException;
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
+			throws SiteWhereException;
 
 	/**
 	 * Gets device location entries for an assignment.
@@ -471,12 +469,11 @@ public interface IDeviceManagement extends ISiteWhereLifecycle {
 	 * 
 	 * @param assignmentToken
 	 * @param request
-	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
-			boolean updateState) throws SiteWhereException;
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
+			throws SiteWhereException;
 
 	/**
 	 * Gets the most recent device alert entries for an assignment.

@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.service;
+package com.sitewhere.rest.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;

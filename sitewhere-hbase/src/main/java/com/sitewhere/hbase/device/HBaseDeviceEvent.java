@@ -103,13 +103,12 @@ public class HBaseDeviceEvent {
 	 * @param hbase
 	 * @param assignment
 	 * @param request
-	 * @param updateState
 	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static IDeviceMeasurements createDeviceMeasurements(ISiteWhereHBaseClient hbase,
-			IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request, boolean updateState,
+			IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request,
 			IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
@@ -139,7 +138,7 @@ public class HBaseDeviceEvent {
 		}
 
 		// Update state if requested.
-		if (updateState) {
+		if (request.isUpdateState()) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateMeasurementsUpdateLogic(assignment, measurements);
 			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated, cache);
@@ -193,7 +192,7 @@ public class HBaseDeviceEvent {
 	 * @throws SiteWhereException
 	 */
 	public static IDeviceLocation createDeviceLocation(ISiteWhereHBaseClient hbase,
-			IDeviceAssignment assignment, IDeviceLocationCreateRequest request, boolean updateState,
+			IDeviceAssignment assignment, IDeviceLocationCreateRequest request,
 			IDeviceManagementCacheProvider cache) throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(assignment, time);
@@ -217,7 +216,7 @@ public class HBaseDeviceEvent {
 		}
 
 		// Update state if requested.
-		if (updateState) {
+		if (request.isUpdateState()) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateLocationUpdateLogic(assignment, location);
 			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated, cache);
@@ -269,7 +268,7 @@ public class HBaseDeviceEvent {
 	 * @throws SiteWhereException
 	 */
 	public static IDeviceAlert createDeviceAlert(ISiteWhereHBaseClient hbase, IDeviceAssignment assignment,
-			IDeviceAlertCreateRequest request, boolean updateState, IDeviceManagementCacheProvider cache)
+			IDeviceAlertCreateRequest request, IDeviceManagementCacheProvider cache)
 			throws SiteWhereException {
 		long time = getEventTime(request);
 		byte[] rowkey = getEventRowKey(assignment, time);
@@ -294,7 +293,7 @@ public class HBaseDeviceEvent {
 		}
 
 		// Update state if requested.
-		if (updateState) {
+		if (request.isUpdateState()) {
 			DeviceAssignmentState updated =
 					SiteWherePersistence.assignmentStateAlertUpdateLogic(assignment, alert);
 			HBaseDeviceAssignment.updateDeviceAssignmentState(hbase, assignment.getToken(), updated, cache);

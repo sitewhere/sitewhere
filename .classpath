@@ -61,5 +61,6 @@
 	<classpathentry kind="var" path="M2_REPO/com/_8x8/cloud/swagger2raml/swagger2raml/1.0-SNAPSHOT/swagger2raml-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/mangofactory/swagger-springmvc/0.9.0/swagger-springmvc-0.9.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-core_2.10/1.3.5/swagger-core_2.10-1.3.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpclient/4.3.1/httpclient-4.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

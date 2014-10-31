@@ -579,24 +579,21 @@ public class SiteWherePersistence {
 	 * @param assignmentToken
 	 * @param batch
 	 * @param management
-	 * @param updateState
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static DeviceEventBatchResponse deviceEventBatchLogic(String assignmentToken,
-			IDeviceEventBatch batch, IDeviceManagement management, boolean updateState)
-			throws SiteWhereException {
+			IDeviceEventBatch batch, IDeviceManagement management) throws SiteWhereException {
 		DeviceEventBatchResponse response = new DeviceEventBatchResponse();
 		for (IDeviceMeasurementsCreateRequest measurements : batch.getMeasurements()) {
 			response.getCreatedMeasurements().add(
-					management.addDeviceMeasurements(assignmentToken, measurements, updateState));
+					management.addDeviceMeasurements(assignmentToken, measurements));
 		}
 		for (IDeviceLocationCreateRequest location : batch.getLocations()) {
-			response.getCreatedLocations().add(
-					management.addDeviceLocation(assignmentToken, location, updateState));
+			response.getCreatedLocations().add(management.addDeviceLocation(assignmentToken, location));
 		}
 		for (IDeviceAlertCreateRequest alert : batch.getAlerts()) {
-			response.getCreatedAlerts().add(management.addDeviceAlert(assignmentToken, alert, updateState));
+			response.getCreatedAlerts().add(management.addDeviceAlert(assignmentToken, alert));
 		}
 		return response;
 	}

@@ -24,4 +24,12 @@ public interface IDeviceEventCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public Date getEventDate();
+
+	/**
+	 * Indicates whether state information on the device assignment should be updated to
+	 * reflect new event.
+	 * 
+	 * @return
+	 */
+	public boolean isUpdateState();
 }

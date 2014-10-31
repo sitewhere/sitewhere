@@ -12,7 +12,7 @@ import java.util.List;
 import org.springframework.http.converter.HttpMessageConverter;
 
 import com.sitewhere.mule.spring.MappingJackson2HttpMessageConverter;
-import com.sitewhere.rest.service.SiteWhereClient;
+import com.sitewhere.rest.client.SiteWhereClient;
 
 /**
  * Customized version of {@link SiteWhereClient} that hacks around classpath issues when

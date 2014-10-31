@@ -263,8 +263,8 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 
 	@Override
 	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
-			IDeviceMeasurementsCreateRequest measurements, boolean updateState) throws SiteWhereException {
-		return delegate.addDeviceMeasurements(assignmentToken, measurements, updateState);
+			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
+		return delegate.addDeviceMeasurements(assignmentToken, measurements);
 	}
 
 	@Override
@@ -280,9 +280,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request,
-			boolean updateState) throws SiteWhereException {
-		return delegate.addDeviceLocation(assignmentToken, request, updateState);
+	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
+			throws SiteWhereException {
+		return delegate.addDeviceLocation(assignmentToken, request);
 	}
 
 	@Override
@@ -304,9 +304,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request,
-			boolean updateState) throws SiteWhereException {
-		return delegate.addDeviceAlert(assignmentToken, request, updateState);
+	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
+			throws SiteWhereException {
+		return delegate.addDeviceAlert(assignmentToken, request);
 	}
 
 	@Override

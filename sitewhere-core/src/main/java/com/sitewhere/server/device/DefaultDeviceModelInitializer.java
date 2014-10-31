@@ -612,7 +612,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			mreq.addOrReplaceMeasurement("engine.temperature", temp);
 			mreq.addOrReplaceMeasurement("fuel.level", fuel);
 			mreq.setEventDate(new Date(current));
-			results.add(getDeviceManagement().addDeviceMeasurements(assignment.getToken(), mreq, true));
+			results.add(getDeviceManagement().addDeviceMeasurements(assignment.getToken(), mreq));
 			measurementCount++;
 
 			// Create alerts based on current temperature.
@@ -630,7 +630,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					areq.setLevel(AlertLevel.Critical);
 					break;
 				}
-				getDeviceManagement().addDeviceAlert(assignment.getToken(), areq, true);
+				getDeviceManagement().addDeviceAlert(assignment.getToken(), areq);
 				alertCount++;
 			}
 
@@ -694,7 +694,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					request.setElevation(0.0);
 					request.setEventDate(new Date(current));
 					IDeviceLocation created =
-							getDeviceManagement().addDeviceLocation(assignment.getToken(), request, true);
+							getDeviceManagement().addDeviceLocation(assignment.getToken(), request);
 					results.add(created);
 
 					cx = cx + deltaX;
