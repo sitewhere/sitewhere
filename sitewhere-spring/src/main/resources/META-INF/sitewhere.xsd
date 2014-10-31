@@ -68,9 +68,7 @@
 	<xsd:complexType name="datastoreType">
 		<xsd:sequence>
 			<xsd:element ref="abstract-datastore"/>
-			<xsd:choice minOccurs="0" maxOccurs="1">
-				<xsd:element name="ehcache-device-management-cache" type="ehcacheDeviceManagementCacheType"/>
-			</xsd:choice>
+			<xsd:element ref="abstract-cache" minOccurs="0" maxOccurs="1"/>
 			<xsd:element minOccurs="0" name="default-device-model-initializer" type="defaultDeviceModelInitializerType">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -125,8 +123,74 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for device management caches to allow substitutionGroups -->
+	<xsd:element name="abstract-cache" abstract="true" type="abstractCacheType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for device management cache elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common cache information -->
+	<xsd:complexType name="abstractCacheType"/>
+
 	<!-- Configuration data for EHCache cache provider -->
-	<xsd:complexType name="ehcacheDeviceManagementCacheType"/>
+	<xsd:element name="ehcache-device-management-cache" type="ehcacheDeviceManagementCacheType"
+		substitutionGroup="abstract-cache"/>
+	<xsd:complexType name="ehcacheDeviceManagementCacheType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCacheType">
+				<xsd:attribute name="siteCacheMaxEntries" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Maximum number of entries in the site cache.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="deviceSpecificationCacheMaxEntries" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Maximum number of entries in the device specification cache.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="deviceCacheMaxEntries" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Maximum number of entries in the device cache.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="deviceAssignmentCacheMaxEntries" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Maximum number of entries in the device assignment cache.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="siteCacheTtl" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Time to live for site cache entries.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="deviceSpecificationCacheTtl" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Time to live for device specification cache entries.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="deviceCacheTtl" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Time to live for device cache entries.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="deviceAssignmentCacheTtl" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Time to live for device assignment cache entries.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
 	<!-- Creates default device model data -->
 	<xsd:complexType name="defaultDeviceModelInitializerType">

@@ -161,6 +161,41 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	protected void parseEHCacheDeviceManagementCache(Element element, ParserContext context) {
 		BeanDefinitionBuilder cache =
 				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.ehcache.DeviceManagementCacheProvider");
+		Attr siteCacheMaxEntries = element.getAttributeNode("siteCacheMaxEntries");
+		if (siteCacheMaxEntries != null) {
+			cache.addPropertyValue("siteCacheMaxEntries", siteCacheMaxEntries.getValue());
+		}
+		Attr deviceSpecificationCacheMaxEntries =
+				element.getAttributeNode("deviceSpecificationCacheMaxEntries");
+		if (deviceSpecificationCacheMaxEntries != null) {
+			cache.addPropertyValue("deviceSpecificationCacheMaxEntries",
+					deviceSpecificationCacheMaxEntries.getValue());
+		}
+		Attr deviceCacheMaxEntries = element.getAttributeNode("deviceCacheMaxEntries");
+		if (deviceCacheMaxEntries != null) {
+			cache.addPropertyValue("deviceCacheMaxEntries", deviceCacheMaxEntries.getValue());
+		}
+		Attr deviceAssignmentCacheMaxEntries = element.getAttributeNode("deviceAssignmentCacheMaxEntries");
+		if (deviceAssignmentCacheMaxEntries != null) {
+			cache.addPropertyValue("deviceAssignmentCacheMaxEntries",
+					deviceAssignmentCacheMaxEntries.getValue());
+		}
+		Attr siteCacheTtl = element.getAttributeNode("siteCacheTtl");
+		if (siteCacheTtl != null) {
+			cache.addPropertyValue("siteCacheTtl", siteCacheTtl.getValue());
+		}
+		Attr deviceSpecificationCacheTtl = element.getAttributeNode("deviceSpecificationCacheTtl");
+		if (deviceSpecificationCacheTtl != null) {
+			cache.addPropertyValue("deviceSpecificationCacheTtl", deviceSpecificationCacheTtl.getValue());
+		}
+		Attr deviceCacheTtl = element.getAttributeNode("deviceCacheTtl");
+		if (deviceCacheTtl != null) {
+			cache.addPropertyValue("deviceCacheTtl", deviceCacheTtl.getValue());
+		}
+		Attr deviceAssignmentCacheTtl = element.getAttributeNode("deviceAssignmentCacheTtl");
+		if (deviceAssignmentCacheTtl != null) {
+			cache.addPropertyValue("deviceAssignmentCacheTtl", deviceAssignmentCacheTtl.getValue());
+		}
 		context.getRegistry().registerBeanDefinition(
 				SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER, cache.getBeanDefinition());
 	}
