@@ -15,6 +15,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.sitewhere.rest.client.SiteWhereClient;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -24,7 +25,6 @@ import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.system.Version;
-import com.sitewhere.rest.service.SiteWhereClient;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
