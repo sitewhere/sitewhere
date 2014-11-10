@@ -14,6 +14,9 @@ package com.sitewhere.spi.device.command;
  */
 public enum RegistrationFailureReason {
 
+	/** Registration manager does not allow new devices */
+	NewDevicesNotAllowed,
+
 	/** Invalid specification token was passed */
 	InvalidSpecificationToken,
 

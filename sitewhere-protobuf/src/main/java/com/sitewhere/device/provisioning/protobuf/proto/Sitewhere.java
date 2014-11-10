@@ -5881,6 +5881,10 @@ public final class Sitewhere {
        * <code>SITE_TOKEN_REQUIRED = 2;</code>
        */
       SITE_TOKEN_REQUIRED(1, 2),
+      /**
+       * <code>NEW_DEVICES_NOT_ALLOWED = 3;</code>
+       */
+      NEW_DEVICES_NOT_ALLOWED(2, 3),
       ;
 
       /**
@@ -5891,6 +5895,10 @@ public final class Sitewhere {
        * <code>SITE_TOKEN_REQUIRED = 2;</code>
        */
       public static final int SITE_TOKEN_REQUIRED_VALUE = 2;
+      /**
+       * <code>NEW_DEVICES_NOT_ALLOWED = 3;</code>
+       */
+      public static final int NEW_DEVICES_NOT_ALLOWED_VALUE = 3;
 
 
       public final int getNumber() { return value; }
@@ -5899,6 +5907,7 @@ public final class Sitewhere {
         switch (value) {
           case 1: return INVALID_SPECIFICATION;
           case 2: return SITE_TOKEN_REQUIRED;
+          case 3: return NEW_DEVICES_NOT_ALLOWED;
           default: return null;
         }
       }

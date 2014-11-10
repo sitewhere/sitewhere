@@ -88,6 +88,10 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder<byte[]
 			builder.setState(RegistrationAckState.REGISTRATION_ERROR);
 			builder.setErrorMessage(fail.getErrorMessage());
 			switch (fail.getReason()) {
+			case NewDevicesNotAllowed: {
+				builder.setErrorType(RegistrationAckError.NEW_DEVICES_NOT_ALLOWED);
+				break;
+			}
 			case InvalidSpecificationToken: {
 				builder.setErrorType(RegistrationAckError.INVALID_SPECIFICATION);
 				break;

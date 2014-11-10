@@ -37,13 +37,13 @@ public class RegistrationManager implements IRegistrationManager {
 	private static Logger LOGGER = Logger.getLogger(RegistrationManager.class);
 
 	/** Indicates if new devices can register with the system */
-	private boolean allowNewDevices;
+	private boolean allowNewDevices = true;
 
 	/** Indicates if devices can be auto-assigned if no site token is passed */
-	private boolean autoAssignSite;
+	private boolean autoAssignSite = true;
 
 	/** Token used if autoAssignSite is enabled */
-	private String autoAssignSiteToken;
+	private String autoAssignSiteToken = null;
 
 	/*
 	 * (non-Javadoc)
@@ -62,6 +62,12 @@ public class RegistrationManager implements IRegistrationManager {
 						request.getSpecificationToken());
 		// Create device if it does not already exist.
 		if (device == null) {
+			if (!isAllowNewDevices()) {
+				LOGGER.warn("Ignoring device registration request since new devices are not allowed.");
+				// TODO: Should we send this using a dummy device?
+				// sendNoNewDevicesAllowed(request.getHardwareId());
+				return;
+			}
 			LOGGER.debug("Creating new device as part of registration.");
 			if (specification == null) {
 				sendInvalidSpecification(request.getHardwareId());
@@ -118,6 +124,20 @@ public class RegistrationManager implements IRegistrationManager {
 	}
 
 	/**
+	 * Send a message indicating that the registration manager does not allow registration
+	 * of new devices.
+	 * 
+	 * @param hardwareId
+	 * @throws SiteWhereException
+	 */
+	protected void sendNoNewDevicesAllowed(String hardwareId) throws SiteWhereException {
+		RegistrationFailureCommand command = new RegistrationFailureCommand();
+		command.setReason(RegistrationFailureReason.NewDevicesNotAllowed);
+		command.setErrorMessage("Registration manager does not allow new devices to be created.");
+		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, command);
+	}
+
+	/**
 	 * Send a message indicating invalid specification id or one that does not match
 	 * existing device.
 	 * 
@@ -127,6 +147,7 @@ public class RegistrationManager implements IRegistrationManager {
 	protected void sendInvalidSpecification(String hardwareId) throws SiteWhereException {
 		RegistrationFailureCommand command = new RegistrationFailureCommand();
 		command.setReason(RegistrationFailureReason.InvalidSpecificationToken);
+		command.setErrorMessage("Specification token passed in registration was invalid.");
 		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, command);
 	}
 
@@ -139,6 +160,7 @@ public class RegistrationManager implements IRegistrationManager {
 	protected void sendSiteTokenRequired(String hardwareId) throws SiteWhereException {
 		RegistrationFailureCommand command = new RegistrationFailureCommand();
 		command.setReason(RegistrationFailureReason.SiteTokenRequired);
+		command.setErrorMessage("Automatic site assignment disabled. Site token required.");
 		SiteWhere.getServer().getDeviceProvisioning().deliverSystemCommand(hardwareId, command);
 	}
 

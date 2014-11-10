@@ -9,6 +9,7 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -32,6 +33,9 @@ import com.sitewhere.spi.device.provisioning.IInboundEventSource;
  * @author Derek
  */
 public class EventSourcesParser {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(EventSourcesParser.class);
 
 	/** Used to generate unique names for nested beans */
 	private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
@@ -155,15 +159,15 @@ public class EventSourcesParser {
 			}
 			switch (type) {
 			case ProtobufDecoder: {
-				parseProtobufDecoder(child, context, source);
+				parseProtobufDecoder(parent, child, context, source);
 				return true;
 			}
 			case JsonDecoder: {
-				parseJsonDecoder(child, context, source);
+				parseJsonDecoder(parent, child, context, source);
 				return true;
 			}
 			case EventDecoder: {
-				parseDecoderRef(child, context, source);
+				parseDecoderRef(parent, child, context, source);
 				return true;
 			}
 			}
@@ -174,11 +178,15 @@ public class EventSourcesParser {
 	/**
 	 * Create parser for SiteWhere Google Protocol Buffer format.
 	 * 
+	 * @param parent
 	 * @param decoder
 	 * @param context
 	 * @param source
 	 */
-	protected void parseProtobufDecoder(Element decoder, ParserContext context, BeanDefinitionBuilder source) {
+	protected void parseProtobufDecoder(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring SiteWhere Google Protocol Buffer event decoder for "
+				+ parent.getLocalName());
 		BeanDefinitionBuilder builder =
 				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder");
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
@@ -190,11 +198,14 @@ public class EventSourcesParser {
 	/**
 	 * Create parser for SiteWhere Google Protocol Buffer format.
 	 * 
+	 * @param parent
 	 * @param decoder
 	 * @param context
 	 * @param source
 	 */
-	protected void parseJsonDecoder(Element decoder, ParserContext context, BeanDefinitionBuilder source) {
+	protected void parseJsonDecoder(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring SiteWhere JSON batch event decoder for " + parent.getLocalName());
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonBatchEventDecoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
@@ -205,15 +216,18 @@ public class EventSourcesParser {
 	/**
 	 * Create parser for SiteWhere Google Protocol Buffer format.
 	 * 
+	 * @param parent
 	 * @param decoder
 	 * @param context
 	 * @param source
 	 */
-	protected void parseDecoderRef(Element decoder, ParserContext context, BeanDefinitionBuilder source) {
+	protected void parseDecoderRef(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
 		Attr decoderRef = decoder.getAttributeNode("ref");
 		if (decoderRef == null) {
 			throw new RuntimeException("Event decoder 'ref' attribute is required.");
 		}
+		LOGGER.debug("Configuring reference to " + decoderRef.getValue() + " for " + parent.getLocalName());
 		source.addPropertyReference("deviceEventDecoder", decoderRef.getValue());
 	}
 

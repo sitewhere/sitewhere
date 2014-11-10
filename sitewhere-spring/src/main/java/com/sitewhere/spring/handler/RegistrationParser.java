@@ -9,11 +9,15 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+
+import com.sitewhere.device.provisioning.RegistrationManager;
 
 /**
  * Parse elements related to device registration.
@@ -37,12 +41,43 @@ public class RegistrationParser {
 				throw new RuntimeException("Unknown registration element: " + child.getLocalName());
 			}
 			switch (type) {
+			case DefaultRegistrationManager: {
+				return parseDefaultRegistrationManager(child, context);
+			}
 			case RegistrationManager: {
 				return parseRegistrationManager(child, context);
 			}
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Parse information for the default registration manager.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected BeanDefinition parseDefaultRegistrationManager(Element element, ParserContext context) {
+		BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(RegistrationManager.class);
+
+		Attr allowNewDevices = element.getAttributeNode("allowNewDevices");
+		if (allowNewDevices != null) {
+			manager.addPropertyValue("allowNewDevices", allowNewDevices.getValue());
+		}
+
+		Attr autoAssignSite = element.getAttributeNode("autoAssignSite");
+		if (autoAssignSite != null) {
+			manager.addPropertyValue("autoAssignSite", autoAssignSite.getValue());
+		}
+
+		Attr autoAssignToken = element.getAttributeNode("autoAssignToken");
+		if (autoAssignToken != null) {
+			manager.addPropertyValue("autoAssignToken", autoAssignToken.getValue());
+		}
+
+		return manager.getBeanDefinition();
 	}
 
 	/**
@@ -66,6 +101,9 @@ public class RegistrationParser {
 	 * @author Derek
 	 */
 	public static enum Elements {
+
+		/** Default registration manager */
+		DefaultRegistrationManager("default-registration-manager"),
 
 		/** Registration manager reference */
 		RegistrationManager("registration-manager");

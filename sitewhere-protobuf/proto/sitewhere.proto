@@ -78,7 +78,7 @@ message Device {
 
 	// Enumeration of registation state responses.
 	enum RegistrationAckState {NEW_REGISTRATION = 1; ALREADY_REGISTERED = 2; REGISTRATION_ERROR = 3;} 
-	enum RegistrationAckError {INVALID_SPECIFICATION = 1; SITE_TOKEN_REQUIRED = 2; } 
+	enum RegistrationAckError {INVALID_SPECIFICATION = 1; SITE_TOKEN_REQUIRED = 2; NEW_DEVICES_NOT_ALLOWED = 3;} 
 
 	// Acknowledges registration.
 	message RegistrationAck {

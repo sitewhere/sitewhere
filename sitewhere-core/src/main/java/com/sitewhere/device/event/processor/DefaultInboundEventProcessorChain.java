@@ -77,7 +77,7 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 			try {
 				processor.onRegistrationRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
-				LOGGER.error(e);
+				LOGGER.error("Processor failed to process registration request.", e);
 			}
 		}
 	}
@@ -96,7 +96,7 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 			try {
 				processor.onDeviceCommandResponseRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
-				LOGGER.error(e);
+				LOGGER.error("Processor failed to process command response request.", e);
 			}
 		}
 	}
@@ -115,7 +115,7 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 			try {
 				processor.onDeviceMeasurementsCreateRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
-				LOGGER.error(e);
+				LOGGER.error("Processor failed to process measurements create request.", e);
 			}
 		}
 	}
@@ -134,7 +134,7 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 			try {
 				processor.onDeviceLocationCreateRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
-				LOGGER.error(e);
+				LOGGER.error("Processor failed to process location create request.", e);
 			}
 		}
 	}
@@ -153,7 +153,7 @@ public class DefaultInboundEventProcessorChain implements IInboundEventProcessor
 			try {
 				processor.onDeviceAlertCreateRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
-				LOGGER.error(e);
+				LOGGER.error("Processor failed to process alert create request.", e);
 			}
 		}
 	}
