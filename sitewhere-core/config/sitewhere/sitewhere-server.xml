@@ -58,8 +58,6 @@
 					topic="SiteWhere/input/jsonbatch">
 					<sw:json-event-decoder/>
 				</sw:mqtt-event-source>
-
-				<sw:event-source ref="socketEventSource"/>
 			</sw:event-sources>
 			
 			<!-- Device registration -->
@@ -72,8 +70,6 @@
 				<sw:specification-mapping-router>
 					<sw:mapping specification="417b36a8-21ef-4196-a8fe-cc756f994d0b"
 						destination="default"/>
-					<sw:mapping specification="fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910"
-						destination="laipac"/>
 				</sw:specification-mapping-router>
 			</sw:command-routing>
 			
@@ -87,13 +83,6 @@
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>
-				
-				<!-- Delivers commands via Twilio SMS messages -->
-				<sw:twilio-command-destination destinationId="laipac"
-					accountSid="${twilio.account.sid}" authToken="${twilio.auth.token}" fromPhoneNumber="${twilio.from.phone.number}">
-					<sw:command-encoder ref="laipacEncoder"/>
-					<sw:parameter-extractor ref="laipacExtractor"/>
-				</sw:twilio-command-destination>
 
 			</sw:command-destinations>
 
@@ -171,23 +160,6 @@
 	<!-- # DEVICE PROVISIONING # -->
 	<!-- ####################### -->
 
-	<!-- SOCKET EVENT DEBUGGING -->
-
-	<!-- Device event receiver that pulls event data from a server socket -->
-	<bean id="laipacReceiver" class="com.sitewhere.ee.devices.laipac.LaipacEventReceiver">
-		<property name="port" value="8484"/>
-		<property name="numThreads" value="5"/>
-	</bean>
-
-	<!-- Device event source for debugging socket requests -->
-	<bean id="socketEventSource" class="com.sitewhere.ee.devices.laipac.LaipacEventSource">
-		<property name="inboundEventReceivers">
-			<list>
-				<ref bean="laipacReceiver"/>
-			</list>
-		</property>
-	</bean>
-
 	<!-- REGISTRATION -->
 
 	<!-- Manages registration of new devices in the system -->
@@ -195,14 +167,6 @@
 		<property name="allowNewDevices" value="true"/>
 		<property name="autoAssignSite" value="true"/>
 	</bean>
-
-	<!-- OUTBOUND PROCESSING -->
-
-	<!-- Encodes Laipac device commands into SMS messages -->
-	<bean id="laipacEncoder" class="com.sitewhere.ee.devices.laipac.LaipacCommandEncoder"/>
-
-	<!-- Extracts SMS parameters for Laipac devices -->
-	<bean id="laipacExtractor" class="com.sitewhere.ee.devices.laipac.LaipacSmsParameterExtractor"/>
 
 	<!-- ############################# -->
 	<!-- # EXTERNAL SEARCH PROVIDERS # -->
