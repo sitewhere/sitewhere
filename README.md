@@ -26,9 +26,9 @@ Navigate to the newly created directory and execute:
     mvn clean install
 
 After the build completes, a file named **sitewhere.war** should have been created in the **deploy** folder. This archive can be copied to the sitewhere server **webapps** directory to execute the updated code. Note that the web archive has external dependencies and will not run on an unmodified
-Tomcat instance, so using a compatible SiteWhere server release is the preferred approach. For more details, see the following page:
+Tomcat instance, so using a compatible SiteWhere server release is the preferred approach. For more details, see the 
+[installation guide] (http://docs.sitewhere.org/current/userguide/installation.html#using-an-existing-tomcat-instance).
 
-	http://docs.sitewhere.org/current/userguide/installation.html#using-an-existing-tomcat-instance
 
 * * * *
 
