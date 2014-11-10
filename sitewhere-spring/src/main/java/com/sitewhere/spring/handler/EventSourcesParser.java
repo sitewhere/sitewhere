@@ -115,13 +115,10 @@ public class EventSourcesParser {
 		source.addPropertyValue("inboundEventReceivers", list);
 
 		// Add decoder reference.
-		boolean hadDecoder = false;
-		List<Element> children = DomUtils.getChildElements(element);
-		for (Element child : children) {
-			hadDecoder = hadDecoder || parseBinaryDecoder(child, context, source);
-		}
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException("No event decoder specified for event source: " + element.toString());
+			throw new RuntimeException("No event decoder specified for MQTT event source: "
+					+ element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -135,38 +132,41 @@ public class EventSourcesParser {
 	 * @param source
 	 * @return
 	 */
-	protected boolean parseBinaryDecoder(Element decoder, ParserContext context, BeanDefinitionBuilder source) {
-		if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(decoder.getNamespaceURI())) {
-			NamespaceHandler nested =
-					context.getReaderContext().getNamespaceHandlerResolver().resolve(
-							decoder.getNamespaceURI());
-			if (nested != null) {
-				BeanDefinition decoderBean = nested.parse(decoder, context);
-				String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
-				context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
-				return true;
-			} else {
-				throw new RuntimeException("Invalid nested element found in event source: "
-						+ decoder.toString());
+	protected boolean parseBinaryDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
+		List<Element> children = DomUtils.getChildElements(parent);
+		for (Element child : children) {
+			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+				NamespaceHandler nested =
+						context.getReaderContext().getNamespaceHandlerResolver().resolve(
+								child.getNamespaceURI());
+				if (nested != null) {
+					BeanDefinition decoderBean = nested.parse(child, context);
+					String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
+					context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
+					source.addPropertyReference("deviceEventDecoder", decoderName);
+					return true;
+				} else {
+					continue;
+				}
 			}
-		}
-		BinaryDecoders type = BinaryDecoders.getByLocalName(decoder.getLocalName());
-		if (type == null) {
-			return false;
-		}
-		switch (type) {
-		case ProtobufDecoder: {
-			parseProtobufDecoder(decoder, context, source);
-			return true;
-		}
-		case JsonDecoder: {
-			parseJsonDecoder(decoder, context, source);
-			return true;
-		}
-		case EventDecoder: {
-			parseDecoderRef(decoder, context, source);
-			return true;
-		}
+			BinaryDecoders type = BinaryDecoders.getByLocalName(child.getLocalName());
+			if (type == null) {
+				return false;
+			}
+			switch (type) {
+			case ProtobufDecoder: {
+				parseProtobufDecoder(child, context, source);
+				return true;
+			}
+			case JsonDecoder: {
+				parseJsonDecoder(child, context, source);
+				return true;
+			}
+			case EventDecoder: {
+				parseDecoderRef(child, context, source);
+				return true;
+			}
+			}
 		}
 		return false;
 	}

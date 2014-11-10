@@ -532,16 +532,54 @@
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for command encoders to allow substitutionGroups -->
+	<xsd:element name="abstract-command-encoder" abstract="true"
+		type="abstractCommandEncoderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for command encoder elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common command encoder information -->
+	<xsd:complexType name="abstractCommandEncoderType"/>
+	
+	<!-- Reference to a command encoder defined as a Spring bean -->
+	<xsd:element name="command-encoder" type="commandEncoderReferenceType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>References a command encoder defined in an external bean</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="commandEncoderReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Encodes commands using standard SiteWhere Google Protocol Buffer naming convention -->
+	<xsd:element name="protobuf-command-encoder" type="swProtobufCommandEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that encodes commands based on standard SiteWhere
+				Google Protocol Buffer naming convention.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swProtobufCommandEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Command destination that delivers commands via MQTT -->
 	<xsd:complexType name="mqttCommandDestinationType">
 		<xsd:sequence>
-			<xsd:element name="encoder" type="commandExecutionEncoderReferenceType">
-				<xsd:annotation>
-					<xsd:documentation>
-						References a custom command execution encoder implementation.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element ref="abstract-command-encoder"/>
 			<xsd:choice minOccurs="0">
 				<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
 					<xsd:annotation>
@@ -576,13 +614,7 @@
 	<!-- Command destination that delivers commands via Twilio SMS message -->
 	<xsd:complexType name="twilioCommandDestinationType">
 		<xsd:sequence>
-			<xsd:element name="encoder" type="commandExecutionEncoderReferenceType">
-				<xsd:annotation>
-					<xsd:documentation>
-						References a custom command execution encoder implementation.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element ref="abstract-command-encoder"/>
 			<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
 				<xsd:annotation>
 					<xsd:documentation>

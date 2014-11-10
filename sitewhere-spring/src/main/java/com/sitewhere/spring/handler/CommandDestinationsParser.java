@@ -9,11 +9,13 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
@@ -98,7 +100,10 @@ public class CommandDestinationsParser {
 		addCommonAttributes(mqtt, element, context);
 
 		// Add encoder reference.
-		addEncoderReference(mqtt, element, context);
+		if (!parseBinaryCommandEncoder(element, context, mqtt)) {
+			throw new RuntimeException(
+					"Command encoder required for MQTT command destination but was not specified.");
+		}
 
 		// Add MQTT command delivery provider bean.
 		AbstractBeanDefinition delivery = createMqttDeliveryProvider(element);
@@ -152,7 +157,10 @@ public class CommandDestinationsParser {
 		addCommonAttributes(sms, element, context);
 
 		// Add encoder reference.
-		addEncoderReference(sms, element, context);
+		if (!parseBinaryCommandEncoder(element, context, sms)) {
+			throw new RuntimeException(
+					"Command encoder required for Twilio command destination but was not specified.");
+		}
 
 		// Add Twilio command delivery provider bean.
 		AbstractBeanDefinition twilioDef = createTwilioDeliveryProvider(element);
@@ -215,22 +223,79 @@ public class CommandDestinationsParser {
 	}
 
 	/**
-	 * Add encoder reference.
+	 * Locate a command encoder element and register it with the command destination.
 	 * 
-	 * @param builder
-	 * @param element
+	 * @param decoder
 	 * @param context
+	 * @param source
+	 * @return
 	 */
-	protected void addEncoderReference(BeanDefinitionBuilder builder, Element element, ParserContext context) {
-		Element encoder = DomUtils.getChildElementByTagName(element, "encoder");
-		if (encoder == null) {
-			throw new RuntimeException("Command encoder required but not specified.");
+	protected boolean parseBinaryCommandEncoder(Element parent, ParserContext context,
+			BeanDefinitionBuilder destination) {
+		List<Element> children = DomUtils.getChildElements(parent);
+		for (Element child : children) {
+			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+				NamespaceHandler nested =
+						context.getReaderContext().getNamespaceHandlerResolver().resolve(
+								child.getNamespaceURI());
+				if (nested != null) {
+					BeanDefinition decoderBean = nested.parse(child, context);
+					String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
+					context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
+					destination.addPropertyReference("commandExecutionEncoder", decoderName);
+					return true;
+				} else {
+					continue;
+				}
+			}
+			BinaryCommandEncoders type = BinaryCommandEncoders.getByLocalName(child.getLocalName());
+			if (type == null) {
+				return false;
+			}
+			switch (type) {
+			case ProtobufEncoder: {
+				parseProtobufCommandEncoder(child, context, destination);
+				return true;
+			}
+			case CommandEncoder: {
+				parseEncoderRef(child, context, destination);
+				return true;
+			}
+			}
 		}
-		Attr ref = encoder.getAttributeNode("ref");
-		if (ref == null) {
-			throw new RuntimeException("Command encoder ref required but not specified.");
+		return false;
+	}
+
+	/**
+	 * Parse definition of SiteWhere GPB command encoder.
+	 * 
+	 * @param encoder
+	 * @param context
+	 * @param destination
+	 */
+	protected void parseProtobufCommandEncoder(Element encoder, ParserContext context,
+			BeanDefinitionBuilder destination) {
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder");
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		destination.addPropertyReference("commandExecutionEncoder", name);
+	}
+
+	/**
+	 * Parse reference to a command encoder defined in an external bean.
+	 * 
+	 * @param encoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseEncoderRef(Element encoder, ParserContext context, BeanDefinitionBuilder source) {
+		Attr encoderRef = encoder.getAttributeNode("ref");
+		if (encoderRef == null) {
+			throw new RuntimeException("Command encoder 'ref' attribute is required.");
 		}
-		builder.addPropertyReference("commandExecutionEncoder", ref.getValue());
+		source.addPropertyReference("deviceEventDecoder", encoderRef.getValue());
 	}
 
 	/**
@@ -314,6 +379,44 @@ public class CommandDestinationsParser {
 
 		public static Elements getByLocalName(String localName) {
 			for (Elements value : Elements.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
+
+	/**
+	 * Enumeration of binary command encoders.
+	 * 
+	 * @author Derek
+	 */
+	public static enum BinaryCommandEncoders {
+
+		/** Encodes commands with standard SiteWhere GPB naming convention */
+		ProtobufEncoder("protobuf-command-encoder"),
+
+		/** Reference to externally defined event decoder */
+		CommandEncoder("command-encoder");
+
+		/** Event code */
+		private String localName;
+
+		private BinaryCommandEncoders(String localName) {
+			this.localName = localName;
+		}
+
+		public static BinaryCommandEncoders getByLocalName(String localName) {
+			for (BinaryCommandEncoders value : BinaryCommandEncoders.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}
