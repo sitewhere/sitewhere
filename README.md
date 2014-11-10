@@ -32,4 +32,4 @@ Tomcat instance, so using a compatible SiteWhere server release is the preferred
 
 * * * *
 
-Copyright (c) 2014, [Reveal Technologies](http://www.reveal-tech.com), LLC. All rights reserved.
+Copyright (c) 2009-2014, [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.
