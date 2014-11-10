@@ -1,7 +1,7 @@
 ![SiteWhere] (http://www.sitewhere.org/sites/default/files/sitewhere.png)
 
-SiteWhere Open Source M2M Integration Platform
-----------------------------------------------
+SiteWhere : The Open Platform for the Internet of Things™
+---------------------------------------------------------
 
 #### SiteWhere is an open source platform for storing, processing, and analyzing M2M device data. ####
 
@@ -25,7 +25,10 @@ Navigate to the newly created directory and execute:
 
     mvn clean install
 
-After the build completes, a file named **sitewhere.war** should have been created in the **deploy** folder. This archive can be copied to the sitewhere server **webapps** directory to execute the updated code.
+After the build completes, a file named **sitewhere.war** should have been created in the **deploy** folder. This archive can be copied to the sitewhere server **webapps** directory to execute the updated code. Note that the web archive has external dependencies and will not run on an unmodified
+Tomcat instance, so using a compatible SiteWhere server release is the preferred approach. For more details, see the following page:
+
+	http://docs.sitewhere.org/current/userguide/installation.html#using-an-existing-tomcat-instance
 
 * * * *
 
