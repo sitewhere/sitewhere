@@ -288,14 +288,14 @@ public class CommandDestinationsParser {
 	 * 
 	 * @param encoder
 	 * @param context
-	 * @param source
+	 * @param destination
 	 */
-	protected void parseEncoderRef(Element encoder, ParserContext context, BeanDefinitionBuilder source) {
+	protected void parseEncoderRef(Element encoder, ParserContext context, BeanDefinitionBuilder destination) {
 		Attr encoderRef = encoder.getAttributeNode("ref");
 		if (encoderRef == null) {
 			throw new RuntimeException("Command encoder 'ref' attribute is required.");
 		}
-		source.addPropertyReference("deviceEventDecoder", encoderRef.getValue());
+		destination.addPropertyReference("commandExecutionEncoder", encoderRef.getValue());
 	}
 
 	/**
