@@ -9,17 +9,20 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.provisioning.BinaryInboundEventSource;
+import com.sitewhere.device.provisioning.json.JsonBatchEventDecoder;
 import com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 
@@ -44,6 +47,18 @@ public class EventSourcesParser {
 		ManagedList<Object> result = new ManagedList<Object>();
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
+			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+				NamespaceHandler nested =
+						context.getReaderContext().getNamespaceHandlerResolver().resolve(
+								child.getNamespaceURI());
+				if (nested != null) {
+					nested.parse(child, context);
+					continue;
+				} else {
+					throw new RuntimeException("Invalid nested element found in 'event-sources' section: "
+							+ child.toString());
+				}
+			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
 				throw new RuntimeException("Unknown event source element: " + child.getLocalName());
@@ -100,17 +115,106 @@ public class EventSourcesParser {
 		source.addPropertyValue("inboundEventReceivers", list);
 
 		// Add decoder reference.
-		Element decoder = DomUtils.getChildElementByTagName(element, "decoder");
-		if (decoder == null) {
-			throw new RuntimeException("Command decoder required but not specified.");
+		boolean hadDecoder = false;
+		List<Element> children = DomUtils.getChildElements(element);
+		for (Element child : children) {
+			hadDecoder = hadDecoder || parseBinaryDecoder(child, context, source);
 		}
-		Attr decoderRef = decoder.getAttributeNode("ref");
-		if (decoderRef == null) {
-			throw new RuntimeException("Command decoder ref required but not specified.");
+		if (!hadDecoder) {
+			throw new RuntimeException("No event decoder specified for event source: " + element.toString());
 		}
-		source.addPropertyReference("deviceEventDecoder", decoderRef.getValue());
 
 		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Parse a binary decoder from the list of possibilities.
+	 * 
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 * @return
+	 */
+	protected boolean parseBinaryDecoder(Element decoder, ParserContext context, BeanDefinitionBuilder source) {
+		if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(decoder.getNamespaceURI())) {
+			NamespaceHandler nested =
+					context.getReaderContext().getNamespaceHandlerResolver().resolve(
+							decoder.getNamespaceURI());
+			if (nested != null) {
+				BeanDefinition decoderBean = nested.parse(decoder, context);
+				String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
+				context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
+				return true;
+			} else {
+				throw new RuntimeException("Invalid nested element found in event source: "
+						+ decoder.toString());
+			}
+		}
+		BinaryDecoders type = BinaryDecoders.getByLocalName(decoder.getLocalName());
+		if (type == null) {
+			return false;
+		}
+		switch (type) {
+		case ProtobufDecoder: {
+			parseProtobufDecoder(decoder, context, source);
+			return true;
+		}
+		case JsonDecoder: {
+			parseJsonDecoder(decoder, context, source);
+			return true;
+		}
+		case EventDecoder: {
+			parseDecoderRef(decoder, context, source);
+			return true;
+		}
+		}
+		return false;
+	}
+
+	/**
+	 * Create parser for SiteWhere Google Protocol Buffer format.
+	 * 
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseProtobufDecoder(Element decoder, ParserContext context, BeanDefinitionBuilder source) {
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder");
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("deviceEventDecoder", name);
+	}
+
+	/**
+	 * Create parser for SiteWhere Google Protocol Buffer format.
+	 * 
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseJsonDecoder(Element decoder, ParserContext context, BeanDefinitionBuilder source) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonBatchEventDecoder.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("deviceEventDecoder", name);
+	}
+
+	/**
+	 * Create parser for SiteWhere Google Protocol Buffer format.
+	 * 
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseDecoderRef(Element decoder, ParserContext context, BeanDefinitionBuilder source) {
+		Attr decoderRef = decoder.getAttributeNode("ref");
+		if (decoderRef == null) {
+			throw new RuntimeException("Event decoder 'ref' attribute is required.");
+		}
+		source.addPropertyReference("deviceEventDecoder", decoderRef.getValue());
 	}
 
 	/**
@@ -165,6 +269,47 @@ public class EventSourcesParser {
 
 		public static Elements getByLocalName(String localName) {
 			for (Elements value : Elements.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
+
+	/**
+	 * Expected binary decoder elements.
+	 * 
+	 * @author Derek
+	 */
+	public static enum BinaryDecoders {
+
+		/** SiteWhere Google Protocol Buffer decoder */
+		ProtobufDecoder("protobuf-event-decoder"),
+
+		/** SiteWhere JSON batch decoder */
+		JsonDecoder("json-event-decoder"),
+
+		/** Reference to externally defined event decoder */
+		EventDecoder("event-decoder");
+
+		/** Event code */
+		private String localName;
+
+		private BinaryDecoders(String localName) {
+			this.localName = localName;
+		}
+
+		public static BinaryDecoders getByLocalName(String localName) {
+			for (BinaryDecoders value : BinaryDecoders.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}

@@ -101,6 +101,10 @@
 	<!-- Configuration data for a MongoDB datastore -->
 	<xsd:element name="mongo-datastore" type="mongoDatastoreType"
 		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>Datastore that uses MongoDB for data persistence.
+			</xsd:documentation>
+		</xsd:annotation>
 	</xsd:element>
 	<xsd:complexType name="mongoDatastoreType">
 		<xsd:complexContent>
@@ -114,7 +118,12 @@
 	
 	<!-- Configuration data for an HBase datastore -->
 	<xsd:element name="hbase-datastore" type="hbaseDatastoreType"
-		substitutionGroup="abstract-datastore"/>
+		substitutionGroup="abstract-datastore">
+		<xsd:annotation>
+			<xsd:documentation>Datastore that uses Apache HBase for data persistence.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
 	<xsd:complexType name="hbaseDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
@@ -137,7 +146,13 @@
 
 	<!-- Configuration data for EHCache cache provider -->
 	<xsd:element name="ehcache-device-management-cache" type="ehcacheDeviceManagementCacheType"
-		substitutionGroup="abstract-cache"/>
+		substitutionGroup="abstract-cache">
+		<xsd:annotation>
+			<xsd:documentation>Device management cache that uses Ehcache for the underlying cache
+				mechanism.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
 	<xsd:complexType name="ehcacheDeviceManagementCacheType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractCacheType">
@@ -281,8 +296,8 @@
 			<xsd:element name="command-routing" type="commandRoutingType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Command routing determines which agent is used for processing a
-						given command invocation.
+						Command routing determines which destination is used for
+						processing a given command invocation.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -300,48 +315,113 @@
 	<!-- Contains information about inbound event sources -->
 	<xsd:complexType name="eventSourcesType">
 		<xsd:sequence>
-			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element name="event-source" type="eventSourceReferenceType">
-					<xsd:annotation>
-						<xsd:documentation>
-							References a custom event source implementation.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element name="mqtt-event-source" type="mqttEventSourceType">
-					<xsd:annotation>
-						<xsd:documentation>
-							Event source that pulls messages from a single MQTT event
-							reciever and decodes them.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-			</xsd:choice>
+			<xsd:element ref="abstract-event-source" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for decoders to allow substitutionGroups -->
+	<xsd:element name="abstract-decoder" abstract="true" type="abstractDecoderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for decoder elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common decoder information -->
+	<xsd:complexType name="abstractDecoderType"/>
+	
+	<!-- Reference to an event decoder defined as a Spring bean -->
+	<xsd:element name="event-decoder" type="eventDecoderReferenceType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>References a decoder defined in an external bean</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="eventDecoderReferenceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Decode using the standard SiteWhere Google Protocol Buffer definition -->
+	<xsd:element name="protobuf-event-decoder" type="swProtobufDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder that expects a message in the SiteWhere Google Protocol
+				Buffer format.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swProtobufDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Decode using the standard SiteWhere JSON representation -->
+	<xsd:element name="json-event-decoder" type="swJsonDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder that expects a message in the SiteWhere JSON batch format.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swJsonDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for event sources to allow substitutionGroups -->
+	<xsd:element name="abstract-event-source" abstract="true" type="abstractEventSourceType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for event source elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common event source information -->
+	<xsd:complexType name="abstractEventSourceType"/>
+
 	<!-- Reference to an event source defined in Spring beans -->
+	<xsd:element name="event-source" type="eventSourceReferenceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source defined externally as a Spring bean</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
 	<xsd:complexType name="eventSourceReferenceType">
-		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Event source that pulls binary information from an MQTT topic and decodes it -->
+	<xsd:element name="mqtt-event-source" type="mqttEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls binary information from an MQTT topic and
+				decodes it
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
 	<xsd:complexType name="mqttEventSourceType">
-		<xsd:sequence>
-			<xsd:element name="decoder" type="eventDecoderReferenceType">
-				<xsd:annotation>
-					<xsd:documentation>
-						References a custom event decoder implementation.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
-		<xsd:attributeGroup ref="mqtt-inbound-attributes"/>
-	</xsd:complexType>
-
-	<!-- Reference to an event decoder defined as a Spring bean -->
-	<xsd:complexType name="eventDecoderReferenceType">
-		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="mqtt-inbound-attributes"/>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 	
 	<!-- Attributes used for inbound MQTT processing -->
@@ -382,8 +462,8 @@
 				<xsd:element name="specification-mapping-router" type="specificationMappingRouterType">
 					<xsd:annotation>
 						<xsd:documentation>
-							Command router that distributes commands to agents based on a
-							mapping of specification token to command agent id.
+							Command router that distributes commands to destinations based on
+							a mapping of specification token to command agent id.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
@@ -401,7 +481,7 @@
 				minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation>
-						Mapping of a specification token to an agent id.
+						Mapping of a specification token to a destination id.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
