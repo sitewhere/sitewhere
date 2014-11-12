@@ -107,6 +107,14 @@ public class EventSourcesParser {
 		BeanDefinitionBuilder source =
 				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
+		// Verify that a sourceId was provided and set it on the bean.
+		Attr sourceId = element.getAttributeNode("sourceId");
+		if (sourceId == null) {
+			throw new RuntimeException("No 'sourceId' attribute specified for event source: "
+					+ element.toString());
+		}
+		source.addPropertyValue("sourceId", sourceId.getValue());
+
 		// Create MQTT event receiver bean and register it.
 		AbstractBeanDefinition receiver = createMqttEventReceiver(element);
 		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());

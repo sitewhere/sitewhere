@@ -20,6 +20,13 @@ import com.sitewhere.spi.ISiteWhereLifecycle;
 public interface IInboundEventSource<T> extends ISiteWhereLifecycle {
 
 	/**
+	 * Get unique id for event source.
+	 * 
+	 * @return
+	 */
+	public String getSourceId();
+
+	/**
 	 * Set the device event decoder.
 	 * 
 	 * @param decoder

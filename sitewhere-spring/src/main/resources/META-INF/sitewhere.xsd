@@ -388,6 +388,17 @@
 	
 	<!-- Common event source information -->
 	<xsd:complexType name="abstractEventSourceType"/>
+	
+	<!-- Attributes common to all event sources -->
+	<xsd:attributeGroup name="event-source-attributes">
+		<xsd:attribute name="sourceId" type="xsd:token" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique identifier for event source.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
 
 	<!-- Reference to an event source defined in Spring beans -->
 	<xsd:element name="event-source" type="eventSourceReferenceType"
@@ -419,6 +430,7 @@
 				<xsd:sequence>
 					<xsd:element ref="abstract-decoder"/>
 				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
 				<xsd:attributeGroup ref="mqtt-inbound-attributes"/>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -426,9 +438,27 @@
 	
 	<!-- Attributes used for inbound MQTT processing -->
 	<xsd:attributeGroup name="mqtt-inbound-attributes">
-		<xsd:attribute name="hostname" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="port" type="xsd:int"></xsd:attribute>
-		<xsd:attribute name="topic" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="hostname" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker hostname.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="xsd:int">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT broker port.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="topic" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT topic used to deliver inbound events.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:attributeGroup>
 
 	<xsd:complexType name="registrationType">
@@ -474,7 +504,8 @@
 		<xsd:attribute name="autoAssignToken" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>Token for site used in auto assignment. If not set and
-					'autoAssignSite' is set to true, the first site will be used.</xsd:documentation>
+					'autoAssignSite' is set to true, the first site will be used.
+				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:complexType>
@@ -554,7 +585,13 @@
 	
 	<!-- Attributes common to all command destinations -->
 	<xsd:attributeGroup name="command-destination-attributes">
-		<xsd:attribute name="destinationId" type="xsd:string"></xsd:attribute>
+		<xsd:attribute name="destinationId" type="xsd:token" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique identifier for command destination.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:attributeGroup>
 
 	<!-- References command destination defined in a Spring bean -->

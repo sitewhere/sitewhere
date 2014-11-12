@@ -39,6 +39,9 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(InboundEventSource.class);
 
+	/** Unique id for referencing source */
+	private String sourceId;
+
 	/** Device event decoder */
 	private IDeviceEventDecoder<T> deviceEventDecoder;
 
@@ -146,6 +149,19 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 	@Override
 	public void stop() throws SiteWhereException {
 		LOGGER.info("Stopped inbound event source.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventSource#getSourceId()
+	 */
+	public String getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(String sourceId) {
+		this.sourceId = sourceId;
 	}
 
 	/*
