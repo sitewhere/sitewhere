@@ -14,6 +14,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
@@ -72,6 +74,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new device")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDevice createDevice(@RequestBody DeviceCreateRequest request) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDevice", LOGGER);
 		try {
@@ -94,6 +97,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/{hardwareId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a device by unique hardware id")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDevice getDeviceByHardwareId(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(defaultValue = "true") boolean includeSpecification,
@@ -128,6 +132,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/{hardwareId}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update device information")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDevice updateDevice(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceCreateRequest request) throws SiteWhereException {
@@ -152,6 +157,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/{hardwareId}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete a device based on unique hardware id")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDevice deleteDevice(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
@@ -178,6 +184,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/{hardwareId}/assignment", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get the current assignment for a device")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceAssignment getDeviceCurrentAssignment(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
@@ -213,6 +220,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/{hardwareId}/assignments", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get assignment history for a device")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceAssignment> listDeviceAssignmentHistory(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
@@ -250,6 +258,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new device element mapping")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDevice addDeviceElementMapping(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceElementMapping request) throws SiteWhereException {
@@ -270,6 +279,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete an existing device element mapping")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDevice deleteDeviceElementMapping(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path)
@@ -296,6 +306,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List devices that match certain criteria")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDevice> listDevices(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(defaultValue = "false") boolean includeSpecification,
@@ -333,6 +344,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/{hardwareId}/batch", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Send a batch of events for the current assignment of the given device.")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceEventBatchResponse addDeviceEventBatch(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceEventBatch batch) throws SiteWhereException {
@@ -376,6 +388,7 @@ public class DevicesController extends SiteWhereController {
 	@RequestMapping(value = "/unassigned", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List devices that are not currently assigned")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDevice> listUnassignedDevices(
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)

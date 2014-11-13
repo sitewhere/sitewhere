@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 import com.sitewhere.device.provisioning.protobuf.SpecificationProtoBuilder;
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
@@ -72,6 +74,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new device specification")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceSpecification createDeviceSpecification(
 			@RequestBody DeviceSpecificationCreateRequest request) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDeviceSpecification", LOGGER);
@@ -102,6 +105,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a device specification by unique token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceSpecification getDeviceSpecificationByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset)
@@ -126,6 +130,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/proto", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a device specification by unique token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public String getDeviceSpecificationProtoByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletResponse response) throws SiteWhereException {
@@ -149,6 +154,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/spec.proto", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a device specification by unique token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ResponseEntity<byte[]> getDeviceSpecificationProtoFileByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletResponse response) throws SiteWhereException {
@@ -178,6 +184,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update device specification information")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceSpecification updateDeviceSpecification(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceSpecificationCreateRequest request) throws SiteWhereException {
@@ -206,6 +213,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List device specifications that match certain criteria")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
@@ -246,6 +254,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete a device specification based on token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceSpecification deleteDeviceSpecification(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
@@ -271,6 +280,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/commands", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new device command for a specification.")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommand createDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
@@ -288,6 +298,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/commands", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List device commands for a specification")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceCommand> listDeviceCommands(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted)
@@ -321,6 +332,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/namespaces", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List device command namespaces for a specification")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceCommandNamespace> listDeviceCommandsByNamespace(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted)

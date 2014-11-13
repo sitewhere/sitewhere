@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
@@ -53,6 +55,7 @@ public class InvocationsController extends SiteWhereController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get device command invocation by unique id.")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommandInvocation getDeviceCommandInvocation(
 			@ApiParam(value = "Unique id", required = true) @PathVariable String id)
 			throws SiteWhereException {
@@ -79,6 +82,7 @@ public class InvocationsController extends SiteWhereController {
 	@RequestMapping(value = "/{id}/summary", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get device command invocation summary by unique id.")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
 			@ApiParam(value = "Unique id", required = true) @PathVariable String id)
 			throws SiteWhereException {
@@ -111,6 +115,7 @@ public class InvocationsController extends SiteWhereController {
 	@RequestMapping(value = "/{id}/responses", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List all responses for a device command invocation.")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(
 			@ApiParam(value = "Invocation id", required = true) @PathVariable String id)
 			throws SiteWhereException {

@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -43,6 +45,7 @@ public class ZonesController extends SiteWhereController {
 	@RequestMapping(value = "/{zoneToken}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get zone by unique token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public Zone getZone(
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken)
 			throws SiteWhereException {
@@ -65,6 +68,7 @@ public class ZonesController extends SiteWhereController {
 	@RequestMapping(value = "/{zoneToken}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update an existing zone")
+	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
 	public Zone updateZone(
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 			@RequestBody ZoneCreateRequest request) throws SiteWhereException {
@@ -87,6 +91,7 @@ public class ZonesController extends SiteWhereController {
 	@RequestMapping(value = "/{zoneToken}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete zone based on unique token")
+	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
 	public Zone deleteZone(
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)

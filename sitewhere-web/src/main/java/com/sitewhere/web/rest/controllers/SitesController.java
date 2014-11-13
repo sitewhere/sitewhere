@@ -104,6 +104,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a site by unique token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public Site getSiteByToken(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken)
 			throws SiteWhereException {
@@ -176,6 +177,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List all sites")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<ISite> listSites(
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
@@ -200,6 +202,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/measurements", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List measurements associated with a site")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
@@ -238,6 +241,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/locations", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List locations associated with a site")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
@@ -276,6 +280,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/alerts", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List alerts associated with a site")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
@@ -313,6 +318,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/invocations", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List command invocations associated with a site")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
@@ -351,6 +357,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/responses", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List command responses associated with a site")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
@@ -389,6 +396,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/statechanges", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List state changes associated with a site")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
@@ -426,6 +434,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/assignments", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List device assignments associated with a site")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<DeviceAssignment> findAssignmentsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
@@ -464,6 +473,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new zone associated with a site")
+	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
 	public Zone createZone(
 			@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
 			@RequestBody ZoneCreateRequest request) throws SiteWhereException {
@@ -489,6 +499,7 @@ public class SitesController extends SiteWhereController {
 	@RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List zones associated with a site")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IZone> listZonesForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,

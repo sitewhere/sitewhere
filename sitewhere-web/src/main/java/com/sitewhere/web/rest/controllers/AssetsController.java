@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -58,6 +60,7 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Search hardware assets")
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public SearchResults<? extends IAsset> searchAssets(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria)
@@ -81,6 +84,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/{assetModuleId}/{assetId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Find hardware asset by unique id")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IAsset getAssetById(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
@@ -101,6 +105,7 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/modules", method = RequestMethod.GET)
 	@ResponseBody
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public List<AssetModule> listAssetModules() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listAssetModules", LOGGER);
 		try {
@@ -123,6 +128,7 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/modules/devices", method = RequestMethod.GET)
 	@ResponseBody
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public List<AssetModule> listDeviceAssetModules() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceAssetModules", LOGGER);
 		try {
@@ -147,6 +153,7 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/modules/refresh", method = RequestMethod.POST)
 	@ResponseBody
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public List<CommandResponse> refreshModules() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
 		try {

@@ -13,6 +13,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
@@ -60,6 +62,7 @@ public class AuthoritiesController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new authority")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createAuthority", LOGGER);
@@ -81,6 +84,7 @@ public class AuthoritiesController extends SiteWhereController {
 	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Find authority by unique name")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public GrantedAuthority getAuthorityByName(
 			@ApiParam(value = "Authority name", required = true) @PathVariable String name)
 			throws SiteWhereException {
@@ -107,6 +111,7 @@ public class AuthoritiesController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List authorities that match certain criteria")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public SearchResults<GrantedAuthority> listAuthorities(
 			@ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
 			throws SiteWhereException {

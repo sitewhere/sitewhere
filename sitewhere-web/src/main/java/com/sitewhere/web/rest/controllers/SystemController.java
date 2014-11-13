@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.cache.CacheInformation;
 import com.sitewhere.rest.model.cache.CacheSummary;
 import com.sitewhere.spi.SiteWhereException;
@@ -44,6 +46,7 @@ public class SystemController extends SiteWhereController {
 	@RequestMapping(value = "/version", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get version information")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IVersion getVersion() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getVersion", LOGGER);
 		try {
@@ -62,6 +65,7 @@ public class SystemController extends SiteWhereController {
 	@RequestMapping(value = "/cachesummary", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a summary of cache statistics")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public CacheSummary getCacheSummary() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getCacheSummary", LOGGER);
 		try {
@@ -109,6 +113,7 @@ public class SystemController extends SiteWhereController {
 	@RequestMapping(value = "/tracer", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Set tracer enablement")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public void setTracerEnablement(
 			@ApiParam(value = "Enable tracer implementation", required = false) @RequestParam(defaultValue = "true") boolean enabled)
 			throws SiteWhereException {

@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.server.debug.TracerCategory;
@@ -45,6 +47,7 @@ public class EventsController extends SiteWhereController {
 	@RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get an event by unique id.")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceEvent getEventById(
 			@ApiParam(value = "Event id", required = true) @PathVariable String eventId)
 			throws SiteWhereException {

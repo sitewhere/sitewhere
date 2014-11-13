@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -51,6 +53,7 @@ public class SearchController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get list of available search providers")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public List<ISearchProvider> listSearchProviders() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listSearchProviders", LOGGER);
 		try {
@@ -69,6 +72,7 @@ public class SearchController extends SiteWhereController {
 	@RequestMapping(value = "/{providerId}/events", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Search provider for events that match the given criteria")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public List<IDeviceEvent> searchDeviceEvents(
 			@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 			HttpServletRequest request) throws SiteWhereException {

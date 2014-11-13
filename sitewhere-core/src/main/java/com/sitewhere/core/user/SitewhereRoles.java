@@ -14,6 +14,10 @@ package com.sitewhere.core.user;
  */
 public interface SitewhereRoles {
 
+	/** Role that indicates user has been authenticated */
+	public static final String ROLE_AUTHENTICATED_USER = "ROLE_"
+			+ ISiteWhereAuthorities.AUTH_AUTHENTICATED_USER;
+
 	/** Role for site adminstration (edit/delete) */
 	public static final String ROLE_ADMINISTER_SITES = "ROLE_" + ISiteWhereAuthorities.AUTH_ADMIN_SITES;
 

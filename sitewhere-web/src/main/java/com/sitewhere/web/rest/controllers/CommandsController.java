@@ -10,6 +10,7 @@ package com.sitewhere.web.rest.controllers;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -55,6 +57,7 @@ public class CommandsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update device command information")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommand updateDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
@@ -75,6 +78,7 @@ public class CommandsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a device command by unique token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommand getDeviceCommandByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandByToken", LOGGER);
@@ -96,6 +100,7 @@ public class CommandsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete a device command based on token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommand deleteDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
