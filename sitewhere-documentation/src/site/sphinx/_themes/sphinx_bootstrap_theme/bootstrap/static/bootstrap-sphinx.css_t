@@ -87,6 +87,7 @@ ol li img {
 	padding-top: 10px;
 	margin-bottom: 15px;
 	margin-top: 15px;
+	text-decoration: underline;
 }
 
 .sw-nav-content {

@@ -1,9 +1,9 @@
-========================
- Administrative Console
-========================
+======================
+Administrative Console
+======================
 SiteWhere is distributed with an HTML5 administrative console application that provides an
 easy way to create and maintain SiteWhere data without having to do everything via the REST 
-services. The administrative console (often refered to as the admin console or admin ui) is
+services. The administrative console (often referred to as the admin console or admin ui) is
 available as part of any standalone or cloud install of SiteWhere. In a default local installation
 the admin console is accessible via:
 
@@ -57,12 +57,12 @@ the system:
    :align: left
 
 Each entry has icons on the right side that allow the given site to be edited, deleted,
-or opened. 
+or opened.
 
 Creating and Editing Sites
 --------------------------
 To create a new site, click on the **Add New Site** button at the top of the site list
-page. For an existing site, click the edit icon at the right side of the site entry.
+page. To change an existing site, click the edit icon at the right side of the site entry.
 The following sections cover information needed to create or edit a site.
 
 Edit Site - Site Details Tab
@@ -147,3 +147,142 @@ configured to use the access point.
    :alt: Edit Site - Metadata
    :align: left
 
+Managing Sites - Site Details
+-----------------------------
+From the site list page, clicking on the green arrow to the right of an entry opens
+the site detail page. This page shows the basic site information as well as a list
+of all devices assigned to the site and all associated event information.
+
+.. image:: /_static/images/userguide/site-details.png
+   :width: 100%
+   :alt: Site Details
+   :align: left
+
+Site Details - Assignments Tab
+******************************
+The **Assignments** tab contains a list of devices assigned to the site ordered with
+the most recent assignments first. Clicking on any of the assignments will open
+the assignment details page for the assignment.
+
+Site Details - Locations Tab
+****************************
+The **Locations** tab contains a list of the most recent location measurements for 
+devices assigned to the site.
+
+Site Details - Measurements Tab
+*******************************
+The **Measurements** tab contains a list of the most recent measurement values for 
+devices assigned to the site.
+
+Site Details - Alerts Tab
+*************************
+The **Alerts** tab contains a list of the most recent alerts for 
+devices assigned to the site.
+
+Site Details - Zones Tab
+************************
+The **Zones** tab contains a list of the zones defined for the site. Zones define
+geospatial areas that are of interest for a site. For more information on zones, 
+see the next section.
+
+Managing Sites - Zones
+----------------------
+Zones define geospatial areas that are of interest for a site. For instance, an
+airport may have secure zones that define areas where only authorized agents are
+allowed to enter. A site may have any number of zones and the zones may overlap.
+A zone is defined by a list of lat/long pairs that define a polygon. Zones may
+be large and complex, so there is no limit to the number of points that make up
+the boundary. In addition to the boundaries, a border color, fill color, and fill
+opacity are defined for each zone. This allows the appearance of zones to be 
+tailored and presented on map views.
+
+Creating a New Zone
+*******************
+To create a new zone, click on the **Zones** tab on the site details page and click
+the **Add New Zone** button. The zone create dialog will appear as shown below:
+
+.. image:: /_static/images/userguide/site-zone-create.png
+   :width: 100%
+   :alt: Create Zone
+   :align: left
+   
+Enter a name for the zone into the text field at the bottom of the dialog and choose
+the zone border color, fill color, and fill opacity. To add a polygon, click on the 
+polygon tool in the upper right corner, then start clicking locations on the map to
+add points. Click the first point added to complete the polygon. You can also create
+a rectangle by clicking on the rectangle tool and dragging to size the area. Click
+**Create** when you are satisfied and the zone will be created.
+
+Editing an Existing Zone
+************************
+
+To change an existing zone, click the edit icon at the right side of the zone entry
+and make the desired changes. Existing zone borders may be altered by clicking on 
+the existing points and dragging them to new locations. New border points may be 
+added by clicking between existing points to add a new point, then dragging it to
+the desired location.
+
+------------------------------
+Managing Device Specifications
+------------------------------
+Device specifications represent unique hardware configurations which may be assigned to
+devices. Two separate device specifications may use the same base platform, yet have enough
+differences in hardware or software configuration to consider them separate when defining
+devices. For instance, you may deploy devices with two configurations, one with
+a standard LED and another with an RGB LED. In this case, it makes sense to create separate
+specifications since a command **setColor()** would only make sense for the device with
+an RGB LED.
+
+Device Specifications List
+--------------------------
+
+Clicking on the **Specifications** tab in the navigation bar opens the device specifications
+list page. All existing device specifications are listed in alphabetical order as shown below:
+
+.. image:: /_static/images/userguide/spec-list.png
+   :width: 100%
+   :alt: Device Specification List
+   :align: left
+
+Each entry has icons on the right side that allow the given specification to be edited, deleted,
+or opened.
+
+Creating and Editing Device Specifications
+------------------------------------------
+To create a new specification, click on the **Add New Specification** button at the top of the list
+page. To change an existing specification, click the edit icon at the right side of the entry.
+The following sections cover information needed to create or edit a specification.
+
+Edit Device Specification - Specification Details Tab
+*****************************************************
+
+The **Specification Details** tab includes basic information about a device specification.
+
+.. image:: /_static/images/userguide/spec-edit-details.png
+   :width: 100%
+   :alt: Edit Device Specification - Specification Details
+   :align: left
+
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Specficiation Name   | Human-readable name that provides a short description  |
+|                      | of the device specification.                           |
++----------------------+--------------------------------------------------------+
+| Specification Type   | Indicates if a specification is for a standalone       |
+|                      | device or a composite device such as a gateway.        |
+|                      | Composite devices contain nested devices that may      |
+|                      | be addressed by sending messages to the parent         |
+|                      | composite device.                                      |
++----------------------+--------------------------------------------------------+
+| Asset Provider       | The asset provider that contains the asset definition  |
+|                      | for the device.                                        |
++----------------------+--------------------------------------------------------+
+| Device Type          | The asset definition as chosen from the list made      |
+|                      | available from the chosen device provider. This        |
+|                      | determines the physical hardware used by devices       |
+|                      | referencing the specification.                         |
++----------------------+--------------------------------------------------------+
+
+Edit Device Specification - Metadata Tab
+****************************************
