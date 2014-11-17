@@ -425,3 +425,89 @@ are listed with the ones most recently created at the top of the list:
    :width: 100%
    :alt: Device List
    :align: left
+
+Creating and Editing Devices
+----------------------------
+To create a new device, click on the **Add New Device** button at the top of the list
+page. To change an existing device, click the edit icon at the right side of the entry.
+The following sections cover information needed to create or edit a device.
+
+Edit Device - Device Details Tab
+********************************
+The **Device Details** tab includes basic information about a device.
+
+.. image:: /_static/images/userguide/device-edit-details.png
+   :width: 100%
+   :alt: Edit Device - Device Details
+   :align: left
+
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Hardware Id          | Unique hardware identifier for the device. The         |
+|                      | identifier can be any string value.                    |
++----------------------+--------------------------------------------------------+
+| Comments             | Extra information about the device.                    |
++----------------------+--------------------------------------------------------+
+
+Edit Device - Specification Tab
+*******************************
+The **Specification** tab is used to choose the device specification that describes
+the device. The specification is used to infer the type of device hardware,
+whether the device can contain nested devices, and which commands may be sent
+to control the device.
+   
+.. image:: /_static/images/userguide/device-edit-spec.png
+   :width: 100%
+   :alt: Edit Device - Specification
+   :align: left
+
+Edit Device - Metadata Tab
+**************************
+Each device can have arbitrary metadata attached to its primary data to provide
+additional information during processing. For instance, a particular device may
+receive commands via SMS, in which case the SMS phone number should be saved
+when the device registers with SiteWhere. The metadata is available during event
+and command processing so the SMS phone number can be extracted and used to 
+deliver commands to control the device. Metadata is stored as name/value pairs
+on the device definition and may include complex structures such as XML or JSON
+payloads.
+   
+.. image:: /_static/images/userguide/device-edit-metadata.png
+   :width: 100%
+   :alt: Edit Device - Metadata
+   :align: left
+   
+Managing Devices - Device Detail
+--------------------------------
+From the device list page, clicking on the green arrow to the right of an entry opens
+the device detail page. As shown in the image below, the device detail page contains the 
+base device information including the current asset assignment if assigned.
+
+.. image:: /_static/images/userguide/device-details.png
+   :width: 100%
+   :alt: Device Details
+   :align: left
+
+Device Details - Assignment History Tab
+***************************************
+The **Assignment History** tab shows the current and all previous asset assignments for
+the given device. Assignments are ordered with the most recent assignments at the top.
+Clicking on the green arrow at the right side of an assignment opens the details page
+for the assignment including the complete event history while assigned to the given asset.
+
+Device Details - Composition Tab
+********************************
+The **Composition** tab is only shown for devices that use a specification marked as
+composite rather than standalone. This tab allows nested devices to be assigned to slots
+in the device element schema defined in the specification. Clicking the **+** to the
+right of a given slot brings up a dialog to choose the device that will fill the slot.
+Once a device has been assigned to a slot in a composite device, commands will be sent
+to the parent device rather than the nested device.
+
+.. image:: /_static/images/userguide/device-composition.png
+   :width: 100%
+   :alt: Device Details - Composition
+   :align: left
+
+   
