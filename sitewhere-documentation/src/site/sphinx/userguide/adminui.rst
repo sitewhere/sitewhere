@@ -228,10 +228,19 @@ Managing Device Specifications
 Device specifications represent unique hardware configurations which may be assigned to
 devices. Two separate device specifications may use the same base platform, yet have enough
 differences in hardware or software configuration to consider them separate when defining
-devices. For instance, you may deploy devices with two configurations, one with
-a standard LED and another with an RGB LED. In this case, it makes sense to create separate
-specifications since a command **setColor()** would only make sense for the device with
-an RGB LED.
+devices. For instance, you might deploy a microcontroller with two configurations, one with
+a standard LED and another with an RGB LED.
+
+Device specifications also cover the list of commands that may be sent to a device. 
+In the case of the LED example above, both specifications might have a command
+**enableLight()** to turn the LED on, but the specification with the RGB LED might also
+have a **setColor()** command to choose the color.
+
+While most devices are standalone, self contained units, SiteWhere device specifications also
+account for more complex scenarios called composite devices. Composite devices handle the case
+where gateway devices act as a go-between for nested devices. Specifications for composite devices
+provide a schema that clearly defines where nested devices 'plug in' to the parent device.
+
 
 Device Specifications List
 --------------------------
@@ -266,7 +275,7 @@ The **Specification Details** tab includes basic information about a device spec
 +----------------------+--------------------------------------------------------+
 | Field                | Description                                            |
 +======================+========================================================+
-| Specficiation Name   | Human-readable name that provides a short description  |
+| Specification Name   | Human-readable name that provides a short description  |
 |                      | of the device specification.                           |
 +----------------------+--------------------------------------------------------+
 | Specification Type   | Indicates if a specification is for a standalone       |
@@ -286,3 +295,19 @@ The **Specification Details** tab includes basic information about a device spec
 
 Edit Device Specification - Metadata Tab
 ****************************************
+A device specification can have arbitrary metadata assigned with it so that the data
+can be used later when processing events. For instance, different logic can be applied
+during event processing based on metadata such as memory configuration or cpu speed
+of the device in question. Metadata can be added as name-value pairs in the dialog
+as shown below:
+
+.. image:: /_static/images/userguide/spec-edit-metadata.png
+   :width: 100%
+   :alt: Edit Device Specification - Metadata
+   :align: left
+   
+Managing Device Specifications - Specification Detail
+-----------------------------------------------------
+From the specification list page, clicking on the green arrow to the right of an entry opens
+the specification detail page.
+   
