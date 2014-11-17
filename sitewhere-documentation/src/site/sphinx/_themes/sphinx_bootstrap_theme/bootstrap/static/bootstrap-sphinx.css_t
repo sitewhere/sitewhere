@@ -90,6 +90,12 @@ ol li img {
 	text-decoration: underline;
 }
 
+.section h5 {
+    font-size: 18px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
 .sw-nav-content {
 	height: 95px; 
 	position: relative; 

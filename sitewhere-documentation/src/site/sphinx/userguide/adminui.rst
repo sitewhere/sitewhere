@@ -309,5 +309,119 @@ as shown below:
 Managing Device Specifications - Specification Detail
 -----------------------------------------------------
 From the specification list page, clicking on the green arrow to the right of an entry opens
-the specification detail page.
-   
+the specification detail page. As shown below, the specification detail page contains the 
+base specification information at the top and a set of tabs below it for modifying other
+key features.
+
+.. image:: /_static/images/userguide/spec-details.png
+   :width: 100%
+   :alt: Device Specification Details
+   :align: left
+
+Device Specification - Commands Tab
+***********************************
+Each device specification contains a list of commands that may be sent to a device that uses it.
+Each command has a unique name and a list of typed parameters that may be passed to it. The 
+parameter types are based on the ones used for Google Protocol buffers, but it is up to the
+encoder on the command destination to choose how the data is transmitted across the wire.
+
+Command Dialog - Command Information
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A new command may be added by clicking the **Add New Command** button. The **Create Device Command**
+dialog opens to the **Command** tab.
+
+.. image:: /_static/images/userguide/spec-command-details.png
+   :width: 100%
+   :alt: Device Specification - Command Details
+   :align: left
+
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Name                 | Name that uniquely identifies a command. It should be  |
+|                      | alphanumeric with no spaces or special characters.     |
++----------------------+--------------------------------------------------------+
+| Namespace            | A URL that helps divide related commands into groups.  |
+|                      | The namespace is used only for presentation purposes   |
+|                      | currently, but will eventually be used in generated    |
+|                      | code as well.                                          |
++----------------------+--------------------------------------------------------+
+| Description          | A short description of that the command does.          |
++----------------------+--------------------------------------------------------+
+
+Command Dialog - Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The **Parameters** tab allows the list of parameters to be edited. To add a new parameter,
+enter a parameter name, choose a type, and check the checkbox if the parameter is required.
+Click **Add** to add the parameter to the list. Existing parameters may be removed by
+clicking the **x** to the right of the entry.
+
+.. image:: /_static/images/userguide/spec-command-parameters.png
+   :width: 100%
+   :alt: Device Specification - Command Parameters
+   :align: left
+
+Command Dialog - Metadata
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Like most other SiteWhere entities, commands may have metadata associated. One use for 
+command metadata is to provide hints to the command encoder to handle special cases
+around transmission of command data.
+
+.. image:: /_static/images/userguide/spec-command-metadata.png
+   :width: 100%
+   :alt: Device Specification - Command Metadata
+   :align: left
+
+Device Specification - Code Generation Tab
+******************************************
+Rather than forcing the developer to create a custom encoding scheme for sending commands,
+SiteWhere provides the option of generating a Google Protocol Buffers definition based
+on the list of commands for a specification. Clicking on the **Code Generation** tab shows
+the Google Protocol Buffer definition for the current list of commands. Clicking on the **Refresh**
+button generates a new definition if commands have been changed. Clicking the **Download** button
+downloads the definition to the local file system. The definition may be used to generate code in
+any of the languages supported by Google Protocol Buffers (most languages are supported).
+
+.. image:: /_static/images/userguide/spec-code-generation.png
+   :width: 100%
+   :alt: Device Specification - Code Generation
+   :align: left
+
+Device Specification - Composition Tab
+**************************************
+The **Composition** tab only appears for specifications marked as composite devices. A composite
+device has a **Device Element Schema** which provides the structure for nesting other devices.
+The schema includes **Device Slots** and **Device Units**. Device slots are locations where a 
+device can be 'plugged in' to the composite device. Device units are named containers which may
+hold their own slots or more nested units. There is no limit to the number of levels of nesting
+allowed. The device units act like folders in a file system, so any nested slot may be referenced
+by a path of unit names followed by the slot name. For instance **default/serial/com1** refers
+to the **com1** slot on the **serial** unit, which is in turn nested in the **default** unit.
+
+When a device of the given specification type is added to the system, nested devices may be 
+registered to any of its slots. When commands are sent to one of the nested devices, SiteWhere
+determines the parent composite (gateway) device and sends the command to the parent, which will
+in turn relay the command to the nested device.
+
+.. image:: /_static/images/userguide/spec-composition.png
+   :width: 100%
+   :alt: Device Specification - Composition
+   :align: left
+
+----------------
+Managing Devices
+----------------
+SiteWhere devices represent physical devices that can interact with the system. Registered devices
+can send events to SiteWhere via configured event sources or by invoking REST services. SiteWhere
+can, in turn, send commands by way of a command destination that delivers command data to the 
+physical device.
+
+Devices List
+------------
+Clicking on the **Devices** tab in the navigation bar opens the device list page. All existing devices 
+are listed with the ones most recently created at the top of the list:
+
+.. image:: /_static/images/userguide/device-list.png
+   :width: 100%
+   :alt: Device List
+   :align: left
