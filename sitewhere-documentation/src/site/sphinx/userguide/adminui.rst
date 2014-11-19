@@ -510,4 +510,116 @@ to the parent device rather than the nested device.
    :alt: Device Details - Composition
    :align: left
 
+----------------------
+Managing Device Groups
+----------------------
+Device groups are used to create an association between related devices. A device can belong
+to any number of groups and there is no limit to the size of a group. Device groups can also
+contain other device groups. Each element (device or subgroup) in a device group can have
+zero or more roles assigned. This allows external applications to query a device group and
+get a list of devices that serve a given role or roles, then take actions such as issuing
+commands or updating metadata.
+
+Devices Groups List
+-------------------
+Clicking on the **Device Groups** tab in the navigation bar opens the device groups list page. 
+All existing device groups are listed with the ones most recently created at the top of the list:
+
+.. image:: /_static/images/userguide/group-list.png
+   :width: 100%
+   :alt: Device Group List
+   :align: left
+
+Creating and Editing Device Groups
+----------------------------------
+To create a new device group, click on the **Add New Device Group** button at the top of the list
+page. To change an existing device group, click the edit icon at the right side of the entry.
+The following sections cover information needed to create or edit a device group.
+
+Edit Device Group - Group Details Tab
+*************************************
+The **Group Details** tab includes basic information about a device group.
+
+.. image:: /_static/images/userguide/group-edit-details.png
+   :width: 100%
+   :alt: Edit Device Group - Group Details
+   :align: left
+
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Group Name           | Short name that describes the function of the group.   |
++----------------------+--------------------------------------------------------+
+| Description          | A longer description of the group.                     |
++----------------------+--------------------------------------------------------+
+
+Edit Device Group - Roles Tab
+*****************************
+The **Roles** tab allows a list of roles to be associated with a device group. Roles are used
+to allow groups to be looked up in different contexts. For instance, a device group may
+have a list of temporary badges for tracking people. Another device group may contain the 
+list of badges that belong to employees on the first floor. Both groups may have a common
+role of 'badgeList'. Querying the SiteWhere services for groups with a role of 'badgeList'
+will return both groups. Future versions of SiteWhere will allow device commands to be targeted
+at device groups to allow for bulk operations. Currently, it is up to the application to
+query for groups, assemble a target list, and issue commands for each device.
+
+.. image:: /_static/images/userguide/group-edit-roles.png
+   :width: 100%
+   :alt: Edit Device Group - Roles
+   :align: left
+
+Edit Device Group - Metadata Tab
+********************************
+The **Metadata** tab allows extra metadata to be associated with a group. The extra information
+will generally be application specific. For instance, a temporary badge group may have extra
+metadata for the building phone number or address where the badges are in use.
+
+.. image:: /_static/images/userguide/group-edit-metadata.png
+   :width: 100%
+   :alt: Edit Device Group - Metadata
+   :align: left
+
+--------------
+Managing Users
+--------------
+SiteWhere users represent entities authorized to use the system. User credentials are used
+to log in to the administrative console and are required for accessing the REST services.
+When performing create/update operations on SiteWhere entities, the username of the
+authenticated user is stored to indicate who performed the action.
+
+Users List
+----------
+Clicking on the **Users** tab in the navigation bar opens the users list page. 
+All existing users are listed alphabetically by username.
+
+.. image:: /_static/images/userguide/users-list.png
+   :width: 100%
+   :alt: Users List
+   :align: left
+
+Creating and Editing Users
+--------------------------
+To create a new user, click on the **Add New User** button at the top of the list.
+
+.. image:: /_static/images/userguide/users-edit-details.png
+   :width: 100%
+   :alt: Edit User - User Details
+   :align: left
+
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Username             | Unique alphanumeric identifier for a user.             |
++----------------------+--------------------------------------------------------+
+| Password             | Password used to authenticate the user.                |
++----------------------+--------------------------------------------------------+
+| Password (Confirm)   | Verifies that password was entered correctly.          |
++----------------------+--------------------------------------------------------+
+| First Name           | First name of user.                                    |
++----------------------+--------------------------------------------------------+
+| Last Name            | Last name (surname) of user.                           |
++----------------------+--------------------------------------------------------+
+| Account Status       | Indicates if account is active, expired, or locked.    |
++----------------------+--------------------------------------------------------+
    
