@@ -27,11 +27,6 @@ pointed to the SiteWhere schema for the 0.9.7 release. Often a new SiteWhere rel
 features to the schema, so it is important to point to the schema
 for the version of SiteWhere being run on the server.
 
-Near the top of the file, there is a *<context:property-placeholder>* declaration that loads a properties file
-so that the variables in it can be substituted. This allows information such as passwords or other configuration
-parameters to be moved out of the configuration file so the configuration can be shared without compromising 
-credentials. It also allows the configuration to be parameterized differently for different execution environments.
-
 The *<sw:configuraton>* section contains all of the schema-based SiteWhere configuration elements. If a
 schema-aware editor such as Eclipse is being used, the editor will provide syntax completion based on the 
 SiteWhere schema. The SiteWhere schema contains many of the most often used building blocks for setting up
@@ -78,7 +73,44 @@ been configured to broadcast all processed events via Hazelcast.
 		</bean>
 	
 	</beans>
-	
+
+Moving Sensitive Data Outside the Configuration
+-----------------------------------------------
+SiteWhere configuration files often contain login credentials or other information that should not
+be shared with other users. Also, there are situations where settings for a system are 
+environment-specific (production vs. staging vs. development) and maintaining a separate configuration 
+for each creates extra work. Using Spring
+`property placeholders <http://docs.spring.io/spring-framework/docs/current/spring-framework-reference/html/xsd-config.html#xsd-config-body-schemas-context-pphc>`_
+allows sensitive data to be moved into an external properties file and injected at runtime.
+In the following example, the hostname and port for the MongoDB datastore would be loaded from
+the **sitewhere.properties** file in the same directory as the main configuration file.
+
+.. code-block:: xml
+   :emphasize-lines: 1, 14
+   
+   <context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties" ignore-resource-not-found="true"/>
+
+   <!-- ########################### -->
+   <!-- # SITEWHERE CONFIGURATION # -->
+   <!-- ########################### -->
+   <sw:configuration>
+      
+      <!-- ########################### -->
+      <!-- # DATASTORE CONFIGURATION # -->
+      <!-- ########################### -->
+      <sw:datastore>
+      
+         <!-- Default MongoDB Datastore -->
+         <sw:mongo-datastore hostname="${mongo.host}" port="${mongo.port}" databaseName="sitewhere"/>
+ 
+The properties file would contain values for the placeholders as shown below:
+
+.. code-block:: properties
+
+   # SiteWhere configuration properties.
+   mongo.host=localhost
+   mongo.port=1234
+
 -----------------------
 Datastore Configuration
 -----------------------
