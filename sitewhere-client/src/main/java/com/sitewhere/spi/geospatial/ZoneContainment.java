@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.geo;
+package com.sitewhere.spi.geospatial;
 
 /**
  * Specifies containment relationship between location and zone.

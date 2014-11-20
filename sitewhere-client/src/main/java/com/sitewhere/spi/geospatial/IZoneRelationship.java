@@ -5,38 +5,36 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.geo;
+package com.sitewhere.spi.geospatial;
 
-import java.util.Map;
-
+import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 
 /**
- * Contains results of matching a location against a list of zones.
+ * Represents a relationship between a location and a zone.
  * 
  * @author Derek
  */
-public interface IZoneMatcher {
+public interface IZoneRelationship {
 
 	/**
-	 * Get location being matched.
+	 * Get device location.
 	 * 
 	 * @return
 	 */
 	public IDeviceLocation getLocation();
 
 	/**
-	 * Get the map of all relationships.
+	 * Get zone.
 	 * 
 	 * @return
 	 */
-	public Map<String, IZoneRelationship> getRelationships();
+	public IZone getZone();
 
 	/**
-	 * Get relationship with the given zone.
+	 * Get containment indicator.
 	 * 
-	 * @param zoneId
 	 * @return
 	 */
-	public IZoneRelationship getRelationship(String zoneId);
+	public ZoneContainment getContainment();
 }

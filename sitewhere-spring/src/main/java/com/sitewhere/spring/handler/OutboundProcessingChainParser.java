@@ -21,7 +21,11 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
 import com.sitewhere.device.provisioning.ProvisioningEventProcessor;
+import com.sitewhere.geospatial.ZoneTest;
+import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.geospatial.ZoneContainment;
 
 /**
  * Parses configuration data from SiteWhere outbound processing chain section.
@@ -54,8 +58,12 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 				processors.add(parseOutboundEventProcessor(child, context));
 				break;
 			}
+			case ZoneTestEventProcessor: {
+				processors.add(parseZoneTestEventProcessor(child, context));
+				break;
+			}
 			case ProvisioningEventProcessor: {
-				processors.add(parseProvisioningEventProcessor(element, context));
+				processors.add(parseProvisioningEventProcessor(child, context));
 				break;
 			}
 			}
@@ -82,6 +90,78 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parse configuration for event processor that tests location events against zone
+	 * boundaries for firing alert conditions.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseZoneTestEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(ZoneTestEventProcessor.class);
+		List<Element> children = DomUtils.getChildElementsByTagName(element, "zone-test");
+		List<Object> tests = new ManagedList<Object>();
+		for (Element testElm : children) {
+			ZoneTest test = new ZoneTest();
+
+			Attr zoneToken = testElm.getAttributeNode("zoneToken");
+			if (zoneToken == null) {
+				throw new RuntimeException("Zone test missing 'zoneToken' attribute.");
+			}
+			test.setZoneToken(zoneToken.getValue());
+
+			Attr condition = testElm.getAttributeNode("condition");
+			if (condition == null) {
+				throw new RuntimeException("Zone test missing 'condition' attribute.");
+			}
+			ZoneContainment containment =
+					(condition.getValue().equalsIgnoreCase("inside") ? ZoneContainment.Inside
+							: ZoneContainment.Outside);
+			test.setCondition(containment);
+
+			Attr alertType = testElm.getAttributeNode("alertType");
+			if (alertType == null) {
+				throw new RuntimeException("Zone test missing 'alertType' attribute.");
+			}
+			test.setAlertType(alertType.getValue());
+
+			Attr alertMessage = testElm.getAttributeNode("alertMessage");
+			if (alertMessage == null) {
+				throw new RuntimeException("Zone test missing 'alertMessage' attribute.");
+			}
+			test.setAlertMessage(alertMessage.getValue());
+
+			Attr alertLevel = testElm.getAttributeNode("alertLevel");
+			AlertLevel level = AlertLevel.Error;
+			if (alertLevel != null) {
+				level = convertAlertLevel(alertLevel.getValue());
+			}
+			test.setAlertLevel(level);
+
+			tests.add(test);
+		}
+		processor.addPropertyValue("zoneTests", tests);
+		return processor.getBeanDefinition();
+	}
+
+	protected AlertLevel convertAlertLevel(String input) {
+		if (input.equalsIgnoreCase("info")) {
+			return AlertLevel.Info;
+		}
+		if (input.equalsIgnoreCase("warning")) {
+			return AlertLevel.Warning;
+		}
+		if (input.equalsIgnoreCase("error")) {
+			return AlertLevel.Error;
+		}
+		if (input.equalsIgnoreCase("critical")) {
+			return AlertLevel.Critical;
+		}
+		throw new RuntimeException("Invalid alert level value: " + input);
+	}
+
+	/**
 	 * Parse configuration for event processor that routes traffic to provisioning
 	 * subsystem.
 	 * 
@@ -104,6 +184,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		/** Reference to custom inbound event processor */
 		OutboundEventProcessor("outbound-event-processor"),
+
+		/** Tests location values against zones */
+		ZoneTestEventProcessor("zone-test-event-processor"),
 
 		/** Reference to custom inbound event processor */
 		ProvisioningEventProcessor("provisioning-event-processor");

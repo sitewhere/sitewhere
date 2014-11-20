@@ -5,18 +5,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.geo.zone;
+package com.sitewhere.geospatial;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.geo.GeoUtils;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.geo.IZoneMatcher;
-import com.sitewhere.spi.geo.IZoneRelationship;
-import com.sitewhere.spi.geo.ZoneContainment;
+import com.sitewhere.spi.geospatial.IZoneMatcher;
+import com.sitewhere.spi.geospatial.IZoneRelationship;
+import com.sitewhere.spi.geospatial.ZoneContainment;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**

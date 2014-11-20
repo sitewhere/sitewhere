@@ -5,10 +5,11 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd?a=11">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd?a=13">
            
 	<!-- Load property values for substitution -->
-	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties" ignore-resource-not-found="true"/>
+	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
+		ignore-resource-not-found="true"/>
 	
 	<!-- ########################### -->
 	<!-- # SITEWHERE CONFIGURATION # -->
@@ -105,6 +106,14 @@
 		
 			<!-- Routes commands for provisioning -->
 			<sw:provisioning-event-processor/>
+			
+			<!-- Performs zone checking for locations -->
+			<!-- 
+			<sw:zone-test-event-processor>
+				<sw:zone-test zoneToken="777fa4e5-bc2f-458b-9968-b598b2e2d2ca" condition="outside"
+					alertLevel="error" alertType="off.site" alertMessage="Asset has left the worksite."/>
+			</sw:zone-test-event-processor>
+			 -->
 			
 			<!-- Send outbound device events over Hazelcast -->
 			<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>

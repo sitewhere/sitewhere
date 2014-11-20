@@ -12,7 +12,7 @@ import java.util.List;
 import com.sitewhere.spi.ISiteWhereContext;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.geo.IZoneMatcher;
+import com.sitewhere.spi.geospatial.IZoneMatcher;
 
 /**
  * Delegate that receives callbacks for zone processing so that developers can specify

@@ -18,7 +18,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.geo.GeoUtils;
+import com.sitewhere.geospatial.GeoUtils;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.command.CommandParameter;
