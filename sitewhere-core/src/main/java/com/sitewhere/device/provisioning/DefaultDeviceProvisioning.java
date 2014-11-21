@@ -48,7 +48,8 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
 
 	/** Configured outbound processing strategy */
-	private IOutboundProcessingStrategy outboundProcessingStrategy = new DirectOutboundProcessingStrategy();
+	private IOutboundProcessingStrategy outboundProcessingStrategy =
+			new BlockingQueueOutboundProcessingStrategy();
 
 	/** Configured outbound command router */
 	private IOutboundCommandRouter outboundCommandRouter;
@@ -84,6 +85,12 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 		}
 		getOutboundCommandRouter().initialize(getCommandDestinations());
 		getOutboundCommandRouter().start();
+
+		// Start outbound processing strategy.
+		if (getOutboundProcessingStrategy() == null) {
+			throw new SiteWhereException("No outbound processing strategy configured for provisioning.");
+		}
+		getOutboundProcessingStrategy().start();
 
 		// Start registration manager.
 		if (getRegistrationManager() == null) {
