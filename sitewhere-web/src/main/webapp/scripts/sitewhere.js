@@ -61,6 +61,10 @@ $.deleteWithInputJSON = function(url, data, onSuccess, onFail) {
 
 /** Common error handler for AJAX calls */
 function handleError(jqXHR, info) {
+	if ((jqXHR.status == 401) || (jqXHR.status == 403)) {
+		window.location.replace("/sitewhere/admin/");
+		return;
+	}
 	var respError = jqXHR.getResponseHeader("X-SiteWhere-Error");
 	if (respError) {
 		swAlert("Error", respError);
