@@ -27,6 +27,7 @@
 				<maven.javadoc.skip>true</maven.javadoc.skip>
 			</properties>
 			<modules>
+				<module>sitewhere-activemq</module>
 				<module>sitewhere-client</module>
 				<module>sitewhere-core</module>
 				<module>sitewhere-ehcache</module>
@@ -48,6 +49,7 @@
 				<maven.javadoc.skip>false</maven.javadoc.skip>
 			</properties>
 			<modules>
+				<module>sitewhere-activemq</module>
 				<module>sitewhere-client</module>
 				<module>sitewhere-core</module>
 				<module>sitewhere-ehcache</module>

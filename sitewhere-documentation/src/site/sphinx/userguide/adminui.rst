@@ -601,6 +601,11 @@ All existing users are listed alphabetically by username.
 Creating and Editing Users
 --------------------------
 To create a new user, click on the **Add New User** button at the top of the list.
+To change an existing user, click the edit icon at the right side of the entry.
+
+Edit User - User Details Tab
+****************************
+The **User Details** tab includes basic information about a user.
 
 .. image:: /_static/images/userguide/users-edit-details.png
    :width: 100%
@@ -622,4 +627,20 @@ To create a new user, click on the **Add New User** button at the top of the lis
 +----------------------+--------------------------------------------------------+
 | Account Status       | Indicates if account is active, expired, or locked.    |
 +----------------------+--------------------------------------------------------+
+
+Edit User - Permissions Tab
+***************************
+The **Permissions** tab allows user permissions to be specified. User permissions
+limit access to parts of the administrative application and certain REST service
+calls. The current list of permissions is just a placeholder for a more 
+comprehensive permissions system that will be added in the near future.
+
+.. image:: /_static/images/userguide/users-edit-permissions.png
+   :width: 100%
+   :alt: Edit User - Permissions
+   :align: left
+
+Edit User - Metadata Tab
+************************
+The **Metadata** tab allows extra metadata to be associated with a user. 
    

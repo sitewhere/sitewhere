@@ -72,6 +72,10 @@ public class EventSourcesParser {
 				result.add(parseEventSource(child, context));
 				break;
 			}
+			case ActiveMQEventSource: {
+				result.add(parseActiveMQEventSource(child, context));
+				break;
+			}
 			case MqttEventSource: {
 				result.add(parseMqttEventSource(child, context));
 				break;
@@ -134,6 +138,107 @@ public class EventSourcesParser {
 		}
 
 		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Create MQTT event receiver from XML element.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createMqttEventReceiver(Element element) {
+		BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(MqttInboundEventReceiver.class);
+
+		Attr hostname = element.getAttributeNode("hostname");
+		if (hostname == null) {
+			throw new RuntimeException("MQTT hostname attribute not provided.");
+		}
+		mqtt.addPropertyValue("hostname", hostname.getValue());
+
+		Attr port = element.getAttributeNode("port");
+		if (port == null) {
+			throw new RuntimeException("MQTT port attribute not provided.");
+		}
+		mqtt.addPropertyValue("port", port.getValue());
+
+		Attr topic = element.getAttributeNode("topic");
+		if (topic == null) {
+			throw new RuntimeException("MQTT topic attribute not provided.");
+		}
+		mqtt.addPropertyValue("topic", topic.getValue());
+
+		return mqtt.getBeanDefinition();
+	}
+
+	/**
+	 * Parse an ActiveMQ event source.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseActiveMQEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source =
+				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		Attr sourceId = element.getAttributeNode("sourceId");
+		if (sourceId == null) {
+			throw new RuntimeException("No 'sourceId' attribute specified for event source: "
+					+ element.toString());
+		}
+		source.addPropertyValue("sourceId", sourceId.getValue());
+
+		// Create ActiveMQ event receiver bean and register it.
+		AbstractBeanDefinition receiver = createActiveMQEventReceiver(element);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException("No event decoder specified for ActiveMQ event source: "
+					+ element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Create ActiveMQ event receiver from XML element.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createActiveMQEventReceiver(Element element) {
+		BeanDefinitionBuilder mq =
+				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.activemq.ActiveMQInboundEventReceiver");
+
+		Attr sourceId = element.getAttributeNode("sourceId");
+		if (sourceId == null) {
+			throw new RuntimeException("ActiveMQ 'sourceId' attribute not provided.");
+		}
+		mq.addPropertyValue("brokerName", sourceId.getValue());
+
+		Attr transportUri = element.getAttributeNode("transportUri");
+		if (transportUri == null) {
+			throw new RuntimeException("ActiveMQ 'transportUri' attribute not provided.");
+		}
+		mq.addPropertyValue("transportUri", transportUri.getValue());
+
+		Attr queueName = element.getAttributeNode("queueName");
+		if (queueName == null) {
+			throw new RuntimeException("ActiveMQ 'queueName' attribute not provided.");
+		}
+		mq.addPropertyValue("queueName", queueName.getValue());
+
+		return mq.getBeanDefinition();
 	}
 
 	/**
@@ -240,36 +345,6 @@ public class EventSourcesParser {
 	}
 
 	/**
-	 * Create MQTT event receiver from XML element.
-	 * 
-	 * @param element
-	 * @return
-	 */
-	protected AbstractBeanDefinition createMqttEventReceiver(Element element) {
-		BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(MqttInboundEventReceiver.class);
-
-		Attr hostname = element.getAttributeNode("hostname");
-		if (hostname == null) {
-			throw new RuntimeException("MQTT hostname attribute not provided.");
-		}
-		mqtt.addPropertyValue("hostname", hostname.getValue());
-
-		Attr port = element.getAttributeNode("port");
-		if (port == null) {
-			throw new RuntimeException("MQTT port attribute not provided.");
-		}
-		mqtt.addPropertyValue("port", port.getValue());
-
-		Attr topic = element.getAttributeNode("topic");
-		if (topic == null) {
-			throw new RuntimeException("MQTT topic attribute not provided.");
-		}
-		mqtt.addPropertyValue("topic", topic.getValue());
-
-		return mqtt.getBeanDefinition();
-	}
-
-	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -278,6 +353,9 @@ public class EventSourcesParser {
 
 		/** Event source */
 		EventSource("event-source"),
+
+		/** ActiveMQ event source */
+		ActiveMQEventSource("activemq-event-source"),
 
 		/** Event source */
 		MqttEventSource("mqtt-event-source");
