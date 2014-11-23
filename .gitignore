@@ -1,4 +1,5 @@
 /bin
+/sitewhere-activemq/target
 /sitewhere-client/target
 /sitewhere-core/target
 /sitewhere-documentation/target
