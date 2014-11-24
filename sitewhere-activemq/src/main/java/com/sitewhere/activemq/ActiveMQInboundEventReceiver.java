@@ -18,6 +18,8 @@ import java.util.concurrent.Executors;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.Destination;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
@@ -84,19 +86,19 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 	@Override
 	public void start() throws SiteWhereException {
 		if (getBrokerName() == null) {
-			throw new SiteWhereException("Broker name is required for ActiveMQ broker.");
+			throw new SiteWhereException("Broker name is required.");
 		}
 		if (getTransportUri() == null) {
-			throw new SiteWhereException("Transport URI is required for ActiveMQ broker.");
+			throw new SiteWhereException("Transport URI is required.");
 		}
 		if (getQueueName() == null) {
-			throw new SiteWhereException("Queue name is required for ActiveMQ broker.");
+			throw new SiteWhereException("Queue name is required.");
 		}
-		TransportConnector connector = new TransportConnector();
 		try {
+			brokerService.setBrokerName(getBrokerName());
+			TransportConnector connector = new TransportConnector();
 			connector.setUri(new URI(getTransportUri()));
 			brokerService.addConnector(connector);
-			brokerService.setBrokerName(getBrokerName());
 			brokerService.start();
 			startConsumers();
 		} catch (Exception e) {
@@ -115,7 +117,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 		for (int i = 0; i < getNumConsumers(); i++) {
 			Consumer consumer = new Consumer();
 			consumer.start();
-			consumersPool.equals(consumer);
+			consumersPool.execute(consumer);
 			consumers.add(consumer);
 		}
 	}
@@ -155,7 +157,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 	 * 
 	 * @author Derek
 	 */
-	public class Consumer implements Runnable {
+	public class Consumer implements Runnable, ExceptionListener {
 
 		/** Connection to ActiveMQ */
 		private Connection connection;
@@ -168,21 +170,17 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 
 		public void start() throws SiteWhereException {
 			try {
-				// Create a ConnectionFactory
+				// Create a VM connection to the broker.
 				ActiveMQConnectionFactory connectionFactory =
 						new ActiveMQConnectionFactory("vm://" + getBrokerName());
-
-				// Create a Connection
 				this.connection = connectionFactory.createConnection();
+				connection.setExceptionListener(this);
 				connection.start();
 
 				// Create a Session
 				this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-				// Create the destination (Topic or Queue)
 				Destination destination = session.createQueue(getQueueName());
-
-				// Create a MessageConsumer from the Session to the Topic or Queue
 				this.consumer = session.createConsumer(destination);
 			} catch (Exception e) {
 				throw new SiteWhereException("Error starting ActiveMQ consumer.", e);
@@ -209,6 +207,10 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 			while (true) {
 				try {
 					Message message = consumer.receive();
+					if (message == null) {
+						LOGGER.warn("Consumer received null message. Terminating.");
+						return;
+					}
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
 						getEncodedMessages().offer(textMessage.getText().getBytes());
@@ -222,7 +224,22 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 					}
 				} catch (Exception e) {
 					LOGGER.error("Error in ActiveMQ message processing.", e);
+					return;
 				}
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see javax.jms.ExceptionListener#onException(javax.jms.JMSException)
+		 */
+		@Override
+		public void onException(JMSException e) {
+			try {
+				stop();
+			} catch (SiteWhereException e1) {
+				LOGGER.error(e);
 			}
 		}
 	}

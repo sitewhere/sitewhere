@@ -13,6 +13,7 @@
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mule/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-protobuf/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-protobuf/src/test/java"/>
 	<classpathentry kind="src" path="sitewhere-solr/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-spring/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-twilio/src/main/java"/>
@@ -64,5 +65,7 @@
 	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-core_2.10/1.3.5/swagger-core_2.10-1.3.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpclient/4.3.1/httpclient-4.3.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/activemq/activemq-all/5.10.0/activemq-all-5.10.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/rabbitmq/amqp-client/3.4.1/amqp-client-3.4.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/qpid/proton-j/0.8/proton-j-0.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
