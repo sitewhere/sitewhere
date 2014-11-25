@@ -140,8 +140,6 @@ commented as shown below:
 Note that the default settings assume a local MongoDB instance running on the default port and using a database
 named **sitewhere**.
 
-Attributes for <mongo-datastore>
-********************************
 The following attributes may be specified for the *<sw:mongo-datastore>* element.
       
 +----------------------+----------+--------------------------------------------------+
@@ -178,8 +176,6 @@ commented as shown below:
 
 Note that you will need to update the quorum address so that SiteWhere can locate your HBase cluster.
 
-Attributes for <hbase-datastore>
-********************************
 The following attributes may be specified for the *<sw:hbase-datastore>* element.
       
 +----------------------+----------+--------------------------------------------------+
@@ -268,23 +264,80 @@ MQTT Event Source
 *****************
 Since consuming MQTT data is common in IoT applications, SiteWhere includes a component that 
 streamlines the process. In the example below, an event source is configured to listen for messages
-on the given topic, then use the **protobufEventDecoder** (declared externally as a Spring bean) to
-decode the message payload into SiteWhere events.
+on the given topic, then use the *<sw:protobuf-event-decoder/>* to decode the message payload 
+using the standard SiteWhere Google Protocol Buffers message format.
 
 .. code-block:: xml
    :emphasize-lines: 7-10
 
-	<sw:provisioning>
+   <sw:provisioning>
 	
-		<!-- Inbound event sources -->
-		<sw:event-sources>
+      <!-- Inbound event sources -->
+      <sw:event-sources>
 
-			<!-- Event source for protobuf messages over MQTT -->
-			<sw:mqtt-event-source hostname="localhost" port="1883"
-				topic="SiteWhere/input/protobuf">
-				<sw:decoder ref="protobufEventDecoder"/>
-			</sw:mqtt-event-source>
+         <!-- Event source for protobuf messages over MQTT -->
+         <sw:mqtt-event-source sourceId="protobuf" hostname="localhost"
+            port="1883" topic="SiteWhere/input/protobuf">
+            <sw:protobuf-event-decoder/>
+        </sw:mqtt-event-source>
+
+The following attributes may be specified for the *<sw:mqtt-event-source>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| sourceId             | required | Unique event source id.                          |
++----------------------+----------+--------------------------------------------------+
+| hostname             | required | MQTT broker server hostname or IP address.       |
++----------------------+----------+--------------------------------------------------+
+| port                 | required | MQTT broker server port.                         |
++----------------------+----------+--------------------------------------------------+
+| topic                | required | MQTT topic where devices will post events.       |
++----------------------+----------+--------------------------------------------------+
+
+ActiveMQ Event Source
+*********************
+`Apache ActiveMQ <http://activemq.apache.org/>`_ is an open source messaging platform
+that supports many wire formats such as AMQP, OpenWire, XMPP, and MQTT. It also supports
+the standard Java JMS APIs for message processing. SiteWhere includes an event source
+that creates an embedded ActiveMQ broker that listens on a configured transport. A
+multithreaded pool of consumers listen on a configured topic and hand off the binary
+payload to the configured decoder.
+
+.. code-block:: xml
+   :emphasize-lines: 7-10
+
+   <sw:provisioning>
+   
+      <!-- Inbound event sources -->
+      <sw:event-sources>
+
+         <!-- Event source for protobuf messages over ActiveMQ queue -->
+         <sw:activemq-event-source sourceId="activemq" transportUri="tcp://localhost:1234"
+            queueName="SITEWHERE.IN" numConsumers="150">
+            <sw:protobuf-event-decoder/>
+         </sw:activemq-event-source>
          
+The example above listens for JMS connections over TCP/IP with 150 consumer threads that 
+read data from the configured queue, decode the data using SiteWhere Google Protocol Buffers
+format, then send the decoded events to be processed.
+
+The following attributes may be specified for the *<sw:activemq-event-source>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| sourceId             | required | Unique event source id.                          |
++----------------------+----------+--------------------------------------------------+
+| transportUri         | required | Configures the ActiveMQ transport that will be   |
+|                      |          | made available for clients to connect to.        |
++----------------------+----------+--------------------------------------------------+
+| queueName            | required | Queue that external clients post events to.      |
++----------------------+----------+--------------------------------------------------+
+| numConsumers         | optional | Number of threaded consumers used to process     |
+|                      |          | data from the queue. Defaults to *3*.            |
++----------------------+----------+--------------------------------------------------+
+
 Inbound Processing Strategy
 ---------------------------
 The inbound processing strategy is responsible for moving events from event sources into the
@@ -315,8 +368,6 @@ strategy implementation with persistent queues and transactional semantics.
                numEventProcessorThreads="150" enableMonitoring="true" monitoringIntervalSec="1"/>
          </sw:inbound-processing-strategy>
 
-Attributes for <default-inbound-processing-strategy>
-****************************************************
 The following attributes may be specified for the *<sw:default-inbound-processing-strategy>* element.
       
 +--------------------------+----------+----------------------------------------------------+
@@ -359,18 +410,30 @@ is not appropriate, a custom parameter extractor can be injected instead.
 .. code-block:: xml
    :emphasize-lines: 7-12
 
-		<sw:provisioning>
+   <sw:provisioning>
 					
-			<!-- Outbound command destinations -->
-			<sw:command-destinations>
+      <!-- Outbound command destinations -->
+      <sw:command-destinations>
 
-				<!-- Delivers commands via MQTT -->
-				<sw:mqtt-command-destination destinationId="default"
-					hostname="localhost" port="1883">
-					<sw:encoder ref="protobufExecutionEncoder"/>
-					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
-						systemTopicExpr="SiteWhere/system/%s"/>
-				</sw:mqtt-command-destination>
+         <!-- Delivers commands via MQTT -->
+         <sw:mqtt-command-destination destinationId="default"
+            hostname="localhost" port="1883">
+            <sw:protobuf-command-encoder/>
+            <sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+               systemTopicExpr="SiteWhere/system/%s"/>
+         </sw:mqtt-command-destination>
+
+The following attributes may be specified for the *<sw:mqtt-command-destination>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| destinationId        | required | Unique id for destination.                       |
++----------------------+----------+--------------------------------------------------+
+| hostname             | required | MQTT broker hostname.                            |
++----------------------+----------+--------------------------------------------------+
+| port                 | required | MQTT broker port.                                |
++----------------------+----------+--------------------------------------------------+
 
 Twilio Command Destination
 **************************
@@ -382,31 +445,44 @@ messages will be sent from).
 .. code-block:: xml
    :emphasize-lines: 7-12
 
-		<sw:provisioning>
+   <sw:provisioning>
 					
-			<!-- Outbound command destinations -->
-			<sw:command-destinations>
+      <!-- Outbound command destinations -->
+      <sw:command-destinations>
 
-				<!-- Delivers commands via Twilio SMS messages -->
-				<sw:twilio-command-destination destinationId="laipac"
-					accountSid="${twilio.account.sid}" authToken="${twilio.auth.token}" 
-					fromPhoneNumber="${twilio.from.phone.number}">
-					<sw:encoder ref="laipacExecutionEncoder"/>
-					<sw:parameter-extractor ref="laipacExtractor"/>
-				</sw:twilio-command-destination>
+         <!-- Delivers commands via Twilio SMS messages -->
+         <sw:twilio-command-destination destinationId="laipac"
+            accountSid="${twilio.account.sid}" authToken="${twilio.auth.token}" 
+            fromPhoneNumber="${twilio.from.phone.number}">
+            <sw:protobuf-command-encoder/>
+            <sw:parameter-extractor ref="laipacExtractor"/>
+         </sw:twilio-command-destination>
 				
 The account SID, auth token, and sending phone number are all pieces of data related to the Twilio account.
 The parameter extractor implementation should be one that supplies parameters of type 
 SmsParameters which is used by the delivery provider to determine the SMS phone number 
 to deliver the command to.
 
+The following attributes may be specified for the *<sw:twilio-command-destination>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| destinationId        | required | Unique id for destination.                       |
++----------------------+----------+--------------------------------------------------+
+| accountSid           | required | Twilio account SID (from Twilio website).        |
++----------------------+----------+--------------------------------------------------+
+| authToken            | required | Twilio account auth token (from Twilio website). |
++----------------------+----------+--------------------------------------------------+
+| fromPhoneNumber      | required | Twilio phone number used to originate SMS.       |
++----------------------+----------+--------------------------------------------------+
+
 ------------------------
 Inbound Processing Chain
 ------------------------
-After data has been converted into SiteWhere device events by event sources, the default provisioning 
-implementation (DefaultDeviceProvisioning.html)
-queues up events to be processed by the **inbound processing chain**. The chain is a series of
-**inbound event processors** (implementing 
+After data has been decoded into SiteWhere device events by event sources, the
+inbound processing strategy queues up events to be processed by the 
+**inbound processing chain**. The chain is a series of **inbound event processors** (implementing 
 `IInboundEventProcessor <../apidocs/com/sitewhere/spi/device/event/processor/IInboundEventProcessor.html>`_)
 that each handle the inbound events in series. New inbound event processors can be added to the chain to augment
 the existing functionality. For instance, a metrics processor could keep count of events processed per second. 
