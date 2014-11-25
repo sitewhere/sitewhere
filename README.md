@@ -30,8 +30,8 @@ Tomcat instance, so using a compatible SiteWhere server release is the preferred
 [installation guide] (http://docs.sitewhere.org/current/userguide/installation.html#using-an-existing-tomcat-instance).
 
 
-Sitewhere Intall at Ubuntu Server 14.04 64bit
-----------------------------------------------
+Sitewhere Install for Ubuntu Server 14.04 64bit
+-----------------------------------------------
 
     sudo su
     apt-get update -y
@@ -49,7 +49,7 @@ Sitewhere Intall at Ubuntu Server 14.04 64bit
     echo "mongodb-org-tools hold" | sudo dpkg --set-selections
     service mongod start
 
-###Install HIVEMQ
+###Install HiveMQ
 
     wget --content-disposition http://www.hivemq.com/downloads/releases/latest
     unzip hivemq-2.1.0.zip
@@ -58,7 +58,7 @@ Sitewhere Intall at Ubuntu Server 14.04 64bit
 
 ###Install Solr
 
-> Option If you need.
+> Optional if needed.
 
     cd ~
     wget http://archive.apache.org/dist/lucene/solr/4.7.2/solr-4.7.2.tgz
@@ -71,9 +71,15 @@ Sitewhere Intall at Ubuntu Server 14.04 64bit
 
 ###Install Sitewhere Release Version
 
-> It has two way for setup Sitewhere system
+> Download a SiteWhere server release from the sitewhere.org website
 
-> You can use Latest version from github
+    wget https://s3.amazonaws.com/reveal-technologies/sitewhere-server-0.9.7.tar.gz
+    tar -zxvf sitewhere-server-0.9.7.tar.gz
+    mv sitewhere-server-0.9.7 /opt/sitewhere
+    cd /opt/sitewhere/bin
+    sh startup.sh
+
+> To build and install latest code from GitHub
 
     apt-get install maven git unzip -y
     apt-get install openjdk-7-jdk tomcat7 -y
@@ -83,14 +89,6 @@ Sitewhere Intall at Ubuntu Server 14.04 64bit
     mvn clean install
     cp deploy/sitewhere $(YOUR_TOMCAT_PATH)/webapps/.
     service tomcat7 start
-
-> You can use Sitewhere website download Release package
-
-    wget https://s3.amazonaws.com/reveal-technologies/sitewhere-server-0.9.7.tar.gz
-    tar -zxvf sitewhere-server-0.9.7.tar.gz
-    mv sitewhere-server-0.9.7 /opt/sitewhere
-    cd /opt/sitewhere/bin
-    sh startup.sh
 
 * * * *
 
