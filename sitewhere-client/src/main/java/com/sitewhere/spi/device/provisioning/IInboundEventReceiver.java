@@ -7,10 +7,7 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
-import java.util.concurrent.BlockingQueue;
-
 import com.sitewhere.spi.ISiteWhereLifecycle;
-import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Handles receipt of device event information from an underlying transport.
@@ -20,11 +17,9 @@ import com.sitewhere.spi.SiteWhereException;
 public interface IInboundEventReceiver<T> extends ISiteWhereLifecycle {
 
 	/**
-	 * Gets access to a queue of (still encoded) messages becoming available from the
-	 * underlying transport.
+	 * Set the parent event source that will process events.
 	 * 
-	 * @return
-	 * @throws SiteWhereException
+	 * @param source
 	 */
-	public BlockingQueue<T> getEncodedMessages() throws SiteWhereException;
+	public void setEventSource(IInboundEventSource<T> source);
 }

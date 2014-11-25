@@ -9,8 +9,6 @@ package com.sitewhere.device.provisioning;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -51,9 +49,6 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 	/** List of {@link IInboundEventReceiver} that supply this processor */
 	private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
 
-	/** Thread pool for event receivers */
-	private ExecutorService receiverThreadPool;
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -61,7 +56,7 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Starting device event source...");
+		LOGGER.debug("Starting device event source...");
 		if (getInboundProcessingStrategy() == null) {
 			setInboundProcessingStrategy(SiteWhere.getServer().getDeviceProvisioning().getInboundProcessingStrategy());
 		}
@@ -69,7 +64,7 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 			throw new SiteWhereException("No inbound event receivers registered for event source.");
 		}
 		startEventReceiverThreads();
-		LOGGER.info("Started device event source.");
+		LOGGER.debug("Started device event source.");
 	}
 
 	/**
@@ -80,64 +75,49 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 	protected void startEventReceiverThreads() throws SiteWhereException {
 		if (getInboundEventReceivers().size() > 0) {
 			LOGGER.info("Initializing " + getInboundEventReceivers().size() + " device event receivers...");
-			receiverThreadPool = Executors.newFixedThreadPool(getInboundEventReceivers().size());
 			for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
+				receiver.setEventSource(this);
 				receiver.start();
-				receiverThreadPool.execute(new EventReceiverProcessor(receiver));
 			}
 		} else {
 			LOGGER.warn("No device event receivers configured for event source!");
 		}
 	}
 
-	/**
-	 * Thread that pulls records off the receiver's queue (blocking if necessary).
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @author Derek
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#onEncodedEventReceived
+	 * (java.lang.Object)
 	 */
-	private class EventReceiverProcessor implements Runnable {
-
-		/** Receiver being monitored */
-		private IInboundEventReceiver<T> receiver;
-
-		public EventReceiverProcessor(IInboundEventReceiver<T> receiver) {
-			this.receiver = receiver;
-		}
-
-		@Override
-		public void run() {
-			LOGGER.info("Started device event receiver thread.");
-			while (true) {
-				try {
-					T message = receiver.getEncodedMessages().take();
-					LOGGER.debug("Device event receiver thread picked up event.");
-					List<IDecodedDeviceEventRequest> requests = getDeviceEventDecoder().decode(message);
-					if (requests != null) {
-						for (IDecodedDeviceEventRequest decoded : requests) {
-							if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
-								getInboundProcessingStrategy().processRegistration(decoded);
-							} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
-								getInboundProcessingStrategy().processDeviceCommandResponse(decoded);
-							} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
-								getInboundProcessingStrategy().processDeviceMeasurements(decoded);
-							} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
-								getInboundProcessingStrategy().processDeviceLocation(decoded);
-							} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
-								getInboundProcessingStrategy().processDeviceAlert(decoded);
-							} else {
-								LOGGER.error("Decoded device event request could not be routed: "
-										+ decoded.getRequest().getClass().getName());
-							}
-						}
+	@Override
+	public void onEncodedEventReceived(T encodedEvent) {
+		try {
+			LOGGER.debug("Device event receiver thread picked up event.");
+			List<IDecodedDeviceEventRequest> requests = getDeviceEventDecoder().decode(encodedEvent);
+			if (requests != null) {
+				for (IDecodedDeviceEventRequest decoded : requests) {
+					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
+						getInboundProcessingStrategy().processRegistration(decoded);
+					} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
+						getInboundProcessingStrategy().processDeviceCommandResponse(decoded);
+					} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
+						getInboundProcessingStrategy().processDeviceMeasurements(decoded);
+					} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
+						getInboundProcessingStrategy().processDeviceLocation(decoded);
+					} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
+						getInboundProcessingStrategy().processDeviceAlert(decoded);
+					} else {
+						LOGGER.error("Decoded device event request could not be routed: "
+								+ decoded.getRequest().getClass().getName());
 					}
-				} catch (SiteWhereException e) {
-					LOGGER.error("Event receiver thread unable to decode event request.", e);
-				} catch (InterruptedException e) {
-					LOGGER.warn("Event receiver thread interrupted.", e);
-				} catch (Throwable e) {
-					LOGGER.error("Unhandled exception in device event decoding.", e);
 				}
 			}
+		} catch (SiteWhereException e) {
+			LOGGER.error("Event receiver thread unable to decode event request.", e);
+		} catch (Throwable e) {
+			LOGGER.error("Unhandled exception in device event decoding.", e);
 		}
 	}
 

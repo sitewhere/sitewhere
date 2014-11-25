@@ -46,4 +46,11 @@ public interface IInboundEventSource<T> extends ISiteWhereLifecycle {
 	 * @param receivers
 	 */
 	public void setInboundEventReceivers(List<IInboundEventReceiver<T>> receivers);
+
+	/**
+	 * Called by {@link IInboundEventReceiver} when an encoded event is received.
+	 * 
+	 * @param encodedEvent
+	 */
+	public void onEncodedEventReceived(T encodedEvent);
 }

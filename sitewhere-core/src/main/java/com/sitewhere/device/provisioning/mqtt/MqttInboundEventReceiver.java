@@ -8,8 +8,6 @@
 package com.sitewhere.device.provisioning.mqtt;
 
 import java.net.URISyntaxException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,6 +20,7 @@ import org.fusesource.mqtt.client.Topic;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
+import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT topic and
@@ -34,9 +33,6 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
 
-	/** Maximum number of backlogged messages before blocking */
-	private static final int MAX_MESSAGE_BACKLOG = 1000;
-
 	/** Default hostname if not set via Spring */
 	public static final String DEFAULT_HOSTNAME = "localhost";
 
@@ -46,6 +42,9 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 	/** Default subscribed topic name */
 	public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
 
+	/** Parent event source */
+	private IInboundEventSource<byte[]> eventSource;
+
 	/** Host name */
 	private String hostname = DEFAULT_HOSTNAME;
 
@@ -54,9 +53,6 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 
 	/** Topic name */
 	private String topic = DEFAULT_TOPIC;
-
-	/** Queue that holds messages to be processed */
-	private BlockingQueue<byte[]> encodedMessages = new ArrayBlockingQueue<byte[]>(MAX_MESSAGE_BACKLOG);
 
 	/** MQTT client */
 	private MQTT mqtt;
@@ -117,10 +113,7 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 				try {
 					Message message = connection.receive();
 					message.ack();
-					if (!encodedMessages.offer(message.getPayload())) {
-						LOGGER.error("MQTT messages are being discarded because "
-								+ "they are not being processed quickly enough.");
-					}
+					getEventSource().onEncodedEventReceived(message.getPayload());
 				} catch (InterruptedException e) {
 					LOGGER.warn("Device event processor interrupted.", e);
 				} catch (Throwable e) {
@@ -145,6 +138,21 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 		}
 	}
 
+	public IInboundEventSource<byte[]> getEventSource() {
+		return eventSource;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#setEventSource(com.
+	 * sitewhere.spi.device.provisioning.IInboundEventSource)
+	 */
+	public void setEventSource(IInboundEventSource<byte[]> eventSource) {
+		this.eventSource = eventSource;
+	}
+
 	public String getHostname() {
 		return hostname;
 	}
@@ -167,19 +175,5 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 
 	public void setTopic(String topic) {
 		this.topic = topic;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEncodedMessages()
-	 */
-	public BlockingQueue<byte[]> getEncodedMessages() {
-		return encodedMessages;
-	}
-
-	public void setEncodedMessages(BlockingQueue<byte[]> encodedMessages) {
-		this.encodedMessages = encodedMessages;
 	}
 }

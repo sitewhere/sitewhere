@@ -8,9 +8,9 @@
 package com.sitewhere.device.provisioning.socket;
 
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 
 /**
  * Interface for handling socket communication with a remote device.
@@ -23,11 +23,11 @@ public interface ISocketInteractionHandler<T> {
 
 	/**
 	 * Delegates processing of socket information. Commands parsed from the socket should
-	 * be added to the queue via offer().
+	 * be passed to {@link IInboundEventSource} onEncodedEventReceived() method.
 	 * 
 	 * @param socket
 	 * @param queue
 	 * @throws SiteWhereException
 	 */
-	public void process(Socket socket, BlockingQueue<T> queue) throws SiteWhereException;
+	public void process(Socket socket, IInboundEventSource<T> eventSource) throws SiteWhereException;
 }

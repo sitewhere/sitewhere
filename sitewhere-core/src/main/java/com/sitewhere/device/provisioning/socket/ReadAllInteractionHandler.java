@@ -11,13 +11,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 
 /**
  * Implementation of {@link ISocketInteractionHandler} that reads everything from the
- * socket and puts the resulting byte array on the queue.
+ * socket and sends the resulting byte array to the parent event source.
  * 
  * @author Derek
  */
@@ -27,11 +27,11 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.device.provisioning.receivers.socket.ISocketInteractionHandler#process
-	 * (java.net.Socket, java.util.concurrent.BlockingQueue)
+	 * com.sitewhere.device.provisioning.socket.ISocketInteractionHandler#process(java
+	 * .net.Socket, com.sitewhere.spi.device.provisioning.IInboundEventSource)
 	 */
 	@Override
-	public void process(Socket socket, BlockingQueue<byte[]> queue) throws SiteWhereException {
+	public void process(Socket socket, IInboundEventSource<byte[]> eventSource) throws SiteWhereException {
 		try {
 			InputStream input = socket.getInputStream();
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -40,7 +40,7 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
 				output.write(value);
 			}
 			input.close();
-			queue.offer(output.toByteArray());
+			eventSource.onEncodedEventReceived(output.toByteArray());
 		} catch (IOException e) {
 			throw new SiteWhereException("Exception processing request in socket interaction handler.", e);
 		}

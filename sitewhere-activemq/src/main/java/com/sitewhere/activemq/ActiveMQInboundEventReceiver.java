@@ -10,8 +10,6 @@ package com.sitewhere.activemq;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
+import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that uses an ActiveMQ broker to listen
@@ -44,11 +43,11 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ActiveMQInboundEventReceiver.class);
 
-	/** Maximum number of backlogged messages before blocking */
-	private static final int MAX_MESSAGE_BACKLOG = 1000;
-
 	/** Number of consumers reading messages from the queue */
 	private static final int DEFAULT_NUM_CONSUMERS = 3;
+
+	/** Parent event source */
+	private IInboundEventSource<byte[]> eventSource;
 
 	/** ActiveMQ broker service */
 	private BrokerService brokerService;
@@ -67,9 +66,6 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 
 	/** List of consumers reading messages */
 	private List<Consumer> consumers = new ArrayList<Consumer>();
-
-	/** Queue that holds messages to be processed */
-	private BlockingQueue<byte[]> encodedMessages = new ArrayBlockingQueue<byte[]>(MAX_MESSAGE_BACKLOG);
 
 	/** Thread pool for consumer processing */
 	private ExecutorService consumersPool;
@@ -214,12 +210,12 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 					}
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
-						getEncodedMessages().offer(textMessage.getText().getBytes());
+						getEventSource().onEncodedEventReceived(textMessage.getText().getBytes());
 					} else if (message instanceof BytesMessage) {
 						BytesMessage bytesMessage = (BytesMessage) message;
 						byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 						bytesMessage.readBytes(buffer);
-						getEncodedMessages().offer(buffer);
+						getEventSource().onEncodedEventReceived(buffer);
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}
@@ -245,18 +241,19 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 		}
 	}
 
+	public IInboundEventSource<byte[]> getEventSource() {
+		return eventSource;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEncodedMessages()
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#setEventSource(com.
+	 * sitewhere.spi.device.provisioning.IInboundEventSource)
 	 */
-	public BlockingQueue<byte[]> getEncodedMessages() {
-		return encodedMessages;
-	}
-
-	public void setEncodedMessages(BlockingQueue<byte[]> encodedMessages) {
-		this.encodedMessages = encodedMessages;
+	public void setEventSource(IInboundEventSource<byte[]> eventSource) {
+		this.eventSource = eventSource;
 	}
 
 	public String getBrokerName() {

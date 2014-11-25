@@ -10,8 +10,6 @@ package com.sitewhere.device.provisioning.socket;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
+import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that creates a server socket and spawns
@@ -37,14 +36,14 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 	/** Default port for server socket */
 	private static final int DEFAULT_PORT = 8484;
 
-	/** Default max requests waiting for system to process */
-	private static final int DEFAULT_MAX_QUEUED_REQUESTS = 100;
-
 	/** Number of threads used to service requests */
 	private int numThreads = DEFAULT_NUM_THREADS;
 
 	/** Port used for server socket */
 	private int port = DEFAULT_PORT;
+
+	/** Parent event source */
+	private IInboundEventSource<T> eventSource;
 
 	/** Classname for handler implementation */
 	private String handler = ReadAllInteractionHandler.class.getName();
@@ -60,9 +59,6 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 
 	/** Handles processing of server requests */
 	private ServerProcessingThread processing;
-
-	/** Queue used to hold messages that are ready for processing */
-	private BlockingQueue<T> queue = new ArrayBlockingQueue<T>(DEFAULT_MAX_QUEUED_REQUESTS);
 
 	/*
 	 * (non-Javadoc)
@@ -111,17 +107,6 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 		LOGGER.info("Socket receiver processing stopped.");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEncodedMessages()
-	 */
-	@Override
-	public BlockingQueue<T> getEncodedMessages() throws SiteWhereException {
-		return queue;
-	}
-
 	/**
 	 * Handles loop that processes server requests.
 	 * 
@@ -168,7 +153,7 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 		public void run() {
 			try {
 				LOGGER.debug("About to process request received on port " + getPort() + ".");
-				createHandlerInstance().process(socket, queue);
+				createHandlerInstance().process(socket, getEventSource());
 				LOGGER.debug("Processing complete.");
 			} catch (SiteWhereException e) {
 				LOGGER.error("Exception processing request in event receiver server socket.", e);
@@ -198,6 +183,21 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 		} catch (IllegalAccessException e) {
 			throw new SiteWhereException(e);
 		}
+	}
+
+	public IInboundEventSource<T> getEventSource() {
+		return eventSource;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#setEventSource(com.
+	 * sitewhere.spi.device.provisioning.IInboundEventSource)
+	 */
+	public void setEventSource(IInboundEventSource<T> eventSource) {
+		this.eventSource = eventSource;
 	}
 
 	public int getNumThreads() {
