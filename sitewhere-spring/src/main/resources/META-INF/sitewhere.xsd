@@ -331,6 +331,15 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="inbound-processing-strategy" type="inboundProcessingStrategyType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						The inbound processing strategy controls how events are moved from
+						event sources into the inbound processing chain.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="registration" type="registrationType">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -543,6 +552,61 @@
 						<xsd:documentation>
 							Number of consumers used to read data from the queue into
 							SiteWhere.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Contains inbound processing strategy implementation -->
+	<xsd:complexType name="inboundProcessingStrategyType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-inbound-processing-strategy"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for inbound processing strategies to allow substitutionGroups -->
+	<xsd:element name="abstract-inbound-processing-strategy" abstract="true"
+		type="abstractInboundProcessingStrategyType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for inbound processing strategy elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common inbound processing strategy information -->
+	<xsd:complexType name="abstractInboundProcessingStrategyType"/>
+	
+	<!-- Configures the default inbound processing strategy -->
+	<xsd:element name="default-inbound-processing-strategy" type="defaultInboundProcessingStrategyType"
+		substitutionGroup="abstract-inbound-processing-strategy">
+		<xsd:annotation>
+			<xsd:documentation>Configures the default inbound processing strategy
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultInboundProcessingStrategyType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractInboundProcessingStrategyType">
+				<xsd:attribute name="numEventProcessorThreads" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Controls the number of threads that submit queued events to the
+							inbound processing chain.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="enableMonitoring" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Enables monitoring output for debugging event processing.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="monitoringIntervalSec" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Number of seconds between monitoring log statements. The
+							'enableMonitoring' attribute must be set to true for this to have an effect.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

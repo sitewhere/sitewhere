@@ -49,7 +49,16 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	private static final int EVENT_PROCESSOR_THREAD_COUNT = 100;
 
 	/** Interval between monitoring log output messages */
-	private static final int MONITORING_INTERVAL_MS = 5000;
+	private static final int MONITORING_INTERVAL_SEC = 5;
+
+	/** Number of thread used for event processing */
+	private int eventProcessorThreadCount = EVENT_PROCESSOR_THREAD_COUNT;
+
+	/** Indicates whether monitoring messages should be logged */
+	private boolean enableMonitoring = false;
+
+	/** Number of seconds between monitoring messages */
+	private int monitoringIntervalSec = MONITORING_INTERVAL_SEC;
 
 	/** Counter for number of events */
 	private AtomicLong eventCount = new AtomicLong();
@@ -80,13 +89,17 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		processorPool = Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT);
-		for (int i = 0; i < EVENT_PROCESSOR_THREAD_COUNT; i++) {
+		processorPool = Executors.newFixedThreadPool(getEventProcessorThreadCount());
+		for (int i = 0; i < getEventProcessorThreadCount(); i++) {
 			processorPool.execute(new BlockingMessageProcessor(queue));
 		}
 		LOGGER.info("Started blocking queue inbound processing strategy with queue size of " + MAX_QUEUE_SIZE
-				+ " and " + EVENT_PROCESSOR_THREAD_COUNT + " threads.");
-		monitorPool.execute(new MonitorOutput());
+				+ " and " + getEventProcessorThreadCount() + " threads.");
+
+		// Only show monitoring data if enabled.
+		if (isEnableMonitoring()) {
+			monitorPool.execute(new MonitorOutput());
+		}
 	}
 
 	/*
@@ -260,6 +273,30 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 		return total / count;
 	}
 
+	public int getEventProcessorThreadCount() {
+		return eventProcessorThreadCount;
+	}
+
+	public void setEventProcessorThreadCount(int eventProcessorThreadCount) {
+		this.eventProcessorThreadCount = eventProcessorThreadCount;
+	}
+
+	public boolean isEnableMonitoring() {
+		return enableMonitoring;
+	}
+
+	public void setEnableMonitoring(boolean enableMonitoring) {
+		this.enableMonitoring = enableMonitoring;
+	}
+
+	public int getMonitoringIntervalSec() {
+		return monitoringIntervalSec;
+	}
+
+	public void setMonitoringIntervalSec(int monitoringIntervalSec) {
+		this.monitoringIntervalSec = monitoringIntervalSec;
+	}
+
 	public class PerformanceWrapper {
 
 		/** Start time for event processing */
@@ -312,7 +349,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 					LOGGER.error(e);
 				}
 				try {
-					Thread.sleep(MONITORING_INTERVAL_MS);
+					Thread.sleep(getMonitoringIntervalSec() * 1000);
 				} catch (InterruptedException e) {
 				}
 			}

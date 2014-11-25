@@ -50,6 +50,11 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 				provisioning.addPropertyValue("inboundEventSources", sources);
 				break;
 			}
+			case InboundProcessingStrategy: {
+				Object strategy = parseInboundProcessingStrategy(child, context);
+				provisioning.addPropertyValue("inboundProcessingStrategy", strategy);
+				break;
+			}
 			case Registration: {
 				Object manager = parseRegistration(child, context);
 				provisioning.addPropertyValue("registrationManager", manager);
@@ -81,6 +86,17 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 	 */
 	protected ManagedList<?> parseEventSources(Element element, ParserContext context) {
 		return new EventSourcesParser().parse(element, context);
+	}
+
+	/**
+	 * Parse the inbound processing strategy configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected Object parseInboundProcessingStrategy(Element element, ParserContext context) {
+		return new InboundProcessingStrategyParser().parse(element, context);
 	}
 
 	/**
@@ -125,6 +141,9 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 
 		/** Event sources list */
 		EventSources("event-sources"),
+
+		/** Inbound processing strategy */
+		InboundProcessingStrategy("inbound-processing-strategy"),
 
 		/** Device registration */
 		Registration("registration"),
