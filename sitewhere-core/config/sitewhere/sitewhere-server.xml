@@ -62,7 +62,7 @@
 				
 				<!-- Event source for protobuf messages over ActiveMQ queue -->
 				<sw:activemq-event-source sourceId="amqp" transportUri="amqp://0.0.0.0:5672"
-					queueName="SITEWHERE.IN">
+					queueName="SITEWHERE.IN" numConsumers="10">
 					<sw:protobuf-event-decoder/>
 				</sw:activemq-event-source>
 			</sw:event-sources>

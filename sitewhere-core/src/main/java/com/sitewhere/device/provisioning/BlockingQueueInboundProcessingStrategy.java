@@ -11,6 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
+import com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent;
 
 /**
  * Implementation of {@link IInboundProcessingStrategy} that uses an
@@ -34,23 +36,42 @@ import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
  * 
  * @author Derek
  */
-public class BlockingQueueInboundProcessingStrategy implements IInboundProcessingStrategy {
+public class BlockingQueueInboundProcessingStrategy implements IInboundProcessingStrategy,
+		IMonitoredPipelineComponent {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BlockingQueueInboundProcessingStrategy.class);
 
 	/** Maximum size of queues */
-	private static final int MAX_QUEUE_SIZE = 1000;
+	private static final int MAX_QUEUE_SIZE = 10000;
 
 	/** Number of threads used for event processing */
-	private static final int EVENT_PROCESSOR_THREAD_COUNT = 10;
+	private static final int EVENT_PROCESSOR_THREAD_COUNT = 100;
 
-	/** Blocking queue of pending event create requests from receivers */
-	private BlockingQueue<IDecodedDeviceEventRequest> queue =
-			new ArrayBlockingQueue<IDecodedDeviceEventRequest>(MAX_QUEUE_SIZE);
+	/** Interval between monitoring log output messages */
+	private static final int MONITORING_INTERVAL_MS = 5000;
+
+	/** Counter for number of events */
+	private AtomicLong eventCount = new AtomicLong();
+
+	/** Counter for number of errors */
+	private AtomicLong errorCount = new AtomicLong();
+
+	/** Total wait time */
+	private AtomicLong totalWaitTime = new AtomicLong();
+
+	/** Total processing time */
+	private AtomicLong totalProcessingTime = new AtomicLong();
+
+	/** Blocking queue of pending event create requests from event sources */
+	private BlockingQueue<PerformanceWrapper> queue = new ArrayBlockingQueue<PerformanceWrapper>(
+			MAX_QUEUE_SIZE);
 
 	/** Thread pool for processing events */
 	private ExecutorService processorPool;
+
+	/** Pool for monitoring thread */
+	private ExecutorService monitorPool = Executors.newSingleThreadExecutor();
 
 	/*
 	 * (non-Javadoc)
@@ -65,6 +86,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 		}
 		LOGGER.info("Started blocking queue inbound processing strategy with queue size of " + MAX_QUEUE_SIZE
 				+ " and " + EVENT_PROCESSOR_THREAD_COUNT + " threads.");
+		monitorPool.execute(new MonitorOutput());
 	}
 
 	/*
@@ -77,6 +99,9 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 		if (processorPool != null) {
 			processorPool.shutdown();
 		}
+		if (monitorPool != null) {
+			monitorPool.shutdown();
+		}
 	}
 
 	/*
@@ -88,7 +113,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 */
 	@Override
 	public void processRegistration(IDecodedDeviceEventRequest request) throws SiteWhereException {
-		queue.offer(request);
+		addRequestToQueue(request);
 	}
 
 	/*
@@ -100,7 +125,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 */
 	@Override
 	public void processDeviceCommandResponse(IDecodedDeviceEventRequest request) throws SiteWhereException {
-		queue.offer(request);
+		addRequestToQueue(request);
 	}
 
 	/*
@@ -112,7 +137,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 */
 	@Override
 	public void processDeviceMeasurements(IDecodedDeviceEventRequest request) throws SiteWhereException {
-		queue.offer(request);
+		addRequestToQueue(request);
 	}
 
 	/*
@@ -124,7 +149,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 */
 	@Override
 	public void processDeviceLocation(IDecodedDeviceEventRequest request) throws SiteWhereException {
-		queue.offer(request);
+		addRequestToQueue(request);
 	}
 
 	/*
@@ -136,7 +161,162 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 */
 	@Override
 	public void processDeviceAlert(IDecodedDeviceEventRequest request) throws SiteWhereException {
-		queue.offer(request);
+		addRequestToQueue(request);
+	}
+
+	/**
+	 * Adds an {@link IDecodedDeviceEventRequest} to the queue, blocking if no space is
+	 * available.
+	 * 
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	protected void addRequestToQueue(IDecodedDeviceEventRequest request) throws SiteWhereException {
+		try {
+			eventCount.incrementAndGet();
+
+			PerformanceWrapper wrapper = new PerformanceWrapper();
+			wrapper.setRequest(request);
+			wrapper.setStartTime(System.currentTimeMillis());
+			queue.put(wrapper);
+		} catch (InterruptedException e) {
+			errorCount.incrementAndGet();
+			throw new SiteWhereException(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#getEventCount()
+	 */
+	@Override
+	public long getEventCount() {
+		return eventCount.get();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#getErrorCount()
+	 */
+	@Override
+	public long getErrorCount() {
+		return errorCount.get();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#getBacklog()
+	 */
+	@Override
+	public long getBacklog() {
+		return queue.size();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#
+	 * getAverageProcessingWaitTime()
+	 */
+	@Override
+	public long getAverageProcessingWaitTime() {
+		long total = totalWaitTime.get();
+		long count = eventCount.get();
+		if (count == 0) {
+			return 0;
+		}
+		return total / count;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#
+	 * getAverageProcessingTime()
+	 */
+	@Override
+	public long getAverageProcessingTime() {
+		return 0;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#
+	 * getAverageDownstreamProcessingTime()
+	 */
+	@Override
+	public long getAverageDownstreamProcessingTime() {
+		long total = totalProcessingTime.get();
+		long count = eventCount.get();
+		if (count == 0) {
+			return 0;
+		}
+		return total / count;
+	}
+
+	public class PerformanceWrapper {
+
+		/** Start time for event processing */
+		private long startTime;
+
+		/** Event request */
+		private IDecodedDeviceEventRequest request;
+
+		public long getStartTime() {
+			return startTime;
+		}
+
+		public void setStartTime(long startTime) {
+			this.startTime = startTime;
+		}
+
+		public IDecodedDeviceEventRequest getRequest() {
+			return request;
+		}
+
+		public void setRequest(IDecodedDeviceEventRequest request) {
+			this.request = request;
+		}
+	}
+
+	/**
+	 * Logs monitor output at a given time interval.
+	 * 
+	 * @author Derek
+	 */
+	public class MonitorOutput implements Runnable {
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					long eventCount = getEventCount();
+					long errorCount = getErrorCount();
+					long backlog = getBacklog();
+					long avgWaitTime = getAverageProcessingWaitTime();
+					long avgProcessingTime = getAverageProcessingTime();
+					long avgDownstreamTime = getAverageDownstreamProcessingTime();
+					String message =
+							String.format(
+									"Count(%5d) Errors(%5d) Backlog(%5d) AvgWait(%5d ms) AvgProc(%5d ms) AvgDS(%5d ms)",
+									eventCount, errorCount, backlog, avgWaitTime, avgProcessingTime,
+									avgDownstreamTime);
+					LOGGER.info(message);
+				} catch (Throwable e) {
+					LOGGER.error(e);
+				}
+				try {
+					Thread.sleep(MONITORING_INTERVAL_MS);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
 	}
 
 	/**
@@ -149,9 +329,9 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	private class BlockingMessageProcessor implements Runnable {
 
 		/** Queue where messages are placed */
-		private BlockingQueue<IDecodedDeviceEventRequest> queue;
+		private BlockingQueue<PerformanceWrapper> queue;
 
-		public BlockingMessageProcessor(BlockingQueue<IDecodedDeviceEventRequest> queue) {
+		public BlockingMessageProcessor(BlockingQueue<PerformanceWrapper> queue) {
 			this.queue = queue;
 		}
 
@@ -172,7 +352,13 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 			}
 			while (true) {
 				try {
-					IDecodedDeviceEventRequest decoded = queue.take();
+					PerformanceWrapper wrapper = queue.take();
+					long wait = System.currentTimeMillis() - wrapper.getStartTime();
+					totalWaitTime.addAndGet(wait);
+
+					long processingStart = System.currentTimeMillis();
+
+					IDecodedDeviceEventRequest decoded = wrapper.getRequest();
 					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
 						SiteWhere.getServer().getInboundEventProcessorChain().onRegistrationRequest(
 								decoded.getHardwareId(), decoded.getOriginator(),
@@ -197,11 +383,17 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 						throw new RuntimeException("Unknown device event type: "
 								+ decoded.getRequest().getClass().getName());
 					}
+
+					long processingTime = System.currentTimeMillis() - processingStart;
+					totalProcessingTime.addAndGet(processingTime);
 				} catch (SiteWhereException e) {
+					errorCount.incrementAndGet();
 					LOGGER.error("Error processing inbound device event.", e);
 				} catch (InterruptedException e) {
+					errorCount.incrementAndGet();
 					LOGGER.warn("Inbound event processing thread interrupted.", e);
 				} catch (Throwable e) {
+					errorCount.incrementAndGet();
 					LOGGER.error("Unhandled exception in inbound event processing.", e);
 				}
 			}

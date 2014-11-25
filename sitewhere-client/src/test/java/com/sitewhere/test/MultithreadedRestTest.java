@@ -43,7 +43,7 @@ public class MultithreadedRestTest {
 					updateState));
 		}
 		for (int i = 0; i < numThreads; ++i) {
-			SiteWhereClientTester.TestResults r = completionService.take().get();
+			completionService.take().get();
 		}
 	}
 }

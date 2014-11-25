@@ -8,6 +8,11 @@
 package com.sitewhere.protobuf.test;
 
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
@@ -33,25 +38,30 @@ import com.sitewhere.spi.SiteWhereException;
 public class ActiveMQTests {
 
 	/** Hardware id for test message */
-	private static final String HARDWARE_ID = "1dbf0bc8-9767-4997-abb3-266217084d03";
+	private static final String HARDWARE_ID = "12cf0747-9530-42f6-b6a7-5db32c3cfa3e";
+
+	/** Nunber of threads for multithreaded tests */
+	private static final int NUM_THREADS = 150;
+
+	/** Nunber of calls performed per thread */
+	private static final int NUM_CALLS_PER_THREAD = 1000;
 
 	@Test
 	public void doJMSTest() throws Exception {
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:1234");
-		javax.jms.Connection connection = connectionFactory.createConnection();
-		connection.start();
+		(new JmsTester(1)).call();
+	}
 
-		Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-		Destination destination = session.createQueue("SITEWHERE.IN");
+	@Test
+	public void doMultithreadedJmsTest() throws Exception {
+		ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+		CompletionService<Void> completionService = new ExecutorCompletionService<Void>(executor);
 
-		MessageProducer producer = session.createProducer(destination);
-
-		BytesMessage message = session.createBytesMessage();
-		message.writeBytes(generateEncodedMeasurementsMessage());
-		producer.send(message);
-
-		session.close();
-		connection.close();
+		for (int i = 0; i < NUM_THREADS; i++) {
+			completionService.submit(new JmsTester(NUM_CALLS_PER_THREAD));
+		}
+		for (int i = 0; i < NUM_THREADS; ++i) {
+			completionService.take().get();
+		}
 	}
 
 	@Test
@@ -69,7 +79,7 @@ public class ActiveMQTests {
 		channel.queueDeclare(queueName, true, false, false, null);
 		channel.queueBind(queueName, exchangeName, routingKey);
 
-		byte[] messageBodyBytes = "Hello, world!".getBytes();
+		byte[] messageBodyBytes = generateEncodedMeasurementsMessage();
 		channel.basicPublish(exchangeName, routingKey, null, messageBodyBytes);
 
 		channel.close();
@@ -81,7 +91,7 @@ public class ActiveMQTests {
 		Messenger messenger = Proton.messenger();
 		messenger.start();
 
-		Data data = new Data(new Binary("Hello, world!".getBytes()));
+		Data data = new Data(new Binary(generateEncodedMeasurementsMessage()));
 
 		Message message = Proton.message();
 		message.setAddress("amqp://127.0.0.1:5672/SITEWHERE.IN");
@@ -108,5 +118,37 @@ public class ActiveMQTests {
 		request.setRequest(mx);
 
 		return (new ProtobufDeviceEventEncoder()).encode(request);
+	}
+
+	public class JmsTester implements Callable<Void> {
+
+		private int messageCount;
+
+		public JmsTester(int messageCount) {
+			this.messageCount = messageCount;
+		}
+
+		@Override
+		public Void call() throws Exception {
+			ActiveMQConnectionFactory connectionFactory =
+					new ActiveMQConnectionFactory("tcp://localhost:1234");
+			javax.jms.Connection connection = connectionFactory.createConnection();
+			connection.start();
+
+			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			Destination destination = session.createQueue("SITEWHERE.IN");
+
+			MessageProducer producer = session.createProducer(destination);
+
+			for (int i = 0; i < messageCount; i++) {
+				BytesMessage message = session.createBytesMessage();
+				message.writeBytes(generateEncodedMeasurementsMessage());
+				producer.send(message);
+			}
+
+			session.close();
+			connection.close();
+			return null;
+		}
 	}
 }

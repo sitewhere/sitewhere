@@ -120,6 +120,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 			consumersPool.execute(consumer);
 			consumers.add(consumer);
 		}
+		LOGGER.info("Created " + consumers.size() + " consumers for processing ActiveMQ messages.");
 	}
 
 	/*

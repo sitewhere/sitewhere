@@ -238,6 +238,11 @@ public class EventSourcesParser {
 		}
 		mq.addPropertyValue("queueName", queueName.getValue());
 
+		Attr numConsumers = element.getAttributeNode("numConsumers");
+		if (numConsumers != null) {
+			mq.addPropertyValue("numConsumers", numConsumers.getValue());
+		}
+
 		return mq.getBeanDefinition();
 	}
 
