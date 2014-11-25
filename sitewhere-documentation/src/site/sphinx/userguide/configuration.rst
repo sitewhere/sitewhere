@@ -140,6 +140,23 @@ commented as shown below:
 Note that the default settings assume a local MongoDB instance running on the default port and using a database
 named **sitewhere**.
 
+Attributes for <mongo-datastore>
+********************************
+The following attributes may be specified for the *<sw:mongo-datastore>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| hostname             | optional | Server hostname for MongoDB instance.            |
+|                      |          | Defaults to *localhost*.                         |
++----------------------+----------+--------------------------------------------------+
+| port                 | optional | Server port for MongoDB instance.                |
+|                      |          | Defaults to *27017*.                             |
++----------------------+----------+--------------------------------------------------+
+| databaseName         | optional | MongoDB database name for SiteWhere storage.     |
+|                      |          | Defaults to *sitewhere*.                         |
++----------------------+----------+--------------------------------------------------+
+
 Configuring an HBase Datastore
 ------------------------------
 To use Apache HBase as the backing datastore, edit the SiteWhere configuration  *<sw:datastore>* section 
@@ -160,6 +177,16 @@ commented as shown below:
 		<sw:hbase-datastore quorum="localhost"/>
 
 Note that you will need to update the quorum address so that SiteWhere can locate your HBase cluster.
+
+Attributes for <hbase-datastore>
+********************************
+The following attributes may be specified for the *<sw:hbase-datastore>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| quorum               | required | Server hostname for HBase ZooKeeper quorum.      |
++----------------------+----------+--------------------------------------------------+
 
 Populating Sample Data
 ----------------------
@@ -219,10 +246,11 @@ Device Provisioning
 -------------------
 In SiteWhere, the term **provisioning** refers to the subsystem that communicates with devices.
 On the inbound side, device data is brought in to the system via **event sources**. The inbound 
-data is converted into SiteWhere events and passed in to the inbound processing chain. On the
-outbound side (as part of the outbound processing chain) commands are sent to external devices 
-via **command destinations**. An **outbound command router** makes the choice of which command 
-destination will be used to deliver the command payload.
+data is converted into SiteWhere events and passed in to the **inbound processing chain** by 
+the **inbound processing strategy**. On the outbound side (as part of the outbound processing 
+chain) commands are sent to external devices via **command destinations**. An **outbound 
+command router** makes the choice of which command destination will be used to deliver the 
+command payload.
 
 Event Sources
 -------------
@@ -256,6 +284,53 @@ decode the message payload into SiteWhere events.
 				topic="SiteWhere/input/protobuf">
 				<sw:decoder ref="protobufEventDecoder"/>
 			</sw:mqtt-event-source>
+         
+Inbound Processing Strategy
+---------------------------
+The inbound processing strategy is responsible for moving events from event sources into the
+inbound processing chain. It is responsible for handling threading and reliably delivering
+events for processing. An inbound processing strategy must implement the 
+`IInboundProcessingStrategy <../apidocs/com/sitewhere/spi/device/provisioning/IInboundProcessingStrategy.html>`_
+interface.
+
+Default Inbound Processing Strategy
+***********************************
+The default inbound processing strategy for SiteWhere CE uses a bounded queue to hold events
+being delivered from event sources. It creates a thread pool that consumes the queue to 
+deliver events to the inbound processing chain. If events are delivered faster than the thread
+pool can process them, the queue will eventually start blocking the event receiver threads.
+Increasing the number of threads for event processing takes load from the queue but increases
+processing load on the core system. SiteWhere CE does not persist the inbound queue, so shutting 
+down the server may result in data loss. SiteWhere EE offers a more advanced inbound processing
+strategy implementation with persistent queues and transactional semantics.
+
+.. code-block:: xml
+   :emphasize-lines: 5-6
+
+   <sw:provisioning>
+   
+         <!-- Inbound Processing Strategy -->
+         <sw:inbound-processing-strategy>
+            <sw:default-inbound-processing-strategy
+               numEventProcessorThreads="150" enableMonitoring="true" monitoringIntervalSec="1"/>
+         </sw:inbound-processing-strategy>
+
+Attributes for <default-inbound-processing-strategy>
+****************************************************
+The following attributes may be specified for the *<sw:default-inbound-processing-strategy>* element.
+      
++--------------------------+----------+----------------------------------------------------+
+| Attribute                | Required | Description                                        |
++==========================+==========+====================================================+
+| numEventProcessorThreads | optional | Number of threads used to process incoming events. |
+|                          |          | Defaults to *100*.                                 |
++--------------------------+----------+----------------------------------------------------+
+| enableMonitoring         | optional | Enables monitoring of event processing in the log. |
+|                          |          | Defaults to *false*.                               |
++--------------------------+----------+----------------------------------------------------+
+| monitoringIntervalSec    | optional | Interval (in seconds) at which monitoring messages |
+|                          |          | are posted. Defaults to *5*.                       |
++--------------------------+----------+----------------------------------------------------+
 
 Command Destinations
 --------------------

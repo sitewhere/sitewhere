@@ -109,9 +109,21 @@
 	<xsd:complexType name="mongoDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="hostname" type="xsd:string"></xsd:attribute>
-				<xsd:attribute name="port" type="xsd:int"></xsd:attribute>
-				<xsd:attribute name="databaseName" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="hostname" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>Server hostname for MongoDB instance.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="port" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Server port for MongoDB instance.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="databaseName" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>MongoDB database name for SiteWhere storage.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
