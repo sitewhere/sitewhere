@@ -93,6 +93,10 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	
+	<listener>
+		<listener-class>com.sitewhere.web.ShutdownListener</listener-class>
+	</listener>
+	
 	<session-config>
 		<session-timeout>60</session-timeout>
 	</session-config>

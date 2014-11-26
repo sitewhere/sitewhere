@@ -123,6 +123,18 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 	public void stop() throws SiteWhereException {
 		LOGGER.info("Stopping device provisioning...");
 
+		// Stop inbound event sources.
+		if (getInboundEventSources() != null) {
+			for (IInboundEventSource<?> processor : getInboundEventSources()) {
+				processor.stop();
+			}
+		}
+
+		// Stop inbound processing strategy.
+		if (getInboundProcessingStrategy() != null) {
+			getInboundProcessingStrategy().stop();
+		}
+
 		// Stop command processing strategy.
 		if (getCommandProcessingStrategy() != null) {
 			getCommandProcessingStrategy().stop();
@@ -132,18 +144,6 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 		if (getCommandDestinations() != null) {
 			for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
 				destination.stop();
-			}
-		}
-
-		// Stop inbound processing strategy.
-		if (getInboundProcessingStrategy() != null) {
-			getInboundProcessingStrategy().stop();
-		}
-
-		// Stop inbound event sources.
-		if (getInboundEventSources() != null) {
-			for (IInboundEventSource<?> processor : getInboundEventSources()) {
-				processor.stop();
 			}
 		}
 

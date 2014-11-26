@@ -302,10 +302,10 @@ public class SiteWhereServer implements ISiteWhereServer {
 	@Override
 	public void stop() throws SiteWhereException {
 		// Disable provisioning.
+		deviceProvisioning.stop();
+		inboundEventProcessorChain.stop();
 		outboundEventProcessorChain.setProcessingEnabled(false);
 		outboundEventProcessorChain.stop();
-		inboundEventProcessorChain.stop();
-		deviceProvisioning.stop();
 
 		// Stop core management implementations.
 		if (getDeviceManagementCacheProvider() != null) {

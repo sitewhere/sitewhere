@@ -115,6 +115,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 		if (monitorPool != null) {
 			monitorPool.shutdown();
 		}
+		LOGGER.info("Stopped blocking queue inbound processing strategy.");
 	}
 
 	/*

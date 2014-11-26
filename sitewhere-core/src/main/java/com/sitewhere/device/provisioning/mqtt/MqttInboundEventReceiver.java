@@ -10,6 +10,8 @@ package com.sitewhere.device.provisioning.mqtt;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.fusesource.mqtt.client.BlockingConnection;
@@ -61,7 +63,7 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 	private BlockingConnection connection;
 
 	/** Used to execute MQTT subscribe in separate thread */
-	private ExecutorService executor = Executors.newSingleThreadExecutor();
+	private ExecutorService executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
 
 	/*
 	 * (non-Javadoc)
@@ -97,6 +99,18 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 
 		// Handle message processing in separate thread.
 		executor.execute(new MqttSubscriptionProcessor());
+	}
+
+	/** Used for naming consumer threads */
+	private class SubscribersThreadFactory implements ThreadFactory {
+
+		/** Counts threads */
+		private AtomicInteger counter = new AtomicInteger();
+
+		public Thread newThread(Runnable r) {
+			return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic()
+					+ ") Receiver " + counter.incrementAndGet());
+		}
 	}
 
 	/**

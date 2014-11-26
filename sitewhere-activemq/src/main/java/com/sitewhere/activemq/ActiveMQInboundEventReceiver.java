@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
@@ -95,6 +97,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 			TransportConnector connector = new TransportConnector();
 			connector.setUri(new URI(getTransportUri()));
 			brokerService.addConnector(connector);
+			brokerService.setUseShutdownHook(false);
 			brokerService.start();
 			startConsumers();
 		} catch (Exception e) {
@@ -109,7 +112,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 	 */
 	protected void startConsumers() throws SiteWhereException {
 		consumers.clear();
-		consumersPool = Executors.newFixedThreadPool(getNumConsumers());
+		consumersPool = Executors.newFixedThreadPool(getNumConsumers(), new ConsumersThreadFactory());
 		for (int i = 0; i < getNumConsumers(); i++) {
 			Consumer consumer = new Consumer();
 			consumer.start();
@@ -148,13 +151,25 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 		}
 	}
 
+	/** Used for naming consumer threads */
+	private class ConsumersThreadFactory implements ThreadFactory {
+
+		/** Counts threads */
+		private AtomicInteger counter = new AtomicInteger();
+
+		public Thread newThread(Runnable r) {
+			return new Thread(r, "SiteWhere ActiveMQ(" + getBrokerName() + ") Consumer "
+					+ counter.incrementAndGet());
+		}
+	}
+
 	/**
 	 * Reads messages from the ActiveMQ queue and puts the binary content on a queue for
 	 * SiteWhere to use.
 	 * 
 	 * @author Derek
 	 */
-	public class Consumer implements Runnable, ExceptionListener {
+	private class Consumer implements Runnable, ExceptionListener {
 
 		/** Connection to ActiveMQ */
 		private Connection connection;
@@ -205,8 +220,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 				try {
 					Message message = consumer.receive();
 					if (message == null) {
-						LOGGER.warn("Consumer received null message. Terminating.");
-						return;
+						break;
 					}
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
@@ -219,7 +233,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					LOGGER.error("Error in ActiveMQ message processing.", e);
 					return;
 				}
@@ -236,7 +250,6 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 			try {
 				stop();
 			} catch (SiteWhereException e1) {
-				LOGGER.error(e);
 			}
 		}
 	}
