@@ -129,7 +129,7 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 					message.ack();
 					getEventSource().onEncodedEventReceived(message.getPayload());
 				} catch (InterruptedException e) {
-					LOGGER.warn("Device event processor interrupted.", e);
+					break;
 				} catch (Throwable e) {
 					LOGGER.error(e);
 				}
@@ -144,9 +144,10 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		executor.shutdown();
+		executor.shutdownNow();
 		try {
 			connection.disconnect();
+			connection.kill();
 		} catch (Exception e) {
 			LOGGER.error("Error shutting down MQTT device event receiver.", e);
 		}

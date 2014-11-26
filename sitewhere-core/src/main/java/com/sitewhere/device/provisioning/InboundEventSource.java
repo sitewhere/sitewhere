@@ -56,7 +56,7 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.debug("Starting event source...");
+		LOGGER.debug("Starting event source '" + getSourceId() + "'.");
 		if (getInboundProcessingStrategy() == null) {
 			setInboundProcessingStrategy(SiteWhere.getServer().getDeviceProvisioning().getInboundProcessingStrategy());
 		}
@@ -64,7 +64,7 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 			throw new SiteWhereException("No inbound event receivers registered for event source.");
 		}
 		startEventReceiverThreads();
-		LOGGER.debug("Started event source.");
+		LOGGER.debug("Started event source '" + getSourceId() + "'.");
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class InboundEventSource<T> implements IInboundEventSource<T> {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopping inbound event source.");
+		LOGGER.info("Stopping inbound event source '" + getSourceId() + "'.");
 		if (getInboundEventReceivers().size() > 0) {
 			LOGGER.info("Stopping " + getInboundEventReceivers().size() + " event receivers...");
 			for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {

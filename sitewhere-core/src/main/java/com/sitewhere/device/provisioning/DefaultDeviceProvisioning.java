@@ -135,6 +135,11 @@ public class DefaultDeviceProvisioning implements IDeviceProvisioning {
 			getInboundProcessingStrategy().stop();
 		}
 
+		// Stop outbound processing strategy.
+		if (getOutboundProcessingStrategy() != null) {
+			getOutboundProcessingStrategy().stop();
+		}
+
 		// Stop command processing strategy.
 		if (getCommandProcessingStrategy() != null) {
 			getCommandProcessingStrategy().stop();

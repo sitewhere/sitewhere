@@ -11,6 +11,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,12 +60,25 @@ public class BlockingQueueOutboundProcessingStrategy implements IOutboundProcess
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		processorPool = Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT);
+		processorPool =
+				Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT, new ProcessorsThreadFactory());
 		for (int i = 0; i < EVENT_PROCESSOR_THREAD_COUNT; i++) {
 			processorPool.execute(new BlockingDeviceEventProcessor(queue));
 		}
 		LOGGER.info("Started blocking queue outbound processing strategy with queue size of "
 				+ MAX_QUEUE_SIZE + " and " + EVENT_PROCESSOR_THREAD_COUNT + " threads.");
+	}
+
+	/** Used for naming processor threads */
+	private class ProcessorsThreadFactory implements ThreadFactory {
+
+		/** Counts threads */
+		private AtomicInteger counter = new AtomicInteger();
+
+		public Thread newThread(Runnable r) {
+			return new Thread(r, "SiteWhere BlockingQueueOutboundProcessingStrategy Processor "
+					+ counter.incrementAndGet());
+		}
 	}
 
 	/*
@@ -74,7 +89,7 @@ public class BlockingQueueOutboundProcessingStrategy implements IOutboundProcess
 	@Override
 	public void stop() throws SiteWhereException {
 		if (processorPool != null) {
-			processorPool.shutdown();
+			processorPool.shutdownNow();
 		}
 	}
 
@@ -193,7 +208,7 @@ public class BlockingQueueOutboundProcessingStrategy implements IOutboundProcess
 				} catch (SiteWhereException e) {
 					LOGGER.error("Error processing outbound device event.", e);
 				} catch (InterruptedException e) {
-					LOGGER.warn("Outbound event processing thread interrupted.", e);
+					break;
 				} catch (Throwable e) {
 					LOGGER.error("Unhandled exception in outbound event processing.", e);
 				}

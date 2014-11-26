@@ -11,6 +11,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
@@ -89,7 +91,8 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		processorPool = Executors.newFixedThreadPool(getEventProcessorThreadCount());
+		processorPool =
+				Executors.newFixedThreadPool(getEventProcessorThreadCount(), new ProcessorsThreadFactory());
 		for (int i = 0; i < getEventProcessorThreadCount(); i++) {
 			processorPool.execute(new BlockingMessageProcessor(queue));
 		}
@@ -102,6 +105,18 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 		}
 	}
 
+	/** Used for naming processor threads */
+	private class ProcessorsThreadFactory implements ThreadFactory {
+
+		/** Counts threads */
+		private AtomicInteger counter = new AtomicInteger();
+
+		public Thread newThread(Runnable r) {
+			return new Thread(r, "SiteWhere BlockingQueueInboundProcessingStrategy Processor "
+					+ counter.incrementAndGet());
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -110,10 +125,10 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	@Override
 	public void stop() throws SiteWhereException {
 		if (processorPool != null) {
-			processorPool.shutdown();
+			processorPool.shutdownNow();
 		}
 		if (monitorPool != null) {
-			monitorPool.shutdown();
+			monitorPool.shutdownNow();
 		}
 		LOGGER.info("Stopped blocking queue inbound processing strategy.");
 	}
@@ -428,8 +443,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 					errorCount.incrementAndGet();
 					LOGGER.error("Error processing inbound device event.", e);
 				} catch (InterruptedException e) {
-					errorCount.incrementAndGet();
-					LOGGER.warn("Inbound event processing thread interrupted.", e);
+					break;
 				} catch (Throwable e) {
 					errorCount.incrementAndGet();
 					LOGGER.error("Unhandled exception in inbound event processing.", e);

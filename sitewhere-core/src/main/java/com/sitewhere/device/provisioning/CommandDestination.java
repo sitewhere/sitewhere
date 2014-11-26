@@ -87,7 +87,7 @@ public class CommandDestination<T, P> implements ICommandDestination<T, P> {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Starting command destination...");
+		LOGGER.info("Starting command destination '" + getDestinationId() + "'.");
 
 		// Start command execution encoder.
 		if (getCommandExecutionEncoder() == null) {
@@ -115,7 +115,7 @@ public class CommandDestination<T, P> implements ICommandDestination<T, P> {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopping command destination...");
+		LOGGER.info("Stopping command destination '" + getDestinationId() + "'.");
 
 		// Stop command execution encoder.
 		if (getCommandExecutionEncoder() != null) {
