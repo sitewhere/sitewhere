@@ -23,9 +23,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<properties>
-				<maven.javadoc.skip>true</maven.javadoc.skip>
-			</properties>
 			<modules>
 				<module>sitewhere-activemq</module>
 				<module>sitewhere-client</module>
@@ -45,9 +42,6 @@
 		</profile>
 		<profile>
 			<id>withdocs</id>
-			<properties>
-				<maven.javadoc.skip>false</maven.javadoc.skip>
-			</properties>
 			<modules>
 				<module>sitewhere-activemq</module>
 				<module>sitewhere-client</module>
@@ -66,6 +60,54 @@
 				<module>sitewhere-web</module>
 			</modules>
 		</profile>
+
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<properties>
@@ -77,7 +119,6 @@
 		<mule.version>3.4.0</mule.version>
 		<junit.version>4.0</junit.version>
 		<log4j.version>1.2.15</log4j.version>
-		<maven.javadoc.skip>true</maven.javadoc.skip>
 	</properties>
 
 	<licenses>
@@ -108,16 +149,14 @@
 	</organization>
 
 	<distributionManagement>
-		<repository>
-			<id>release-repository</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		</repository>
 		<snapshotRepository>
-			<id>snapshot-repository</id>
-			<name>Maven2 Snapshot Repository</name>
+			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
 	</distributionManagement>
 
 	<dependencies>
@@ -149,5 +188,41 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>false</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
