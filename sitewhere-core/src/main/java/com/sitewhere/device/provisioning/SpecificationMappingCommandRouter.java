@@ -30,6 +30,9 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	/** Map of specification tokens to command destination ids */
 	private Map<String, String> mappings = new HashMap<String, String>();
 
+	/** Default destination for unmapped specifications */
+	private String defaultDestination = null;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -74,12 +77,15 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 		String specToken = device.getSpecificationToken();
 		String destinationId = mappings.get(specToken);
 		if (destinationId == null) {
-			throw new SiteWhereException("No command destination mapping for specification: " + specToken);
+			if (getDefaultDestination() != null) {
+				destinationId = getDefaultDestination();
+			} else {
+				throw new SiteWhereException("No command destination mapping for specification: " + specToken);
+			}
 		}
 		ICommandDestination<?, ?> destination = getDestinations().get(destinationId);
 		if (destination == null) {
-			throw new SiteWhereException("Mapping exists, but no destination found for destination id: "
-					+ destinationId);
+			throw new SiteWhereException("No destination found for destination id: " + destinationId);
 		}
 		return destination;
 	}
@@ -90,5 +96,13 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 
 	public void setMappings(Map<String, String> mappings) {
 		this.mappings = mappings;
+	}
+
+	public String getDefaultDestination() {
+		return defaultDestination;
+	}
+
+	public void setDefaultDestination(String defaultDestination) {
+		this.defaultDestination = defaultDestination;
 	}
 }

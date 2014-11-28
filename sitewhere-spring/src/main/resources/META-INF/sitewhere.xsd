@@ -712,6 +712,14 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
+		<xsd:attribute name="defaultDestination" type="xsd:token" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Allows a default destination to be set for specifications that do
+					not have a specific mapping.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="specificationMappingRouterMappingType">

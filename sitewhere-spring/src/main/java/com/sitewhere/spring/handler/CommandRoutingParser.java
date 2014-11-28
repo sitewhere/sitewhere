@@ -78,6 +78,12 @@ public class CommandRoutingParser {
 	protected BeanDefinition parseSpecificationMappingRouter(Element element, ParserContext context) {
 		BeanDefinitionBuilder router =
 				BeanDefinitionBuilder.rootBeanDefinition(SpecificationMappingCommandRouter.class);
+
+		Attr defaultDestination = element.getAttributeNode("defaultDestination");
+		if (defaultDestination != null) {
+			router.addPropertyValue("defaultDestination", defaultDestination.getValue());
+		}
+
 		ManagedMap<String, String> map = new ManagedMap<String, String>();
 		List<Element> mappings = DomUtils.getChildElementsByTagName(element, "mapping");
 		for (Element mapping : mappings) {
