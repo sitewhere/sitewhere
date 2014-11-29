@@ -29,7 +29,6 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
-import com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent;
 
 /**
  * Implementation of {@link IInboundProcessingStrategy} that uses an
@@ -38,8 +37,7 @@ import com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent;
  * 
  * @author Derek
  */
-public class BlockingQueueInboundProcessingStrategy implements IInboundProcessingStrategy,
-		IMonitoredPipelineComponent {
+public class BlockingQueueInboundProcessingStrategy implements IInboundProcessingStrategy {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BlockingQueueInboundProcessingStrategy.class);
@@ -214,45 +212,38 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get the number of events processed.
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#getEventCount()
+	 * @return
 	 */
-	@Override
 	public long getEventCount() {
 		return eventCount.get();
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get the number of errors in processing.
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#getErrorCount()
+	 * @return
 	 */
-	@Override
 	public long getErrorCount() {
 		return errorCount.get();
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get the number of backlogged requests.
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#getBacklog()
+	 * @return
 	 */
-	@Override
 	public long getBacklog() {
 		return queue.size();
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get the average wait time in milliseconds.
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#
-	 * getAverageProcessingWaitTime()
+	 * @return
 	 */
-	@Override
 	public long getAverageProcessingWaitTime() {
 		long total = totalWaitTime.get();
 		long count = eventCount.get();
@@ -262,24 +253,20 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 		return total / count;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get the average processing time in milliseconds.
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#
-	 * getAverageProcessingTime()
+	 * @return
 	 */
-	@Override
 	public long getAverageProcessingTime() {
 		return 0;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get the average processing time of downstream components.
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IMonitoredPipelineComponent#
-	 * getAverageDownstreamProcessingTime()
+	 * @return
 	 */
-	@Override
 	public long getAverageDownstreamProcessingTime() {
 		long total = totalProcessingTime.get();
 		long count = eventCount.get();
