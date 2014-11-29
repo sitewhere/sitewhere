@@ -19,7 +19,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleListener;
-import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -49,7 +49,7 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		LOGGER.info("Starting Hazelcast instance ...");
-		File sitewhere = SiteWhereServer.getSiteWhereConfigFolder();
+		File sitewhere = TomcatConfigurationResolver.getSiteWhereConfigFolder();
 		File configFile = new File(sitewhere, getConfigFileName());
 		if (!configFile.exists()) {
 			throw new SiteWhereException("Hazelcast configuration file not found. Looking in: "

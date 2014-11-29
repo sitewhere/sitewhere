@@ -8,25 +8,19 @@
 package com.sitewhere.server;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.mule.util.StringMessageUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.io.FileSystemResource;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.user.User;
@@ -36,6 +30,7 @@ import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
@@ -68,14 +63,14 @@ public class SiteWhereServer implements ISiteWhereServer {
 	/** Spring context for server */
 	public static ApplicationContext SERVER_SPRING_CONTEXT;
 
-	/** File name for SiteWhere server config file */
-	public static final String SERVER_CONFIG_FILE_NAME = "sitewhere-server.xml";
-
 	/** Contains version information */
 	private IVersion version;
 
 	/** Provides hierarchical tracing for debugging */
 	private ITracer tracer;
+
+	/** Allows Spring configuration to be resolved */
+	private IConfigurationResolver configurationResolver = new TomcatConfigurationResolver();
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
@@ -132,6 +127,15 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 */
 	public ITracer getTracer() {
 		return tracer;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationResolver()
+	 */
+	public IConfigurationResolver getConfigurationResolver() {
+		return configurationResolver;
 	}
 
 	/*
@@ -222,32 +226,6 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 */
 	public HealthCheckRegistry getHealthCheckRegistry() {
 		return healthCheckRegistry;
-	}
-
-	/**
-	 * Gets the CATALINA/conf/sitewhere folder where configs are stored.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static File getSiteWhereConfigFolder() throws SiteWhereException {
-		String catalina = System.getProperty("catalina.base");
-		if (catalina == null) {
-			throw new SiteWhereException("CATALINA_HOME not set.");
-		}
-		File catFolder = new File(catalina);
-		if (!catFolder.exists()) {
-			throw new SiteWhereException("CATALINA_HOME folder does not exist.");
-		}
-		File confDir = new File(catalina, "conf");
-		if (!confDir.exists()) {
-			throw new SiteWhereException("CATALINA_HOME conf folder does not exist.");
-		}
-		File sitewhereDir = new File(confDir, "sitewhere");
-		if (!confDir.exists()) {
-			throw new SiteWhereException("CATALINA_HOME conf/sitewhere folder does not exist.");
-		}
-		return sitewhereDir;
 	}
 
 	/**
@@ -367,14 +345,7 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		LOGGER.info("Loading Spring configuration ...");
-		File sitewhereConf = getSiteWhereConfigFolder();
-		File serverConfigFile = new File(sitewhereConf, SERVER_CONFIG_FILE_NAME);
-		if (!serverConfigFile.exists()) {
-			throw new SiteWhereException("SiteWhere server configuration not found: "
-					+ serverConfigFile.getAbsolutePath());
-		}
-		SERVER_SPRING_CONTEXT = loadServerApplicationContext(serverConfigFile);
+		SERVER_SPRING_CONTEXT = getConfigurationResolver().resolveSiteWhereContext(getVersion());
 	}
 
 	/**
@@ -608,31 +579,5 @@ public class SiteWhereServer implements ISiteWhereServer {
 		} catch (SiteWhereException e) {
 			LOGGER.warn("Unable to read from device model.", e);
 		}
-	}
-
-	/**
-	 * Load application context from file.
-	 * 
-	 * @param configFile
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected ApplicationContext loadServerApplicationContext(File configFile) throws SiteWhereException {
-		GenericApplicationContext context = new GenericApplicationContext();
-
-		// Plug in custom property source.
-		Map<String, Object> properties = new HashMap<String, Object>();
-		properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
-
-		MapPropertySource source = new MapPropertySource("sitewhere", properties);
-		context.getEnvironment().getPropertySources().addLast(source);
-
-		// Read context from XML configuration file.
-		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
-		reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
-		reader.loadBeanDefinitions(new FileSystemResource(configFile));
-
-		context.refresh();
-		return context;
 	}
 }

@@ -16,9 +16,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.command.CommandResponse;
-import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.asset.AssetMatcher;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
@@ -73,7 +73,7 @@ public class FileSystemDeviceAssetModule implements IAssetModule<HardwareAsset> 
 	 * Reloads list of device assets from the filesystem.
 	 */
 	protected void reload() throws SiteWhereException {
-		File config = SiteWhereServer.getSiteWhereConfigFolder();
+		File config = TomcatConfigurationResolver.getSiteWhereConfigFolder();
 		File assetsFolder = new File(config, IFileSystemAssetModuleConstants.ASSETS_FOLDER);
 		if (!assetsFolder.exists()) {
 			throw new SiteWhereException("Assets subfolder not found. Looking for: "

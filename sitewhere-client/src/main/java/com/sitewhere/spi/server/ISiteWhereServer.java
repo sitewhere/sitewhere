@@ -12,6 +12,7 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
@@ -49,6 +50,13 @@ public interface ISiteWhereServer extends ISiteWhereLifecycle {
 	 * @return
 	 */
 	public ITracer getTracer();
+
+	/**
+	 * Get class that can be used to location the Spring configuration context.
+	 * 
+	 * @return
+	 */
+	public IConfigurationResolver getConfigurationResolver();
 
 	/**
 	 * Get the user management implementation.
