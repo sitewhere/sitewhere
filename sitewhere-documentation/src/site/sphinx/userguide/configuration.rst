@@ -535,21 +535,72 @@ default configuration is shown below:
 .. code-block:: xml
    :emphasize-lines: 6
 
-		<sw:provisioning>
+   <sw:provisioning>
 					
-			<sw:outbound-processing-chain>
+      <sw:outbound-processing-chain>
 			
-				<!-- Routes commands for provisioning -->
-				<sw:provisioning-event-processor/>
+         <!-- Routes commands for provisioning -->
+         <sw:provisioning-event-processor/>
 				
-				<!-- Send outbound device events over Hazelcast -->
-				<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
+         <!-- Send outbound device events over Hazelcast -->
+         <sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
 	
-			</sw:outbound-processing-chain>
+      </sw:outbound-processing-chain>
 
 This example also shows the addition of a custom outbound event processor which references a Spring bean
 defined elsewhere in the configuration. Events will be passed to the custom processor after they have
 been processed by the provisioning processor.
+
+Zone Test Event Processor
+-------------------------
+The *<sw:zone-test-event-processor/>* outbound event processor is used to test location events against
+a list of predefined zones to verify if they fall within the zone boundaries. Each location event is
+tested against the conditions defined in the list of *<sw:zone-test/>* elements. The zone tests
+specify the unique token of the zone to test against (defined via the admin interface or REST services)
+and the test condition (inside or outside the zone). If the condition is met, a new alert event is 
+created based on the alert attributes in the test. The alert event can be processed like any other
+alert entering the system, allowing other outbound processing components to handle reaction to the
+zone condition.
+
+.. code-block:: xml
+   :emphasize-lines: 9-12
+ 
+   <sw:provisioning>
+   
+      <sw:outbound-processing-chain>
+      
+         <!-- Routes commands for provisioning -->
+         <sw:provisioning-event-processor/>
+         
+         <!-- Performs zone checking for locations -->
+         <sw:zone-test-event-processor>
+            <sw:zone-test zoneToken="777fa4e5-bc2f-458b-9968-b598b2e2d2ca" condition="outside"
+               alertLevel="error" alertType="off.site" alertMessage="Asset has left the worksite."/>
+         </sw:zone-test-event-processor>
+
+In the example above, each location will be checked against the zone defined by the given zone token.
+If the location is outside the given zone (in this case the worksite where an asset is deployed), an
+alert is fired. The alert is an error of type 'off.site' an includes an alert message. If an asset 
+goes offsite, the alert event can be used for reactions such as firing an SMS message or sending 
+an audible alarm to a device on the worksite.
+ 
+The following attributes may be specified for the *<sw:zone-test>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| zoneToken            | required | Unique token for zone to test.                   |
++----------------------+----------+--------------------------------------------------+
+| condition            | required | Condition for test.                              |
+|                      |          | Either *inside* or *outside*.                    |
++----------------------+----------+--------------------------------------------------+
+| alertType            | required | Alert type for generated alert.                  |
++----------------------+----------+--------------------------------------------------+
+| alertLevel           | optional | Alert level for generated alert.                 |
+|                      |          | Defaults to *error*.                             |
++----------------------+----------+--------------------------------------------------+
+| alertMessage         | required | Alert message for generated alert.               |
++----------------------+----------+--------------------------------------------------+
 
 Broadcasting Events via Hazelcast
 ---------------------------------
