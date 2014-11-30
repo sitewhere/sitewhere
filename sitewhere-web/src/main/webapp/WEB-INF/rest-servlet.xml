@@ -17,7 +17,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<context:annotation-config/>
 	
 	<!-- Swagger Configuration -->
-	<context:property-placeholder location="file:${catalina.home}/conf/sitewhere/swagger.properties"/>
 	<context:component-scan base-package="com.sitewhere.web.rest"/>
 	<bean class="com.sitewhere.web.swagger.SiteWhereSwaggerConfig"/>
 	
