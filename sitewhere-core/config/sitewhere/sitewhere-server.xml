@@ -61,7 +61,7 @@
 				</sw:mqtt-event-source>
 				
 				<!-- Event source for protobuf messages over ActiveMQ queue -->
-				<sw:activemq-event-source sourceId="amqp" transportUri="amqp://0.0.0.0:5672"
+				<sw:activemq-event-source sourceId="activemq" transportUri="tcp://localhost:1234"
 					queueName="SITEWHERE.IN" numConsumers="10">
 					<sw:protobuf-event-decoder/>
 				</sw:activemq-event-source>
@@ -70,7 +70,7 @@
 			<!-- Inbound Processing Strategy -->
 			<sw:inbound-processing-strategy>
 				<sw:default-inbound-processing-strategy
-					numEventProcessorThreads="150" enableMonitoring="true" monitoringIntervalSec="3"/>
+					numEventProcessorThreads="150" enableMonitoring="false" monitoringIntervalSec="3"/>
 			</sw:inbound-processing-strategy>
 			
 			<!-- Device registration -->
@@ -104,6 +104,15 @@
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>
+
+				<!-- Deliver commands via Twilio SMS message. -->
+				<!-- 
+				<sw:twilio-command-destination destinationId="twilio"
+					accountSid="${twilio.account.sid}" authToken="${twilio.auth.token}" fromPhoneNumber="${twilio.from.phone.number}">
+					<sw:protobuf-command-encoder/>
+					<sw:parameter-extractor ref="externalParameterExtractor"/>
+				</sw:twilio-command-destination>
+			 	-->
 
 			</sw:command-destinations>
 
