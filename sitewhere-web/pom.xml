@@ -178,11 +178,18 @@
 			<version>0.9.0</version>
 		</dependency>
 		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>15.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.1.1</version>
 			<scope>runtime</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -199,19 +206,12 @@
 				<configuration>
 					<warName>sitewhere</warName>
 					<outputDirectory>${project.basedir}/../deploy</outputDirectory>
-					<packagingIncludes>
-						WEB-INF/lib/sitewhere*.jar,
-						WEB-INF/jsp/**,
-						WEB-INF/classes/**,
-						WEB-INF/*.xml,
-						index.*,
-						*.html,
-						css/**,
-						font/**,
-						img/**,
-						lib/**,
-						scripts/**
-					</packagingIncludes>
+					<packagingExcludes>
+						%regex[WEB-INF/lib/jaxb.*],
+						%regex[WEB-INF/lib/jasper.*],
+						%regex[WEB-INF/lib/jsp.*],
+						%regex[WEB-INF/lib/servlet.*]
+					</packagingExcludes>
 				</configuration>
 				<executions>
 					<execution>
