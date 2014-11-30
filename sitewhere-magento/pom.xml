@@ -25,18 +25,6 @@
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-client</artifactId>
-			<version>3.0.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-simple</artifactId>
-			<version>3.0.2</version>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
