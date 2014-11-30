@@ -15,8 +15,8 @@
 	</xsd:element>
 
 	<xsd:complexType name="configurationType">
-		<xsd:all>
-			<xsd:element name="datastore" type="datastoreType" minOccurs="0">
+		<xsd:all minOccurs="0">
+			<xsd:element name="datastore" type="datastoreType">
 				<xsd:annotation>
 					<xsd:documentation>
 						Provides information about how SiteWhere data is to be persisted
@@ -25,7 +25,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="provisioning" type="provisioningType" minOccurs="0">
+			<xsd:element name="provisioning" type="provisioningType">
 				<xsd:annotation>
 					<xsd:documentation>
 						Provisioning includes receiving inbound event data and registering
@@ -33,8 +33,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType"
-				minOccurs="0">
+			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType">
 				<xsd:annotation>
 					<xsd:documentation>
 						A chain of processors through which all inbound device information
@@ -43,8 +42,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType"
-				minOccurs="0">
+			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType">
 				<xsd:annotation>
 					<xsd:documentation>
 						A chain of processors through which all outbound device events are
@@ -53,7 +51,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="asset-management" type="assetManagementType" minOccurs="0">
+			<xsd:element name="asset-management" type="assetManagementType">
 				<xsd:annotation>
 					<xsd:documentation>
 						Specifies details related to the asset management subsystem
@@ -66,9 +64,9 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="datastoreType">
-		<xsd:sequence>
+		<xsd:all>
 			<xsd:element ref="abstract-datastore"/>
-			<xsd:element ref="abstract-cache" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="abstract-cache" minOccurs="0"/>
 			<xsd:element minOccurs="0" name="default-device-model-initializer" type="defaultDeviceModelInitializerType">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -83,7 +81,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-		</xsd:sequence>
+		</xsd:all>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
