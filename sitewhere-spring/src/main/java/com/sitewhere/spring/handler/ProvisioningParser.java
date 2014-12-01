@@ -36,8 +36,7 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 	 */
 	@Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		BeanDefinitionBuilder provisioning =
-				BeanDefinitionBuilder.rootBeanDefinition(DefaultDeviceProvisioning.class);
+		BeanDefinitionBuilder provisioning = createBuilder();
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -75,6 +74,16 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_PROVISIONING,
 				provisioning.getBeanDefinition());
 		return null;
+	}
+
+	/**
+	 * Creates the {@link BeanDefinitionBuilder} that will be populated with nested
+	 * provisioning elements.
+	 * 
+	 * @return
+	 */
+	protected BeanDefinitionBuilder createBuilder() {
+		return BeanDefinitionBuilder.rootBeanDefinition(DefaultDeviceProvisioning.class);
 	}
 
 	/**

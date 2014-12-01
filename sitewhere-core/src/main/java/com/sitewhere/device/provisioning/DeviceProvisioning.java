@@ -10,8 +10,6 @@ package com.sitewhere.device.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -31,9 +29,6 @@ import com.sitewhere.spi.device.provisioning.IRegistrationManager;
  * @author Derek
  */
 public abstract class DeviceProvisioning implements IDeviceProvisioning {
-
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceProvisioning.class);
 
 	/** Configured registration manager */
 	private IRegistrationManager registrationManager;
@@ -63,8 +58,6 @@ public abstract class DeviceProvisioning implements IDeviceProvisioning {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Starting device provisioning...");
-
 		// Start command processing strategy.
 		if (getCommandProcessingStrategy() == null) {
 			throw new SiteWhereException("No command processing strategy configured for provisioning.");
@@ -109,8 +102,6 @@ public abstract class DeviceProvisioning implements IDeviceProvisioning {
 				processor.start();
 			}
 		}
-
-		LOGGER.info("Started device provisioning.");
 	}
 
 	/*
@@ -120,8 +111,6 @@ public abstract class DeviceProvisioning implements IDeviceProvisioning {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopping device provisioning...");
-
 		// Stop inbound event sources.
 		if (getInboundEventSources() != null) {
 			for (IInboundEventSource<?> processor : getInboundEventSources()) {
@@ -150,8 +139,6 @@ public abstract class DeviceProvisioning implements IDeviceProvisioning {
 				destination.stop();
 			}
 		}
-
-		LOGGER.info("Stopped device provisioning.");
 	}
 
 	/*

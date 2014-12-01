@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -34,7 +35,16 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
-				continue;
+				NamespaceHandler nested =
+						context.getReaderContext().getNamespaceHandlerResolver().resolve(
+								child.getNamespaceURI());
+				if (nested != null) {
+					nested.parse(child, context);
+					continue;
+				} else {
+					throw new RuntimeException("Invalid nested element found in 'configuration' section: "
+							+ child.toString());
+				}
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {

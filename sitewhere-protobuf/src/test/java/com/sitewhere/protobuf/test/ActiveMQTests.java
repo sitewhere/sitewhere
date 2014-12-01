@@ -38,13 +38,13 @@ import com.sitewhere.spi.SiteWhereException;
 public class ActiveMQTests {
 
 	/** Hardware id for test message */
-	private static final String HARDWARE_ID = "12cf0747-9530-42f6-b6a7-5db32c3cfa3e";
+	private static final String HARDWARE_ID = "12a0f3f9-4e64-4bb4-9ef1-bab65a65f22c";
 
 	/** Nunber of threads for multithreaded tests */
-	private static final int NUM_THREADS = 150;
+	private static final int NUM_THREADS = 40;
 
 	/** Nunber of calls performed per thread */
-	private static final int NUM_CALLS_PER_THREAD = 1000;
+	private static final int NUM_CALLS_PER_THREAD = 500;
 
 	@Test
 	public void doJMSTest() throws Exception {

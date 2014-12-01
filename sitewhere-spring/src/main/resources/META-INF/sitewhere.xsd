@@ -25,14 +25,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="provisioning" type="provisioningType">
-				<xsd:annotation>
-					<xsd:documentation>
-						Provisioning includes receiving inbound event data and registering
-						devices as well as routing, encoding, and delivering device commands.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element ref="abstract-provisioning-implementation"/>
 			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -331,7 +324,19 @@
 		<xsd:attribute name="alertMessage" type="xsd:string" use="required"></xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="provisioningType">
+
+	<!-- Used as a placeholder for provisioning implementations to allow substitutionGroups -->
+	<xsd:element name="abstract-provisioning-implementation" abstract="true"
+		type="abstractProvisioningType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for device provisioning implementation elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common information for device provisioning implementations -->
+	<xsd:complexType name="abstractProvisioningType">
 		<xsd:sequence>
 			<xsd:element name="event-sources" type="eventSourcesType">
 				<xsd:annotation>
@@ -375,6 +380,21 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Default device provisioning implementation -->
+	<xsd:element name="provisioning" type="defaultProvisioningType"
+		substitutionGroup="abstract-provisioning-implementation">
+		<xsd:annotation>
+			<xsd:documentation>Specifies the default device provisioning implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultProvisioningType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractProvisioningType">
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Contains information about inbound event sources -->
