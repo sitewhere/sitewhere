@@ -338,6 +338,56 @@ The following attributes may be specified for the *<sw:activemq-event-source>* e
 |                      |          | data from the queue. Defaults to *3*.            |
 +----------------------+----------+--------------------------------------------------+
 
+Socket Event Source
+*******************
+Many devices connect over direct socket connections to report events. For instance, many
+GPS trackers have cellular connectivity and report location or other events over GPRS.
+The *<sw:socket-event-source/>* can be used to create a server socket which listens
+on a given port, receiving client connections and processing them using a multithreaded
+approach. Socket interactions are often complex and stateful, so the processing is
+delegated to an implementation of 
+`ISocketInteractionHandler <../apidocs/com/sitewhere/spi/device/provisioning/socket/ISocketInteractionHandler.html>`_
+which handles the conversation between device and server. The socket interaction handler
+returns a payload which is passed to the configured decoder to build SiteWhere events.
+
+.. code-block:: xml
+   :emphasize-lines: 7-10
+
+   <sw:provisioning>
+   
+      <!-- Inbound event sources -->
+      <sw:event-sources>
+
+         <!-- Event source for protobuf messages from socket connections -->
+         <sw:socket-event-source port="8585" numThreads="10" sourceId="socket">
+            <sw:read-all-interaction-handler-factory/>
+            <sw:protobuf-event-decoder/>
+         </sw:socket-event-source>
+
+Configuring the *<sw:read-all-interaction-handler-factory/>* reads all of the input from
+the client socket and passes the binary information to the configured decoder. In some cases
+(such as sending payloads in the standard SiteWhere Google Protocol Buffers format) this
+is sufficient. However, in most cases, the user will need to create an interaction handler that
+understands the conversational logic between the device and server. A custom implementation
+can be referenced by using the *<sw:interaction-handler-factory/>* element
+which references a Spring bean that contains the socket interaction handler factory. The factory implements the
+`ISocketInteractionHandlerFactory <../apidocs/com/sitewhere/spi/device/provisioning/socket/ISocketInteractionHandlerFactory.html>`_
+interface and creates instances of the socket interaction handler that manages device 
+conversation.
+
+The following attributes may be specified for the *<sw:socket-event-source>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| sourceId             | required | Unique event source id.                          |
++----------------------+----------+--------------------------------------------------+
+| port                 | optional | Server port to listen on. Defaults to *8484*.    |
++----------------------+----------+--------------------------------------------------+
+| numThreads           | required | Number of threads used to process client         |
+|                      |          | requests. Defaults to *5*.                       |
++----------------------+----------+--------------------------------------------------+
+
 Inbound Processing Strategy
 ---------------------------
 The inbound processing strategy is responsible for moving events from event sources into the
