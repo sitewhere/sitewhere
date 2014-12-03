@@ -71,6 +71,12 @@
 					queueName="SITEWHERE.IN" numConsumers="10">
 					<sw:protobuf-event-decoder/>
 				</sw:activemq-event-source>
+				
+				<!-- Event source for Stomp messages over ActiveMQ queue -->
+				<sw:activemq-event-source sourceId="stomp" transportUri="stomp://localhost:2345?trace=true"
+					queueName="SITEWHERE.STOMP" numConsumers="10">
+					<sw:json-event-decoder/>
+				</sw:activemq-event-source>
 			</sw:event-sources>
 		
 			<!-- Inbound Processing Strategy -->
