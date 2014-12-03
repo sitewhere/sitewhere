@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd?a=22">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd?a=8a">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
@@ -59,6 +59,12 @@
 					topic="SiteWhere/input/jsonbatch">
 					<sw:json-event-decoder/>
 				</sw:mqtt-event-source>
+				
+				<!-- Event source for protobuf messages from socket connections -->
+				<sw:socket-event-source port="8585" numThreads="10" sourceId="socket">
+					<sw:read-all-interaction-handler-factory/>
+					<sw:protobuf-event-decoder/>
+				</sw:socket-event-source>
 				
 				<!-- Event source for protobuf messages over ActiveMQ queue -->
 				<sw:activemq-event-source sourceId="activemq" transportUri="tcp://localhost:1234"

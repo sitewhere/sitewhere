@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.provisioning.socket;
+package com.sitewhere.spi.device.provisioning.socket;
 
 import java.net.Socket;
 

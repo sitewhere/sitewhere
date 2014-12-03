@@ -60,7 +60,7 @@
 											</fileset>
 										</copy>
 										<copy todir="${project.basedir}/../deploy/docs">
-											<fileset dir="${project.basedir}/../sitewhere-client/target/site">
+											<fileset dir="${project.basedir}/../sitewhere-client/target/">
 												<include name="apidocs/**"/>
 											</fileset>
 										</copy>

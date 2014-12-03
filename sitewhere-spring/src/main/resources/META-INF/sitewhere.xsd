@@ -589,6 +589,73 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Reference to an interaction handler factory defined in a Spring bean -->
+	<xsd:complexType name="interactionHandlerFactoryReferenceType">
+		<xsd:attribute name="ref" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Bean that implements the ISocketInteractionHandler interface.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Reads all of the client data from the socket and returns a byte array -->
+	<xsd:complexType name="readAllInteractionHandlerFactoryType">
+	</xsd:complexType>
+
+	<!-- Event source that pulls binary information from a server socket and decodes it -->
+	<xsd:element name="socket-event-source" type="socketEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls binary information from connections to a
+				TCP/IP server socket.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="socketEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:choice>
+						<xsd:element name="interaction-handler-factory" type="interactionHandlerFactoryReferenceType">
+							<xsd:annotation>
+								<xsd:documentation>Reference to an interaction handler factory defined in an
+									external Spring bean. Factory must implement ISocketInteractionHandlerFactory
+									interface.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="read-all-interaction-handler-factory" type="readAllInteractionHandlerFactoryType">
+							<xsd:annotation>
+								<xsd:documentation>Interaction handler that reads all content from the client
+									socket and delivers it to the decoder as a byte array.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:choice>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="port" type="xsd:int" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Port on which the server socket will listen.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="numThreads" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Number of threads used to handle client connections to the server
+							socket.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Contains inbound processing strategy implementation -->
 	<xsd:complexType name="inboundProcessingStrategyType">
 		<xsd:sequence>

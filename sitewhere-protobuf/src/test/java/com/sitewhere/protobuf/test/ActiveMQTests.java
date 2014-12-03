@@ -7,7 +7,6 @@
  */
 package com.sitewhere.protobuf.test;
 
-import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -30,10 +29,6 @@ import org.junit.Test;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventEncoder;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
-import com.sitewhere.rest.model.device.provisioning.DecodedDeviceEventRequest;
-import com.sitewhere.spi.SiteWhereException;
 
 public class ActiveMQTests {
 
@@ -79,7 +74,7 @@ public class ActiveMQTests {
 		channel.queueDeclare(queueName, true, false, false, null);
 		channel.queueBind(queueName, exchangeName, routingKey);
 
-		byte[] messageBodyBytes = generateEncodedMeasurementsMessage();
+		byte[] messageBodyBytes = EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID);
 		channel.basicPublish(exchangeName, routingKey, null, messageBodyBytes);
 
 		channel.close();
@@ -91,7 +86,7 @@ public class ActiveMQTests {
 		Messenger messenger = Proton.messenger();
 		messenger.start();
 
-		Data data = new Data(new Binary(generateEncodedMeasurementsMessage()));
+		Data data = new Data(new Binary(EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID)));
 
 		Message message = Proton.message();
 		message.setAddress("amqp://127.0.0.1:5672/SITEWHERE.IN");
@@ -100,24 +95,6 @@ public class ActiveMQTests {
 
 		messenger.send();
 		messenger.stop();
-	}
-
-	/**
-	 * Generate an encoded measurements message.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected byte[] generateEncodedMeasurementsMessage() throws SiteWhereException {
-		DecodedDeviceEventRequest request = new DecodedDeviceEventRequest();
-		request.setHardwareId(HARDWARE_ID);
-
-		DeviceMeasurementsCreateRequest mx = new DeviceMeasurementsCreateRequest();
-		mx.setEventDate(new Date());
-		mx.addOrReplaceMeasurement("fuel.level", 123.4);
-		request.setRequest(mx);
-
-		return (new ProtobufDeviceEventEncoder()).encode(request);
 	}
 
 	public class JmsTester implements Callable<Void> {
@@ -142,7 +119,7 @@ public class ActiveMQTests {
 
 			for (int i = 0; i < messageCount; i++) {
 				BytesMessage message = session.createBytesMessage();
-				message.writeBytes(generateEncodedMeasurementsMessage());
+				message.writeBytes(EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID));
 				producer.send(message);
 			}
 

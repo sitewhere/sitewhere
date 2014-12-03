@@ -14,6 +14,8 @@ import java.net.Socket;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandler;
+import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
 
 /**
  * Implementation of {@link ISocketInteractionHandler} that reads everything from the
@@ -43,6 +45,26 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
 			eventSource.onEncodedEventReceived(output.toByteArray());
 		} catch (IOException e) {
 			throw new SiteWhereException("Exception processing request in socket interaction handler.", e);
+		}
+	}
+
+	/**
+	 * Factory class that produces {@link ReadAllInteractionHandler} instances.
+	 * 
+	 * @author Derek
+	 */
+	public static class Factory implements ISocketInteractionHandlerFactory<byte[]> {
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory
+		 * #newInstance()
+		 */
+		@Override
+		public ISocketInteractionHandler<byte[]> newInstance() {
+			return new ReadAllInteractionHandler();
 		}
 	}
 }

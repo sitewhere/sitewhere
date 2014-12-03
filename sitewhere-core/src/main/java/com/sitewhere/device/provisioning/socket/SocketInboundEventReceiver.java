@@ -18,6 +18,8 @@ import org.apache.log4j.Logger;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandler;
+import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that creates a server socket and spawns
@@ -45,8 +47,8 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 	/** Parent event source */
 	private IInboundEventSource<T> eventSource;
 
-	/** Classname for handler implementation */
-	private String handler = ReadAllInteractionHandler.class.getName();
+	/** Factory that produces {@link ISocketInteractionHandler} instances */
+	private ISocketInteractionHandlerFactory<T> handlerFactory;
 
 	/** Pool of threads used to service requests */
 	private ExecutorService processingService;
@@ -68,6 +70,10 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 	@Override
 	public void start() throws SiteWhereException {
 		try {
+			if (getHandlerFactory() == null) {
+				throw new SiteWhereException(
+						"No socket interaction handler factory configured for socket event source.");
+			}
 			LOGGER.info("Receiver creating server socket on port " + getPort() + ".");
 			this.server = new ServerSocket(getPort());
 			this.processing = new ServerProcessingThread();
@@ -153,35 +159,11 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 		public void run() {
 			try {
 				LOGGER.debug("About to process request received on port " + getPort() + ".");
-				createHandlerInstance().process(socket, getEventSource());
+				getHandlerFactory().newInstance().process(socket, getEventSource());
 				LOGGER.debug("Processing complete.");
 			} catch (SiteWhereException e) {
 				LOGGER.error("Exception processing request in event receiver server socket.", e);
 			}
-		}
-	}
-
-	/**
-	 * Create an instance of the handler class.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@SuppressWarnings("unchecked")
-	protected ISocketInteractionHandler<T> createHandlerInstance() throws SiteWhereException {
-		try {
-			Class<?> clazz = Class.forName(getHandler());
-			if (!(ISocketInteractionHandler.class.isAssignableFrom(clazz))) {
-				throw new SiteWhereException(
-						"Socket interaction handler does not implement required interface.");
-			}
-			return (ISocketInteractionHandler<T>) clazz.newInstance();
-		} catch (ClassNotFoundException e) {
-			throw new SiteWhereException(e);
-		} catch (InstantiationException e) {
-			throw new SiteWhereException(e);
-		} catch (IllegalAccessException e) {
-			throw new SiteWhereException(e);
 		}
 	}
 
@@ -216,11 +198,11 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 		this.port = port;
 	}
 
-	public String getHandler() {
-		return handler;
+	public ISocketInteractionHandlerFactory<T> getHandlerFactory() {
+		return handlerFactory;
 	}
 
-	public void setHandler(String handler) {
-		this.handler = handler;
+	public void setHandlerFactory(ISocketInteractionHandlerFactory<T> handlerFactory) {
+		this.handlerFactory = handlerFactory;
 	}
 }

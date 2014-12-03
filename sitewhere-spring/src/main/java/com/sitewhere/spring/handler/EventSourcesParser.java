@@ -25,7 +25,10 @@ import org.w3c.dom.Element;
 import com.sitewhere.device.provisioning.BinaryInboundEventSource;
 import com.sitewhere.device.provisioning.json.JsonBatchEventDecoder;
 import com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver;
+import com.sitewhere.device.provisioning.socket.BinarySocketInboundEventReceiver;
+import com.sitewhere.device.provisioning.socket.ReadAllInteractionHandler;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
 
 /**
  * Parses the list of {@link IInboundEventSource} elements used in provisioning.
@@ -76,6 +79,10 @@ public class EventSourcesParser {
 				result.add(parseActiveMQEventSource(child, context));
 				break;
 			}
+			case SocketEventSource: {
+				result.add(parseSocketEventSource(child, context));
+				break;
+			}
 			case MqttEventSource: {
 				result.add(parseMqttEventSource(child, context));
 				break;
@@ -112,12 +119,7 @@ public class EventSourcesParser {
 				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 		// Verify that a sourceId was provided and set it on the bean.
-		Attr sourceId = element.getAttributeNode("sourceId");
-		if (sourceId == null) {
-			throw new RuntimeException("No 'sourceId' attribute specified for event source: "
-					+ element.toString());
-		}
-		source.addPropertyValue("sourceId", sourceId.getValue());
+		parseEventSourceId(element, source);
 
 		// Create MQTT event receiver bean and register it.
 		AbstractBeanDefinition receiver = createMqttEventReceiver(element);
@@ -182,12 +184,7 @@ public class EventSourcesParser {
 				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
 
 		// Verify that a sourceId was provided and set it on the bean.
-		Attr sourceId = element.getAttributeNode("sourceId");
-		if (sourceId == null) {
-			throw new RuntimeException("No 'sourceId' attribute specified for event source: "
-					+ element.toString());
-		}
-		source.addPropertyValue("sourceId", sourceId.getValue());
+		parseEventSourceId(element, source);
 
 		// Create ActiveMQ event receiver bean and register it.
 		AbstractBeanDefinition receiver = createActiveMQEventReceiver(element);
@@ -247,6 +244,150 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Parse a socket event source.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseSocketEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source =
+				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create socket event receiver bean and register it.
+		AbstractBeanDefinition receiver = createSocketEventReceiver(element, context);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException("No event decoder specified for socket event source: "
+					+ element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Create socket event receiver from XML element.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition createSocketEventReceiver(Element element, ParserContext context) {
+		BeanDefinitionBuilder socket =
+				BeanDefinitionBuilder.rootBeanDefinition(BinarySocketInboundEventReceiver.class);
+
+		Attr port = element.getAttributeNode("port");
+		if (port != null) {
+			socket.addPropertyValue("port", port.getValue());
+		}
+
+		Attr numThreads = element.getAttributeNode("numThreads");
+		if (numThreads != null) {
+			socket.addPropertyValue("numThreads", numThreads.getValue());
+		}
+
+		// Parse configured socket interaction handler factory if available.
+		parseSocketInteractionHandlerFactory(element, context, socket);
+
+		return socket.getBeanDefinition();
+	}
+
+	/**
+	 * Parse a socket interaction handler factory from the list of possibilities.
+	 * 
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 * @return
+	 */
+	protected boolean parseSocketInteractionHandlerFactory(Element parent, ParserContext context,
+			BeanDefinitionBuilder source) {
+		List<Element> children = DomUtils.getChildElements(parent);
+		for (Element child : children) {
+			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+				NamespaceHandler nested =
+						context.getReaderContext().getNamespaceHandlerResolver().resolve(
+								child.getNamespaceURI());
+				if (nested != null) {
+					BeanDefinition factoryBean = nested.parse(child, context);
+					String factoryName = nameGenerator.generateBeanName(factoryBean, context.getRegistry());
+					context.getRegistry().registerBeanDefinition(factoryName, factoryBean);
+					source.addPropertyReference("handlerFactory", factoryName);
+					return true;
+				} else {
+					continue;
+				}
+			}
+			BinarySocketInteractionHandlers type =
+					BinarySocketInteractionHandlers.getByLocalName(child.getLocalName());
+			if (type == null) {
+				continue;
+			}
+			switch (type) {
+			case InteractionHandlerFactoryReference: {
+				parseInteractionHandlerFactoryReference(parent, child, context, source);
+				return true;
+			}
+			case ReadAllInteractionHandlerFactory: {
+				parseReadAllFactory(parent, child, context, source);
+				return true;
+			}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Parse reference to an external {@link ISocketInteractionHandlerFactory} bean.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseInteractionHandlerFactoryReference(Element parent, Element decoder,
+			ParserContext context, BeanDefinitionBuilder source) {
+		Attr factoryRef = decoder.getAttributeNode("ref");
+		if (factoryRef == null) {
+			throw new RuntimeException("Socket interaction handler factory 'ref' attribute is required.");
+		}
+		LOGGER.debug("Configuring reference to " + factoryRef.getValue() + " for " + parent.getLocalName());
+		source.addPropertyReference("handlerFactory", factoryRef.getValue());
+	}
+
+	/**
+	 * Parse configuration for {@link ReadAllInteractionHandler} factory implementation.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseReadAllFactory(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring 'read all' socket interaction handler factory for " + parent.getLocalName());
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition(ReadAllInteractionHandler.Factory.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("handlerFactory", name);
+	}
+
+	/**
 	 * Parse a binary decoder from the list of possibilities.
 	 * 
 	 * @param decoder
@@ -273,7 +414,7 @@ public class EventSourcesParser {
 			}
 			BinaryDecoders type = BinaryDecoders.getByLocalName(child.getLocalName());
 			if (type == null) {
-				return false;
+				continue;
 			}
 			switch (type) {
 			case ProtobufDecoder: {
@@ -350,6 +491,21 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Verify that a 'sourceId' was provided and set it on the bean.
+	 * 
+	 * @param element
+	 * @param builder
+	 */
+	protected void parseEventSourceId(Element element, BeanDefinitionBuilder builder) {
+		Attr sourceId = element.getAttributeNode("sourceId");
+		if (sourceId == null) {
+			throw new RuntimeException("No 'sourceId' attribute specified for event source: "
+					+ element.toString());
+		}
+		builder.addPropertyValue("sourceId", sourceId.getValue());
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -361,6 +517,9 @@ public class EventSourcesParser {
 
 		/** ActiveMQ event source */
 		ActiveMQEventSource("activemq-event-source"),
+
+		/** Socket event source */
+		SocketEventSource("socket-event-source"),
 
 		/** Event source */
 		MqttEventSource("mqtt-event-source");
@@ -415,6 +574,44 @@ public class EventSourcesParser {
 
 		public static BinaryDecoders getByLocalName(String localName) {
 			for (BinaryDecoders value : BinaryDecoders.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
+
+	/**
+	 * Expected binary socket interaction handler elements.
+	 * 
+	 * @author Derek
+	 */
+	public static enum BinarySocketInteractionHandlers {
+
+		/** Reference to a socket interaction handler factory defined in a Spring bean */
+		InteractionHandlerFactoryReference("interaction-handler-factory"),
+
+		/** Produces socket interaction handlers that read all data from the client socket */
+		ReadAllInteractionHandlerFactory("read-all-interaction-handler-factory");
+
+		/** Event code */
+		private String localName;
+
+		private BinarySocketInteractionHandlers(String localName) {
+			this.localName = localName;
+		}
+
+		public static BinarySocketInteractionHandlers getByLocalName(String localName) {
+			for (BinarySocketInteractionHandlers value : BinarySocketInteractionHandlers.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}
