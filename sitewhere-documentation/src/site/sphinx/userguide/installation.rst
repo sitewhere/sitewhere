@@ -1,6 +1,6 @@
-==============
- Installation
-==============
+============
+Installation
+============
 SiteWhere provides many options for installation depending on user requirements. There are options
 for running SiteWhere in the cloud, as a local server, installed within an existing Tomcat instance,
 or running as a virtual machine.
@@ -44,20 +44,20 @@ as `Cloudera <http://www.cloudera.com>`_ or `Hortonworks <http://hortonworks.com
 ---------------------------------
 Using an Existing Tomcat Instance
 ---------------------------------
-Rather than installing the complete SiteWhere server bundle that includes its own Tomcat instance, SiteWhere may
-also be installed into an existing Tomcat instance. First, download the server bundle for the version of SiteWhere
-required and unzip/untar the archive to access its contents. SiteWhere requires additional libraries be added to
-the standard classpath, so follow the next steps to add them:
+Starting with version 1.0.0, SiteWhere may be installed as a web archive in an existing Tomcat
+instance rather than requiring the full server installation. Versions prior to 1.0.0 required
+a Tomcat installation with a custom classpath since most dependencies were not stored in the
+web archive.
 
-1) Copy the **sitewhere** and **mule** folder hierarchies into the root folder of your Tomcat instance.
-2) Overwrite (or append) the following line into the **catalina.properties** for the shared loader configuration:
+To build and install SiteWhere:
 
-.. code-block:: properties
-
-  shared.loader=${catalina.home}/sitewhere/*.jar,${catalina.home}/sitewhere/hbase-default/*.jar,${catalina.home}/mule/mule/*.jar,${catalina.home}/mule/opt/*.jar,${catalina.home}/mule/shared/default/*.jar,${catalina.home}/mule/user/*.jar
-
-3) Copy the SiteWhere configuration directory from **conf/sitewhere** in the server distro to the same location in your Tomcat installation.
-4) Copy **webapps/sitewhere.war** in the server distro to the same location in your Tomcat installation.
+1) Clone SiteWhere Community Edition from *https://github.com/sitewhere/sitewhere.git*.
+2) Install Maven and execute *mvn clean install* at the root of the project.
+3) Copy *deploy/sitewhere.war* (generated from the Maven build) into your Tomcat *webapps* directory.
+4) Copy the SiteWhere configuration files from *sitewhere-core/config*
+   (*https://github.com/sitewhere/sitewhere/tree/master/sitewhere-core/config*) 
+   into the *conf* folder of your Tomcat installation.
+5) Install the database as outlined above.
 
 After completing the above steps, start your Tomcat instance. There will be detailed output in the log file indicating
 that SiteWhere has been loaded and properly configured. At this point SiteWhere should behave as if installed as a 
