@@ -38,42 +38,39 @@ been configured to broadcast all processed events via Hazelcast.
 
 .. code-block:: xml
 
-	<?xml version="1.0" encoding="UTF-8"?>
-	<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:context="http://www.springframework.org/schema/context" xmlns:sw="http://www.sitewhere.com/schema/sitewhere"
-		xsi:schemaLocation="
-	           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-	           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
-	           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-	           http://www.sitewhere.com/schema/sitewhere http://www.sitewhere.org/schema/sitewhere/0.9.7/sitewhere.xsd">
-	           
-		<!-- Load property values for substitution -->
-		<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"/>
-		
-		<!-- SiteWhere schema-based configuration -->
-		<sw:configuration>
-			
-			<sw:outbound-processing-chain>
-				
-				<!-- Reference to Spring bean declared later in the file -->
-				<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
-	
-			</sw:outbound-processing-chain>
-	
-		</sw:configuration>
-	
-		<!-- Provides access to a local Hazelcast instance for SiteWhere -->
-		<bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
-			<property name="configFileName" value="hazelcast.xml"/>
-		</bean>
-		
-	 	<!-- Broadcasts SiteWhere state over Hazelcast -->
-		<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
-			<property name="configuration" ref="hazelcastConfig"/>
-		</bean>
-	
-	</beans>
-
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:context="http://www.springframework.org/schema/context" xmlns:sw="http://www.sitewhere.com/schema/sitewhere/ce"
+      xsi:schemaLocation="
+              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd">
+      
+      <sw:configuration>
+               
+         <sw:outbound-processing-chain>
+         
+            <!-- Send outbound device events over Hazelcast -->
+            <sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
+   
+         </sw:outbound-processing-chain>
+   
+      </sw:configuration>
+   
+      <!-- Provides access to a local Hazelcast instance for SiteWhere -->
+      <bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
+         <property name="configFileName" value="hazelcast.xml"/>
+      </bean>
+   
+   
+      <!-- Broadcasts SiteWhere state over Hazelcast -->
+      <bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
+         <property name="configuration" ref="hazelcastConfig"/>
+      </bean>
+   
+   </beans>
+   
 Moving Sensitive Data Outside the Configuration
 -----------------------------------------------
 SiteWhere configuration files often contain login credentials or other information that should not
