@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce-dev/1.0.0/sitewhere.xsd?a=8b">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce-dev/1.0.0/sitewhere.xsd?a=8d">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
@@ -165,7 +165,7 @@
 			 -->
 			
 			<!-- Send outbound device events over Hazelcast -->
-			<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
+			<sw:hazelcast-event-processor/>
 
 		</sw:outbound-processing-chain>
 		
@@ -194,11 +194,6 @@
 	<!-- ############################# -->
 	<!-- # OUTBOUND EVENT PROCESSING # -->
 	<!-- ############################# -->
-
-	<!-- Broadcasts SiteWhere state over Hazelcast -->
-	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
-		<property name="configuration" ref="swHazelcastConfiguration"/>
-	</bean>
 
 	<!-- Indexes SiteWhere events in Solr -->
 	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">

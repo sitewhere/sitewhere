@@ -15,8 +15,8 @@
 	</xsd:element>
 
 	<xsd:complexType name="configurationType">
-		<xsd:all minOccurs="0">
-			<xsd:element name="globals" type="globalsType">
+		<xsd:all>
+			<xsd:element name="globals" type="globalsType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Global configuration settings for external services that SiteWhere
@@ -331,6 +331,23 @@
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Hazelcast outbound event processor -->
+	<xsd:element name="hazelcast-event-processor" type="hazelcastEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to Hazelcast topics for processing by external
+				consumers.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hazelcastEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

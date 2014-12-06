@@ -23,6 +23,8 @@ import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
 import com.sitewhere.device.provisioning.ProvisioningEventProcessor;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
+import com.sitewhere.hazelcast.HazelcastEventProcessor;
+import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.geospatial.ZoneContainment;
@@ -60,6 +62,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 			case ZoneTestEventProcessor: {
 				processors.add(parseZoneTestEventProcessor(child, context));
+				break;
+			}
+			case HazelcastEventProcessor: {
+				processors.add(parseHazelcastEventProcessor(child, context));
 				break;
 			}
 			case ProvisioningEventProcessor: {
@@ -162,6 +168,21 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parse configuration for Hazelcast outbound event processor.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseHazelcastEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(HazelcastEventProcessor.class);
+		processor.addPropertyReference("configuration",
+				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
+		return processor.getBeanDefinition();
+	}
+
+	/**
 	 * Parse configuration for event processor that routes traffic to provisioning
 	 * subsystem.
 	 * 
@@ -187,6 +208,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		/** Tests location values against zones */
 		ZoneTestEventProcessor("zone-test-event-processor"),
+
+		/** Sends outbound events over Hazelcast topics */
+		HazelcastEventProcessor("hazelcast-event-processor"),
 
 		/** Reference to custom inbound event processor */
 		ProvisioningEventProcessor("provisioning-event-processor");
