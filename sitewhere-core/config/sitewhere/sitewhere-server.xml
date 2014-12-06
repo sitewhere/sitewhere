@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd?a=8a">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce-dev/1.0.0/sitewhere.xsd?a=8b">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
@@ -15,6 +15,13 @@
 	<!-- # SITEWHERE CONFIGURATION # -->
 	<!-- ########################### -->
 	<sw:configuration>
+
+		<!-- ################################# -->
+		<!-- # GLOBAL SERVICES CONFIGURATION # -->
+		<!-- ################################# -->
+		<sw:globals>
+			<sw:hazelcast-configuration configFileLocation="${CATALINA_BASE}/conf/sitewhere/hazelcast.xml"/>
+		</sw:globals>
 		
 		<!-- ########################### -->
 		<!-- # DATASTORE CONFIGURATION # -->
@@ -73,8 +80,9 @@
 				</sw:activemq-event-source>
 				
 				<!-- Event source for Stomp messages over ActiveMQ queue -->
-				<sw:activemq-event-source sourceId="stomp" transportUri="stomp://localhost:2345?trace=true"
-					queueName="SITEWHERE.STOMP" numConsumers="10">
+				<sw:activemq-event-source sourceId="stomp"
+					transportUri="stomp://localhost:2345?trace=true" queueName="SITEWHERE.STOMP"
+					numConsumers="10">
 					<sw:json-event-decoder/>
 				</sw:activemq-event-source>
 			</sw:event-sources>
@@ -174,15 +182,6 @@
 
 	</sw:configuration>
 
-	<!-- ########################### -->
-	<!-- # HAZELCAST CONFIGURATION # -->
-	<!-- ########################### -->
-
-	<!-- Provides access to a local Hazelcast instance for SiteWhere -->
-	<bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
-		<property name="configFileName" value="hazelcast.xml"/>
-	</bean>
-
 	<!-- ###################### -->
 	<!-- # SOLR CONFIGURATION # -->
 	<!-- ###################### -->
@@ -198,7 +197,7 @@
 
 	<!-- Broadcasts SiteWhere state over Hazelcast -->
 	<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
-		<property name="configuration" ref="hazelcastConfig"/>
+		<property name="configuration" ref="swHazelcastConfiguration"/>
 	</bean>
 
 	<!-- Indexes SiteWhere events in Solr -->

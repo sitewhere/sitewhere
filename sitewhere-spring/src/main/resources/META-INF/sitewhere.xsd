@@ -16,6 +16,14 @@
 
 	<xsd:complexType name="configurationType">
 		<xsd:all minOccurs="0">
+			<xsd:element name="globals" type="globalsType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Global configuration settings for external services that SiteWhere
+						interacts with.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="datastore" type="datastoreType">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -1036,6 +1044,45 @@
 		<xsd:attribute name="moduleId" type="xsd:string" use="optional"/>
 		<xsd:attribute name="moduleName" type="xsd:string" use="optional"/>
 		<xsd:attribute name="filename" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for global elements to allow substitutionGroups -->
+	<xsd:element name="abstract-global" abstract="true" type="abstractGlobalType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for global elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common global element information -->
+	<xsd:complexType name="abstractGlobalType"/>
+
+	<!-- Contains global configuration elements -->
+	<xsd:complexType name="globalsType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-global" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Configuration data for a MongoDB datastore -->
+	<xsd:element name="hazelcast-configuration" type="hazelcastConfigurationType"
+		substitutionGroup="abstract-global">
+		<xsd:annotation>
+			<xsd:documentation>Global configuration settings for Hazelcasst.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hazelcastConfigurationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractGlobalType">
+				<xsd:attribute name="configFileLocation" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>Path to Hazelcast configuration file.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 </xsd:schema>

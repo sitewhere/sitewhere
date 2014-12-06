@@ -19,7 +19,6 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleListener;
-import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -32,11 +31,11 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereHazelcastConfiguration.class);
 
-	/** Hazelcast XML configuration */
-	private static final String DEFAULT_FILE_NAME = "hazelcast.xml";
+	/** Bean name where global Hazelcast configuration is expected */	
+	public static final String HAZELCAST_CONFIGURATION_BEAN = "swHazelcastConfiguration";
 
-	/** Configuration file name */
-	private String configFileName = DEFAULT_FILE_NAME;
+	/** Configuration file location */
+	private String configFileLocation = null;
 
 	/** Singleton hazelcast instance */
 	private HazelcastInstance instance;
@@ -49,8 +48,7 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		LOGGER.info("Starting Hazelcast instance ...");
-		File sitewhere = TomcatConfigurationResolver.getSiteWhereConfigFolder();
-		File configFile = new File(sitewhere, getConfigFileName());
+		File configFile = new File(getConfigFileLocation());
 		if (!configFile.exists()) {
 			throw new SiteWhereException("Hazelcast configuration file not found. Looking in: "
 					+ configFile.getAbsolutePath());
@@ -77,11 +75,11 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 		return instance;
 	}
 
-	public String getConfigFileName() {
-		return configFileName;
+	public String getConfigFileLocation() {
+		return configFileLocation;
 	}
 
-	public void setConfigFileName(String configFileName) {
-		this.configFileName = configFileName;
+	public void setConfigFileLocation(String configFileLocation) {
+		this.configFileLocation = configFileLocation;
 	}
 }

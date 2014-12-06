@@ -10,18 +10,17 @@ package com.sitewhere.spring.handler;
 import java.util.List;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-/**
- * Parses the top-level element for SiteWhere Spring configuration.
- * 
- * @author Derek
- */
-public class ConfigurationParser extends AbstractBeanDefinitionParser {
+import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
+
+public class GlobalsParser extends AbstractBeanDefinitionParser {
 
 	/*
 	 * (non-Javadoc)
@@ -32,8 +31,8 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 	 */
 	@Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		List<Element> children = DomUtils.getChildElements(element);
-		for (Element child : children) {
+		List<Element> dsChildren = DomUtils.getChildElements(element);
+		for (Element child : dsChildren) {
 			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
 				NamespaceHandler nested =
 						context.getReaderContext().getNamespaceHandlerResolver().resolve(
@@ -42,42 +41,42 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 					nested.parse(child, context);
 					continue;
 				} else {
-					throw new RuntimeException("Invalid nested element found in 'configuration' section: "
+					throw new RuntimeException("Invalid nested element found in 'globals' section: "
 							+ child.toString());
 				}
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
-				throw new RuntimeException("Unknown configuration element: " + child.getLocalName());
+				throw new RuntimeException("Unknown globals element: " + child.getLocalName());
 			}
 			switch (type) {
-			case Globals: {
-				new GlobalsParser().parse(child, context);
-				break;
-			}
-			case Datastore: {
-				new DatastoreParser().parse(child, context);
-				break;
-			}
-			case InboundProcessingChain: {
-				new InboundProcessingChainParser().parse(child, context);
-				break;
-			}
-			case OutboundProcessingChain: {
-				new OutboundProcessingChainParser().parse(child, context);
-				break;
-			}
-			case Provisioning: {
-				new ProvisioningParser().parse(child, context);
-				break;
-			}
-			case AssetManagement: {
-				new AssetManagementParser().parse(child, context);
+			case HazelcastConfiguration: {
+				parseHazelcastConfiguration(child, context);
 				break;
 			}
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Parse the global Hazelcast configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseHazelcastConfiguration(Element element, ParserContext context) {
+		BeanDefinitionBuilder config =
+				BeanDefinitionBuilder.rootBeanDefinition(SiteWhereHazelcastConfiguration.class);
+
+		Attr configFileLocation = element.getAttributeNode("configFileLocation");
+		if (configFileLocation == null) {
+			throw new RuntimeException("Hazelcast configuration missing 'configFileLocation' attribute.");
+		}
+		config.addPropertyValue("configFileLocation", configFileLocation.getValue());
+
+		context.getRegistry().registerBeanDefinition(
+				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN, config.getBeanDefinition());
 	}
 
 	/**
@@ -87,23 +86,8 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 	 */
 	public static enum Elements {
 
-		/** Globals */
-		Globals("globals"),
-
-		/** Datastore */
-		Datastore("datastore"),
-
-		/** Inbound processing chain */
-		InboundProcessingChain("inbound-processing-chain"),
-
-		/** Outbound processing chain */
-		OutboundProcessingChain("outbound-processing-chain"),
-
-		/** Provisioning */
-		Provisioning("provisioning"),
-
-		/** Asset management */
-		AssetManagement("asset-management");
+		/** Global Hazelcast configuration */
+		HazelcastConfiguration("hazelcast-configuration");
 
 		/** Event code */
 		private String localName;
