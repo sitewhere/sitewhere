@@ -652,38 +652,35 @@ The following attributes may be specified for the *<sw:zone-test>* element.
 Broadcasting Events via Hazelcast
 ---------------------------------
 SiteWhere has support for broadcasting events over `Hazelcast <http://hazelcast.com/>`_ topics, making it
-easy to share events with external agents. To enable Hazelcast broadcasting, declare the following beans
-in the configuration file anywhere outside of the *<sw:configuration>* block:
+easy to share events with external agents. To enable Hazelcast broadcasting, first add the configuration
+information to the *<sw:globals>* section as shown below:
 
 .. code-block:: xml
+   :emphasize-lines: 4
    
-		<!-- Provides access to a local Hazelcast instance for SiteWhere -->
-		<bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
-			<property name="configFileName" value="hazelcast.xml"/>
-		</bean>
-		
-		<!-- Broadcasts SiteWhere state over Hazelcast -->
-		<bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
-			<property name="configuration" ref="hazelcastConfig"/>
-		</bean>
+   <sw:configuration>
 
-Note that the Hazelcast event processor references a **hazelcast.xml** configuration file. This file
-(located in the same directory as the primary configuration file) may be used to configure Hazelcast options.
-Once the beans have been declared, they may be referenced as part of the outbound processing chain to
+      <sw:globals>
+         <sw:hazelcast-configuration configFileLocation="${CATALINA_BASE}/conf/sitewhere/hazelcast.xml"/>
+      </sw:globals>
+
+Note that the *configFileLocation* attribute specifies the full path to a Hazelcast configuration file.
+The configuration above is the default which assumes SiteWhere is running inside a Tomcat container.
+Once the configuration has been declared, it may be referenced as part of the outbound processing chain to
 enable broadcasting of events.
 
 .. code-block:: xml
    :emphasize-lines: 7
    
-		<sw:outbound-processing-chain>
-		
-			<!-- Routes commands for provisioning -->
-			<sw:provisioning-event-processor/>
-			
-			<!-- Send outbound device events over Hazelcast -->
-			<sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
+   <sw:outbound-processing-chain>
+      
+      <!-- Routes commands for provisioning -->
+      <sw:provisioning-event-processor/>
 
-		</sw:outbound-processing-chain>
+      <!-- Send outbound device events over Hazelcast -->
+      <sw:hazelcast-event-processor/>
+
+   </sw:outbound-processing-chain>
 
 To consume events from the Hazelcast topics, listen on the topic names as defined in 
 `ISiteWhereHazelcast <../apidocs/com/sitewhere/spi/server/hazelcast/ISiteWhereHazelcast.html>`_.
