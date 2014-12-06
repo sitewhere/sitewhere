@@ -19,6 +19,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
+import com.sitewhere.solr.SiteWhereSolrConfiguration;
 
 public class GlobalsParser extends AbstractBeanDefinitionParser {
 
@@ -54,6 +55,10 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 				parseHazelcastConfiguration(child, context);
 				break;
 			}
+			case SolrConfiguration: {
+				parseSolrConfiguration(child, context);
+				break;
+			}
 			}
 		}
 		return null;
@@ -80,6 +85,25 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse the global Solr configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseSolrConfiguration(Element element, ParserContext context) {
+		BeanDefinitionBuilder config =
+				BeanDefinitionBuilder.rootBeanDefinition(SiteWhereSolrConfiguration.class);
+
+		Attr solrServerUrl = element.getAttributeNode("solrServerUrl");
+		if (solrServerUrl != null) {
+			config.addPropertyValue("solrServerUrl", solrServerUrl.getValue());
+		}
+
+		context.getRegistry().registerBeanDefinition(SiteWhereSolrConfiguration.SOLR_CONFIGURATION_BEAN,
+				config.getBeanDefinition());
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -87,7 +111,10 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 	public static enum Elements {
 
 		/** Global Hazelcast configuration */
-		HazelcastConfiguration("hazelcast-configuration");
+		HazelcastConfiguration("hazelcast-configuration"),
+
+		/** Global Solr configuration */
+		SolrConfiguration("solr-configuration");
 
 		/** Event code */
 		private String localName;

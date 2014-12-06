@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce-dev/1.0.0/sitewhere.xsd?a=8d">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce-dev/1.0.0/sitewhere.xsd?a=8f">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
@@ -21,6 +21,7 @@
 		<!-- ################################# -->
 		<sw:globals>
 			<sw:hazelcast-configuration configFileLocation="${CATALINA_BASE}/conf/sitewhere/hazelcast.xml"/>
+			<sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
 		</sw:globals>
 		
 		<!-- ########################### -->
@@ -166,6 +167,11 @@
 			
 			<!-- Send outbound device events over Hazelcast -->
 			<sw:hazelcast-event-processor/>
+			
+			<!-- Index outbound device events in Solr -->
+			<!-- 
+			<sw:solr-event-processor/>
+			 -->
 
 		</sw:outbound-processing-chain>
 		
@@ -182,32 +188,16 @@
 
 	</sw:configuration>
 
-	<!-- ###################### -->
-	<!-- # SOLR CONFIGURATION # -->
-	<!-- ###################### -->
-
-	<!-- Provides connectivity to Solr for components that need it -->
-	<bean id="solrConfig" class="com.sitewhere.solr.SiteWhereSolrConfiguration">
-		<property name="solrServerUrl" value="http://localhost:8983/solr/SiteWhere"/>
-	</bean>
-
-	<!-- ############################# -->
-	<!-- # OUTBOUND EVENT PROCESSING # -->
-	<!-- ############################# -->
-
-	<!-- Indexes SiteWhere events in Solr -->
-	<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
-		<property name="solr" ref="solrConfig"/>
-	</bean>
-
 	<!-- ############################# -->
 	<!-- # EXTERNAL SEARCH PROVIDERS # -->
 	<!-- ############################# -->
 
 	<!-- Configuration for Solr external search provider -->
+	<!--  
 	<bean id="solrSearchProvider" class="com.sitewhere.solr.search.SolrSearchProvider">
-		<property name="solr" ref="solrConfig"/>
+		<property name="solr" ref="swSolrConfiguration"/>
 	</bean>
+	-->
 
 	<!-- Search provider manager and configured external search providers -->
 	<bean id="searchProviderManager" class="com.sitewhere.server.search.SearchProviderManager">

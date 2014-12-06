@@ -26,6 +26,8 @@ import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.solr.SiteWhereSolrConfiguration;
+import com.sitewhere.solr.SolrDeviceEventProcessor;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.geospatial.ZoneContainment;
 
@@ -66,6 +68,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 			case HazelcastEventProcessor: {
 				processors.add(parseHazelcastEventProcessor(child, context));
+				break;
+			}
+			case SolrEventProcessor: {
+				processors.add(parseSolrEventProcessor(child, context));
 				break;
 			}
 			case ProvisioningEventProcessor: {
@@ -183,6 +189,20 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parse configuration for Solr outbound event processor.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseSolrEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(SolrDeviceEventProcessor.class);
+		processor.addPropertyReference("solr", SiteWhereSolrConfiguration.SOLR_CONFIGURATION_BEAN);
+		return processor.getBeanDefinition();
+	}
+
+	/**
 	 * Parse configuration for event processor that routes traffic to provisioning
 	 * subsystem.
 	 * 
@@ -211,6 +231,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		/** Sends outbound events over Hazelcast topics */
 		HazelcastEventProcessor("hazelcast-event-processor"),
+
+		/** Indexes outbound events in Apache Solr */
+		SolrEventProcessor("solr-event-processor"),
 
 		/** Reference to custom inbound event processor */
 		ProvisioningEventProcessor("provisioning-event-processor");

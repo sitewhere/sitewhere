@@ -21,6 +21,9 @@ public class SiteWhereSolrConfiguration implements InitializingBean {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereSolrConfiguration.class);
 
+	/** Bean name where global Solr configuration is expected */
+	public static final String SOLR_CONFIGURATION_BEAN = "swSolrConfiguration";
+
 	/** Default URL for contacting Solr server */
 	private static final String DEFAULT_SOLR_URL = "http://localhost:8983/solr";
 

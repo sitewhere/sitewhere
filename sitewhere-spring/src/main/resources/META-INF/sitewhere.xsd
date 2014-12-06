@@ -352,6 +352,22 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Solr outbound event processor -->
+	<xsd:element name="solr-event-processor" type="solrEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to Apache Solr for indexing.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="solrEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:simpleType name="zoneContainmentType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="inside"/>
@@ -1109,7 +1125,7 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<!-- Configuration data for a MongoDB datastore -->
+	<!-- Configuration data for Hazelcast services -->
 	<xsd:element name="hazelcast-configuration" type="hazelcastConfigurationType"
 		substitutionGroup="abstract-global">
 		<xsd:annotation>
@@ -1123,6 +1139,26 @@
 				<xsd:attribute name="configFileLocation" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>Path to Hazelcast configuration file.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Configuration data for Solr services -->
+	<xsd:element name="solr-configuration" type="solrConfigurationType"
+		substitutionGroup="abstract-global">
+		<xsd:annotation>
+			<xsd:documentation>Global configuration settings for Apache Solr.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="solrConfigurationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractGlobalType">
+				<xsd:attribute name="solrServerUrl" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>URL used by Solr client to access server.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>
