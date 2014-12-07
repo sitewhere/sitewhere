@@ -108,6 +108,69 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<profile>
+			<id>buildServer</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<version>1.2.1</version>
+						<executions>
+							<execution>
+								<id>get-tomcat</id>
+								<phase>compile</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>http://apache.osuosl.org/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.zip</url>
+									<unpack>true</unpack>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+									<md5>f585fb1a782d5d074f855e86570d3309</md5>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<inherited>false</inherited>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<configuration>
+									<target>
+										<delete includeemptydirs="true">
+											<fileset dir="${project.build.directory}/apache-tomcat-7.0.57/webapps"
+												includes="**/*"/>
+										</delete>
+										<copy todir="${project.build.directory}/apache-tomcat-7.0.57/webapps">
+											<fileset dir="${project.basedir}/deploy">
+												<include name="sitewhere.war"/>
+											</fileset>
+										</copy>
+										<copy todir="${project.build.directory}/apache-tomcat-7.0.57/conf">
+											<fileset dir="${project.basedir}/sitewhere-core/config" includes="**/*"/>
+										</copy>
+										<move todir="${project.build.directory}/sitewhere-server-${project.version}">
+											<fileset dir="${project.build.directory}/apache-tomcat-7.0.57"/>
+										</move>
+										<zip destfile="${project.basedir}/deploy/sitewhere-server-${project.version}.zip"
+											basedir="${project.build.directory}" includes="sitewhere-server-${project.version}/**"/>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<properties>
