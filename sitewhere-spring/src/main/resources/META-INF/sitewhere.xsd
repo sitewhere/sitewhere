@@ -61,6 +61,15 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="search-providers" type="searchProvidersType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies a list of external search providers that have indexed
+						SiteWhere data and may be queried via the REST services, returning a list of
+						SiteWhere events.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
 
@@ -1104,6 +1113,58 @@
 		<xsd:attribute name="moduleId" type="xsd:string" use="optional"/>
 		<xsd:attribute name="moduleName" type="xsd:string" use="optional"/>
 		<xsd:attribute name="filename" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for search provider elements to allow substitutionGroups -->
+	<xsd:element name="abstract-search-provider" abstract="true"
+		type="abstractSearchProviderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for search provider elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common search provider element information -->
+	<xsd:complexType name="abstractSearchProviderType">
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Unique id for referencing the search provider.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Name shown in user interface for search provider.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- Specifies list of search providers -->
+	<xsd:complexType name="searchProvidersType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-search-provider" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Apache Solr search provider -->
+	<xsd:element name="solr-search-provider" type="solrSearchProviderType"
+		substitutionGroup="abstract-search-provider">
+		<xsd:annotation>
+			<xsd:documentation>
+				Search provider that sends search requests to Apache Solr and
+				returns the results as matching SiteWhere events.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="solrSearchProviderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractSearchProviderType">
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for global elements to allow substitutionGroups -->

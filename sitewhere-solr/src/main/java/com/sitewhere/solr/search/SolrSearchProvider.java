@@ -44,7 +44,13 @@ public class SolrSearchProvider implements IDeviceEventSearchProvider {
 	private static final String ID = "solr";
 
 	/** Name returned for provider */
-	private static final String NAME = "Apache Solr Search Provider";
+	private static final String NAME = "Apache Solr";
+
+	/** Provider id */
+	private String id = ID;
+
+	/** Provider name */
+	private String name = NAME;
 
 	/** Solr configuration */
 	private SiteWhereSolrConfiguration solr;
@@ -137,9 +143,12 @@ public class SolrSearchProvider implements IDeviceEventSearchProvider {
 	 * 
 	 * @see com.sitewhere.spi.search.external.ISearchProvider#getId()
 	 */
-	@Override
 	public String getId() {
-		return ID;
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	/*
@@ -147,9 +156,12 @@ public class SolrSearchProvider implements IDeviceEventSearchProvider {
 	 * 
 	 * @see com.sitewhere.spi.search.external.ISearchProvider#getName()
 	 */
-	@Override
 	public String getName() {
-		return NAME;
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public SiteWhereSolrConfiguration getSolr() {

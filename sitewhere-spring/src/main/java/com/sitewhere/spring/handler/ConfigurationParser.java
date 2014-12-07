@@ -75,6 +75,10 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 				new AssetManagementParser().parse(child, context);
 				break;
 			}
+			case SearchProviders: {
+				new SearchProvidersParser().parse(child, context);
+				break;
+			}
 			}
 		}
 		return null;
@@ -103,7 +107,10 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 		Provisioning("provisioning"),
 
 		/** Asset management */
-		AssetManagement("asset-management");
+		AssetManagement("asset-management"),
+
+		/** Search providers */
+		SearchProviders("search-providers");
 
 		/** Event code */
 		private String localName;

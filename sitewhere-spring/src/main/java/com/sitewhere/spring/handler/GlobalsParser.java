@@ -21,6 +21,11 @@ import org.w3c.dom.Element;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 
+/**
+ * Parses configuration information for the 'globals' section.
+ * 
+ * @author Derek
+ */
 public class GlobalsParser extends AbstractBeanDefinitionParser {
 
 	/*

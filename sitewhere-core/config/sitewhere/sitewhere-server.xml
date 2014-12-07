@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce-dev/1.0.0/sitewhere.xsd?a=8f">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce-dev/1.0.0/sitewhere.xsd?a=8j">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
@@ -185,28 +185,20 @@
 			<sw:filesystem-person-asset-module/>
 
 		</sw:asset-management>
+		
+		<!-- ############################# -->
+		<!-- # EXTERNAL SEARCH PROVIDERS # -->
+		<!-- ############################# -->
+		<sw:search-providers>
+		
+			<!-- Apache Solr search provider -->
+			<!-- 
+			<sw:solr-search-provider name="Apache Solr" id="solr"/>
+			 -->
+
+		</sw:search-providers>
 
 	</sw:configuration>
-
-	<!-- ############################# -->
-	<!-- # EXTERNAL SEARCH PROVIDERS # -->
-	<!-- ############################# -->
-
-	<!-- Configuration for Solr external search provider -->
-	<!--  
-	<bean id="solrSearchProvider" class="com.sitewhere.solr.search.SolrSearchProvider">
-		<property name="solr" ref="swSolrConfiguration"/>
-	</bean>
-	-->
-
-	<!-- Search provider manager and configured external search providers -->
-	<bean id="searchProviderManager" class="com.sitewhere.server.search.SearchProviderManager">
-		<property name="searchProviders">
-			<list>
-				<!-- <ref bean="solrSearchProvider"/> -->
-			</list>
-		</property>
-	</bean>
            
 	<!-- Import beans specific to the given edition -->
 	<import resource="sitewhere-edition-${sitewhere.edition}.xml"/>
