@@ -692,36 +692,34 @@ the sophisticated search and analytics features it provides. The Solr outbound e
 the `Solrj <https://cwiki.apache.org/confluence/display/solr/Using+SolrJ>`_ library to send each
 outbound event to a Solr instance. The events are stored using a custom SiteWhere document schema,
 allowing event data to be indexed based on its type. For instance, location events are stored with
-geospatial indexes to allow efficient location searches. To enable the Solr event processor, the 
-following beans must be added to the configuration file anywhere outside of the *<sw:configuration>* block:
+geospatial indexes to allow efficient location searches. To enable the Solr event processor, first add the configuration
+information to the *<sw:globals>* section as shown below:
 
 .. code-block:: xml
+   :emphasize-lines: 5
    
-		<!-- Provides connectivity to Solr for components that need it -->
-		<bean id="solrConfig" class="com.sitewhere.solr.SiteWhereSolrConfiguration">
-			<property name="solrServerUrl" value="http://localhost:8983/solr/SiteWhere"/>
-		</bean>
-			
-		<!-- Indexes SiteWhere events in Solr -->
-		<bean id="solrDeviceEventProcessor" class="com.sitewhere.solr.SolrDeviceEventProcessor">
-			<property name="solr" ref="solrConfig"/>
-		</bean>
+   <sw:configuration>
 
-The **solrServerUrl** parameter needs to point to the Solr core being used for SiteWhere data. To
-add the bean to the outbound processing chain, reference it as shown below:
+      <sw:globals>
+         <sw:hazelcast-configuration configFileLocation="${CATALINA_BASE}/conf/sitewhere/hazelcast.xml"/>
+         <sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
+      </sw:globals>
+
+The **solrServerUrl** attribute needs to point to the Solr core being used for SiteWhere data. To
+add the outbound event processor to the chain, reference it as shown below:
 
 .. code-block:: xml
    :emphasize-lines: 7
    
-		<sw:outbound-processing-chain>
+   <sw:outbound-processing-chain>
 		
-			<!-- Routes commands for provisioning -->
-			<sw:provisioning-event-processor/>
+      <!-- Routes commands for provisioning -->
+      <sw:provisioning-event-processor/>
 			
-			<!-- Send outbound device events to Solr -->
-			<sw:outbound-event-processor ref="solrDeviceEventProcessor"/>
+      <!-- Index events in Solr -->
+      <sw:solr-event-processor/>
 
-		</sw:outbound-processing-chain>
+   </sw:outbound-processing-chain>
 
 Note that on system startup, the event processor attempts to ping the Solr server to verify the 
 settings are correct. If the ping fails, server startup will fail.
