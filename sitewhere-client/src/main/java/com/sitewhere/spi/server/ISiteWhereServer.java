@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.server;
 
+import java.util.List;
+
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.spi.ISiteWhereLifecycle;
@@ -113,6 +115,14 @@ public interface ISiteWhereServer extends ISiteWhereLifecycle {
 	 * @return
 	 */
 	public ISearchProviderManager getSearchProviderManager();
+
+	/**
+	 * Get list of components that have registered to participate in the server component
+	 * lifecycle.
+	 * 
+	 * @return
+	 */
+	public List<ISiteWhereLifecycle> getRegisteredLifecycleComponents();
 
 	/**
 	 * Get the metrics registry.

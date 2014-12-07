@@ -28,6 +28,7 @@ import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
+import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
@@ -95,6 +96,9 @@ public class SiteWhereServer implements ISiteWhereServer {
 
 	/** Interface for the search provider manager */
 	private ISearchProviderManager searchProviderManager;
+
+	/** List of components registered to participate in SiteWhere server lifecycle */
+	private List<ISiteWhereLifecycle> registeredLifecycleComponents = new ArrayList<ISiteWhereLifecycle>();
 
 	/** Metric regsitry */
 	private MetricRegistry metricRegistry = new MetricRegistry();
@@ -213,6 +217,15 @@ public class SiteWhereServer implements ISiteWhereServer {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getRegisteredLifecycleComponents()
+	 */
+	public List<ISiteWhereLifecycle> getRegisteredLifecycleComponents() {
+		return registeredLifecycleComponents;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getMetricRegistry()
 	 */
 	public MetricRegistry getMetricRegistry() {
@@ -248,6 +261,12 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
 	 */
 	public void start() throws SiteWhereException {
+
+		// Start all lifecycle components.
+		for (ISiteWhereLifecycle component : getRegisteredLifecycleComponents()) {
+			component.start();
+		}
+
 		// Start core management implementations.
 		getDeviceManagement().start();
 		if (getDeviceManagementCacheProvider() != null) {
@@ -293,6 +312,11 @@ public class SiteWhereServer implements ISiteWhereServer {
 		getUserManagement().stop();
 		getAssetModuleManager().stop();
 		getSearchProviderManager().stop();
+
+		// Start all lifecycle components.
+		for (ISiteWhereLifecycle component : getRegisteredLifecycleComponents()) {
+			component.stop();
+		}
 	}
 
 	/*

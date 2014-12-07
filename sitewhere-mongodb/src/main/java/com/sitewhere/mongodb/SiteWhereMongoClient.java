@@ -7,6 +7,7 @@
  */
 package com.sitewhere.mongodb;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,13 +18,16 @@ import org.springframework.beans.factory.InitializingBean;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
+import com.sitewhere.SiteWhere;
+import com.sitewhere.spi.ISiteWhereLifecycle;
+import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Spring wrapper for initializing a Mongo client used by SiteWhere components.
  * 
  * @author dadams
  */
-public class SiteWhereMongoClient implements InitializingBean {
+public class SiteWhereMongoClient implements InitializingBean, ISiteWhereLifecycle {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereMongoClient.class);
@@ -92,36 +96,61 @@ public class SiteWhereMongoClient implements InitializingBean {
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		this.client = new MongoClient(getHostname(), getPort());
-		List<String> messages = new ArrayList<String>();
-		messages.add("------------------");
-		messages.add("-- MONGO CLIENT --");
-		messages.add("------------------");
-		messages.add("Mongo client initialized. Version: " + client.getVersion());
-		messages.add("Hostname: " + hostname);
-		messages.add("Port: " + port);
-		messages.add("Database Name: " + databaseName);
-		messages.add("");
-		messages.add("-----------------------");
-		messages.add("-- Device Management --");
-		messages.add("-----------------------");
-		messages.add("Device specifications collection name: " + getDeviceSpecificationsCollectionName());
-		messages.add("Device commands collection name: " + getDeviceCommandsCollectionName());
-		messages.add("Devices collection name: " + getDevicesCollectionName());
-		messages.add("Device groups collection name: " + getDeviceGroupsCollectionName());
-		messages.add("Group elements collection name: " + getGroupElementsCollectionName());
-		messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
-		messages.add("Sites collection name: " + getSitesCollectionName());
-		messages.add("Zones collection name: " + getZonesCollectionName());
-		messages.add("Events collection name: " + getEventsCollectionName());
-		messages.add("");
-		messages.add("---------------------");
-		messages.add("-- User Management --");
-		messages.add("---------------------");
-		messages.add("Users collection name: " + getUsersCollectionName());
-		messages.add("Authorities collection name: " + getAuthoritiesCollectionName());
-		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
-		LOGGER.info("\n" + message + "\n");
+		SiteWhere.getServer().getRegisteredLifecycleComponents().add(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+		try {
+			this.client = new MongoClient(getHostname(), getPort());
+			List<String> messages = new ArrayList<String>();
+			messages.add("------------------");
+			messages.add("-- MONGO CLIENT --");
+			messages.add("------------------");
+			messages.add("Mongo client initialized. Version: " + client.getVersion());
+			messages.add("Hostname: " + hostname);
+			messages.add("Port: " + port);
+			messages.add("Database Name: " + databaseName);
+			messages.add("");
+			messages.add("-----------------------");
+			messages.add("-- Device Management --");
+			messages.add("-----------------------");
+			messages.add("Device specifications collection name: " + getDeviceSpecificationsCollectionName());
+			messages.add("Device commands collection name: " + getDeviceCommandsCollectionName());
+			messages.add("Devices collection name: " + getDevicesCollectionName());
+			messages.add("Device groups collection name: " + getDeviceGroupsCollectionName());
+			messages.add("Group elements collection name: " + getGroupElementsCollectionName());
+			messages.add("Device assignments collection name: " + getDeviceAssignmentsCollectionName());
+			messages.add("Sites collection name: " + getSitesCollectionName());
+			messages.add("Zones collection name: " + getZonesCollectionName());
+			messages.add("Events collection name: " + getEventsCollectionName());
+			messages.add("");
+			messages.add("---------------------");
+			messages.add("-- User Management --");
+			messages.add("---------------------");
+			messages.add("Users collection name: " + getUsersCollectionName());
+			messages.add("Authorities collection name: " + getAuthoritiesCollectionName());
+			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+			LOGGER.info("\n" + message + "\n");
+		} catch (UnknownHostException e) {
+			throw new SiteWhereException(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+		client.close();
+		LOGGER.info("Mongo client shutdown completed.");
 	}
 
 	/**
