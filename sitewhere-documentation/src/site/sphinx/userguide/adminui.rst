@@ -510,6 +510,88 @@ to the parent device rather than the nested device.
    :alt: Device Details - Composition
    :align: left
 
+---------------------------
+Managing Device Assignments
+---------------------------
+Device assignments represent the association of a device with a site and (optionally) a 
+physical asset. For example, a badge device can be assigned to an office building and a particular
+person in that building. Events received for a given hardware id are recorded under the
+current device assignment for that device. In the case of the badge example, there would
+be a separate event trail for each person the badge was assigned to. 
+
+Assigning a Device
+------------------
+If a device does not have a current assignment, an **Assign Device** button will appear in
+the asset portion of the device entry as shown below:
+
+.. image:: /_static/images/userguide/device-assign.png
+   :width: 100%
+   :alt: Device Assignment - Assign a Device
+   :align: left
+
+Clicking the button opens a dialog that allows the device to be assigned. The
+**Assignment Details** tab shows the hardware id for the device along with a dropdown
+for choosing which site the device will be assigned to.
+
+.. image:: /_static/images/userguide/device-assign-details.png
+   :width: 100%
+   :alt: Device Assignment - Assignment Details
+   :align: left
+
+Clicking the **Asset Association** tab allows an asset to be associated with the device.
+If the **Associate Asset** checkbox is left unchecked, the device will not be assigned to an asset.
+Otherwise, the list of asset providers is shown in a dropdown. Choose an asset provider and
+then choose an asset from the list for that provider.
+
+.. image:: /_static/images/userguide/device-assign-asset.png
+   :width: 100%
+   :alt: Device Assignment - Asset Association
+   :align: left
+   
+Clicking the **Metadata** tab allows metadata to be created for the assignment. An example of
+assignment metadata is a 'valid through' date for the badge. This can be used by the system to
+fire an alert if the badge is used beyond a given date.
+
+.. image:: /_static/images/userguide/device-assign-metadata.png
+   :width: 100%
+   :alt: Device Assignment - Metadata
+   :align: left
+
+Clicking the **Assign** button at the bottom of the dialog will create the assignment.
+
+Managing Assignments - Assignment Detail
+----------------------------------------
+The assignment detail page can be accessed from the **Assignments** tab for a site or from
+the **Assignment History** tab in the device details page. In both cases, clicking on the
+green arrow at the right of the assignment entry navigates to the **View Assignment** page.
+
+.. image:: /_static/images/userguide/assignment-details.png
+   :width: 100%
+   :alt: Device Assignment - View Assignment
+   :align: left
+
+The **View Assignment** page contains all of the event data related to the given assignment.
+The **Locations**, **Measurements**, **Alerts**, and **Command Invocations** tabs display
+events of each given type for the assignment.
+
+Assignment Detail - Invoke Device Command
+*****************************************
+Clicking the **Command Invocations** tab displays the list of commands that have been issued
+to the device over the duration of the assignment. Click the **Invoke Commmand** button
+to issue a new command to the device. Note that the list of available commands is based
+on the device specification for the device in the assignment. Each command has a list of
+parameters and the command dialog allows the parameters to be filled in before sending 
+the command. 
+
+.. image:: /_static/images/userguide/assignment-command-details.png
+   :width: 100%
+   :alt: Device Assignment - Invoke Device Command
+   :align: left
+
+Clicking the **Invoke** button will create a new command invocation event,
+saving the event for the assignment and sending the command to the device based on
+the server provisioning configuration.
+
 ----------------------
 Managing Device Groups
 ----------------------

@@ -385,6 +385,40 @@ The following attributes may be specified for the *<sw:socket-event-source>* ele
 |                      |          | requests. Defaults to *5*.                       |
 +----------------------+----------+--------------------------------------------------+
 
+Custom Event Source
+*******************
+In cases where a custom protocol is needed to support inbound events for devices, SiteWhere makes
+it easy to plug in a custom event source. The custom event source class must implement the
+`IInboundEventSource <../apidocs/com/sitewhere/spi/device/provisioning/IInboundEventSource.html>`_
+interface. SiteWhere provides base classes that provide much of the common event source 
+functionality. For instance the com.sitewhere.device.provisioning.BinaryInboundEventSource found
+in sitewhere-core provides an event source that deals with binary data. By creating an instance
+of BinaryInboundEventSource and plugging in a custom 
+`IInboundEventReceiver <../apidocs/com/sitewhere/spi/device/provisioning/IInboundEventReceiver.html>`_
+and `IDeviceEventDecoder <../apidocs/com/sitewhere/spi/device/provisioning/IDeviceEventDecoder.html>`_
+implementation, the behavior can be completely customized. The event receiver takes care of receiving
+binary data from the device and the decoder converts the data into SiteWhere events that can be 
+processed.
+
+.. code-block:: xml
+   :emphasize-lines: 7
+
+   <sw:provisioning>
+   
+      <!-- Inbound event sources -->
+      <sw:event-sources>
+
+         <!-- Custom event source referencing a Spring bean -->
+         <sw:event-source ref="customEventSourceBean"/>
+
+The following attributes may be specified for the *<sw:event-source>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| ref                  | required | Reference to externally defined Spring bean      |
++----------------------+----------+--------------------------------------------------+
+
 Inbound Processing Strategy
 ---------------------------
 The inbound processing strategy is responsible for moving events from event sources into the
