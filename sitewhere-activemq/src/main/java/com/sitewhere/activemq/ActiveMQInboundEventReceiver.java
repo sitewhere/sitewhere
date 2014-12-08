@@ -7,6 +7,7 @@
  */
 package com.sitewhere.activemq;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
 import org.apache.log4j.Logger;
 
+import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
@@ -63,6 +65,9 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 	/** Queue name used for inbound event data */
 	private String queueName;
 
+	/** ActiveMQ data directory */
+	private String dataDirectory;
+
 	/** Number of consumers used to read messages from the queue */
 	private int numConsumers = DEFAULT_NUM_CONSUMERS;
 
@@ -92,12 +97,18 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 		if (getQueueName() == null) {
 			throw new SiteWhereException("Queue name is required.");
 		}
+		if (getDataDirectory() == null) {
+			File tomcatData = TomcatConfigurationResolver.getSiteWhereDataFolder();
+			setDataDirectory(tomcatData.getAbsolutePath());
+		}
 		try {
 			brokerService.setBrokerName(getBrokerName());
 			TransportConnector connector = new TransportConnector();
 			connector.setUri(new URI(getTransportUri()));
 			brokerService.addConnector(connector);
+			brokerService.setDataDirectory(getDataDirectory());
 			brokerService.setUseShutdownHook(false);
+			brokerService.setUseJmx(false);
 			brokerService.start();
 			startConsumers();
 		} catch (Exception e) {
@@ -291,6 +302,14 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 
 	public void setQueueName(String queueName) {
 		this.queueName = queueName;
+	}
+
+	public String getDataDirectory() {
+		return dataDirectory;
+	}
+
+	public void setDataDirectory(String dataDirectory) {
+		this.dataDirectory = dataDirectory;
 	}
 
 	public int getNumConsumers() {

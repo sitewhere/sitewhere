@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce-dev/1.0.0/sitewhere.xsd?a=8j">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd?a=x1">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
@@ -76,14 +76,14 @@
 				
 				<!-- Event source for protobuf messages over ActiveMQ queue -->
 				<sw:activemq-event-source sourceId="activemq" transportUri="tcp://localhost:1234"
-					queueName="SITEWHERE.IN" numConsumers="10">
+					queueName="SITEWHERE.IN" numConsumers="10" dataDirectory="${CATALINA_BASE}/amqdata">
 					<sw:protobuf-event-decoder/>
 				</sw:activemq-event-source>
 				
 				<!-- Event source for Stomp messages over ActiveMQ queue -->
 				<sw:activemq-event-source sourceId="stomp"
 					transportUri="stomp://localhost:2345?trace=true" queueName="SITEWHERE.STOMP"
-					numConsumers="10">
+					numConsumers="10" dataDirectory="${CATALINA_BASE}/stompdata">
 					<sw:json-event-decoder/>
 				</sw:activemq-event-source>
 			</sw:event-sources>

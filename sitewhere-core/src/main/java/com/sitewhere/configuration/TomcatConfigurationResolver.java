@@ -89,4 +89,26 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 		}
 		return sitewhereDir;
 	}
+
+	/**
+	 * Gets the CATALINA/data folder where data is stored.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static File getSiteWhereDataFolder() throws SiteWhereException {
+		String catalina = System.getProperty("catalina.base");
+		if (catalina == null) {
+			throw new SiteWhereException("CATALINA_HOME not set.");
+		}
+		File catFolder = new File(catalina);
+		if (!catFolder.exists()) {
+			throw new SiteWhereException("CATALINA_HOME folder does not exist.");
+		}
+		File dataDir = new File(catalina, "data");
+		if (!dataDir.exists()) {
+			dataDir.mkdir();
+		}
+		return dataDir;
+	}
 }

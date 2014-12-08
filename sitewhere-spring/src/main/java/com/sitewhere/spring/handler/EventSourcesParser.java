@@ -235,6 +235,11 @@ public class EventSourcesParser {
 		}
 		mq.addPropertyValue("queueName", queueName.getValue());
 
+		Attr dataDirectory = element.getAttributeNode("dataDirectory");
+		if (dataDirectory != null) {
+			mq.addPropertyValue("dataDirectory", dataDirectory.getValue());
+		}
+
 		Attr numConsumers = element.getAttributeNode("numConsumers");
 		if (numConsumers != null) {
 			mq.addPropertyValue("numConsumers", numConsumers.getValue());

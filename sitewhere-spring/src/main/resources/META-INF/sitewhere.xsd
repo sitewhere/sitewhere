@@ -647,6 +647,13 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="dataDirectory" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Data directory used to store persistent message queues.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 				<xsd:attribute name="queueName" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
