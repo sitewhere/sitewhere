@@ -1,6 +1,6 @@
-=================================
- SiteWhere Provisioning Tutorial
-=================================
+===============================
+SiteWhere Provisioning Tutorial
+===============================
 Provisioning is one of the central features provided by SiteWhere. The provisioning engine allows
 SiteWhere to interact with connected devices using a powerful and highly configurable set of
 components. This tutorial will explain the basics of how SiteWhere provisioning works including
@@ -41,7 +41,7 @@ Device Commands
 Below the basic specification information is a list of *Device Commands*. Commands specify how SiteWhere
 can interact with the underlying hardware. A device command has a unique name, a namespace, and zero
 or more parameters. Device commands are intended to work in much the same way as calling
-an RPC method in a programming language. The command name and a list of strongly-typed parameters are 
+an RPC method in a programming language. The command name and a list of strongly-typed parameters are encoded and 
 sent to the device which interprets them and executes the corresponding logic. Each parameter has a name
 (which must be unique within the command), a type, and a flag indicating whether it is required. An example
 of the SiteWhere UI for editing commands is shown below:
@@ -74,102 +74,63 @@ button at the top of the page. An example of the page is shown below:
 
 As mentioned above, protocol buffers have been chosen as the default encoding mechanism for sending
 messages between SiteWhere and connected devices. The encoding (as well as most other provisioning
-components) is pluggable, so you are not forced to use protocol buffers. Taking a look in the main
-configuration file found at **${SITEWHERE_HOME}/conf/sitewhere/sitewhere-server.xml**, browse down 
-and you will find a section for configuring provisioning. It will look similar to the one below:
+elements) is pluggable, so you are not forced to use protocol buffers. Taking a look in the main
+configuration file found at **conf/sitewhere/sitewhere-server.xml**, browse down 
+and you will find a section for configuring provisioning. The outbound elements are shown below:
 
 .. code-block:: xml
 
-	<!-- ####################### -->
-	<!-- # DEVICE PROVISIONING # -->
-	<!-- ####################### -->
-	
-	<!-- OUTBOUND PROCESSING -->
-	
-	<!-- Encodes device commands using Google Protocol Buffers -->
-	<bean id="protobufExecutionEncoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder"/>
-	
-	<!-- Delivery provider that publishes commands to MQTT topics -->
-	<bean id="mqttDeliveryProvider" class="com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider">
-		<property name="hostname" value="localhost"/>
-		<property name="port" value="1883"/>
-		<property name="commandTopicPrefix" value="SiteWhere/commands/"/>
-		<property name="systemTopicPrefix" value="SiteWhere/system/"/>
-	</bean>
-	
-	<!-- GOOGLE PROTOCOL BUFFER INBOUND PROCESSING -->
-	
-	<!-- Device event receiver that monitors an MQTT topic for events (protobuf format) -->
-	<bean id="protobufMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver">
-		<property name="hostname" value="localhost"/>
-		<property name="port" value="1883"/>
-		<property name="topic" value="SiteWhere/input/protobuf"/>
-	</bean>
-	
-	<!-- Decodes device event messages using Google Protocol Buffers -->
-	<bean id="protobufEventDecoder" class="com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventDecoder"/>
-	
-	<!-- Device event processor for protobuf messages over MQTT -->
-	<bean id="protbufEventProcessor" class="com.sitewhere.device.provisioning.DefaultDeviceEventProcessor">
-		<property name="deviceEventDecoder" ref="protobufEventDecoder"/>
-		<property name="deviceEventReceivers">
-			<list>
-				<ref bean="protobufMqttEventReceiver"/>
-			</list>
-		</property>
-	</bean>
-	
-	<!-- JSON BATCH INBOUND PROCESSING -->
-	
-	<!-- Device event receiver that monitors an MQTT topic for events (JSON batch format) -->
-	<bean id="jsonMqttEventReceiver" class="com.sitewhere.device.provisioning.mqtt.MqttDeviceEventReceiver">
-		<property name="hostname" value="localhost"/>
-		<property name="port" value="1883"/>
-		<property name="topic" value="SiteWhere/input/jsonbatch"/>
-	</bean>
-	
-	<!-- Decodes device event messages using Jackson/JSON -->
-	<bean id="jsonEventDecoder" class="com.sitewhere.device.provisioning.decoders.JsonBatchEventDecoder"/>
-	
-	<!-- Device event processor for protobuf messages over MQTT -->
-	<bean id="jsonEventProcessor" class="com.sitewhere.device.provisioning.DefaultDeviceEventProcessor">
-		<property name="deviceEventDecoder" ref="jsonEventDecoder"/>
-		<property name="deviceEventReceivers">
-			<list>
-				<ref bean="jsonMqttEventReceiver"/>
-			</list>
-		</property>
-	</bean>
-	
-	<!-- REGISTRATION -->
-	
-	<!-- Manages registration of new devices in the system -->
-	<bean id="protobufRegistrationManager" class="com.sitewhere.device.provisioning.protobuf.ProtobufRegistrationManager">
-		<property name="allowNewDevices" value="true"/>
-		<property name="autoAssignSite" value="true"/>
-	</bean>
+   <sw:provisioning>
+   
+      <!-- Inbound elements removed -->
+               
+      <!-- Device command routing -->
+      <sw:command-routing>
+         <sw:specification-mapping-router defaultDestination="default">
+            <sw:mapping specification="417b36a8-21ef-4196-a8fe-cc756f994d0b"
+               destination="arduino"/>
+         </sw:specification-mapping-router>
+      </sw:command-routing>
+         
+      <!-- Outbound command destinations -->
+      <sw:command-destinations>
 
-	<!-- Configures device provisioning -->
-	<bean id="deviceProvisioning" class="com.sitewhere.device.provisioning.DefaultDeviceProvisioning">
-		<property name="commandExecutionEncoder" ref="protobufExecutionEncoder"/>
-		<property name="commandDeliveryProvider" ref="mqttDeliveryProvider"/>
-		<property name="registrationManager" ref="protobufRegistrationManager"/>
-		<property name="deviceEventProcessors">
-			<list>
-				<ref bean="protbufEventProcessor"/>
-				<ref bean="jsonEventProcessor"/>
-			</list>
-		</property>
-	</bean>
+         <!-- Delivers commands via MQTT -->
+         <sw:mqtt-command-destination destinationId="default"
+            hostname="localhost" port="1883">
+            <sw:protobuf-command-encoder/>
+            <sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+               systemTopicExpr="SiteWhere/system/%s"/>
+         </sw:mqtt-command-destination>
 
-This block of configuration elements configures how SiteWhere communicates with connected devices. In the
-default configuration shown above, outbound device commands are encoded using protocol buffers, then 
-delivered to a device via MQTT. Inbound events/responses from devices are delivered via two channels. One
-channel is pulled from an inbound MQTT topic and decoded via protocol buffers. The other channel is
-pulled from another inbound MQTT topic and decoded as JSON which is expected in a pre-determined format.
-As you can see, it is easy enough to substitute your own custom encoding methods or transports. SiteWhere 
-provides core service provider interfaces(SPIs) for all of the major provisioning components. For the rest
-of the tutorial, we will assume that you are using the default configuration.
+         <!-- Delivers commands via MQTT -->
+         <sw:mqtt-command-destination destinationId="arduino"
+            hostname="localhost" port="1883">
+            <sw:protobuf-command-encoder/>
+            <sw:hardware-id-topic-extractor commandTopicExpr="Arduino/commands/%s"
+               systemTopicExpr="Arduino/system/%s"/>
+         </sw:mqtt-command-destination>
+
+      </sw:command-destinations>
+
+   </sw:provisioning>
+
+This block of configuration elements configures how SiteWhere sends commands to devices.
+The *<sw:command-routing>* section contains a router that sends commands to destinations
+based on which device specification the device uses. Other routers can be plugged in if 
+a different routing strategy is desired. In this case, all devices with the given
+specification token (Arduino specification from SiteWhere sample data) are routed to 
+the command destination with desinationId **arduino**. All other commands are routed to
+the **defaultDestination** value which points to the **default** destination. Both destinations
+encode the commands using the SiteWhere GPB protocol (using *<sw:protobuf-command-encoder/>*)
+and deliver commands over MQTT (using *<sw:mqtt-command-destination>*). The difference
+between the two is the *<sw:hardware-id-topic-extractor>* which is used to determine the 
+MQTT topic names to deliver commands to. The **arduino** destination uses topics that
+start with *Arduino* while the **default** destination uses topics that start with **SiteWhere**.
+For MQTT destinations, there are two topics per device for sending commands, one for system
+commands and another for device specification commands. System commands include notifications
+such as registration responses while specification commands are the commands specific to the
+device.
 
 -----------------
 Client Processing
@@ -183,7 +144,7 @@ starting point for creating a custom Java client. Agents in other languages will
 it's not hard to develop one from scratch considering much of the code is generated for you. First, take
 a look at the following project on GitHub:
 
-	https://github.com/reveal-technologies/sitewhere-tools
+	https://github.com/sitewhere/sitewhere-tools
 	
 This project contains a module called **sitewhere-java-agent** which provides the scaffolding for a custom
 Java agent that can be executed from the command line of any platform that supports Java. In our example, we
@@ -195,7 +156,7 @@ Download and Build the Agent
 Before moving ahead, verify that you have the required development tools installed. You will need Eclipse 
 and Maven installed as detailed in the `development guide <../development.html>`_. Import the GitHub 
 project for **sitewhere-tools** into Eclipse, then build it in Maven to make sure that the dependencies 
-are downloaded. If the build is successful, a jar named **sitewhere-java-agent-0.9.4.jar** should be 
+are downloaded. If the build is successful, a jar named **sitewhere-java-agent-x.x.x.jar** should be 
 generated in the **sitewhere-java-agent/target** directory.
 
 By default, the agent uses the **.proto** generated based on the **Raspberrry Pi Default** spec 
@@ -226,7 +187,7 @@ Running the Agent
 -----------------
 To run the agent, execute the following from the command line:
 
-	java -jar sitewhere-java-agent-0.9.4.jar
+	java -jar sitewhere-java-agent-x.x.x.jar
 	
 Assuming the settings in **config.properties** are correct, the agent should connect to the remote
 SiteWhere instance via MQTT and register with the server. A response should be echoed to the console

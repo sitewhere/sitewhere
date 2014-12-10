@@ -1,6 +1,6 @@
-===========================
- SiteWhere Developer Guide
-===========================
+=========================
+SiteWhere Developer Guide
+=========================
 This manual covers the steps necessary for a developer to get started working with the 
 SiteWhere source code. It addresses topics such as setting up a development environment, 
 downloading SiteWhere source code, and building SiteWhere artifacts.
@@ -9,7 +9,7 @@ downloading SiteWhere source code, and building SiteWhere artifacts.
 Setting Up a Developement Environment
 -------------------------------------
 Most of the core SiteWhere source code is written in `Java <http://www.oracle.com/technetwork/java/index.html>`_ 
-and made available on on the Reveal Technologies `GitHub page <https://github.com/reveal-technologies>`_. The easiest 
+and made available on on the SiteWhere `GitHub page <https://github.com/sitewhere>`_. The easiest 
 path to get up and running is to use a development environment that has integrated support for the Git version 
 control system. This guide assumes that you will be using the Eclipse IDE. SiteWhere was developed with Eclipse 
 and the repositories contain artifacts that make it simple to load the source into Eclipse.
@@ -52,7 +52,7 @@ following steps will create a local copy of the SiteWhere repository for you:
 2. Choose **Git > Projects from Git** then click Next.
 3. Choose **GitHub** as the repository source.
 4. Type **sitewhere** in the search box and click Search.
-5. Choose **reveal-technologies/sitewhere** from the list, then keep clicking **Next** until the
+5. Choose **sitewhere/sitewhere** from the list, then keep clicking **Next** until the
    end of the wizard and click **Finish**.
     
 Once the repository has been loaded into Eclipse, it will automatically be compiled. The compilation will 
