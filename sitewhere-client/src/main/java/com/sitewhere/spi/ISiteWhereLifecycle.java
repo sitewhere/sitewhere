@@ -8,21 +8,21 @@
 package com.sitewhere.spi;
 
 /**
- * Lifecycle methods used in service provider implementations.
+ * Lifecycle methods used in SiteWhere components.
  * 
  * @author Derek
  */
 public interface ISiteWhereLifecycle {
 
 	/**
-	 * Start the device management implementation.
+	 * Start the component.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	public void start() throws SiteWhereException;
 
 	/**
-	 * Stop the device management implementation.
+	 * Stop the component.
 	 * 
 	 * @throws SiteWhereException
 	 */
