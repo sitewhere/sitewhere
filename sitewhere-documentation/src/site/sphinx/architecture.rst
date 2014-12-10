@@ -1,6 +1,6 @@
-===============================
- SiteWhere System Architecture
-===============================
+=============================
+SiteWhere System Architecture
+=============================
 
 This document describes the components that make up SiteWhere and how they relate to each other.
 
@@ -24,13 +24,11 @@ more detail.
 
 Web Application Container
 -------------------------
-SiteWhere is deployed as a Web Appliction Archive (WAR) file and is designed to run in a web container.
-The WAR file itself is not self-sufficient since most of the library dependencies are not packaged in the
-WAR. The process of building and deploying updated versions of the WAR is much faster without including
-the 50+ MB of library dependencies. As a result, you will need to use the packaged version of SiteWhere
-server, which is just a standard Tomcat 7 install with the extra libraries and some extra configuration 
-files added. If you want to run SiteWhere in another application container, you will need to make sure the
-classpath contains all of the files in the **sitewhere** folder.
+SiteWhere is deployed as a Web Application Archive (WAR) file and is designed to run in a web container
+such as Apache Tomcat. SiteWhere will run on a vanilla version of Apache Tomcat assuming the 
+`configuration files <https://github.com/sitewhere/sitewhere/tree/master/sitewhere-core/config>`_
+are copied into the Tomcat **conf** folder. The configuration files may be altered to change
+the way SiteWhere processes device events and integrates with external services.
 
 Datastores
 ----------
@@ -50,25 +48,23 @@ data implementation. The types of datastores currently supported include MongoDB
 HBase. MongoDB is a great choice for running on a personal workstation or a  cloud instance with limited 
 resources. HBase is better suited for projects that require massive scalability,  but at the expense of 
 more overhead both in system configuration and system resources. For more information
-on configuring a datastore for SiteWhere see `Datastore Configuration <configuration/datasources.html>`_ 
+on configuring a datastore for SiteWhere see `Datastore Configuration <userguide/configuration.html#datastore-configuration>`_ 
 in the configuration guide.
 
 Asset Modules
 -------------
-In SiteWhere terminology, an asset represents extra information that provides context about a device. Every
-device references a device specification that indicates the type of hardware the device is using. The 
-specification is in turn associated with an asset type which gives detailed information about the device.
-The asset type includes things like a human-readable name, description, SKU, URL for a product image, and any number of
-other properties that enhance the understanding of the hardware. Assets are also used to provide information
-about entities that are associated with devices. For instance a person asset may be associated with a badge.
-A hardware asset may indicate the type of vehicle a location device is attached to.
+SiteWhere assets represent objects in the physical world -- people, places, and things. Device specification
+assets are used to describe the hardware information/configuration for a type of device. Device assignment
+assets are used to describe an entity associated with a device -- a person associated with a badge or
+a bulldozer associated with a location tracker or a hospital ward associated with a piece of hospital
+equipment.
 
 Rather than hard-coding a schema for assets in the system, SiteWhere defines SPIs for general asset types and
-allows asset modules to be plugged in to provide asset definitions. This allows existing identity managment
+allows asset modules to be plugged in to provide asset definitions. This allows existing identity management
 systems to be used in providing a list of available person assets. It also allows product catalog systems to 
 be used in defining available hardware assets. SiteWhere uses asset modules in a read-only manner and only 
 ever references entities based on a unique id understood by the underlying asset module. Maintaining the list
-of available assets is left to the systems behind the asset modules (which ususally already have a user interface
+of available assets is left to the systems behind the asset modules (which usually already have a user interface
 specific to the features they provide).
 
 REST Services
@@ -77,7 +73,7 @@ Most of the core functionality related to the SiteWhere APIs is accessible exter
 services, an external entity can create, view, update, or delete entities in the system. The services can also 
 interact with subsystems such as asset management. All REST calls are subject to authentication and use Spring Security
 to verify that the user is authorized for the operation. Currently the system uses basic authentication over an
-unencrypted pipe, so the data is not secure. Data can be secured by changing communication to use basic auth over SSL,
+unencrypted pipe, so the data is not secure. Data can be secured by changing communication to use basic authentication over SSL,
 which is considered a reasonable approach for sending REST data securely. This will become the default setup as 
 SiteWhere nears a 1.0 release.
 
