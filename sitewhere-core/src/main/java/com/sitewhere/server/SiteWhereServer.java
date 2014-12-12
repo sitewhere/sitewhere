@@ -42,6 +42,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
+import com.sitewhere.spi.server.ServerStatus;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
@@ -67,8 +68,14 @@ public class SiteWhereServer implements ISiteWhereServer {
 	/** Contains version information */
 	private IVersion version;
 
+	/** Server status */
+	private ServerStatus status = ServerStatus.Stopped;
+
+	/** Server startup error */
+	private Throwable serverStartupError;
+
 	/** Provides hierarchical tracing for debugging */
-	private ITracer tracer;
+	private ITracer tracer = new NullTracer();
 
 	/** Allows Spring configuration to be resolved */
 	private IConfigurationResolver configurationResolver = new TomcatConfigurationResolver();
@@ -122,6 +129,24 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 */
 	public IVersion getVersion() {
 		return version;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getStatus()
+	 */
+	public ServerStatus getStatus() {
+		return status;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerStartupError()
+	 */
+	public Throwable getServerStartupError() {
+		return serverStartupError;
 	}
 
 	/*
@@ -262,33 +287,48 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 */
 	public void start() throws SiteWhereException {
 
-		// Start all lifecycle components.
-		for (ISiteWhereLifecycle component : getRegisteredLifecycleComponents()) {
-			component.start();
+		// Update status to 'starting'
+		this.status = ServerStatus.Starting;
+
+		try {
+			// Start all lifecycle components.
+			for (ISiteWhereLifecycle component : getRegisteredLifecycleComponents()) {
+				component.start();
+			}
+
+			// Start core management implementations.
+			getDeviceManagement().start();
+			if (getDeviceManagementCacheProvider() != null) {
+				getDeviceManagementCacheProvider().start();
+			}
+			getUserManagement().start();
+			getAssetModuleManager().start();
+			getSearchProviderManager().start();
+
+			// Populate data if requested.
+			verifyUserModel();
+			verifyDeviceModel();
+
+			// Enable provisioning.
+			if (outboundEventProcessorChain != null) {
+				outboundEventProcessorChain.start();
+				outboundEventProcessorChain.setProcessingEnabled(true);
+			}
+			if (inboundEventProcessorChain != null) {
+				inboundEventProcessorChain.start();
+			}
+			deviceProvisioning.start();
+		} catch (Throwable e) {
+			this.status = ServerStatus.Error;
+			this.serverStartupError = e;
+			if (e instanceof SiteWhereException) {
+				throw (SiteWhereException) e;
+			}
+			throw new SiteWhereException(e);
 		}
 
-		// Start core management implementations.
-		getDeviceManagement().start();
-		if (getDeviceManagementCacheProvider() != null) {
-			getDeviceManagementCacheProvider().start();
-		}
-		getUserManagement().start();
-		getAssetModuleManager().start();
-		getSearchProviderManager().start();
-
-		// Populate data if requested.
-		verifyUserModel();
-		verifyDeviceModel();
-
-		// Enable provisioning.
-		if (outboundEventProcessorChain != null) {
-			outboundEventProcessorChain.start();
-			outboundEventProcessorChain.setProcessingEnabled(true);
-		}
-		if (inboundEventProcessorChain != null) {
-			inboundEventProcessorChain.start();
-		}
-		deviceProvisioning.start();
+		// Update status to 'started'
+		this.status = ServerStatus.Started;
 	}
 
 	/*
@@ -298,25 +338,40 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		// Disable provisioning.
-		deviceProvisioning.stop();
-		inboundEventProcessorChain.stop();
-		outboundEventProcessorChain.setProcessingEnabled(false);
-		outboundEventProcessorChain.stop();
 
-		// Stop core management implementations.
-		if (getDeviceManagementCacheProvider() != null) {
-			getDeviceManagementCacheProvider().stop();
-		}
-		getDeviceManagement().stop();
-		getUserManagement().stop();
-		getAssetModuleManager().stop();
-		getSearchProviderManager().stop();
+		// Update status to 'stopping'
+		this.status = ServerStatus.Stopping;
 
-		// Start all lifecycle components.
-		for (ISiteWhereLifecycle component : getRegisteredLifecycleComponents()) {
-			component.stop();
+		try {
+			// Disable provisioning.
+			deviceProvisioning.stop();
+			inboundEventProcessorChain.stop();
+			outboundEventProcessorChain.setProcessingEnabled(false);
+			outboundEventProcessorChain.stop();
+
+			// Stop core management implementations.
+			if (getDeviceManagementCacheProvider() != null) {
+				getDeviceManagementCacheProvider().stop();
+			}
+			getDeviceManagement().stop();
+			getUserManagement().stop();
+			getAssetModuleManager().stop();
+			getSearchProviderManager().stop();
+
+			// Start all lifecycle components.
+			for (ISiteWhereLifecycle component : getRegisteredLifecycleComponents()) {
+				component.stop();
+			}
+		} catch (Throwable e) {
+			this.status = ServerStatus.Error;
+			if (e instanceof SiteWhereException) {
+				throw (SiteWhereException) e;
+			}
+			throw new SiteWhereException(e);
 		}
+
+		// Update status to 'stopped'
+		this.status = ServerStatus.Stopped;
 	}
 
 	/*

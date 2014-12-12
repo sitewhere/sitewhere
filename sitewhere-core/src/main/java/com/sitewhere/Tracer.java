@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.debug.TracerCategory;
 
@@ -21,6 +22,12 @@ import com.sitewhere.spi.server.debug.TracerCategory;
  */
 public class Tracer {
 
+	/** Private logger instance */
+	private static Logger LOGGER = Logger.getLogger(Tracer.class);
+
+	/** Fallback tracer implementation */
+	private static ITracer FALLBACK = new NullTracer();
+
 	/**
 	 * Starts tracing.
 	 * 
@@ -29,7 +36,7 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void start(TracerCategory category, String message, Logger logger) {
-		SiteWhere.getServer().getTracer().start(category, message, logger);
+		getTracer().start(category, message, logger);
 	}
 
 	/**
@@ -38,7 +45,7 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void stop(Logger logger) {
-		SiteWhere.getServer().getTracer().stop(logger);
+		getTracer().stop(logger);
 	}
 
 	/**
@@ -47,7 +54,7 @@ public class Tracer {
 	 * @param enabled
 	 */
 	public static void setEnabled(boolean enabled) {
-		SiteWhere.getServer().getTracer().setEnabled(enabled);
+		getTracer().setEnabled(enabled);
 	}
 
 	/**
@@ -57,7 +64,7 @@ public class Tracer {
 	 * @throws UnsupportedOperationException
 	 */
 	public static String asHtml() throws UnsupportedOperationException {
-		return SiteWhere.getServer().getTracer().asHtml();
+		return getTracer().asHtml();
 	}
 
 	/**
@@ -68,7 +75,7 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void push(TracerCategory category, String message, Logger logger) {
-		SiteWhere.getServer().getTracer().push(category, message, logger);
+		getTracer().push(category, message, logger);
 	}
 
 	/**
@@ -77,7 +84,7 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void pop(Logger logger) {
-		SiteWhere.getServer().getTracer().pop(logger);
+		getTracer().pop(logger);
 	}
 
 	/**
@@ -87,7 +94,7 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void debug(String message, Logger logger) {
-		SiteWhere.getServer().getTracer().debug(message, logger);
+		getTracer().debug(message, logger);
 	}
 
 	/**
@@ -97,7 +104,7 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void info(String message, Logger logger) {
-		SiteWhere.getServer().getTracer().info(message, logger);
+		getTracer().info(message, logger);
 	}
 
 	/**
@@ -108,7 +115,7 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void warn(String message, Throwable error, Logger logger) {
-		SiteWhere.getServer().getTracer().warn(message, error, logger);
+		getTracer().warn(message, error, logger);
 	}
 
 	/**
@@ -119,7 +126,7 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void error(String message, Throwable error, Logger logger) {
-		SiteWhere.getServer().getTracer().error(message, error, logger);
+		getTracer().error(message, error, logger);
 	}
 
 	/**
@@ -131,6 +138,23 @@ public class Tracer {
 	 * @param logger
 	 */
 	public static void timing(String message, long delta, TimeUnit unit, Logger logger) {
-		SiteWhere.getServer().getTracer().timing(message, delta, unit, logger);
+		getTracer().timing(message, delta, unit, logger);
+	}
+
+	/**
+	 * Gets tracer while detecting server problems.
+	 * 
+	 * @return
+	 */
+	protected static ITracer getTracer() {
+		if (SiteWhere.getServer() == null) {
+			LOGGER.warn("Tracer called, but server does not exist. Check log file for errors on startup.");
+			return FALLBACK;
+		}
+		if (SiteWhere.getServer().getTracer() == null) {
+			LOGGER.warn("Tracer not initialized. Check log file for errors on startup.");
+			return FALLBACK;
+		}
+		return SiteWhere.getServer().getTracer();
 	}
 }

@@ -39,6 +39,10 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 			if (input instanceof UsernamePasswordAuthenticationToken) {
 				String username = (String) input.getPrincipal();
 				String password = (String) input.getCredentials();
+				if ((SiteWhere.getServer() == null) || (SiteWhere.getServer().getUserManagement() == null)) {
+					throw new AuthenticationServiceException(
+							"SiteWhere server not available for authentication. Check logs for details.");
+				}
 				IUser user = SiteWhere.getServer().getUserManagement().authenticate(username, password);
 				List<IGrantedAuthority> auths =
 						SiteWhere.getServer().getUserManagement().getGrantedAuthorities(user.getUsername());

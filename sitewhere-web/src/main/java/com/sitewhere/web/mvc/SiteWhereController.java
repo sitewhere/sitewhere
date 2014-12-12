@@ -27,6 +27,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.server.ServerStatus;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.version.VersionHelper;
 
@@ -52,7 +53,11 @@ public class SiteWhereController {
 		try {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("version", VersionHelper.getVersion());
-			return new ModelAndView("login", data);
+			if (SiteWhere.getServer().getStatus() == ServerStatus.Started) {
+				return new ModelAndView("login", data);
+			} else {
+				return new ModelAndView("noserver", data);
+			}
 		} finally {
 			Tracer.stop(LOGGER);
 		}

@@ -47,6 +47,20 @@ public interface ISiteWhereServer extends ISiteWhereLifecycle {
 	public IVersion getVersion();
 
 	/**
+	 * Get server status.
+	 * 
+	 * @return
+	 */
+	public ServerStatus getStatus();
+
+	/**
+	 * Returns exception if one was thrown on startup.
+	 * 
+	 * @return
+	 */
+	public Throwable getServerStartupError();
+
+	/**
 	 * Get tracer for debug operations.
 	 * 
 	 * @return
