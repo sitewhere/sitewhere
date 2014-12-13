@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.server.asset.AssetMatcher;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
@@ -38,7 +39,7 @@ import com.sitewhere.spi.command.ICommandResponse;
  * 
  * @author dadams
  */
-public class Wso2ScimAssetModule implements IAssetModule<PersonAsset> {
+public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetModule<PersonAsset> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(Wso2ScimAssetModule.class);
@@ -76,7 +77,7 @@ public class Wso2ScimAssetModule implements IAssetModule<PersonAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
 		LOGGER.info("Connecting to WSO2 Identity Server instance at: " + getUserUrl());
@@ -87,7 +88,17 @@ public class Wso2ScimAssetModule implements IAssetModule<PersonAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	public void stop() throws SiteWhereException {
 		this.client = null;

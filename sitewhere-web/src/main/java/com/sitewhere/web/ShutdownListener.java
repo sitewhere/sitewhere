@@ -13,7 +13,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Handles server shutdown logic when servlet context is destroyed.
@@ -23,6 +22,7 @@ import com.sitewhere.spi.SiteWhereException;
 public class ShutdownListener implements ServletContextListener {
 
 	/** Static logger instance */
+	@SuppressWarnings("unused")
 	private static Logger LOGGER = Logger.getLogger(ShutdownListener.class);
 
 	/*
@@ -34,11 +34,7 @@ public class ShutdownListener implements ServletContextListener {
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
-		try {
-			SiteWhere.getServer().stop();
-		} catch (SiteWhereException e) {
-			LOGGER.error("Error stopping SiteWhere instance.", e);
-		}
+		SiteWhere.getServer().lifecycleStop();
 	}
 
 	/*

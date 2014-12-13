@@ -63,12 +63,12 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		if (getCommandProcessingStrategy() == null) {
 			throw new SiteWhereException("No command processing strategy configured for provisioning.");
 		}
-		getCommandProcessingStrategy().start();
+		getCommandProcessingStrategy().lifecycleStart();
 
 		// Start command destinations.
 		if (getCommandDestinations() != null) {
 			for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
-				destination.start();
+				destination.lifecycleStart();
 			}
 		}
 
@@ -77,30 +77,30 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 			throw new SiteWhereException("No command router for provisioning.");
 		}
 		getOutboundCommandRouter().initialize(getCommandDestinations());
-		getOutboundCommandRouter().start();
+		getOutboundCommandRouter().lifecycleStart();
 
 		// Start outbound processing strategy.
 		if (getOutboundProcessingStrategy() == null) {
 			throw new SiteWhereException("No outbound processing strategy configured for provisioning.");
 		}
-		getOutboundProcessingStrategy().start();
+		getOutboundProcessingStrategy().lifecycleStart();
 
 		// Start registration manager.
 		if (getRegistrationManager() == null) {
 			throw new SiteWhereException("No registration manager configured for provisioning.");
 		}
-		getRegistrationManager().start();
+		getRegistrationManager().lifecycleStart();
 
 		// Start inbound processing strategy.
 		if (getInboundProcessingStrategy() == null) {
 			throw new SiteWhereException("No inbound processing strategy configured for provisioning.");
 		}
-		getInboundProcessingStrategy().start();
+		getInboundProcessingStrategy().lifecycleStart();
 
 		// Start device event sources.
 		if (getInboundEventSources() != null) {
 			for (IInboundEventSource<?> processor : getInboundEventSources()) {
-				processor.start();
+				processor.lifecycleStart();
 			}
 		}
 	}
@@ -115,29 +115,29 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		// Stop inbound event sources.
 		if (getInboundEventSources() != null) {
 			for (IInboundEventSource<?> processor : getInboundEventSources()) {
-				processor.stop();
+				processor.lifecycleStop();
 			}
 		}
 
 		// Stop inbound processing strategy.
 		if (getInboundProcessingStrategy() != null) {
-			getInboundProcessingStrategy().stop();
+			getInboundProcessingStrategy().lifecycleStop();
 		}
 
 		// Stop outbound processing strategy.
 		if (getOutboundProcessingStrategy() != null) {
-			getOutboundProcessingStrategy().stop();
+			getOutboundProcessingStrategy().lifecycleStop();
 		}
 
 		// Stop command processing strategy.
 		if (getCommandProcessingStrategy() != null) {
-			getCommandProcessingStrategy().stop();
+			getCommandProcessingStrategy().lifecycleStop();
 		}
 
 		// Start command destinations.
 		if (getCommandDestinations() != null) {
 			for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
-				destination.stop();
+				destination.lifecycleStop();
 			}
 		}
 	}

@@ -37,7 +37,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 public class DefaultEventStorageProcessor extends InboundEventProcessor {
 
 	/** Static logger instance */
-	@SuppressWarnings("unused")
 	private static Logger LOGGER = Logger.getLogger(DefaultEventStorageProcessor.class);
 
 	/*
@@ -47,6 +46,16 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*

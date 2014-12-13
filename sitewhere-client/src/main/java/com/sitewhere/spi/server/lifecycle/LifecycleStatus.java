@@ -5,27 +5,27 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.server;
+package com.sitewhere.spi.server.lifecycle;
 
 /**
- * Status indicator for SiteWhere server.
+ * Lifecycle status for component.
  * 
  * @author Derek
  */
-public enum ServerStatus {
+public enum LifecycleStatus {
 
-	/** Server is stopped */
+	/** Component is stopped */
 	Stopped,
 
-	/** Server is starting */
+	/** Component is starting */
 	Starting,
 
-	/** Server is started */
+	/** Component is started */
 	Started,
 
-	/** Server is stopping */
+	/** Component is stopping */
 	Stopping,
 
-	/** Server startup failed with an error */
+	/** Component startup failed with an error */
 	Error;
 }

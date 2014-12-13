@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.server.lifecycle;
 
+import org.apache.log4j.Logger;
+
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -24,6 +26,25 @@ public interface ILifecycleComponent {
 	public String getComponentName();
 
 	/**
+	 * Get current lifecycle status.
+	 * 
+	 * @return
+	 */
+	public LifecycleStatus getLifecycleStatus();
+
+	/**
+	 * Gets the last lifecycle error that occurred.
+	 * 
+	 * @return
+	 */
+	public Throwable getLifecycleError();
+
+	/**
+	 * Starts the component while keeping up with lifecycle information.
+	 */
+	public void lifecycleStart();
+
+	/**
 	 * Start the component.
 	 * 
 	 * @throws SiteWhereException
@@ -31,9 +52,21 @@ public interface ILifecycleComponent {
 	public void start() throws SiteWhereException;
 
 	/**
+	 * Stops the component while keeping up with lifecycle information.
+	 */
+	public void lifecycleStop();
+
+	/**
 	 * Stop the component.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	public void stop() throws SiteWhereException;
+
+	/**
+	 * Get component logger.
+	 * 
+	 * @return
+	 */
+	public Logger getLogger();
 }

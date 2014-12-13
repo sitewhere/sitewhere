@@ -43,11 +43,19 @@ public class DefaultInboundEventProcessorChain extends LifecycleComponent implem
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Inbound event processor chain starting...");
 		for (IInboundEventProcessor processor : getProcessors()) {
-			processor.start();
+			processor.lifecycleStart();
 		}
-		LOGGER.info("Inbound event processor chain started.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*
@@ -57,11 +65,9 @@ public class DefaultInboundEventProcessorChain extends LifecycleComponent implem
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Inbound event processor chain stopping...");
 		for (IInboundEventProcessor processor : getProcessors()) {
-			processor.stop();
+			processor.lifecycleStop();
 		}
-		LOGGER.info("Inbound event processor chain stopped.");
 	}
 
 	/*

@@ -64,7 +64,6 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Hazelcast device event processor starting ...");
 		if (getConfiguration() == null) {
 			throw new SiteWhereException("No Hazelcast configuration provided.");
 		}
@@ -81,7 +80,16 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 		this.commandResponsesTopic =
 				getConfiguration().getHazelcastInstance().getTopic(
 						ISiteWhereHazelcast.TOPIC_COMMAND_RESPONSE_ADDED);
-		LOGGER.info("Hazelcast device event processor started.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*

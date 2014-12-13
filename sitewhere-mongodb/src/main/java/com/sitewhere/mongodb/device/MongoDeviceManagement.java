@@ -114,10 +114,18 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
-		LOGGER.info("Mongo device management started.");
-
 		/** Ensure that collection indexes exist */
 		ensureIndexes();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*

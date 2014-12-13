@@ -10,6 +10,8 @@ package com.sitewhere.device.provisioning;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -27,6 +29,9 @@ import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
  */
 public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(SpecificationMappingCommandRouter.class);
+
 	/** Map of specification tokens to command destination ids */
 	private Map<String, String> mappings = new HashMap<String, String>();
 
@@ -40,6 +45,16 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*

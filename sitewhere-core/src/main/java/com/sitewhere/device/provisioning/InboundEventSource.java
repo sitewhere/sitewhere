@@ -64,21 +64,30 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 		if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
 			throw new SiteWhereException("No inbound event receivers registered for event source.");
 		}
-		startEventReceiverThreads();
+		startEventReceivers();
 		LOGGER.debug("Started event source '" + getSourceId() + "'.");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
 	/**
-	 * Create one thread per receiver and have it pull records in blocking mode.
+	 * Start event receivers for this event source.
 	 * 
 	 * @throws SiteWhereException
 	 */
-	protected void startEventReceiverThreads() throws SiteWhereException {
+	protected void startEventReceivers() throws SiteWhereException {
 		if (getInboundEventReceivers().size() > 0) {
-			LOGGER.info("Initializing " + getInboundEventReceivers().size() + " device event receivers...");
 			for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
 				receiver.setEventSource(this);
-				receiver.start();
+				receiver.lifecycleStart();
 			}
 		} else {
 			LOGGER.warn("No device event receivers configured for event source!");
@@ -131,9 +140,8 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 	public void stop() throws SiteWhereException {
 		LOGGER.info("Stopping inbound event source '" + getSourceId() + "'.");
 		if (getInboundEventReceivers().size() > 0) {
-			LOGGER.info("Stopping " + getInboundEventReceivers().size() + " event receivers...");
 			for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
-				receiver.stop();
+				receiver.lifecycleStop();
 			}
 		}
 	}

@@ -46,11 +46,19 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Outbound event processor chain starting...");
 		for (IOutboundEventProcessor processor : getProcessors()) {
-			processor.start();
+			processor.lifecycleStart();
 		}
-		LOGGER.info("Outbound event processor chain started.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*
@@ -60,11 +68,9 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Outbound event processor chain stopping...");
 		for (IOutboundEventProcessor processor : getProcessors()) {
-			processor.stop();
+			processor.lifecycleStop();
 		}
-		LOGGER.info("Outbound event processor chain stopped.");
 	}
 
 	/*

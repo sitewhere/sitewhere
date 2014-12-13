@@ -48,7 +48,16 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 	@Override
 	public void start() throws SiteWhereException {
 		executor.execute(new ProvisioningProcessor());
-		LOGGER.info("Provisioning event processing started.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*
@@ -58,7 +67,6 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Provisioning event processing shutting down.");
 		executor.shutdown();
 	}
 
@@ -84,7 +92,6 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 
 		@Override
 		public void run() {
-			LOGGER.info("Started device provisioning processor thread.");
 			while (true) {
 				try {
 					IDeviceCommandInvocation invocation = queue.take();

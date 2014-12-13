@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetModule;
@@ -26,7 +27,7 @@ import com.sitewhere.spi.command.ICommandResponse;
  * 
  * @author dadams
  */
-public class AssetModuleManager implements IAssetModuleManager {
+public class AssetModuleManager extends LifecycleComponent implements IAssetModuleManager {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(AssetModuleManager.class);
@@ -40,39 +41,34 @@ public class AssetModuleManager implements IAssetModuleManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModuleManager#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
 		modulesById.clear();
 		for (IAssetModule<?> module : modules) {
-			LOGGER.info("Starting asset module: " + module.getName());
-			try {
-				module.start();
-				modulesById.put(module.getId(), module);
-				LOGGER.info("Started asset module: " + module.getName());
-			} catch (SiteWhereException e) {
-				LOGGER.error("Unable to start asset module: " + module.getName(), e);
-			} catch (Throwable t) {
-				LOGGER.error("Unhandled exception in asset module: " + module.getName(), t);
-				t.printStackTrace();
-			}
+			module.lifecycleStart();
+			modulesById.put(module.getId(), module);
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModuleManager#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	public void stop() {
 		for (IAssetModule<?> module : modules) {
-			try {
-				LOGGER.info("Stopping asset module: " + module.getName());
-				module.stop();
-				LOGGER.info("Stopped asset module: " + module.getName());
-			} catch (SiteWhereException e) {
-				LOGGER.error("Unable to stop asset module.", e);
-			}
+			module.lifecycleStop();
 		}
 	}
 

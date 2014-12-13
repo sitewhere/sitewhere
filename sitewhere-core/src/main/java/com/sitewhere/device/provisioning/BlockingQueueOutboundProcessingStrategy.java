@@ -71,6 +71,16 @@ public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent 
 				+ MAX_QUEUE_SIZE + " and " + EVENT_PROCESSOR_THREAD_COUNT + " threads.");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
 	/** Used for naming processor threads */
 	private class ProcessorsThreadFactory implements ThreadFactory {
 

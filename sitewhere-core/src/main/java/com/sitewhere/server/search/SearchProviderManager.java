@@ -41,12 +41,20 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Search provider manager starting...");
 		for (ISearchProvider provider : getSearchProviders()) {
-			provider.start();
+			provider.lifecycleStart();
 			providersById.put(provider.getId(), provider);
 		}
-		LOGGER.info("Search provider manager started.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*
@@ -57,7 +65,7 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
 	@Override
 	public void stop() throws SiteWhereException {
 		for (ISearchProvider provider : getSearchProviders()) {
-			provider.stop();
+			provider.lifecycleStop();
 		}
 	}
 

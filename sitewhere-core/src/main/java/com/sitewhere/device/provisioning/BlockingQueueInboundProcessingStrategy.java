@@ -105,6 +105,16 @@ public class BlockingQueueInboundProcessingStrategy extends LifecycleComponent i
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
 	/** Used for naming processor threads */
 	private class ProcessorsThreadFactory implements ThreadFactory {
 

@@ -58,10 +58,18 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
-		LOGGER.info("Mongo user management started.");
-
 		/** Ensure that expected indexes exist */
 		ensureIndexes();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/**

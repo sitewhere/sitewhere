@@ -7,6 +7,8 @@
  */
 package com.sitewhere.device.provisioning;
 
+import org.apache.log4j.Logger;
+
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -27,6 +29,9 @@ import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
 public class DirectOutboundProcessingStrategy extends LifecycleComponent implements
 		IOutboundProcessingStrategy {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(DirectOutboundProcessingStrategy.class);
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -34,6 +39,16 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*

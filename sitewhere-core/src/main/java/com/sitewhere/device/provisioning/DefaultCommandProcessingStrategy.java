@@ -112,13 +112,23 @@ public class DefaultCommandProcessingStrategy extends LifecycleComponent impleme
 		if (getCommandExecutionBuilder() == null) {
 			throw new SiteWhereException("No command execution builder configured for provisioning.");
 		}
-		getCommandExecutionBuilder().start();
+		getCommandExecutionBuilder().lifecycleStart();
 
 		// Start command target resolver.
 		if (getCommandTargetResolver() == null) {
 			throw new SiteWhereException("No command target resolver configured for provisioning.");
 		}
-		getCommandTargetResolver().start();
+		getCommandTargetResolver().lifecycleStart();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*
@@ -132,12 +142,12 @@ public class DefaultCommandProcessingStrategy extends LifecycleComponent impleme
 
 		// Stop command execution builder.
 		if (getCommandExecutionBuilder() != null) {
-			getCommandExecutionBuilder().stop();
+			getCommandExecutionBuilder().lifecycleStop();
 		}
 
 		// Stop command target resolver.
 		if (getCommandTargetResolver() != null) {
-			getCommandTargetResolver().stop();
+			getCommandTargetResolver().lifecycleStop();
 		}
 	}
 

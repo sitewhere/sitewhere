@@ -7,7 +7,9 @@
  */
 package com.sitewhere.server.lifecycle;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Base class for implementing {@link ILifecycleComponent}.
@@ -15,6 +17,12 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * @author Derek
  */
 public abstract class LifecycleComponent implements ILifecycleComponent {
+
+	/** Lifecycle status indicator */
+	private LifecycleStatus lifecycleStatus = LifecycleStatus.Stopped;
+
+	/** Last error encountered in lifecycle operations */
+	private Throwable lifecycleError;
 
 	/*
 	 * (non-Javadoc)
@@ -24,5 +32,77 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	@Override
 	public String getComponentName() {
 		return getClass().getSimpleName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart()
+	 */
+	public void lifecycleStart() {
+		setLifecycleStatus(LifecycleStatus.Starting);
+		getLogger().info(getComponentName() + " state transitioned to STARTING.");
+		try {
+			start();
+			setLifecycleStatus(LifecycleStatus.Started);
+			getLogger().info(getComponentName() + " state transitioned to STARTED.");
+		} catch (SiteWhereException e) {
+			setLifecycleStatus(LifecycleStatus.Error);
+			setLifecycleError(e);
+			getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
+		} catch (Throwable t) {
+			setLifecycleStatus(LifecycleStatus.Error);
+			setLifecycleError(t);
+			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStop()
+	 */
+	public void lifecycleStop() {
+		setLifecycleStatus(LifecycleStatus.Stopping);
+		getLogger().info(getComponentName() + " state transitioned to STOPPING.");
+		try {
+			stop();
+			setLifecycleStatus(LifecycleStatus.Stopped);
+			getLogger().info(getComponentName() + " state transitioned to STOPPED.");
+		} catch (SiteWhereException e) {
+			setLifecycleStatus(LifecycleStatus.Error);
+			setLifecycleError(e);
+			getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
+		} catch (Throwable t) {
+			setLifecycleStatus(LifecycleStatus.Error);
+			setLifecycleError(t);
+			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus()
+	 */
+	public LifecycleStatus getLifecycleStatus() {
+		return lifecycleStatus;
+	}
+
+	public void setLifecycleStatus(LifecycleStatus lifecycleStatus) {
+		this.lifecycleStatus = lifecycleStatus;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError()
+	 */
+	public Throwable getLifecycleError() {
+		return lifecycleError;
+	}
+
+	public void setLifecycleError(Throwable lifecycleError) {
+		this.lifecycleError = lifecycleError;
 	}
 }

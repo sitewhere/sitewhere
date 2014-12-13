@@ -117,6 +117,16 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
 	/**
 	 * Starts consumers for reading messages into SiteWhere.
 	 * 

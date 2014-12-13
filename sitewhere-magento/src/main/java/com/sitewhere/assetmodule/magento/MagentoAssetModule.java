@@ -52,6 +52,7 @@ import com.sitewhere.assetmodule.magento.ws.MagentoService;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.server.asset.AssetMatcher;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
@@ -63,7 +64,7 @@ import com.sitewhere.spi.command.ICommandResponse;
  * 
  * @author dadams
  */
-public class MagentoAssetModule implements IAssetModule<HardwareAsset> {
+public class MagentoAssetModule extends LifecycleComponent implements IAssetModule<HardwareAsset> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MagentoAssetModule.class);
@@ -119,8 +120,9 @@ public class MagentoAssetModule implements IAssetModule<HardwareAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
+	@Override
 	public void start() throws SiteWhereException {
 		LOGGER.info("Connecting to Magento web service as user '" + getMagentoUsername() + "'.");
 		try {
@@ -138,6 +140,16 @@ public class MagentoAssetModule implements IAssetModule<HardwareAsset> {
 		} catch (MalformedURLException e) {
 			throw new SiteWhereException(e);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/**
@@ -160,8 +172,9 @@ public class MagentoAssetModule implements IAssetModule<HardwareAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
+	@Override
 	public void stop() throws SiteWhereException {
 	}
 

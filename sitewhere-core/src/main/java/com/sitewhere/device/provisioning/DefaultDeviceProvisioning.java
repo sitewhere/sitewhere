@@ -36,9 +36,27 @@ public class DefaultDeviceProvisioning extends DeviceProvisioning {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Starting CE device provisioning implementation.");
 		super.start();
-		LOGGER.info("Completed CE device provisioning startup.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#getComponentName()
+	 */
+	@Override
+	public String getComponentName() {
+		return "CE Device Provisioning";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*

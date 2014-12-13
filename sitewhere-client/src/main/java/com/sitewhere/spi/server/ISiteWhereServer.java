@@ -47,13 +47,6 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IVersion getVersion();
 
 	/**
-	 * Get server status.
-	 * 
-	 * @return
-	 */
-	public ServerStatus getStatus();
-
-	/**
 	 * Returns exception if one was thrown on startup.
 	 * 
 	 * @return

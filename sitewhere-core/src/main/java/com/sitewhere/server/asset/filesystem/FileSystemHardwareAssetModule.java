@@ -20,6 +20,7 @@ import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.server.asset.AssetMatcher;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
@@ -31,7 +32,7 @@ import com.sitewhere.spi.command.ICommandResponse;
  * 
  * @author Derek Adams
  */
-public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset> {
+public class FileSystemHardwareAssetModule extends LifecycleComponent implements IAssetModule<HardwareAsset> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(FileSystemHardwareAssetModule.class);
@@ -63,10 +64,20 @@ public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
 		reload();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/**
@@ -106,7 +117,7 @@ public class FileSystemHardwareAssetModule implements IAssetModule<HardwareAsset
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	public void stop() throws SiteWhereException {
 	}

@@ -11,8 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.server.asset.AssetMatcher;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
@@ -23,7 +26,10 @@ import com.sitewhere.spi.command.ICommandResponse;
  * 
  * @author Derek
  */
-public class GnuHealthWardsAssetModule implements IAssetModule<LocationAsset> {
+public class GnuHealthWardsAssetModule extends LifecycleComponent implements IAssetModule<LocationAsset> {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(GnuHealthWardsAssetModule.class);
 
 	/** Module id */
 	private static final String MODULE_ID = "gnuhealth-wards";
@@ -46,7 +52,7 @@ public class GnuHealthWardsAssetModule implements IAssetModule<LocationAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -57,7 +63,17 @@ public class GnuHealthWardsAssetModule implements IAssetModule<LocationAsset> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAssetModule#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

@@ -172,7 +172,6 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Device registration manager starting.");
 		if (isAutoAssignSite()) {
 			if (getAutoAssignSiteToken() == null) {
 				updateAutoAssignToFirstSite();
@@ -185,6 +184,16 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 				}
 			}
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	/**
@@ -210,7 +219,6 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Device registration manager stopping.");
 	}
 
 	public boolean isAllowNewDevices() {

@@ -54,12 +54,12 @@ public class SearchController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get list of available search providers")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public List<ISearchProvider> listSearchProviders() throws SiteWhereException {
+	public List<SearchProvider> listSearchProviders() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listSearchProviders", LOGGER);
 		try {
 			List<ISearchProvider> providers =
 					SiteWhere.getServer().getSearchProviderManager().getSearchProviders();
-			List<ISearchProvider> retval = new ArrayList<ISearchProvider>();
+			List<SearchProvider> retval = new ArrayList<SearchProvider>();
 			for (ISearchProvider provider : providers) {
 				retval.add(SearchProvider.copy(provider));
 			}

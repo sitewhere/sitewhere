@@ -102,6 +102,16 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 		executor.execute(new MqttSubscriptionProcessor());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
 	/** Used for naming consumer threads */
 	private class SubscribersThreadFactory implements ThreadFactory {
 

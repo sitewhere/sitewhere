@@ -99,6 +99,16 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 		LOGGER.info("HBase device management started.");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
 	/**
 	 * Make sure that all SiteWhere tables exist, creating them if necessary.
 	 * 

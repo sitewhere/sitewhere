@@ -11,25 +11,14 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Interface for interacting with the asset module manager.
  * 
  * @author dadams
  */
-public interface IAssetModuleManager {
-
-	/**
-	 * Start the asset module manager.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void start() throws SiteWhereException;
-
-	/**
-	 * Stop the asset module manager.
-	 */
-	public void stop();
+public interface IAssetModuleManager extends ILifecycleComponent {
 
 	/**
 	 * Get the list of asset modules.

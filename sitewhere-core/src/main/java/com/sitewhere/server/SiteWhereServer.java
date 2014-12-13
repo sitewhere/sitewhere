@@ -42,7 +42,6 @@ import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
-import com.sitewhere.spi.server.ServerStatus;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -68,9 +67,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** Contains version information */
 	private IVersion version;
-
-	/** Server status */
-	private ServerStatus status = ServerStatus.Stopped;
 
 	/** Server startup error */
 	private Throwable serverStartupError;
@@ -130,15 +126,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public IVersion getVersion() {
 		return version;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getStatus()
-	 */
-	public ServerStatus getStatus() {
-		return status;
 	}
 
 	/*
@@ -288,49 +275,54 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-
-		// Update status to 'starting'
-		this.status = ServerStatus.Starting;
-
-		try {
-			// Start all lifecycle components.
-			for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-				component.start();
-			}
-
-			// Start core management implementations.
-			getDeviceManagement().start();
-			if (getDeviceManagementCacheProvider() != null) {
-				getDeviceManagementCacheProvider().start();
-			}
-			getUserManagement().start();
-			getAssetModuleManager().start();
-			getSearchProviderManager().start();
-
-			// Populate data if requested.
-			verifyUserModel();
-			verifyDeviceModel();
-
-			// Enable provisioning.
-			if (outboundEventProcessorChain != null) {
-				outboundEventProcessorChain.start();
-				outboundEventProcessorChain.setProcessingEnabled(true);
-			}
-			if (inboundEventProcessorChain != null) {
-				inboundEventProcessorChain.start();
-			}
-			deviceProvisioning.start();
-		} catch (Throwable e) {
-			this.status = ServerStatus.Error;
-			this.serverStartupError = e;
-			if (e instanceof SiteWhereException) {
-				throw (SiteWhereException) e;
-			}
-			throw new SiteWhereException(e);
+		// Start all lifecycle components.
+		for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
+			component.lifecycleStart();
 		}
 
-		// Update status to 'started'
-		this.status = ServerStatus.Started;
+		// Start core management implementations.
+		getDeviceManagement().lifecycleStart();
+		if (getDeviceManagementCacheProvider() != null) {
+			getDeviceManagementCacheProvider().lifecycleStart();
+		}
+		getUserManagement().lifecycleStart();
+		getAssetModuleManager().lifecycleStart();
+		getSearchProviderManager().lifecycleStart();
+
+		// Populate data if requested.
+		verifyUserModel();
+		verifyDeviceModel();
+
+		// Enable provisioning.
+		if (outboundEventProcessorChain != null) {
+			outboundEventProcessorChain.lifecycleStart();
+			outboundEventProcessorChain.setProcessingEnabled(true);
+		}
+		if (inboundEventProcessorChain != null) {
+			inboundEventProcessorChain.lifecycleStart();
+		}
+		deviceProvisioning.lifecycleStart();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#getComponentName()
+	 */
+	@Override
+	public String getComponentName() {
+		return "SiteWhere Server " + getVersion().getEditionIdentifier() + " "
+				+ getVersion().getVersionIdentifier();
 	}
 
 	/*
@@ -340,40 +332,25 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		// Disable provisioning.
+		deviceProvisioning.lifecycleStop();
+		inboundEventProcessorChain.lifecycleStop();
+		outboundEventProcessorChain.setProcessingEnabled(false);
+		outboundEventProcessorChain.lifecycleStop();
 
-		// Update status to 'stopping'
-		this.status = ServerStatus.Stopping;
-
-		try {
-			// Disable provisioning.
-			deviceProvisioning.stop();
-			inboundEventProcessorChain.stop();
-			outboundEventProcessorChain.setProcessingEnabled(false);
-			outboundEventProcessorChain.stop();
-
-			// Stop core management implementations.
-			if (getDeviceManagementCacheProvider() != null) {
-				getDeviceManagementCacheProvider().stop();
-			}
-			getDeviceManagement().stop();
-			getUserManagement().stop();
-			getAssetModuleManager().stop();
-			getSearchProviderManager().stop();
-
-			// Start all lifecycle components.
-			for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-				component.stop();
-			}
-		} catch (Throwable e) {
-			this.status = ServerStatus.Error;
-			if (e instanceof SiteWhereException) {
-				throw (SiteWhereException) e;
-			}
-			throw new SiteWhereException(e);
+		// Stop core management implementations.
+		if (getDeviceManagementCacheProvider() != null) {
+			getDeviceManagementCacheProvider().lifecycleStop();
 		}
+		getDeviceManagement().lifecycleStop();
+		getUserManagement().lifecycleStop();
+		getAssetModuleManager().lifecycleStop();
+		getSearchProviderManager().lifecycleStop();
 
-		// Update status to 'stopped'
-		this.status = ServerStatus.Stopped;
+		// Start all lifecycle components.
+		for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
+			component.lifecycleStop();
+		}
 	}
 
 	/*

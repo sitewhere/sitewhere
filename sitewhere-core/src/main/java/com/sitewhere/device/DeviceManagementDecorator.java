@@ -9,6 +9,8 @@ package com.sitewhere.device;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -60,6 +62,9 @@ import com.sitewhere.spi.search.ISearchResults;
  */
 public class DeviceManagementDecorator extends LifecycleComponent implements IDeviceManagement {
 
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(DeviceManagementDecorator.class);
+
 	/** Delegate instance */
 	private IDeviceManagement delegate;
 
@@ -73,11 +78,41 @@ public class DeviceManagementDecorator extends LifecycleComponent implements IDe
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStart()
+	 */
+	@Override
+	public void lifecycleStart() {
+		delegate.lifecycleStart();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
 		delegate.start();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStop()
+	 */
+	@Override
+	public void lifecycleStop() {
+		delegate.lifecycleStop();
 	}
 
 	/*

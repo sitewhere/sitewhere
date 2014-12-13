@@ -31,7 +31,7 @@ public class SiteWhere {
 		try {
 			SERVER = clazz.newInstance();
 			SERVER.initialize();
-			SERVER.start();
+			SERVER.lifecycleStart();
 		} catch (InstantiationException e) {
 			throw new SiteWhereException("Unable to create SiteWhere server instance.", e);
 		} catch (IllegalAccessException e) {
@@ -45,7 +45,7 @@ public class SiteWhere {
 	 * @throws SiteWhereException
 	 */
 	public static void stop() throws SiteWhereException {
-		getServer().stop();
+		getServer().lifecycleStop();
 	}
 
 	/**
