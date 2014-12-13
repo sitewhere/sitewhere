@@ -46,7 +46,7 @@ public class AssetModuleManager extends LifecycleComponent implements IAssetModu
 	public void start() throws SiteWhereException {
 		modulesById.clear();
 		for (IAssetModule<?> module : modules) {
-			module.lifecycleStart();
+			startNestedComponent(module, true);
 			modulesById.put(module.getId(), module);
 		}
 	}
