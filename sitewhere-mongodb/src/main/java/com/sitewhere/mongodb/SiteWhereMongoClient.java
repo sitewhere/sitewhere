@@ -19,7 +19,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.sitewhere.SiteWhere;
-import com.sitewhere.spi.ISiteWhereLifecycle;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -27,7 +27,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author dadams
  */
-public class SiteWhereMongoClient implements InitializingBean, ISiteWhereLifecycle {
+public class SiteWhereMongoClient extends LifecycleComponent implements InitializingBean {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereMongoClient.class);
@@ -102,7 +102,7 @@ public class SiteWhereMongoClient implements InitializingBean, ISiteWhereLifecyc
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -145,7 +145,7 @@ public class SiteWhereMongoClient implements InitializingBean, ISiteWhereLifecyc
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

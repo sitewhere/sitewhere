@@ -32,6 +32,7 @@ import org.apache.activemq.broker.TransportConnector;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
@@ -42,7 +43,7 @@ import com.sitewhere.spi.device.provisioning.IInboundEventSource;
  * 
  * @author Derek
  */
-public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[]> {
+public class ActiveMQInboundEventReceiver extends LifecycleComponent implements IInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ActiveMQInboundEventReceiver.class);
@@ -84,7 +85,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -136,7 +137,7 @@ public class ActiveMQInboundEventReceiver implements IInboundEventReceiver<byte[
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

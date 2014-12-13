@@ -9,8 +9,8 @@ package com.sitewhere.spi.user;
 
 import java.util.List;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
@@ -19,7 +19,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  * 
  * @author Derek
  */
-public interface IUserManagement extends ISiteWhereLifecycle {
+public interface IUserManagement extends ILifecycleComponent {
 
 	/**
 	 * Create a new user based on the given input.

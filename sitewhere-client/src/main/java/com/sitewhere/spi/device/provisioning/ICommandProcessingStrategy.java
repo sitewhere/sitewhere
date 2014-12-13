@@ -7,17 +7,17 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Defines the flow executed for processing a command for delivery.
  * 
  * @author Derek
  */
-public interface ICommandProcessingStrategy extends ISiteWhereLifecycle {
+public interface ICommandProcessingStrategy extends ILifecycleComponent {
 
 	/**
 	 * Get the {@link ICommandTargetResolver} implementation.

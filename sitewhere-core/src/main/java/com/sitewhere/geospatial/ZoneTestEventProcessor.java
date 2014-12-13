@@ -16,7 +16,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IZone;
@@ -45,12 +45,20 @@ public class ZoneTestEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		super.start();
 		LOGGER.info("Starting zone test processor with " + zoneTests.size() + " tests.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
 	}
 
 	/*

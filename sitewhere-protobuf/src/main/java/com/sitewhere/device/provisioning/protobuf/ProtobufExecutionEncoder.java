@@ -18,6 +18,7 @@ import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.Header;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAck;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckError;
 import com.sitewhere.device.provisioning.protobuf.proto.Sitewhere.Device.RegistrationAckState;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -33,7 +34,7 @@ import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
  * 
  * @author Derek
  */
-public class ProtobufExecutionEncoder implements ICommandExecutionEncoder<byte[]> {
+public class ProtobufExecutionEncoder extends LifecycleComponent implements ICommandExecutionEncoder<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ProtobufExecutionEncoder.class);
@@ -131,7 +132,7 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder<byte[]
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -141,7 +142,7 @@ public class ProtobufExecutionEncoder implements ICommandExecutionEncoder<byte[]
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

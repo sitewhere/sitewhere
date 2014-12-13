@@ -20,6 +20,7 @@ import org.fusesource.mqtt.client.Message;
 import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
@@ -30,7 +31,7 @@ import com.sitewhere.spi.device.provisioning.IInboundEventSource;
  * 
  * @author Derek
  */
-public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
+public class MqttInboundEventReceiver extends LifecycleComponent implements IInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
@@ -68,7 +69,7 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -140,7 +141,7 @@ public class MqttInboundEventReceiver implements IInboundEventReceiver<byte[]> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

@@ -5,14 +5,23 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi;
+package com.sitewhere.spi.server.lifecycle;
+
+import com.sitewhere.spi.SiteWhereException;
 
 /**
  * Lifecycle methods used in SiteWhere components.
  * 
  * @author Derek
  */
-public interface ISiteWhereLifecycle {
+public interface ILifecycleComponent {
+
+	/**
+	 * Get human-readable name shown for component.
+	 * 
+	 * @return
+	 */
+	public String getComponentName();
 
 	/**
 	 * Start the component.

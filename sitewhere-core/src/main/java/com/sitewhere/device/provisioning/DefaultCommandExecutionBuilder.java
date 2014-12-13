@@ -10,6 +10,7 @@ package com.sitewhere.device.provisioning;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.rest.model.device.command.DeviceCommandExecution;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.command.ICommandParameter;
@@ -28,7 +29,7 @@ import com.sitewhere.spi.error.ErrorLevel;
  * 
  * @author Derek
  */
-public class DefaultCommandExecutionBuilder implements ICommandExecutionBuilder {
+public class DefaultCommandExecutionBuilder extends LifecycleComponent implements ICommandExecutionBuilder {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultCommandExecutionBuilder.class);
@@ -138,7 +139,7 @@ public class DefaultCommandExecutionBuilder implements ICommandExecutionBuilder 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -148,7 +149,7 @@ public class DefaultCommandExecutionBuilder implements ICommandExecutionBuilder 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

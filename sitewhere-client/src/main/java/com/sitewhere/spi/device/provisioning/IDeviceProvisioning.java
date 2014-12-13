@@ -9,17 +9,17 @@ package com.sitewhere.spi.device.provisioning;
 
 import java.util.List;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Base interface for device provisioning functionality.
  * 
  * @author Derek
  */
-public interface IDeviceProvisioning extends ISiteWhereLifecycle {
+public interface IDeviceProvisioning extends ILifecycleComponent {
 
 	/**
 	 * Get the list of sources that bring device event data into the system.

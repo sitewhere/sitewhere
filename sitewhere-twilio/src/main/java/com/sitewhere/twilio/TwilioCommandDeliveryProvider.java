@@ -15,6 +15,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.device.provisioning.sms.SmsParameters;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -31,7 +32,8 @@ import com.twilio.sdk.resource.instance.Account;
  * 
  * @author Derek
  */
-public class TwilioCommandDeliveryProvider implements ICommandDeliveryProvider<String, SmsParameters> {
+public class TwilioCommandDeliveryProvider extends LifecycleComponent implements
+		ICommandDeliveryProvider<String, SmsParameters> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(TwilioCommandDeliveryProvider.class);
@@ -54,7 +56,7 @@ public class TwilioCommandDeliveryProvider implements ICommandDeliveryProvider<S
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -73,7 +75,7 @@ public class TwilioCommandDeliveryProvider implements ICommandDeliveryProvider<S
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

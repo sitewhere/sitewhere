@@ -9,20 +9,20 @@ package com.sitewhere.spi.device.provisioning;
 
 import java.util.List;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Routes commands to one or more {@link ICommandDestination} implementations.
  * 
  * @author Derek
  */
-public interface IOutboundCommandRouter extends ISiteWhereLifecycle {
+public interface IOutboundCommandRouter extends ILifecycleComponent {
 
 	/**
 	 * Initialize the router with destination information.

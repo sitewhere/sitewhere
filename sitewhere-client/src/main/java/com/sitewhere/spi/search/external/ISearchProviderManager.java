@@ -9,14 +9,14 @@ package com.sitewhere.spi.search.external;
 
 import java.util.List;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Manages a list of search providers that can be used by SiteWhere.
  * 
  * @author Derek
  */
-public interface ISearchProviderManager extends ISiteWhereLifecycle {
+public interface ISearchProviderManager extends ILifecycleComponent {
 
 	/**
 	 * Get list of available search providers.

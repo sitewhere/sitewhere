@@ -9,6 +9,7 @@ package com.sitewhere.device.provisioning;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -27,7 +28,7 @@ import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
  * 
  * @param <T>
  */
-public class CommandDestination<T, P> implements ICommandDestination<T, P> {
+public class CommandDestination<T, P> extends LifecycleComponent implements ICommandDestination<T, P> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(CommandDestination.class);
@@ -83,7 +84,7 @@ public class CommandDestination<T, P> implements ICommandDestination<T, P> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -111,7 +112,7 @@ public class CommandDestination<T, P> implements ICommandDestination<T, P> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

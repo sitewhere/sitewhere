@@ -15,6 +15,7 @@ import com.sitewhere.rest.model.device.command.RegistrationFailureCommand;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
@@ -31,7 +32,7 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class RegistrationManager implements IRegistrationManager {
+public class RegistrationManager extends LifecycleComponent implements IRegistrationManager {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(RegistrationManager.class);
@@ -167,7 +168,7 @@ public class RegistrationManager implements IRegistrationManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -205,7 +206,7 @@ public class RegistrationManager implements IRegistrationManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

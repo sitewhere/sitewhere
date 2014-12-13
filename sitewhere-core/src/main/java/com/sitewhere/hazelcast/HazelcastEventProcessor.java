@@ -10,13 +10,13 @@ package com.sitewhere.hazelcast;
 import org.apache.log4j.Logger;
 
 import com.hazelcast.core.ITopic;
+import com.sitewhere.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
-import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -60,7 +60,7 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -82,6 +82,15 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 				getConfiguration().getHazelcastInstance().getTopic(
 						ISiteWhereHazelcast.TOPIC_COMMAND_RESPONSE_ADDED);
 		LOGGER.info("Hazelcast device event processor started.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
 	}
 
 	/*

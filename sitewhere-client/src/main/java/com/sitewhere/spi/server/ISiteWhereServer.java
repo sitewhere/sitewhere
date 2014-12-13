@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
@@ -22,6 +21,7 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IUserManagement;
 
@@ -30,7 +30,7 @@ import com.sitewhere.spi.user.IUserManagement;
  * 
  * @author Derek
  */
-public interface ISiteWhereServer extends ISiteWhereLifecycle {
+public interface ISiteWhereServer extends ILifecycleComponent {
 
 	/**
 	 * Initialize the server.
@@ -136,7 +136,7 @@ public interface ISiteWhereServer extends ISiteWhereLifecycle {
 	 * 
 	 * @return
 	 */
-	public List<ISiteWhereLifecycle> getRegisteredLifecycleComponents();
+	public List<ILifecycleComponent> getRegisteredLifecycleComponents();
 
 	/**
 	 * Get the metrics registry.

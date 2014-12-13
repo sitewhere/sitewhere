@@ -14,6 +14,7 @@ import net.sf.ehcache.config.Configuration;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.CacheType;
 import com.sitewhere.spi.cache.ICache;
@@ -28,7 +29,8 @@ import com.sitewhere.spi.device.ISite;
  * 
  * @author Derek
  */
-public class DeviceManagementCacheProvider implements IDeviceManagementCacheProvider {
+public class DeviceManagementCacheProvider extends LifecycleComponent implements
+		IDeviceManagementCacheProvider {
 
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(DeviceManagementCacheProvider.class);
@@ -84,7 +86,7 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -144,7 +146,7 @@ public class DeviceManagementCacheProvider implements IDeviceManagementCacheProv
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

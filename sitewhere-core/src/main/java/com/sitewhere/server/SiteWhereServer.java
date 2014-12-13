@@ -28,7 +28,7 @@ import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
-import com.sitewhere.spi.ISiteWhereLifecycle;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
@@ -45,6 +45,7 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ServerStatus;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -57,7 +58,7 @@ import com.sitewhere.version.VersionHelper;
  * 
  * @author Derek Adams
  */
-public class SiteWhereServer implements ISiteWhereServer {
+public class SiteWhereServer extends LifecycleComponent implements ISiteWhereServer {
 
 	/** Private logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereServer.class);
@@ -105,7 +106,7 @@ public class SiteWhereServer implements ISiteWhereServer {
 	private ISearchProviderManager searchProviderManager;
 
 	/** List of components registered to participate in SiteWhere server lifecycle */
-	private List<ISiteWhereLifecycle> registeredLifecycleComponents = new ArrayList<ISiteWhereLifecycle>();
+	private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
 
 	/** Metric regsitry */
 	private MetricRegistry metricRegistry = new MetricRegistry();
@@ -244,7 +245,7 @@ public class SiteWhereServer implements ISiteWhereServer {
 	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getRegisteredLifecycleComponents()
 	 */
-	public List<ISiteWhereLifecycle> getRegisteredLifecycleComponents() {
+	public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
 		return registeredLifecycleComponents;
 	}
 
@@ -283,8 +284,9 @@ public class SiteWhereServer implements ISiteWhereServer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
+	@Override
 	public void start() throws SiteWhereException {
 
 		// Update status to 'starting'
@@ -292,7 +294,7 @@ public class SiteWhereServer implements ISiteWhereServer {
 
 		try {
 			// Start all lifecycle components.
-			for (ISiteWhereLifecycle component : getRegisteredLifecycleComponents()) {
+			for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 				component.start();
 			}
 
@@ -334,7 +336,7 @@ public class SiteWhereServer implements ISiteWhereServer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
@@ -359,7 +361,7 @@ public class SiteWhereServer implements ISiteWhereServer {
 			getSearchProviderManager().stop();
 
 			// Start all lifecycle components.
-			for (ISiteWhereLifecycle component : getRegisteredLifecycleComponents()) {
+			for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 				component.stop();
 			}
 		} catch (Throwable e) {

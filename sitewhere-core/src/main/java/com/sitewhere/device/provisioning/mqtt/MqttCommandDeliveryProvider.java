@@ -14,6 +14,7 @@ import org.fusesource.mqtt.client.BlockingConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -26,7 +27,8 @@ import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
  * 
  * @author Derek
  */
-public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byte[], MqttParameters> {
+public class MqttCommandDeliveryProvider extends LifecycleComponent implements
+		ICommandDeliveryProvider<byte[], MqttParameters> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttCommandDeliveryProvider.class);
@@ -52,7 +54,7 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -75,7 +77,7 @@ public class MqttCommandDeliveryProvider implements ICommandDeliveryProvider<byt
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

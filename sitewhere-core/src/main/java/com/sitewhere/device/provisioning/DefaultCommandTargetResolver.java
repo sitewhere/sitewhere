@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -25,7 +26,7 @@ import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
  * 
  * @author Derek
  */
-public class DefaultCommandTargetResolver implements ICommandTargetResolver {
+public class DefaultCommandTargetResolver extends LifecycleComponent implements ICommandTargetResolver {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultCommandTargetResolver.class);
@@ -52,7 +53,7 @@ public class DefaultCommandTargetResolver implements ICommandTargetResolver {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -62,7 +63,7 @@ public class DefaultCommandTargetResolver implements ICommandTargetResolver {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

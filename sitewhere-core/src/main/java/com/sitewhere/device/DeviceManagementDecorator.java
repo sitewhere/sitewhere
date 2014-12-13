@@ -5,11 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device;
+package com.sitewhere.device;
 
 import java.util.List;
 
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -57,7 +58,7 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class DeviceManagementDecorator implements IDeviceManagement {
+public class DeviceManagementDecorator extends LifecycleComponent implements IDeviceManagement {
 
 	/** Delegate instance */
 	private IDeviceManagement delegate;
@@ -69,11 +70,21 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 		this.delegate = delegate;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+	 */
 	@Override
 	public void start() throws SiteWhereException {
 		delegate.start();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
 	@Override
 	public void stop() throws SiteWhereException {
 		delegate.stop();

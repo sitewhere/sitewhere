@@ -9,13 +9,14 @@ package com.sitewhere.rest.model.search.external;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.external.ISearchProvider;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Implementation of {@link ISearchProvider} used for marshaling.
  * 
  * @author Derek
  */
-public class SearchProvider implements ISearchProvider {
+public class SearchProvider implements ISearchProvider, ILifecycleComponent {
 
 	/** Provider id */
 	private String id;
@@ -26,7 +27,7 @@ public class SearchProvider implements ISearchProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -35,10 +36,20 @@ public class SearchProvider implements ISearchProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentName()
+	 */
+	@Override
+	public String getComponentName() {
+		return null;
 	}
 
 	/*

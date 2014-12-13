@@ -18,6 +18,7 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -69,7 +70,8 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceManagement {
+public class HBaseDeviceManagement extends LifecycleComponent implements IDeviceManagement,
+		ICachingDeviceManagement {
 
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(HBaseDeviceManagement.class);
@@ -83,7 +85,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
 		LOGGER.info("HBase device management starting...");
@@ -112,7 +114,7 @@ public class HBaseDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	public void stop() throws SiteWhereException {
 		LOGGER.info("HBase device management stopped.");

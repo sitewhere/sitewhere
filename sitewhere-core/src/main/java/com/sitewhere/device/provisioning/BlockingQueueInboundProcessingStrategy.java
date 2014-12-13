@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.SiteWhereServer;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -37,7 +38,8 @@ import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
  * 
  * @author Derek
  */
-public class BlockingQueueInboundProcessingStrategy implements IInboundProcessingStrategy {
+public class BlockingQueueInboundProcessingStrategy extends LifecycleComponent implements
+		IInboundProcessingStrategy {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BlockingQueueInboundProcessingStrategy.class);
@@ -85,7 +87,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -118,7 +120,7 @@ public class BlockingQueueInboundProcessingStrategy implements IInboundProcessin
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

@@ -7,14 +7,14 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Handles receipt of device event information from an underlying transport.
  * 
  * @author Derek
  */
-public interface IInboundEventReceiver<T> extends ISiteWhereLifecycle {
+public interface IInboundEventReceiver<T> extends ILifecycleComponent {
 
 	/**
 	 * Set the parent event source that will process events.

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.sitewhere.gnuhealth.GnuHealthConfiguration.JsonCall;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.command.CommandResponse;
-import com.sitewhere.spi.ISiteWhereLifecycle;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
@@ -40,7 +40,7 @@ import com.sitewhere.spi.command.ICommandResponse;
  * 
  * @author Derek
  */
-public class GnuHealthData implements ISiteWhereLifecycle {
+public class GnuHealthData extends LifecycleComponent {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GnuHealthData.class);
@@ -75,7 +75,7 @@ public class GnuHealthData implements ISiteWhereLifecycle {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -92,7 +92,7 @@ public class GnuHealthData implements ISiteWhereLifecycle {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

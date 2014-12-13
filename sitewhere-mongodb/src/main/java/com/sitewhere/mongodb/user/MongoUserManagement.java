@@ -26,6 +26,7 @@ import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.User;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -43,7 +44,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  * 
  * @author dadams
  */
-public class MongoUserManagement implements IUserManagement {
+public class MongoUserManagement extends LifecycleComponent implements IUserManagement {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MongoUserManagement.class);
@@ -54,7 +55,7 @@ public class MongoUserManagement implements IUserManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
 		LOGGER.info("Mongo user management started.");
@@ -78,7 +79,7 @@ public class MongoUserManagement implements IUserManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	public void stop() throws SiteWhereException {
 		LOGGER.info("Mongo user management stopped.");

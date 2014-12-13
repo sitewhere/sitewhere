@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
@@ -27,7 +28,7 @@ import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFac
  * 
  * @author Derek
  */
-public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
+public class SocketInboundEventReceiver<T> extends LifecycleComponent implements IInboundEventReceiver<T> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SocketInboundEventReceiver.class);
@@ -65,7 +66,7 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -90,7 +91,7 @@ public class SocketInboundEventReceiver<T> implements IInboundEventReceiver<T> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

@@ -21,6 +21,7 @@ import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.MultiMapSolrParams;
 import org.apache.solr.servlet.SolrRequestParsers;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.solr.SiteWhereSolrFactory;
 import com.sitewhere.spi.SiteWhereException;
@@ -35,7 +36,7 @@ import com.sitewhere.spi.search.external.ISearchProvider;
  * 
  * @author Derek
  */
-public class SolrSearchProvider implements IDeviceEventSearchProvider {
+public class SolrSearchProvider extends LifecycleComponent implements IDeviceEventSearchProvider {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SolrSearchProvider.class);
@@ -58,7 +59,7 @@ public class SolrSearchProvider implements IDeviceEventSearchProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -82,7 +83,7 @@ public class SolrSearchProvider implements IDeviceEventSearchProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

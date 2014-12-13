@@ -7,20 +7,20 @@
  */
 package com.sitewhere.spi.device.event.processor;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Allows intereseted entities to interact with SiteWhere outbound event processing.
  * 
  * @author Derek
  */
-public interface IOutboundEventProcessor extends ISiteWhereLifecycle {
+public interface IOutboundEventProcessor extends ILifecycleComponent {
 
 	/**
 	 * Executes code after device measurements have been successfully saved.

@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.external.ISearchProvider;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
@@ -22,7 +23,7 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
  * 
  * @author Derek
  */
-public class SearchProviderManager implements ISearchProviderManager {
+public class SearchProviderManager extends LifecycleComponent implements ISearchProviderManager {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SearchProviderManager.class);
@@ -36,7 +37,7 @@ public class SearchProviderManager implements ISearchProviderManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -51,7 +52,7 @@ public class SearchProviderManager implements ISearchProviderManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

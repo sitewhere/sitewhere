@@ -10,7 +10,6 @@ package com.sitewhere.device.event.processor;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.rest.model.device.event.processor.InboundEventProcessor;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -40,6 +39,24 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	/** Static logger instance */
 	@SuppressWarnings("unused")
 	private static Logger LOGGER = Logger.getLogger(DefaultEventStorageProcessor.class);
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+	}
 
 	/*
 	 * (non-Javadoc)

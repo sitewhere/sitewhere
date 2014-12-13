@@ -9,7 +9,7 @@ package com.sitewhere.device.event.processor;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
-import com.sitewhere.rest.model.device.DeviceManagementDecorator;
+import com.sitewhere.device.DeviceManagementDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;

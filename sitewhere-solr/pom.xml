@@ -21,6 +21,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-core</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
 			<version>4.6.0</version>

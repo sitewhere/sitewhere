@@ -16,6 +16,7 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.uid.IdManager;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
@@ -30,7 +31,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  * 
  * @author Derek
  */
-public class HBaseUserManagement implements IUserManagement {
+public class HBaseUserManagement extends LifecycleComponent implements IUserManagement {
 
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(HBaseUserManagement.class);
@@ -41,7 +42,7 @@ public class HBaseUserManagement implements IUserManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -59,7 +60,7 @@ public class HBaseUserManagement implements IUserManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

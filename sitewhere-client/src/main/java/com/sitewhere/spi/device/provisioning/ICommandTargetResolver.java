@@ -9,10 +9,10 @@ package com.sitewhere.spi.device.provisioning;
 
 import java.util.List;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Allows an {@link IDeviceCommandInvocation} to be resolved to one or more
@@ -20,7 +20,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public interface ICommandTargetResolver extends ISiteWhereLifecycle {
+public interface ICommandTargetResolver extends ILifecycleComponent {
 
 	/**
 	 * Resolves a command invocation to a list of assignments that should receive the

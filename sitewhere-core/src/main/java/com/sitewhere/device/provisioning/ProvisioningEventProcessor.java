@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 

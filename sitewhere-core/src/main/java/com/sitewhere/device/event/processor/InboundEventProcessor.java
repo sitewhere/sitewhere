@@ -5,8 +5,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.device.event.processor;
+package com.sitewhere.device.event.processor;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -21,25 +22,7 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
  * 
  * @author Derek
  */
-public class InboundEventProcessor implements IInboundEventProcessor {
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-	}
+public abstract class InboundEventProcessor extends LifecycleComponent implements IInboundEventProcessor {
 
 	/*
 	 * (non-Javadoc)

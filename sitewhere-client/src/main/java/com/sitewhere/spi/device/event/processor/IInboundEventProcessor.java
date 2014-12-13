@@ -7,7 +7,6 @@
  */
 package com.sitewhere.spi.device.event.processor;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -17,13 +16,14 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Allows interested entities to interact with SiteWhere inbound event processing.
  * 
  * @author Derek
  */
-public interface IInboundEventProcessor extends ISiteWhereLifecycle {
+public interface IInboundEventProcessor extends ILifecycleComponent {
 
 	/**
 	 * Called when a {@link IDeviceRegistrationRequest} is received.

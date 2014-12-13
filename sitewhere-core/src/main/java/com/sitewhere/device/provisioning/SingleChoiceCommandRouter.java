@@ -67,12 +67,11 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.provisioning.OutboundCommandRouter#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
 		LOGGER.info("Starting single choice command router...");
-		super.start();
 		if (getDestinations().size() != 1) {
 			throw new SiteWhereException("Expected exactly one destination for command routing but found "
 					+ getDestinations().size() + ".");
@@ -84,11 +83,10 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.provisioning.OutboundCommandRouter#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		super.stop();
 		LOGGER.info("Stopped single choice command router.");
 	}
 }

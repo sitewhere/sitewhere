@@ -7,9 +7,9 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Provides a strategy for reporting system events to interested
@@ -18,5 +18,5 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
  * 
  * @author Derek
  */
-public interface IOutboundProcessingStrategy extends ISiteWhereLifecycle, IOutboundEventProcessor {
+public interface IOutboundProcessingStrategy extends ILifecycleComponent, IOutboundEventProcessor {
 }

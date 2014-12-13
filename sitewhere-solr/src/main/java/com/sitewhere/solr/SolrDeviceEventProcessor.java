@@ -19,7 +19,7 @@ import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 
-import com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -53,11 +53,10 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		super.start();
 		if (getSolr() == null) {
 			throw new SiteWhereException("No Solr configuration provided to " + getClass().getName());
 		}
@@ -78,11 +77,10 @@ public class SolrDeviceEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		super.stop();
 	}
 
 	/*

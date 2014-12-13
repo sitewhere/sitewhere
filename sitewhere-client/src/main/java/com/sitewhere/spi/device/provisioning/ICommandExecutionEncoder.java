@@ -7,12 +7,12 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Encodes an {@link IDeviceCommandExecution} into a format that can be transmitted.
@@ -23,7 +23,7 @@ import com.sitewhere.spi.device.command.ISystemCommand;
  *            format for encoded command. Must be compatible with the
  *            {@link ICommandDeliveryProvider} that will deliver the command.
  */
-public interface ICommandExecutionEncoder<T> extends ISiteWhereLifecycle {
+public interface ICommandExecutionEncoder<T> extends ILifecycleComponent {
 
 	/**
 	 * Encodes a command execution.

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.spi.device.provisioning;
 
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -15,6 +14,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Provides a strategy for moving decoded events from an {@link IInboundEventSource} onto
@@ -22,7 +22,7 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
  * 
  * @author Derek
  */
-public interface IInboundProcessingStrategy extends ISiteWhereLifecycle {
+public interface IInboundProcessingStrategy extends ILifecycleComponent {
 
 	/**
 	 * Process an {@link IDeviceRegistrationRequest}.

@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -31,7 +32,8 @@ import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
  * 
  * @author Derek
  */
-public class DefaultCommandProcessingStrategy implements ICommandProcessingStrategy {
+public class DefaultCommandProcessingStrategy extends LifecycleComponent implements
+		ICommandProcessingStrategy {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultCommandProcessingStrategy.class);
@@ -100,7 +102,7 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -122,7 +124,7 @@ public class DefaultCommandProcessingStrategy implements ICommandProcessingStrat
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

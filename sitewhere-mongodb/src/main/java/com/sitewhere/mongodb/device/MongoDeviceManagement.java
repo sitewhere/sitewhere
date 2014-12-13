@@ -43,6 +43,7 @@ import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -95,7 +96,8 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author dadams
  */
-public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceManagement {
+public class MongoDeviceManagement extends LifecycleComponent implements IDeviceManagement,
+		ICachingDeviceManagement {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MongoDeviceManagement.class);
@@ -109,7 +111,7 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagement#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
 		LOGGER.info("Mongo device management started.");
@@ -169,7 +171,7 @@ public class MongoDeviceManagement implements IDeviceManagement, ICachingDeviceM
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagement#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	public void stop() throws SiteWhereException {
 		LOGGER.info("Mongo device management stopped.");

@@ -10,6 +10,7 @@ package com.sitewhere.device.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -28,7 +29,7 @@ import com.sitewhere.spi.device.provisioning.IRegistrationManager;
  * 
  * @author Derek
  */
-public abstract class DeviceProvisioning implements IDeviceProvisioning {
+public abstract class DeviceProvisioning extends LifecycleComponent implements IDeviceProvisioning {
 
 	/** Configured registration manager */
 	private IRegistrationManager registrationManager;
@@ -54,7 +55,7 @@ public abstract class DeviceProvisioning implements IDeviceProvisioning {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -107,7 +108,7 @@ public abstract class DeviceProvisioning implements IDeviceProvisioning {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

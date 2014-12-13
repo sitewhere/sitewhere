@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -26,7 +27,8 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
  * 
  * @author Derek
  */
-public class DefaultOutboundEventProcessorChain implements IOutboundEventProcessorChain {
+public class DefaultOutboundEventProcessorChain extends LifecycleComponent implements
+		IOutboundEventProcessorChain {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultOutboundEventProcessorChain.class);
@@ -40,7 +42,7 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -54,7 +56,7 @@ public class DefaultOutboundEventProcessorChain implements IOutboundEventProcess
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

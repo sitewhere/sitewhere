@@ -8,6 +8,7 @@
 package com.sitewhere.device.provisioning;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -23,12 +24,13 @@ import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
  * 
  * @author Derek
  */
-public class DirectOutboundProcessingStrategy implements IOutboundProcessingStrategy {
+public class DirectOutboundProcessingStrategy extends LifecycleComponent implements
+		IOutboundProcessingStrategy {
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#start()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
@@ -37,7 +39,7 @@ public class DirectOutboundProcessingStrategy implements IOutboundProcessingStra
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereLifecycle#stop()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {

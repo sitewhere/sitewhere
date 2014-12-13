@@ -10,7 +10,6 @@ package com.sitewhere.spi.device;
 import java.util.List;
 
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -42,13 +41,14 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Interface for device operations.
  * 
  * @author Derek
  */
-public interface IDeviceManagement extends ISiteWhereLifecycle {
+public interface IDeviceManagement extends ILifecycleComponent {
 
 	/**
 	 * Create a new device specification.

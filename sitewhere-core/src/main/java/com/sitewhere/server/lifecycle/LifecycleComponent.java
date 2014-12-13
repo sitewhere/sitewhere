@@ -5,28 +5,24 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.search.external;
+package com.sitewhere.server.lifecycle;
 
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
- * Implemented by external search providers that index SiteWhere data.
+ * Base class for implementing {@link ILifecycleComponent}.
  * 
  * @author Derek
  */
-public interface ISearchProvider extends ILifecycleComponent {
+public abstract class LifecycleComponent implements ILifecycleComponent {
 
-	/**
-	 * Get unique id of search provider.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentName()
 	 */
-	public String getId();
-
-	/**
-	 * Get a human-readable name for the search provider.
-	 * 
-	 * @return
-	 */
-	public String getName();
+	@Override
+	public String getComponentName() {
+		return getClass().getSimpleName();
+	}
 }
