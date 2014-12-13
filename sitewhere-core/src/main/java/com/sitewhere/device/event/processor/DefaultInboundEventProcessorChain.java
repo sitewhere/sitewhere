@@ -43,8 +43,9 @@ public class DefaultInboundEventProcessorChain extends LifecycleComponent implem
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		getLifecycleComponents().clear();
 		for (IInboundEventProcessor processor : getProcessors()) {
-			processor.lifecycleStart();
+			startNestedComponent(processor, false);
 		}
 	}
 

@@ -47,8 +47,9 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		getLifecycleComponents().clear();
 		for (IOutboundEventProcessor processor : getProcessors()) {
-			processor.lifecycleStart();
+			startNestedComponent(processor, false);
 		}
 	}
 

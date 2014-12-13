@@ -42,6 +42,8 @@ public class SiteWhereServerLoader extends HttpServlet {
 		super.init();
 		try {
 			SiteWhere.start();
+			LOGGER.info("Server started successfully.");
+			SiteWhere.getServer().logState();
 		} catch (SiteWhereException e) {
 			List<String> messages = new ArrayList<String>();
 			messages.add("!!!! SiteWhere Server Failed to Start !!!!");

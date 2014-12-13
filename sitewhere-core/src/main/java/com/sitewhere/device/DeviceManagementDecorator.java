@@ -52,6 +52,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -142,11 +143,32 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleComponents()
+	 */
+	@Override
+	public List<ILifecycleComponent> getLifecycleComponents() {
+		return delegate.getLifecycleComponents();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
 		delegate.stop();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#logState()
+	 */
+	@Override
+	public void logState() {
+		delegate.logState();
 	}
 
 	@Override

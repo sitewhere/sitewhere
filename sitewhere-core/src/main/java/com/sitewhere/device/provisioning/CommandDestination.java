@@ -94,7 +94,7 @@ public class CommandDestination<T, P> extends LifecycleComponent implements ICom
 		if (getCommandExecutionEncoder() == null) {
 			throw new SiteWhereException("No command execution encoder configured for destination.");
 		}
-		getCommandExecutionEncoder().lifecycleStart();
+		startNestedComponent(getCommandExecutionEncoder(), true);
 
 		// Start command execution encoder.
 		if (getCommandDeliveryParameterExtractor() == null) {
@@ -106,7 +106,17 @@ public class CommandDestination<T, P> extends LifecycleComponent implements ICom
 		if (getCommandDeliveryProvider() == null) {
 			throw new SiteWhereException("No command delivery provider configured for destination.");
 		}
-		getCommandDeliveryProvider().lifecycleStart();
+		startNestedComponent(getCommandDeliveryProvider(), true);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#getComponentName()
+	 */
+	@Override
+	public String getComponentName() {
+		return "Command Destination (" + getDestinationId() + ")";
 	}
 
 	/*

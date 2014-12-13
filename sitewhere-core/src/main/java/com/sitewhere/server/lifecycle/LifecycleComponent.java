@@ -7,6 +7,9 @@
  */
 package com.sitewhere.server.lifecycle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -23,6 +26,9 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 
 	/** Last error encountered in lifecycle operations */
 	private SiteWhereException lifecycleError;
+
+	/** List of contained lifecycle components */
+	private List<ILifecycleComponent> lifecycleComponents = new ArrayList<ILifecycleComponent>();
 
 	/*
 	 * (non-Javadoc)
@@ -83,6 +89,61 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#logState()
+	 */
+	public void logState() {
+		getLogger().info("\n\nSiteWhere Server State:\n" + logState("", this) + "\n");
+	}
+
+	/**
+	 * Recursively log state for a component.
+	 * 
+	 * @param pad
+	 * @param component
+	 */
+	protected String logState(String pad, ILifecycleComponent component) {
+		String entry =
+				"\n" + pad + "+ " + component.getComponentName() + " " + component.getLifecycleStatus();
+		for (ILifecycleComponent nested : component.getLifecycleComponents()) {
+			entry = entry + logState("  " + pad, nested);
+		}
+		return entry;
+	}
+
+	/**
+	 * Starts a nested {@link ILifecycleComponent}. Uses default message.
+	 * 
+	 * @param component
+	 * @param require
+	 * @throws SiteWhereException
+	 */
+	public void startNestedComponent(ILifecycleComponent component, boolean require)
+			throws SiteWhereException {
+		startNestedComponent(component, getComponentName() + " failed to start.", require);
+	}
+
+	/**
+	 * Starts a nested {@link ILifecycleComponent}.
+	 * 
+	 * @param component
+	 * @param errorMessage
+	 * @param require
+	 * @throws SiteWhereException
+	 */
+	public void startNestedComponent(ILifecycleComponent component, String errorMessage, boolean require)
+			throws SiteWhereException {
+		component.lifecycleStart();
+		if (require) {
+			if (component.getLifecycleStatus() == LifecycleStatus.Error) {
+				throw new SiteWhereException("Server startup aborted. " + errorMessage);
+			}
+		}
+		getLifecycleComponents().add(component);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus()
 	 */
 	public LifecycleStatus getLifecycleStatus() {
@@ -104,5 +165,19 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 
 	public void setLifecycleError(SiteWhereException lifecycleError) {
 		this.lifecycleError = lifecycleError;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleComponents()
+	 */
+	public List<ILifecycleComponent> getLifecycleComponents() {
+		return lifecycleComponents;
+	}
+
+	public void setLifecycleComponents(List<ILifecycleComponent> lifecycleComponents) {
+		this.lifecycleComponents = lifecycleComponents;
 	}
 }

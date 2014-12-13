@@ -59,16 +59,18 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		getLifecycleComponents().clear();
+
 		// Start command processing strategy.
 		if (getCommandProcessingStrategy() == null) {
 			throw new SiteWhereException("No command processing strategy configured for provisioning.");
 		}
-		getCommandProcessingStrategy().lifecycleStart();
+		startNestedComponent(getCommandProcessingStrategy(), true);
 
 		// Start command destinations.
 		if (getCommandDestinations() != null) {
 			for (ICommandDestination<?, ?> destination : getCommandDestinations()) {
-				destination.lifecycleStart();
+				startNestedComponent(destination, false);
 			}
 		}
 
@@ -77,30 +79,30 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 			throw new SiteWhereException("No command router for provisioning.");
 		}
 		getOutboundCommandRouter().initialize(getCommandDestinations());
-		getOutboundCommandRouter().lifecycleStart();
+		startNestedComponent(getOutboundCommandRouter(), true);
 
 		// Start outbound processing strategy.
 		if (getOutboundProcessingStrategy() == null) {
 			throw new SiteWhereException("No outbound processing strategy configured for provisioning.");
 		}
-		getOutboundProcessingStrategy().lifecycleStart();
+		startNestedComponent(getOutboundProcessingStrategy(), true);
 
 		// Start registration manager.
 		if (getRegistrationManager() == null) {
 			throw new SiteWhereException("No registration manager configured for provisioning.");
 		}
-		getRegistrationManager().lifecycleStart();
+		startNestedComponent(getRegistrationManager(), true);
 
 		// Start inbound processing strategy.
 		if (getInboundProcessingStrategy() == null) {
 			throw new SiteWhereException("No inbound processing strategy configured for provisioning.");
 		}
-		getInboundProcessingStrategy().lifecycleStart();
+		startNestedComponent(getInboundProcessingStrategy(), true);
 
 		// Start device event sources.
 		if (getInboundEventSources() != null) {
 			for (IInboundEventSource<?> processor : getInboundEventSources()) {
-				processor.lifecycleStart();
+				startNestedComponent(processor, false);
 			}
 		}
 	}

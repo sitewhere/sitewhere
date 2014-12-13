@@ -57,6 +57,8 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		getLifecycleComponents().clear();
+
 		LOGGER.debug("Starting event source '" + getSourceId() + "'.");
 		if (getInboundProcessingStrategy() == null) {
 			setInboundProcessingStrategy(SiteWhere.getServer().getDeviceProvisioning().getInboundProcessingStrategy());
@@ -66,6 +68,16 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 		}
 		startEventReceivers();
 		LOGGER.debug("Started event source '" + getSourceId() + "'.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#getComponentName()
+	 */
+	@Override
+	public String getComponentName() {
+		return "Event Source (" + getSourceId() + ")";
 	}
 
 	/*
@@ -87,7 +99,7 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 		if (getInboundEventReceivers().size() > 0) {
 			for (IInboundEventReceiver<T> receiver : getInboundEventReceivers()) {
 				receiver.setEventSource(this);
-				receiver.lifecycleStart();
+				startNestedComponent(receiver, true);
 			}
 		} else {
 			LOGGER.warn("No device event receivers configured for event source!");

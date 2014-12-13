@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.server.lifecycle;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -40,6 +42,13 @@ public interface ILifecycleComponent {
 	public SiteWhereException getLifecycleError();
 
 	/**
+	 * Get the list of contained {@link ILifecycleComponent} elements.
+	 * 
+	 * @return
+	 */
+	public List<ILifecycleComponent> getLifecycleComponents();
+
+	/**
 	 * Starts the component while keeping up with lifecycle information.
 	 */
 	public void lifecycleStart();
@@ -69,4 +78,9 @@ public interface ILifecycleComponent {
 	 * @return
 	 */
 	public Logger getLogger();
+
+	/**
+	 * Logs the state of this component and all nested components.
+	 */
+	public void logState();
 }

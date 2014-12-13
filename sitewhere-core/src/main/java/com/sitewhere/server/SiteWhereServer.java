@@ -45,7 +45,6 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -276,63 +275,49 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		// Clear the component list.
+		getLifecycleComponents().clear();
+
 		// Start all lifecycle components.
 		for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
-			component.lifecycleStart();
+			startNestedComponent(component, component.getComponentName() + " startup failed.", true);
 		}
 
 		// Start device management.
-		getDeviceManagement().lifecycleStart();
-		require(getDeviceManagement(), "Device management startup failed.");
-		getLogger().info("Device management status: " + getDeviceManagement().getLifecycleStatus());
+		startNestedComponent(getDeviceManagement(), "Device management startup failed.", true);
 
 		// Start device management cache provider if specificed.
 		if (getDeviceManagementCacheProvider() != null) {
-			getDeviceManagementCacheProvider().lifecycleStart();
+			startNestedComponent(getDeviceManagementCacheProvider(),
+					"Device management chace provider startup failed.", true);
 		}
 
 		// Start user management.
-		getUserManagement().lifecycleStart();
-		require(getUserManagement(), "User management startup failed.");
+		startNestedComponent(getUserManagement(), "User management startup failed.", true);
 
 		// Start asset module manager.
-		getAssetModuleManager().lifecycleStart();
-		require(getAssetModuleManager(), "Asset module manager startup failed.");
+		startNestedComponent(getAssetModuleManager(), "Asset module manager startup failed.", true);
 
 		// Start search provider manager.
-		getSearchProviderManager().lifecycleStart();
-		require(getSearchProviderManager(), "Search provider manager startup failed.");
+		startNestedComponent(getSearchProviderManager(), "Search provider manager startup failed.", true);
 
 		// Populate data if requested.
 		verifyUserModel();
 		verifyDeviceModel();
 
 		// Enable provisioning.
-		if (outboundEventProcessorChain != null) {
-			outboundEventProcessorChain.lifecycleStart();
-			outboundEventProcessorChain.setProcessingEnabled(true);
+		if (getOutboundEventProcessorChain() != null) {
+			startNestedComponent(getOutboundEventProcessorChain(),
+					"Outbound processor chain startup failed.", true);
+			getOutboundEventProcessorChain().setProcessingEnabled(true);
 		}
-		if (inboundEventProcessorChain != null) {
-			inboundEventProcessorChain.lifecycleStart();
+		if (getInboundEventProcessorChain() != null) {
+			startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.",
+					true);
 		}
 
 		// Start device provisioning.
-		getDeviceProvisioning().lifecycleStart();
-		require(getDeviceProvisioning(), "Device provisioning startup failed.");
-	}
-
-	/**
-	 * Require the given component to have initialized succesfully to allow server to
-	 * start.
-	 * 
-	 * @param component
-	 * @param message
-	 * @throws SiteWhereException
-	 */
-	protected void require(ILifecycleComponent component, String message) throws SiteWhereException {
-		if (component.getLifecycleStatus() == LifecycleStatus.Error) {
-			throw new SiteWhereException("Server startup aborted. " + message);
-		}
+		startNestedComponent(getDeviceProvisioning(), "Device provisioning startup failed.", true);
 	}
 
 	/*
@@ -364,10 +349,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	@Override
 	public void stop() throws SiteWhereException {
 		// Disable provisioning.
-		deviceProvisioning.lifecycleStop();
-		inboundEventProcessorChain.lifecycleStop();
-		outboundEventProcessorChain.setProcessingEnabled(false);
-		outboundEventProcessorChain.lifecycleStop();
+		getDeviceProvisioning().lifecycleStop();
+		getInboundEventProcessorChain().lifecycleStop();
+		getOutboundEventProcessorChain().setProcessingEnabled(false);
+		getOutboundEventProcessorChain().lifecycleStop();
 
 		// Stop core management implementations.
 		if (getDeviceManagementCacheProvider() != null) {
