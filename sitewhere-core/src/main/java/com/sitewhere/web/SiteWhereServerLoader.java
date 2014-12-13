@@ -49,8 +49,6 @@ public class SiteWhereServerLoader extends HttpServlet {
 			messages.add("Error: " + e.getMessage());
 			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
-			LOGGER.error(e);
-			e.printStackTrace();
 		} catch (Throwable e) {
 			List<String> messages = new ArrayList<String>();
 			messages.add("!!!! Unhandled Exception !!!!");
@@ -58,8 +56,6 @@ public class SiteWhereServerLoader extends HttpServlet {
 			messages.add("Error: " + e.getMessage());
 			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
-			LOGGER.error(e);
-			e.printStackTrace();
 		}
 	}
 }

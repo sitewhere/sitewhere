@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Default implementation of {@link IOutboundEventProcessorChain} interface.
@@ -107,7 +108,11 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.onMeasurements(measurements);
+					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+						processor.onMeasurements(measurements);
+					} else {
+						logSkipped(processor);
+					}
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
@@ -127,7 +132,11 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.onLocation(location);
+					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+						processor.onLocation(location);
+					} else {
+						logSkipped(processor);
+					}
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
@@ -147,7 +156,11 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.onAlert(alert);
+					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+						processor.onAlert(alert);
+					} else {
+						logSkipped(processor);
+					}
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
@@ -167,7 +180,11 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.onCommandInvocation(invocation);
+					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+						processor.onCommandInvocation(invocation);
+					} else {
+						logSkipped(processor);
+					}
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
@@ -187,12 +204,27 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 		if (isProcessingEnabled()) {
 			for (IOutboundEventProcessor processor : getProcessors()) {
 				try {
-					processor.onCommandResponse(response);
+					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+						processor.onCommandResponse(response);
+					} else {
+						logSkipped(processor);
+					}
 				} catch (SiteWhereException e) {
 					LOGGER.error(e);
 				}
 			}
 		}
+	}
+
+	/**
+	 * Output log message indicating a processor was skipped.
+	 * 
+	 * @param processor
+	 */
+	protected void logSkipped(IOutboundEventProcessor processor) {
+		getLogger().warn(
+				"Skipping event processor " + processor.getComponentName() + " because its state is '"
+						+ processor.getLifecycleStatus() + "'");
 	}
 
 	/*

@@ -22,7 +22,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	private LifecycleStatus lifecycleStatus = LifecycleStatus.Stopped;
 
 	/** Last error encountered in lifecycle operations */
-	private Throwable lifecycleError;
+	private SiteWhereException lifecycleError;
 
 	/*
 	 * (non-Javadoc)
@@ -52,7 +52,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 			getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
 		} catch (Throwable t) {
 			setLifecycleStatus(LifecycleStatus.Error);
-			setLifecycleError(t);
+			setLifecycleError(new SiteWhereException(t));
 			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 		}
 	}
@@ -75,7 +75,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 			getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
 		} catch (Throwable t) {
 			setLifecycleStatus(LifecycleStatus.Error);
-			setLifecycleError(t);
+			setLifecycleError(new SiteWhereException(t));
 			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 		}
 	}
@@ -98,11 +98,11 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError()
 	 */
-	public Throwable getLifecycleError() {
+	public SiteWhereException getLifecycleError() {
 		return lifecycleError;
 	}
 
-	public void setLifecycleError(Throwable lifecycleError) {
+	public void setLifecycleError(SiteWhereException lifecycleError) {
 		this.lifecycleError = lifecycleError;
 	}
 }

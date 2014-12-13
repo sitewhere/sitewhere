@@ -9,6 +9,7 @@ package com.sitewhere;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereServer;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.version.VersionHelper;
 
 /**
@@ -32,6 +33,11 @@ public class SiteWhere {
 			SERVER = clazz.newInstance();
 			SERVER.initialize();
 			SERVER.lifecycleStart();
+
+			// Handle errors that prevent server startup.
+			if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+				throw SERVER.getLifecycleError();
+			}
 		} catch (InstantiationException e) {
 			throw new SiteWhereException("Unable to create SiteWhere server instance.", e);
 		} catch (IllegalAccessException e) {

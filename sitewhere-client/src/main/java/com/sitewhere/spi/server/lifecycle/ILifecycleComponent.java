@@ -37,7 +37,7 @@ public interface ILifecycleComponent {
 	 * 
 	 * @return
 	 */
-	public Throwable getLifecycleError();
+	public SiteWhereException getLifecycleError();
 
 	/**
 	 * Starts the component while keeping up with lifecycle information.

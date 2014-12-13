@@ -45,6 +45,7 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -280,14 +281,27 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			component.lifecycleStart();
 		}
 
-		// Start core management implementations.
+		// Start device management.
 		getDeviceManagement().lifecycleStart();
+		require(getDeviceManagement(), "Device management startup failed.");
+		getLogger().info("Device management status: " + getDeviceManagement().getLifecycleStatus());
+
+		// Start device management cache provider if specificed.
 		if (getDeviceManagementCacheProvider() != null) {
 			getDeviceManagementCacheProvider().lifecycleStart();
 		}
+
+		// Start user management.
 		getUserManagement().lifecycleStart();
+		require(getUserManagement(), "User management startup failed.");
+
+		// Start asset module manager.
 		getAssetModuleManager().lifecycleStart();
+		require(getAssetModuleManager(), "Asset module manager startup failed.");
+
+		// Start search provider manager.
 		getSearchProviderManager().lifecycleStart();
+		require(getSearchProviderManager(), "Search provider manager startup failed.");
 
 		// Populate data if requested.
 		verifyUserModel();
@@ -301,7 +315,24 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		if (inboundEventProcessorChain != null) {
 			inboundEventProcessorChain.lifecycleStart();
 		}
-		deviceProvisioning.lifecycleStart();
+
+		// Start device provisioning.
+		getDeviceProvisioning().lifecycleStart();
+		require(getDeviceProvisioning(), "Device provisioning startup failed.");
+	}
+
+	/**
+	 * Require the given component to have initialized succesfully to allow server to
+	 * start.
+	 * 
+	 * @param component
+	 * @param message
+	 * @throws SiteWhereException
+	 */
+	protected void require(ILifecycleComponent component, String message) throws SiteWhereException {
+		if (component.getLifecycleStatus() == LifecycleStatus.Error) {
+			throw new SiteWhereException("Server startup aborted. " + message);
+		}
 	}
 
 	/*

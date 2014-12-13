@@ -12,7 +12,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -53,6 +52,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Allows classes to inject themselves as a facade around an existing device management
@@ -60,16 +60,10 @@ import com.sitewhere.spi.search.ISearchResults;
  * 
  * @author Derek
  */
-public class DeviceManagementDecorator extends LifecycleComponent implements IDeviceManagement {
-
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(DeviceManagementDecorator.class);
+public class DeviceManagementDecorator implements IDeviceManagement {
 
 	/** Delegate instance */
 	private IDeviceManagement delegate;
-
-	public DeviceManagementDecorator() {
-	}
 
 	public DeviceManagementDecorator(IDeviceManagement delegate) {
 		this.delegate = delegate;
@@ -102,7 +96,7 @@ public class DeviceManagementDecorator extends LifecycleComponent implements IDe
 	 */
 	@Override
 	public Logger getLogger() {
-		return LOGGER;
+		return delegate.getLogger();
 	}
 
 	/*
@@ -113,6 +107,36 @@ public class DeviceManagementDecorator extends LifecycleComponent implements IDe
 	@Override
 	public void lifecycleStop() {
 		delegate.lifecycleStop();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentName()
+	 */
+	@Override
+	public String getComponentName() {
+		return delegate.getComponentName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus()
+	 */
+	@Override
+	public LifecycleStatus getLifecycleStatus() {
+		return delegate.getLifecycleStatus();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError()
+	 */
+	@Override
+	public SiteWhereException getLifecycleError() {
+		return delegate.getLifecycleError();
 	}
 
 	/*
