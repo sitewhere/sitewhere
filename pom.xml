@@ -153,7 +153,11 @@
 											</fileset>
 										</copy>
 										<copy todir="${project.build.directory}/apache-tomcat-7.0.57/conf">
-											<fileset dir="${project.basedir}/sitewhere-core/config" includes="**/*"/>
+											<fileset dir="${project.basedir}/sitewhere-core/config" includes="**/*"
+												excludes="log4j.xml"/>
+										</copy>
+										<copy todir="${project.build.directory}/apache-tomcat-7.0.57/lib">
+											<fileset dir="${project.basedir}/sitewhere-core/config" includes="log4j.xml"/>
 										</copy>
 										<move todir="${project.build.directory}/sitewhere-server-${project.version}">
 											<fileset dir="${project.build.directory}/apache-tomcat-7.0.57"/>
