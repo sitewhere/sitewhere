@@ -59,14 +59,14 @@ $(document).ready(function() {
 						<div class="control-group">
 							<label class="control-label" for="login-username">Username</label>
 							<div class="controls">
-								<input type="text" id="login-username" name="j_username" class="input-large" title="Username" value="admin">
+								<input type="text" id="login-username" name="j_username" class="input-large" title="Username">
 							</div>
 						</div>
 						<div class="control-group">
 							<label class="control-label" for="login-password">Password</label>
 							<div class="controls">
 								<input type="password" id="login-password" name="j_password" class="input-large" 
-									title="Password" value="password">
+									title="Password">
 							</div>
 						</div>
 						<div class="control-group">
@@ -83,6 +83,9 @@ $(document).ready(function() {
 						</div>
 					</form>
 				</div>
+			</div>
+			<div class="alert alert-info" style="width: 550px; margin-left: auto; margin-right: auto; text-align: center; margin-top: 10px;">
+				The default login and password are <b>admin</b>:<b>password</b>.
 			</div>
 		</div>
 		<div style="height: 10px;"></div>
