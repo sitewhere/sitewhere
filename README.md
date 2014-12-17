@@ -73,9 +73,9 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
 
 > Download a SiteWhere server release from the sitewhere.org website
 
-    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.0.0-rc2.tar.gz
-    tar -zxvf sitewhere-server-1.0.0-rc2.tar.gz
-    mv sitewhere-server-1.0.0-rc2 /opt/sitewhere
+    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.0.0.tar.gz
+    tar -zxvf sitewhere-server-1.0.0.tar.gz
+    mv sitewhere-server-1.0.0 /opt/sitewhere
     cd /opt/sitewhere/bin
     sh startup.sh
 
