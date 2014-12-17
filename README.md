@@ -84,7 +84,7 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
     apt-get install maven git unzip -y
     apt-get install openjdk-7-jdk tomcat7 -y
     service tomcat7 stop
-    git clone https://github.com/reveal-technologies/sitewhere.git
+    git clone https://github.com/sitewhere/sitewhere.git
     cd sitewhere
     mvn clean install
     cp deploy/sitewhere $(YOUR_TOMCAT_PATH)/webapps/.
