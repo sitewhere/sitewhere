@@ -1,6 +1,6 @@
 ![SiteWhere] (http://www.sitewhere.org/sites/default/files/sitewhere.png)
 
-SiteWhere : The Open Platform for the Internet of Things™
+SiteWhere : The Open Platform for the Internet of Thingsâ„¢
 ---------------------------------------------------------
 
 #### SiteWhere is an open source platform for storing, processing, and analyzing M2M device data. ####
@@ -38,8 +38,8 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
 
 ###Install MongoDB
 
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-    echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo -tee /etc/apt/sources.list.d/mongodb.list
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+    echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list
     apt-get update
     apt-get install -y mongodb-org
     echo "mongodb-org hold" | sudo dpkg --set-selections
@@ -52,8 +52,8 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
 ###Install HiveMQ
 
     wget --content-disposition http://www.hivemq.com/downloads/releases/latest
-    unzip hivemq-2.1.0.zip
-    cd hivemq-2.1.0/bin
+    unzip hivemq-2.1.1.zip
+    cd hivemq-2.1.1/bin
     ./run.sh &
 
 ###Install Solr
@@ -73,9 +73,9 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
 
 > Download a SiteWhere server release from the sitewhere.org website
 
-    wget https://s3.amazonaws.com/reveal-technologies/sitewhere-server-0.9.7.tar.gz
-    tar -zxvf sitewhere-server-0.9.7.tar.gz
-    mv sitewhere-server-0.9.7 /opt/sitewhere
+    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.0.0.tar.gz
+    tar -zxvf sitewhere-server-1.0.0.tar.gz
+    mv sitewhere-server-1.0.0 /opt/sitewhere
     cd /opt/sitewhere/bin
     sh startup.sh
 
@@ -84,10 +84,11 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
     apt-get install maven git unzip -y
     apt-get install openjdk-7-jdk tomcat7 -y
     service tomcat7 stop
-    git clone https://github.com/reveal-technologies/sitewhere.git
+    git clone https://github.com/sitewhere/sitewhere.git
     cd sitewhere
     mvn clean install
     cp deploy/sitewhere $(YOUR_TOMCAT_PATH)/webapps/.
+    cp -R sitewhere-core/config/* /var/lib/tomcat7/config
     service tomcat7 start
 
 * * * *
