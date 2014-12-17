@@ -770,8 +770,8 @@ The file must be available on the server classpath in order to be used.
 The default logging configuration file logs to the console output and also creates a separate log file named
 **sitewhere.log** which contains the same content.
 
-Swapping the Server into Debug Mode
------------------------------------
+Enabling Server Debug Output
+----------------------------
 By default, most debugging output is not logged for SiteWhere. To turn debugging on for all aspects of the server,
 scroll down to the following block:
 
@@ -782,7 +782,7 @@ scroll down to the following block:
    </category>
 
 Change the **INFO** value to **DEBUG** and restart the server. All debug information will be now be available. This is
-discouraged in production environments becuase logging takes system resources and will degrade performance.
+discouraged in production environments because logging takes system resources and will degrade performance.
 
 Debugging Device Provisioning
 -----------------------------
