@@ -757,3 +757,44 @@ add the outbound event processor to the chain, reference it as shown below:
 
 Note that on system startup, the event processor attempts to ping the Solr server to verify the 
 settings are correct. If the ping fails, server startup will fail.
+
+-------------------
+Configuring Logging
+-------------------
+SiteWhere uses `Apache Log4j <http://logging.apache.org/log4j/1.2/>`_ for logging information about the running system.
+The logging output is configured by the **log4j.xml** file which is found in the lib folder of the default server
+distributions. For users running SiteWhere on their own application server instance, the default logging configuration
+file can be found on `GitHub <https://github.com/sitewhere/sitewhere/blob/master/sitewhere-core/config/log4j.xml>`_.
+The file must be available on the server classpath in order to be used.
+
+The default logging configuration file logs to the console output and also creates a separate log file named
+**sitewhere.log** which contains the same content.
+
+Swapping the Server into Debug Mode
+-----------------------------------
+By default, most debugging output is not logged for SiteWhere. To turn debugging on for all aspects of the server,
+scroll down to the following block:
+
+.. code-block:: xml
+   
+   <category name="com.sitewhere">
+      <priority value="INFO" />
+   </category>
+
+Change the **INFO** value to **DEBUG** and restart the server. All debug information will be now be available. This is
+discouraged in production environments becuase logging takes system resources and will degrade performance.
+
+Debugging Device Provisioning
+-----------------------------
+Debugging can also be enabled just for certain areas of the system. A common area where users require detailed
+debugging information is in the provisioning of device data. It is often helpful to see exactly what SiteWhere is
+doing to handle inbound and outbound data. To turn on provisioning debugging, scroll down to the following block in
+the **log4j.xml** file:
+
+.. code-block:: xml
+   
+   <category name="com.sitewhere.device.provisioning">
+      <priority value="INFO" />
+   </category>
+
+Update the **INFO** value to **DEBUG** and restart the server to see more detailed provisioning information.
