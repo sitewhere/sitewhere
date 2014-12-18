@@ -402,11 +402,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Initialize search provider management.
 		initializeSearchProviderManagement();
 
+		String os = System.getProperty("os.name") + " (" + System.getProperty("os.version") + ")";
+		String java = System.getProperty("java.vendor") + " (" + System.getProperty("java.version") + ")";
+
 		// Print version information.
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server " + version.getEdition());
 		messages.add("");
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
+		messages.add("Operating System: " + os);
+		messages.add("Java Runtime: " + java);
 		messages.add("");
 		messages.add("Copyright (c) 2009-2014 SiteWhere, LLC");
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
