@@ -52,6 +52,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -249,14 +250,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public ISearchResults<IDevice> listDevices(boolean includeDeleted, ISearchCriteria criteria)
+	public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
 		return delegate.listDevices(includeDeleted, criteria);
-	}
-
-	@Override
-	public ISearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException {
-		return delegate.listUnassignedDevices(criteria);
 	}
 
 	@Override

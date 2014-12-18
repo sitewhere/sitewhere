@@ -90,6 +90,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
  * Device management implementation that uses MongoDB for persistence.
@@ -576,33 +577,36 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.IDeviceManagement#listDevices(boolean,
-	 * com.sitewhere.spi.common.ISearchCriteria)
+	 * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
 	 */
 	@Override
-	public SearchResults<IDevice> listDevices(boolean includeDeleted, ISearchCriteria criteria)
+	public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
 		DBCollection devices = getMongoClient().getDevicesCollection();
 		DBObject dbCriteria = new BasicDBObject();
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 		}
+		if (!criteria.isIncludeAssigned()) {
+			dbCriteria.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
+		}
+		switch (criteria.getSearchType()) {
+		case All: {
+			break;
+		}
+		case UsesSpecification: {
+			if (criteria.getDeviceBySpecificationParameters() != null) {
+				String token = criteria.getDeviceBySpecificationParameters().getSpecificationToken();
+				if (token == null) {
+					throw new SiteWhereException("Invalid device search. No specification token passed.");
+				}
+				dbCriteria.put(MongoDevice.PROP_SPECIFICATION_TOKEN, token);
+			}
+			break;
+		}
+		}
 		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 		return MongoPersistence.search(IDevice.class, devices, dbCriteria, sort, criteria);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#listUnassignedDevices(com.sitewhere.
-	 * spi.common.ISearchCriteria)
-	 */
-	@Override
-	public SearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection devices = getMongoClient().getDevicesCollection();
-		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
-		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
-		return MongoPersistence.search(IDevice.class, devices, query, sort, criteria);
 	}
 
 	/*

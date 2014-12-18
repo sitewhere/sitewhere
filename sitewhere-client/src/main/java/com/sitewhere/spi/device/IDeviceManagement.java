@@ -41,6 +41,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -199,17 +200,8 @@ public interface IDeviceManagement extends ILifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IDevice> listDevices(boolean includeDeleted, ISearchCriteria criteria)
+	public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException;
-
-	/**
-	 * List all devices that are not currently assigned.
-	 * 
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
 	 * Create an {@link IDeviceElementMapping} for a nested device.

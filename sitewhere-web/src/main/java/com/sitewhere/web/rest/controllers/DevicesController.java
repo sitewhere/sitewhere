@@ -14,6 +14,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateReq
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
@@ -47,6 +49,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -308,15 +311,56 @@ public class DevicesController extends SiteWhereController {
 	@ApiOperation(value = "List devices that match certain criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDevice> listDevices(
-			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-			@ApiParam(value = "Include specification information", required = false) @RequestParam(defaultValue = "false") boolean includeSpecification,
-			@ApiParam(value = "Include assignment if associated", required = false) @RequestParam(defaultValue = "false") boolean includeAssignment,
-			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
+			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
+			@ApiParam(value = "Include assigned devices", required = false) @RequestParam(required = false, defaultValue = "true") boolean includeAssigned,
+			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
+			@ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
+			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDevices", LOGGER);
 		try {
-			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			IDeviceSearchCriteria criteria =
+					DeviceSearchCriteria.createDefaultSearch(page, pageSize, startDate, endDate,
+							includeAssigned);
+			ISearchResults<IDevice> results =
+					SiteWhere.getServer().getDeviceManagement().listDevices(includeDeleted, criteria);
+			DeviceMarshalHelper helper = new DeviceMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeSpecification(includeSpecification);
+			helper.setIncludeAssignment(includeAssignment);
+			List<IDevice> devicesConv = new ArrayList<IDevice>();
+			for (IDevice device : results.getResults()) {
+				devicesConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
+			}
+			return new SearchResults<IDevice>(devicesConv, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/specification/{specificationToken}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List devices that use a given specification")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISearchResults<IDevice> listDevicesForSpecification(
+			@ApiParam(value = "Specification token", required = true) @PathVariable String specificationToken,
+			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
+			@ApiParam(value = "Include assigned devices", required = false) @RequestParam(required = false, defaultValue = "true") boolean includeAssigned,
+			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
+			@ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
+			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listDevices", LOGGER);
+		try {
+			IDeviceSearchCriteria criteria =
+					DeviceSearchCriteria.createDeviceBySpecificationSearch(specificationToken, page,
+							pageSize, startDate, endDate, includeAssigned);
 			ISearchResults<IDevice> results =
 					SiteWhere.getServer().getDeviceManagement().listDevices(includeDeleted, criteria);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper();
@@ -374,39 +418,6 @@ public class DevicesController extends SiteWhereController {
 
 			return SiteWhere.getServer().getDeviceManagement().addDeviceEventBatch(
 					device.getAssignmentToken(), batch);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * List all unassigned devices.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	@RequestMapping(value = "/unassigned", method = RequestMethod.GET)
-	@ResponseBody
-	@ApiOperation(value = "List devices that are not currently assigned")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public ISearchResults<IDevice> listUnassignedDevices(
-			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listUnassignedDevices", LOGGER);
-		try {
-			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			ISearchResults<IDevice> devices =
-					SiteWhere.getServer().getDeviceManagement().listUnassignedDevices(criteria);
-			DeviceMarshalHelper helper = new DeviceMarshalHelper();
-			helper.setIncludeAsset(false);
-			helper.setIncludeAssignment(false);
-
-			List<IDevice> devicesConv = new ArrayList<IDevice>();
-			for (IDevice device : devices.getResults()) {
-				devicesConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
-			}
-			return new SearchResults<IDevice>(devicesConv, devices.getNumResults());
 		} finally {
 			Tracer.stop(LOGGER);
 		}

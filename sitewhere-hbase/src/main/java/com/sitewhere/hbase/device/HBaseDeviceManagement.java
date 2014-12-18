@@ -64,6 +64,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
  * HBase implementation of SiteWhere device management.
@@ -323,22 +324,11 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.IDeviceManagement#listDevices(boolean,
-	 * com.sitewhere.spi.common.ISearchCriteria)
+	 * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
 	 */
-	public SearchResults<IDevice> listDevices(boolean includeDeleted, ISearchCriteria criteria)
+	public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
 		return HBaseDevice.listDevices(client, includeDeleted, criteria);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#listUnassignedDevices(com.sitewhere.
-	 * spi.common.ISearchCriteria)
-	 */
-	public SearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseDevice.listUnassignedDevices(client, criteria);
 	}
 
 	/*

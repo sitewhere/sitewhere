@@ -48,6 +48,9 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.search.device.DeviceSearchType;
+import com.sitewhere.spi.search.device.IDeviceBySpecificationParameters;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
@@ -138,38 +141,11 @@ public class HBaseDevice {
 	 * @throws SiteWhereException
 	 */
 	public static SearchResults<IDevice> listDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
-			ISearchCriteria criteria) throws SiteWhereException {
+			IDeviceSearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDevices (HBase)", LOGGER);
 		try {
-			Pager<byte[]> matches = getFilteredDevices(hbase, includeDeleted, false, criteria);
-			List<IDevice> response = new ArrayList<IDevice>();
-			for (byte[] json : matches.getResults()) {
-				response.add(MarshalUtils.unmarshalJson(json, Device.class));
-			}
-			return new SearchResults<IDevice>(response, matches.getTotal());
-		} finally {
-			Tracer.pop(LOGGER);
-		}
-	}
-
-	/**
-	 * List devices that do not have a current assignment.
-	 * 
-	 * @param hbase
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static SearchResults<IDevice> listUnassignedDevices(ISiteWhereHBaseClient hbase,
-			ISearchCriteria criteria) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "listUnassignedDevices (HBase)", LOGGER);
-		try {
-			Pager<byte[]> matches = getFilteredDevices(hbase, false, true, criteria);
-			List<IDevice> response = new ArrayList<IDevice>();
-			for (byte[] json : matches.getResults()) {
-				response.add(MarshalUtils.unmarshalJson(json, Device.class));
-			}
-			return new SearchResults<IDevice>(response, matches.getTotal());
+			Pager<IDevice> matches = getFilteredDevices(hbase, includeDeleted, criteria);
+			return new SearchResults<IDevice>(matches.getResults(), matches.getTotal());
 		} finally {
 			Tracer.pop(LOGGER);
 		}
@@ -180,15 +156,28 @@ public class HBaseDevice {
 	 * 
 	 * @param hbase
 	 * @param includeDeleted
-	 * @param excludeAssigned
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static Pager<byte[]> getFilteredDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
-			boolean excludeAssigned, ISearchCriteria criteria) throws SiteWhereException {
+	protected static Pager<IDevice> getFilteredDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
+			IDeviceSearchCriteria criteria) throws SiteWhereException {
 		HTableInterface devices = null;
 		ResultScanner scanner = null;
+
+		String specificationToken = null;
+		if (criteria.getSearchType() == DeviceSearchType.UsesSpecification) {
+			IDeviceBySpecificationParameters params = criteria.getDeviceBySpecificationParameters();
+			if (params == null) {
+				throw new SiteWhereException(
+						"Querying devices by specification token, but parameters were not passed.");
+			}
+			specificationToken = params.getSpecificationToken();
+			if (specificationToken == null) {
+				throw new SiteWhereException("No specification token passed for device query.");
+			}
+		}
+
 		try {
 			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Scan scan = new Scan();
@@ -196,13 +185,13 @@ public class HBaseDevice {
 			scan.setStopRow(new byte[] { DeviceRecordType.DeviceSpecification.getType() });
 			scanner = devices.getScanner(scan);
 
-			Pager<byte[]> pager = new Pager<byte[]>(criteria);
+			Pager<IDevice> pager = new Pager<IDevice>(criteria);
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
 				byte[] json = null;
 				for (KeyValue column : result.raw()) {
 					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(CURRENT_ASSIGNMENT, qualifier)) && (excludeAssigned)) {
+					if ((Bytes.equals(CURRENT_ASSIGNMENT, qualifier)) && (!criteria.isIncludeAssigned())) {
 						shouldAdd = false;
 					}
 					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
@@ -213,7 +202,21 @@ public class HBaseDevice {
 					}
 				}
 				if ((shouldAdd) && (json != null)) {
-					pager.process(json);
+					Device device = MarshalUtils.unmarshalJson(json, Device.class);
+					if ((!criteria.isIncludeAssigned()) && (device.getAssignmentToken() != null)) {
+						continue;
+					}
+					switch (criteria.getSearchType()) {
+					case All: {
+						break;
+					}
+					case UsesSpecification: {
+						if (!specificationToken.equals(device.getSpecificationToken())) {
+							continue;
+						}
+					}
+					}
+					pager.process(device);
 				}
 			}
 			return pager;
