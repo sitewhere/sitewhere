@@ -142,7 +142,9 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 					RequestProcessingThread processor = new RequestProcessingThread(socket);
 					pool.submit(processor);
 				} catch (IOException e) {
-					LOGGER.error("Exception while accepting request in event receiver server socket.", e);
+					if (!terminate) {
+						LOGGER.error("Exception while accepting request in event receiver server socket.", e);
+					}
 				}
 			}
 		}
