@@ -47,6 +47,15 @@
 	/** Filter specified in request parameters */
 	var rqFilter = '<c:out value="${filter}"/>';
 
+	/** Specification token specified in request parameters */
+	var rqSpecificationToken = '<c:out value="${specification.token}"/>';
+
+	/** Group token specified in request parameters */
+	var rqGroupToken = '<c:out value="${group.token}"/>';
+
+	/** Date range type specified in request parameters */
+	var rqDateRange = '<c:out value="${dateRange}"/>';
+
 	/** Called when edit button on the list entry is pressed */
 	function onDeviceEditClicked(e, hardwareId) {
 		var event = e || window.event;
@@ -124,6 +133,17 @@
 		}
 		location.assign(redirect);
 	}
+	
+	/** Build criteria object to pass state to filter dialog */
+	function buildFilterCriteria() {
+		var criteria = {
+			"filter" : rqFilter,
+			"specification" : rqSpecificationToken,
+			"group" : rqGroupToken,
+			"dateRange" : rqDateRange,
+		};
+		return criteria;
+	}
 
 	$(document).ready(function() {
 		var dsUrl = "${pageContext.request.contextPath}/api/";
@@ -183,7 +203,7 @@
 
 		/** Handle filter options dialog */
 		$('#btn-filter-results').click(function(event) {
-			dflOpen(event, onFilterChanged)
+			dflOpen(event, buildFilterCriteria(), onFilterChanged)
 		});
 	});
 </script>

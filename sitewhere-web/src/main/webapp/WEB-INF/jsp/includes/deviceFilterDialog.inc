@@ -401,7 +401,7 @@
 	}
 
 	/** Open the dialog */
-	function dflOpen(e, callback) {
+	function dflOpen(e, criteria, callback) {
 		var event = e || window.event;
 		event.stopPropagation();
 
@@ -410,6 +410,20 @@
 
 		// Function called on submit.
 		dflSubmitCallback = callback;
+		
+		// Set filter type dropdown choice.
+		var filterChoice = "dfl-all-filter";
+		if (criteria.filter == "specification") {
+			filterChoice = "dfl-spec-filter";
+		} else if (criteria.filter == "group") {
+			filterChoice = "dfl-group-filter";
+		}
+		$("#dfl-filter-type").val(filterChoice);
+		dflFilterTypeChanged();
+		
+		// Set date range type dropdown choice.
+		$("#dfl-cdate-type").val(criteria.filter);
+		dflCreateDateTypeChanged();
 
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
