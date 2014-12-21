@@ -231,9 +231,44 @@ public class SiteWhereController {
 	 * @return
 	 */
 	@RequestMapping("/devices/list")
-	public ModelAndView listDevices() {
+	public ModelAndView listDevices(@RequestParam(required = false) String filter,
+			@RequestParam(required = false) String token, @RequestParam(required = false) String dateRange) {
 		try {
+			// Make sure there is always a value for filter type.
+			if (filter == null) {
+				filter = "all";
+			}
+
 			Map<String, Object> data = createBaseData();
+			data.put("filter", filter);
+
+			// Look up specification that will be used for filtering.
+			if ("specification".equals(filter)) {
+				if (token == null) {
+					throw new SiteWhereException(
+							"Specification filter specified, but specification token not passed");
+				}
+				IDeviceSpecification found =
+						SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(token);
+				if (found == null) {
+					throw new SiteWhereException("Specification token was not valid.");
+				}
+				data.put("specification", found);
+			}
+
+			// Look up device group that will be used for filtering.
+			if ("group".equals(filter)) {
+				if (token == null) {
+					throw new SiteWhereException("Device group filter specified, but group token not passed");
+				}
+				IDeviceGroup found = SiteWhere.getServer().getDeviceManagement().getDeviceGroup(token);
+				if (found == null) {
+					throw new SiteWhereException("Device group token was not valid.");
+				}
+				data.put("group", found);
+			}
+
+			data.put("dateRange", dateRange);
 			return new ModelAndView("devices/list", data);
 		} catch (SiteWhereException e) {
 			LOGGER.error(e);
