@@ -157,6 +157,12 @@
 		};
 		return criteria;
 	}
+	
+	/** Clear all criteria */
+	function clearCriteria() {
+		var redirect = location.protocol + '//' + location.host + location.pathname;
+		location.assign(redirect);
+	}
 
 	/** Display filter criteria being used */
 	function showFilterCriteria() {
@@ -200,7 +206,7 @@
 		}
 
 		if (showCriteria) {
-			criteriaDesc += ".";
+			criteriaDesc += ".<a class='btn btn-mini' style='float: right;' href='javascript:void(0)' onclick='clearCriteria()'>Clear Filter</a>";
 			$('#filter-criteria').html(criteriaDesc);
 			$('#filter-criteria').show();
 		}
