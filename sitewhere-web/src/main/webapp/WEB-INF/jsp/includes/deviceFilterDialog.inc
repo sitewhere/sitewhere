@@ -8,7 +8,15 @@
 		<div class="ellipsis">#:asset.name# (SKU: #:asset.sku#)</div>
 	</div>
 </script>
-<div id="dfl-dialog" class="modal hide">
+<script type="text/x-kendo-tmpl" id="dfl-group-template">
+	<div class="asset-entry gradient-bg" id="dfl-group-#:token#">
+		<div class="asset-entry-logowrapper">
+			<img class="asset-entry-logo" src="${pageContext.request.contextPath}/img/devicegroup.png"/>
+		</div>
+		<div class="ellipsis"><b>#:name#</b></div>
+		<div class="ellipsis">#:description#)</div>
+	</div>
+</script><div id="dfl-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal"
 			aria-hidden="true">&times;</button>
@@ -279,7 +287,7 @@
 		dflDeviceGroups = $("#dfl-devicegroups").kendoListView({
 			dataSource : dflDeviceGroupsDS,
 			selectable : "single",
-			template : kendo.template($("#devicegroup-entry-small").html()),
+			template : kendo.template($("#dfl-group-template").html()),
 			change : dflDeviceGroupChosen
 		}).data("kendoListView");
 
@@ -451,7 +459,7 @@
 			dflSpecifications.select($('#dfl-spec-' + criteria.specification).get(0));
 		} else if (criteria.filter == "group") {
 			filterChoice = "dfl-group-filter";
-			dflSpecifications.select($('#dfl-group-' + criteria.specification).get(0));
+			dflDeviceGroups.select($('#dfl-group-' + criteria.group).get(0));
 		}
 		dflFilterType.value(filterChoice);
 		dflFilterTypeChanged();
