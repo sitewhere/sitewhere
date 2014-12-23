@@ -348,8 +348,8 @@
 			criteria.afterDate = JSON.stringify(dflDateAfter.value()).replace(/"/g, '');
 		} else if ("dfl-cdate-between" == dateRangeType) {
 			criteria.dateRange = "between";
-			criteria.rangeStart = JSON.stringify(dflDateBetweenStart.value()).replace(/"/g, '');
-			criteria.rangeEnd = JSON.stringify(dflDateBetweenEnd.value()).replace(/"/g, '');
+			criteria.afterDate = JSON.stringify(dflDateBetweenStart.value()).replace(/"/g, '');
+			criteria.beforeDate = JSON.stringify(dflDateBetweenEnd.value()).replace(/"/g, '');
 		}
 
 		return criteria;
@@ -467,8 +467,8 @@
 			dflDateAfter.value(kendo.parseDate(criteria.afterDate));
 		} else if (criteria.dateRange == "between") {
 			rangeChoice = "dfl-cdate-between";
-			dflDateBetweenStart.value(kendo.parseDate(criteria.rangeStart));
-			dflDateBetweenEnd.value(kendo.parseDate(criteria.rangeEnd));
+			dflDateBetweenStart.value(kendo.parseDate(criteria.afterDate));
+			dflDateBetweenEnd.value(kendo.parseDate(criteria.beforeDate));
 		}
 		dflCdateType.value(rangeChoice);
 		dflCreateDateTypeChanged();

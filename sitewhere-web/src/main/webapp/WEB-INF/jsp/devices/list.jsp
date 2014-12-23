@@ -62,12 +62,6 @@
 	/** Date specified for 'before' period */
 	var rqBeforeDate = '<c:out value="${beforeDate}"/>';
 
-	/** Date specified for start of date range */
-	var rqRangeStart = '<c:out value="${rangeStart}"/>';
-
-	/** Date specified for end of date range */
-	var rqRangeEnd = '<c:out value="${rangeEnd}"/>';
-
 	/** Called when edit button on the list entry is pressed */
 	function onDeviceEditClicked(e, hardwareId) {
 		var event = e || window.event;
@@ -153,10 +147,8 @@
 			"specification" : rqSpecificationToken,
 			"group" : rqGroupToken,
 			"dateRange" : rqDateRange,
-			"beforeDate" : rqBeforeDate,
 			"afterDate" : rqAfterDate,
-			"rangeStart" : rqRangeStart,
-			"rangeEnd" : rqRangeEnd,
+			"beforeDate" : rqBeforeDate,
 		};
 		return criteria;
 	}
@@ -177,6 +169,13 @@
 			dsUrl += "devices";
 		}
 		dsUrl += "?includeSpecification=true&includeAssignment=true";
+		
+		if (rqAfterDate.length > 0) {
+			dsUrl += "&startDate=" + rqAfterDate;
+		}
+		if (rqBeforeDate.length > 0) {
+			dsUrl += "&endDate=" + rqBeforeDate;
+		}
 
 		/** Create AJAX datasource for devices list */
 		devicesDS = new kendo.data.DataSource({

@@ -583,13 +583,14 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
 		DBCollection devices = getMongoClient().getDevicesCollection();
-		DBObject dbCriteria = new BasicDBObject();
+		BasicDBObject dbCriteria = new BasicDBObject();
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 		}
 		if (!criteria.isIncludeAssigned()) {
 			dbCriteria.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
 		}
+		MongoPersistence.addDateSearchCriteria(dbCriteria, MongoSiteWhereEntity.PROP_CREATED_DATE, criteria);
 		switch (criteria.getSearchType()) {
 		case All: {
 			break;
