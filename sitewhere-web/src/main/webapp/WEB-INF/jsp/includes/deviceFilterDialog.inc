@@ -1,4 +1,13 @@
 <!-- Dialog for filtering device list -->
+<script type="text/x-kendo-tmpl" id="dfl-specification-template">
+	<div class="asset-entry gradient-bg" id="dfl-spec-#:token#">
+		<div class="asset-entry-logowrapper">
+			<img class="asset-entry-logo" src="#:asset.imageUrl#"/>
+		</div>
+		<div class="ellipsis"><b>#:name#</b></div>
+		<div class="ellipsis">#:asset.name# (SKU: #:asset.sku#)</div>
+	</div>
+</script>
 <div id="dfl-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal"
@@ -169,6 +178,12 @@
 		value : "dfl-group-filter"
 	}, ];
 
+	/** Filter type dropdown */
+	var dflFilterType;
+	
+	/** Create date range type */
+	var dflCdateType;
+
 	/** Datasource for specifications */
 	var dflSpecificationsDS;
 
@@ -180,6 +195,9 @@
 
 	/** Device groups list */
 	var dflDeviceGroups;
+	
+	/** Date pickers for various filter types */
+	var dflDateBefore, dflDateAfter, dflDateBetweenStart, dflDateBetweenEnd;
 
 	/** Available date ranges in dropdown */
 	var dflDateRanges = [ {
@@ -213,13 +231,13 @@
 		}).data("kendoTabStrip");
 
 		// create DropDownList from input HTML element
-		$("#dfl-filter-type").kendoDropDownList({
+		dflFilterType = $("#dfl-filter-type").kendoDropDownList({
 			dataTextField : "text",
 			dataValueField : "value",
 			dataSource : dflFilterTypes,
 			index : 0,
 			change : dflFilterTypeChanged
-		});
+		}).data("kendoDropDownList");
 
 		/** Create AJAX datasource for specifications list */
 		dflSpecificationsDS = new kendo.data.DataSource({
@@ -239,7 +257,7 @@
 		dflSpecifications = $("#dfl-specifications").kendoListView({
 			dataSource : dflSpecificationsDS,
 			selectable : "single",
-			template : kendo.template($("#specification-entry-small").html()),
+			template : kendo.template($("#dfl-specification-template").html()),
 			change : dflSpecificationChosen
 		}).data("kendoListView");
 
@@ -266,26 +284,26 @@
 		}).data("kendoListView");
 
 		/** Create dropdown list for choosing create date range */
-		$("#dfl-cdate-type").kendoDropDownList({
+		dflCdateType = $("#dfl-cdate-type").kendoDropDownList({
 			dataTextField : "text",
 			dataValueField : "value",
 			dataSource : dflDateRanges,
 			index : 0,
 			change : dflCreateDateTypeChanged
-		});
+		}).data("kendoDropDownList");
 
-		$("#dfl-cdate-after-date").kendoDateTimePicker({
+		dflDateAfter = $("#dfl-cdate-after-date").kendoDateTimePicker({
 			value : new Date()
-		});
-		$("#dfl-cdate-before-date").kendoDateTimePicker({
+		}).data("kendoDateTimePicker");
+		dflDateBefore = $("#dfl-cdate-before-date").kendoDateTimePicker({
 			value : new Date()
-		});
-		$("#dfl-cdate-between-date-start").kendoDateTimePicker({
+		}).data("kendoDateTimePicker");
+		dflDateBetweenStart = $("#dfl-cdate-between-date-start").kendoDateTimePicker({
 			value : new Date()
-		});
-		$("#dfl-cdate-between-date-end").kendoDateTimePicker({
+		}).data("kendoDateTimePicker");
+		dflDateBetweenEnd = $("#dfl-cdate-between-date-end").kendoDateTimePicker({
 			value : new Date()
-		});
+		}).data("kendoDateTimePicker");
 
 		/** Handle dialog submit */
 		$('#dfl-dialog-submit').click(function(event) {
@@ -322,6 +340,16 @@
 			criteria.dateRange = "day";
 		} else if ("dfl-cdate-week" == dateRangeType) {
 			criteria.dateRange = "week";
+		} else if ("dfl-cdate-before" == dateRangeType) {
+			criteria.dateRange = "before";
+			criteria.beforeDate = JSON.stringify(dflDateBefore.value()).replace(/"/g, '');
+		} else if ("dfl-cdate-after" == dateRangeType) {
+			criteria.dateRange = "after";
+			criteria.afterDate = JSON.stringify(dflDateAfter.value()).replace(/"/g, '');
+		} else if ("dfl-cdate-between" == dateRangeType) {
+			criteria.dateRange = "between";
+			criteria.rangeStart = JSON.stringify(dflDateBetweenStart.value()).replace(/"/g, '');
+			criteria.rangeEnd = JSON.stringify(dflDateBetweenEnd.value()).replace(/"/g, '');
 		}
 
 		return criteria;
@@ -410,19 +438,39 @@
 
 		// Function called on submit.
 		dflSubmitCallback = callback;
-		
+
 		// Set filter type dropdown choice.
 		var filterChoice = "dfl-all-filter";
 		if (criteria.filter == "specification") {
 			filterChoice = "dfl-spec-filter";
+			dflSpecifications.select($('#dfl-spec-' + criteria.specification).get(0));
 		} else if (criteria.filter == "group") {
 			filterChoice = "dfl-group-filter";
+			dflSpecifications.select($('#dfl-group-' + criteria.specification).get(0));
 		}
-		$("#dfl-filter-type").val(filterChoice);
+		dflFilterType.value(filterChoice);
 		dflFilterTypeChanged();
-		
+
 		// Set date range type dropdown choice.
-		$("#dfl-cdate-type").val(criteria.filter);
+		var rangeChoice = "dfl-cdate-any";
+		if (criteria.dateRange == "hour") {
+			rangeChoice = "dfl-cdate-hour";
+		} else if (criteria.dateRange == "day") {
+			rangeChoice = "dfl-cdate-day";
+		} else if (criteria.dateRange == "week") {
+			rangeChoice = "dfl-cdate-week";
+		} else if (criteria.dateRange == "before") {
+			rangeChoice = "dfl-cdate-before";
+			dflDateBefore.value(kendo.parseDate(criteria.beforeDate));
+		} else if (criteria.dateRange == "after") {
+			rangeChoice = "dfl-cdate-after";
+			dflDateAfter.value(kendo.parseDate(criteria.afterDate));
+		} else if (criteria.dateRange == "between") {
+			rangeChoice = "dfl-cdate-between";
+			dflDateBetweenStart.value(kendo.parseDate(criteria.rangeStart));
+			dflDateBetweenEnd.value(kendo.parseDate(criteria.rangeEnd));
+		}
+		dflCdateType.value(rangeChoice);
 		dflCreateDateTypeChanged();
 
 		// Clear old validation errors and show dialog.

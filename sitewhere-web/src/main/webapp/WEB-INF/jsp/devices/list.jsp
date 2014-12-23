@@ -56,6 +56,18 @@
 	/** Date range type specified in request parameters */
 	var rqDateRange = '<c:out value="${dateRange}"/>';
 
+	/** Date specified for 'after' period */
+	var rqAfterDate = '<c:out value="${afterDate}"/>';
+
+	/** Date specified for 'before' period */
+	var rqBeforeDate = '<c:out value="${beforeDate}"/>';
+
+	/** Date specified for start of date range */
+	var rqRangeStart = '<c:out value="${rangeStart}"/>';
+
+	/** Date specified for end of date range */
+	var rqRangeEnd = '<c:out value="${rangeEnd}"/>';
+
 	/** Called when edit button on the list entry is pressed */
 	function onDeviceEditClicked(e, hardwareId) {
 		var event = e || window.event;
@@ -141,6 +153,10 @@
 			"specification" : rqSpecificationToken,
 			"group" : rqGroupToken,
 			"dateRange" : rqDateRange,
+			"beforeDate" : rqBeforeDate,
+			"afterDate" : rqAfterDate,
+			"rangeStart" : rqRangeStart,
+			"rangeEnd" : rqRangeEnd,
 		};
 		return criteria;
 	}
