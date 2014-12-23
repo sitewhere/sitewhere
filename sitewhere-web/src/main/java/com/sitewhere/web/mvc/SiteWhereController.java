@@ -234,7 +234,8 @@ public class SiteWhereController {
 	public ModelAndView listDevices(@RequestParam(required = false) String filter,
 			@RequestParam(required = false) String token, @RequestParam(required = false) String dateRange,
 			@RequestParam(required = false) String beforeDate,
-			@RequestParam(required = false) String afterDate) {
+			@RequestParam(required = false) String afterDate,
+			@RequestParam(required = false) boolean excludeAssigned) {
 		try {
 			// Make sure there is always a value for filter type.
 			if (filter == null) {
@@ -273,6 +274,7 @@ public class SiteWhereController {
 			data.put("dateRange", dateRange);
 			data.put("beforeDate", beforeDate);
 			data.put("afterDate", afterDate);
+			data.put("excludeAssigned", excludeAssigned);
 			return new ModelAndView("devices/list", data);
 		} catch (SiteWhereException e) {
 			LOGGER.error(e);

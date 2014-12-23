@@ -137,14 +137,14 @@
 			<div>
 				<form id="dfl-other-options" class="form-horizontal"
 					style="padding-top: 15px;">
-					<div class="sw-info-text">Choose the option below to include
-						devices that have a current assignment. Otherwise, only unassigned
-						devices are returned.</div>
+					<div class="sw-info-text">Choose the option below to exclude
+						devices that have a current assignment. Otherwise, both assigned
+						and unassigned devices will be returned.</div>
 					<div class="control-group">
-						<label class="control-label" for="dfl-option-incl-assigned">Include
+						<label class="control-label" for="dfl-option-excl-assigned">Exclude
 							Assigned</label>
 						<div class="controls">
-							<input type="checkbox" id="dfl-option-incl-assigned" />
+							<input type="checkbox" id="dfl-option-excl-assigned" />
 						</div>
 					</div>
 				</form>
@@ -180,7 +180,7 @@
 
 	/** Filter type dropdown */
 	var dflFilterType;
-	
+
 	/** Create date range type */
 	var dflCdateType;
 
@@ -195,7 +195,7 @@
 
 	/** Device groups list */
 	var dflDeviceGroups;
-	
+
 	/** Date pickers for various filter types */
 	var dflDateBefore, dflDateAfter, dflDateBetweenStart, dflDateBetweenEnd;
 
@@ -351,6 +351,11 @@
 			criteria.afterDate = JSON.stringify(dflDateBetweenStart.value()).replace(/"/g, '');
 			criteria.beforeDate = JSON.stringify(dflDateBetweenEnd.value()).replace(/"/g, '');
 		}
+		
+		// Handle 'exclude assigned' flag.
+		if ($('#dfl-option-excl-assigned').is(':checked')) {
+			criteria.excludeAssigned = "true";
+		}
 
 		return criteria;
 	}
@@ -472,6 +477,11 @@
 		}
 		dflCdateType.value(rangeChoice);
 		dflCreateDateTypeChanged();
+		
+		// Check checkbox if flag is true.
+		if (criteria.excludeAssigned) {
+			$('#dfl-option-excl-assigned').prop( "checked", true );
+		}
 
 		// Clear old validation errors and show dialog.
 		$.validity.clear();

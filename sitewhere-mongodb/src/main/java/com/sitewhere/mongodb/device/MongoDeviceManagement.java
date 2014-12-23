@@ -587,7 +587,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 		}
-		if (!criteria.isIncludeAssigned()) {
+		if (criteria.isExcludeAssigned()) {
 			dbCriteria.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
 		}
 		MongoPersistence.addDateSearchCriteria(dbCriteria, MongoSiteWhereEntity.PROP_CREATED_DATE, criteria);

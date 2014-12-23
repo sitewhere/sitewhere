@@ -27,6 +27,7 @@
 		</a>
 	</div>
 </div>
+<div id="filter-criteria" class="sw-title-bar sw-filter-criteria hide"></div>
 <div id="devices" class="sw-device-list"></div>
 <div id="pager" class="k-pager-wrap"></div>
 
@@ -61,6 +62,9 @@
 
 	/** Date specified for 'before' period */
 	var rqBeforeDate = '<c:out value="${beforeDate}"/>';
+
+	/** Date specified for 'before' period */
+	var rqExcludeAssigned = '<c:out value="${excludeAssigned}"/>';
 
 	/** Called when edit button on the list entry is pressed */
 	function onDeviceEditClicked(e, hardwareId) {
@@ -139,7 +143,7 @@
 		}
 		location.assign(redirect);
 	}
-	
+
 	/** Build criteria object to pass state to filter dialog */
 	function buildFilterCriteria() {
 		var criteria = {
@@ -149,8 +153,57 @@
 			"dateRange" : rqDateRange,
 			"afterDate" : rqAfterDate,
 			"beforeDate" : rqBeforeDate,
+			"excludeAssigned" : ("true" == rqExcludeAssigned),
 		};
 		return criteria;
+	}
+
+	/** Display filter criteria being used */
+	function showFilterCriteria() {
+		var showCriteria = false;
+		var criteriaDesc = "<i class='icon-filter sw-button-icon'></i> Displaying";
+		
+		if ("true" == rqExcludeAssigned) {
+			criteriaDesc += " <strong>unassigned</strong>";
+			showCriteria = true;
+		}
+
+		if ("specification" == rqFilter) {
+			criteriaDesc += " devices of specification <strong>${specification.name}</strong>";
+			showCriteria = true;
+		} else if ("group" == rqFilter) {
+			criteriaDesc += " devices from group <strong>${group.name}</strong>"
+			showCriteria = true;
+		} else {
+			criteriaDesc += " devices"
+		}
+
+		if (rqDateRange == "hour") {
+			criteriaDesc += " created in the last <strong>hour</strong>";
+			showCriteria = true;
+		} else if (rqDateRange == "day") {
+			criteriaDesc += " created in the last <strong>day</strong>";
+			showCriteria = true;
+		} else if (rqDateRange == "week") {
+			criteriaDesc += " created in the last <strong>week</strong>";
+			showCriteria = true;
+		} else if (rqDateRange == "before") {
+			criteriaDesc += " created before <strong>" + moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
+			showCriteria = true;
+		} else if (rqDateRange == "after") {
+			criteriaDesc += " created after <strong>" + moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
+			showCriteria = true;
+		} else if (rqDateRange == "between") {
+			criteriaDesc += " created between <strong>" + moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong> and <strong>"
+					+ moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
+			showCriteria = true;
+		}
+
+		if (showCriteria) {
+			criteriaDesc += ".";
+			$('#filter-criteria').html(criteriaDesc);
+			$('#filter-criteria').show();
+		}
 	}
 
 	$(document).ready(function() {
@@ -169,12 +222,27 @@
 			dsUrl += "devices";
 		}
 		dsUrl += "?includeSpecification=true&includeAssignment=true";
-		
-		if (rqAfterDate.length > 0) {
-			dsUrl += "&startDate=" + rqAfterDate;
+
+		// Handle date ranges.
+		var windowStart = new Date();
+		if ((rqDateRange == "before") || (rqDateRange == "after") || (rqDateRange == "between")) {
+			if (rqAfterDate.length > 0) {
+				dsUrl += "&startDate=" + rqAfterDate;
+			}
+			if (rqBeforeDate.length > 0) {
+				dsUrl += "&endDate=" + rqBeforeDate;
+			}
+		} else if (rqDateRange == "hour") {
+			dsUrl += "&startDate=" + moment().subtract(1, 'hours').toISOString();
+		} else if (rqDateRange == "day") {
+			dsUrl += "&startDate=" + moment().subtract(1, 'days').toISOString();
+		} else if (rqDateRange == "week") {
+			dsUrl += "&startDate=" + moment().subtract(7, 'days').toISOString();
 		}
-		if (rqBeforeDate.length > 0) {
-			dsUrl += "&endDate=" + rqBeforeDate;
+
+		// Handle 'exclude assigned' flag.
+		if ("true" == rqExcludeAssigned) {
+			dsUrl += "&excludeAssigned=true";
 		}
 
 		/** Create AJAX datasource for devices list */
@@ -220,6 +288,8 @@
 		$('#btn-filter-results').click(function(event) {
 			dflOpen(event, buildFilterCriteria(), onFilterChanged)
 		});
+
+		showFilterCriteria();
 	});
 </script>
 

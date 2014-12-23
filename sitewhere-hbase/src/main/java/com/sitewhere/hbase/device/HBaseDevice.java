@@ -191,7 +191,7 @@ public class HBaseDevice {
 				byte[] json = null;
 				for (KeyValue column : result.raw()) {
 					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(CURRENT_ASSIGNMENT, qualifier)) && (!criteria.isIncludeAssigned())) {
+					if ((Bytes.equals(CURRENT_ASSIGNMENT, qualifier)) && (criteria.isExcludeAssigned())) {
 						shouldAdd = false;
 					}
 					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
@@ -203,9 +203,6 @@ public class HBaseDevice {
 				}
 				if ((shouldAdd) && (json != null)) {
 					Device device = MarshalUtils.unmarshalJson(json, Device.class);
-					if ((!criteria.isIncludeAssigned()) && (device.getAssignmentToken() != null)) {
-						continue;
-					}
 					switch (criteria.getSearchType()) {
 					case All: {
 						break;

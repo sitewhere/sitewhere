@@ -6,9 +6,10 @@
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/kendo.web.min.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/modernizr.js"></script>
+<script src="${pageContext.request.contextPath}/scripts/moment.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/sitewhere.js"></script>
 <link rel="shortcut icon" href="${pageContext.request.contextPath}/img/favicon.ico" />
- <link href="${pageContext.request.contextPath}/css/kendo.common.min.css" rel="stylesheet" />
+<link href="${pageContext.request.contextPath}/css/kendo.common.min.css" rel="stylesheet" />
 <link href="${pageContext.request.contextPath}/css/kendo.bootstrap.min.css" rel="stylesheet" />
 <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="${pageContext.request.contextPath}/css/font-awesome.min.css" rel="stylesheet" media="screen">

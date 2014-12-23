@@ -312,7 +312,7 @@ public class DevicesController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDevice> listDevices(
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
-			@ApiParam(value = "Include assigned devices", required = false) @RequestParam(required = false, defaultValue = "true") boolean includeAssigned,
+			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
 			@ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -324,7 +324,7 @@ public class DevicesController extends SiteWhereController {
 		try {
 			IDeviceSearchCriteria criteria =
 					DeviceSearchCriteria.createDefaultSearch(page, pageSize, startDate, endDate,
-							includeAssigned);
+							excludeAssigned);
 			ISearchResults<IDevice> results =
 					SiteWhere.getServer().getDeviceManagement().listDevices(includeDeleted, criteria);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper();
@@ -348,7 +348,7 @@ public class DevicesController extends SiteWhereController {
 	public ISearchResults<IDevice> listDevicesForSpecification(
 			@ApiParam(value = "Specification token", required = true) @PathVariable String specificationToken,
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
-			@ApiParam(value = "Include assigned devices", required = false) @RequestParam(required = false, defaultValue = "true") boolean includeAssigned,
+			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
 			@ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(required = false, defaultValue = "1") int page,
@@ -360,7 +360,7 @@ public class DevicesController extends SiteWhereController {
 		try {
 			IDeviceSearchCriteria criteria =
 					DeviceSearchCriteria.createDeviceBySpecificationSearch(specificationToken, page,
-							pageSize, startDate, endDate, includeAssigned);
+							pageSize, startDate, endDate, excludeAssigned);
 			ISearchResults<IDevice> results =
 					SiteWhere.getServer().getDeviceManagement().listDevices(includeDeleted, criteria);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper();

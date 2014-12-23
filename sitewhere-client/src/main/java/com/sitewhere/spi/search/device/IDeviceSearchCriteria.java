@@ -17,11 +17,11 @@ import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 public interface IDeviceSearchCriteria extends IDateRangeSearchCriteria {
 
 	/**
-	 * Indicates whether assigned devices should be returned.
+	 * Indicates whether assigned devices should be excluded.
 	 * 
 	 * @return
 	 */
-	public boolean isIncludeAssigned();
+	public boolean isExcludeAssigned();
 
 	/**
 	 * Gets the type of search being performed.

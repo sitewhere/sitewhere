@@ -21,8 +21,8 @@ import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
  */
 public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDeviceSearchCriteria {
 
-	/** Indicates if assigned devices should be returned */
-	private boolean includeAssigned = true;
+	/** Indicates if assigned devices should be excluded */
+	private boolean excludeAssigned = true;
 
 	/** Type of search to execute */
 	private DeviceSearchType searchType;
@@ -31,9 +31,9 @@ public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDe
 	private IDeviceBySpecificationParameters deviceBySpecificationParameters;
 
 	public DeviceSearchCriteria(int pageNumber, int pageSize, Date startDate, Date endDate,
-			boolean includeAssigned) {
+			boolean excludeAssigned) {
 		super(pageNumber, pageSize, startDate, endDate);
-		this.includeAssigned = includeAssigned;
+		this.excludeAssigned = excludeAssigned;
 	}
 
 	/**
@@ -43,13 +43,13 @@ public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDe
 	 * @param pageSize
 	 * @param startDate
 	 * @param endDate
-	 * @param includeAssigned
+	 * @param excludeAssigned
 	 * @return
 	 */
 	public static IDeviceSearchCriteria createDefaultSearch(int pageNumber, int pageSize, Date startDate,
-			Date endDate, boolean includeAssigned) {
+			Date endDate, boolean excludeAssigned) {
 		DeviceSearchCriteria criteria =
-				new DeviceSearchCriteria(pageNumber, pageSize, startDate, endDate, includeAssigned);
+				new DeviceSearchCriteria(pageNumber, pageSize, startDate, endDate, excludeAssigned);
 		criteria.setSearchType(DeviceSearchType.All);
 		return criteria;
 	}
@@ -62,13 +62,13 @@ public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDe
 	 * @param pageSize
 	 * @param startDate
 	 * @param endDate
-	 * @param includeAssigned
+	 * @param excludeAssigned
 	 * @return
 	 */
 	public static IDeviceSearchCriteria createDeviceBySpecificationSearch(String specificationToken,
-			int pageNumber, int pageSize, Date startDate, Date endDate, boolean includeAssigned) {
+			int pageNumber, int pageSize, Date startDate, Date endDate, boolean excludeAssigned) {
 		DeviceSearchCriteria criteria =
-				new DeviceSearchCriteria(pageNumber, pageSize, startDate, endDate, includeAssigned);
+				new DeviceSearchCriteria(pageNumber, pageSize, startDate, endDate, excludeAssigned);
 		criteria.setSearchType(DeviceSearchType.UsesSpecification);
 		DeviceBySpecificationParameters params = new DeviceBySpecificationParameters();
 		params.setSpecificationToken(specificationToken);
@@ -79,14 +79,14 @@ public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#isIncludeAssigned()
+	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#isExcludeAssigned()
 	 */
-	public boolean isIncludeAssigned() {
-		return includeAssigned;
+	public boolean isExcludeAssigned() {
+		return excludeAssigned;
 	}
 
-	public void setIncludeAssigned(boolean includeAssigned) {
-		this.includeAssigned = includeAssigned;
+	public void setExcludeAssigned(boolean excludeAssigned) {
+		this.excludeAssigned = excludeAssigned;
 	}
 
 	/*
