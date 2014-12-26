@@ -14,7 +14,7 @@
 			<img class="asset-entry-logo" src="${pageContext.request.contextPath}/img/devicegroup.png"/>
 		</div>
 		<div class="ellipsis"><b>#:name#</b></div>
-		<div class="ellipsis">#:description#)</div>
+		<div class="ellipsis">#:description#</div>
 	</div>
 </script><div id="dfl-dialog" class="modal hide">
 	<div class="modal-header k-header">
