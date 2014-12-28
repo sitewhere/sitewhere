@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd?a=x1">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.1/sitewhere.xsd?a=1">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
@@ -102,8 +102,8 @@
 			<!-- Device command routing -->
 			<sw:command-routing>
 				<sw:specification-mapping-router defaultDestination="default">
-					<sw:mapping specification="417b36a8-21ef-4196-a8fe-cc756f994d0b"
-						destination="arduino"/>
+					<sw:mapping specification="d2604433-e4eb-419b-97c7-88efe9b2cd41"
+						destination="android"/>
 				</sw:specification-mapping-router>
 			</sw:command-routing>
 			
@@ -119,9 +119,9 @@
 				</sw:mqtt-command-destination>
 
 				<!-- Delivers commands via MQTT -->
-				<sw:mqtt-command-destination destinationId="arduino"
+				<sw:mqtt-command-destination destinationId="android"
 					hostname="localhost" port="1883">
-					<sw:protobuf-command-encoder/>
+					<sw:java-protobuf-hybrid-encoder/>
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>

@@ -985,6 +985,23 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
+	<!-- Encodes commands using protbuf for system commands and Java serialization for custom commands -->
+	<xsd:element name="java-protobuf-hybrid-encoder" type="swJavaProtobufHybridEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that encodes system commands using protocol buffers
+				but encodes custom commands using serialized Java objects. This allows Java clients to
+				use the commands directly rather than having to recompile stubs based on a proto.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swJavaProtobufHybridEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<!-- Command destination that delivers commands via MQTT -->
 	<xsd:complexType name="mqttCommandDestinationType">
