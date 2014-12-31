@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi;
 
+import java.util.Calendar;
+
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -30,6 +32,7 @@ import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
+import com.sitewhere.rest.model.search.DeviceSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
@@ -119,6 +122,24 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public Device updateDevice(String hardwareId, DeviceCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * List devices that meet the given criteria.
+	 * 
+	 * @param includeDeleted
+	 * @param excludeAssigned
+	 * @param populateSpecification
+	 * @param populateAssignment
+	 * @param pageNumber
+	 * @param pageSize
+	 * @param createDateStart
+	 * @param createDateEnd
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSearchResults listDevices(Boolean includeDeleted, Boolean excludeAssigned,
+			Boolean populateSpecification, Boolean populateAssignment, Integer pageNumber, Integer pageSize,
+			Calendar createDateStart, Calendar createDateEnd) throws SiteWhereException;
 
 	/**
 	 * Delete a device.

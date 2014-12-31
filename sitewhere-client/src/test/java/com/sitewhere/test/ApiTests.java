@@ -173,7 +173,14 @@ public class ApiTests {
 		SearchResults<Zone> search = client.listZonesForSite(TEST_SITE_TOKEN);
 		System.out.println("Found " + search.getNumResults() + " results.");
 	}
-	
+
+	@Test
+	public void testListDevices() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		SearchResults<Device> devices = client.listDevices(false, true, true, true, 1, 100, null, null);
+		System.out.println("Found " + devices.getNumResults() + " devices.");
+	}
+
 	/**
 	 * Verifies that
 	 * 

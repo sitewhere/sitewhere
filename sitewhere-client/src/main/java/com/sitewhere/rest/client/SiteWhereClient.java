@@ -8,6 +8,7 @@
 package com.sitewhere.rest.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
+import com.sitewhere.rest.model.search.DeviceSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
@@ -246,6 +248,39 @@ public class SiteWhereClient implements ISiteWhereClient {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("hardwareId", hardwareId);
 		return sendRest(getBaseUrl() + "devices/{hardwareId}", HttpMethod.PUT, request, Device.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDevices(java.lang.Boolean,
+	 * java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.Integer,
+	 * java.lang.Integer, java.util.Calendar, java.util.Calendar)
+	 */
+	@Override
+	public DeviceSearchResults listDevices(Boolean includeDeleted, Boolean excludeAssigned,
+			Boolean populateSpecification, Boolean populateAssignment, Integer pageNumber, Integer pageSize,
+			Calendar createDateStart, Calendar createDateEnd) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		if (includeDeleted != null) {
+			vars.put("includeDeleted", String.valueOf(includeDeleted));
+		}
+		if (excludeAssigned != null) {
+			vars.put("excludeAssigned", String.valueOf(excludeAssigned));
+		}
+		if (populateSpecification != null) {
+			vars.put("includeSpecification", String.valueOf(populateSpecification));
+		}
+		if (populateAssignment != null) {
+			vars.put("includeAssignment", String.valueOf(populateAssignment));
+		}
+		if (pageNumber != null) {
+			vars.put("page", String.valueOf(pageNumber));
+		}
+		if (pageSize != null) {
+			vars.put("pageSize", String.valueOf(pageSize));
+		}
+		return sendRest(getBaseUrl() + "devices", HttpMethod.GET, null, DeviceSearchResults.class, vars);
 	}
 
 	/*
