@@ -259,7 +259,6 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					requests.add(request);
 				}
 				getDeviceManagement().addDeviceGroupElements(group.getToken(), requests);
-				// testListAndRemoveNetworkElements(group);
 			}
 		}
 

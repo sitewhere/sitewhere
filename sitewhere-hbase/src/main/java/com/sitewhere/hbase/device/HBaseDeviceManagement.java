@@ -8,6 +8,7 @@
 package com.sitewhere.hbase.device;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
 import org.apache.log4j.Logger;
@@ -33,6 +34,8 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.batch.IBatchElement;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -51,6 +54,8 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -64,6 +69,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
@@ -1008,6 +1014,81 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public SearchResults<IDeviceGroupElement> listDeviceGroupElements(String networkToken,
 			ISearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceGroupElement.listDeviceGroupElements(client, networkToken, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createBatchOperation(com.sitewhere.spi
+	 * .device.request.IBatchOperationCreateRequest)
+	 */
+	@Override
+	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
+			throws SiteWhereException {
+		return HBaseBatchOperation.createBatchOperation(client, request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#getBatchOperation(java.lang.String)
+	 */
+	@Override
+	public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
+		return HBaseBatchOperation.getBatchOperationByToken(client, token);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listBatchOperations(boolean,
+	 * com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return HBaseBatchOperation.listBatchOperations(client, includeDeleted, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteBatchOperation(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
+		return HBaseBatchOperation.deleteBatchOperation(client, token, force);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listBatchElements(java.lang.String,
+	 * com.sitewhere.spi.search.device.IBatchElementSearchCriteria)
+	 */
+	@Override
+	public SearchResults<IBatchElement> listBatchElements(String batchToken,
+			IBatchElementSearchCriteria criteria) throws SiteWhereException {
+		return HBaseBatchElement.listBatchElements(client, batchToken, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createBatchCommandInvocation(com.sitewhere
+	 * .spi.device.request.IBatchCommandInvocationRequest)
+	 */
+	@Override
+	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
+			throws SiteWhereException {
+		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
+		IBatchOperationCreateRequest generic =
+				SiteWherePersistence.batchCommandInvocationCreateLogic(request, uuid);
+		return createBatchOperation(generic);
 	}
 
 	/**

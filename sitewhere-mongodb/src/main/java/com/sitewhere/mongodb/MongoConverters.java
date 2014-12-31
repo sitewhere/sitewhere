@@ -10,16 +10,17 @@ package com.sitewhere.mongodb;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.mongodb.device.MongoBatchOperation;
 import com.sitewhere.mongodb.device.MongoDevice;
 import com.sitewhere.mongodb.device.MongoDeviceAlert;
 import com.sitewhere.mongodb.device.MongoDeviceAssignment;
 import com.sitewhere.mongodb.device.MongoDeviceCommand;
 import com.sitewhere.mongodb.device.MongoDeviceCommandInvocation;
 import com.sitewhere.mongodb.device.MongoDeviceCommandResponse;
-import com.sitewhere.mongodb.device.MongoDeviceLocation;
-import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
 import com.sitewhere.mongodb.device.MongoDeviceGroup;
 import com.sitewhere.mongodb.device.MongoDeviceGroupElement;
+import com.sitewhere.mongodb.device.MongoDeviceLocation;
+import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
 import com.sitewhere.mongodb.device.MongoDeviceSpecification;
 import com.sitewhere.mongodb.device.MongoDeviceStateChange;
 import com.sitewhere.mongodb.device.MongoSite;
@@ -29,6 +30,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -65,6 +67,7 @@ public class MongoConverters {
 		CONVERTERS.put(IZone.class, new MongoZone());
 		CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());
 		CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
+		CONVERTERS.put(IBatchOperation.class, new MongoBatchOperation());
 	}
 
 	/**

@@ -8,23 +8,17 @@
 package com.sitewhere.hbase.device;
 
 /**
- * Indicates device record type.
+ * Binary type indicator flag for batch operation records.
  * 
  * @author Derek
  */
-public enum DeviceRecordType {
-
-	/** Device record */
-	Device((byte) 0x00),
-
-	/** Device specification record */
-	DeviceSpecification((byte) 0x01),
-
-	/** Device group record */
-	DeviceGroup((byte) 0x02),
+public enum BatchOperationRecordType {
 
 	/** Batch operation record */
-	BatchOperation((byte) 0x03);
+	BatchOperation((byte) 0x00),
+
+	/** Batch element record */
+	BatchElement((byte) 0x01);
 
 	/** Type indicator */
 	private byte type;
@@ -34,7 +28,7 @@ public enum DeviceRecordType {
 	 * 
 	 * @param value
 	 */
-	private DeviceRecordType(byte type) {
+	private BatchOperationRecordType(byte type) {
 		this.type = type;
 	}
 

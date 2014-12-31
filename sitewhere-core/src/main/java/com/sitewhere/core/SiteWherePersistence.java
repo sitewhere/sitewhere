@@ -28,6 +28,8 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchElement;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -41,6 +43,7 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
@@ -57,6 +60,8 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.batch.OperationType;
+import com.sitewhere.spi.device.batch.ProcessingStatus;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -75,6 +80,8 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -1040,6 +1047,67 @@ public class SiteWherePersistence {
 		element.setElementId(source.getElementId());
 		element.setRoles(source.getRoles());
 		return element;
+	}
+
+	/**
+	 * Common logic for creating a batch operation based on an incoming request.
+	 * 
+	 * @param source
+	 * @param uuid
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static BatchOperation batchOperationCreateLogic(IBatchOperationCreateRequest source, String uuid)
+			throws SiteWhereException {
+		BatchOperation batch = new BatchOperation();
+		batch.setToken(uuid);
+		batch.setOperationType(source.getOperationType());
+		batch.getParameters().putAll(source.getParameters());
+
+		SiteWherePersistence.initializeEntityMetadata(batch);
+		MetadataProvider.copy(source, batch);
+		return batch;
+	}
+
+	/**
+	 * Common logic for creating a batch operation element.
+	 * 
+	 * @param batchOperationToken
+	 * @param hardwareId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static BatchElement batchElementCreateLogic(String batchOperationToken, String hardwareId)
+			throws SiteWhereException {
+		BatchElement element = new BatchElement();
+		element.setBatchOperationToken(batchOperationToken);
+		element.setHardwareId(hardwareId);
+		element.setIndex(0);
+		element.setProcessingStatus(ProcessingStatus.Unprocessed);
+		return element;
+	}
+
+	/**
+	 * Encodes batch command invocation parameters into the generic
+	 * {@link IBatchOperationCreateRequest} format.
+	 * 
+	 * @param request
+	 * @param uuid
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IBatchOperationCreateRequest batchCommandInvocationCreateLogic(
+			IBatchCommandInvocationRequest request, String uuid) throws SiteWhereException {
+		BatchOperationCreateRequest batch = new BatchOperationCreateRequest();
+		batch.setToken(uuid);
+		batch.setOperationType(OperationType.InvokeCommand);
+		batch.setHardwareIds(request.getHardwareIds());
+		batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN,
+				request.getCommandToken());
+		for (String key : request.getParameterValues().keySet()) {
+			batch.addOrReplaceMetadata(key, request.getParameterValues().get(key));
+		}
+		return batch;
 	}
 
 	/**

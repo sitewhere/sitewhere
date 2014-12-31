@@ -256,30 +256,6 @@ public class HBaseDeviceGroupElement {
 	}
 
 	/**
-	 * Data structure that holds information about a record to be deleted.
-	 * 
-	 * @author Derek
-	 */
-	public static class DeleteRecord {
-
-		private byte[] rowkey;
-		private byte[] json;
-
-		public DeleteRecord(byte[] rowkey, byte[] json) {
-			this.rowkey = rowkey;
-			this.json = json;
-		}
-
-		public byte[] getRowkey() {
-			return rowkey;
-		}
-
-		public byte[] getJson() {
-			return json;
-		}
-	}
-
-	/**
 	 * Get paged results for listing device group elements. TODO: This is not optimized!
 	 * Getting the correct record count requires a full scan of all elements in the group.
 	 * 
