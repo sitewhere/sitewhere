@@ -30,6 +30,7 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
@@ -39,6 +40,7 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
@@ -521,6 +523,25 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("siteToken", siteToken);
 		String url = getBaseUrl() + "sites/{siteToken}/zones";
 		return sendRest(url, HttpMethod.GET, null, ZoneSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.ISiteWhereClient#createBatchCommandInvocation(java.lang.String,
+	 * java.lang.String, java.util.Map, java.util.List)
+	 */
+	@Override
+	public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
+			Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException {
+		BatchCommandInvocationRequest request = new BatchCommandInvocationRequest();
+		request.setToken(batchToken);
+		request.setCommandToken(commandToken);
+		request.setParameterValues(parameters);
+		request.setHardwareIds(hardwareIds);
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "batch/command", HttpMethod.POST, request, BatchOperation.class, vars);
 	}
 
 	/**

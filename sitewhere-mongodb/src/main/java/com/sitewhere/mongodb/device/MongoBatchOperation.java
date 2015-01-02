@@ -10,7 +10,6 @@ package com.sitewhere.mongodb.device;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
@@ -65,13 +64,13 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 	public static void toDBObject(IBatchOperation source, BasicDBObject target) {
 		target.append(PROP_TOKEN, source.getToken());
 		if (source.getOperationType() != null) {
-			target.append(PROP_OPERATION_TYPE, source.getOperationType());
+			target.append(PROP_OPERATION_TYPE, source.getOperationType().name());
 		}
 
 		// Set parameters as nested object.
 		BasicDBObject params = new BasicDBObject();
-		for (String key : source.getMetadata().keySet()) {
-			params.put(key, source.getMetadata(key));
+		for (String key : source.getParameters().keySet()) {
+			params.put(key, source.getParameters().get(key));
 		}
 		target.put(PROP_PARAMETERS, params);
 
@@ -128,22 +127,5 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 		BatchOperation result = new BatchOperation();
 		MongoBatchOperation.fromDBObject(source, result);
 		return result;
-	}
-
-	/**
-	 * Get the next available index for the group.
-	 * 
-	 * @param mongo
-	 * @param token
-	 * @return
-	 */
-	public static long getNextGroupIndex(SiteWhereMongoClient mongo, String token) {
-		BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
-		BasicDBObject update = new BasicDBObject(MongoBatchOperation.PROP_LAST_INDEX, (long) 1);
-		BasicDBObject increment = new BasicDBObject("$inc", update);
-		DBObject updated =
-				mongo.getBatchOperationsCollection().findAndModify(query, new BasicDBObject(),
-						new BasicDBObject(), false, increment, true, true);
-		return (Long) updated.get(PROP_LAST_INDEX);
 	}
 }

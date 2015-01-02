@@ -112,7 +112,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final int NUM_DEVICE_GROUPS = 3;
 
 	/** Number of devices/assignments to create */
-	public static final int ASSIGNMENTS_PER_SITE = 15;
+	public static final int ASSIGNMENTS_PER_SITE = 25;
 
 	/** Number of events per assignment */
 	public static final int EVENTS_PER_ASSIGNMENT = 75;

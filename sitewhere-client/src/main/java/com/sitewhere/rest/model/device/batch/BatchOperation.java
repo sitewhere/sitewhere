@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.batch;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -27,7 +28,7 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 	private OperationType operationType;
 
 	/** Operation parameters */
-	private Map<String, String> parameters;
+	private Map<String, String> parameters = new HashMap<String, String>();
 
 	/*
 	 * (non-Javadoc)

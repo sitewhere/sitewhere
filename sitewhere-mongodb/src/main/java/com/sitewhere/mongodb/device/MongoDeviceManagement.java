@@ -368,9 +368,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		List<IDeviceCommand> existing = listDeviceCommands(spec.getToken(), false);
 
 		// Use common logic so all backend implementations work the same.
-		DeviceCommand command =
-				SiteWherePersistence.deviceCommandCreateLogic(spec, request, UUID.randomUUID().toString(),
-						existing);
+		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
+		DeviceCommand command = SiteWherePersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
 
 		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
 		DBObject created = MongoDeviceCommand.toDBObject(command);
@@ -1682,12 +1681,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
-		String uuid;
-		if (request.getToken() != null) {
-			uuid = request.getToken();
-		} else {
-			uuid = UUID.randomUUID().toString();
-		}
+		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 		DeviceGroup group = SiteWherePersistence.deviceGroupCreateLogic(request, uuid);
 
 		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
@@ -1882,11 +1876,11 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		MongoPersistence.insert(batches, created);
 
 		// Insert element for each hardware id.
+		long index = 0;
 		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
 		for (String hardwareId : request.getHardwareIds()) {
 			BatchElement element = SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId);
-			long index = MongoBatchOperation.getNextGroupIndex(getMongoClient(), batch.getToken());
-			element.setIndex(index);
+			element.setIndex(++index);
 			DBObject dbElement = MongoBatchElement.toDBObject(element);
 			MongoPersistence.insert(elements, dbElement);
 		}

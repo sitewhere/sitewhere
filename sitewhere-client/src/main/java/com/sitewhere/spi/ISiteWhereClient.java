@@ -8,6 +8,8 @@
 package com.sitewhere.spi;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
@@ -15,6 +17,7 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
@@ -317,4 +320,17 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException;
+
+	/**
+	 * Invokes a command on a list of devices as a batch operation.
+	 * 
+	 * @param batchToken
+	 * @param commandToken
+	 * @param parameters
+	 * @param hardwareIds
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
+			Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException;
 }

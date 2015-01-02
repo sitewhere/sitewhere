@@ -64,7 +64,7 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 		target.append(PROP_HARDWARE_ID, source.getHardwareId());
 		target.append(PROP_INDEX, source.getIndex());
 		if (source.getProcessingStatus() != null) {
-			target.append(PROP_PROCESSING_STATUS, source.getProcessingStatus());
+			target.append(PROP_PROCESSING_STATUS, source.getProcessingStatus().name());
 		}
 	}
 

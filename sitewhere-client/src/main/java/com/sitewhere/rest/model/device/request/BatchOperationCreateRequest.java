@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class BatchOperationCreateRequest extends MetadataProvider implements IBa
 	private OperationType operationType;
 
 	/** Operation parameters */
-	private Map<String, String> parameters;
+	private Map<String, String> parameters = new HashMap<String, String>();
 
 	/** List of hardware ids of affected devices */
 	private List<String> hardwareIds = new ArrayList<String>();

@@ -8,7 +8,9 @@
 package com.sitewhere.test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -20,6 +22,7 @@ import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
@@ -50,6 +53,9 @@ public class ApiTests {
 
 	/** Site token used in tests */
 	public static final String TEST_SITE_TOKEN = "22223793-3028-4114-86ba-aefc7d05369f";
+
+	/** Android device specification token */
+	public static final String ANDROID_SPEC_TOKEN = "d2604433-e4eb-419b-97c7-88efe9b2cd41";
 
 	/** SiteWhere client */
 	private ISiteWhereClient client;
@@ -179,6 +185,42 @@ public class ApiTests {
 		SiteWhereClient client = new SiteWhereClient();
 		SearchResults<Device> devices = client.listDevices(false, true, true, true, 1, 100, null, null);
 		System.out.println("Found " + devices.getNumResults() + " devices.");
+	}
+
+	@Test
+	public void sendBatchCommandInvocation() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		List<Device> androids = getDevicesForSpecification(ANDROID_SPEC_TOKEN);
+		List<String> hwids = new ArrayList<String>();
+		for (Device device : androids) {
+			hwids.add(device.getHardwareId());
+		}
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("color", "#ff0000");
+		BatchOperation op =
+				client.createBatchCommandInvocation(null, "4eee91e5-8445-42f9-bb06-5c3b14216b50", parameters,
+						hwids);
+		System.out.println("Created operation: " + op.getToken());
+	}
+
+	/**
+	 * Get all devices for a given specification. NOTE: Logic only looks at the first 100
+	 * devices.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected List<Device> getDevicesForSpecification(String token) throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		SearchResults<Device> devices = client.listDevices(false, true, true, true, 1, 100, null, null);
+		List<Device> results = new ArrayList<Device>();
+		for (Device device : devices.getResults()) {
+			if (device.getSpecificationToken().equals(token)) {
+				results.add(device);
+			}
+		}
+		return results;
 	}
 
 	/**
