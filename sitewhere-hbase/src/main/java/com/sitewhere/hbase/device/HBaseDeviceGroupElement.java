@@ -49,7 +49,7 @@ public class HBaseDeviceGroupElement {
 	public static final int INDEX_LENGTH = 4;
 
 	/** Column qualifier for element identifier (type+id) */
-	public static final byte[] ELEMENT_IDENTIFIER = Bytes.toBytes("ident");
+	public static final byte[] ELEMENT_IDENTIFIER = Bytes.toBytes("i");
 
 	/**
 	 * Create a group of group elements.

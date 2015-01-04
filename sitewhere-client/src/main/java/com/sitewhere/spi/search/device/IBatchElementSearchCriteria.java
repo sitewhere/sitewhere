@@ -7,7 +7,7 @@
  */
 package com.sitewhere.spi.search.device;
 
-import com.sitewhere.spi.device.batch.ProcessingStatus;
+import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
@@ -22,5 +22,5 @@ public interface IBatchElementSearchCriteria extends ISearchCriteria {
 	 * 
 	 * @return
 	 */
-	public ProcessingStatus getProcessingStatus();
+	public ElementProcessingStatus getProcessingStatus();
 }

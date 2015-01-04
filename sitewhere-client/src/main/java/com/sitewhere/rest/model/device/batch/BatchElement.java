@@ -8,7 +8,7 @@
 package com.sitewhere.rest.model.device.batch;
 
 import com.sitewhere.spi.device.batch.IBatchElement;
-import com.sitewhere.spi.device.batch.ProcessingStatus;
+import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 
 /**
  * Model object for a batch element.
@@ -27,7 +27,7 @@ public class BatchElement implements IBatchElement {
 	private long index;
 
 	/** Processing status */
-	private ProcessingStatus processingStatus;
+	private ElementProcessingStatus processingStatus;
 
 	/*
 	 * (non-Javadoc)
@@ -73,11 +73,11 @@ public class BatchElement implements IBatchElement {
 	 * 
 	 * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessingStatus()
 	 */
-	public ProcessingStatus getProcessingStatus() {
+	public ElementProcessingStatus getProcessingStatus() {
 		return processingStatus;
 	}
 
-	public void setProcessingStatus(ProcessingStatus processingStatus) {
+	public void setProcessingStatus(ElementProcessingStatus processingStatus) {
 		this.processingStatus = processingStatus;
 	}
 }

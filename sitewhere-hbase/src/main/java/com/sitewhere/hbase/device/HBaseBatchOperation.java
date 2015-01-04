@@ -7,11 +7,13 @@
  */
 package com.sitewhere.hbase.device;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -27,6 +29,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IFilter;
+import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
@@ -42,6 +45,9 @@ public class HBaseBatchOperation {
 
 	/** Length of group identifier (subset of 8 byte long) */
 	public static final int IDENTIFIER_LENGTH = 4;
+
+	/** Column qualifier for batch operation processing status */
+	public static final byte[] PROCESSING_STATUS = Bytes.toBytes("s");
 
 	/** Used to look up row keys from tokens */
 	public static UniqueIdCounterMapRowKeyBuilder KEY_BUILDER = new UniqueIdCounterMapRowKeyBuilder() {
@@ -93,16 +99,26 @@ public class HBaseBatchOperation {
 		BatchOperation batch = SiteWherePersistence.batchOperationCreateLogic(request, uuid);
 
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
+		qualifiers.put(PROCESSING_STATUS,
+				Bytes.toBytes(String.valueOf(BatchOperationStatus.Unprocessed.getCode())));
 		BatchOperation operation =
 				HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER,
 						qualifiers);
 
 		// Create elements for each device in the operation.
 		long index = 0;
-		for (String hardwareId : request.getHardwareIds()) {
-			BatchElement element =
-					SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
-			HBaseBatchElement.createBatchElement(hbase, element);
+		HTableInterface devices = null;
+		try {
+			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			for (String hardwareId : request.getHardwareIds()) {
+				BatchElement element =
+						SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
+				HBaseBatchElement.createBatchElement(hbase, devices, element);
+			}
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to create device group element.", e);
+		} finally {
+			HBaseUtils.closeCleanly(devices);
 		}
 
 		return operation;

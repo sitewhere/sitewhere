@@ -12,7 +12,7 @@ import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.device.batch.BatchElement;
 import com.sitewhere.spi.device.batch.IBatchElement;
-import com.sitewhere.spi.device.batch.ProcessingStatus;
+import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 
 /**
  * Used to load or save batch element data to MongoDB.
@@ -84,7 +84,7 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 		target.setHardwareId(hardwareId);
 		target.setIndex(index);
 		if (status != null) {
-			target.setProcessingStatus(ProcessingStatus.valueOf(status));
+			target.setProcessingStatus(ElementProcessingStatus.valueOf(status));
 		}
 	}
 

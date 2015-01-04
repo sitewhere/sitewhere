@@ -38,4 +38,11 @@ public interface IBatchOperation extends IMetadataProviderEntity {
 	 * @return
 	 */
 	public Map<String, String> getParameters();
+
+	/**
+	 * Get processing status for the batch operation.
+	 * 
+	 * @return
+	 */
+	public BatchOperationStatus getProcessingStatus();
 }

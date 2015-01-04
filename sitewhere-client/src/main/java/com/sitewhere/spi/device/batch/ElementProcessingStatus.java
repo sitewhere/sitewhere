@@ -12,14 +12,38 @@ package com.sitewhere.spi.device.batch;
  * 
  * @author Derek
  */
-public enum ProcessingStatus {
+public enum ElementProcessingStatus {
 
 	/** Indicates a batch element has not been processed */
-	Unprocessed,
+	Unprocessed('U'),
 
 	/** Indicates processing failed for the batch element */
-	Failed,
+	Failed('F'),
 
 	/** Indicates processing succeeded for the batch element */
-	Succeeded;
+	Succeeded('S');
+
+	/** Event code */
+	private char code;
+
+	private ElementProcessingStatus(char code) {
+		this.code = code;
+	}
+
+	public static ElementProcessingStatus getByCode(char code) {
+		for (ElementProcessingStatus value : ElementProcessingStatus.values()) {
+			if (value.getCode() == code) {
+				return value;
+			}
+		}
+		return null;
+	}
+
+	public char getCode() {
+		return code;
+	}
+
+	public void setCode(char code) {
+		this.code = code;
+	}
 }

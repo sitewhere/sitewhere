@@ -40,5 +40,5 @@ public interface IBatchElement {
 	 * 
 	 * @return
 	 */
-	public ProcessingStatus getProcessingStatus();
+	public ElementProcessingStatus getProcessingStatus();
 }

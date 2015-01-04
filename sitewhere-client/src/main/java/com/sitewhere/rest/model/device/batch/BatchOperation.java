@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.OperationType;
 
@@ -29,6 +30,9 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 
 	/** Operation parameters */
 	private Map<String, String> parameters = new HashMap<String, String>();
+
+	/** Processing status for operation */
+	private BatchOperationStatus processingStatus = BatchOperationStatus.Unprocessed;
 
 	/*
 	 * (non-Javadoc)
@@ -69,11 +73,25 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 		this.parameters = parameters;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.batch.IBatchOperation#getProcessingStatus()
+	 */
+	public BatchOperationStatus getProcessingStatus() {
+		return processingStatus;
+	}
+
+	public void setProcessingStatus(BatchOperationStatus processingStatus) {
+		this.processingStatus = processingStatus;
+	}
+
 	public static BatchOperation copy(IBatchOperation input) {
 		BatchOperation result = new BatchOperation();
 		result.setToken(input.getToken());
 		result.setOperationType(input.getOperationType());
 		result.getParameters().putAll(input.getParameters());
+		result.setProcessingStatus(input.getProcessingStatus());
 		MetadataProviderEntity.copy(input, result);
 		return result;
 	}

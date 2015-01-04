@@ -61,7 +61,7 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.batch.OperationType;
-import com.sitewhere.spi.device.batch.ProcessingStatus;
+import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -1084,7 +1084,7 @@ public class SiteWherePersistence {
 		element.setBatchOperationToken(batchOperationToken);
 		element.setHardwareId(hardwareId);
 		element.setIndex(index);
-		element.setProcessingStatus(ProcessingStatus.Unprocessed);
+		element.setProcessingStatus(ElementProcessingStatus.Unprocessed);
 		return element;
 	}
 

@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.provisioning.ICommandDestination;
@@ -33,6 +34,9 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 
 	/** Configured registration manager */
 	private IRegistrationManager registrationManager;
+
+	/** Configured batch operation manager */
+	private IBatchOperationManager batchOperationManager;
 
 	/** Configured inbound processing strategy */
 	private IInboundProcessingStrategy inboundProcessingStrategy;
@@ -93,6 +97,12 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		}
 		startNestedComponent(getRegistrationManager(), true);
 
+		// Start batch operation manager.
+		if (getBatchOperationManager() == null) {
+			throw new SiteWhereException("No batch operation manager configured for provisioning.");
+		}
+		startNestedComponent(getBatchOperationManager(), true);
+
 		// Start inbound processing strategy.
 		if (getInboundProcessingStrategy() == null) {
 			throw new SiteWhereException("No inbound processing strategy configured for provisioning.");
@@ -124,6 +134,16 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		// Stop inbound processing strategy.
 		if (getInboundProcessingStrategy() != null) {
 			getInboundProcessingStrategy().lifecycleStop();
+		}
+
+		// Stop batch operation manager.
+		if (getBatchOperationManager() != null) {
+			getBatchOperationManager().lifecycleStop();
+		}
+
+		// Stop registration manager.
+		if (getRegistrationManager() != null) {
+			getRegistrationManager().lifecycleStop();
 		}
 
 		// Stop outbound processing strategy.
@@ -174,6 +194,14 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 
 	public void setRegistrationManager(IRegistrationManager registrationManager) {
 		this.registrationManager = registrationManager;
+	}
+
+	public IBatchOperationManager getBatchOperationManager() {
+		return batchOperationManager;
+	}
+
+	public void setBatchOperationManager(IBatchOperationManager batchOperationManager) {
+		this.batchOperationManager = batchOperationManager;
 	}
 
 	public IInboundProcessingStrategy getInboundProcessingStrategy() {

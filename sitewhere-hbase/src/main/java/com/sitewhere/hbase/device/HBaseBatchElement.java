@@ -48,10 +48,10 @@ public class HBaseBatchElement {
 	public static final int INDEX_LENGTH = 4;
 
 	/** Column qualifier for element hardware id */
-	public static final byte[] HARDWARE_ID = Bytes.toBytes("hwid");
+	public static final byte[] HARDWARE_ID = Bytes.toBytes("i");
 
 	/** Column qualifier for element processing status */
-	public static final byte[] PROCESSING_STATUS = Bytes.toBytes("pstat");
+	public static final byte[] PROCESSING_STATUS = Bytes.toBytes("s");
 
 	/**
 	 * Create a batch element row.
@@ -61,8 +61,8 @@ public class HBaseBatchElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchElement createBatchElement(ISiteWhereHBaseClient hbase, IBatchElement request)
-			throws SiteWhereException {
+	public static IBatchElement createBatchElement(ISiteWhereHBaseClient hbase, HTableInterface devices,
+			IBatchElement request) throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(request.getBatchOperationToken(), request.getIndex());
 
 		// Use common processing logic so all backend implementations work the same.
@@ -73,19 +73,15 @@ public class HBaseBatchElement {
 		// Serialize as JSON.
 		byte[] json = MarshalUtils.marshalJson(element);
 
-		HTableInterface devices = null;
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Put put = new Put(elementKey);
 			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
 			put.add(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
 			put.add(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
-					Bytes.toBytes(request.getProcessingStatus().name()));
+					Bytes.toBytes(String.valueOf(request.getProcessingStatus().getCode())));
 			devices.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to create device group element.", e);
-		} finally {
-			HBaseUtils.closeCleanly(devices);
 		}
 
 		return element;
