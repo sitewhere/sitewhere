@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -83,6 +84,18 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 		} catch (InterruptedException e) {
 			throw new SiteWhereException("Interrupted while processing command invocation.", e);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onBatchOperation(com
+	 * .sitewhere.spi.device.batch.IBatchOperation)
+	 */
+	@Override
+	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
+		// Send to batch operation manager for processing.
 	}
 
 	/**

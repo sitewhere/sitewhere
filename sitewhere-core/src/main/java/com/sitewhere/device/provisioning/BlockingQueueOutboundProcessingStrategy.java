@@ -21,6 +21,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -49,8 +50,8 @@ public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent 
 	/** Number of threads used for event processing */
 	private static final int EVENT_PROCESSOR_THREAD_COUNT = 10;
 
-	/** Blocking queue of pending event create requests from receivers */
-	private BlockingQueue<IDeviceEvent> queue = new ArrayBlockingQueue<IDeviceEvent>(MAX_QUEUE_SIZE);
+	/** Blocking queue of pending create requests from receivers */
+	private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(MAX_QUEUE_SIZE);
 
 	/** Thread pool for processing events */
 	private ExecutorService processorPool;
@@ -165,6 +166,18 @@ public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent 
 		queue.offer(response);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onBatchOperation
+	 * (com.sitewhere.spi.device.batch.IBatchOperation)
+	 */
+	@Override
+	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
+		queue.offer(operation);
+	}
+
 	/**
 	 * Blocking thread that processes {@link IDeviceEvent} messages from a queue.
 	 * 
@@ -175,9 +188,9 @@ public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent 
 	private class BlockingDeviceEventProcessor implements Runnable {
 
 		/** Queue where messages are placed */
-		private BlockingQueue<IDeviceEvent> queue;
+		private BlockingQueue<Object> queue;
 
-		public BlockingDeviceEventProcessor(BlockingQueue<IDeviceEvent> queue) {
+		public BlockingDeviceEventProcessor(BlockingQueue<Object> queue) {
 			this.queue = queue;
 		}
 
@@ -198,7 +211,7 @@ public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent 
 			}
 			while (true) {
 				try {
-					IDeviceEvent event = queue.take();
+					Object event = queue.take();
 					if (event instanceof IDeviceMeasurements) {
 						SiteWhere.getServer().getOutboundEventProcessorChain().onMeasurements(
 								(IDeviceMeasurements) event);
@@ -213,6 +226,9 @@ public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent 
 					} else if (event instanceof IDeviceCommandResponse) {
 						SiteWhere.getServer().getOutboundEventProcessorChain().onCommandResponse(
 								(IDeviceCommandResponse) event);
+					} else if (event instanceof IBatchOperation) {
+						SiteWhere.getServer().getOutboundEventProcessorChain().onBatchOperation(
+								(IBatchOperation) event);
 					} else {
 						throw new RuntimeException("Unknown device event type in outbound processing: "
 								+ event.getClass().getName());

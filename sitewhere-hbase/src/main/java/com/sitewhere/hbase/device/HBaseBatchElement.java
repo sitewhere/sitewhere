@@ -68,7 +68,7 @@ public class HBaseBatchElement {
 		// Use common processing logic so all backend implementations work the same.
 		BatchElement element =
 				SiteWherePersistence.batchElementCreateLogic(request.getBatchOperationToken(),
-						request.getHardwareId());
+						request.getHardwareId(), request.getIndex());
 
 		// Serialize as JSON.
 		byte[] json = MarshalUtils.marshalJson(element);

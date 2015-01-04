@@ -1879,8 +1879,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		long index = 0;
 		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
 		for (String hardwareId : request.getHardwareIds()) {
-			BatchElement element = SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId);
-			element.setIndex(++index);
+			BatchElement element =
+					SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
 			DBObject dbElement = MongoBatchElement.toDBObject(element);
 			MongoPersistence.insert(elements, dbElement);
 		}

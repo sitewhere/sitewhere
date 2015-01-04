@@ -21,6 +21,7 @@ import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
+import com.sitewhere.rest.model.device.batch.BatchElement;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -92,8 +93,19 @@ public class HBaseBatchOperation {
 		BatchOperation batch = SiteWherePersistence.batchOperationCreateLogic(request, uuid);
 
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
-		return HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER,
-				qualifiers);
+		BatchOperation operation =
+				HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER,
+						qualifiers);
+
+		// Create elements for each device in the operation.
+		long index = 0;
+		for (String hardwareId : request.getHardwareIds()) {
+			BatchElement element =
+					SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
+			HBaseBatchElement.createBatchElement(hbase, element);
+		}
+
+		return operation;
 	}
 
 	/**

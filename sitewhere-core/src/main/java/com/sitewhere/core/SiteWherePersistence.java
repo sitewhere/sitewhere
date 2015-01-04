@@ -1074,15 +1074,16 @@ public class SiteWherePersistence {
 	 * 
 	 * @param batchOperationToken
 	 * @param hardwareId
+	 * @param index
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static BatchElement batchElementCreateLogic(String batchOperationToken, String hardwareId)
-			throws SiteWhereException {
+	public static BatchElement batchElementCreateLogic(String batchOperationToken, String hardwareId,
+			long index) throws SiteWhereException {
 		BatchElement element = new BatchElement();
 		element.setBatchOperationToken(batchOperationToken);
 		element.setHardwareId(hardwareId);
-		element.setIndex(0);
+		element.setIndex(index);
 		element.setProcessingStatus(ProcessingStatus.Unprocessed);
 		return element;
 	}

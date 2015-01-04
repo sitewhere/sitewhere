@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -118,5 +119,17 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 	@Override
 	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
 		SiteWhere.getServer().getOutboundEventProcessorChain().onCommandResponse(response);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onBatchOperation
+	 * (com.sitewhere.spi.device.batch.IBatchOperation)
+	 */
+	@Override
+	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
+		SiteWhere.getServer().getOutboundEventProcessorChain().onBatchOperation(operation);
 	}
 }
