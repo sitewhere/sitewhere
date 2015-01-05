@@ -213,6 +213,12 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	protected AbstractBeanDefinition parseProvisioningEventProcessor(Element element, ParserContext context) {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(ProvisioningEventProcessor.class);
+
+		Attr numThreads = element.getAttributeNode("numThreads");
+		if (numThreads != null) {
+			processor.addPropertyValue("numThreads", Integer.parseInt(numThreads.getValue()));
+		}
+
 		return processor.getBeanDefinition();
 	}
 

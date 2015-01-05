@@ -57,10 +57,10 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.batch.IBatchOperationManager#queueForProcessing(com.sitewhere
-	 * .spi.device.batch.IBatchOperation)
+	 * com.sitewhere.spi.device.batch.IBatchOperationManager#process(com.sitewhere.spi
+	 * .device.batch.IBatchOperation)
 	 */
 	@Override
-	public void queueForProcessing(IBatchOperation operation) throws SiteWhereException {
+	public void process(IBatchOperation operation) throws SiteWhereException {
 	}
 }

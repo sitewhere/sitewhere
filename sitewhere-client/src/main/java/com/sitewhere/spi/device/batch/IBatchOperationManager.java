@@ -18,11 +18,11 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface IBatchOperationManager extends ILifecycleComponent {
 
 	/**
-	 * Queues an {@link IBatchOperation} for processing. Note that this does not mean that
-	 * the batch will be immediately processed since other batches may be queued first.
+	 * Processes an {@link IBatchOperation}. The batch operation is processed in the
+	 * calling thread.
 	 * 
 	 * @param operation
 	 * @throws SiteWhereException
 	 */
-	public void queueForProcessing(IBatchOperation operation) throws SiteWhereException;
+	public void process(IBatchOperation operation) throws SiteWhereException;
 }

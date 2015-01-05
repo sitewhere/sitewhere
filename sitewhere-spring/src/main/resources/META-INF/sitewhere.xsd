@@ -312,6 +312,14 @@
 	<xsd:complexType name="provisioningEventProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundProcessorType">
+				<xsd:attribute name="numThreads" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Sets the number of threads used to process provisioning commands.
+							Increase for situations where the load of device commands is high.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

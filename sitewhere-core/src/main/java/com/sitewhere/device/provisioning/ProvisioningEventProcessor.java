@@ -7,10 +7,10 @@
  */
 package com.sitewhere.device.provisioning;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
@@ -32,14 +32,13 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 	private static Logger LOGGER = Logger.getLogger(ProvisioningEventProcessor.class);
 
 	/** Number of invocations to buffer before blocking calls */
-	private static final int BUFFER_SIZE = 100;
+	private static final int DEFAULT_NUM_THREADS = 10;
 
-	/** Bounded queue that holds documents to be processed */
-	private BlockingQueue<IDeviceCommandInvocation> queue = new ArrayBlockingQueue<IDeviceCommandInvocation>(
-			BUFFER_SIZE);
+	/** Number of threads used for processing provisioning requests */
+	private int numThreads = DEFAULT_NUM_THREADS;
 
 	/** Used to execute Solr indexing in a separate thread */
-	private ExecutorService executor = Executors.newSingleThreadExecutor();
+	private ExecutorService executor;
 
 	/*
 	 * (non-Javadoc)
@@ -48,7 +47,8 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		executor.execute(new ProvisioningProcessor());
+		LOGGER.info("Provisioning event processor using " + getNumThreads() + " threads to process requests.");
+		executor = Executors.newFixedThreadPool(getNumThreads(), new ProcessorsThreadFactory());
 	}
 
 	/*
@@ -68,7 +68,7 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		executor.shutdown();
+		executor.shutdownNow();
 	}
 
 	/*
@@ -79,11 +79,7 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		try {
-			queue.put(invocation);
-		} catch (InterruptedException e) {
-			throw new SiteWhereException("Interrupted while processing command invocation.", e);
-		}
+		executor.execute(new CommandInvocationProcessor(invocation));
 	}
 
 	/*
@@ -95,31 +91,73 @@ public class ProvisioningEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
-		// Send to batch operation manager for processing.
+		executor.execute(new BatchOperationProcessor(operation));
 	}
 
 	/**
-	 * Processes provisioning operations asynchronously.
+	 * Processes command invocations asynchronously.
 	 */
-	private class ProvisioningProcessor implements Runnable {
+	private class CommandInvocationProcessor implements Runnable {
+
+		private IDeviceCommandInvocation command;
+
+		public CommandInvocationProcessor(IDeviceCommandInvocation command) {
+			this.command = command;
+		}
 
 		@Override
 		public void run() {
-			while (true) {
-				try {
-					IDeviceCommandInvocation invocation = queue.take();
-					try {
-						LOGGER.debug("Provisioning processor thread picked up invocation.");
-						SiteWhere.getServer().getDeviceProvisioning().deliverCommand(invocation);
-					} catch (SiteWhereException e) {
-						LOGGER.error("Exception thrown in provisioning operation.", e);
-					} catch (Throwable e) {
-						LOGGER.error("Unhandled exception in provisioning operation.", e);
-					}
-				} catch (InterruptedException e) {
-					LOGGER.error(e);
-				}
+			try {
+				LOGGER.debug("Provisioning processor thread processing command invocation.");
+				SiteWhere.getServer().getDeviceProvisioning().deliverCommand(command);
+			} catch (SiteWhereException e) {
+				LOGGER.error("Exception thrown in provisioning operation.", e);
+			} catch (Throwable e) {
+				LOGGER.error("Unhandled exception in provisioning operation.", e);
 			}
 		}
+	}
+
+	/**
+	 * Processes batch operations asynchronously.
+	 */
+	private class BatchOperationProcessor implements Runnable {
+
+		private IBatchOperation operation;
+
+		public BatchOperationProcessor(IBatchOperation operation) {
+			this.operation = operation;
+		}
+
+		@Override
+		public void run() {
+			try {
+				LOGGER.debug("Provisioning processor thread processing batch operation.");
+				SiteWhere.getServer().getDeviceProvisioning().getBatchOperationManager().process(operation);
+			} catch (SiteWhereException e) {
+				LOGGER.error("Exception thrown in provisioning operation.", e);
+			} catch (Throwable e) {
+				LOGGER.error("Unhandled exception in provisioning operation.", e);
+			}
+		}
+	}
+
+	/** Used for naming processor threads */
+	private class ProcessorsThreadFactory implements ThreadFactory {
+
+		/** Counts threads */
+		private AtomicInteger counter = new AtomicInteger();
+
+		public Thread newThread(Runnable r) {
+			return new Thread(r, "Provisioning processor " + counter.incrementAndGet());
+		}
+	}
+
+	public int getNumThreads() {
+		return numThreads;
+	}
+
+	public void setNumThreads(int numThreads) {
+		this.numThreads = numThreads;
 	}
 }
