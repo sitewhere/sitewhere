@@ -83,6 +83,7 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -1886,6 +1887,32 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		}
 
 		return MongoBatchOperation.fromDBObject(created);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateBatchOperation(java.lang.String,
+	 * com.sitewhere.spi.device.request.IBatchOperationUpdateRequest)
+	 */
+	@Override
+	public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
+			throws SiteWhereException {
+		DBCollection batchops = getMongoClient().getBatchOperationsCollection();
+		DBObject match = assertBatchOperation(token);
+
+		BatchOperation operation = MongoBatchOperation.fromDBObject(match);
+		SiteWherePersistence.batchOperationUpdateLogic(request, operation);
+
+		DBObject updated = MongoBatchOperation.toDBObject(operation);
+
+		// Manually copy last index since it's not copied by default.
+		updated.put(MongoBatchOperation.PROP_LAST_INDEX, match.get(MongoBatchOperation.PROP_LAST_INDEX));
+
+		BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
+		MongoPersistence.update(batchops, query, updated);
+		return MongoBatchOperation.fromDBObject(updated);
 	}
 
 	/*

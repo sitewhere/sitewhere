@@ -60,8 +60,8 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
-import com.sitewhere.spi.device.batch.OperationType;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
+import com.sitewhere.spi.device.batch.OperationType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -82,6 +82,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -1067,6 +1068,29 @@ public class SiteWherePersistence {
 		SiteWherePersistence.initializeEntityMetadata(batch);
 		MetadataProvider.copy(source, batch);
 		return batch;
+	}
+
+	/**
+	 * Common logic for updating batch operation information.
+	 * 
+	 * @param source
+	 * @param target
+	 * @throws SiteWhereException
+	 */
+	public static void batchOperationUpdateLogic(IBatchOperationUpdateRequest source, BatchOperation target)
+			throws SiteWhereException {
+		if (source.getProcessingStatus() != null) {
+			target.setProcessingStatus(source.getProcessingStatus());
+		}
+		if (source.getProcessingStartedDate() != null) {
+			target.setProcessingStartedDate(source.getProcessingStartedDate());
+		}
+		if (source.getProcessingEndedDate() != null) {
+			target.setProcessingEndedDate(source.getProcessingEndedDate());
+		}
+
+		SiteWherePersistence.setUpdatedEntityMetadata(target);
+		MetadataProvider.copy(source, target);
 	}
 
 	/**

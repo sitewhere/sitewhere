@@ -32,6 +32,7 @@ import com.sitewhere.spi.common.IFilter;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
@@ -102,8 +103,8 @@ public class HBaseBatchOperation {
 		qualifiers.put(PROCESSING_STATUS,
 				Bytes.toBytes(String.valueOf(BatchOperationStatus.Unprocessed.getCode())));
 		BatchOperation operation =
-				HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER,
-						qualifiers);
+				HBaseUtils.createOrUpdate(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid,
+						KEY_BUILDER, qualifiers);
 
 		// Create elements for each device in the operation.
 		long index = 0;
@@ -122,6 +123,30 @@ public class HBaseBatchOperation {
 		}
 
 		return operation;
+	}
+
+	/**
+	 * Update an existing batch operation.
+	 * 
+	 * @param hbase
+	 * @param token
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IBatchOperation updateBatchOperation(ISiteWhereHBaseClient hbase, String token,
+			IBatchOperationUpdateRequest request) throws SiteWhereException {
+		BatchOperation updated = assertBatchOperation(hbase, token);
+		BatchOperationStatus oldProcessingStatus = updated.getProcessingStatus();
+		SiteWherePersistence.batchOperationUpdateLogic(request, updated);
+
+		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
+		if (updated.getProcessingStatus() != oldProcessingStatus) {
+			qualifiers.put(PROCESSING_STATUS,
+					Bytes.toBytes(String.valueOf(updated.getProcessingStatus().getCode())));
+		}
+		return HBaseUtils.createOrUpdate(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token,
+				KEY_BUILDER, qualifiers);
 	}
 
 	/**

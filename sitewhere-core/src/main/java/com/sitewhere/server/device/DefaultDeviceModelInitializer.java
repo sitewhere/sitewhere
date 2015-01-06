@@ -540,7 +540,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		for (int x = 0; x < ASSIGNMENTS_PER_SITE; x++) {
 			AssignmentChoice assnChoice = getRandomAssignmentChoice();
 			IDeviceSpecification specification = getRandomDeviceSpecification();
-			List<IDeviceCommand> commands = commandsBySpecToken.get(specification.getToken());
+			// List<IDeviceCommand> commands =
+			// commandsBySpecToken.get(specification.getToken());
 
 			// Create device.
 			DeviceCreateRequest request = new DeviceCreateRequest();
@@ -564,10 +565,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			// Create events for assignment.
 			createDeviceMeasurements(assignment, before);
 			createDeviceLocations(assignment, before);
-			List<IDeviceCommandInvocation> invocations =
-					createDeviceCommandInvocations(assignment, before, commands);
-			createDeviceCommandResponses(assignment, before, invocations);
-			createDeviceStateChanges(assignment, specification, before);
+			// List<IDeviceCommandInvocation> invocations =
+			// createDeviceCommandInvocations(assignment, before, commands);
+			// createDeviceCommandResponses(assignment, before, invocations);
+			// createDeviceStateChanges(assignment, specification, before);
 
 			results.add(assignment);
 		}

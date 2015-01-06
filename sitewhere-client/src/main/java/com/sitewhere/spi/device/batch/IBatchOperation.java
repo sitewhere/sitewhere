@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.device.batch;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
@@ -45,4 +46,18 @@ public interface IBatchOperation extends IMetadataProviderEntity {
 	 * @return
 	 */
 	public BatchOperationStatus getProcessingStatus();
+
+	/**
+	 * Get the date when processing of the operation started.
+	 * 
+	 * @return
+	 */
+	public Date getProcessingStartedDate();
+
+	/**
+	 * Get the date when processing of the operation ended.
+	 * 
+	 * @return
+	 */
+	public Date getProcessingEndedDate();
 }

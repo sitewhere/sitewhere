@@ -7,12 +7,15 @@
  */
 package com.sitewhere.mongodb.device;
 
+import java.util.Date;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
+import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.OperationType;
 
@@ -27,13 +30,22 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 	public static final String PROP_TOKEN = "token";
 
 	/** Property for operation type */
-	public static final String PROP_OPERATION_TYPE = "opType";
+	public static final String PROP_OPERATION_TYPE = "type";
 
 	/** Property for operation parameters */
 	public static final String PROP_PARAMETERS = "params";
 
+	/** Property for processing status */
+	public static final String PROP_PROC_STATUS = "status";
+
 	/** Property for element list */
 	public static final String PROP_LAST_INDEX = "lastIndex";
+
+	/** Property for processing start date */
+	public static final String PROP_PROC_START_DATE = "processingStartDate";
+
+	/** Property for processing end date */
+	public static final String PROP_PROC_END_DATE = "processingEndDate";
 
 	/*
 	 * (non-Javadoc)
@@ -66,6 +78,15 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 		if (source.getOperationType() != null) {
 			target.append(PROP_OPERATION_TYPE, source.getOperationType().name());
 		}
+		if (source.getProcessingStatus() != null) {
+			target.append(PROP_PROC_STATUS, source.getProcessingStatus().name());
+		}
+		if (source.getProcessingStartedDate() != null) {
+			target.append(PROP_PROC_START_DATE, source.getProcessingStartedDate());
+		}
+		if (source.getProcessingEndedDate() != null) {
+			target.append(PROP_PROC_END_DATE, source.getProcessingEndedDate());
+		}
 
 		// Set parameters as nested object.
 		BasicDBObject params = new BasicDBObject();
@@ -87,11 +108,19 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 	public static void fromDBObject(DBObject source, BatchOperation target) {
 		String token = (String) source.get(PROP_TOKEN);
 		String operationType = (String) source.get(PROP_OPERATION_TYPE);
+		String procStatus = (String) source.get(PROP_PROC_STATUS);
+		Date procStart = (Date) source.get(PROP_PROC_START_DATE);
+		Date procEnd = (Date) source.get(PROP_PROC_END_DATE);
 
 		target.setToken(token);
 		if (operationType != null) {
 			target.setOperationType(OperationType.valueOf(operationType));
 		}
+		if (procStatus != null) {
+			target.setProcessingStatus(BatchOperationStatus.valueOf(procStatus));
+		}
+		target.setProcessingStartedDate(procStart);
+		target.setProcessingEndedDate(procEnd);
 
 		// Load parameters from nested object.
 		DBObject params = (DBObject) source.get(PROP_PARAMETERS);

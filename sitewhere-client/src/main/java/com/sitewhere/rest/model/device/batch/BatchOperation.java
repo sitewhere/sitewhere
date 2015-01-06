@@ -7,10 +7,13 @@
  */
 package com.sitewhere.rest.model.device.batch;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.OperationType;
@@ -33,6 +36,12 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 
 	/** Processing status for operation */
 	private BatchOperationStatus processingStatus = BatchOperationStatus.Unprocessed;
+
+	/** Date when operation processing started */
+	private Date processingStartedDate;
+
+	/** Date when operation processing ended */
+	private Date processingEndedDate;
 
 	/*
 	 * (non-Javadoc)
@@ -86,12 +95,42 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 		this.processingStatus = processingStatus;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.batch.IBatchOperation#getProcessingStartedDate()
+	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getProcessingStartedDate() {
+		return processingStartedDate;
+	}
+
+	public void setProcessingStartedDate(Date processingStartedDate) {
+		this.processingStartedDate = processingStartedDate;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.batch.IBatchOperation#getProcessingEndedDate()
+	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getProcessingEndedDate() {
+		return processingEndedDate;
+	}
+
+	public void setProcessingEndedDate(Date processingEndedDate) {
+		this.processingEndedDate = processingEndedDate;
+	}
+
 	public static BatchOperation copy(IBatchOperation input) {
 		BatchOperation result = new BatchOperation();
 		result.setToken(input.getToken());
 		result.setOperationType(input.getOperationType());
 		result.getParameters().putAll(input.getParameters());
 		result.setProcessingStatus(input.getProcessingStatus());
+		result.setProcessingStartedDate(input.getProcessingStartedDate());
+		result.setProcessingEndedDate(input.getProcessingEndedDate());
 		MetadataProviderEntity.copy(input, result);
 		return result;
 	}

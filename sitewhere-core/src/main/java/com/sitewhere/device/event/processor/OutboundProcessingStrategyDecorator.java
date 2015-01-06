@@ -12,6 +12,7 @@ import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.DeviceManagementDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -27,6 +28,8 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 
 /**
  * Acts as a decorator for injecting a {@link IOutboundEventProcessorChain} into the
@@ -137,6 +140,36 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 		IDeviceCommandResponse result = super.addDeviceCommandResponse(assignmentToken, request);
 		outbound.onCommandResponse(result);
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.DeviceManagementDecorator#createBatchOperation(com.sitewhere
+	 * .spi.device.request.IBatchOperationCreateRequest)
+	 */
+	@Override
+	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
+			throws SiteWhereException {
+		IBatchOperation result = super.createBatchOperation(request);
+		outbound.onBatchOperation(result);
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.DeviceManagementDecorator#createBatchCommandInvocation(com
+	 * .sitewhere.spi.device.request.IBatchCommandInvocationRequest)
+	 */
+	@Override
+	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
+			throws SiteWhereException {
+		IBatchOperation result = super.createBatchCommandInvocation(request);
+		outbound.onBatchOperation(result);
 		return result;
 	}
 }
