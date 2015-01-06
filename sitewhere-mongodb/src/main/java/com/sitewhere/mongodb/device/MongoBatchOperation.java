@@ -38,9 +38,6 @@ public class MongoBatchOperation implements MongoConverter<IBatchOperation> {
 	/** Property for processing status */
 	public static final String PROP_PROC_STATUS = "status";
 
-	/** Property for element list */
-	public static final String PROP_LAST_INDEX = "lastIndex";
-
 	/** Property for processing start date */
 	public static final String PROP_PROC_START_DATE = "processingStartDate";
 

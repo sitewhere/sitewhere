@@ -1907,9 +1907,6 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBObject updated = MongoBatchOperation.toDBObject(operation);
 
-		// Manually copy last index since it's not copied by default.
-		updated.put(MongoBatchOperation.PROP_LAST_INDEX, match.get(MongoBatchOperation.PROP_LAST_INDEX));
-
 		BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
 		MongoPersistence.update(batchops, query, updated);
 		return MongoBatchOperation.fromDBObject(updated);

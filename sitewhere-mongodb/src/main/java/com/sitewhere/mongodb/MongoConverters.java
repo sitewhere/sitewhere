@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.mongodb.device.MongoBatchElement;
 import com.sitewhere.mongodb.device.MongoBatchOperation;
 import com.sitewhere.mongodb.device.MongoDevice;
 import com.sitewhere.mongodb.device.MongoDeviceAlert;
@@ -30,6 +31,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.batch.IBatchElement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -68,6 +70,7 @@ public class MongoConverters {
 		CONVERTERS.put(IDeviceGroup.class, new MongoDeviceGroup());
 		CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
 		CONVERTERS.put(IBatchOperation.class, new MongoBatchOperation());
+		CONVERTERS.put(IBatchElement.class, new MongoBatchElement());
 	}
 
 	/**

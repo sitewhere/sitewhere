@@ -18,12 +18,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.request.BatchOperationUpdateRequest;
+import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
+import com.sitewhere.spi.device.batch.IBatchElement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.IBatchOperationManager;
+import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 /**
  * Default implementation of {@link IBatchOperationManager}. Uses multiple threads to
@@ -122,9 +126,44 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 				request.setProcessingStartedDate(new Date());
 				SiteWhere.getServer().getDeviceManagement().updateBatchOperation(operation.getToken(),
 						request);
+
+				int pageSize = 100;
+				int pageNumber = 0;
+				while (true) {
+					pageNumber++;
+					IBatchElementSearchCriteria criteria =
+							new BatchElementSearchCriteria(pageNumber, pageSize);
+					SearchResults<IBatchElement> matches =
+							SiteWhere.getServer().getDeviceManagement().listBatchElements(
+									operation.getToken(), criteria);
+					if (matches.getNumResults() == 0) {
+						break;
+					}
+					for (IBatchElement element : matches.getResults()) {
+						switch (operation.getOperationType()) {
+						case InvokeCommand: {
+							processBatchCommandInvocationElement(element);
+							break;
+						}
+						case UpdateFirmware: {
+							break;
+						}
+						}
+					}
+				}
 			} catch (SiteWhereException e) {
 				LOGGER.error("Error processing batch operation.", e);
 			}
+		}
+
+		/**
+		 * Process a single element from a batch command invocation.
+		 * 
+		 * @param element
+		 * @throws SiteWhereException
+		 */
+		protected void processBatchCommandInvocationElement(IBatchElement element) throws SiteWhereException {
+			LOGGER.info("Processing command invocation: " + element.getHardwareId());
 		}
 	}
 }
