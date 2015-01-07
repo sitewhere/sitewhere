@@ -55,6 +55,7 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -1087,6 +1088,19 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public SearchResults<IBatchElement> listBatchElements(String batchToken,
 			IBatchElementSearchCriteria criteria) throws SiteWhereException {
 		return HBaseBatchElement.listBatchElements(client, batchToken, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateBatchElement(java.lang.String,
+	 * long, com.sitewhere.spi.device.request.IBatchElementUpdateRequest)
+	 */
+	@Override
+	public IBatchElement updateBatchElement(String operationToken, long index,
+			IBatchElementUpdateRequest request) throws SiteWhereException {
+		return HBaseBatchElement.updateBatchElement(client, operationToken, index, request);
 	}
 
 	/*

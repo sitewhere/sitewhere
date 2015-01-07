@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
@@ -32,6 +33,7 @@ import com.sitewhere.rest.model.device.batch.BatchElement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchElement;
+import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 /**
@@ -88,6 +90,68 @@ public class HBaseBatchElement {
 	}
 
 	/**
+	 * Updates an existing batch operation element.
+	 * 
+	 * @param hbase
+	 * @param operationToken
+	 * @param index
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IBatchElement updateBatchElement(ISiteWhereHBaseClient hbase, String operationToken,
+			long index, IBatchElementUpdateRequest request) throws SiteWhereException {
+		HTableInterface devices = null;
+		try {
+			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			BatchElement element = getBatchElement(hbase, devices, operationToken, index);
+			byte[] elementKey = getElementRowKey(operationToken, index);
+
+			SiteWherePersistence.batchElementUpdateLogic(request, element);
+			byte[] json = MarshalUtils.marshalJson(element);
+
+			Put put = new Put(elementKey);
+			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			put.add(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
+			put.add(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
+					Bytes.toBytes(String.valueOf(request.getProcessingStatus().getCode())));
+			devices.put(put);
+			return element;
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to update batch element.", e);
+		} finally {
+			HBaseUtils.closeCleanly(devices);
+		}
+	}
+
+	/**
+	 * Gets the batch operation element given the parent operation token and unique index.
+	 * 
+	 * @param hbase
+	 * @param devices
+	 * @param operationToken
+	 * @param index
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static BatchElement getBatchElement(ISiteWhereHBaseClient hbase, HTableInterface devices,
+			String operationToken, long index) throws SiteWhereException {
+		byte[] elementKey = getElementRowKey(operationToken, index);
+		try {
+			Get get = new Get(elementKey);
+			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+			Result result = devices.get(get);
+			if (result.size() != 1) {
+				throw new SiteWhereException(
+						"Unable to get batch operation element by operation token and index.");
+			}
+			return MarshalUtils.unmarshalJson(result.value(), BatchElement.class);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to create device group element.", e);
+		}
+	}
+
+	/**
 	 * List batch elements that meet the given criteria.
 	 * 
 	 * @param hbase
@@ -106,7 +170,7 @@ public class HBaseBatchElement {
 					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
 							BatchOperationRecordType.BatchElement.getType());
 			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(batchToken,
+					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
 							(byte) (BatchOperationRecordType.BatchElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);

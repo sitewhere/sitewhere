@@ -82,6 +82,7 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -1992,6 +1993,31 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateBatchElement(java.lang.String,
+	 * long, com.sitewhere.spi.device.request.IBatchElementUpdateRequest)
+	 */
+	@Override
+	public IBatchElement updateBatchElement(String operationToken, long index,
+			IBatchElementUpdateRequest request) throws SiteWhereException {
+		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+		DBObject dbElement = assertBatchElement(operationToken, index);
+
+		BatchElement element = MongoBatchElement.fromDBObject(dbElement);
+		SiteWherePersistence.batchElementUpdateLogic(request, element);
+
+		DBObject updated = MongoBatchElement.toDBObject(element);
+
+		BasicDBObject query =
+				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken).append(
+						MongoBatchElement.PROP_INDEX, index);
+		MongoPersistence.update(elements, query, updated);
+		return MongoBatchElement.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#createBatchCommandInvocation(com.sitewhere
 	 * .spi.device.request.IBatchCommandInvocationRequest)
 	 */
@@ -2166,6 +2192,33 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DBObject match = getBatchOperationDBObjectByToken(token);
 		if (match == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
+		}
+		return match;
+	}
+
+	/**
+	 * Return the {@link DBObject} for the batch operation element based on the token for
+	 * its parent operation and its index.
+	 * 
+	 * @param operationToken
+	 * @param index
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject getBatchElementDBObjectByIndex(String operationToken, long index)
+			throws SiteWhereException {
+		DBCollection ops = getMongoClient().getBatchOperationElementsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken).append(
+						MongoBatchElement.PROP_INDEX, index);
+		DBObject result = ops.findOne(query);
+		return result;
+	}
+
+	protected DBObject assertBatchElement(String operationToken, long index) throws SiteWhereException {
+		DBObject match = getBatchElementDBObjectByIndex(operationToken, index);
+		if (match == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidBatchElement, ErrorLevel.ERROR);
 		}
 		return match;
 	}

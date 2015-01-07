@@ -81,6 +81,7 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -1110,6 +1111,20 @@ public class SiteWherePersistence {
 		element.setIndex(index);
 		element.setProcessingStatus(ElementProcessingStatus.Unprocessed);
 		return element;
+	}
+
+	/**
+	 * Common logic for updating a batch operation element.
+	 * 
+	 * @param request
+	 * @param element
+	 * @throws SiteWhereException
+	 */
+	public static void batchElementUpdateLogic(IBatchElementUpdateRequest request, BatchElement element)
+			throws SiteWhereException {
+		if (request.getProcessingStatus() != null) {
+			element.setProcessingStatus(request.getProcessingStatus());
+		}
 	}
 
 	/**

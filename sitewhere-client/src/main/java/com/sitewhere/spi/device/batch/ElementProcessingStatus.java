@@ -17,6 +17,9 @@ public enum ElementProcessingStatus {
 	/** Indicates a batch element has not been processed */
 	Unprocessed('U'),
 
+	/** Indicates a batch element is currently being processed */
+	Processing('P'),
+
 	/** Indicates processing failed for the batch element */
 	Failed('F'),
 

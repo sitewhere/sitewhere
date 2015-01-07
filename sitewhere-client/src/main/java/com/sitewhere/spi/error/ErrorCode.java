@@ -79,6 +79,9 @@ public enum ErrorCode {
 	/** Invalid batch operation token */
 	InvalidBatchOperationToken(550, "Batch operation not found."),
 
+	/** Invalid batch element */
+	InvalidBatchElement(555, "Batch element not found."),
+
 	/** Invalid search provider id */
 	InvalidSearchProviderId(600, "Search provider not found."),
 

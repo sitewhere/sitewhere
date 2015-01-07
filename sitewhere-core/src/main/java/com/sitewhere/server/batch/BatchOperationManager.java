@@ -8,6 +8,7 @@
 package com.sitewhere.server.batch;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -17,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.rest.model.device.request.BatchElementUpdateRequest;
 import com.sitewhere.rest.model.device.request.BatchOperationUpdateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
@@ -24,6 +26,7 @@ import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
+import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 import com.sitewhere.spi.device.batch.IBatchElement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.IBatchOperationManager;
@@ -139,20 +142,53 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 					if (matches.getNumResults() == 0) {
 						break;
 					}
-					for (IBatchElement element : matches.getResults()) {
-						switch (operation.getOperationType()) {
-						case InvokeCommand: {
-							processBatchCommandInvocationElement(element);
-							break;
-						}
-						case UpdateFirmware: {
-							break;
-						}
-						}
-					}
+					processBatchElements(matches.getResults());
 				}
 			} catch (SiteWhereException e) {
 				LOGGER.error("Error processing batch operation.", e);
+			}
+		}
+
+		/**
+		 * Processes a page of batch elements.
+		 * 
+		 * @param elements
+		 */
+		protected void processBatchElements(List<IBatchElement> elements) throws SiteWhereException {
+			for (IBatchElement element : elements) {
+				// Only process unprocessed elements.
+				if (element.getProcessingStatus() != ElementProcessingStatus.Unprocessed) {
+					continue;
+				}
+
+				// Indicate element is being processed.
+				BatchElementUpdateRequest request = new BatchElementUpdateRequest();
+				request.setProcessingStatus(ElementProcessingStatus.Processing);
+				SiteWhere.getServer().getDeviceManagement().updateBatchElement(
+						element.getBatchOperationToken(), element.getIndex(), request);
+
+				try {
+					switch (operation.getOperationType()) {
+					case InvokeCommand: {
+						processBatchCommandInvocationElement(element);
+						break;
+					}
+					case UpdateFirmware: {
+						break;
+					}
+					}
+					// Indicate element succeeded in processing.
+					request = new BatchElementUpdateRequest();
+					request.setProcessingStatus(ElementProcessingStatus.Succeeded);
+					SiteWhere.getServer().getDeviceManagement().updateBatchElement(
+							element.getBatchOperationToken(), element.getIndex(), request);
+				} catch (SiteWhereException t) {
+					// Indicate element failed in processing.
+					request = new BatchElementUpdateRequest();
+					request.setProcessingStatus(ElementProcessingStatus.Failed);
+					SiteWhere.getServer().getDeviceManagement().updateBatchElement(
+							element.getBatchOperationToken(), element.getIndex(), request);
+				}
 			}
 		}
 
@@ -164,6 +200,10 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		 */
 		protected void processBatchCommandInvocationElement(IBatchElement element) throws SiteWhereException {
 			LOGGER.info("Processing command invocation: " + element.getHardwareId());
+			try {
+				Thread.sleep(20000);
+			} catch (InterruptedException e) {
+			}
 		}
 	}
 }
