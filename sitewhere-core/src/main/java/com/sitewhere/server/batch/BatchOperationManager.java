@@ -18,18 +18,26 @@ import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.request.BatchElementUpdateRequest;
 import com.sitewhere.rest.model.device.request.BatchOperationUpdateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
+import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 import com.sitewhere.spi.device.batch.IBatchElement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.IBatchOperationManager;
+import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.event.CommandInitiator;
+import com.sitewhere.spi.device.event.CommandTarget;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 
 /**
@@ -113,6 +121,8 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		/** Operation being processed */
 		private IBatchOperation operation;
 
+		private SitewhereAuthentication systemUser;
+
 		public BatchOperationProcessor(IBatchOperation operation) {
 			this.operation = operation;
 		}
@@ -121,8 +131,8 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		public void run() {
 			LOGGER.debug("Processing batch operation: " + operation.getToken());
 			try {
-				SecurityContextHolder.getContext().setAuthentication(
-						SiteWhereServer.getSystemAuthentication());
+				systemUser = SiteWhereServer.getSystemAuthentication();
+				SecurityContextHolder.getContext().setAuthentication(systemUser);
 
 				BatchOperationUpdateRequest request = new BatchOperationUpdateRequest();
 				request.setProcessingStatus(BatchOperationStatus.Processing);
@@ -142,7 +152,7 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 					if (matches.getNumResults() == 0) {
 						break;
 					}
-					processBatchElements(matches.getResults());
+					processBatchElements(operation, matches.getResults());
 				}
 			} catch (SiteWhereException e) {
 				LOGGER.error("Error processing batch operation.", e);
@@ -152,9 +162,12 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		/**
 		 * Processes a page of batch elements.
 		 * 
+		 * @param operation
 		 * @param elements
+		 * @throws SiteWhereException
 		 */
-		protected void processBatchElements(List<IBatchElement> elements) throws SiteWhereException {
+		protected void processBatchElements(IBatchOperation operation, List<IBatchElement> elements)
+				throws SiteWhereException {
 			for (IBatchElement element : elements) {
 				// Only process unprocessed elements.
 				if (element.getProcessingStatus() != ElementProcessingStatus.Unprocessed) {
@@ -170,7 +183,7 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 				try {
 					switch (operation.getOperationType()) {
 					case InvokeCommand: {
-						processBatchCommandInvocationElement(element);
+						processBatchCommandInvocationElement(operation, element);
 						break;
 					}
 					case UpdateFirmware: {
@@ -195,15 +208,52 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		/**
 		 * Process a single element from a batch command invocation.
 		 * 
+		 * @param operation
 		 * @param element
 		 * @throws SiteWhereException
 		 */
-		protected void processBatchCommandInvocationElement(IBatchElement element) throws SiteWhereException {
+		protected void processBatchCommandInvocationElement(IBatchOperation operation, IBatchElement element)
+				throws SiteWhereException {
 			LOGGER.info("Processing command invocation: " + element.getHardwareId());
-			try {
-				Thread.sleep(20000);
-			} catch (InterruptedException e) {
+
+			// Find information about the command to be executed.
+			String commandToken =
+					operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
+			if (commandToken == null) {
+				throw new SiteWhereException("Command token not found in batch command invocation request.");
 			}
+			IDeviceCommand command =
+					SiteWhere.getServer().getDeviceManagement().getDeviceCommandByToken(commandToken);
+			if (command == null) {
+				throw new SiteWhereException("Invalid command token referenced by batch command invocation.");
+			}
+
+			// Find information about the device to execute the command against.
+			IDevice device =
+					SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(element.getHardwareId());
+			if (device == null) {
+				throw new SiteWhereException("Invalid device hardware id in command invocation.");
+			}
+
+			// Find the current assignment information for the device.
+			IDeviceAssignment assignment =
+					SiteWhere.getServer().getDeviceManagement().getCurrentDeviceAssignment(device);
+			if (assignment == null) {
+				throw new SiteWhereException("Device is not currently assigned. Command can not be invoked.");
+			}
+
+			// Create the request.
+			DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
+			request.setCommandToken(commandToken);
+			request.setInitiator(CommandInitiator.BatchOperation);
+			request.setInitiatorId(systemUser.getName());
+			request.setTarget(CommandTarget.Assignment);
+			request.setTargetId(assignment.getToken());
+			request.setParameterValues(operation.getMetadata());
+
+			// Invoke the command.
+			SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(assignment.getToken(),
+					command, request);
 		}
 	}
 }

@@ -198,7 +198,7 @@ public class ApiTests {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("color", "#ff0000");
 		BatchOperation op =
-				client.createBatchCommandInvocation(null, "4eee91e5-8445-42f9-bb06-5c3b14216b50", parameters,
+				client.createBatchCommandInvocation(null, "17340bb1-8673-4fc9-8ed0-4f818acedaa5", parameters,
 						hwids);
 		System.out.println("Created operation: " + op.getToken());
 	}
