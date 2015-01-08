@@ -39,6 +39,7 @@ import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Default implementation of {@link IBatchOperationManager}. Uses multiple threads to
@@ -77,6 +78,15 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 	public void start() throws SiteWhereException {
 		processorPool =
 				Executors.newFixedThreadPool(BATCH_PROCESSOR_THREAD_COUNT, new ProcessorsThreadFactory());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#canPause()
+	 */
+	public boolean canPause() throws SiteWhereException {
+		return true;
 	}
 
 	/*
@@ -160,6 +170,18 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		}
 
 		/**
+		 * Handle case where batch operation manager has been paused.
+		 */
+		protected void handlePaused() {
+			while (getLifecycleStatus() == LifecycleStatus.Paused) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+
+		/**
 		 * Processes a page of batch elements.
 		 * 
 		 * @param operation
@@ -169,6 +191,9 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		protected void processBatchElements(IBatchOperation operation, List<IBatchElement> elements)
 				throws SiteWhereException {
 			for (IBatchElement element : elements) {
+				// Check whether manager has been paused.
+				handlePaused();
+
 				// Only process unprocessed elements.
 				if (element.getProcessingStatus() != ElementProcessingStatus.Unprocessed) {
 					continue;

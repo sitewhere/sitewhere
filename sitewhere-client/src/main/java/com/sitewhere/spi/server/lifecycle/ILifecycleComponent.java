@@ -61,6 +61,26 @@ public interface ILifecycleComponent {
 	public void start() throws SiteWhereException;
 
 	/**
+	 * Pauses the component while keeping up with lifecycle information.
+	 */
+	public void lifecyclePause();
+
+	/**
+	 * Indicates to framework whether component can be paused.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public boolean canPause() throws SiteWhereException;
+
+	/**
+	 * Pause the component.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void pause() throws SiteWhereException;
+
+	/**
 	 * Stops the component while keeping up with lifecycle information.
 	 */
 	public void lifecycleStop();

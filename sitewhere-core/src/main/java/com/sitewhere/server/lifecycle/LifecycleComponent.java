@@ -46,10 +46,13 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart()
 	 */
 	public void lifecycleStart() {
+		LifecycleStatus old = getLifecycleStatus();
 		setLifecycleStatus(LifecycleStatus.Starting);
 		getLogger().info(getComponentName() + " state transitioned to STARTING.");
 		try {
-			start();
+			if (old != LifecycleStatus.Paused) {
+				start();
+			}
 			setLifecycleStatus(LifecycleStatus.Started);
 			getLogger().info(getComponentName() + " state transitioned to STARTED.");
 		} catch (SiteWhereException e) {
@@ -61,6 +64,48 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 			setLifecycleError(new SiteWhereException(t));
 			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
+	 */
+	@Override
+	public void lifecyclePause() {
+		setLifecycleStatus(LifecycleStatus.Pausing);
+		getLogger().info(getComponentName() + " state transitioned to PAUSING.");
+		try {
+			pause();
+			setLifecycleStatus(LifecycleStatus.Paused);
+			getLogger().info(getComponentName() + " state transitioned to PAUSED.");
+		} catch (SiteWhereException e) {
+			setLifecycleStatus(LifecycleStatus.Error);
+			setLifecycleError(e);
+			getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
+		} catch (Throwable t) {
+			setLifecycleStatus(LifecycleStatus.Error);
+			setLifecycleError(new SiteWhereException(t));
+			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause()
+	 */
+	@Override
+	public void pause() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canPause()
+	 */
+	public boolean canPause() throws SiteWhereException {
+		return false;
 	}
 
 	/*

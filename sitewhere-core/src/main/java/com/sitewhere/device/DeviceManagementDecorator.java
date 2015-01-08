@@ -101,6 +101,36 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
+	 */
+	@Override
+	public void lifecyclePause() {
+		delegate.lifecyclePause();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canPause()
+	 */
+	@Override
+	public boolean canPause() throws SiteWhereException {
+		return delegate.canPause();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause()
+	 */
+	@Override
+	public void pause() throws SiteWhereException {
+		delegate.pause();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override

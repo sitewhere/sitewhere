@@ -10,6 +10,7 @@ package com.sitewhere.web.rest.controllers;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,9 @@ import com.sitewhere.spi.cache.ICache;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.system.SystemComponents;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -51,6 +54,43 @@ public class SystemController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "getVersion", LOGGER);
 		try {
 			return SiteWhere.getServer().getVersion();
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/component/{shortName}/lifecycle/{command}", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "Request component lifecycle change.")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public void updateComponentLifecycle(
+			@ApiParam(value = "Component short name", required = true) @PathVariable String shortName,
+			@ApiParam(value = "Lifecycle command", required = true) @PathVariable String command)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "updateComponentLifecycle", LOGGER);
+		try {
+			SystemComponents component = SystemComponents.getByShortName(shortName);
+			if (component == null) {
+				throw new SiteWhereException("Unknown lifecycle component.");
+			}
+			ILifecycleComponent lifecycle = null;
+			switch (component) {
+			case BatchOperationManager: {
+				lifecycle = SiteWhere.getServer().getDeviceProvisioning().getBatchOperationManager();
+				break;
+			}
+			case DeviceProvisioning: {
+				lifecycle = SiteWhere.getServer().getDeviceProvisioning();
+				break;
+			}
+			}
+			if (command.equalsIgnoreCase("start")) {
+				lifecycle.lifecycleStart();
+			} else if (command.equalsIgnoreCase("stop")) {
+				lifecycle.lifecycleStop();
+			} else if (command.equalsIgnoreCase("pause")) {
+				lifecycle.lifecyclePause();
+			}
 		} finally {
 			Tracer.stop(LOGGER);
 		}
