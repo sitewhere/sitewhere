@@ -16,7 +16,8 @@
 		<div class="ellipsis"><b>#:name#</b></div>
 		<div class="ellipsis">#:description#</div>
 	</div>
-</script><div id="dfl-dialog" class="modal hide">
+</script>
+<div id="dfl-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal"
 			aria-hidden="true">&times;</button>
@@ -25,29 +26,29 @@
 	<div class="modal-body">
 		<div id="dfl-tabs">
 			<ul>
-				<li class="k-state-active">Filter Type</li>
+				<li class="k-state-active">Specifications</li>
+				<li>Groups</li>
 				<li>Created Date</li>
 				<li>Other Options</li>
 			</ul>
 			<div>
-				<form id="dfl-options-form" class="form-horizontal"
+				<form id="dfl-spec-form" class="form-horizontal"
 					style="padding-top: 15px;">
 					<div class="control-group"
 						style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
 						<label class="control-label" for="dfl-filter-type">Filter
-							Type</label>
+							by Specification</label>
 						<div class="controls">
-							<input id="dfl-filter-type" class="input-xlarge" />
+							<input id="dfl-spec-filter-type" style="width: 300px;" />
 						</div>
 					</div>
 				</form>
-				<div id="dfl-filter-type-forms">
-					<form id="dfl-all-filter" class="form-horizontal">
-						<div class="sw-info-text">This filter begins with all
-							devices in the system and applies the other filter options to
-							constrain the query.</div>
+				<div id="dfl-spec-forms">
+					<form id="dfl-spec-all" class="form-horizontal">
+						<div class="sw-info-text">This filter does not limit results
+							based on device specification.</div>
 					</form>
-					<form id="dfl-spec-filter" class="form-horizontal hide">
+					<form id="dfl-spec-choice" class="form-horizontal hide">
 						<div class="control-group">
 							<label class="control-label" for="dfl-chosen-specification-token">Choose
 								Specification</label>
@@ -58,7 +59,26 @@
 							</div>
 						</div>
 					</form>
-					<form id="dfl-group-filter" class="form-horizontal hide">
+				</div>
+			</div>
+			<div>
+				<form id="dfl-groups-form" class="form-horizontal"
+					style="padding-top: 15px;">
+					<div class="control-group"
+						style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
+						<label class="control-label" for="dfl-filter-type">Group
+							Filter</label>
+						<div class="controls">
+							<input id="dfl-group-filter-type" style="width: 300px;" />
+						</div>
+					</div>
+				</form>
+				<div id="dfl-groups-forms">
+					<form id="dfl-group-all" class="form-horizontal">
+						<div class="sw-info-text">This filter will choose all
+							devices without regard to which group they belong to.</div>
+					</form>
+					<form id="dfl-group-choice" class="form-horizontal hide">
 						<div class="control-group">
 							<label class="control-label" for="dfl-chosen-group-token">Choose
 								Device Group</label>
@@ -66,6 +86,15 @@
 								<div id="dfl-devicegroups" class="sw-form-search-results"></div>
 								<input type="hidden" id="dfl-chosen-group-token"
 									title="Device Group" />
+							</div>
+						</div>
+					</form>
+					<form id="dfl-groups-by-role" class="form-horizontal hide">
+						<div class="control-group">
+							<label class="control-label" for="dfl-chosen-specification-token">Enter
+								Role</label>
+							<div class="controls">
+								<input type="text" id="dfl-groups-role-text" title="Role" />
 							</div>
 						</div>
 					</form>
@@ -174,20 +203,32 @@
 	/** Provides external access to tabs */
 	var dflTabs;
 
-	/** Available filter types shown in dropdown */
-	var dflFilterTypes = [ {
-		text : "Show all devices",
-		value : "dfl-all-filter"
+	/** Available specification filter types shown in dropdown */
+	var dflSpecFilterTypes = [ {
+		text : "No specification filter",
+		value : "dfl-spec-all"
 	}, {
-		text : "Show devices using a given specification",
-		value : "dfl-spec-filter"
-	}, {
-		text : "Show devices belonging to a device group",
-		value : "dfl-group-filter"
-	}, ];
+		text : "Include devices using a given specification",
+		value : "dfl-spec-choice"
+	} ];
 
-	/** Filter type dropdown */
-	var dflFilterType;
+	/** Specification filter type dropdown */
+	var dflSpecFilterType;
+
+	/** Available group filter types shown in dropdown */
+	var dflGroupFilterTypes = [ {
+		text : "No group filter",
+		value : "dfl-group-all"
+	}, {
+		text : "Include devices in a given group",
+		value : "dfl-group-choice"
+	}, {
+		text : "Include devices in groups with role",
+		value : "dfl-groups-with-role"
+	} ];
+
+	/** Group filter type dropdown */
+	var dflGroupFilterType;
 
 	/** Create date range type */
 	var dflCdateType;
@@ -238,13 +279,13 @@
 			animation : false
 		}).data("kendoTabStrip");
 
-		// create DropDownList from input HTML element
-		dflFilterType = $("#dfl-filter-type").kendoDropDownList({
+		// Specification filter dropdown.
+		dflSpecFilterType = $("#dfl-spec-filter-type").kendoDropDownList({
 			dataTextField : "text",
 			dataValueField : "value",
-			dataSource : dflFilterTypes,
+			dataSource : dflSpecFilterTypes,
 			index : 0,
-			change : dflFilterTypeChanged
+			change : dflSpecFilterTypeChanged
 		}).data("kendoDropDownList");
 
 		/** Create AJAX datasource for specifications list */
@@ -268,6 +309,15 @@
 			template : kendo.template($("#dfl-specification-template").html()),
 			change : dflSpecificationChosen
 		}).data("kendoListView");
+		
+		// Group filter dropdown.
+		dflGroupFilterType = $("#dfl-group-filter-type").kendoDropDownList({
+			dataTextField : "text",
+			dataValueField : "value",
+			dataSource : dflGroupFilterTypes,
+			index : 0,
+			change : dflGroupFilterTypeChanged
+		}).data("kendoDropDownList");
 
 		/** Create AJAX datasource for device groups list */
 		dflDeviceGroupsDS = new kendo.data.DataSource({
@@ -359,7 +409,7 @@
 			criteria.afterDate = JSON.stringify(dflDateBetweenStart.value()).replace(/"/g, '');
 			criteria.beforeDate = JSON.stringify(dflDateBetweenEnd.value()).replace(/"/g, '');
 		}
-		
+
 		// Handle 'exclude assigned' flag.
 		if ($('#dfl-option-excl-assigned').is(':checked')) {
 			criteria.excludeAssigned = "true";
@@ -368,16 +418,33 @@
 		return criteria;
 	}
 
-	/** Get the currently selected filter type */
-	function dflGetFilterType() {
-		return $("#dfl-filter-type").val();
+	/** Get the currently selected spec filter type */
+	function dflGetSpecFilterType() {
+		return $("#dfl-spec-filter-type").val();
 	}
 
-	/** Called when filter type dropdown value changes */
-	function dflFilterTypeChanged() {
-		var selectedFilterType = dflGetFilterType();
-		$("#dfl-filter-type-forms").children().each(function(i) {
-			if (selectedFilterType == $(this).attr("id")) {
+	/** Called when spec filter type dropdown value changes */
+	function dflSpecFilterTypeChanged() {
+		var selected = dflGetSpecFilterType();
+		$("#dfl-spec-forms").children().each(function(i) {
+			if (selected == $(this).attr("id")) {
+				$(this).removeClass("hide");
+			} else if (!$(this).hasClass("hide")) {
+				$(this).addClass("hide");
+			}
+		});
+	}
+
+	/** Get the currently selected group filter type */
+	function dflGetGroupFilterType() {
+		return $("#dfl-group-filter-type").val();
+	}
+
+	/** Called when group filter type dropdown value changes */
+	function dflGroupFilterTypeChanged() {
+		var selected = dflGetGroupFilterType();
+		$("#dfl-groups-forms").children().each(function(i) {
+			if (selected == $(this).attr("id")) {
 				$(this).removeClass("hide");
 			} else if (!$(this).hasClass("hide")) {
 				$(this).addClass("hide");
@@ -452,17 +519,23 @@
 		// Function called on submit.
 		dflSubmitCallback = callback;
 
-		// Set filter type dropdown choice.
-		var filterChoice = "dfl-all-filter";
+		// Set specification filter type dropdown choice.
+		var specFilter = "dfl-spec-all";
 		if (criteria.filter == "specification") {
-			filterChoice = "dfl-spec-filter";
+			specFilter = "dfl-spec-choice";
 			dflSpecifications.select($('#dfl-spec-' + criteria.specification).get(0));
-		} else if (criteria.filter == "group") {
-			filterChoice = "dfl-group-filter";
-			dflDeviceGroups.select($('#dfl-group-' + criteria.group).get(0));
 		}
-		dflFilterType.value(filterChoice);
-		dflFilterTypeChanged();
+		dflSpecFilterType.value(specFilter);
+		dflSpecFilterTypeChanged();
+
+		// Set group filter type dropdown choice.
+		var groupFilter = "dfl-group-all";
+		if (criteria.filter == "group") {
+			groupFilter = "dfl-spec-choice";
+			dflSpecifications.select($('#dfl-spec-' + criteria.specification).get(0));
+		}
+		dflGroupFilterType.value(groupFilter);
+		dflGroupFilterTypeChanged();
 
 		// Set date range type dropdown choice.
 		var rangeChoice = "dfl-cdate-any";
@@ -485,10 +558,10 @@
 		}
 		dflCdateType.value(rangeChoice);
 		dflCreateDateTypeChanged();
-		
+
 		// Check checkbox if flag is true.
 		if (criteria.excludeAssigned) {
-			$('#dfl-option-excl-assigned').prop( "checked", true );
+			$('#dfl-option-excl-assigned').prop("checked", true);
 		}
 
 		// Clear old validation errors and show dialog.
