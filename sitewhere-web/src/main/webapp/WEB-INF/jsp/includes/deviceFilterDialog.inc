@@ -91,7 +91,7 @@
 					</form>
 					<form id="dfl-groups-by-role" class="form-horizontal hide">
 						<div class="control-group">
-							<label class="control-label" for="dfl-chosen-specification-token">Enter
+							<label class="control-label" for="dfl-groups-role-text">Enter
 								Role</label>
 							<div class="controls">
 								<input type="text" id="dfl-groups-role-text" title="Role" />
@@ -224,7 +224,7 @@
 		value : "dfl-group-choice"
 	}, {
 		text : "Include devices in groups with role",
-		value : "dfl-groups-with-role"
+		value : "dfl-groups-by-role"
 	} ];
 
 	/** Group filter type dropdown */
@@ -378,17 +378,20 @@
 
 	/** Create an object that describes chosen filter criteria */
 	function createFilterCriteria() {
-		var filterType = dflGetFilterType();
+		var specFilterType = dflGetSpecFilterType();
+		var groupFilterType = dflGetGroupFilterType();
 		var dateRangeType = dflGetCreateDateType();
 		var criteria = {};
 
-		// Handle filter types.
-		if ("dfl-spec-filter" == filterType) {
-			criteria.filter = "specification";
-			criteria.token = $("#dfl-chosen-specification-token").val();
-		} else if ("dfl-group-filter" == filterType) {
-			criteria.filter = "group";
-			criteria.token = $("#dfl-chosen-group-token").val();
+		// Handle specification filter.
+		if ("dfl-spec-choice" == specFilterType) {
+			criteria.specification = $("#dfl-chosen-specification-token").val();
+		}
+		
+		if ("dfl-group-choice" == groupFilterType) {
+			criteria.group = $("#dfl-chosen-group-token").val();
+		} else if ("dfl-groups-by-role" == groupFilterType) {
+			criteria.groupsWithRole = $("#dfl-groups-role-text").val();
 		}
 
 		// Handle date range types.

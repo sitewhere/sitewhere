@@ -231,28 +231,19 @@ public class SiteWhereController {
 	 * @return
 	 */
 	@RequestMapping("/devices/list")
-	public ModelAndView listDevices(@RequestParam(required = false) String filter,
-			@RequestParam(required = false) String token, @RequestParam(required = false) String dateRange,
+	public ModelAndView listDevices(@RequestParam(required = false) String specification,
+			@RequestParam(required = false) String group, @RequestParam(required = false) String dateRange,
 			@RequestParam(required = false) String beforeDate,
 			@RequestParam(required = false) String afterDate,
 			@RequestParam(required = false) boolean excludeAssigned) {
 		try {
-			// Make sure there is always a value for filter type.
-			if (filter == null) {
-				filter = "all";
-			}
-
 			Map<String, Object> data = createBaseData();
-			data.put("filter", filter);
 
 			// Look up specification that will be used for filtering.
-			if ("specification".equals(filter)) {
-				if (token == null) {
-					throw new SiteWhereException(
-							"Specification filter specified, but specification token not passed");
-				}
+			if (specification != null) {
 				IDeviceSpecification found =
-						SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(token);
+						SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(
+								specification);
 				if (found == null) {
 					throw new SiteWhereException("Specification token was not valid.");
 				}
@@ -260,11 +251,8 @@ public class SiteWhereController {
 			}
 
 			// Look up device group that will be used for filtering.
-			if ("group".equals(filter)) {
-				if (token == null) {
-					throw new SiteWhereException("Device group filter specified, but group token not passed");
-				}
-				IDeviceGroup found = SiteWhere.getServer().getDeviceManagement().getDeviceGroup(token);
+			if (group != null) {
+				IDeviceGroup found = SiteWhere.getServer().getDeviceManagement().getDeviceGroup(group);
 				if (found == null) {
 					throw new SiteWhereException("Device group token was not valid.");
 				}

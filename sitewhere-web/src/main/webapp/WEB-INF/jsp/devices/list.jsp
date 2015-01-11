@@ -45,9 +45,6 @@
 	/** Reference for device list datasource */
 	var devicesDS;
 
-	/** Filter specified in request parameters */
-	var rqFilter = '<c:out value="${filter}"/>';
-
 	/** Specification token specified in request parameters */
 	var rqSpecificationToken = '<c:out value="${specification.token}"/>';
 
@@ -147,7 +144,6 @@
 	/** Build criteria object to pass state to filter dialog */
 	function buildFilterCriteria() {
 		var criteria = {
-			"filter" : rqFilter,
 			"specification" : rqSpecificationToken,
 			"group" : rqGroupToken,
 			"dateRange" : rqDateRange,
@@ -157,7 +153,7 @@
 		};
 		return criteria;
 	}
-	
+
 	/** Clear all criteria */
 	function clearCriteria() {
 		var redirect = location.protocol + '//' + location.host + location.pathname;
@@ -168,19 +164,26 @@
 	function showFilterCriteria() {
 		var showCriteria = false;
 		var criteriaDesc = "<i class='icon-filter sw-button-icon'></i> Displaying";
-		
+
 		if ("true" == rqExcludeAssigned) {
 			criteriaDesc += " <strong>unassigned</strong>";
 			showCriteria = true;
 		}
 
-		if ("specification" == rqFilter) {
+		if (rqSpecificationToken) {
 			criteriaDesc += " devices of specification <strong>${specification.name}</strong>";
 			showCriteria = true;
-		} else if ("group" == rqFilter) {
-			criteriaDesc += " devices from group <strong>${group.name}</strong>"
+		}
+
+		if (rqGroupToken && rqSpecificationToken) {
+			criteriaDesc += " belonging to group <strong>${group.name}</strong>"
 			showCriteria = true;
-		} else {
+		} else if (rqGroupToken) {
+			criteriaDesc += " devices belonging to group <strong>${group.name}</strong>"
+			showCriteria = true;
+		}
+
+		else if (!rqGroupToken && !rqSpecificationToken) {
 			criteriaDesc += " devices"
 		}
 
@@ -194,13 +197,17 @@
 			criteriaDesc += " created in the last <strong>week</strong>";
 			showCriteria = true;
 		} else if (rqDateRange == "before") {
-			criteriaDesc += " created before <strong>" + moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
+			criteriaDesc += " created before <strong>"
+					+ moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
 			showCriteria = true;
 		} else if (rqDateRange == "after") {
-			criteriaDesc += " created after <strong>" + moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
+			criteriaDesc += " created after <strong>"
+					+ moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
 			showCriteria = true;
 		} else if (rqDateRange == "between") {
-			criteriaDesc += " created between <strong>" + moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong> and <strong>"
+			criteriaDesc += " created between <strong>"
+					+ moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss')
+					+ "</strong> and <strong>"
 					+ moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
 			showCriteria = true;
 		}
@@ -216,11 +223,11 @@
 		var dsUrl = "${pageContext.request.contextPath}/api/";
 
 		// Handle specification filter.
-		if (rqFilter == "specification") {
+		if (rqSpecificationToken && !rqGroupToken) {
 			dsUrl += "devices/specification/${specification.token}";
 		}
 		// Handle group filter.
-		else if (rqFilter == "group") {
+		else if (rqGroupToken) {
 			dsUrl += "devices/group/${group.token}";
 		}
 		// Handle no filter.
@@ -228,6 +235,9 @@
 			dsUrl += "devices";
 		}
 		dsUrl += "?includeSpecification=true&includeAssignment=true";
+		if (rqSpecificationToken && rqGroupToken) {
+			dsUrl += "&specification=${specification.token}";
+		}
 
 		// Handle date ranges.
 		var windowStart = new Date();

@@ -384,6 +384,7 @@ public class DevicesController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDevice> listDevicesForGroup(
 			@ApiParam(value = "Group token", required = true) @PathVariable String groupToken,
+			@ApiParam(value = "Specification token", required = false) @RequestParam(required = false) String specification,
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
@@ -395,9 +396,16 @@ public class DevicesController extends SiteWhereController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDevices", LOGGER);
 		try {
-			IDeviceSearchCriteria criteria =
-					DeviceSearchCriteria.createDefaultSearch(page, pageSize, startDate, endDate,
-							excludeAssigned);
+			IDeviceSearchCriteria criteria;
+			if (specification == null) {
+				criteria =
+						DeviceSearchCriteria.createDefaultSearch(page, pageSize, startDate, endDate,
+								excludeAssigned);
+			} else {
+				criteria =
+						DeviceSearchCriteria.createDeviceBySpecificationSearch(specification, page, pageSize,
+								startDate, endDate, excludeAssigned);
+			}
 			List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(groupToken, criteria);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper();
 			helper.setIncludeAsset(true);
