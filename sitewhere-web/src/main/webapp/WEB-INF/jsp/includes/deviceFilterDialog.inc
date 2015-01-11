@@ -524,7 +524,7 @@
 
 		// Set specification filter type dropdown choice.
 		var specFilter = "dfl-spec-all";
-		if (criteria.filter == "specification") {
+		if (criteria.specification) {
 			specFilter = "dfl-spec-choice";
 			dflSpecifications.select($('#dfl-spec-' + criteria.specification).get(0));
 		}
@@ -533,9 +533,9 @@
 
 		// Set group filter type dropdown choice.
 		var groupFilter = "dfl-group-all";
-		if (criteria.filter == "group") {
-			groupFilter = "dfl-spec-choice";
-			dflSpecifications.select($('#dfl-spec-' + criteria.specification).get(0));
+		if (criteria.group) {
+			groupFilter = "dfl-group-choice";
+			dflDeviceGroups.select($('#dfl-group-' + criteria.group).get(0));
 		}
 		dflGroupFilterType.value(groupFilter);
 		dflGroupFilterTypeChanged();
