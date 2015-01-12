@@ -29,6 +29,7 @@ import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.spi.SiteWhereException;
@@ -81,12 +82,15 @@ public class HBaseDeviceAssignment {
 			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "createDeviceAssignment (HBase)", LOGGER);
 		try {
-			Long siteId = IdManager.getInstance().getSiteKeys().getValue(request.getSiteToken());
+			Device device = HBaseDevice.getDeviceByHardwareId(hbase, request.getDeviceHardwareId(), cache);
+			if (device == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
+			}
+			Long siteId = IdManager.getInstance().getSiteKeys().getValue(device.getSiteToken());
 			if (siteId == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
-			String existing = HBaseDevice.getCurrentAssignmentId(hbase, request.getDeviceHardwareId(), cache);
-			if (existing != null) {
+			if (device.getAssignmentToken() != null) {
 				throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 			}
 			byte[] baserow = HBaseSite.getAssignmentRowKey(siteId);
@@ -102,7 +106,7 @@ public class HBaseDeviceAssignment {
 
 			// Create device assignment for JSON.
 			DeviceAssignment newAssignment =
-					SiteWherePersistence.deviceAssignmentCreateLogic(request, request.getSiteToken(), uuid);
+					SiteWherePersistence.deviceAssignmentCreateLogic(request, device, uuid);
 			byte[] json = MarshalUtils.marshalJson(newAssignment);
 
 			HTableInterface sites = null;

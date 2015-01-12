@@ -698,19 +698,15 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
 			throws SiteWhereException {
-		// Verify foreign references.
-		DBObject site = getSiteDBObjectByToken(request.getSiteToken());
-		if (site == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-		}
-		DBObject device = assertDevice(request.getDeviceHardwareId());
-		if (device.get(MongoDevice.PROP_ASSIGNMENT_TOKEN) != null) {
+		DBObject deviceDb = assertDevice(request.getDeviceHardwareId());
+		if (deviceDb.get(MongoDevice.PROP_ASSIGNMENT_TOKEN) != null) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 		}
+		Device device = MongoDevice.fromDBObject(deviceDb);
 
 		// Use common logic to load assignment from request.
 		DeviceAssignment newAssignment =
-				SiteWherePersistence.deviceAssignmentCreateLogic(request, request.getSiteToken(),
+				SiteWherePersistence.deviceAssignmentCreateLogic(request, device,
 						UUID.randomUUID().toString());
 
 		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
@@ -725,12 +721,12 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		// Update device to point to created assignment.
 		DBCollection devices = getMongoClient().getDevicesCollection();
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
-		device.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, newAssignment.getToken());
-		MongoPersistence.update(devices, query, device);
+		deviceDb.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, newAssignment.getToken());
+		MongoPersistence.update(devices, query, deviceDb);
 
 		// Update cache with new device data.
 		if (getCacheProvider() != null) {
-			Device updated = MongoDevice.fromDBObject(device);
+			Device updated = MongoDevice.fromDBObject(deviceDb);
 			getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
 		}
 		return newAssignment;

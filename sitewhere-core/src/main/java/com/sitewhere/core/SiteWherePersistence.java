@@ -561,7 +561,7 @@ public class SiteWherePersistence {
 	 * @throws SiteWhereException
 	 */
 	public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source,
-			String siteToken, String uuid) throws SiteWhereException {
+			IDevice device, String uuid) throws SiteWhereException {
 		DeviceAssignment newAssignment = new DeviceAssignment();
 
 		if (uuid == null) {
@@ -569,10 +569,8 @@ public class SiteWherePersistence {
 		}
 		newAssignment.setToken(uuid);
 
-		if (source.getSiteToken() == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-		}
-		newAssignment.setSiteToken(source.getSiteToken());
+		// Copy site token from device.
+		newAssignment.setSiteToken(device.getSiteToken());
 
 		if (source.getDeviceHardwareId() == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);

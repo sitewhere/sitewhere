@@ -25,13 +25,6 @@ public interface IDeviceAssignmentCreateRequest extends IMetadataProvider {
 	public String getDeviceHardwareId();
 
 	/**
-	 * Get token of assigned site.
-	 * 
-	 * @return
-	 */
-	public String getSiteToken();
-
-	/**
 	 * Get assignment type.
 	 * 
 	 * @return
