@@ -64,6 +64,7 @@ public class DeviceMarshalHelper {
 	public Device convert(IDevice source, IAssetModuleManager manager) throws SiteWhereException {
 		Device result = new Device();
 		result.setHardwareId(source.getHardwareId());
+		result.setSiteToken(source.getSiteToken());
 		result.setParentHardwareId(source.getParentHardwareId());
 		result.setComments(source.getComments());
 		MetadataProviderEntity.copy(source, result);

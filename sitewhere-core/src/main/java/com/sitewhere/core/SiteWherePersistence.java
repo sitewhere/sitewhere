@@ -336,8 +336,21 @@ public class SiteWherePersistence {
 	 */
 	public static Device deviceCreateLogic(IDeviceCreateRequest request) throws SiteWhereException {
 		Device device = new Device();
+		if (request.getHardwareId() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
 		device.setHardwareId(request.getHardwareId());
+
+		if (request.getSiteToken() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		device.setSiteToken(request.getSiteToken());
+
+		if (request.getSpecificationToken() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
 		device.setSpecificationToken(request.getSpecificationToken());
+
 		device.setComments(request.getComments());
 		device.setStatus(DeviceStatus.Ok);
 
@@ -359,6 +372,16 @@ public class SiteWherePersistence {
 		if ((request.getHardwareId() != null) && (!request.getHardwareId().equals(target.getHardwareId()))) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR,
 					HttpServletResponse.SC_BAD_REQUEST);
+		}
+		if (request.getSiteToken() != null) {
+			// Can not change the site for an assigned device.
+			if (target.getAssignmentToken() != null) {
+				if (!target.getSiteToken().equals(request.getSiteToken())) {
+					throw new SiteWhereSystemException(ErrorCode.DeviceSiteCanNotBeChangedIfAssigned,
+							ErrorLevel.ERROR, HttpServletResponse.SC_BAD_REQUEST);
+				}
+			}
+			target.setSiteToken(request.getSiteToken());
 		}
 		if (request.getSpecificationToken() != null) {
 			target.setSpecificationToken(request.getSpecificationToken());

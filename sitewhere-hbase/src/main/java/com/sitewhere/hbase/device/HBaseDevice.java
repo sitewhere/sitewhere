@@ -69,8 +69,11 @@ public class HBaseDevice {
 	/** Byte that indicates an assignment history entry qualifier */
 	public static final byte ASSIGNMENT_HISTORY_INDICATOR = (byte) 0x01;
 
+	/** Column qualifier for current site */
+	public static final byte[] CURRENT_SITE = "site".getBytes();
+
 	/** Column qualifier for current device assignment */
-	public static final byte[] CURRENT_ASSIGNMENT = "assignment".getBytes();
+	public static final byte[] CURRENT_ASSIGNMENT = "assn".getBytes();
 
 	/** Used for cloning device results */
 	private static DeviceMarshalHelper DEVICE_HELPER =
@@ -250,6 +253,7 @@ public class HBaseDevice {
 			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Put put = new Put(primary);
 			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			put.add(ISiteWhereHBase.FAMILY_ID, CURRENT_SITE, Bytes.toBytes(device.getSiteToken()));
 			devices.put(put);
 			if (cache != null) {
 				cache.getDeviceCache().put(device.getHardwareId(), device);

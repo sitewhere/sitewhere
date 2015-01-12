@@ -547,6 +547,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			DeviceCreateRequest request = new DeviceCreateRequest();
 			request.setHardwareId(UUID.randomUUID().toString());
 			request.setSpecificationToken(specification.getToken());
+			request.setSiteToken(site.getToken());
 			request.setComments(assnChoice.getDeviceDescriptionBase() + " " + (x + 1) + ".");
 			IDevice device = getDeviceManagement().createDevice(request);
 			LOGGER.info(PREFIX_CREATE_DEVICE + " " + device.getHardwareId());

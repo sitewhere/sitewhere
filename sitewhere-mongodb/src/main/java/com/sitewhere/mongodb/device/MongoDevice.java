@@ -30,6 +30,9 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	public static final String PROP_HARDWARE_ID = "hardwareId";
 
 	/** Property for specification token */
+	public static final String PROP_SITE_TOKEN = "siteToken";
+
+	/** Property for specification token */
 	public static final String PROP_SPECIFICATION_TOKEN = "specificationToken";
 
 	/** Property for parent hardware id (if nested) */
@@ -70,6 +73,7 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	 */
 	public static void toDBObject(IDevice source, BasicDBObject target) {
 		target.append(PROP_HARDWARE_ID, source.getHardwareId());
+		target.append(PROP_SITE_TOKEN, source.getSiteToken());
 		target.append(PROP_SPECIFICATION_TOKEN, source.getSpecificationToken());
 		target.append(PROP_PARENT_HARDWARE_ID, source.getParentHardwareId());
 		target.append(PROP_COMMENTS, source.getComments());
@@ -95,12 +99,14 @@ public class MongoDevice implements MongoConverter<IDevice> {
 	@SuppressWarnings("unchecked")
 	public static void fromDBObject(DBObject source, Device target) {
 		String hardwareId = (String) source.get(PROP_HARDWARE_ID);
+		String siteToken = (String) source.get(PROP_SITE_TOKEN);
 		String specificationToken = (String) source.get(PROP_SPECIFICATION_TOKEN);
 		String parentHardwareId = (String) source.get(PROP_PARENT_HARDWARE_ID);
 		String comments = (String) source.get(PROP_COMMENTS);
 		String assignmentToken = (String) source.get(PROP_ASSIGNMENT_TOKEN);
 
 		target.setHardwareId(hardwareId);
+		target.setSiteToken(siteToken);
 		target.setSpecificationToken(specificationToken);
 		target.setParentHardwareId(parentHardwareId);
 		target.setComments(comments);

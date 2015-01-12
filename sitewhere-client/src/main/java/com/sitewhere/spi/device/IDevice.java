@@ -27,6 +27,13 @@ public interface IDevice extends IMetadataProviderEntity {
 	public String getHardwareId();
 
 	/**
+	 * Get token for associated site.
+	 * 
+	 * @return
+	 */
+	public String getSiteToken();
+
+	/**
 	 * Get token for device specification.
 	 * 
 	 * @return

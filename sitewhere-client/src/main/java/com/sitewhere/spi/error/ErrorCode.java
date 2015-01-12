@@ -108,6 +108,9 @@ public enum ErrorCode {
 	/** Attempting to delete a device that is currently assigned */
 	DeviceCanNotBeDeletedIfAssigned(603, "Device can not be deleted if it is currently assigned."),
 
+	/** Attempting to change site for device that is currently assigned */
+	DeviceSiteCanNotBeChangedIfAssigned(603, "Device site can not be changed if it is currently assigned."),
+
 	/** Attempting to create a device element mapping for a path that is already mapped */
 	DeviceElementMappingExists(610,
 			"Device has an existing mapping for the given device element schema path."),
