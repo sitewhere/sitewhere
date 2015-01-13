@@ -69,14 +69,25 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 				// sendNoNewDevicesAllowed(request.getHardwareId());
 				return;
 			}
-			LOGGER.debug("Creating new device as part of registration.");
 			if (specification == null) {
 				sendInvalidSpecification(request.getHardwareId());
 				return;
 			}
+			if (!isAutoAssignSite()) {
+				sendSiteTokenRequired(request.getHardwareId());
+				return;
+			}
+			if (isAutoAssignSite() && (getAutoAssignSiteToken() == null)) {
+				updateAutoAssignToFirstSite();
+				if (getAutoAssignSiteToken() == null) {
+					throw new SiteWhereException("Unable to register device. No sites are configured.");
+				}
+			}
+			LOGGER.debug("Creating new device as part of registration.");
 			DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 			deviceCreate.setHardwareId(request.getHardwareId());
 			deviceCreate.setSpecificationToken(request.getSpecificationToken());
+			deviceCreate.setSiteToken(getAutoAssignSiteToken());
 			deviceCreate.setComments("Device created by on-demand registration.");
 			for (String key : request.getMetadata().keySet()) {
 				String value = request.getMetadata(key);
@@ -89,19 +100,8 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 		}
 		// Make sure device is assigned.
 		if (device.getAssignmentToken() == null) {
-			if (!isAutoAssignSite()) {
-				sendSiteTokenRequired(request.getHardwareId());
-				return;
-			}
-			if (isAutoAssignSite() && (getAutoAssignSiteToken() == null)) {
-				updateAutoAssignToFirstSite();
-				if (getAutoAssignSiteToken() == null) {
-					throw new SiteWhereException("Unable to register device. No sites are configured.");
-				}
-			}
 			LOGGER.debug("Handling unassigned device for registration.");
 			DeviceAssignmentCreateRequest assnCreate = new DeviceAssignmentCreateRequest();
-			assnCreate.setSiteToken(getAutoAssignSiteToken());
 			assnCreate.setDeviceHardwareId(device.getHardwareId());
 			assnCreate.setAssignmentType(DeviceAssignmentType.Unassociated);
 			SiteWhere.getServer().getDeviceManagement().createDeviceAssignment(assnCreate);

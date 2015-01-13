@@ -558,7 +558,6 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			assnRequest.setAssetModuleId(assnChoice.getAssignmentAssetModuleId());
 			assnRequest.setAssetId(assnChoice.getAssignmentAssetId());
 			assnRequest.setDeviceHardwareId(device.getHardwareId());
-			assnRequest.setSiteToken(site.getToken());
 			assnRequest.addOrReplaceMetadata("serialNumber", UUID.randomUUID().toString());
 			IDeviceAssignment assignment = getDeviceManagement().createDeviceAssignment(assnRequest);
 			LOGGER.info(PREFIX_CREATE_ASSIGNMENT + " " + assignment.getToken());

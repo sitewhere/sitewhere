@@ -99,9 +99,6 @@ public class AssignmentsController extends SiteWhereController {
 			if (StringUtils.isEmpty(request.getDeviceHardwareId())) {
 				throw new SiteWhereException("Hardware id required.");
 			}
-			if (StringUtils.isEmpty(request.getSiteToken())) {
-				throw new SiteWhereException("Site token required.");
-			}
 			if (request.getAssignmentType() == null) {
 				throw new SiteWhereException("Assignment type required.");
 			}

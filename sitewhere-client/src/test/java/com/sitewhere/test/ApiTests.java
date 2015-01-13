@@ -129,7 +129,6 @@ public class ApiTests {
 
 		// Create a device assignment.
 		DeviceAssignmentCreateRequest assnRequest = new DeviceAssignmentCreateRequest();
-		assnRequest.setSiteToken(TEST_SITE_TOKEN);
 		assnRequest.setAssignmentType(DeviceAssignmentType.Associated);
 		assnRequest.setAssetModuleId("testAssetModuleId");
 		assnRequest.setAssetId(TEST_ASSET_ID);
