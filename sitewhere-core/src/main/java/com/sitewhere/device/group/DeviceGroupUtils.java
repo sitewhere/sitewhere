@@ -8,15 +8,20 @@
 package com.sitewhere.device.group;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
@@ -36,7 +41,7 @@ public class DeviceGroupUtils {
 	 */
 	public static List<IDevice> getDevicesInGroup(String groupToken, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
-		List<IDevice> devices = getDevicesInGroup(groupToken);
+		Collection<IDevice> devices = getDevicesInGroup(groupToken);
 		List<IDevice> matches = new ArrayList<IDevice>();
 		for (IDevice device : devices) {
 			switch (criteria.getSearchType()) {
@@ -66,30 +71,60 @@ public class DeviceGroupUtils {
 	}
 
 	/**
-	 * Get the list of unique devices in a group. (Recurses into subgroups)
+	 * Get the list of unique devices in a group. (Recurses into subgroups and removes
+	 * duplicates)
 	 * 
 	 * @param groupToken
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDevice> getDevicesInGroup(String groupToken) throws SiteWhereException {
-		List<IDevice> devices = new ArrayList<IDevice>();
+	public static Collection<IDevice> getDevicesInGroup(String groupToken) throws SiteWhereException {
+		Map<String, IDevice> devices = new HashMap<String, IDevice>();
 		ISearchCriteria criteria = new SearchCriteria(1, 0);
 		SearchResults<IDeviceGroupElement> elements =
 				SiteWhere.getServer().getDeviceManagement().listDeviceGroupElements(groupToken, criteria);
 		for (IDeviceGroupElement element : elements.getResults()) {
 			switch (element.getType()) {
 			case Device: {
-				devices.add(SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(
-						element.getElementId()));
+				devices.put(
+						element.getElementId(),
+						SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(
+								element.getElementId()));
 				break;
 			}
 			case Group: {
-				devices.addAll(getDevicesInGroup(element.getElementId()));
+				Collection<IDevice> subDevices = getDevicesInGroup(element.getElementId());
+				for (IDevice subDevice : subDevices) {
+					devices.put(subDevice.getHardwareId(), subDevice);
+				}
 				break;
 			}
 			}
 		}
-		return devices;
+		return devices.values();
+	}
+
+	/**
+	 * Gets devices in all groups that have the given role. Duplicates are removed.
+	 * 
+	 * @param groupRole
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static Collection<IDevice> getDevicesInGroupsWithRole(String groupRole,
+			IDeviceSearchCriteria criteria) throws SiteWhereException {
+		Map<String, IDevice> devices = new HashMap<String, IDevice>();
+		ISearchCriteria groupCriteria = new SearchCriteria(1, 0);
+		ISearchResults<IDeviceGroup> groups =
+				SiteWhere.getServer().getDeviceManagement().listDeviceGroupsWithRole(groupRole, false,
+						groupCriteria);
+		for (IDeviceGroup group : groups.getResults()) {
+			List<IDevice> groupDevices = getDevicesInGroup(group.getToken(), criteria);
+			for (IDevice groupDevice : groupDevices) {
+				devices.put(groupDevice.getHardwareId(), groupDevice);
+			}
+		}
+		return devices.values();
 	}
 }

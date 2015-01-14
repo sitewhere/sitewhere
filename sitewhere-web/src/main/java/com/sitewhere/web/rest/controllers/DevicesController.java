@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -394,7 +395,7 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
 			throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listDevices", LOGGER);
+		Tracer.start(TracerCategory.RestApiCall, "listDevicesForGroup", LOGGER);
 		try {
 			IDeviceSearchCriteria criteria;
 			if (specification == null) {
@@ -407,6 +408,49 @@ public class DevicesController extends SiteWhereController {
 								startDate, endDate, excludeAssigned);
 			}
 			List<IDevice> matches = DeviceGroupUtils.getDevicesInGroup(groupToken, criteria);
+			DeviceMarshalHelper helper = new DeviceMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeSpecification(includeSpecification);
+			helper.setIncludeAssignment(includeAssignment);
+			List<IDevice> devicesConv = new ArrayList<IDevice>();
+			for (IDevice device : matches) {
+				devicesConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
+			}
+			return new SearchResults<IDevice>(devicesConv, matches.size());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/grouprole/{role}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List devices that belong to a groups with a given role")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISearchResults<IDevice> listDevicesForGroupsWithRole(
+			@ApiParam(value = "Group role", required = true) @PathVariable String role,
+			@ApiParam(value = "Specification token", required = false) @RequestParam(required = false) String specification,
+			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
+			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
+			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
+			@ApiParam(value = "Include assignment information if associated", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeAssignment,
+			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listDevicesForGroupsWithRole", LOGGER);
+		try {
+			IDeviceSearchCriteria criteria;
+			if (specification == null) {
+				criteria =
+						DeviceSearchCriteria.createDefaultSearch(page, pageSize, startDate, endDate,
+								excludeAssigned);
+			} else {
+				criteria =
+						DeviceSearchCriteria.createDeviceBySpecificationSearch(specification, page, pageSize,
+								startDate, endDate, excludeAssigned);
+			}
+			Collection<IDevice> matches = DeviceGroupUtils.getDevicesInGroupsWithRole(role, criteria);
 			DeviceMarshalHelper helper = new DeviceMarshalHelper();
 			helper.setIncludeAsset(true);
 			helper.setIncludeSpecification(includeSpecification);

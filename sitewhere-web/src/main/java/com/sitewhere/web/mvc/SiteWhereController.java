@@ -232,7 +232,9 @@ public class SiteWhereController {
 	 */
 	@RequestMapping("/devices/list")
 	public ModelAndView listDevices(@RequestParam(required = false) String specification,
-			@RequestParam(required = false) String group, @RequestParam(required = false) String dateRange,
+			@RequestParam(required = false) String group,
+			@RequestParam(required = false) String groupsWithRole,
+			@RequestParam(required = false) String dateRange,
 			@RequestParam(required = false) String beforeDate,
 			@RequestParam(required = false) String afterDate,
 			@RequestParam(required = false) boolean excludeAssigned) {
@@ -257,6 +259,10 @@ public class SiteWhereController {
 					throw new SiteWhereException("Device group token was not valid.");
 				}
 				data.put("group", found);
+			}
+
+			if (groupsWithRole != null) {
+				data.put("groupsWithRole", groupsWithRole);
 			}
 
 			data.put("dateRange", dateRange);

@@ -22,6 +22,8 @@
 	<div class="sw-title-bar-right">
 		<a id="btn-filter-results" class="btn" href="javascript:void(0)">
 			<i class="icon-search sw-button-icon"></i> Filter Results
+		</a> <a id="btn-batch-command" class="btn hide" href="javascript:void(0)">
+			<i class="icon-bolt sw-button-icon"></i> Batch Command
 		</a> <a id="btn-add-device" class="btn" href="javascript:void(0)"> <i
 			class="icon-plus sw-button-icon"></i> Add New Device
 		</a>
@@ -50,6 +52,9 @@
 
 	/** Group token specified in request parameters */
 	var rqGroupToken = '<c:out value="${group.token}"/>';
+
+	/** Role specified in 'groups with role' request parameters */
+	var rqGroupsWithRole = '<c:out value="${groupsWithRole}"/>';
 
 	/** Date range type specified in request parameters */
 	var rqDateRange = '<c:out value="${dateRange}"/>';
@@ -146,6 +151,7 @@
 		var criteria = {
 			"specification" : rqSpecificationToken,
 			"group" : rqGroupToken,
+			"groupsWithRole" : rqGroupsWithRole,
 			"dateRange" : rqDateRange,
 			"afterDate" : rqAfterDate,
 			"beforeDate" : rqBeforeDate,
@@ -163,7 +169,8 @@
 	/** Display filter criteria being used */
 	function showFilterCriteria() {
 		var showCriteria = false;
-		var criteriaDesc = "<i class='icon-filter sw-button-icon'></i> Displaying";
+		var criteriaDesc = "<a class='btn btn-mini' style='float: right;' href='javascript:void(0)' onclick='clearCriteria()'>Clear Filter</a>";
+		criteriaDesc += "<span style='width: 90%; display: block;'><i class='icon-filter sw-button-icon'></i> Displaying";
 
 		if ("true" == rqExcludeAssigned) {
 			criteriaDesc += " <strong>unassigned</strong>";
@@ -176,14 +183,18 @@
 		}
 
 		if (rqGroupToken && rqSpecificationToken) {
-			criteriaDesc += " belonging to group <strong>${group.name}</strong>"
+			criteriaDesc += " belonging to group <strong>${group.name}</strong>";
 			showCriteria = true;
 		} else if (rqGroupToken) {
-			criteriaDesc += " devices belonging to group <strong>${group.name}</strong>"
+			criteriaDesc += " devices belonging to group <strong>${group.name}</strong>";
 			showCriteria = true;
-		}
-
-		else if (!rqGroupToken && !rqSpecificationToken) {
+		} else if (rqGroupsWithRole && rqSpecificationToken) {
+			criteriaDesc += " belonging to groups with role <strong>${groupsWithRole}</strong>";
+			showCriteria = true;
+		} else if (rqGroupsWithRole && !rqSpecificationToken) {
+			criteriaDesc += " devices in groups with role <strong>${groupsWithRole}</strong>";
+			showCriteria = true;
+		} else if (!rqGroupToken && !rqSpecificationToken) {
 			criteriaDesc += " devices"
 		}
 
@@ -213,7 +224,7 @@
 		}
 
 		if (showCriteria) {
-			criteriaDesc += ".<a class='btn btn-mini' style='float: right;' href='javascript:void(0)' onclick='clearCriteria()'>Clear Filter</a>";
+			criteriaDesc += ".</span>";
 			$('#filter-criteria').html(criteriaDesc);
 			$('#filter-criteria').show();
 		}
@@ -223,19 +234,23 @@
 		var dsUrl = "${pageContext.request.contextPath}/api/";
 
 		// Handle specification filter.
-		if (rqSpecificationToken && !rqGroupToken) {
+		if (rqSpecificationToken && !rqGroupToken && !rqGroupsWithRole) {
 			dsUrl += "devices/specification/${specification.token}";
 		}
 		// Handle group filter.
 		else if (rqGroupToken) {
 			dsUrl += "devices/group/${group.token}";
 		}
+		// Handle groups with role filter.
+		else if (rqGroupsWithRole) {
+			dsUrl += "devices/grouprole/" + rqGroupsWithRole;
+		}
 		// Handle no filter.
 		else {
 			dsUrl += "devices";
 		}
 		dsUrl += "?includeSpecification=true&includeAssignment=true";
-		if (rqSpecificationToken && rqGroupToken) {
+		if (rqSpecificationToken && (rqGroupToken || rqGroupsWithRole)) {
 			dsUrl += "&specification=${specification.token}";
 		}
 
@@ -283,6 +298,11 @@
 			serverSorting : true,
 			pageSize : 15,
 		});
+		
+		// Only show batch command button if specification is chosen.
+		if (rqSpecificationToken) {
+			$('#btn-batch-command').show();
+		}
 
 		/** Create the list of devices */
 		$("#devices").kendoListView({

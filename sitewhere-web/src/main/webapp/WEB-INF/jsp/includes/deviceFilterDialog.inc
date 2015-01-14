@@ -536,6 +536,9 @@
 		if (criteria.group) {
 			groupFilter = "dfl-group-choice";
 			dflDeviceGroups.select($('#dfl-group-' + criteria.group).get(0));
+		} else if (criteria.groupsWithRole) {
+			groupFilter = "dfl-groups-by-role";
+			$('#dfl-groups-role-text').val(criteria.groupsWithRole);
 		}
 		dflGroupFilterType.value(groupFilter);
 		dflGroupFilterTypeChanged();
