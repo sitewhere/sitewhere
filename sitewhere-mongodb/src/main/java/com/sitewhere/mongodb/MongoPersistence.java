@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -38,6 +39,10 @@ import com.sitewhere.spi.search.ISearchCriteria;
  * @author Derek
  */
 public class MongoPersistence {
+
+	/** Static logger instance */
+	@SuppressWarnings("unused")
+	private static Logger LOGGER = Logger.getLogger(MongoPersistence.class);
 
 	/**
 	 * Common handler for creating new objects. Assures that errors are handled in a

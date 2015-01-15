@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -150,20 +151,22 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 				SiteWhere.getServer().getDeviceManagement().updateBatchOperation(operation.getToken(),
 						request);
 
-				int pageSize = 100;
-				int pageNumber = 0;
-				while (true) {
-					pageNumber++;
-					IBatchElementSearchCriteria criteria =
-							new BatchElementSearchCriteria(pageNumber, pageSize);
-					SearchResults<IBatchElement> matches =
-							SiteWhere.getServer().getDeviceManagement().listBatchElements(
-									operation.getToken(), criteria);
-					if (matches.getNumResults() == 0) {
-						break;
-					}
-					processBatchElements(operation, matches.getResults());
+				// Process all batch elements.
+				IBatchElementSearchCriteria criteria = new BatchElementSearchCriteria(1, 0);
+				SearchResults<IBatchElement> matches =
+						SiteWhere.getServer().getDeviceManagement().listBatchElements(operation.getToken(),
+								criteria);
+				BatchProcessingResults result = processBatchElements(operation, matches.getResults());
+
+				// Update operation to reflect processing results.
+				request = new BatchOperationUpdateRequest();
+				request.setProcessingStatus(BatchOperationStatus.FinishedSuccessfully);
+				request.setProcessingEndedDate(new Date());
+				if (result.getErrorCount() > 0) {
+					request.setProcessingStatus(BatchOperationStatus.FinishedWithErrors);
 				}
+				SiteWhere.getServer().getDeviceManagement().updateBatchOperation(operation.getToken(),
+						request);
 			} catch (SiteWhereException e) {
 				LOGGER.error("Error processing batch operation.", e);
 			}
@@ -186,10 +189,12 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		 * 
 		 * @param operation
 		 * @param elements
+		 * @return
 		 * @throws SiteWhereException
 		 */
-		protected void processBatchElements(IBatchOperation operation, List<IBatchElement> elements)
-				throws SiteWhereException {
+		protected BatchProcessingResults processBatchElements(IBatchOperation operation,
+				List<IBatchElement> elements) throws SiteWhereException {
+			BatchProcessingResults results = new BatchProcessingResults();
 			for (IBatchElement element : elements) {
 				// Check whether manager has been paused.
 				handlePaused();
@@ -218,16 +223,21 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 					// Indicate element succeeded in processing.
 					request = new BatchElementUpdateRequest();
 					request.setProcessingStatus(ElementProcessingStatus.Succeeded);
-					SiteWhere.getServer().getDeviceManagement().updateBatchElement(
-							element.getBatchOperationToken(), element.getIndex(), request);
+					IBatchElement updated =
+							SiteWhere.getServer().getDeviceManagement().updateBatchElement(
+									element.getBatchOperationToken(), element.getIndex(), request);
+					results.process(updated);
 				} catch (SiteWhereException t) {
 					// Indicate element failed in processing.
 					request = new BatchElementUpdateRequest();
 					request.setProcessingStatus(ElementProcessingStatus.Failed);
-					SiteWhere.getServer().getDeviceManagement().updateBatchElement(
-							element.getBatchOperationToken(), element.getIndex(), request);
+					IBatchElement updated =
+							SiteWhere.getServer().getDeviceManagement().updateBatchElement(
+									element.getBatchOperationToken(), element.getIndex(), request);
+					results.process(updated);
 				}
 			}
+			return results;
 		}
 
 		/**
@@ -279,6 +289,42 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 			// Invoke the command.
 			SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(assignment.getToken(),
 					command, request);
+		}
+	}
+
+	/**
+	 * Used to track status of processed elements.
+	 * 
+	 * @author Derek
+	 */
+	private class BatchProcessingResults {
+
+		// Count of successfully processed elements.
+		private AtomicLong success = new AtomicLong();
+
+		// Count of elements that failed to process.
+		private AtomicLong failed = new AtomicLong();
+
+		public void process(IBatchElement element) {
+			switch (element.getProcessingStatus()) {
+			case Succeeded: {
+				success.incrementAndGet();
+				break;
+			}
+			case Failed: {
+				failed.incrementAndGet();
+				break;
+			}
+			case Processing:
+			case Unprocessed: {
+				LOGGER.warn("Batch element was not in an expected state: " + element.getProcessingStatus());
+				break;
+			}
+			}
+		}
+
+		public long getErrorCount() {
+			return failed.get();
 		}
 	}
 }
