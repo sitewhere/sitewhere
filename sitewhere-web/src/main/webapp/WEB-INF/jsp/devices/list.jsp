@@ -13,6 +13,7 @@
 <%@ include file="../includes/deviceUpdateDialog.inc"%>
 <%@ include file="../includes/deviceFilterDialog.inc"%>
 <%@ include file="../includes/assignmentCreateDialog.inc"%>
+<%@ include file="../includes/batchCommandInvokeDialog.inc"%>
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
@@ -229,6 +230,10 @@
 			$('#filter-criteria').show();
 		}
 	}
+	
+	/** Called after a batch command is invoked */
+	function onBatchCommandInvoked() {
+	}
 
 	$(document).ready(function() {
 		var dsUrl = "${pageContext.request.contextPath}/api/";
@@ -317,12 +322,17 @@
 
 		/** Handle create dialog */
 		$('#btn-add-device').click(function(event) {
-			dcOpen(event, onDeviceCreated)
+			dcOpen(event, onDeviceCreated);
 		});
 
 		/** Handle filter options dialog */
 		$('#btn-filter-results').click(function(event) {
-			dflOpen(event, buildFilterCriteria(), onFilterChanged)
+			dflOpen(event, buildFilterCriteria(), onFilterChanged);
+		});
+
+		/** Handle batch command dialog */
+		$('#btn-batch-command').click(function(event) {
+			bciOpen(buildFilterCriteria(), onBatchCommandInvoked);
 		});
 
 		showFilterCriteria();
