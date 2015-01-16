@@ -218,6 +218,12 @@ function parseBatchOperationData(item) {
     if (item.updatedDate && typeof item.updatedDate === "string") {
     	item.updatedDate = kendo.parseDate(item.updatedDate);
     }
+    if (item.processingStartedDate && typeof item.processingStartedDate === "string") {
+    	item.processingStartedDate = kendo.parseDate(item.processingStartedDate);
+    }
+    if (item.processingEndedDate && typeof item.processingEndedDate === "string") {
+    	item.processingEndedDate = kendo.parseDate(item.processingEndedDate);
+    }
 }
 
 /** Converts fields that need to be parsed in a user */

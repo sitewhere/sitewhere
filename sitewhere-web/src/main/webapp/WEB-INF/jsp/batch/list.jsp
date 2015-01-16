@@ -22,16 +22,22 @@
 </div>
 <table id="batchoperations">
 	<colgroup>
-		<col style="width: 100%;" />
+		<col style="width: 25%;" />
+		<col style="width: 25%;" />
+		<col style="width: 25%;" />
+		<col style="width: 25%;" />
 	</colgroup>
 	<thead>
 		<tr>
-			<th>Column</th>
+			<th>Operation</th>
+			<th>Processing Status</th>
+			<th>Processing Started</th>
+			<th>Processing Finished</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="1"></td>
+			<td colspan="4"></td>
 		</tr>
 	</tbody>
 </table>
