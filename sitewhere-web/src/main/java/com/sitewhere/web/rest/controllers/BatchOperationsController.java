@@ -7,6 +7,7 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
@@ -24,11 +26,15 @@ import com.sitewhere.device.batch.BatchUtils;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
+import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 /**
  * Controller for batch operations.
@@ -42,6 +48,30 @@ public class BatchOperationsController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BatchOperationsController.class);
+
+	@RequestMapping(method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List all batch operations")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISearchResults<IBatchOperation> listBatchOperations(
+			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
+			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroups", LOGGER);
+		try {
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			ISearchResults<IBatchOperation> results =
+					SiteWhere.getServer().getDeviceManagement().listBatchOperations(includeDeleted, criteria);
+			List<IBatchOperation> opsConv = new ArrayList<IBatchOperation>();
+			for (IBatchOperation op : results.getResults()) {
+				opsConv.add(BatchOperation.copy(op));
+			}
+			return new SearchResults<IBatchOperation>(opsConv, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
 
 	@RequestMapping(value = "/command", method = RequestMethod.POST)
 	@ResponseBody

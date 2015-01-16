@@ -210,6 +210,16 @@ function parseZoneData(item) {
     }
 }
 
+/** Converts fields that need to be parsed in a batch operation */
+function parseBatchOperationData(item) {
+    if (item.createdDate && typeof item.createdDate === "string") {
+    	item.createdDate = kendo.parseDate(item.createdDate);
+    }
+    if (item.updatedDate && typeof item.updatedDate === "string") {
+    	item.updatedDate = kendo.parseDate(item.updatedDate);
+    }
+}
+
 /** Converts fields that need to be parsed in a user */
 function parseUserData(item) {
     if (item.createdDate && typeof item.createdDate === "string") {

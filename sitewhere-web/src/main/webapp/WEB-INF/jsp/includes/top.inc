@@ -76,6 +76,14 @@
 	</c:otherwise>
 </c:choose>
 <c:choose>
+	<c:when test="${sitewhere_section == 'batch'}">
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/batch/list.html">Batch</a></li>
+	</c:when>
+	<c:otherwise>
+		<li><a href="${pageContext.request.contextPath}/admin/batch/list.html">Batch</a></li>
+	</c:otherwise>
+</c:choose>
+<c:choose>
 	<c:when test="${sitewhere_section == 'users'}">
 		<li class="active"><a href="${pageContext.request.contextPath}/admin/users/list.html">Users</a></li>
 	</c:when>

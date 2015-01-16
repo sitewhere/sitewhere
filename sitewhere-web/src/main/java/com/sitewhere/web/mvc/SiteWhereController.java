@@ -348,6 +348,27 @@ public class SiteWhereController {
 	}
 
 	/**
+	 * Display the "list batch operations" page.
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/batch/list")
+	public ModelAndView listBatchOperations() {
+		Tracer.start(TracerCategory.AdminUserInterface, "listBatchOperations", LOGGER);
+		try {
+			try {
+				Map<String, Object> data = createBaseData();
+				return new ModelAndView("batch/list", data);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Display the "list users" page.
 	 * 
 	 * @return
