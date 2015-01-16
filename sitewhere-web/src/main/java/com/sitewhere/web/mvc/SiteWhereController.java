@@ -26,7 +26,10 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.version.VersionHelper;
@@ -366,6 +369,39 @@ public class SiteWhereController {
 		} finally {
 			Tracer.stop(LOGGER);
 		}
+	}
+
+	/**
+	 * View details about a batch command invocation.
+	 * 
+	 * @param batchToken
+	 * @return
+	 */
+	@RequestMapping("/batch/command")
+	public ModelAndView batchCommandInvocationDetail(@RequestParam("token") String batchToken) {
+		if (batchToken != null) {
+			try {
+				Map<String, Object> data = createBaseData();
+				IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
+				IBatchOperation operation = management.getBatchOperation(batchToken);
+				if (operation != null) {
+					data.put("operation", operation);
+					String commandToken =
+							operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
+					if (commandToken == null) {
+						return showError("No command token set for batch operation.");
+					}
+					IDeviceCommand command = management.getDeviceCommandByToken(commandToken);
+					data.put("command", command);
+					return new ModelAndView("batch/command", data);
+				}
+				return showError("Batch operation for token '" + batchToken + "' not found.");
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		}
+		return showError("No batch operation token passed.");
 	}
 
 	/**

@@ -22,29 +22,33 @@
 </div>
 <table id="batchoperations">
 	<colgroup>
-		<col style="width: 25%;" />
-		<col style="width: 25%;" />
-		<col style="width: 25%;" />
-		<col style="width: 25%;" />
+		<col style="width: 19%;" />
+		<col style="width: 19%;" />
+		<col style="width: 19%;" />
+		<col style="width: 19%;" />
+		<col style="width: 19%;" />
+		<col style="width: 5%;" />
 	</colgroup>
 	<thead>
 		<tr>
 			<th>Operation</th>
 			<th>Processing Status</th>
+			<th>Operation Created</th>
 			<th>Processing Started</th>
 			<th>Processing Finished</th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="4"></td>
+			<td colspan="6"></td>
 		</tr>
 	</tbody>
 </table>
 <div id="pager" class="k-pager-wrap"></div>
 
-<form id="view-batch-operation-detail" method="get" action="detail.html">
-	<input id="batch-operation-id" name="token" type="hidden" />
+<form id="view-batch-operation-detail" method="get">
+	<input id="batch-operation-token" name="token" type="hidden" />
 </form>
 
 <%@ include file="../includes/templateBatchOperationEntry.inc"%>
@@ -53,6 +57,15 @@
 <script>
 	/** Reference for batch operations datasource */
 	var batchOpsDS;
+
+	/** View a batch operation */
+	function viewBatchOperation(type, token) {
+		if (type == "InvokeCommand") {
+			$("#batch-operation-token").val(token);
+			$("#view-batch-operation-detail").get(0).setAttribute('action', 'command.html');
+			$("#view-batch-operation-detail").submit();
+		}
+	}
 
 	$(document).ready(function() {
 
@@ -80,12 +93,12 @@
 		});
 
 		/** Create the list of batch operations */
-        $("#batchoperations").kendoGrid({
+		$("#batchoperations").kendoGrid({
 			dataSource : batchOpsDS,
-            rowTemplate: kendo.template($("#tpl-batch-operation-entry").html()),
-            scrollable: true,
-            height: 350,
-        });
+			rowTemplate : kendo.template($("#tpl-batch-operation-entry").html()),
+			scrollable : true,
+			height : 400,
+		});
 
 		/** Pager for batch operation list */
 		$("#pager").kendoPager({

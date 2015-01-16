@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,8 +29,13 @@ import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.batch.IBatchElement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
@@ -48,6 +54,25 @@ public class BatchOperationsController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BatchOperationsController.class);
+
+	@RequestMapping(value = "/{batchToken}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get a batch operation by unique token")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public IBatchOperation getBatchOperationByToken(
+			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String batchToken)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getBatchOperationByToken", LOGGER);
+		try {
+			IBatchOperation batch = SiteWhere.getServer().getDeviceManagement().getBatchOperation(batchToken);
+			if (batch == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
+			}
+			return BatchOperation.copy(batch);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
@@ -68,6 +93,26 @@ public class BatchOperationsController {
 				opsConv.add(BatchOperation.copy(op));
 			}
 			return new SearchResults<IBatchOperation>(opsConv, results.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/{operationToken}/elements", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List elements from a batch operation")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISearchResults<IBatchElement> listBatchOperationElements(
+			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String operationToken,
+			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroupElements", LOGGER);
+		try {
+			BatchElementSearchCriteria criteria = new BatchElementSearchCriteria(page, pageSize);
+			ISearchResults<IBatchElement> results =
+					SiteWhere.getServer().getDeviceManagement().listBatchElements(operationToken, criteria);
+			return results;
 		} finally {
 			Tracer.stop(LOGGER);
 		}
