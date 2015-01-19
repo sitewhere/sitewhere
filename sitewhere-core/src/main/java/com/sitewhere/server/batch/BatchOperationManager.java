@@ -28,6 +28,7 @@ import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
@@ -38,6 +39,7 @@ import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -210,10 +212,11 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 				SiteWhere.getServer().getDeviceManagement().updateBatchElement(
 						element.getBatchOperationToken(), element.getIndex(), request);
 
+				request = new BatchElementUpdateRequest();
 				try {
 					switch (operation.getOperationType()) {
 					case InvokeCommand: {
-						processBatchCommandInvocationElement(operation, element);
+						processBatchCommandInvocationElement(operation, element, request);
 						break;
 					}
 					case UpdateFirmware: {
@@ -221,16 +224,12 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 					}
 					}
 					// Indicate element succeeded in processing.
-					request = new BatchElementUpdateRequest();
 					request.setProcessingStatus(ElementProcessingStatus.Succeeded);
-					IBatchElement updated =
-							SiteWhere.getServer().getDeviceManagement().updateBatchElement(
-									element.getBatchOperationToken(), element.getIndex(), request);
-					results.process(updated);
+					request.setProcessedDate(new Date());
 				} catch (SiteWhereException t) {
 					// Indicate element failed in processing.
-					request = new BatchElementUpdateRequest();
 					request.setProcessingStatus(ElementProcessingStatus.Failed);
+				} finally {
 					IBatchElement updated =
 							SiteWhere.getServer().getDeviceManagement().updateBatchElement(
 									element.getBatchOperationToken(), element.getIndex(), request);
@@ -245,10 +244,11 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		 * 
 		 * @param operation
 		 * @param element
+		 * @param updated
 		 * @throws SiteWhereException
 		 */
-		protected void processBatchCommandInvocationElement(IBatchOperation operation, IBatchElement element)
-				throws SiteWhereException {
+		protected void processBatchCommandInvocationElement(IBatchOperation operation, IBatchElement element,
+				IMetadataProvider updated) throws SiteWhereException {
 			LOGGER.info("Processing command invocation: " + element.getHardwareId());
 
 			// Find information about the command to be executed.
@@ -287,8 +287,11 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 			request.setParameterValues(operation.getMetadata());
 
 			// Invoke the command.
-			SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(assignment.getToken(),
-					command, request);
+			IDeviceCommandInvocation invocation =
+					SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(
+							assignment.getToken(), command, request);
+			updated.addOrReplaceMetadata(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID,
+					invocation.getId());
 		}
 	}
 

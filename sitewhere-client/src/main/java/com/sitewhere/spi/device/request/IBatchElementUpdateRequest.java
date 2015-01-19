@@ -7,6 +7,9 @@
  */
 package com.sitewhere.spi.device.request;
 
+import java.util.Date;
+
+import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 import com.sitewhere.spi.device.batch.IBatchElement;
 
@@ -15,7 +18,7 @@ import com.sitewhere.spi.device.batch.IBatchElement;
  * 
  * @author Derek
  */
-public interface IBatchElementUpdateRequest {
+public interface IBatchElementUpdateRequest extends IMetadataProvider {
 
 	/**
 	 * Get processing status indicator.
@@ -23,4 +26,11 @@ public interface IBatchElementUpdateRequest {
 	 * @return
 	 */
 	public ElementProcessingStatus getProcessingStatus();
+
+	/**
+	 * Get date element was processed.
+	 * 
+	 * @return
+	 */
+	public Date getProcessedDate();
 }

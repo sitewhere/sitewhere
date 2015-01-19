@@ -1131,6 +1131,7 @@ public class SiteWherePersistence {
 		element.setHardwareId(hardwareId);
 		element.setIndex(index);
 		element.setProcessingStatus(ElementProcessingStatus.Unprocessed);
+		element.setProcessedDate(null);
 		return element;
 	}
 
@@ -1145,6 +1146,12 @@ public class SiteWherePersistence {
 			throws SiteWhereException {
 		if (request.getProcessingStatus() != null) {
 			element.setProcessingStatus(request.getProcessingStatus());
+		}
+		if (request.getProcessedDate() != null) {
+			element.setProcessedDate(request.getProcessedDate());
+		}
+		if (request.getMetadata().size() > 0) {
+			element.getMetadata().putAll(request.getMetadata());
 		}
 	}
 

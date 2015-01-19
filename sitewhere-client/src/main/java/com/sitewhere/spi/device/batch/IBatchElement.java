@@ -7,12 +7,16 @@
  */
 package com.sitewhere.spi.device.batch;
 
+import java.util.Date;
+
+import com.sitewhere.spi.common.IMetadataProvider;
+
 /**
  * Holds information about a single device operation within an {@link IBatchOperation}.
  * 
  * @author Derek
  */
-public interface IBatchElement {
+public interface IBatchElement extends IMetadataProvider {
 
 	/**
 	 * Get token for parent {@link IBatchOperation}.
@@ -41,4 +45,11 @@ public interface IBatchElement {
 	 * @return
 	 */
 	public ElementProcessingStatus getProcessingStatus();
+
+	/**
+	 * Get the date on which the element was processed.
+	 * 
+	 * @return
+	 */
+	public Date getProcessedDate();
 }

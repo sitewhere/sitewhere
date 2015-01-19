@@ -7,12 +7,15 @@
  */
 package com.sitewhere.mongodb.device;
 
+import java.util.Date;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
+import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.rest.model.device.batch.BatchElement;
-import com.sitewhere.spi.device.batch.IBatchElement;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
+import com.sitewhere.spi.device.batch.IBatchElement;
 
 /**
  * Used to load or save batch element data to MongoDB.
@@ -32,6 +35,9 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 
 	/** Property for processing status */
 	public static final String PROP_PROCESSING_STATUS = "status";
+
+	/** Property for date element was processed */
+	public static final String PROP_PROCESSED_DATE = "processedDate";
 
 	/*
 	 * (non-Javadoc)
@@ -66,6 +72,10 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 		if (source.getProcessingStatus() != null) {
 			target.append(PROP_PROCESSING_STATUS, source.getProcessingStatus().name());
 		}
+		if (source.getProcessedDate() != null) {
+			target.append(PROP_PROCESSED_DATE, source.getProcessedDate());
+		}
+		MongoMetadataProvider.toDBObject(source, target);
 	}
 
 	/**
@@ -79,6 +89,7 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 		String hardwareId = (String) source.get(PROP_HARDWARE_ID);
 		Long index = (Long) source.get(PROP_INDEX);
 		String status = (String) source.get(PROP_PROCESSING_STATUS);
+		Date procDate = (Date) source.get(PROP_PROCESSED_DATE);
 
 		target.setBatchOperationToken(parent);
 		target.setHardwareId(hardwareId);
@@ -86,6 +97,8 @@ public class MongoBatchElement implements MongoConverter<IBatchElement> {
 		if (status != null) {
 			target.setProcessingStatus(ElementProcessingStatus.valueOf(status));
 		}
+		target.setProcessedDate(procDate);
+		MongoMetadataProvider.fromDBObject(source, target);
 	}
 
 	/**

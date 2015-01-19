@@ -7,15 +7,20 @@
  */
 package com.sitewhere.rest.model.device.batch;
 
-import com.sitewhere.spi.device.batch.IBatchElement;
+import java.util.Date;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
+import com.sitewhere.spi.device.batch.IBatchElement;
 
 /**
  * Model object for a batch element.
  * 
  * @author Derek
  */
-public class BatchElement implements IBatchElement {
+public class BatchElement extends MetadataProvider implements IBatchElement {
 
 	/** Token for parent batch operation */
 	private String batchOperationToken;
@@ -28,6 +33,9 @@ public class BatchElement implements IBatchElement {
 
 	/** Processing status */
 	private ElementProcessingStatus processingStatus;
+
+	/** Date on which element was processed */
+	private Date processedDate;
 
 	/*
 	 * (non-Javadoc)
@@ -79,5 +87,19 @@ public class BatchElement implements IBatchElement {
 
 	public void setProcessingStatus(ElementProcessingStatus processingStatus) {
 		this.processingStatus = processingStatus;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessedDate()
+	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getProcessedDate() {
+		return processedDate;
+	}
+
+	public void setProcessedDate(Date processedDate) {
+		this.processedDate = processedDate;
 	}
 }

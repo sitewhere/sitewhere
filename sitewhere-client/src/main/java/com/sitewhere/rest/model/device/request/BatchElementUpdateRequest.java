@@ -7,6 +7,9 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.util.Date;
+
+import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 
@@ -15,10 +18,13 @@ import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
  * 
  * @author Derek
  */
-public class BatchElementUpdateRequest implements IBatchElementUpdateRequest {
+public class BatchElementUpdateRequest extends MetadataProvider implements IBatchElementUpdateRequest {
 
 	/** Processing status for update */
 	private ElementProcessingStatus processingStatus;
+
+	/** Date element was processed */
+	private Date processedDate;
 
 	/*
 	 * (non-Javadoc)
@@ -32,5 +38,18 @@ public class BatchElementUpdateRequest implements IBatchElementUpdateRequest {
 
 	public void setProcessingStatus(ElementProcessingStatus processingStatus) {
 		this.processingStatus = processingStatus;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IBatchElementUpdateRequest#getProcessedDate()
+	 */
+	public Date getProcessedDate() {
+		return processedDate;
+	}
+
+	public void setProcessedDate(Date processedDate) {
+		this.processedDate = processedDate;
 	}
 }

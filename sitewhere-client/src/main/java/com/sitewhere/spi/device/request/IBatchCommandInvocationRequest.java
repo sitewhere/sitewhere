@@ -20,6 +20,9 @@ public interface IBatchCommandInvocationRequest {
 	/** Batch operation parameter name for command token */
 	public static final String PARAM_COMMAND_TOKEN = "commandToken";
 
+	/** Metadata property on batch element that holds invocation event id */
+	public static final String META_INVOCATION_EVENT_ID = "invocation";
+
 	/**
 	 * Get unique token for batch request.
 	 * 
