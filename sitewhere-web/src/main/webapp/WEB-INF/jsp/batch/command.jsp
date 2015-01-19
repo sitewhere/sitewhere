@@ -70,7 +70,11 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+	/** Unique batch operation token */
 	var batchToken = '<c:out value="${operation.token}"/>';
+	
+	/** JSON command information */
+	var command = ${command};
 
 	/** Datasource for elements */
 	var elementsDS;
@@ -132,7 +136,9 @@
 	/** Called on successful batch operation load request */
 	function loadGetSuccess(data, status, jqXHR) {
 		var template = kendo.template($("#tpl-batch-command-invocation-entry").html());
-		parseDeviceGroupData(data);
+		parseBatchOperationData(data);
+		data.command = command;
+		data.commandHtml = swHtmlifyCommandWithValues(command, data.metadata);
 		$('#batch-command-invocation-details').html(template(data));
 	}
 

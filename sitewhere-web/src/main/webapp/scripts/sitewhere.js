@@ -312,6 +312,57 @@ function swMetadataAsLookup(metadata) {
 	return lookup;
 }
 
+/** Creates an HTML highlighted version of a command */
+function swHtmlifyCommand(command) {
+	var chtml = "";
+	if (command.description) {
+    	chtml += "<div class='sw-spec-command-desc'>";
+    	chtml += "/** " + command.description + " **/</div>"
+	}
+    chtml += "<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '" + command.token + "')\">" + 
+    	command.name + "</span>(";
+    for (var i = 0, param; param = command.parameters[i]; i++) {
+		if (param.required) {
+			chtml += "<strong>"
+		}
+		if (i > 0) {
+			chtml += ", ";
+		}
+		chtml += " <span class='sw-spec-command-param-name'>" + param.name + "</span>";
+		chtml += ":<span class='sw-spec-command-param-type'>" + param.type + "</span> ";
+		if (param.required) {
+			chtml += "</strong>"
+		}
+	}
+	chtml += ")"
+		return chtml;
+}
+
+/** Creates an HTML highlighted version of a command */
+function swHtmlifyCommandWithValues(command, values) {
+	var chtml = "";
+	if (command.description) {
+    	chtml += "<div class='sw-spec-command-desc'>";
+    	chtml += "/** " + command.description + " **/</div>"
+	}
+    chtml += "<span class=\"sw-spec-command-name\">" + command.name + "</span>(";
+    for (var i = 0, param; param = command.parameters[i]; i++) {
+		if (param.required) {
+			chtml += "<strong>"
+		}
+		if (i > 0) {
+			chtml += ", ";
+		}
+		chtml += " <span class='sw-spec-command-param-name'>" + param.name + "</span>";
+		chtml += ":<span class='sw-spec-command-param-type'>" + values[param.name] + "</span> ";
+		if (param.required) {
+			chtml += "</strong>"
+		}
+	}
+	chtml += ")"
+		return chtml;
+}
+
 /** Create map of slot path to device data */
 function swGetDeviceSlotPathMap(device) {
 	var mappings = device.deviceElementMappings;

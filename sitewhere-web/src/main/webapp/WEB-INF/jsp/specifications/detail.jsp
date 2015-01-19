@@ -4,48 +4,6 @@
 <c:set var="use_map_includes" value="true" />
 <%@ include file="../includes/top.inc"%>
 
-<style>
-.sw-spec-namespace {
-	border: 1px solid #ccc;
-	margin-bottom: 15px;
-	font-family: courier;
-}
-.sw-spec-namespace-name {
-	color: #333;
-}
-.sw-spec-ns-header {
-	background-color: #eee;
-	padding: 5px;
-	font-size: 10pt;
-}
-.sw-spec-command {
-	font-family: courier;
-	padding: 10px 15px;
-	position: relative;
-	border-bottom: 1px solid #eee;
-}
-.sw-spec-command-desc {
-	color: #060;
-	font-style: italic;
-	max-width: 90%;
-}
-.sw-spec-command-name {
-	color: #060;
-	font-weight: bold;
-}
-.sw-list-entry:hover .sw-spec-command-name {
-	cursor: pointer;
-	border-bottom: 1px solid #060;
-}
-.sw-spec-command-param-name {
-	color: #333;
-}
-.sw-spec-command-param-type {
-	color: #666;
-	padding-left: 3px;
-}
-</style>
-
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
 	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
@@ -253,39 +211,13 @@
         	nsHtml += "<span class='sw-spec-namespace-name'>" + ((ns.value) ? ns.value : "(Default)") + "</span>";
         	nsHtml += "</div>";
         	for (var j=0, command; command=ns.commands[j]; j++) {
-        		commandData = {"commandHtml": htmlify(command), "command": command };
+        		commandData = {"commandHtml": swHtmlifyCommand(command), "command": command };
            		nsHtml += template(commandData);
        		}
          	nsHtml += "</div>";
         	allHtml += nsHtml;
    		}
 		$('#commands').html(allHtml);
-    }
-    
-    /** Creates an HTML highlighted version of a command */
-    function htmlify(command) {
-    	var chtml = "";
-    	if (command.description) {
-	    	chtml += "<div class='sw-spec-command-desc'>";
-	    	chtml += "/** " + command.description + " **/</div>"
-		}
-	    chtml += "<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '" + command.token + "')\">" + 
-	    	command.name + "</span>(";
-	    for (var i = 0, param; param = command.parameters[i]; i++) {
-    		if (param.required) {
-    			chtml += "<strong>"
-    		}
-			if (i > 0) {
-				chtml += ", ";
-			}
-			chtml += " <span class='sw-spec-command-param-name'>" + param.name + "</span>";
-			chtml += ":<span class='sw-spec-command-param-type'>" + param.type + "</span> ";
-    		if (param.required) {
-    			chtml += "</strong>"
-    		}
-    	}
-		chtml += ")"
-   		return chtml;
     }
     
 	/** Handle error on getting specification command data */

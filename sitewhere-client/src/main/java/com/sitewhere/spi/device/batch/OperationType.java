@@ -15,8 +15,23 @@ package com.sitewhere.spi.device.batch;
 public enum OperationType {
 
 	/** Operation invokes a command on multiple devices */
-	InvokeCommand,
+	InvokeCommand("Batch Command Invocation"),
 
 	/** Operation updates firmware on multiple devices */
-	UpdateFirmware;
+	UpdateFirmware("Batch Firmware Update");
+
+	/** Operation description */
+	private String description;
+
+	private OperationType(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

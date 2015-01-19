@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -392,7 +393,7 @@ public class SiteWhereController {
 						return showError("No command token set for batch operation.");
 					}
 					IDeviceCommand command = management.getDeviceCommandByToken(commandToken);
-					data.put("command", command);
+					data.put("command", new String(MarshalUtils.marshalJsonAsString(command)));
 					return new ModelAndView("batch/command", data);
 				}
 				return showError("Batch operation for token '" + batchToken + "' not found.");
