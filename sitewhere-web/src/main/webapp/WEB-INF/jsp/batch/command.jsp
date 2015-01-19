@@ -43,17 +43,17 @@
 		</div>
 		<table id="elements">
 			<colgroup>
-				<col style="width: 40%;" />
+				<col style="width: 35%;" />
 				<col style="width: 15%;" />
-				<col style="width: 40%;" />
-				<col style="width: 5%;" />
+				<col style="width: 20%;" />
+				<col style="width: 30%;" />
 			</colgroup>
 			<thead>
 				<tr>
 					<th>Hardware Id</th>
-					<th>Index</th>
 					<th>Processing Status</th>
-					<th></th>
+					<th>Processed Date</th>
+					<th>Invocation Event Id</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -65,6 +65,10 @@
 		<div id="elements-pager" class="k-pager-wrap"></div>
 	</div>
 </div>
+
+<%@ include file="../includes/templateInvocationSummaryEntry.inc"%>
+<%@ include file="../includes/templateResponseSummaryEntry.inc"%>
+<%@ include file="../includes/invocationViewDialog.inc"%>
 
 <%@ include file="../includes/templateBatchCommandInvocationEntry.inc"%>
 <%@ include file="../includes/commonFunctions.inc"%>
@@ -92,6 +96,12 @@
 			schema : {
 				data : "results",
 				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseBatchElementData(item);
+					});
+					return response;
+				}
 			},
 			serverPaging : true,
 			serverSorting : true,
@@ -145,6 +155,11 @@
 	/** Handle error on getting batch operation data */
 	function loadGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to load batch command invocation data.");
+	}
+	
+	/** View a command invocation that has been clicked on */
+	function viewCommandInvocation(event, id) {
+		ivOpen(id);
 	}
 </script>
 

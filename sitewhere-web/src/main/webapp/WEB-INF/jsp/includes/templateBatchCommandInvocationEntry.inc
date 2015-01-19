@@ -28,11 +28,8 @@
 	id="tpl-batch-command-invocation-element-entry">
 	<tr class="sw-list-entry row-gradient">
 		<td>#:hardwareId#</td>
-		<td>#:index#</td>
 		<td>#:processingStatus#</td>
-		<td>
-			<i class="icon-circle-arrow-right sw-action-glyph sw-view-glyph" title="View Command Invocation"
-				style="vertical-align: middle;" onclick="viewCommandInvocation(event, '#:hardwareId#')"></i>
-		</td>
+		<td>#= formattedDate(processedDate) #</td>
+		<td><a href="javascript:void(0)" onclick="viewCommandInvocation(event, '#:metadata['invocation']#')">#:metadata['invocation']#</a></td>
 	</tr>
 </script>

@@ -21,6 +21,9 @@ import com.sitewhere.spi.device.batch.OperationType;
  */
 public interface IBatchOperationCreateRequest extends IMetadataProvider {
 
+	/** Metadata property on events that holds batch id that generated event */
+	public static final String META_BATCH_OPERATION_ID = "batch";
+
 	/**
 	 * Get the unique token.
 	 * 

@@ -226,6 +226,13 @@ function parseBatchOperationData(item) {
     }
 }
 
+/** Converts fields that need to be parsed in a batch operation */
+function parseBatchElementData(item) {
+    if (item.processedDate && typeof item.processedDate === "string") {
+    	item.processedDate = kendo.parseDate(item.processedDate);
+    }
+}
+
 /** Converts fields that need to be parsed in a user */
 function parseUserData(item) {
     if (item.createdDate && typeof item.createdDate === "string") {

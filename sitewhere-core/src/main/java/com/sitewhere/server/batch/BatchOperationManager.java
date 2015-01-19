@@ -41,6 +41,7 @@ import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -285,6 +286,8 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 			request.setTarget(CommandTarget.Assignment);
 			request.setTargetId(assignment.getToken());
 			request.setParameterValues(operation.getMetadata());
+			request.addOrReplaceMetadata(IBatchOperationCreateRequest.META_BATCH_OPERATION_ID,
+					operation.getToken());
 
 			// Invoke the command.
 			IDeviceCommandInvocation invocation =
