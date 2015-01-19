@@ -62,6 +62,9 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 	/** Thread pool for processing events */
 	private ExecutorService processorPool;
 
+	/** Throttling delay in milliseconds */
+	private long throttleDelayMs;
+
 	/** Used for naming batch operation processor threads */
 	private class ProcessorsThreadFactory implements ThreadFactory {
 
@@ -125,6 +128,14 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		processorPool.execute(new BatchOperationProcessor(operation));
 	}
 
+	public long getThrottleDelayMs() {
+		return throttleDelayMs;
+	}
+
+	public void setThrottleDelayMs(long throttleDelayMs) {
+		this.throttleDelayMs = throttleDelayMs;
+	}
+
 	/**
 	 * Processes a batch in a separate thread.
 	 * 
@@ -178,11 +189,18 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		/**
 		 * Handle case where batch operation manager has been paused.
 		 */
-		protected void handlePaused() {
+		protected void handlePauseAndThrottle() {
 			while (getLifecycleStatus() == LifecycleStatus.Paused) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
+				}
+			}
+			if (getThrottleDelayMs() > 0) {
+				try {
+					Thread.sleep(getThrottleDelayMs());
+				} catch (InterruptedException e) {
+					LOGGER.warn("Throttle timer interrupted.");
 				}
 			}
 		}
@@ -200,7 +218,7 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 			BatchProcessingResults results = new BatchProcessingResults();
 			for (IBatchElement element : elements) {
 				// Check whether manager has been paused.
-				handlePaused();
+				handlePauseAndThrottle();
 
 				// Only process unprocessed elements.
 				if (element.getProcessingStatus() != ElementProcessingStatus.Unprocessed) {

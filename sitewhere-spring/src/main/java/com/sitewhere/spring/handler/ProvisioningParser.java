@@ -59,6 +59,11 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 				provisioning.addPropertyValue("registrationManager", manager);
 				break;
 			}
+			case BatchOperations: {
+				Object manager = parseBatchOperations(child, context);
+				provisioning.addPropertyValue("batchOperationManager", manager);
+				break;
+			}
 			case CommandRouting: {
 				Object router = parseCommandRouting(child, context);
 				provisioning.addPropertyValue("outboundCommandRouter", router);
@@ -120,6 +125,17 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse the batch operations configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected Object parseBatchOperations(Element element, ParserContext context) {
+		return new BatchOperationsParser().parse(element, context);
+	}
+
+	/**
 	 * Parse the command routing configuration.
 	 * 
 	 * @param element
@@ -156,6 +172,9 @@ public class ProvisioningParser extends AbstractBeanDefinitionParser {
 
 		/** Device registration */
 		Registration("registration"),
+
+		/** Batch operations */
+		BatchOperations("batch-operations"),
 
 		/** Command routing configuration */
 		CommandRouting("command-routing"),

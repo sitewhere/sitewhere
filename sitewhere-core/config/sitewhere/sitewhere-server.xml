@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.1/sitewhere.xsd?a=2">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.1/sitewhere.xsd?a=3">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties"
@@ -98,6 +98,12 @@
 			<sw:registration>
 				<sw:default-registration-manager allowNewDevices="true"/>
 			</sw:registration>
+			
+			<!-- Batch operation management -->
+			<sw:batch-operations>
+				<sw:default-batch-operation-manager
+					throttleDelayMs="10000"/>
+			</sw:batch-operations>
 			
 			<!-- Device command routing -->
 			<sw:command-routing>
