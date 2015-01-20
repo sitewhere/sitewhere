@@ -188,6 +188,12 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		getCommandProcessingStrategy().deliverSystemCommand(this, hardwareId, command);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getRegistrationManager()
+	 */
 	public IRegistrationManager getRegistrationManager() {
 		return registrationManager;
 	}
@@ -196,6 +202,13 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		this.registrationManager = registrationManager;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getBatchOperationManager
+	 * ()
+	 */
 	public IBatchOperationManager getBatchOperationManager() {
 		return batchOperationManager;
 	}
@@ -204,6 +217,13 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		this.batchOperationManager = batchOperationManager;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getInboundProcessingStrategy
+	 * ()
+	 */
 	public IInboundProcessingStrategy getInboundProcessingStrategy() {
 		return inboundProcessingStrategy;
 	}
@@ -212,6 +232,12 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		this.inboundProcessingStrategy = inboundProcessingStrategy;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getInboundEventSources()
+	 */
 	public List<IInboundEventSource<?>> getInboundEventSources() {
 		return inboundEventSources;
 	}
@@ -220,6 +246,13 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		this.inboundEventSources = inboundEventSources;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandProcessingStrategy
+	 * ()
+	 */
 	public ICommandProcessingStrategy getCommandProcessingStrategy() {
 		return commandProcessingStrategy;
 	}
@@ -228,6 +261,13 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		this.commandProcessingStrategy = commandProcessingStrategy;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getOutboundProcessingStrategy
+	 * ()
+	 */
 	public IOutboundProcessingStrategy getOutboundProcessingStrategy() {
 		return outboundProcessingStrategy;
 	}
@@ -236,6 +276,13 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		this.outboundProcessingStrategy = outboundProcessingStrategy;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getOutboundCommandRouter
+	 * ()
+	 */
 	public IOutboundCommandRouter getOutboundCommandRouter() {
 		return outboundCommandRouter;
 	}
@@ -244,6 +291,12 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 		this.outboundCommandRouter = outboundCommandRouter;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IDeviceProvisioning#getCommandDestinations()
+	 */
 	public List<ICommandDestination<?, ?>> getCommandDestinations() {
 		return commandDestinations;
 	}
