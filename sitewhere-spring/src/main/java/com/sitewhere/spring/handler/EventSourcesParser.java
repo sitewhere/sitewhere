@@ -22,11 +22,13 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.activemq.ActiveMQInboundEventReceiver;
 import com.sitewhere.device.provisioning.BinaryInboundEventSource;
 import com.sitewhere.device.provisioning.json.JsonBatchEventDecoder;
 import com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.device.provisioning.socket.BinarySocketInboundEventReceiver;
 import com.sitewhere.device.provisioning.socket.ReadAllInteractionHandler;
+import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
 
@@ -50,7 +52,7 @@ public class EventSourcesParser {
 	 * @param context
 	 * @return
 	 */
-	protected ManagedList<?> parse(Element element, ParserContext context) {
+	public ManagedList<?> parse(Element element, ParserContext context) {
 		ManagedList<Object> result = new ManagedList<Object>();
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
@@ -108,6 +110,15 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Get the MQTT event source implementation class.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventSource<byte[]>> getMqttEventSourceImplementation() {
+		return BinaryInboundEventSource.class;
+	}
+
+	/**
 	 * Parse an MQTT event source.
 	 * 
 	 * @param element
@@ -116,7 +127,7 @@ public class EventSourcesParser {
 	 */
 	protected AbstractBeanDefinition parseMqttEventSource(Element element, ParserContext context) {
 		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+				BeanDefinitionBuilder.rootBeanDefinition(getMqttEventSourceImplementation());
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
@@ -143,13 +154,23 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Get implementation class for MQTT event receiver.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventReceiver<byte[]>> getMqttEventReceiverImplementation() {
+		return MqttInboundEventReceiver.class;
+	}
+
+	/**
 	 * Create MQTT event receiver from XML element.
 	 * 
 	 * @param element
 	 * @return
 	 */
 	protected AbstractBeanDefinition createMqttEventReceiver(Element element) {
-		BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(MqttInboundEventReceiver.class);
+		BeanDefinitionBuilder mqtt =
+				BeanDefinitionBuilder.rootBeanDefinition(getMqttEventReceiverImplementation());
 
 		Attr hostname = element.getAttributeNode("hostname");
 		if (hostname == null) {
@@ -173,6 +194,15 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Get the ActiveMQ event source implementation class.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventSource<byte[]>> getActiveMQEventSourceImplementation() {
+		return BinaryInboundEventSource.class;
+	}
+
+	/**
 	 * Parse an ActiveMQ event source.
 	 * 
 	 * @param element
@@ -181,7 +211,7 @@ public class EventSourcesParser {
 	 */
 	protected AbstractBeanDefinition parseActiveMQEventSource(Element element, ParserContext context) {
 		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+				BeanDefinitionBuilder.rootBeanDefinition(getActiveMQEventSourceImplementation());
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
@@ -208,6 +238,15 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Get implementation class for ActiveMQ event receiver.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventReceiver<byte[]>> getActiveMQEventReceiverImplementation() {
+		return ActiveMQInboundEventReceiver.class;
+	}
+
+	/**
 	 * Create ActiveMQ event receiver from XML element.
 	 * 
 	 * @param element
@@ -215,7 +254,7 @@ public class EventSourcesParser {
 	 */
 	protected AbstractBeanDefinition createActiveMQEventReceiver(Element element) {
 		BeanDefinitionBuilder mq =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.activemq.ActiveMQInboundEventReceiver");
+				BeanDefinitionBuilder.rootBeanDefinition(getActiveMQEventReceiverImplementation());
 
 		Attr sourceId = element.getAttributeNode("sourceId");
 		if (sourceId == null) {
@@ -284,6 +323,15 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Get implementation class for socket event receiver.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventReceiver<byte[]>> getSocketEventReceiverImplementation() {
+		return BinarySocketInboundEventReceiver.class;
+	}
+
+	/**
 	 * Create socket event receiver from XML element.
 	 * 
 	 * @param element
@@ -292,7 +340,7 @@ public class EventSourcesParser {
 	 */
 	protected AbstractBeanDefinition createSocketEventReceiver(Element element, ParserContext context) {
 		BeanDefinitionBuilder socket =
-				BeanDefinitionBuilder.rootBeanDefinition(BinarySocketInboundEventReceiver.class);
+				BeanDefinitionBuilder.rootBeanDefinition(getSocketEventReceiverImplementation());
 
 		Attr port = element.getAttributeNode("port");
 		if (port != null) {

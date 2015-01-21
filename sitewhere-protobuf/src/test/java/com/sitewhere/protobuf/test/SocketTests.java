@@ -14,7 +14,7 @@ import org.junit.Test;
 public class SocketTests {
 
 	/** Hardware id for test message */
-	private static final String HARDWARE_ID = "26ac91a5-aa59-44ef-af77-85e470ab0c16";
+	private static final String HARDWARE_ID = "46497751-fdbd-46c0-a6db-3f0007b0fd00";
 
 	/** Port that server socket listens on */
 	public static final int SERVER_SOCKET_PORT = 8585;

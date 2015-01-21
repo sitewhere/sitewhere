@@ -170,6 +170,18 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#onEventPayloadReceived
+	 * (java.lang.Object)
+	 */
+	@Override
+	public void onEventPayloadReceived(T payload) {
+		getEventSource().onEncodedEventReceived(SocketInboundEventReceiver.this, payload);
+	}
+
 	/**
 	 * Handles processing for a single request.
 	 * 
@@ -188,8 +200,7 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 		public void run() {
 			try {
 				LOGGER.debug("About to process request received on port " + getPort() + ".");
-				getHandlerFactory().newInstance().process(socket, getEventSource(),
-						SocketInboundEventReceiver.this);
+				getHandlerFactory().newInstance().process(socket, SocketInboundEventReceiver.this);
 				LOGGER.debug("Processing complete.");
 			} catch (SiteWhereException e) {
 				LOGGER.error("Exception processing request in event receiver server socket.", e);
@@ -197,6 +208,11 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEventSource()
+	 */
 	public IInboundEventSource<T> getEventSource() {
 		return eventSource;
 	}

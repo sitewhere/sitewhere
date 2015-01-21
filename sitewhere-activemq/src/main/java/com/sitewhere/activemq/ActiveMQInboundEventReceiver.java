@@ -183,6 +183,18 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#onEventPayloadReceived
+	 * (java.lang.Object)
+	 */
+	@Override
+	public void onEventPayloadReceived(byte[] payload) {
+		getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this, payload);
+	}
+
 	/** Used for naming consumer threads */
 	private class ConsumersThreadFactory implements ThreadFactory {
 
@@ -256,13 +268,12 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 					}
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
-						getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this,
-								textMessage.getText().getBytes());
+						onEventPayloadReceived(textMessage.getText().getBytes());
 					} else if (message instanceof BytesMessage) {
 						BytesMessage bytesMessage = (BytesMessage) message;
 						byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 						bytesMessage.readBytes(buffer);
-						getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this, buffer);
+						onEventPayloadReceived(buffer);
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}
@@ -287,6 +298,11 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEventSource()
+	 */
 	public IInboundEventSource<byte[]> getEventSource() {
 		return eventSource;
 	}

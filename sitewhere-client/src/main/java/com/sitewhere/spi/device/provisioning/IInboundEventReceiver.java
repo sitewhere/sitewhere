@@ -24,9 +24,23 @@ public interface IInboundEventReceiver<T> extends ILifecycleComponent {
 	public String getDisplayName();
 
 	/**
+	 * Called when an event payload is received.
+	 * 
+	 * @param payload
+	 */
+	public void onEventPayloadReceived(T payload);
+
+	/**
 	 * Set the parent event source that will process events.
 	 * 
 	 * @param source
 	 */
 	public void setEventSource(IInboundEventSource<T> source);
+
+	/**
+	 * Get the parent event source.
+	 * 
+	 * @return
+	 */
+	public IInboundEventSource<T> getEventSource();
 }

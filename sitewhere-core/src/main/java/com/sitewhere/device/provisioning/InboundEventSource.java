@@ -137,10 +137,20 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 				}
 			}
 		} catch (SiteWhereException e) {
-			LOGGER.error("Event receiver thread unable to decode event request.", e);
+			onEventDecodeFailed(encodedEvent, e);
 		} catch (Throwable e) {
-			LOGGER.error("Unhandled exception in device event decoding.", e);
+			onEventDecodeFailed(encodedEvent, e);
 		}
+	}
+
+	/**
+	 * Handler for case where decoder throws an exception.
+	 * 
+	 * @param encodedEvent
+	 * @param t
+	 */
+	protected void onEventDecodeFailed(T encodedEvent, Throwable t) {
+		LOGGER.error("Event receiver thread unable to decode event request.", t);
 	}
 
 	/*
