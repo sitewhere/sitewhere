@@ -127,6 +127,16 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 		return LOGGER;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
+		return getTransportUri();
+	}
+
 	/**
 	 * Starts consumers for reading messages into SiteWhere.
 	 * 
@@ -246,12 +256,13 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 					}
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
-						getEventSource().onEncodedEventReceived(textMessage.getText().getBytes());
+						getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this,
+								textMessage.getText().getBytes());
 					} else if (message instanceof BytesMessage) {
 						BytesMessage bytesMessage = (BytesMessage) message;
 						byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 						bytesMessage.readBytes(buffer);
-						getEventSource().onEncodedEventReceived(buffer);
+						getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this, buffer);
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}

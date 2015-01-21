@@ -111,10 +111,10 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#onEncodedEventReceived
-	 * (java.lang.Object)
+	 * (com.sitewhere.spi.device.provisioning.IInboundEventReceiver, java.lang.Object)
 	 */
 	@Override
-	public void onEncodedEventReceived(T encodedEvent) {
+	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent) {
 		try {
 			LOGGER.debug("Device event receiver thread picked up event.");
 			List<IDecodedDeviceEventRequest> requests = getDeviceEventDecoder().decode(encodedEvent);

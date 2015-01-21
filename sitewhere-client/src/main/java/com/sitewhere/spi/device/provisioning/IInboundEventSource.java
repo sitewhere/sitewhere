@@ -50,7 +50,8 @@ public interface IInboundEventSource<T> extends ILifecycleComponent {
 	/**
 	 * Called by {@link IInboundEventReceiver} when an encoded event is received.
 	 * 
+	 * @param receiver
 	 * @param encodedEvent
 	 */
-	public void onEncodedEventReceived(T encodedEvent);
+	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent);
 }

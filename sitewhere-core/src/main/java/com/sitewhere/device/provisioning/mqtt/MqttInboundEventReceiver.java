@@ -112,6 +112,16 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 		return LOGGER;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
+		return getHostname() + ":" + getPort() + "/" + getTopic();
+	}
+
 	/** Used for naming consumer threads */
 	private class SubscribersThreadFactory implements ThreadFactory {
 
@@ -138,7 +148,8 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 				try {
 					Message message = connection.receive();
 					message.ack();
-					getEventSource().onEncodedEventReceived(message.getPayload());
+					getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this,
+							message.getPayload());
 				} catch (InterruptedException e) {
 					break;
 				} catch (Throwable e) {

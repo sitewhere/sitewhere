@@ -10,6 +10,7 @@ package com.sitewhere.spi.device.provisioning.socket;
 import java.net.Socket;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 
 /**
@@ -26,8 +27,10 @@ public interface ISocketInteractionHandler<T> {
 	 * be passed to {@link IInboundEventSource} onEncodedEventReceived() method.
 	 * 
 	 * @param socket
-	 * @param queue
+	 * @param eventSource
+	 * @param receiver
 	 * @throws SiteWhereException
 	 */
-	public void process(Socket socket, IInboundEventSource<T> eventSource) throws SiteWhereException;
+	public void process(Socket socket, IInboundEventSource<T> eventSource, IInboundEventReceiver<T> receiver)
+			throws SiteWhereException;
 }

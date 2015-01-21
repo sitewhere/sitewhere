@@ -17,6 +17,13 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface IInboundEventReceiver<T> extends ILifecycleComponent {
 
 	/**
+	 * Get name shown in user interfaces when referencing receiver.
+	 * 
+	 * @return
+	 */
+	public String getDisplayName();
+
+	/**
 	 * Set the parent event source that will process events.
 	 * 
 	 * @param source
