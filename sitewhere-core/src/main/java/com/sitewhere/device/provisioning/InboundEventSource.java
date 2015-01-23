@@ -114,10 +114,10 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 	 * (com.sitewhere.spi.device.provisioning.IInboundEventReceiver, java.lang.Object)
 	 */
 	@Override
-	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent) {
+	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload) {
 		try {
 			LOGGER.debug("Device event receiver thread picked up event.");
-			List<IDecodedDeviceEventRequest> requests = getDeviceEventDecoder().decode(encodedEvent);
+			List<IDecodedDeviceEventRequest> requests = decodePayload(encodedPayload);
 			if (requests != null) {
 				for (IDecodedDeviceEventRequest decoded : requests) {
 					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
@@ -137,10 +137,21 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 				}
 			}
 		} catch (SiteWhereException e) {
-			onEventDecodeFailed(encodedEvent, e);
+			onEventDecodeFailed(encodedPayload, e);
 		} catch (Throwable e) {
-			onEventDecodeFailed(encodedEvent, e);
+			onEventDecodeFailed(encodedPayload, e);
 		}
+	}
+
+	/**
+	 * Decode a payload into individual events.
+	 * 
+	 * @param encodedPayload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected List<IDecodedDeviceEventRequest> decodePayload(T encodedPayload) throws SiteWhereException {
+		return getDeviceEventDecoder().decode(encodedPayload);
 	}
 
 	/**

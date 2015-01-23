@@ -288,6 +288,15 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Get the socket event source implementation class.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventSource<byte[]>> getSocketEventSourceImplementation() {
+		return BinaryInboundEventSource.class;
+	}
+
+	/**
 	 * Parse a socket event source.
 	 * 
 	 * @param element
@@ -296,7 +305,7 @@ public class EventSourcesParser {
 	 */
 	protected AbstractBeanDefinition parseSocketEventSource(Element element, ParserContext context) {
 		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+				BeanDefinitionBuilder.rootBeanDefinition(getSocketEventSourceImplementation());
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
