@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link IInboundEventSource}.
@@ -49,6 +50,10 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 
 	/** List of {@link IInboundEventReceiver} that supply this processor */
 	private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
+
+	public InboundEventSource() {
+		super(LifecycleComponentType.InboundEventSource);
+	}
 
 	/*
 	 * (non-Javadoc)

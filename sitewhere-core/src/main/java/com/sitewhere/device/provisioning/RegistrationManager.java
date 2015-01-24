@@ -26,6 +26,7 @@ import com.sitewhere.spi.device.command.RegistrationSuccessReason;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Base logic for {@link IRegistrationManager} implementations.
@@ -45,6 +46,10 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 
 	/** Token used if autoAssignSite is enabled */
 	private String autoAssignSiteToken = null;
+
+	public RegistrationManager() {
+		super(LifecycleComponentType.RegistrationManger);
+	}
 
 	/*
 	 * (non-Javadoc)

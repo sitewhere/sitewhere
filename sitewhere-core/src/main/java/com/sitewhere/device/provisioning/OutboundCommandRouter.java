@@ -15,6 +15,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.ICommandDestination;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Abstract base class for {@link IOutboundCommandRouter} implementations.
@@ -26,6 +27,10 @@ public abstract class OutboundCommandRouter extends LifecycleComponent implement
 	/** List of destinations serviced by the router */
 	private Map<String, ICommandDestination<?, ?>> destinations =
 			new HashMap<String, ICommandDestination<?, ?>>();
+
+	public OutboundCommandRouter() {
+		super(LifecycleComponentType.CommandRouter);
+	}
 
 	/*
 	 * (non-Javadoc)

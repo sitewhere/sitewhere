@@ -10,8 +10,11 @@ package com.sitewhere.server.lifecycle;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -20,6 +23,12 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * @author Derek
  */
 public abstract class LifecycleComponent implements ILifecycleComponent {
+
+	/** Unique component id */
+	private String componentId = UUID.getUUID().toString();
+
+	/** Component type */
+	private LifecycleComponentType componentType;
 
 	/** Lifecycle status indicator */
 	private LifecycleStatus lifecycleStatus = LifecycleStatus.Stopped;
@@ -30,6 +39,19 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	/** List of contained lifecycle components */
 	private List<ILifecycleComponent> lifecycleComponents = new ArrayList<ILifecycleComponent>();
 
+	public LifecycleComponent(LifecycleComponentType type) {
+		this.componentType = type;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
+	 */
+	public String getComponentId() {
+		return componentId;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -38,6 +60,15 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	@Override
 	public String getComponentName() {
 		return getClass().getSimpleName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentType()
+	 */
+	public LifecycleComponentType getComponentType() {
+		return componentType;
 	}
 
 	/*
@@ -128,6 +159,38 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 			setLifecycleStatus(LifecycleStatus.Error);
 			setLifecycleError(new SiteWhereException(t));
 			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#findComponentsOfType(com
+	 * .sitewhere.spi.server.lifecycle.LifecycleComponentType)
+	 */
+	@Override
+	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type)
+			throws SiteWhereException {
+		List<ILifecycleComponent> matches = new ArrayList<ILifecycleComponent>();
+		findComponentsOfType(this, matches, type);
+		return matches;
+	}
+
+	/**
+	 * Recursive matching of nested components to find those of the given type.
+	 * 
+	 * @param matches
+	 * @param type
+	 * @throws SiteWhereException
+	 */
+	public void findComponentsOfType(ILifecycleComponent current, List<ILifecycleComponent> matches,
+			LifecycleComponentType type) throws SiteWhereException {
+		if (current.getComponentType() == type) {
+			matches.add(current);
+		}
+		for (ILifecycleComponent child : current.getLifecycleComponents()) {
+			findComponentsOfType(child, matches, type);
 		}
 	}
 

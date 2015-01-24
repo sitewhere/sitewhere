@@ -100,6 +100,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Device management implementation that uses MongoDB for persistence.
@@ -117,6 +118,10 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 	/** Provides caching for device management entities */
 	private IDeviceManagementCacheProvider cacheProvider;
+
+	public MongoDeviceManagement() {
+		super(LifecycleComponentType.DataStore);
+	}
 
 	/*
 	 * (non-Javadoc)

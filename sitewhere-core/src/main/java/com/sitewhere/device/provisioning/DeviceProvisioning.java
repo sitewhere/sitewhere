@@ -23,6 +23,7 @@ import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.IOutboundCommandRouter;
 import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.IRegistrationManager;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Base class for implementations of {@link IDeviceProvisioning}. Takes care of starting
@@ -55,6 +56,10 @@ public abstract class DeviceProvisioning extends LifecycleComponent implements I
 
 	/** Configured list of command destinations */
 	private List<ICommandDestination<?, ?>> commandDestinations = new ArrayList<ICommandDestination<?, ?>>();
+
+	public DeviceProvisioning() {
+		super(LifecycleComponentType.DeviceProvisioning);
+	}
 
 	/*
 	 * (non-Javadoc)

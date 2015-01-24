@@ -20,6 +20,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionBuilder;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of the {@link ICommandExecutionBuilder} interface that handles
@@ -33,6 +34,10 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultCommandExecutionBuilder.class);
+
+	public DefaultCommandExecutionBuilder() {
+		super(LifecycleComponentType.CommandExecutionBuilder);
+	}
 
 	/*
 	 * (non-Javadoc)

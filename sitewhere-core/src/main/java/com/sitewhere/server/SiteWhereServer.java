@@ -45,6 +45,7 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -109,6 +110,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** Health check registry */
 	private HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
+
+	public SiteWhereServer() {
+		super(LifecycleComponentType.System);
+	}
 
 	/**
 	 * Get Spring application context for Atlas server objects.

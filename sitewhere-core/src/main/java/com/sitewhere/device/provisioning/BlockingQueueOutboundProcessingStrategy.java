@@ -30,6 +30,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IOutboundProcessingStrategy} that uses an
@@ -55,6 +56,10 @@ public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent 
 
 	/** Thread pool for processing events */
 	private ExecutorService processorPool;
+
+	public BlockingQueueOutboundProcessingStrategy() {
+		super(LifecycleComponentType.OutboundProcessingStrategy);
+	}
 
 	/*
 	 * (non-Javadoc)

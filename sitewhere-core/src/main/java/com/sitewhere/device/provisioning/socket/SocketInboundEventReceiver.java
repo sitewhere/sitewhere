@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that creates a server socket and spawns
@@ -68,6 +69,10 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 
 	/** Handles processing of server requests */
 	private ServerProcessingThread processing;
+
+	public SocketInboundEventReceiver() {
+		super(LifecycleComponentType.InboundEventReceiver);
+	}
 
 	/*
 	 * (non-Javadoc)

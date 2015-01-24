@@ -43,6 +43,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -64,6 +65,10 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 
 	/** Throttling delay in milliseconds */
 	private long throttleDelayMs;
+
+	public BatchOperationManager() {
+		super(LifecycleComponentType.BatchOperationManager);
+	}
 
 	/** Used for naming batch operation processor threads */
 	private class ProcessorsThreadFactory implements ThreadFactory {

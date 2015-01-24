@@ -26,6 +26,7 @@ import com.sitewhere.spi.device.provisioning.ICommandExecutionBuilder;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link ICommandProcessingStrategy}.
@@ -43,6 +44,10 @@ public class DefaultCommandProcessingStrategy extends LifecycleComponent impleme
 
 	/** Configured command execution builder */
 	private ICommandExecutionBuilder commandExecutionBuilder = new DefaultCommandExecutionBuilder();
+
+	public DefaultCommandProcessingStrategy() {
+		super(LifecycleComponentType.CommandProcessingStrategy);
+	}
 
 	/*
 	 * (non-Javadoc)

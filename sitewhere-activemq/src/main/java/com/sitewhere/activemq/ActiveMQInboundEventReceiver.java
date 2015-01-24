@@ -36,6 +36,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that uses an ActiveMQ broker to listen
@@ -79,6 +80,7 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 	private ExecutorService consumersPool;
 
 	public ActiveMQInboundEventReceiver() {
+		super(LifecycleComponentType.InboundEventReceiver);
 		this.brokerService = new BrokerService();
 	}
 

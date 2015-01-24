@@ -20,6 +20,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IOutboundProcessingStrategy} that sends messages directly to
@@ -32,6 +33,10 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DirectOutboundProcessingStrategy.class);
+
+	public DirectOutboundProcessingStrategy() {
+		super(LifecycleComponentType.OutboundProcessingStrategy);
+	}
 
 	/*
 	 * (non-Javadoc)

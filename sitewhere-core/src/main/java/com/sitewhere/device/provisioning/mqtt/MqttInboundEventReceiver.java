@@ -24,6 +24,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT topic and
@@ -65,6 +66,10 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 
 	/** Used to execute MQTT subscribe in separate thread */
 	private ExecutorService executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
+
+	public MqttInboundEventReceiver() {
+		super(LifecycleComponentType.InboundEventReceiver);
+	}
 
 	/*
 	 * (non-Javadoc)

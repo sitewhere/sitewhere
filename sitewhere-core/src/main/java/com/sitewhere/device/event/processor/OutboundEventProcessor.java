@@ -16,6 +16,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link IOutboundEventProcessor}.
@@ -23,6 +24,10 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
  * @author Derek
  */
 public abstract class OutboundEventProcessor extends LifecycleComponent implements IOutboundEventProcessor {
+
+	public OutboundEventProcessor() {
+		super(LifecycleComponentType.OutboundEventProcessor);
+	}
 
 	/*
 	 * (non-Javadoc)

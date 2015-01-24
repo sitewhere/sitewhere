@@ -21,6 +21,7 @@ import com.mongodb.MongoClient;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Spring wrapper for initializing a Mongo client used by SiteWhere components.
@@ -97,6 +98,10 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	/** Injected name used for authorities collection */
 	private String authoritiesCollectionName = IMongoCollectionNames.DEFAULT_AUTHORITIES_COLLECTION_NAME;
+
+	public SiteWhereMongoClient() {
+		super(LifecycleComponentType.DataStore);
+	}
 
 	/*
 	 * (non-Javadoc)

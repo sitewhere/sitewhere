@@ -21,6 +21,7 @@ import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Asset module that represents GNU Health buildings as {@link ILocationAsset}.
@@ -49,6 +50,10 @@ public class GnuHealthBuildingsAssetModule extends LifecycleComponent implements
 
 	/** Used to find search results */
 	private AssetMatcher matcher = new AssetMatcher();
+
+	public GnuHealthBuildingsAssetModule() {
+		super(LifecycleComponentType.AssetModule);
+	}
 
 	/*
 	 * (non-Javadoc)

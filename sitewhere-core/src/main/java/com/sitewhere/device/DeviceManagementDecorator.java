@@ -61,6 +61,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -76,6 +77,26 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 
 	public DeviceManagementDecorator(IDeviceManagement delegate) {
 		this.delegate = delegate;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
+	 */
+	@Override
+	public String getComponentId() {
+		return delegate.getComponentId();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentType()
+	 */
+	@Override
+	public LifecycleComponentType getComponentType() {
+		return delegate.getComponentType();
 	}
 
 	/*
@@ -197,6 +218,19 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	@Override
 	public void stop() throws SiteWhereException {
 		delegate.stop();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#findComponentsOfType(com
+	 * .sitewhere.spi.server.lifecycle.LifecycleComponentType)
+	 */
+	@Override
+	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type)
+			throws SiteWhereException {
+		return delegate.findComponentsOfType(type);
 	}
 
 	/*

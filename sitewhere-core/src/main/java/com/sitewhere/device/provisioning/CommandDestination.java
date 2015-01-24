@@ -20,6 +20,7 @@ import com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
 import com.sitewhere.spi.device.provisioning.ICommandDestination;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link ICommandDestination}.
@@ -44,6 +45,10 @@ public class CommandDestination<T, P> extends LifecycleComponent implements ICom
 
 	/** Configured command delivery provider */
 	private ICommandDeliveryProvider<T, P> commandDeliveryProvider;
+
+	public CommandDestination() {
+		super(LifecycleComponentType.CommandDestination);
+	}
 
 	/*
 	 * (non-Javadoc)

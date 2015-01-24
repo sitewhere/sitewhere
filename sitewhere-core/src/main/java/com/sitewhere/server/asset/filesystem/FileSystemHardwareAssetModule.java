@@ -26,6 +26,7 @@ import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Module that loads a list of hardware assets from an XML file on the filesystem.
@@ -60,6 +61,10 @@ public class FileSystemHardwareAssetModule extends LifecycleComponent implements
 
 	/** Module name */
 	private String moduleName = MODULE_NAME;
+
+	public FileSystemHardwareAssetModule() {
+		super(LifecycleComponentType.AssetModule);
+	}
 
 	/*
 	 * (non-Javadoc)

@@ -73,6 +73,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * HBase implementation of SiteWhere device management.
@@ -90,6 +91,10 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 
 	/** Injected cache provider */
 	private IDeviceManagementCacheProvider cacheProvider;
+
+	public HBaseDeviceManagement() {
+		super(LifecycleComponentType.DataStore);
+	}
 
 	/*
 	 * (non-Javadoc)

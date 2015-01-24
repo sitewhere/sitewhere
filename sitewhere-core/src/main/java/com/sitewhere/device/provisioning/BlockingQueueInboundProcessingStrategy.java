@@ -30,6 +30,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.provisioning.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundProcessingStrategy} that uses an
@@ -83,6 +84,10 @@ public class BlockingQueueInboundProcessingStrategy extends LifecycleComponent i
 
 	/** Pool for monitoring thread */
 	private ExecutorService monitorPool = Executors.newSingleThreadExecutor();
+
+	public BlockingQueueInboundProcessingStrategy() {
+		super(LifecycleComponentType.InboundProcessingStrategy);
+	}
 
 	/*
 	 * (non-Javadoc)

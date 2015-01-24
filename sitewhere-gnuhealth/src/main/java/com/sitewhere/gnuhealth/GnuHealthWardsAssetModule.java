@@ -20,6 +20,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Asset module that enumerates wards from GNU Health for use as SiteWhere assets.
@@ -48,6 +49,10 @@ public class GnuHealthWardsAssetModule extends LifecycleComponent implements IAs
 
 	/** Used to find search results */
 	private AssetMatcher matcher = new AssetMatcher();
+
+	public GnuHealthWardsAssetModule() {
+		super(LifecycleComponentType.AssetModule);
+	}
 
 	/*
 	 * (non-Javadoc)

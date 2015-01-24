@@ -31,6 +31,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IUser;
@@ -51,6 +52,10 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 
 	/** Injected with global SiteWhere Mongo client */
 	private SiteWhereMongoClient mongoClient;
+
+	public MongoUserManagement() {
+		super(LifecycleComponentType.DataStore);
+	}
 
 	/*
 	 * (non-Javadoc)
