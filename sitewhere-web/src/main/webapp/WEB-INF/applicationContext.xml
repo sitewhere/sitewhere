@@ -22,6 +22,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Handle admin website authentication -->
 	<sec:http>
+		<sec:intercept-url pattern="/admin" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/admin/" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/admin/loginFailed.html" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/admin/**" access="ROLE_AUTHENTICATED_USER"/>
