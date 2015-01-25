@@ -30,8 +30,8 @@
 
 .sw-main-nav {
 	position: absolute;
-	top: 27px;
-	right: 170px;
+	top: 25px;
+	right: 160px;
 }
 
 .sw-main-nav .nav-pills>.active>a:hover, .nav-pills>.active>a {
@@ -634,7 +634,7 @@ td[role="gridcell"]>input[type="text"] {
 }
 
 .nav-pills>li {
-	padding-left: 10px;
+	padding-left: 5px;
 }
 
 label.error {
