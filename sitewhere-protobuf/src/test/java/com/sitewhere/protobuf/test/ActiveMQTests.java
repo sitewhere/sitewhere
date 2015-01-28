@@ -39,7 +39,7 @@ public class ActiveMQTests {
 	private static final int NUM_THREADS = 20;
 
 	/** Nunber of calls performed per thread */
-	private static final int NUM_CALLS_PER_THREAD = 20;
+	private static final int NUM_CALLS_PER_THREAD = 100;
 
 	@Test
 	public void doJMSTest() throws Exception {

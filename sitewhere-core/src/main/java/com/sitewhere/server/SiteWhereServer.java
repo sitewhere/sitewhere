@@ -11,7 +11,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.mule.util.StringMessageUtils;
@@ -104,6 +106,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** List of components registered to participate in SiteWhere server lifecycle */
 	private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
+
+	/** Map of component ids to lifecycle components */
+	private Map<String, ILifecycleComponent> lifecycleComponentsById =
+			new HashMap<String, ILifecycleComponent>();
 
 	/** Metric regsitry */
 	private MetricRegistry metricRegistry = new MetricRegistry();
@@ -323,6 +329,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		// Start device provisioning.
 		startNestedComponent(getDeviceProvisioning(), "Device provisioning startup failed.", true);
+
+		// Force refresh on components-by-id map.
+		refreshLifecycleComponentMap(this, lifecycleComponentsById);
 	}
 
 	/*
@@ -344,6 +353,32 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public String getComponentName() {
 		return "SiteWhere Server " + getVersion().getEditionIdentifier() + " "
 				+ getVersion().getVersionIdentifier();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.lang.String
+	 * )
+	 */
+	@Override
+	public ILifecycleComponent getLifecycleComponentById(String id) {
+		return lifecycleComponentsById.get(id);
+	}
+
+	/**
+	 * Recursively navigates component structure and creates a map of components by id.
+	 * 
+	 * @param current
+	 * @param map
+	 */
+	protected void refreshLifecycleComponentMap(ILifecycleComponent current,
+			Map<String, ILifecycleComponent> map) {
+		map.put(current.getComponentId(), current);
+		for (ILifecycleComponent sub : current.getLifecycleComponents()) {
+			refreshLifecycleComponentMap(sub, map);
+		}
 	}
 
 	/*
