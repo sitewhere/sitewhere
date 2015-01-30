@@ -76,7 +76,7 @@ public class DefaultCommandProcessingStrategy extends LifecycleComponent impleme
 				}
 
 				IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device);
-				provisioning.getOutboundCommandRouter().routeCommand(execution, nesting, assignment, device);
+				provisioning.getOutboundCommandRouter().routeCommand(execution, nesting, assignment);
 			}
 		} else {
 			throw new SiteWhereException("Invalid command referenced from invocation.");
@@ -101,7 +101,7 @@ public class DefaultCommandProcessingStrategy extends LifecycleComponent impleme
 		}
 		IDeviceAssignment assignment = management.getCurrentDeviceAssignment(device);
 		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device);
-		provisioning.getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment, device);
+		provisioning.getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment);
 	}
 
 	/*

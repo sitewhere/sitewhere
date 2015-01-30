@@ -8,8 +8,8 @@
 package com.sitewhere.spi.device.provisioning;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 
 /**
@@ -24,12 +24,12 @@ public interface ICommandDeliveryParameterExtractor<T> {
 	/**
 	 * Extract required delivery parameters from the given sources.
 	 * 
-	 * @param device
+	 * @param nesting
 	 * @param assignment
 	 * @param execution
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public T extractDeliveryParameters(IDevice device, IDeviceAssignment assignment,
+	public T extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
 			IDeviceCommandExecution execution) throws SiteWhereException;
 }

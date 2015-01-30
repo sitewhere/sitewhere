@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
@@ -57,14 +56,14 @@ public class CommandDestination<T, P> extends LifecycleComponent implements ICom
 	 * com.sitewhere.spi.device.provisioning.ICommandDestination#deliverCommand(com.sitewhere
 	 * .spi.device.command.IDeviceCommandExecution,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
+	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
 	public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
+			IDeviceAssignment assignment) throws SiteWhereException {
 		T encoded = getCommandExecutionEncoder().encode(execution, nesting, assignment);
 		P params =
-				getCommandDeliveryParameterExtractor().extractDeliveryParameters(device, assignment,
+				getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment,
 						execution);
 		getCommandDeliveryProvider().deliver(nesting, assignment, execution, encoded, params);
 	}
@@ -76,13 +75,14 @@ public class CommandDestination<T, P> extends LifecycleComponent implements ICom
 	 * com.sitewhere.spi.device.provisioning.ICommandDestination#deliverSystemCommand(
 	 * com.sitewhere.spi.device.command.ISystemCommand,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
+	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
 	public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
+			IDeviceAssignment assignment) throws SiteWhereException {
 		T encoded = getCommandExecutionEncoder().encodeSystemCommand(command, nesting, assignment);
-		P params = getCommandDeliveryParameterExtractor().extractDeliveryParameters(device, assignment, null);
+		P params =
+				getCommandDeliveryParameterExtractor().extractDeliveryParameters(nesting, assignment, null);
 		getCommandDeliveryProvider().deliverSystemCommand(nesting, assignment, encoded, params);
 	}
 

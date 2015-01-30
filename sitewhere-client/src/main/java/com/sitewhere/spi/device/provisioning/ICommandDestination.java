@@ -8,7 +8,6 @@
 package com.sitewhere.spi.device.provisioning;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
@@ -59,11 +58,10 @@ public interface ICommandDestination<T, P> extends ILifecycleComponent {
 	 * @param execution
 	 * @param nesting
 	 * @param assignment
-	 * @param device
 	 * @throws SiteWhereException
 	 */
 	public void deliverCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
+			IDeviceAssignment assignment) throws SiteWhereException;
 
 	/**
 	 * Deliver a system command.
@@ -71,9 +69,8 @@ public interface ICommandDestination<T, P> extends ILifecycleComponent {
 	 * @param command
 	 * @param nesting
 	 * @param assignment
-	 * @param device
 	 * @throws SiteWhereException
 	 */
 	public void deliverSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDevice device) throws SiteWhereException;
+			IDeviceAssignment assignment) throws SiteWhereException;
 }
