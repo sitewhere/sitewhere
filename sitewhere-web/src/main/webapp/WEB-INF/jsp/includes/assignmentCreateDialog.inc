@@ -287,7 +287,9 @@
 	/** Open the dialog */
 	function acOpen(e, hardwareId, callback) {
 		var event = e || window.event;
-		event.stopPropagation();
+		if (event) {
+			event.stopPropagation();
+		}
 		
 		$('#ac-general-form')[0].reset();
 		$('#ac-hardware-id').val(hardwareId);
