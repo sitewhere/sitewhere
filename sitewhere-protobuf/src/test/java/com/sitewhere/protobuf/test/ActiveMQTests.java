@@ -36,10 +36,10 @@ public class ActiveMQTests {
 	private static final String HARDWARE_ID = "46497751-fdbd-46c0-a6db-3f0007b0fd00";
 
 	/** Nunber of threads for multithreaded tests */
-	private static final int NUM_THREADS = 20;
+	private static final int NUM_THREADS = 50;
 
 	/** Nunber of calls performed per thread */
-	private static final int NUM_CALLS_PER_THREAD = 100;
+	private static final int NUM_CALLS_PER_THREAD = 300;
 
 	@Test
 	public void doJMSTest() throws Exception {
