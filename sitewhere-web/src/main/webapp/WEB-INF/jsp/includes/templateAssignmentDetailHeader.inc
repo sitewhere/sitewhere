@@ -14,7 +14,7 @@
 .sw-assignment-header-label {
 	font-size: 12pt;
 	font-weight: bold;
-	min-width: 180px;
+	min-width: 200px;
 	display: inline-block;
 	line-height: 1.5;
 }
@@ -23,8 +23,8 @@
 	float: left;
 	margin-right: 40px;
 	margin-top: 25px;
-	width: 130px;
-	height: 130px;
+	width: 160px;
+	height: 160px;
 	position: relative;
 	margin-left: 10px;
 }
@@ -76,6 +76,22 @@
 				<span class="sw-assignment-header-label" title="Unique assignment token">Token:</span>
 				<span title="#:token#">#:token#</span>
 			</div>
+# if (data.associatedPerson) { #
+			<div>
+				<span class="sw-assignment-header-label" title="Assigned person">Assigned Person:</span>
+				<span title="#:associatedPerson.name#">#:associatedPerson.name#</span>
+			</div>
+# } else if (data.associatedHardware) { #
+			<div>
+				<span class="sw-assignment-header-label" title="Assigned hardware">Assigned Hardware:</span>
+				<span title="#:associatedHardware.name#">#:associatedHardware.name#</span>
+			</div>
+# } else if (data.associatedLocation) { #
+			<div>
+				<span class="sw-assignment-header-label" title="Assigned location">Assigned Location:</span>
+				<span title="#:associatedLocation.name#">#:associatedLocation.name#</span>
+			</div>
+# }	#
 			<div>
 				<span class="sw-assignment-header-label" title="Device used by assignment">Assigned Device:</span>
 				<span title="#:device.assetName#"><a href='/sitewhere/admin/devices/detail.html?hardwareId=#:device.hardwareId#'>#:device.assetName#</a></span>
