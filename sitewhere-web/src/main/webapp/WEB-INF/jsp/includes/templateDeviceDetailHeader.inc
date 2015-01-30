@@ -46,13 +46,13 @@
 			</div>
 			<div>
 				<span class="sw-device-header-label" title="Device specification used">Device Specification:</span>
-				<span title="#:specification.name#">#:specification.name#</span>
+				<span title="#:specification.name#"><a href='/sitewhere/admin/specifications/detail.html?token=#:specification.token#'>#:specification.name#</a></span>
 			</div>
 			<div>
 				<span class="sw-device-header-label" title="Currently assigned asset">Current Assignment:</span>
 # if (data.assignment) { #
 # if (assignment.assignmentType != 'Unassociated') { #
-				<span title="#:assignment.assetName#">#:assignment.assetName#</span>
+				<span title="#:assignment.assetName#"><a href='/sitewhere/admin/assignments/detail.html?token=#:assignment.token#'>#:assignment.assetName#</a></span>
 # } else { #
 				<span title="Not associated with an asset">Device is not associated with an asset</span>
 # } #
