@@ -13,13 +13,15 @@
 .sw-device-header-label {
 	font-size: 12pt;
 	font-weight: bold;
-	min-width: 180px;
+	min-width: 200px;
 	display: inline-block;
+	line-height: 1.5;
 }
 
 .sw-device-header-logowrapper {
 	float: left;
-	margin-right: 30px;
+	margin-right: 40px;
+	margin-left: 10px;
 	width: 130px;
 	height: 130px;
 	position: relative;
@@ -63,6 +65,7 @@
 # } else { #
 				<span title="Device is not assigned">Device is not assigned</span>
 # } #
+			</div>
 			<div>
 				<span class="sw-device-header-label" title="Date device was added to the system">Created Date:</span>
 				<span title="#= formattedDate(createdDate) #">#= formattedDate(createdDate) #</span>

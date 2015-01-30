@@ -1,0 +1,131 @@
+<style>
+.sw-assignment-header {
+	clear: both;
+	border: 1px solid #dcdcdc;
+	padding: 10px;
+	margin-bottom: 15px;
+	font-size: 12pt;
+	text-align: left;
+	display: block;
+	min-height: 95px;
+	position: relative;
+}
+
+.sw-assignment-header-label {
+	font-size: 12pt;
+	font-weight: bold;
+	min-width: 180px;
+	display: inline-block;
+	line-height: 1.5;
+}
+
+.sw-assignment-header-logowrapper {
+	float: left;
+	margin-right: 40px;
+	margin-top: 25px;
+	width: 130px;
+	height: 130px;
+	position: relative;
+	margin-left: 10px;
+}
+
+.sw-assignment-header-logo-tag {
+	position: absolute;
+	top: -2px;
+	left: -4px;
+}
+
+.sw-assignment-status-indicator {
+	height: 3px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px
+}
+</style>
+
+<!-- Header for device detail page -->
+<script type="text/x-kendo-tmpl" id="tpl-assignment-detail-header">
+# if (data.status == 'Active') { #
+	<div class="sw-assignment-header sw-assignment-active">
+		<div class="sw-assignment-active-indicator sw-assignment-status-indicator"></div>
+# } else if (data.status == 'Missing') { #
+	<div class="sw-assignment-header sw-assignment-missing">
+		<div class="sw-assignment-missing-indicator sw-assignment-status-indicator"></div>
+# } else { #
+	<div class="sw-assignment-header sw-assignment-released">
+		<div class="sw-assignment-status-indicator"></div>
+# } #
+		<div class="sw-assignment-header-logowrapper"
+# if (data.associatedPerson) { #
+			style="background-image: url(#:associatedPerson.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
+			<span class="label label-info sw-assignment-header-logo-tag">Asset</span>
+# } else if (data.associatedHardware) { #
+			style="background-image: url(#:associatedHardware.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
+			<span class="label label-info sw-assignment-header-logo-tag">Asset</span>
+# } else if (data.associatedLocation) { #
+			style="background-image: url(#:associatedLocation.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
+			<span class="label label-info sw-assignment-header-logo-tag">Asset</span>
+# } else if ((data.assignmentType == 'Unassociated') && (data.device)) { #
+			style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
+			<span class="label label-info sw-assignment-header-logo-tag">Unassociated</span>
+# } #
+		</div>
+		<div>
+			<div>
+				<span class="sw-assignment-header-label" title="Unique assignment token">Token:</span>
+				<span title="#:token#">#:token#</span>
+			</div>
+			<div>
+				<span class="sw-assignment-header-label" title="Device used by assignment">Assigned Device:</span>
+				<span title="#:device.assetName#"><a href='/sitewhere/admin/devices/detail.html?hardwareId=#:device.hardwareId#'>#:device.assetName#</a></span>
+			</div>
+			<div>
+				<span class="sw-assignment-header-label" title="Date assignment was created">Created Date:</span>
+				<span title="#= formattedDate(createdDate) #">#= formattedDate(createdDate) #</span>
+			</div>
+			<div>
+				<span class="sw-assignment-header-label" title="Date assignment was last updated">Updated Date:</span>
+				<span title="#= formattedDate(createdDate) #">#= formattedDate(updatedDate) #</span>
+			</div>
+			<div>
+				<span class="sw-assignment-header-label" title="Date assignment became active">Active Date:</span>
+				<span title="#= formattedDate(activeDate) #">#= formattedDate(activeDate) #</span>
+			</div>
+			<div>
+				<span class="sw-assignment-header-label" title="Date assignment was released">Released Date:</span>
+				<span title="#= formattedDate(releasedDate) #">#= formattedDate(updatedDate) #</releasedDate>
+			</div>
+			<div>
+				<span class="sw-assignment-header-label" title="Assignment status">Assignment Status:</span>
+# if (data.status == 'Active') { #
+			<div class="btn-group" style="margin-top: -6px;">
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+					Active
+					<span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li><a tabindex="-1" href="javascript:void(0)" title="Release Assignment"
+						onclick="onReleaseAssignment(event, '#:token#')">Release Assignment</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="Report Device/Asset Missing"
+						onclick="onMissingAssignment(event, '#:token#')">Report Missing</a></li>
+				</ul>
+			</div>
+# } else if (data.status == 'Missing') { #
+			<div class="btn-group" style="margin-top: -6px;">
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+					Missing
+					<span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li><a tabindex="-1" href="javascript:void(0)" title="Release Assignment"
+						onclick="onReleaseAssignment(event, '#:token#')">Release Assignment</a></li>
+				</ul>
+			</div>
+# } else { #
+				<span title="#:status#">#:status#</span>
+# } #
+			</div>
+		</div>
+	</div>
+</script>
