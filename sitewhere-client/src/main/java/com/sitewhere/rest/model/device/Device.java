@@ -58,6 +58,9 @@ public class Device extends MetadataProviderEntity implements IDevice {
 	/** Current device assignment */
 	private DeviceAssignment assignment;
 
+	/** Current site deployment */
+	private Site site;
+
 	/** Asset id from device specification (only for marshaling) */
 	private String assetId;
 
@@ -186,6 +189,14 @@ public class Device extends MetadataProviderEntity implements IDevice {
 
 	public void setAssignment(DeviceAssignment assignment) {
 		this.assignment = assignment;
+	}
+
+	public Site getSite() {
+		return site;
+	}
+
+	public void setSite(Site site) {
+		this.site = site;
 	}
 
 	public String getAssetId() {

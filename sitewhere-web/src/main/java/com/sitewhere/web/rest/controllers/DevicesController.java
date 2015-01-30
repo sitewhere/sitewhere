@@ -107,6 +107,7 @@ public class DevicesController extends SiteWhereController {
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(defaultValue = "true") boolean includeSpecification,
 			@ApiParam(value = "Include assignment if associated", required = false) @RequestParam(defaultValue = "true") boolean includeAssignment,
+			@ApiParam(value = "Include site information", required = false) @RequestParam(defaultValue = "true") boolean includeSite,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
 			@ApiParam(value = "Include detailed nested device information", required = false) @RequestParam(defaultValue = "false") boolean includeNested)
 			throws SiteWhereException {
@@ -117,6 +118,7 @@ public class DevicesController extends SiteWhereController {
 			helper.setIncludeSpecification(includeSpecification);
 			helper.setIncludeAsset(includeAsset);
 			helper.setIncludeAssignment(includeAssignment);
+			helper.setIncludeSite(includeSite);
 			helper.setIncludeNested(includeNested);
 			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
 		} finally {

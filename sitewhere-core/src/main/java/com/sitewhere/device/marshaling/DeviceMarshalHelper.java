@@ -14,12 +14,14 @@ import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
+import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.ISite;
 
 /**
  * Configurable helper class that allows {@link Device} model objects to be created from
@@ -40,6 +42,9 @@ public class DeviceMarshalHelper {
 
 	/** Indicates whether device assignment information is to be copied */
 	private boolean includeAssignment = false;
+
+	/** Indicates whether site information is to be copied */
+	private boolean includeSite = false;
 
 	/** Indicates whether device element mappings should include device details */
 	private boolean includeNested = false;
@@ -122,6 +127,18 @@ public class DeviceMarshalHelper {
 				result.setAssignmentToken(source.getAssignmentToken());
 			}
 		}
+		if (source.getSiteToken() != null) {
+			if (includeSite) {
+				ISite site =
+						SiteWhere.getServer().getDeviceManagement().getSiteByToken(source.getSiteToken());
+				if (site == null) {
+					throw new SiteWhereException("Device contains an invalid site reference.");
+				}
+				result.setSite(Site.copy(site));
+			} else {
+				result.setSiteToken(source.getSiteToken());
+			}
+		}
 		return result;
 	}
 
@@ -190,6 +207,14 @@ public class DeviceMarshalHelper {
 	public DeviceMarshalHelper setIncludeAssignment(boolean includeAssignment) {
 		this.includeAssignment = includeAssignment;
 		return this;
+	}
+
+	public boolean isIncludeSite() {
+		return includeSite;
+	}
+
+	public void setIncludeSite(boolean includeSite) {
+		this.includeSite = includeSite;
 	}
 
 	public boolean isIncludeNested() {

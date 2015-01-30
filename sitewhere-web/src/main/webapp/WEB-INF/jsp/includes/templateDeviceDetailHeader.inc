@@ -19,9 +19,9 @@
 
 .sw-device-header-logowrapper {
 	float: left;
-	margin-right: 25px;
-	width: 110px;
-	height: 110px;
+	margin-right: 30px;
+	width: 130px;
+	height: 130px;
 	position: relative;
 }
 
@@ -47,6 +47,10 @@
 			<div>
 				<span class="sw-device-header-label" title="Device specification used">Device Specification:</span>
 				<span title="#:specification.name#"><a href='/sitewhere/admin/specifications/detail.html?token=#:specification.token#'>#:specification.name#</a></span>
+			</div>
+			<div>
+				<span class="sw-device-header-label" title="Site where device is deployed">Deployed Site:</span>
+				<span title="#:site.name#"><a href='/sitewhere/admin/sites/detail.html?siteToken=#:site.token#'>#:site.name#</a></span>
 			</div>
 			<div>
 				<span class="sw-device-header-label" title="Currently assigned asset">Current Assignment:</span>
