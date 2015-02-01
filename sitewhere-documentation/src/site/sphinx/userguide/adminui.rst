@@ -615,8 +615,8 @@ the asset portion of the device entry as shown below:
    :align: left
 
 Clicking the button opens a dialog that allows the device to be assigned. The
-**Assignment Details** tab shows the hardware id for the device along with a dropdown
-for choosing which site the device will be assigned to.
+**Assignment Details** tab shows the hardware id for the device that will
+be assigned.
 
 .. image:: /_static/images/userguide/device-assign-details.png
    :width: 100%
