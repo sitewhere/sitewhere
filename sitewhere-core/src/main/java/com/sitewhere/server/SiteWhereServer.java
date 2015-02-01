@@ -453,7 +453,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		messages.add("Operating System: " + os);
 		messages.add("Java Runtime: " + java);
 		messages.add("");
-		messages.add("Copyright (c) 2009-2014 SiteWhere, LLC");
+		messages.add("Copyright (c) 2009-2015 SiteWhere, LLC");
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 		LOGGER.info("\n" + message + "\n");
 	}
