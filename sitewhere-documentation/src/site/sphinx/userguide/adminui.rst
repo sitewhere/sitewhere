@@ -447,6 +447,8 @@ The **Device Details** tab includes basic information about a device.
 | Hardware Id          | Unique hardware identifier for the device. The         |
 |                      | identifier can be any string value.                    |
 +----------------------+--------------------------------------------------------+
+| Site                 | Specifies the site where the device will be deployed.  |
++----------------------+--------------------------------------------------------+
 | Comments             | Extra information about the device.                    |
 +----------------------+--------------------------------------------------------+
 
@@ -476,6 +478,89 @@ payloads.
 .. image:: /_static/images/userguide/device-edit-metadata.png
    :width: 100%
    :alt: Edit Device - Metadata
+   :align: left
+   
+Filtering the Device List
+-------------------------
+SiteWhere is designed to manage and interact with a large number of devices, so it
+is important to be able to target specific groups of devices based on criteria.
+On the device list page, clicking on the **Filter Results** button opens a
+dialog that allows criteria to be specified to narrow the list of results.
+   
+Filter Devices - Specifications Tab
+***********************************
+The first tab allows devices to be filtered based on the device specification
+that they implement. The two choices include:
+
+* Do not filter by specification
+* Include only devices that implement a given specification
+
+Limiting results to devices that implement a specification allows all devices 
+of a given type to be targeted. It also adds a **Batch Command** button to the
+toolbar, allowing a command to be executed as a batch operation for all of the
+devices that meet the criteria. Other criteria may be applied in addition to
+the specification to limit the scope of devices affected by the command.
+   
+.. image:: /_static/images/userguide/device-filter-spec.png
+   :width: 100%
+   :alt: Filter Device - Specifications
+   :align: left
+   
+Filter Devices - Groups Tab
+***************************
+The **Groups** tab allows search results to be limited based by whether devices
+are contained in specific device groups. The choices for group filtering 
+include:
+
+* Do not filter by group
+* Include devices that belong to a particular group
+* Include devices that belong to groups with a given role
+
+The group filter criteria is applied in addition to any other criteria so, for
+instance, you can choose a specification and a group to choose only devices of a 
+given type in the group. You can then click **Batch Command** to send a command to
+only those devices.
+   
+.. image:: /_static/images/userguide/device-filter-group.png
+   :width: 100%
+   :alt: Filter Device - Groups
+   :align: left
+   
+Filter Devices - Created Date Tab
+*********************************
+The **Created Date** tab allows search results to be limited by the date a device
+was added to the system. The choices for filtering by created date include:
+
+* Do not filter by created date
+* Include devices created in the last hour
+* Include devices created in the last day
+* Include devices created in the last week
+* Include devices created before a given date
+* Include devices created after a given date
+* Include devices created between two dates
+
+The created date filter criteria is applied in combination with other filters so,
+for instance, you can choose devices in a group that implement a given specification
+and were created in the last week.
+   
+.. image:: /_static/images/userguide/device-filter-createdate.png
+   :width: 100%
+   :alt: Filter Device - Created Date
+   :align: left
+   
+Filter Devices - Other Options
+******************************
+The **Other Options** tab is a catch-all for other criteria that can be used to 
+filter the device list.
+
+Currently, the only option available is filtering devices that are currently 
+assigned. Choosing this option will return only unassigned devices. Examples of
+using this option include looking for devices of a given type that are not
+assigned yet or looking for devices in a group that are not assigned yet.
+
+.. image:: /_static/images/userguide/device-filter-other.png
+   :width: 100%
+   :alt: Filter Device - Other Options
    :align: left
    
 Managing Devices - Device Detail
