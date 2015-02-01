@@ -747,6 +747,70 @@ metadata for the building phone number or address where the badges are in use.
    :alt: Edit Device Group - Metadata
    :align: left
 
+-------------------------
+Managing Batch Operations
+-------------------------
+Batch operations are actions that operate on multiple devices, executing asynchronously
+and providing a mechanism for monitoring progress over time. Examples of batch
+operations include executing commands on a large number of devices or applying
+firmware updates to a group of devices. The batch operation manager is responsible
+for taking a batch operation request and breaking it out into the actions necessary
+to complete the goal. Since batch operations can result in a large load on the system,
+the batch operation manager allows for throttling the execution of operations so that
+a reasonable load is achieved when dealing with thousands or millions of devices.
+
+Batch Operation List
+--------------------
+Clicking the **Batch** tab in the navigation bar opens the batch list page.
+All batch operations are listed in reverse chronological order.
+
+.. image:: /_static/images/userguide/batch-list.png
+   :width: 100%
+   :alt: Batch List
+   :align: left
+
+Batch Command Invocation Details
+--------------------------------
+Commands can be invoked as batch operations by navigating to the device list 
+page, specifying criteria to limit the devices that will be affected, then 
+clicking the **Batch Command** button in the toolbar. Note that commands can
+only be executed on devices that implement the same specification, so the 
+filter criteria must limit the device list to a single specification. Once a 
+batch command has been executed, it will appear on the batch opearation list
+page. Clicking on the arrow to the right of the operation entry will 
+navigate to the batch command invocation details page as shown below:
+
+.. image:: /_static/images/userguide/batch-command-detail.png
+   :width: 100%
+   :alt: Batch Command Detail
+   :align: left
+
+The banner at the top of the page incudes information about the batch command
+invocation. The command that was executed is shown along with the values passed
+for any arguments. The other fields are summarized in the table below:
+
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Token                | Unique token that identifies the batch.                |
++----------------------+--------------------------------------------------------+
+| Operation            | Type of batch operation that was performed.            |
++----------------------+--------------------------------------------------------+
+| Processing Status    | Indicates status of the batch operation as a whole.    |
++----------------------+--------------------------------------------------------+
+| Created Date         | Date the batch operation was created.                  |
++----------------------+--------------------------------------------------------+
+| Processing Started   | Date the batch operation started processing.           |
++----------------------+--------------------------------------------------------+
+| Processing Finished  | Date the batch operation finished processing.          |
++----------------------+--------------------------------------------------------+
+
+Below the header is a list of the batch operation elements. These correspond
+to the individual commands that were invoked on devices. Each entry indicates
+the hardware id of the affected device, the processing status (indicating whether
+a command invocation was created successfully), the processed date, and
+a link to the command invocation event that was generated. 
+
 --------------
 Managing Users
 --------------
