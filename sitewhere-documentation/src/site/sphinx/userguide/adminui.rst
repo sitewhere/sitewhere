@@ -553,7 +553,7 @@ Filter Devices - Other Options
 The **Other Options** tab is a catch-all for other criteria that can be used to 
 filter the device list.
 
-Currently, the only option available is filtering devices that are currently 
+Currently, the only option available is filtering devices that are already 
 assigned. Choosing this option will return only unassigned devices. Examples of
 using this option include looking for devices of a given type that are not
 assigned yet or looking for devices in a group that are not assigned yet.
