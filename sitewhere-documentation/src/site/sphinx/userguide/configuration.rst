@@ -33,8 +33,8 @@ SiteWhere schema. The SiteWhere schema contains many of the most often used buil
 a SiteWhere server. It also allows for the introduction of user-defined component implementations. For example,
 in the configuration below, the *<sw:outbound-event-processor>* contains a *ref* attribute that points to an
 external Spring bean. By implementing components that conform to SiteWhere interfaces and plugging them in via
-Spring beans, the behavior of the system may be customized to add new behaviors. In this case, the system has 
-been configured to broadcast all processed events via Hazelcast.
+Spring beans, the system may be customized to add new behaviors. In this case, the system has been configured 
+to broadcast all processed events via Hazelcast.
 
 .. code-block:: xml
 
@@ -45,7 +45,7 @@ been configured to broadcast all processed events via Hazelcast.
               http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd">
+              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.1/sitewhere.xsd">
       
       <sw:configuration>
                
