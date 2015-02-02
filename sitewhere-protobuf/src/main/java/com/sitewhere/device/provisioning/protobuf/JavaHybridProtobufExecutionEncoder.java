@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import com.sitewhere.rest.model.device.event.DeviceEventOriginator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -50,6 +51,7 @@ public class JavaHybridProtobufExecutionEncoder extends ProtobufExecutionEncoder
 				parameterValues[i++] = encodeParameterValue(parameter, execution.getInvocation());
 			}
 			out.writeObject(parameterValues);
+			out.writeObject(new DeviceEventOriginator(execution.getInvocation()));
 			out.flush();
 			return encoded.toByteArray();
 		} catch (IOException e) {
