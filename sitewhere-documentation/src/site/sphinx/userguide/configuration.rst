@@ -464,6 +464,41 @@ The following attributes may be specified for the *<sw:default-inbound-processin
 |                          |          | are posted. Defaults to *5*.                       |
 +--------------------------+----------+----------------------------------------------------+
 
+Batch Operation Manager
+-----------------------
+The batch operation manager is responsible for asynchronously processing operations that 
+are applied to many devices. Batch operations can be submitted via the administrative
+console or via the REST services. The batch operation manager cycles through the list 
+of batch operation elements, executing each and keeping state regarding progress of
+execution. The default batch operation manager can be configured by using the
+*<sw:default-batch-operation-manager>* element as shown below.
+
+.. code-block:: xml
+   :emphasize-lines: 5
+
+   <sw:provisioning>
+               
+      <!-- Batch operation management -->
+      <sw:batch-operations>
+         <sw:default-batch-operation-manager throttleDelayMs="10000"/>
+      </sw:batch-operations>
+
+The throttle delay value can be used to slow down the rate that elements are processed
+so that the system is not overloaded by large operations.
+      
+A custom batch operation manager can be added by creating a class that implements
+`IBatchOperationManager <../apidocs/com/sitewhere/spi/device/batch/IBatchOperationManager.html>`_
+and adding a reference to it using the *<sw:batch-operation-manager>* element.
+
+The following attributes may be specified for the *<sw:default-batch-operation-manager>* element.
+      
++--------------------------+----------+----------------------------------------------------+
+| Attribute                | Required | Description                                        |
++==========================+==========+====================================================+
+| throttleDelayMs          | optional | Number of milliseconds to wait between processing  |
+|                          |          | batch operation elements. Defaults to *0*.         |
++--------------------------+----------+----------------------------------------------------+
+
 Command Destinations
 --------------------
 Command destinations are responsible for delivering commands to devices. All command destinations implement the
