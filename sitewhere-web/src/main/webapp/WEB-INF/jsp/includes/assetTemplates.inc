@@ -27,7 +27,7 @@
 			<img class="asset-entry-logo" src="#:imageUrl#"/>
 		</div>
 		<div class="ellipsis"><b>#:name#</b></div>
-		<div class="ellipsis">More stuff goes here</div>
+		<div class="ellipsis">Location: (#:latitude#, #:longitude#)</div>
 	</div>
 </script>
 

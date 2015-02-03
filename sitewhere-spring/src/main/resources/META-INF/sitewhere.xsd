@@ -1154,6 +1154,13 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
+				<xsd:element name="filesystem-location-asset-module" type="fileSystemLocationAssetModuleType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Configures a filesystem location asset module instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -1179,6 +1186,13 @@
 
 	<!-- Configures an instance of a filesystem person asset module -->
 	<xsd:complexType name="fileSystemPersonAssetModuleType">
+		<xsd:complexContent>
+			<xsd:extension base="fileSystemAssetModuleType"></xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Configures an instance of a filesystem location asset module -->
+	<xsd:complexType name="fileSystemLocationAssetModuleType">
 		<xsd:complexContent>
 			<xsd:extension base="fileSystemAssetModuleType"></xsd:extension>
 		</xsd:complexContent>

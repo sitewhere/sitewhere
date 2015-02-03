@@ -15,6 +15,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import com.sitewhere.rest.model.asset.HardwareAsset;
+import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
@@ -99,6 +100,38 @@ public class MarshalUtils {
 			return assets;
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to unmarshal person assets file.", e);
+		}
+	}
+
+	/**
+	 * Loads a list of location assets from a file.
+	 * 
+	 * @param config
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static List<LocationAsset> loadLocationAssets(File config) throws SiteWhereException {
+		List<LocationAsset> assets = new ArrayList<LocationAsset>();
+		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(FileSystemLocationAssets.class);
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			FileSystemLocationAssets xmlAssets =
+					(FileSystemLocationAssets) jaxbUnmarshaller.unmarshal(config);
+			for (FileSystemLocationAsset xmlAsset : xmlAssets.getLocationAssets()) {
+				LocationAsset asset = new LocationAsset();
+				asset.setId(xmlAsset.getId());
+				asset.setName(xmlAsset.getName());
+				asset.setLatitude(xmlAsset.getLat());
+				asset.setLongitude(xmlAsset.getLon());
+				asset.setImageUrl(xmlAsset.getImageUrl());
+				for (FileSystemAssetProperty xmlProperty : xmlAsset.getProperties()) {
+					asset.setProperty(xmlProperty.getName(), xmlProperty.getValue());
+				}
+				assets.add(asset);
+			}
+			return assets;
+		} catch (Exception e) {
+			throw new SiteWhereException("Unable to unmarshal location assets file.", e);
 		}
 	}
 }

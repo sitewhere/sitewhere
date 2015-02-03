@@ -12,33 +12,33 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.rest.model.asset.PersonAsset;
+import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
 
 /**
- * Module that loads a list of person assets from an XML file on the filesystem.
+ * Module that loads a list of location assets from an XML file on the filesystem.
  * 
  * @author Derek Adams
  */
-public class FileSystemPersonAssetModule extends FileSystemAssetModule<PersonAsset> implements
-		IAssetModule<PersonAsset> {
+public class FileSystemLocationAssetModule extends FileSystemAssetModule<LocationAsset> implements
+		IAssetModule<LocationAsset> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(FileSystemPersonAssetModule.class);
+	private static Logger LOGGER = Logger.getLogger(FileSystemLocationAssetModule.class);
 
 	/** Module id */
-	public static final String MODULE_ID = "fs-persons";
+	public static final String MODULE_ID = "fs-locations";
 
 	/** Module name */
-	public static final String MODULE_NAME = "Default Identity Management";
+	public static final String MODULE_NAME = "Default Location Management";
 
-	/** Filename in SiteWhere config folder that contains person assets */
-	public static final String PERSON_CONFIG_FILENAME = "person-assets.xml";
+	/** Filename in SiteWhere config folder that contains location assets */
+	public static final String CONFIG_FILENAME = "location-assets.xml";
 
-	public FileSystemPersonAssetModule() {
-		super(PERSON_CONFIG_FILENAME, MODULE_ID, MODULE_NAME);
+	public FileSystemLocationAssetModule() {
+		super(CONFIG_FILENAME, MODULE_ID, MODULE_NAME);
 	}
 
 	/*
@@ -57,7 +57,7 @@ public class FileSystemPersonAssetModule extends FileSystemAssetModule<PersonAss
 	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetType()
 	 */
 	public AssetType getAssetType() {
-		return AssetType.Person;
+		return AssetType.Location;
 	}
 
 	/*
@@ -67,7 +67,7 @@ public class FileSystemPersonAssetModule extends FileSystemAssetModule<PersonAss
 	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(java.io.File)
 	 */
 	@Override
-	protected List<PersonAsset> unmarshal(File file) throws SiteWhereException {
-		return MarshalUtils.loadPersonAssets(file);
+	protected List<LocationAsset> unmarshal(File file) throws SiteWhereException {
+		return MarshalUtils.loadLocationAssets(file);
 	}
 }
