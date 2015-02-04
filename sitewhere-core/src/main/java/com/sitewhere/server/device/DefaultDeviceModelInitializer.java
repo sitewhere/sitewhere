@@ -8,7 +8,6 @@
 package com.sitewhere.server.device;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +17,11 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.SiteWhere;
+import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.geospatial.GeoUtils;
 import com.sitewhere.rest.model.common.Location;
+import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
@@ -44,6 +46,8 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.asset.filesystem.FileSystemDeviceAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule;
+import com.sitewhere.server.asset.filesystem.FileSystemLocationAssetModule;
+import com.sitewhere.server.asset.filesystem.FileSystemPersonAssetModule;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
@@ -112,7 +116,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final int NUM_DEVICE_GROUPS = 3;
 
 	/** Number of devices/assignments to create */
-	public static final int ASSIGNMENTS_PER_SITE = 25;
+	public static final int ASSIGNMENTS_PER_SITE = 40;
 
 	/** Number of events per assignment */
 	public static final int EVENTS_PER_ASSIGNMENT = 75;
@@ -154,14 +158,42 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Specification token for Laipac S-911 BL */
 	public static final String LAIPAC_S911_SPEC_TOKEN = "fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910";
 
+	/** Specification token for MeiTrack device */
+	public static final String MEITRACK_SPEC_TOKEN = "82043707-9e3d-441f-bdcc-33cf0f4f7260";
+
+	/** Available choices for devices/assignments that track heavy equipment */
+	protected static AssignmentChoice[] HEAVY_EQUIPMENT = {
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "300"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "301"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "302"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
+			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
+
+	/** Available choices for devices/assignments that track people */
+	protected static AssignmentChoice[] PERSONNEL = {
+			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "1"),
+			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "2"),
+			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "3") };
+
+	/** Available choices for devices/assignments that track tools */
+	protected static AssignmentChoice[] TOOLS = {
+			new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "1"),
+			new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "2") };
+
 	/** Information for available device specifications */
-	public static final SpecificationDetails[] SPECIFICATION_INFO = {
-			new SpecificationDetails("173", "Android Tablet", "d2604433-e4eb-419b-97c7-88efe9b2cd41"),
-			new SpecificationDetails("181", "Arduino High Memory", "417b36a8-21ef-4196-a8fe-cc756f994d0b"),
-			new SpecificationDetails("174", "Raspberry Pi", "7dfd6d63-5e8d-4380-be04-fc5c73801dfb"),
-			new SpecificationDetails("175", "MeiTrack GPS", "82043707-9e3d-441f-bdcc-33cf0f4f7260"),
-			new SpecificationDetails("176", "Gateway Default", "75126a52-0607-4cca-b995-df40e73a707b"),
-			new SpecificationDetails("300", "Laipac Health Bracelet", LAIPAC_S911_SPEC_TOKEN) };
+	public static final SpecificationDetails[] SPECIFICATION_INFO =
+			{
+					new SpecificationDetails("173", "Android Tablet", "d2604433-e4eb-419b-97c7-88efe9b2cd41",
+							PERSONNEL),
+					new SpecificationDetails("181", "Arduino High Memory",
+							"417b36a8-21ef-4196-a8fe-cc756f994d0b", TOOLS),
+					new SpecificationDetails("174", "Raspberry Pi", "7dfd6d63-5e8d-4380-be04-fc5c73801dfb",
+							TOOLS),
+					new SpecificationDetails("175", "MeiTrack GPS", MEITRACK_SPEC_TOKEN, HEAVY_EQUIPMENT),
+					new SpecificationDetails("176", "Gateway Default",
+							"75126a52-0607-4cca-b995-df40e73a707b", TOOLS),
+					new SpecificationDetails("300", "Laipac Health Bracelet", LAIPAC_S911_SPEC_TOKEN,
+							PERSONNEL) };
 
 	/** Available device specifications */
 	protected IDeviceSpecification[] deviceSpecifications;
@@ -169,42 +201,6 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Map of commands for each specification token */
 	protected Map<String, List<IDeviceCommand>> commandsBySpecToken =
 			new HashMap<String, List<IDeviceCommand>>();
-
-	/** Available choices for devices/assignments that track location */
-	protected static AssignmentChoice[] LOCATION_TRACKERS = {
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "300"),
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "301"),
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "302"),
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
-
-	/** Role for 'light equipment' groups */
-	protected static final String GRP_ROLE_LIGHT_EQUIPMENT = "light-equipment";
-
-	/** Role for 'heavy equipment' groups */
-	protected static final String GRP_ROLE_HEAVY_EQUIPMENT = "heavy-equipment";
-
-	/** Role lists that can be applied to device groups */
-	protected static String[][] GRP_ROLE_LISTS = {
-			new String[] { GRP_ROLE_LIGHT_EQUIPMENT },
-			new String[] { GRP_ROLE_HEAVY_EQUIPMENT } };
-
-	/** Role for 'first team' members */
-	protected static final String GRP_ELM_ROLE_FIRST_TEAM = "first-team";
-
-	/** Role for 'second team' members */
-	protected static final String GRP_ELM_ROLE_SECOND_TEAM = "second-team";
-
-	/** Role for 'earth movers' members */
-	protected static final String GRP_ELM_ROLE_EARTH_MOVERS_TEAM = "earth-movers";
-
-	/** Role lists that can be applied to device group elements */
-	protected static String[][] GRP_ELEMENT_ROLE_LISTS = {
-			new String[] { GRP_ELM_ROLE_FIRST_TEAM },
-			new String[] { GRP_ELM_ROLE_SECOND_TEAM },
-			new String[] { GRP_ELM_ROLE_FIRST_TEAM, GRP_ELM_ROLE_EARTH_MOVERS_TEAM },
-			new String[] { GRP_ELM_ROLE_EARTH_MOVERS_TEAM },
-			new String[] { GRP_ELM_ROLE_SECOND_TEAM, GRP_ELM_ROLE_EARTH_MOVERS_TEAM }, };
 
 	/** Locations that determine zone edges */
 	protected List<Location> zoneLocations;
@@ -244,22 +240,42 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		// Create device specifications.
 		this.deviceSpecifications = createDeviceSpecifications();
 
+		IDeviceGroup heavy = createHeavyEquipmentGroup();
+		IDeviceGroup personnel = createPersonnelTrackingGroup();
+		IDeviceGroup tools = createToolTrackingGroup();
+
+		Map<String, SpecificationDetails> specMap = new HashMap<String, SpecificationDetails>();
+		for (int i = 0; i < SPECIFICATION_INFO.length; i++) {
+			specMap.put(SPECIFICATION_INFO[i].getUuid(), SPECIFICATION_INFO[i]);
+		}
+
 		List<ISite> sites = createSites();
 		for (ISite site : sites) {
-			List<IDeviceAssignment> assignments = createAssignments(site);
-			for (int groupIndex = 0; groupIndex < NUM_DEVICE_GROUPS; groupIndex++) {
-				List<IDeviceGroupElementCreateRequest> requests =
-						new ArrayList<IDeviceGroupElementCreateRequest>();
-				IDeviceGroup group = createDeviceGroup(groupIndex);
-				for (IDeviceAssignment assignment : assignments) {
-					DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
-					request.setType(GroupElementType.Device);
-					request.setElementId(assignment.getDeviceHardwareId());
-					request.setRoles(getRandomDeviceGroupElementRoleList());
-					requests.add(request);
+			List<DeviceAssignment> assignments = createAssignments(site, specMap);
+			List<IDeviceGroupElementCreateRequest> heavyRequests =
+					new ArrayList<IDeviceGroupElementCreateRequest>();
+			List<IDeviceGroupElementCreateRequest> personnelRequests =
+					new ArrayList<IDeviceGroupElementCreateRequest>();
+			List<IDeviceGroupElementCreateRequest> toolsRequests =
+					new ArrayList<IDeviceGroupElementCreateRequest>();
+
+			for (DeviceAssignment assignment : assignments) {
+				DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
+				request.setType(GroupElementType.Device);
+				request.setElementId(assignment.getDeviceHardwareId());
+				request.setRoles(new ArrayList<String>());
+				SpecificationDetails info = specMap.get(assignment.getDevice().getSpecificationToken());
+				if (info.getAssignmentChoices() == HEAVY_EQUIPMENT) {
+					heavyRequests.add(request);
+				} else if (info.getAssignmentChoices() == PERSONNEL) {
+					personnelRequests.add(request);
+				} else if (info.getAssignmentChoices() == TOOLS) {
+					toolsRequests.add(request);
 				}
-				getDeviceManagement().addDeviceGroupElements(group.getToken(), requests);
 			}
+			getDeviceManagement().addDeviceGroupElements(heavy.getToken(), heavyRequests);
+			getDeviceManagement().addDeviceGroupElements(personnel.getToken(), personnelRequests);
+			getDeviceManagement().addDeviceGroupElements(tools.getToken(), toolsRequests);
 		}
 
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -464,6 +480,20 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	}
 
 	/**
+	 * Get the MeiTrack device specification.
+	 * 
+	 * @return
+	 */
+	public IDeviceSpecification getMeitrackSpecification() {
+		for (int i = 0; i < deviceSpecifications.length; i++) {
+			if (deviceSpecifications[i].getToken().equals(MEITRACK_SPEC_TOKEN)) {
+				return deviceSpecifications[i];
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Create example sites.
 	 * 
 	 * @return
@@ -512,18 +542,36 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		return zone;
 	}
 
-	/**
-	 * Create a device group.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IDeviceGroup createDeviceGroup(int index) throws SiteWhereException {
+	public IDeviceGroup createHeavyEquipmentGroup() throws SiteWhereException {
 		DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
 		request.setToken(UUID.randomUUID().toString());
-		request.setName("Construction Equipment Group " + (index + 1));
-		request.setDescription("Device group that contains contruction equipment assets.");
-		request.setRoles(getRandomDeviceGroupRoleList());
+		request.setName("Heavy Equipment Tracking");
+		request.setDescription("Device group that contains devices for tracking location of heavy equipment.");
+		request.setRoles(new ArrayList<String>());
+		request.getRoles().add("heavy-equipment-tracking");
+		request.getRoles().add("tracking");
+		return getDeviceManagement().createDeviceGroup(request);
+	}
+
+	public IDeviceGroup createPersonnelTrackingGroup() throws SiteWhereException {
+		DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
+		request.setToken(UUID.randomUUID().toString());
+		request.setName("Personnel Tracking");
+		request.setDescription("Device group that contains devices for tracking location of people.");
+		request.setRoles(new ArrayList<String>());
+		request.getRoles().add("personnel-tracking");
+		request.getRoles().add("tracking");
+		return getDeviceManagement().createDeviceGroup(request);
+	}
+
+	public IDeviceGroup createToolTrackingGroup() throws SiteWhereException {
+		DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
+		request.setToken(UUID.randomUUID().toString());
+		request.setName("Tool Tracking");
+		request.setDescription("Device group that contains devices for tracking location of tools.");
+		request.setRoles(new ArrayList<String>());
+		request.getRoles().add("tool-tracking");
+		request.getRoles().add("tracking");
 		return getDeviceManagement().createDeviceGroup(request);
 	}
 
@@ -534,12 +582,21 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<IDeviceAssignment> createAssignments(ISite site) throws SiteWhereException {
+	public List<DeviceAssignment> createAssignments(ISite site, Map<String, SpecificationDetails> specMap)
+			throws SiteWhereException {
 		Date before = new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000));
-		List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
+		List<DeviceAssignment> results = new ArrayList<DeviceAssignment>();
+		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+		helper.setIncludeDevice(true);
 		for (int x = 0; x < ASSIGNMENTS_PER_SITE; x++) {
-			AssignmentChoice assnChoice = getRandomAssignmentChoice();
 			IDeviceSpecification specification = getRandomDeviceSpecification();
+
+			// Make sure most of the entries are heavy equipment.
+			if (Math.random() > 0.7) {
+				specification = getMeitrackSpecification();
+			}
+			SpecificationDetails info = specMap.get(specification.getToken());
+			AssignmentChoice assnChoice = getRandomAssignmentChoice(info);
 			// List<IDeviceCommand> commands =
 			// commandsBySpecToken.get(specification.getToken());
 
@@ -570,7 +627,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			// createDeviceCommandResponses(assignment, before, invocations);
 			// createDeviceStateChanges(assignment, specification, before);
 
-			results.add(assignment);
+			results.add(helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager()));
 		}
 		return results;
 	}
@@ -814,35 +871,14 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	}
 
 	/**
-	 * Gets a random location tracker assignment choice entry.
+	 * Get a random assignment from the list of allowed choices.
 	 * 
+	 * @param details
 	 * @return
 	 */
-	protected AssignmentChoice getRandomAssignmentChoice() {
-		int slot = (int) Math.floor(LOCATION_TRACKERS.length * Math.random());
-		return LOCATION_TRACKERS[slot];
-	}
-
-	/**
-	 * Gets a random role list for a device group.
-	 * 
-	 * @return
-	 */
-	protected List<String> getRandomDeviceGroupRoleList() {
-		int slot = (int) Math.floor(GRP_ROLE_LISTS.length * Math.random());
-		String[] roles = GRP_ROLE_LISTS[slot];
-		return Arrays.asList(roles);
-	}
-
-	/**
-	 * Gets a random role list for a device group element.
-	 * 
-	 * @return
-	 */
-	protected List<String> getRandomDeviceGroupElementRoleList() {
-		int slot = (int) Math.floor(GRP_ELEMENT_ROLE_LISTS.length * Math.random());
-		String[] roles = GRP_ELEMENT_ROLE_LISTS[slot];
-		return Arrays.asList(roles);
+	protected AssignmentChoice getRandomAssignmentChoice(SpecificationDetails details) {
+		int slot = (int) Math.floor(details.getAssignmentChoices().length * Math.random());
+		return details.getAssignmentChoices()[slot];
 	}
 
 	/**
@@ -858,10 +894,14 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 		private String uuid;
 
-		public SpecificationDetails(String assetId, String name, String uuid) {
+		private AssignmentChoice[] assignmentChoices;
+
+		public SpecificationDetails(String assetId, String name, String uuid,
+				AssignmentChoice[] assignmentChoices) {
 			this.assetId = assetId;
 			this.name = name;
 			this.uuid = uuid;
+			this.assignmentChoices = assignmentChoices;
 		}
 
 		public String getAssetId() {
@@ -874,6 +914,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 		public String getUuid() {
 			return uuid;
+		}
+
+		public AssignmentChoice[] getAssignmentChoices() {
+			return assignmentChoices;
 		}
 	}
 
