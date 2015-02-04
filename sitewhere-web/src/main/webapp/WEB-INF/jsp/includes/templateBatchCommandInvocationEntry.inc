@@ -30,6 +30,10 @@
 		<td>#:hardwareId#</td>
 		<td>#:processingStatus#</td>
 		<td>#= formattedDate(processedDate) #</td>
+# if (processingStatus == 'Succeeded') { #
 		<td><a href="javascript:void(0)" onclick="viewCommandInvocation(event, '#:metadata['invocation']#')">#:metadata['invocation']#</a></td>
+# } else { #
+		<td></td>
+# } #
 	</tr>
 </script>
