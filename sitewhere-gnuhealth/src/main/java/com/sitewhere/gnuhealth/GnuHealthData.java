@@ -34,6 +34,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Handles operations for loading and caching GNU Health data.
@@ -69,6 +70,7 @@ public class GnuHealthData extends LifecycleComponent {
 	private Map<String, LocationAsset> wardCache = new HashMap<String, LocationAsset>();
 
 	public GnuHealthData(GnuHealthConfiguration configuration) {
+		super(LifecycleComponentType.DataStore);
 		this.configuration = configuration;
 	}
 

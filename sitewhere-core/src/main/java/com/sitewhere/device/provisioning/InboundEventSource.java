@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceEventDecoder;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.IInboundProcessingStrategy;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link IInboundEventSource}.
@@ -49,6 +50,10 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 
 	/** List of {@link IInboundEventReceiver} that supply this processor */
 	private List<IInboundEventReceiver<T>> inboundEventReceivers = new ArrayList<IInboundEventReceiver<T>>();
+
+	public InboundEventSource() {
+		super(LifecycleComponentType.InboundEventSource);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -111,13 +116,13 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#onEncodedEventReceived
-	 * (java.lang.Object)
+	 * (com.sitewhere.spi.device.provisioning.IInboundEventReceiver, java.lang.Object)
 	 */
 	@Override
-	public void onEncodedEventReceived(T encodedEvent) {
+	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload) {
 		try {
 			LOGGER.debug("Device event receiver thread picked up event.");
-			List<IDecodedDeviceEventRequest> requests = getDeviceEventDecoder().decode(encodedEvent);
+			List<IDecodedDeviceEventRequest> requests = decodePayload(encodedPayload);
 			if (requests != null) {
 				for (IDecodedDeviceEventRequest decoded : requests) {
 					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
@@ -137,10 +142,31 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 				}
 			}
 		} catch (SiteWhereException e) {
-			LOGGER.error("Event receiver thread unable to decode event request.", e);
+			onEventDecodeFailed(encodedPayload, e);
 		} catch (Throwable e) {
-			LOGGER.error("Unhandled exception in device event decoding.", e);
+			onEventDecodeFailed(encodedPayload, e);
 		}
+	}
+
+	/**
+	 * Decode a payload into individual events.
+	 * 
+	 * @param encodedPayload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected List<IDecodedDeviceEventRequest> decodePayload(T encodedPayload) throws SiteWhereException {
+		return getDeviceEventDecoder().decode(encodedPayload);
+	}
+
+	/**
+	 * Handler for case where decoder throws an exception.
+	 * 
+	 * @param encodedEvent
+	 * @param t
+	 */
+	protected void onEventDecodeFailed(T encodedEvent, Throwable t) {
+		LOGGER.error("Event receiver thread unable to decode event request.", t);
 	}
 
 	/*

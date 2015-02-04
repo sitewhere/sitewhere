@@ -21,6 +21,7 @@ import com.mongodb.MongoClient;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Spring wrapper for initializing a Mongo client used by SiteWhere components.
@@ -84,11 +85,23 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	/** Injected name used for events collection */
 	private String eventsCollectionName = IMongoCollectionNames.DEFAULT_EVENTS_COLLECTION_NAME;
 
+	/** Injected name used for batch operations collection */
+	private String batchOperationsCollectionName =
+			IMongoCollectionNames.DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME;
+
+	/** Injected name used for batch operation elements collection */
+	private String batchOperationElementsCollectionName =
+			IMongoCollectionNames.DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME;
+
 	/** Injected name used for users collection */
 	private String usersCollectionName = IMongoCollectionNames.DEFAULT_USERS_COLLECTION_NAME;
 
 	/** Injected name used for authorities collection */
 	private String authoritiesCollectionName = IMongoCollectionNames.DEFAULT_AUTHORITIES_COLLECTION_NAME;
+
+	public SiteWhereMongoClient() {
+		super(LifecycleComponentType.DataStore);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -129,6 +142,9 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 			messages.add("Sites collection name: " + getSitesCollectionName());
 			messages.add("Zones collection name: " + getZonesCollectionName());
 			messages.add("Events collection name: " + getEventsCollectionName());
+			messages.add("Batch operations collection name: " + getBatchOperationsCollectionName());
+			messages.add("Batch operation elements collection name: "
+					+ getBatchOperationElementsCollectionName());
 			messages.add("");
 			messages.add("---------------------");
 			messages.add("-- User Management --");
@@ -210,6 +226,14 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	public DBCollection getEventsCollection() {
 		return getSiteWhereDatabase().getCollection(getEventsCollectionName());
+	}
+
+	public DBCollection getBatchOperationsCollection() {
+		return getSiteWhereDatabase().getCollection(getBatchOperationsCollectionName());
+	}
+
+	public DBCollection getBatchOperationElementsCollection() {
+		return getSiteWhereDatabase().getCollection(getBatchOperationElementsCollectionName());
 	}
 
 	public DBCollection getUsersCollection() {
@@ -314,6 +338,22 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	public void setEventsCollectionName(String eventsCollectionName) {
 		this.eventsCollectionName = eventsCollectionName;
+	}
+
+	public String getBatchOperationsCollectionName() {
+		return batchOperationsCollectionName;
+	}
+
+	public void setBatchOperationsCollectionName(String batchOperationsCollectionName) {
+		this.batchOperationsCollectionName = batchOperationsCollectionName;
+	}
+
+	public String getBatchOperationElementsCollectionName() {
+		return batchOperationElementsCollectionName;
+	}
+
+	public void setBatchOperationElementsCollectionName(String batchOperationElementsCollectionName) {
+		this.batchOperationElementsCollectionName = batchOperationElementsCollectionName;
 	}
 
 	public String getUsersCollectionName() {

@@ -58,6 +58,7 @@ import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Asset module that interacts with an external Magento server.
@@ -116,6 +117,10 @@ public class MagentoAssetModule extends LifecycleComponent implements IAssetModu
 
 	/** Map of attribute sets by unique id */
 	private Map<Integer, ArrayOfString> attributeSets = new HashMap<Integer, ArrayOfString>();
+
+	public MagentoAssetModule() {
+		super(LifecycleComponentType.AssetModule);
+	}
 
 	/*
 	 * (non-Javadoc)

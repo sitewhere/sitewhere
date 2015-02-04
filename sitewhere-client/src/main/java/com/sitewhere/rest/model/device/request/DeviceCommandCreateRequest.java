@@ -22,6 +22,9 @@ import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
  */
 public class DeviceCommandCreateRequest extends MetadataProvider implements IDeviceCommandCreateRequest {
 
+	/** Unqiue token */
+	private String token;
+
 	/** Optional namespace */
 	private String namespace;
 
@@ -33,6 +36,19 @@ public class DeviceCommandCreateRequest extends MetadataProvider implements IDev
 
 	/** Command parameters */
 	private List<CommandParameter> parameters = new ArrayList<CommandParameter>();
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getToken()
+	 */
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
 
 	/*
 	 * (non-Javadoc)

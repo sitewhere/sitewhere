@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -26,7 +27,10 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.version.VersionHelper;
@@ -231,9 +235,44 @@ public class SiteWhereController {
 	 * @return
 	 */
 	@RequestMapping("/devices/list")
-	public ModelAndView listDevices() {
+	public ModelAndView listDevices(@RequestParam(required = false) String specification,
+			@RequestParam(required = false) String group,
+			@RequestParam(required = false) String groupsWithRole,
+			@RequestParam(required = false) String dateRange,
+			@RequestParam(required = false) String beforeDate,
+			@RequestParam(required = false) String afterDate,
+			@RequestParam(required = false) boolean excludeAssigned) {
 		try {
 			Map<String, Object> data = createBaseData();
+
+			// Look up specification that will be used for filtering.
+			if (specification != null) {
+				IDeviceSpecification found =
+						SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(
+								specification);
+				if (found == null) {
+					throw new SiteWhereException("Specification token was not valid.");
+				}
+				data.put("specification", found);
+			}
+
+			// Look up device group that will be used for filtering.
+			if (group != null) {
+				IDeviceGroup found = SiteWhere.getServer().getDeviceManagement().getDeviceGroup(group);
+				if (found == null) {
+					throw new SiteWhereException("Device group token was not valid.");
+				}
+				data.put("group", found);
+			}
+
+			if (groupsWithRole != null) {
+				data.put("groupsWithRole", groupsWithRole);
+			}
+
+			data.put("dateRange", dateRange);
+			data.put("beforeDate", beforeDate);
+			data.put("afterDate", afterDate);
+			data.put("excludeAssigned", excludeAssigned);
 			return new ModelAndView("devices/list", data);
 		} catch (SiteWhereException e) {
 			LOGGER.error(e);
@@ -310,6 +349,60 @@ public class SiteWhereController {
 			}
 		}
 		return showError("No group token passed.");
+	}
+
+	/**
+	 * Display the "list batch operations" page.
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/batch/list")
+	public ModelAndView listBatchOperations() {
+		Tracer.start(TracerCategory.AdminUserInterface, "listBatchOperations", LOGGER);
+		try {
+			try {
+				Map<String, Object> data = createBaseData();
+				return new ModelAndView("batch/list", data);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * View details about a batch command invocation.
+	 * 
+	 * @param batchToken
+	 * @return
+	 */
+	@RequestMapping("/batch/command")
+	public ModelAndView batchCommandInvocationDetail(@RequestParam("token") String batchToken) {
+		if (batchToken != null) {
+			try {
+				Map<String, Object> data = createBaseData();
+				IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
+				IBatchOperation operation = management.getBatchOperation(batchToken);
+				if (operation != null) {
+					data.put("operation", operation);
+					String commandToken =
+							operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
+					if (commandToken == null) {
+						return showError("No command token set for batch operation.");
+					}
+					IDeviceCommand command = management.getDeviceCommandByToken(commandToken);
+					data.put("command", new String(MarshalUtils.marshalJsonAsString(command)));
+					return new ModelAndView("batch/command", data);
+				}
+				return showError("Batch operation for token '" + batchToken + "' not found.");
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		}
+		return showError("No batch operation token passed.");
 	}
 
 	/**

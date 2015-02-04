@@ -28,6 +28,13 @@ public interface IDeviceCreateRequest extends IMetadataProvider {
 	public String getHardwareId();
 
 	/**
+	 * Get the site token.
+	 * 
+	 * @return
+	 */
+	public String getSiteToken();
+
+	/**
 	 * Get the device specification token.
 	 * 
 	 * @return

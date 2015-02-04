@@ -132,6 +132,14 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public List<ILifecycleComponent> getRegisteredLifecycleComponents();
 
 	/**
+	 * Gets an {@link ILifecycleComponent} by unique id.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public ILifecycleComponent getLifecycleComponentById(String id);
+
+	/**
 	 * Get the metrics registry.
 	 * 
 	 * @return

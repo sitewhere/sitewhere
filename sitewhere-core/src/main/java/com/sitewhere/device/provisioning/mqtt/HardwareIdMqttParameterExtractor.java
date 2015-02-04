@@ -8,8 +8,8 @@
 package com.sitewhere.device.provisioning.mqtt;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor;
 
@@ -38,19 +38,19 @@ public class HardwareIdMqttParameterExtractor implements ICommandDeliveryParamet
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.provisioning.ICommandDeliveryParameterExtractor#
-	 * extractDeliveryParameters(com.sitewhere.spi.device.IDevice,
+	 * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
 	 */
 	@Override
-	public MqttParameters extractDeliveryParameters(IDevice device, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution) throws SiteWhereException {
+	public MqttParameters extractDeliveryParameters(IDeviceNestingContext nesting,
+			IDeviceAssignment assignment, IDeviceCommandExecution execution) throws SiteWhereException {
 		MqttParameters params = new MqttParameters();
 
-		String commandTopic = String.format(getCommandTopicExpr(), device.getHardwareId());
+		String commandTopic = String.format(getCommandTopicExpr(), nesting.getGateway().getHardwareId());
 		params.setCommandTopic(commandTopic);
 
-		String systemTopic = String.format(getSystemTopicExpr(), device.getHardwareId());
+		String systemTopic = String.format(getSystemTopicExpr(), nesting.getGateway().getHardwareId());
 		params.setSystemTopic(systemTopic);
 
 		return params;

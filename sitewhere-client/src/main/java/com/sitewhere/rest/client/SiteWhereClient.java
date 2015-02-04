@@ -8,6 +8,7 @@
 package com.sitewhere.rest.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
@@ -38,6 +40,7 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
@@ -47,6 +50,7 @@ import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
+import com.sitewhere.rest.model.search.DeviceSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
@@ -246,6 +250,39 @@ public class SiteWhereClient implements ISiteWhereClient {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("hardwareId", hardwareId);
 		return sendRest(getBaseUrl() + "devices/{hardwareId}", HttpMethod.PUT, request, Device.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDevices(java.lang.Boolean,
+	 * java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.Integer,
+	 * java.lang.Integer, java.util.Calendar, java.util.Calendar)
+	 */
+	@Override
+	public DeviceSearchResults listDevices(Boolean includeDeleted, Boolean excludeAssigned,
+			Boolean populateSpecification, Boolean populateAssignment, Integer pageNumber, Integer pageSize,
+			Calendar createDateStart, Calendar createDateEnd) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		if (includeDeleted != null) {
+			vars.put("includeDeleted", String.valueOf(includeDeleted));
+		}
+		if (excludeAssigned != null) {
+			vars.put("excludeAssigned", String.valueOf(excludeAssigned));
+		}
+		if (populateSpecification != null) {
+			vars.put("includeSpecification", String.valueOf(populateSpecification));
+		}
+		if (populateAssignment != null) {
+			vars.put("includeAssignment", String.valueOf(populateAssignment));
+		}
+		if (pageNumber != null) {
+			vars.put("page", String.valueOf(pageNumber));
+		}
+		if (pageSize != null) {
+			vars.put("pageSize", String.valueOf(pageSize));
+		}
+		return sendRest(getBaseUrl() + "devices", HttpMethod.GET, null, DeviceSearchResults.class, vars);
 	}
 
 	/*
@@ -486,6 +523,25 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("siteToken", siteToken);
 		String url = getBaseUrl() + "sites/{siteToken}/zones";
 		return sendRest(url, HttpMethod.GET, null, ZoneSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.ISiteWhereClient#createBatchCommandInvocation(java.lang.String,
+	 * java.lang.String, java.util.Map, java.util.List)
+	 */
+	@Override
+	public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
+			Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException {
+		BatchCommandInvocationRequest request = new BatchCommandInvocationRequest();
+		request.setToken(batchToken);
+		request.setCommandToken(commandToken);
+		request.setParameterValues(parameters);
+		request.setHardwareIds(hardwareIds);
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "batch/command", HttpMethod.POST, request, BatchOperation.class, vars);
 	}
 
 	/**

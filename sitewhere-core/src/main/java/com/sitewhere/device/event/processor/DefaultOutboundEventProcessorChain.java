@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -21,6 +22,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -39,6 +41,10 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 
 	/** List of event processors */
 	private List<IOutboundEventProcessor> processors = new ArrayList<IOutboundEventProcessor>();
+
+	public DefaultOutboundEventProcessorChain() {
+		super(LifecycleComponentType.OutboundProcessorChain);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -207,6 +213,30 @@ public class DefaultOutboundEventProcessorChain extends LifecycleComponent imple
 				try {
 					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
 						processor.onCommandResponse(response);
+					} else {
+						logSkipped(processor);
+					}
+				} catch (SiteWhereException e) {
+					LOGGER.error(e);
+				}
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onBatchOperation
+	 * (com.sitewhere.spi.device.batch.IBatchOperation)
+	 */
+	@Override
+	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
+		if (isProcessingEnabled()) {
+			for (IOutboundEventProcessor processor : getProcessors()) {
+				try {
+					if (processor.getLifecycleStatus() == LifecycleStatus.Started) {
+						processor.onBatchOperation(operation);
 					} else {
 						logSkipped(processor);
 					}

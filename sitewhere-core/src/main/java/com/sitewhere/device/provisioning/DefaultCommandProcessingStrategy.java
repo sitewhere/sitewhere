@@ -26,6 +26,7 @@ import com.sitewhere.spi.device.provisioning.ICommandExecutionBuilder;
 import com.sitewhere.spi.device.provisioning.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link ICommandProcessingStrategy}.
@@ -43,6 +44,10 @@ public class DefaultCommandProcessingStrategy extends LifecycleComponent impleme
 
 	/** Configured command execution builder */
 	private ICommandExecutionBuilder commandExecutionBuilder = new DefaultCommandExecutionBuilder();
+
+	public DefaultCommandProcessingStrategy() {
+		super(LifecycleComponentType.CommandProcessingStrategy);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -71,7 +76,7 @@ public class DefaultCommandProcessingStrategy extends LifecycleComponent impleme
 				}
 
 				IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device);
-				provisioning.getOutboundCommandRouter().routeCommand(execution, nesting, assignment, device);
+				provisioning.getOutboundCommandRouter().routeCommand(execution, nesting, assignment);
 			}
 		} else {
 			throw new SiteWhereException("Invalid command referenced from invocation.");
@@ -96,7 +101,7 @@ public class DefaultCommandProcessingStrategy extends LifecycleComponent impleme
 		}
 		IDeviceAssignment assignment = management.getCurrentDeviceAssignment(device);
 		IDeviceNestingContext nesting = NestedDeviceSupport.calculateNestedDeviceInformation(device);
-		provisioning.getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment, device);
+		provisioning.getOutboundCommandRouter().routeSystemCommand(command, nesting, assignment);
 	}
 
 	/*

@@ -30,6 +30,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ISearchProvider} that executes queries against a Solr server.
@@ -55,6 +56,10 @@ public class SolrSearchProvider extends LifecycleComponent implements IDeviceEve
 
 	/** Solr configuration */
 	private SiteWhereSolrConfiguration solr;
+
+	public SolrSearchProvider() {
+		super(LifecycleComponentType.SearchProvider);
+	}
 
 	/*
 	 * (non-Javadoc)

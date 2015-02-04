@@ -21,19 +21,19 @@ public interface ISiteWhereHBase {
 	 ***************/
 
 	/** Sites table name */
-	public static final byte[] UID_TABLE_NAME = Bytes.toBytes("sw-uids");
+	public static final byte[] UID_TABLE_NAME = Bytes.toBytes("uids");
 
 	/** Sites table name */
-	public static final byte[] SITES_TABLE_NAME = Bytes.toBytes("sw-sites");
+	public static final byte[] SITES_TABLE_NAME = Bytes.toBytes("sites");
 
 	/** Events table name */
-	public static final byte[] EVENTS_TABLE_NAME = Bytes.toBytes("sw-events");
+	public static final byte[] EVENTS_TABLE_NAME = Bytes.toBytes("events");
 
 	/** Devices table name */
-	public static final byte[] DEVICES_TABLE_NAME = Bytes.toBytes("sw-devices");
+	public static final byte[] DEVICES_TABLE_NAME = Bytes.toBytes("devices");
 
 	/** Users table name */
-	public static final byte[] USERS_TABLE_NAME = Bytes.toBytes("sw-users");
+	public static final byte[] USERS_TABLE_NAME = Bytes.toBytes("users");
 
 	/*******************
 	 * COLUMN FAMILIES *
@@ -47,8 +47,8 @@ public interface ISiteWhereHBase {
 	 *********************/
 
 	/** Column qualifier for site JSON content */
-	public static final byte[] JSON_CONTENT = Bytes.toBytes("json");
+	public static final byte[] JSON_CONTENT = Bytes.toBytes("j");
 
 	/** Column qualifier that indicates a deleted record */
-	public static final byte[] DELETED = Bytes.toBytes("deleted");
+	public static final byte[] DELETED = Bytes.toBytes("x");
 }

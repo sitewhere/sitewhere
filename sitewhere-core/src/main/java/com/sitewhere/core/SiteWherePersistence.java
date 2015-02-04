@@ -28,6 +28,8 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchElement;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -41,6 +43,7 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
@@ -57,6 +60,8 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.batch.ElementProcessingStatus;
+import com.sitewhere.spi.device.batch.OperationType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -75,6 +80,10 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -327,8 +336,21 @@ public class SiteWherePersistence {
 	 */
 	public static Device deviceCreateLogic(IDeviceCreateRequest request) throws SiteWhereException {
 		Device device = new Device();
+		if (request.getHardwareId() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
 		device.setHardwareId(request.getHardwareId());
+
+		if (request.getSiteToken() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		device.setSiteToken(request.getSiteToken());
+
+		if (request.getSpecificationToken() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
 		device.setSpecificationToken(request.getSpecificationToken());
+
 		device.setComments(request.getComments());
 		device.setStatus(DeviceStatus.Ok);
 
@@ -350,6 +372,16 @@ public class SiteWherePersistence {
 		if ((request.getHardwareId() != null) && (!request.getHardwareId().equals(target.getHardwareId()))) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR,
 					HttpServletResponse.SC_BAD_REQUEST);
+		}
+		if (request.getSiteToken() != null) {
+			// Can not change the site for an assigned device.
+			if (target.getAssignmentToken() != null) {
+				if (!target.getSiteToken().equals(request.getSiteToken())) {
+					throw new SiteWhereSystemException(ErrorCode.DeviceSiteCanNotBeChangedIfAssigned,
+							ErrorLevel.ERROR, HttpServletResponse.SC_BAD_REQUEST);
+				}
+			}
+			target.setSiteToken(request.getSiteToken());
 		}
 		if (request.getSpecificationToken() != null) {
 			target.setSpecificationToken(request.getSpecificationToken());
@@ -529,7 +561,7 @@ public class SiteWherePersistence {
 	 * @throws SiteWhereException
 	 */
 	public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source,
-			String siteToken, String uuid) throws SiteWhereException {
+			IDevice device, String uuid) throws SiteWhereException {
 		DeviceAssignment newAssignment = new DeviceAssignment();
 
 		if (uuid == null) {
@@ -537,10 +569,8 @@ public class SiteWherePersistence {
 		}
 		newAssignment.setToken(uuid);
 
-		if (source.getSiteToken() == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-		}
-		newAssignment.setSiteToken(source.getSiteToken());
+		// Copy site token from device.
+		newAssignment.setSiteToken(device.getSiteToken());
 
 		if (source.getDeviceHardwareId() == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
@@ -1040,6 +1070,112 @@ public class SiteWherePersistence {
 		element.setElementId(source.getElementId());
 		element.setRoles(source.getRoles());
 		return element;
+	}
+
+	/**
+	 * Common logic for creating a batch operation based on an incoming request.
+	 * 
+	 * @param source
+	 * @param uuid
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static BatchOperation batchOperationCreateLogic(IBatchOperationCreateRequest source, String uuid)
+			throws SiteWhereException {
+		BatchOperation batch = new BatchOperation();
+		batch.setToken(uuid);
+		batch.setOperationType(source.getOperationType());
+		batch.getParameters().putAll(source.getParameters());
+
+		SiteWherePersistence.initializeEntityMetadata(batch);
+		MetadataProvider.copy(source, batch);
+		return batch;
+	}
+
+	/**
+	 * Common logic for updating batch operation information.
+	 * 
+	 * @param source
+	 * @param target
+	 * @throws SiteWhereException
+	 */
+	public static void batchOperationUpdateLogic(IBatchOperationUpdateRequest source, BatchOperation target)
+			throws SiteWhereException {
+		if (source.getProcessingStatus() != null) {
+			target.setProcessingStatus(source.getProcessingStatus());
+		}
+		if (source.getProcessingStartedDate() != null) {
+			target.setProcessingStartedDate(source.getProcessingStartedDate());
+		}
+		if (source.getProcessingEndedDate() != null) {
+			target.setProcessingEndedDate(source.getProcessingEndedDate());
+		}
+
+		SiteWherePersistence.setUpdatedEntityMetadata(target);
+		MetadataProvider.copy(source, target);
+	}
+
+	/**
+	 * Common logic for creating a batch operation element.
+	 * 
+	 * @param batchOperationToken
+	 * @param hardwareId
+	 * @param index
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static BatchElement batchElementCreateLogic(String batchOperationToken, String hardwareId,
+			long index) throws SiteWhereException {
+		BatchElement element = new BatchElement();
+		element.setBatchOperationToken(batchOperationToken);
+		element.setHardwareId(hardwareId);
+		element.setIndex(index);
+		element.setProcessingStatus(ElementProcessingStatus.Unprocessed);
+		element.setProcessedDate(null);
+		return element;
+	}
+
+	/**
+	 * Common logic for updating a batch operation element.
+	 * 
+	 * @param request
+	 * @param element
+	 * @throws SiteWhereException
+	 */
+	public static void batchElementUpdateLogic(IBatchElementUpdateRequest request, BatchElement element)
+			throws SiteWhereException {
+		if (request.getProcessingStatus() != null) {
+			element.setProcessingStatus(request.getProcessingStatus());
+		}
+		if (request.getProcessedDate() != null) {
+			element.setProcessedDate(request.getProcessedDate());
+		}
+		if (request.getMetadata().size() > 0) {
+			element.getMetadata().putAll(request.getMetadata());
+		}
+	}
+
+	/**
+	 * Encodes batch command invocation parameters into the generic
+	 * {@link IBatchOperationCreateRequest} format.
+	 * 
+	 * @param request
+	 * @param uuid
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IBatchOperationCreateRequest batchCommandInvocationCreateLogic(
+			IBatchCommandInvocationRequest request, String uuid) throws SiteWhereException {
+		BatchOperationCreateRequest batch = new BatchOperationCreateRequest();
+		batch.setToken(uuid);
+		batch.setOperationType(OperationType.InvokeCommand);
+		batch.setHardwareIds(request.getHardwareIds());
+		batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN,
+				request.getCommandToken());
+		for (String key : request.getParameterValues().keySet()) {
+			batch.addOrReplaceMetadata(key, request.getParameterValues().get(key));
+		}
+		return batch;
 	}
 
 	/**

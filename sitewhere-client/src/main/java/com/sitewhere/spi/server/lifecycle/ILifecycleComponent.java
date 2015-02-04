@@ -21,11 +21,25 @@ import com.sitewhere.spi.SiteWhereException;
 public interface ILifecycleComponent {
 
 	/**
+	 * Get the unique component id.
+	 * 
+	 * @return
+	 */
+	public String getComponentId();
+
+	/**
 	 * Get human-readable name shown for component.
 	 * 
 	 * @return
 	 */
 	public String getComponentName();
+
+	/**
+	 * Get component type.
+	 * 
+	 * @return
+	 */
+	public LifecycleComponentType getComponentType();
 
 	/**
 	 * Get current lifecycle status.
@@ -61,6 +75,26 @@ public interface ILifecycleComponent {
 	public void start() throws SiteWhereException;
 
 	/**
+	 * Pauses the component while keeping up with lifecycle information.
+	 */
+	public void lifecyclePause();
+
+	/**
+	 * Indicates to framework whether component can be paused.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public boolean canPause() throws SiteWhereException;
+
+	/**
+	 * Pause the component.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void pause() throws SiteWhereException;
+
+	/**
 	 * Stops the component while keeping up with lifecycle information.
 	 */
 	public void lifecycleStop();
@@ -71,6 +105,17 @@ public interface ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public void stop() throws SiteWhereException;
+
+	/**
+	 * Find components (including this component and nested components) that are of the
+	 * given type.
+	 * 
+	 * @param type
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type)
+			throws SiteWhereException;
 
 	/**
 	 * Get component logger.

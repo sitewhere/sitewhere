@@ -257,6 +257,10 @@ public class CommandDestinationsParser {
 				parseProtobufCommandEncoder(child, context, destination);
 				return true;
 			}
+			case JavaHybridProtobufEncoder: {
+				parseJavaHybridProtobufEncoder(child, context, destination);
+				return true;
+			}
 			case CommandEncoder: {
 				parseEncoderRef(child, context, destination);
 				return true;
@@ -277,6 +281,23 @@ public class CommandDestinationsParser {
 			BeanDefinitionBuilder destination) {
 		BeanDefinitionBuilder builder =
 				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder");
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		destination.addPropertyReference("commandExecutionEncoder", name);
+	}
+
+	/**
+	 * Parse definition of SiteWhere Java/GPB hybrid command encoder.
+	 * 
+	 * @param encoder
+	 * @param context
+	 * @param destination
+	 */
+	protected void parseJavaHybridProtobufEncoder(Element encoder, ParserContext context,
+			BeanDefinitionBuilder destination) {
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.device.provisioning.protobuf.JavaHybridProtobufExecutionEncoder");
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -404,6 +425,9 @@ public class CommandDestinationsParser {
 
 		/** Encodes commands with standard SiteWhere GPB naming convention */
 		ProtobufEncoder("protobuf-command-encoder"),
+
+		/** Encodes commands with hybrid protobuf / Java serialization approach */
+		JavaHybridProtobufEncoder("java-protobuf-hybrid-encoder"),
 
 		/** Reference to externally defined event decoder */
 		CommandEncoder("command-encoder");

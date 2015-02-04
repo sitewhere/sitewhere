@@ -54,7 +54,7 @@ public class Pager<T> {
 		total++;
 		if (toSkip > 0) {
 			toSkip--;
-		} else if (matched < criteria.getPageSize()) {
+		} else if ((criteria.getPageSize() == 0) || (matched < criteria.getPageSize())) {
 			results.add(record);
 			matched++;
 		}
@@ -71,7 +71,7 @@ public class Pager<T> {
 	public void setResults(List<T> results) {
 		this.results = results;
 	}
-	
+
 	public long getTotal() {
 		return total;
 	}

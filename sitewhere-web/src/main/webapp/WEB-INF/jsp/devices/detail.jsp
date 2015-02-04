@@ -35,6 +35,8 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title">Device Assignment History</div>
 			<div>
+				<a id="btn-assign-device" class="btn hide" href="javascript:void(0)">
+					<i class="icon-tag sw-button-icon"></i> Assign Device</a>
 				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)">
 					<i class="icon-search sw-button-icon"></i> Filter Results</a>
 				<a id="btn-refresh-assignments" class="btn" href="javascript:void(0)">
@@ -62,6 +64,7 @@
 <%@ include file="../includes/assetTemplates.inc"%>	
 <%@ include file="../includes/assignmentCreateDialog.inc"%>	
 <%@ include file="../includes/assignmentUpdateDialog.inc"%>
+<%@ include file="../includes/templateDeviceDetailHeader.inc"%>
 <%@ include file="../includes/templateDeviceEntry.inc"%>
 <%@ include file="../includes/templateDeviceEntrySmall.inc"%>
 <%@ include file="../includes/templateAssignmentEntry.inc"%>
@@ -186,6 +189,10 @@
 	    	duOpen(hardwareId, onDeviceEditSuccess);
 	    });
 		
+	    $("#btn-assign-device").click(function() {
+	    	acOpen(null, hardwareId, onAssignmentAdded);
+	    });
+		
 		/** Create the tab strip */
 		tabs = $("#tabs").kendoTabStrip({
 			animation: false
@@ -202,10 +209,17 @@
     
     /** Called on successful device load request */
     function loadGetSuccess(data, status, jqXHR) {
-		var template = kendo.template($("#tpl-device-entry").html());
+		var template = kendo.template($("#tpl-device-detail-header").html());
 		parseDeviceData(data);
 		data.inDetailView = true;
 		$('#device-details').html(template(data));
+		
+		// Only show the 'assign device' button if not already assigned.
+		if (!data.assignment) {
+		    $("#btn-assign-device").show();
+		} else {
+		    $("#btn-assign-device").hide();
+		}
 		
 		// Update device element mappings information.
 		refreshDeviceElementMappings(data);

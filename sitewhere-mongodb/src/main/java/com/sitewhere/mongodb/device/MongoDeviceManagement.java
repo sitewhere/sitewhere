@@ -33,6 +33,8 @@ import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchElement;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -58,6 +60,8 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.batch.IBatchElement;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -77,6 +81,10 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -90,6 +98,9 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Device management implementation that uses MongoDB for persistence.
@@ -107,6 +118,10 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 	/** Provides caching for device management entities */
 	private IDeviceManagementCacheProvider cacheProvider;
+
+	public MongoDeviceManagement() {
+		super(LifecycleComponentType.DataStore);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -174,6 +189,10 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		getMongoClient().getGroupElementsCollection().ensureIndex(
 				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
 						MongoDeviceGroupElement.PROP_ROLES, 1));
+		getMongoClient().getBatchOperationsCollection().ensureIndex(
+				new BasicDBObject(MongoBatchOperation.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		getMongoClient().getBatchOperationElementsCollection().ensureIndex(
+				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, 1));
 	}
 
 	/*
@@ -356,9 +375,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		List<IDeviceCommand> existing = listDeviceCommands(spec.getToken(), false);
 
 		// Use common logic so all backend implementations work the same.
-		DeviceCommand command =
-				SiteWherePersistence.deviceCommandCreateLogic(spec, request, UUID.randomUUID().toString(),
-						existing);
+		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
+		DeviceCommand command = SiteWherePersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
 
 		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
 		DBObject created = MongoDeviceCommand.toDBObject(command);
@@ -576,33 +594,37 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.IDeviceManagement#listDevices(boolean,
-	 * com.sitewhere.spi.common.ISearchCriteria)
+	 * com.sitewhere.spi.search.device.IDeviceSearchCriteria)
 	 */
 	@Override
-	public SearchResults<IDevice> listDevices(boolean includeDeleted, ISearchCriteria criteria)
+	public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
 		DBCollection devices = getMongoClient().getDevicesCollection();
-		DBObject dbCriteria = new BasicDBObject();
+		BasicDBObject dbCriteria = new BasicDBObject();
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 		}
+		if (criteria.isExcludeAssigned()) {
+			dbCriteria.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
+		}
+		MongoPersistence.addDateSearchCriteria(dbCriteria, MongoSiteWhereEntity.PROP_CREATED_DATE, criteria);
+		switch (criteria.getSearchType()) {
+		case All: {
+			break;
+		}
+		case UsesSpecification: {
+			if (criteria.getDeviceBySpecificationParameters() != null) {
+				String token = criteria.getDeviceBySpecificationParameters().getSpecificationToken();
+				if (token == null) {
+					throw new SiteWhereException("Invalid device search. No specification token passed.");
+				}
+				dbCriteria.put(MongoDevice.PROP_SPECIFICATION_TOKEN, token);
+			}
+			break;
+		}
+		}
 		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 		return MongoPersistence.search(IDevice.class, devices, dbCriteria, sort, criteria);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#listUnassignedDevices(com.sitewhere.
-	 * spi.common.ISearchCriteria)
-	 */
-	@Override
-	public SearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection devices = getMongoClient().getDevicesCollection();
-		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
-		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
-		return MongoPersistence.search(IDevice.class, devices, query, sort, criteria);
 	}
 
 	/*
@@ -681,19 +703,15 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
 			throws SiteWhereException {
-		// Verify foreign references.
-		DBObject site = getSiteDBObjectByToken(request.getSiteToken());
-		if (site == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
-		}
-		DBObject device = assertDevice(request.getDeviceHardwareId());
-		if (device.get(MongoDevice.PROP_ASSIGNMENT_TOKEN) != null) {
+		DBObject deviceDb = assertDevice(request.getDeviceHardwareId());
+		if (deviceDb.get(MongoDevice.PROP_ASSIGNMENT_TOKEN) != null) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 		}
+		Device device = MongoDevice.fromDBObject(deviceDb);
 
 		// Use common logic to load assignment from request.
 		DeviceAssignment newAssignment =
-				SiteWherePersistence.deviceAssignmentCreateLogic(request, request.getSiteToken(),
+				SiteWherePersistence.deviceAssignmentCreateLogic(request, device,
 						UUID.randomUUID().toString());
 
 		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
@@ -708,12 +726,12 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		// Update device to point to created assignment.
 		DBCollection devices = getMongoClient().getDevicesCollection();
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
-		device.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, newAssignment.getToken());
-		MongoPersistence.update(devices, query, device);
+		deviceDb.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, newAssignment.getToken());
+		MongoPersistence.update(devices, query, deviceDb);
 
 		// Update cache with new device data.
 		if (getCacheProvider() != null) {
-			Device updated = MongoDevice.fromDBObject(device);
+			Device updated = MongoDevice.fromDBObject(deviceDb);
 			getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
 		}
 		return newAssignment;
@@ -1666,12 +1684,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
-		String uuid;
-		if (request.getToken() != null) {
-			uuid = request.getToken();
-		} else {
-			uuid = UUID.randomUUID().toString();
-		}
+		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 		DeviceGroup group = SiteWherePersistence.deviceGroupCreateLogic(request, uuid);
 
 		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
@@ -1848,6 +1861,176 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 				getMongoClient().getGroupElementsCollection(), match, sort, criteria);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createBatchOperation(com.sitewhere.spi
+	 * .device.request.IBatchOperationCreateRequest)
+	 */
+	@Override
+	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
+			throws SiteWhereException {
+		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
+		BatchOperation batch = SiteWherePersistence.batchOperationCreateLogic(request, uuid);
+
+		DBCollection batches = getMongoClient().getBatchOperationsCollection();
+		DBObject created = MongoBatchOperation.toDBObject(batch);
+		MongoPersistence.insert(batches, created);
+
+		// Insert element for each hardware id.
+		long index = 0;
+		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+		for (String hardwareId : request.getHardwareIds()) {
+			BatchElement element =
+					SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
+			DBObject dbElement = MongoBatchElement.toDBObject(element);
+			MongoPersistence.insert(elements, dbElement);
+		}
+
+		return MongoBatchOperation.fromDBObject(created);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateBatchOperation(java.lang.String,
+	 * com.sitewhere.spi.device.request.IBatchOperationUpdateRequest)
+	 */
+	@Override
+	public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
+			throws SiteWhereException {
+		DBCollection batchops = getMongoClient().getBatchOperationsCollection();
+		DBObject match = assertBatchOperation(token);
+
+		BatchOperation operation = MongoBatchOperation.fromDBObject(match);
+		SiteWherePersistence.batchOperationUpdateLogic(request, operation);
+
+		DBObject updated = MongoBatchOperation.toDBObject(operation);
+
+		BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
+		MongoPersistence.update(batchops, query, updated);
+		return MongoBatchOperation.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#getBatchOperation(java.lang.String)
+	 */
+	@Override
+	public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
+		DBObject found = assertBatchOperation(token);
+		return MongoBatchOperation.fromDBObject(found);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listBatchOperations(boolean,
+	 * com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
+		DBCollection ops = getMongoClient().getBatchOperationsCollection();
+		DBObject dbCriteria = new BasicDBObject();
+		if (!includeDeleted) {
+			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
+		}
+		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+		return MongoPersistence.search(IBatchOperation.class, ops, dbCriteria, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#deleteBatchOperation(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
+		DBObject existing = assertBatchOperation(token);
+		if (force) {
+			DBCollection ops = getMongoClient().getBatchOperationsCollection();
+			MongoPersistence.delete(ops, existing);
+
+			// Delete operation elements as well.
+			DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+			BasicDBObject match = new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, token);
+			MongoPersistence.delete(elements, match);
+
+			return MongoBatchOperation.fromDBObject(existing);
+		} else {
+			MongoSiteWhereEntity.setDeleted(existing, true);
+			BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
+			DBCollection ops = getMongoClient().getBatchOperationsCollection();
+			MongoPersistence.update(ops, query, existing);
+			return MongoBatchOperation.fromDBObject(existing);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listBatchElements(java.lang.String,
+	 * com.sitewhere.spi.search.device.IBatchElementSearchCriteria)
+	 */
+	@Override
+	public SearchResults<IBatchElement> listBatchElements(String batchToken,
+			IBatchElementSearchCriteria criteria) throws SiteWhereException {
+		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+		DBObject dbCriteria = new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, batchToken);
+		if (criteria.getProcessingStatus() != null) {
+			dbCriteria.put(MongoBatchElement.PROP_PROCESSING_STATUS, criteria.getProcessingStatus());
+		}
+		BasicDBObject sort = new BasicDBObject(MongoBatchElement.PROP_INDEX, 1);
+		return MongoPersistence.search(IBatchElement.class, elements, dbCriteria, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#updateBatchElement(java.lang.String,
+	 * long, com.sitewhere.spi.device.request.IBatchElementUpdateRequest)
+	 */
+	@Override
+	public IBatchElement updateBatchElement(String operationToken, long index,
+			IBatchElementUpdateRequest request) throws SiteWhereException {
+		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+		DBObject dbElement = assertBatchElement(operationToken, index);
+
+		BatchElement element = MongoBatchElement.fromDBObject(dbElement);
+		SiteWherePersistence.batchElementUpdateLogic(request, element);
+
+		DBObject updated = MongoBatchElement.toDBObject(element);
+
+		BasicDBObject query =
+				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken).append(
+						MongoBatchElement.PROP_INDEX, index);
+		MongoPersistence.update(elements, query, updated);
+		return MongoBatchElement.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createBatchCommandInvocation(com.sitewhere
+	 * .spi.device.request.IBatchCommandInvocationRequest)
+	 */
+	@Override
+	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
+			throws SiteWhereException {
+		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
+		IBatchOperationCreateRequest generic =
+				SiteWherePersistence.batchCommandInvocationCreateLogic(request, uuid);
+		return createBatchOperation(generic);
+	}
+
 	/**
 	 * Return the {@link DBObject} for the site with the given token. Throws an exception
 	 * if the token is not found.
@@ -1961,9 +2144,9 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getDeviceGroupDBObjectByToken(String token) throws SiteWhereException {
-		DBCollection networks = getMongoClient().getDeviceGroupsCollection();
+		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
 		BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
-		DBObject result = networks.findOne(query);
+		DBObject result = groups.findOne(query);
 		return result;
 	}
 
@@ -1979,6 +2162,64 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DBObject match = getDeviceGroupDBObjectByToken(token);
 		if (match == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
+		}
+		return match;
+	}
+
+	/**
+	 * Returns the {@link DBObject} for the batch operation with the given token. Returns
+	 * null if not found.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject getBatchOperationDBObjectByToken(String token) throws SiteWhereException {
+		DBCollection ops = getMongoClient().getBatchOperationsCollection();
+		BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
+		DBObject result = ops.findOne(query);
+		return result;
+	}
+
+	/**
+	 * Return the {@link DBObject} for the batch operation with the given token. Throws an
+	 * exception if the token is not valid.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject assertBatchOperation(String token) throws SiteWhereException {
+		DBObject match = getBatchOperationDBObjectByToken(token);
+		if (match == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
+		}
+		return match;
+	}
+
+	/**
+	 * Return the {@link DBObject} for the batch operation element based on the token for
+	 * its parent operation and its index.
+	 * 
+	 * @param operationToken
+	 * @param index
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject getBatchElementDBObjectByIndex(String operationToken, long index)
+			throws SiteWhereException {
+		DBCollection ops = getMongoClient().getBatchOperationElementsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken).append(
+						MongoBatchElement.PROP_INDEX, index);
+		DBObject result = ops.findOne(query);
+		return result;
+	}
+
+	protected DBObject assertBatchElement(String operationToken, long index) throws SiteWhereException {
+		DBObject match = getBatchElementDBObjectByIndex(operationToken, index);
+		if (match == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidBatchElement, ErrorLevel.ERROR);
 		}
 		return match;
 	}

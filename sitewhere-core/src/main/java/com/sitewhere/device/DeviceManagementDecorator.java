@@ -23,6 +23,8 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.batch.IBatchElement;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -41,6 +43,10 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -52,7 +58,10 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -73,6 +82,26 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
+	 */
+	@Override
+	public String getComponentId() {
+		return delegate.getComponentId();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentType()
+	 */
+	@Override
+	public LifecycleComponentType getComponentType() {
+		return delegate.getComponentType();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStart()
 	 */
 	@Override
@@ -88,6 +117,36 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	@Override
 	public void start() throws SiteWhereException {
 		delegate.start();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
+	 */
+	@Override
+	public void lifecyclePause() {
+		delegate.lifecyclePause();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canPause()
+	 */
+	@Override
+	public boolean canPause() throws SiteWhereException {
+		return delegate.canPause();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause()
+	 */
+	@Override
+	public void pause() throws SiteWhereException {
+		delegate.pause();
 	}
 
 	/*
@@ -159,6 +218,19 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	@Override
 	public void stop() throws SiteWhereException {
 		delegate.stop();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#findComponentsOfType(com
+	 * .sitewhere.spi.server.lifecycle.LifecycleComponentType)
+	 */
+	@Override
+	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type)
+			throws SiteWhereException {
+		return delegate.findComponentsOfType(type);
 	}
 
 	/*
@@ -249,14 +321,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public ISearchResults<IDevice> listDevices(boolean includeDeleted, ISearchCriteria criteria)
+	public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
 		return delegate.listDevices(includeDeleted, criteria);
-	}
-
-	@Override
-	public ISearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException {
-		return delegate.listUnassignedDevices(criteria);
 	}
 
 	@Override
@@ -573,6 +640,52 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	@Override
 	public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
 		return delegate.deleteDeviceGroup(token, force);
+	}
+
+	@Override
+	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
+			throws SiteWhereException {
+		return delegate.createBatchOperation(request);
+	}
+
+	@Override
+	public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
+			throws SiteWhereException {
+		return delegate.updateBatchOperation(token, request);
+	}
+
+	@Override
+	public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
+		return delegate.getBatchOperation(token);
+	}
+
+	@Override
+	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return delegate.listBatchOperations(includeDeleted, criteria);
+	}
+
+	@Override
+	public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
+		return delegate.deleteBatchOperation(token, force);
+	}
+
+	@Override
+	public SearchResults<IBatchElement> listBatchElements(String batchToken,
+			IBatchElementSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listBatchElements(batchToken, criteria);
+	}
+
+	@Override
+	public IBatchElement updateBatchElement(String operationToken, long index,
+			IBatchElementUpdateRequest request) throws SiteWhereException {
+		return delegate.updateBatchElement(operationToken, index, request);
+	}
+
+	@Override
+	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
+			throws SiteWhereException {
+		return delegate.createBatchCommandInvocation(request);
 	}
 
 	public IDeviceManagement getDelegate() {

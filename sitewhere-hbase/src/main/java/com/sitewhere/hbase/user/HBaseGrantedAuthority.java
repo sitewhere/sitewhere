@@ -23,11 +23,11 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
-import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;

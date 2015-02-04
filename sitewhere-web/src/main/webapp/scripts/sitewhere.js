@@ -210,6 +210,29 @@ function parseZoneData(item) {
     }
 }
 
+/** Converts fields that need to be parsed in a batch operation */
+function parseBatchOperationData(item) {
+    if (item.createdDate && typeof item.createdDate === "string") {
+    	item.createdDate = kendo.parseDate(item.createdDate);
+    }
+    if (item.updatedDate && typeof item.updatedDate === "string") {
+    	item.updatedDate = kendo.parseDate(item.updatedDate);
+    }
+    if (item.processingStartedDate && typeof item.processingStartedDate === "string") {
+    	item.processingStartedDate = kendo.parseDate(item.processingStartedDate);
+    }
+    if (item.processingEndedDate && typeof item.processingEndedDate === "string") {
+    	item.processingEndedDate = kendo.parseDate(item.processingEndedDate);
+    }
+}
+
+/** Converts fields that need to be parsed in a batch operation */
+function parseBatchElementData(item) {
+    if (item.processedDate && typeof item.processedDate === "string") {
+    	item.processedDate = kendo.parseDate(item.processedDate);
+    }
+}
+
 /** Converts fields that need to be parsed in a user */
 function parseUserData(item) {
     if (item.createdDate && typeof item.createdDate === "string") {
@@ -294,6 +317,57 @@ function swMetadataAsLookup(metadata) {
 	    lookup[metadata[i].name] = metadata[i].value;
 	}
 	return lookup;
+}
+
+/** Creates an HTML highlighted version of a command */
+function swHtmlifyCommand(command) {
+	var chtml = "";
+	if (command.description) {
+    	chtml += "<div class='sw-spec-command-desc'>";
+    	chtml += "/** " + command.description + " **/</div>"
+	}
+    chtml += "<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '" + command.token + "')\">" + 
+    	command.name + "</span>(";
+    for (var i = 0, param; param = command.parameters[i]; i++) {
+		if (param.required) {
+			chtml += "<strong>"
+		}
+		if (i > 0) {
+			chtml += ", ";
+		}
+		chtml += " <span class='sw-spec-command-param-name'>" + param.name + "</span>";
+		chtml += ":<span class='sw-spec-command-param-type'>" + param.type + "</span> ";
+		if (param.required) {
+			chtml += "</strong>"
+		}
+	}
+	chtml += ")"
+		return chtml;
+}
+
+/** Creates an HTML highlighted version of a command */
+function swHtmlifyCommandWithValues(command, values) {
+	var chtml = "";
+	if (command.description) {
+    	chtml += "<div class='sw-spec-command-desc'>";
+    	chtml += "/** " + command.description + " **/</div>"
+	}
+    chtml += "<span class=\"sw-spec-command-name\">" + command.name + "</span>(";
+    for (var i = 0, param; param = command.parameters[i]; i++) {
+		if (param.required) {
+			chtml += "<strong>"
+		}
+		if (i > 0) {
+			chtml += ", ";
+		}
+		chtml += " <span class='sw-spec-command-param-name'>" + param.name + "</span>";
+		chtml += ":<span class='sw-spec-command-param-type'>" + values[param.name] + "</span> ";
+		if (param.required) {
+			chtml += "</strong>"
+		}
+	}
+	chtml += ")"
+		return chtml;
 }
 
 /** Create map of slot path to device data */

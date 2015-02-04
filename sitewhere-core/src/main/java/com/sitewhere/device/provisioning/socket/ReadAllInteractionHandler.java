@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.net.Socket;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
 
@@ -29,11 +29,11 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.device.provisioning.socket.ISocketInteractionHandler#process(java
-	 * .net.Socket, com.sitewhere.spi.device.provisioning.IInboundEventSource)
+	 * com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandler#process(
+	 * java.net.Socket, com.sitewhere.spi.device.provisioning.IInboundEventReceiver)
 	 */
 	@Override
-	public void process(Socket socket, IInboundEventSource<byte[]> eventSource) throws SiteWhereException {
+	public void process(Socket socket, IInboundEventReceiver<byte[]> receiver) throws SiteWhereException {
 		try {
 			InputStream input = socket.getInputStream();
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -42,7 +42,7 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
 				output.write(value);
 			}
 			input.close();
-			eventSource.onEncodedEventReceived(output.toByteArray());
+			receiver.onEventPayloadReceived(output.toByteArray());
 		} catch (IOException e) {
 			throw new SiteWhereException("Exception processing request in socket interaction handler.", e);
 		}

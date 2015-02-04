@@ -11,7 +11,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.mule.util.StringMessageUtils;
@@ -45,6 +47,7 @@ import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -104,11 +107,19 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/** List of components registered to participate in SiteWhere server lifecycle */
 	private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
 
+	/** Map of component ids to lifecycle components */
+	private Map<String, ILifecycleComponent> lifecycleComponentsById =
+			new HashMap<String, ILifecycleComponent>();
+
 	/** Metric regsitry */
 	private MetricRegistry metricRegistry = new MetricRegistry();
 
 	/** Health check registry */
 	private HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
+
+	public SiteWhereServer() {
+		super(LifecycleComponentType.System);
+	}
 
 	/**
 	 * Get Spring application context for Atlas server objects.
@@ -318,6 +329,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		// Start device provisioning.
 		startNestedComponent(getDeviceProvisioning(), "Device provisioning startup failed.", true);
+
+		// Force refresh on components-by-id map.
+		refreshLifecycleComponentMap(this, lifecycleComponentsById);
 	}
 
 	/*
@@ -339,6 +353,32 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public String getComponentName() {
 		return "SiteWhere Server " + getVersion().getEditionIdentifier() + " "
 				+ getVersion().getVersionIdentifier();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.lang.String
+	 * )
+	 */
+	@Override
+	public ILifecycleComponent getLifecycleComponentById(String id) {
+		return lifecycleComponentsById.get(id);
+	}
+
+	/**
+	 * Recursively navigates component structure and creates a map of components by id.
+	 * 
+	 * @param current
+	 * @param map
+	 */
+	protected void refreshLifecycleComponentMap(ILifecycleComponent current,
+			Map<String, ILifecycleComponent> map) {
+		map.put(current.getComponentId(), current);
+		for (ILifecycleComponent sub : current.getLifecycleComponents()) {
+			refreshLifecycleComponentMap(sub, map);
+		}
 	}
 
 	/*
@@ -402,13 +442,18 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Initialize search provider management.
 		initializeSearchProviderManagement();
 
+		String os = System.getProperty("os.name") + " (" + System.getProperty("os.version") + ")";
+		String java = System.getProperty("java.vendor") + " (" + System.getProperty("java.version") + ")";
+
 		// Print version information.
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server " + version.getEdition());
 		messages.add("");
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
+		messages.add("Operating System: " + os);
+		messages.add("Java Runtime: " + java);
 		messages.add("");
-		messages.add("Copyright (c) 2009-2014 SiteWhere, LLC");
+		messages.add("Copyright (c) 2009-2015 SiteWhere, LLC");
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 		LOGGER.info("\n" + message + "\n");
 	}

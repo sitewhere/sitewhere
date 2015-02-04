@@ -41,6 +41,12 @@ public interface IMongoCollectionNames {
 	/** Default collection name for SiteWhere events */
 	public static final String DEFAULT_EVENTS_COLLECTION_NAME = "events";
 
+	/** Default collection name for SiteWhere batch operations */
+	public static final String DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME = "batchoperations";
+
+	/** Default collection name for SiteWhere batch operation elements */
+	public static final String DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME = "batchopelements";
+
 	/** Default collection name for SiteWhere users */
 	public static final String DEFAULT_USERS_COLLECTION_NAME = "users";
 

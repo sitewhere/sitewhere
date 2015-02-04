@@ -10,6 +10,7 @@ package com.sitewhere.spi.device.provisioning;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -41,6 +42,13 @@ public interface IDeviceProvisioning extends ILifecycleComponent {
 	 * @return
 	 */
 	public IRegistrationManager getRegistrationManager();
+
+	/**
+	 * Get the configured batch operation manager.
+	 * 
+	 * @return
+	 */
+	public IBatchOperationManager getBatchOperationManager();
 
 	/**
 	 * Get the strategy for moving processed events into the outbound chain.

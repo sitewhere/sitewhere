@@ -7,12 +7,17 @@
  */
 package com.sitewhere.spi;
 
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
@@ -30,6 +35,7 @@ import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
+import com.sitewhere.rest.model.search.DeviceSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
@@ -119,6 +125,24 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public Device updateDevice(String hardwareId, DeviceCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * List devices that meet the given criteria.
+	 * 
+	 * @param includeDeleted
+	 * @param excludeAssigned
+	 * @param populateSpecification
+	 * @param populateAssignment
+	 * @param pageNumber
+	 * @param pageSize
+	 * @param createDateStart
+	 * @param createDateEnd
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSearchResults listDevices(Boolean includeDeleted, Boolean excludeAssigned,
+			Boolean populateSpecification, Boolean populateAssignment, Integer pageNumber, Integer pageSize,
+			Calendar createDateStart, Calendar createDateEnd) throws SiteWhereException;
 
 	/**
 	 * Delete a device.
@@ -296,4 +320,17 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException;
+
+	/**
+	 * Invokes a command on a list of devices as a batch operation.
+	 * 
+	 * @param batchToken
+	 * @param commandToken
+	 * @param parameters
+	 * @param hardwareIds
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
+			Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException;
 }

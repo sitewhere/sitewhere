@@ -21,9 +21,6 @@ public class DeviceAssignmentCreateRequest extends MetadataProvider implements I
 	/** Device hardware id */
 	private String deviceHardwareId;
 
-	/** Unique site token */
-	private String siteToken;
-
 	/** Type of assignment */
 	private DeviceAssignmentType assignmentType;
 
@@ -46,19 +43,6 @@ public class DeviceAssignmentCreateRequest extends MetadataProvider implements I
 
 	public void setDeviceHardwareId(String deviceHardwareId) {
 		this.deviceHardwareId = deviceHardwareId;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getSiteToken()
-	 */
-	public String getSiteToken() {
-		return siteToken;
-	}
-
-	public void setSiteToken(String siteToken) {
-		this.siteToken = siteToken;
 	}
 
 	/*

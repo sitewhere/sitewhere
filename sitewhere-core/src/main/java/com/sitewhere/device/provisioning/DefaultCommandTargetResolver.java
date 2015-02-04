@@ -18,6 +18,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.provisioning.ICommandTargetResolver;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Uses information in an {@link IDeviceCommandInvocation} to determine a list of target
@@ -30,6 +31,10 @@ public class DefaultCommandTargetResolver extends LifecycleComponent implements 
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultCommandTargetResolver.class);
+
+	public DefaultCommandTargetResolver() {
+		super(LifecycleComponentType.CommandTargetResolver);
+	}
 
 	/*
 	 * (non-Javadoc)

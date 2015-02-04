@@ -25,6 +25,9 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 	/** Hardware id for new device */
 	private String hardwareId;
 
+	/** Site token */
+	private String siteToken;
+
 	/** Device specification token */
 	private String specificationToken;
 
@@ -54,6 +57,19 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 
 	public void setHardwareId(String hardwareId) {
 		this.hardwareId = hardwareId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getSiteToken()
+	 */
+	public String getSiteToken() {
+		return siteToken;
+	}
+
+	public void setSiteToken(String siteToken) {
+		this.siteToken = siteToken;
 	}
 
 	/*

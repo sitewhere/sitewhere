@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -38,6 +39,10 @@ import com.sitewhere.spi.search.ISearchCriteria;
  * @author Derek
  */
 public class MongoPersistence {
+
+	/** Static logger instance */
+	@SuppressWarnings("unused")
+	private static Logger LOGGER = Logger.getLogger(MongoPersistence.class);
 
 	/**
 	 * Common handler for creating new objects. Assures that errors are handled in a
@@ -119,8 +124,13 @@ public class MongoPersistence {
 	 */
 	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
 			DBObject sort, ISearchCriteria criteria) {
-		int offset = Math.max(0, criteria.getPageNumber() - 1) * criteria.getPageSize();
-		DBCursor cursor = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
+		DBCursor cursor;
+		if (criteria.getPageSize() == 0) {
+			cursor = collection.find(query).sort(sort);
+		} else {
+			int offset = Math.max(0, criteria.getPageNumber() - 1) * criteria.getPageSize();
+			cursor = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
+		}
 		List<T> matches = new ArrayList<T>();
 		SearchResults<T> results = new SearchResults<T>(matches);
 		MongoConverter<T> converter = MongoConverters.getConverterFor(api);

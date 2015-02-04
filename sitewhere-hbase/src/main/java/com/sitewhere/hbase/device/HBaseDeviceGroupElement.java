@@ -22,11 +22,11 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
-import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -49,7 +49,7 @@ public class HBaseDeviceGroupElement {
 	public static final int INDEX_LENGTH = 4;
 
 	/** Column qualifier for element identifier (type+id) */
-	public static final byte[] ELEMENT_IDENTIFIER = Bytes.toBytes("ident");
+	public static final byte[] ELEMENT_IDENTIFIER = Bytes.toBytes("i");
 
 	/**
 	 * Create a group of group elements.
@@ -252,30 +252,6 @@ public class HBaseDeviceGroupElement {
 				scanner.close();
 			}
 			HBaseUtils.closeCleanly(table);
-		}
-	}
-
-	/**
-	 * Data structure that holds information about a record to be deleted.
-	 * 
-	 * @author Derek
-	 */
-	public static class DeleteRecord {
-
-		private byte[] rowkey;
-		private byte[] json;
-
-		public DeleteRecord(byte[] rowkey, byte[] json) {
-			this.rowkey = rowkey;
-			this.json = json;
-		}
-
-		public byte[] getRowkey() {
-			return rowkey;
-		}
-
-		public byte[] getJson() {
-			return json;
 		}
 	}
 

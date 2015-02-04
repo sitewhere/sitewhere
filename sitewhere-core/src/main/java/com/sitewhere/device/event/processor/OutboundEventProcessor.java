@@ -9,12 +9,14 @@ package com.sitewhere.device.event.processor;
 
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link IOutboundEventProcessor}.
@@ -22,6 +24,10 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
  * @author Derek
  */
 public abstract class OutboundEventProcessor extends LifecycleComponent implements IOutboundEventProcessor {
+
+	public OutboundEventProcessor() {
+		super(LifecycleComponentType.OutboundEventProcessor);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -76,5 +82,15 @@ public abstract class OutboundEventProcessor extends LifecycleComponent implemen
 	 */
 	@Override
 	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onBatchOperation
+	 * (com.sitewhere.spi.device.batch.IBatchOperation)
+	 */
+	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
 	}
 }

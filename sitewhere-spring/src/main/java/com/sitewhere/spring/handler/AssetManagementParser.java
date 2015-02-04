@@ -23,6 +23,7 @@ import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.server.asset.AssetModuleManager;
 import com.sitewhere.server.asset.filesystem.FileSystemDeviceAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule;
+import com.sitewhere.server.asset.filesystem.FileSystemLocationAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemPersonAssetModule;
 
 /**
@@ -64,6 +65,10 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 			}
 			case FilesystemPersonAssetModule: {
 				modules.add(parseFilesystemPersonAssetModule(child, context));
+				break;
+			}
+			case FilesystemLocationAssetModule: {
+				modules.add(parseFilesystemLocationAssetModule(child, context));
 				break;
 			}
 			}
@@ -132,6 +137,20 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse a fileystem location asset module configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseFilesystemLocationAssetModule(Element element, ParserContext context) {
+		BeanDefinitionBuilder module =
+				BeanDefinitionBuilder.rootBeanDefinition(FileSystemLocationAssetModule.class);
+		setCommonFilesystemAssetModuleProperties(module, element);
+		return module.getBeanDefinition();
+	}
+
+	/**
 	 * Sets properties common to all filesystem asset module types.
 	 * 
 	 * @param module
@@ -169,7 +188,10 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 		FilesystemHardwareAssetModule("filesystem-hardware-asset-module"),
 
 		/** Configures a filesystem person asset module */
-		FilesystemPersonAssetModule("filesystem-person-asset-module");
+		FilesystemPersonAssetModule("filesystem-person-asset-module"),
+
+		/** Configures a filesystem location asset module */
+		FilesystemLocationAssetModule("filesystem-location-asset-module");
 
 		/** Event code */
 		private String localName;

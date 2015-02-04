@@ -160,6 +160,7 @@
 <%@ include file="../includes/assignmentUpdateDialog.inc"%>
 <%@ include file="../includes/commandInvokeDialog.inc"%>
 <%@ include file="../includes/invocationViewDialog.inc"%>
+<%@ include file="../includes/templateAssignmentDetailHeader.inc"%>
 <%@ include file="../includes/templateAssignmentEntry.inc"%>
 <%@ include file="../includes/templateInvocationEntry.inc"%>
 <%@ include file="../includes/templateInvocationSummaryEntry.inc"%>
@@ -425,7 +426,7 @@
     
     /** Called on successful assignment load request */
     function loadGetSuccess(data, status, jqXHR) {
-		var template = kendo.template($("#tpl-assignment-entry").html());
+		var template = kendo.template($("#tpl-assignment-detail-header").html());
 		parseAssignmentData(data);
 		data.inDetailView = true;
 		$('#assignment-details').html(template(data));

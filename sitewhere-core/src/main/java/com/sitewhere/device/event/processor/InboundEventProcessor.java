@@ -15,6 +15,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Default implementation of {@link IInboundEventProcessor} interface with nothing
@@ -23,6 +24,10 @@ import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
  * @author Derek
  */
 public abstract class InboundEventProcessor extends LifecycleComponent implements IInboundEventProcessor {
+
+	public InboundEventProcessor() {
+		super(LifecycleComponentType.InboundEventProcessor);
+	}
 
 	/*
 	 * (non-Javadoc)

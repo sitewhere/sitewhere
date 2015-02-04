@@ -18,6 +18,7 @@ import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
 import com.sitewhere.spi.user.IUser;
@@ -38,6 +39,10 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 
 	/** Used to communicate with HBase */
 	private ISiteWhereHBaseClient client;
+
+	public HBaseUserManagement() {
+		super(LifecycleComponentType.DataStore);
+	}
 
 	/*
 	 * (non-Javadoc)

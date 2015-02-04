@@ -32,6 +32,9 @@ public class IdManager {
 	/** Manager for device group tokens */
 	private UniqueIdCounterMap deviceGroupKeys;
 
+	/** Manager for batch operation tokens */
+	private UniqueIdCounterMap batchOperationKeys;
+
 	/** Manager for command tokens */
 	private UuidRowKeyMap commandKeys;
 
@@ -71,6 +74,11 @@ public class IdManager {
 		deviceGroupKeys =
 				new UniqueIdCounterMap(hbase, UniqueIdType.DeviceGroupKey, UniqueIdType.DeviceGroupValue);
 		deviceGroupKeys.refresh();
+
+		batchOperationKeys =
+				new UniqueIdCounterMap(hbase, UniqueIdType.BatchOperationKey,
+						UniqueIdType.BatchOperationValue);
+		batchOperationKeys.refresh();
 
 		commandKeys = new UuidRowKeyMap(hbase, UniqueIdType.CommandKey, UniqueIdType.CommandValue);
 		commandKeys.refresh();
@@ -121,6 +129,14 @@ public class IdManager {
 
 	public void setDeviceGroupKeys(UniqueIdCounterMap deviceGroupKeys) {
 		this.deviceGroupKeys = deviceGroupKeys;
+	}
+
+	public UniqueIdCounterMap getBatchOperationKeys() {
+		return batchOperationKeys;
+	}
+
+	public void setBatchOperationKeys(UniqueIdCounterMap batchOperationKeys) {
+		this.batchOperationKeys = batchOperationKeys;
 	}
 
 	public UuidRowKeyMap getZoneKeys() {

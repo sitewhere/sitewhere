@@ -6,9 +6,10 @@
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/kendo.web.min.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/modernizr.js"></script>
+<script src="${pageContext.request.contextPath}/scripts/moment.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/sitewhere.js"></script>
 <link rel="shortcut icon" href="${pageContext.request.contextPath}/img/favicon.ico" />
- <link href="${pageContext.request.contextPath}/css/kendo.common.min.css" rel="stylesheet" />
+<link href="${pageContext.request.contextPath}/css/kendo.common.min.css" rel="stylesheet" />
 <link href="${pageContext.request.contextPath}/css/kendo.bootstrap.min.css" rel="stylesheet" />
 <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet" media="screen">
 <link href="${pageContext.request.contextPath}/css/font-awesome.min.css" rel="stylesheet" media="screen">
@@ -72,6 +73,14 @@
 	</c:when>
 	<c:otherwise>
 		<li><a href="${pageContext.request.contextPath}/admin/groups/list.html">Device Groups</a></li>
+	</c:otherwise>
+</c:choose>
+<c:choose>
+	<c:when test="${sitewhere_section == 'batch'}">
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/batch/list.html">Batch</a></li>
+	</c:when>
+	<c:otherwise>
+		<li><a href="${pageContext.request.contextPath}/admin/batch/list.html">Batch</a></li>
 	</c:otherwise>
 </c:choose>
 <c:choose>

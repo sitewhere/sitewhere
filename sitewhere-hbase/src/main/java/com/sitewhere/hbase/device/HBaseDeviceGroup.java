@@ -101,7 +101,7 @@ public class HBaseDeviceGroup {
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 		byte[] zero = Bytes.toBytes((long) 0);
 		qualifiers.put(ENTRY_COUNTER, zero);
-		return HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, group, uuid, KEY_BUILDER,
+		return HBaseUtils.createOrUpdate(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, group, uuid, KEY_BUILDER,
 				qualifiers);
 	}
 

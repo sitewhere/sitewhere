@@ -21,6 +21,7 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Manages the list of modules
@@ -37,6 +38,10 @@ public class AssetModuleManager extends LifecycleComponent implements IAssetModu
 
 	/** Map of asset modules by unique id */
 	private Map<String, IAssetModule<?>> modulesById = new HashMap<String, IAssetModule<?>>();
+
+	public AssetModuleManager() {
+		super(LifecycleComponentType.AssetModuleManager);
+	}
 
 	/*
 	 * (non-Javadoc)

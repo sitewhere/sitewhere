@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.event.processor;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -61,4 +62,12 @@ public interface IOutboundEventProcessor extends ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
+
+	/**
+	 * Executes code after batch operation has been successfully saved.
+	 * 
+	 * @param operation
+	 * @throws SiteWhereException
+	 */
+	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException;
 }

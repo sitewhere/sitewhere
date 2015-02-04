@@ -10,8 +10,11 @@ package com.sitewhere.server.lifecycle;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.util.UUID;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -21,6 +24,12 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public abstract class LifecycleComponent implements ILifecycleComponent {
 
+	/** Unique component id */
+	private String componentId = UUID.getUUID().toString();
+
+	/** Component type */
+	private LifecycleComponentType componentType;
+
 	/** Lifecycle status indicator */
 	private LifecycleStatus lifecycleStatus = LifecycleStatus.Stopped;
 
@@ -29,6 +38,19 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 
 	/** List of contained lifecycle components */
 	private List<ILifecycleComponent> lifecycleComponents = new ArrayList<ILifecycleComponent>();
+
+	public LifecycleComponent(LifecycleComponentType type) {
+		this.componentType = type;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
+	 */
+	public String getComponentId() {
+		return componentId;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -43,13 +65,25 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentType()
+	 */
+	public LifecycleComponentType getComponentType() {
+		return componentType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecycleStart()
 	 */
 	public void lifecycleStart() {
+		LifecycleStatus old = getLifecycleStatus();
 		setLifecycleStatus(LifecycleStatus.Starting);
 		getLogger().info(getComponentName() + " state transitioned to STARTING.");
 		try {
-			start();
+			if (old != LifecycleStatus.Paused) {
+				start();
+			}
 			setLifecycleStatus(LifecycleStatus.Started);
 			getLogger().info(getComponentName() + " state transitioned to STARTED.");
 		} catch (SiteWhereException e) {
@@ -61,6 +95,48 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 			setLifecycleError(new SiteWhereException(t));
 			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
+	 */
+	@Override
+	public void lifecyclePause() {
+		setLifecycleStatus(LifecycleStatus.Pausing);
+		getLogger().info(getComponentName() + " state transitioned to PAUSING.");
+		try {
+			pause();
+			setLifecycleStatus(LifecycleStatus.Paused);
+			getLogger().info(getComponentName() + " state transitioned to PAUSED.");
+		} catch (SiteWhereException e) {
+			setLifecycleStatus(LifecycleStatus.Error);
+			setLifecycleError(e);
+			getLogger().error(getComponentName() + " state transitioned to ERROR.", e);
+		} catch (Throwable t) {
+			setLifecycleStatus(LifecycleStatus.Error);
+			setLifecycleError(new SiteWhereException(t));
+			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause()
+	 */
+	@Override
+	public void pause() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canPause()
+	 */
+	public boolean canPause() throws SiteWhereException {
+		return false;
 	}
 
 	/*
@@ -83,6 +159,38 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 			setLifecycleStatus(LifecycleStatus.Error);
 			setLifecycleError(new SiteWhereException(t));
 			getLogger().error(getComponentName() + " state transitioned to ERROR.", t);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#findComponentsOfType(com
+	 * .sitewhere.spi.server.lifecycle.LifecycleComponentType)
+	 */
+	@Override
+	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type)
+			throws SiteWhereException {
+		List<ILifecycleComponent> matches = new ArrayList<ILifecycleComponent>();
+		findComponentsOfType(this, matches, type);
+		return matches;
+	}
+
+	/**
+	 * Recursive matching of nested components to find those of the given type.
+	 * 
+	 * @param matches
+	 * @param type
+	 * @throws SiteWhereException
+	 */
+	public void findComponentsOfType(ILifecycleComponent current, List<ILifecycleComponent> matches,
+			LifecycleComponentType type) throws SiteWhereException {
+		if (current.getComponentType() == type) {
+			matches.add(current);
+		}
+		for (ILifecycleComponent child : current.getLifecycleComponents()) {
+			findComponentsOfType(child, matches, type);
 		}
 	}
 

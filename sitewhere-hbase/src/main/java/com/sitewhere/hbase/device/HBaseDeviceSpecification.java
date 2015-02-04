@@ -123,7 +123,7 @@ public class HBaseDeviceSpecification {
 			byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
 			qualifiers.put(COMMAND_COUNTER, maxLong);
 			IDeviceSpecification created =
-					HBaseUtils.create(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, specification, uuid,
+					HBaseUtils.createOrUpdate(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, specification, uuid,
 							KEY_BUILDER, qualifiers);
 			if (cache != null) {
 				cache.getDeviceSpecificationCache().put(uuid, created);

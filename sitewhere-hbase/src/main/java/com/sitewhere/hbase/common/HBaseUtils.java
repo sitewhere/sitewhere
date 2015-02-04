@@ -26,6 +26,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.Tracer;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
@@ -58,7 +59,7 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T create(ISiteWhereHBaseClient hbase, byte[] tableName, T entity, String token,
+	public static <T> T createOrUpdate(ISiteWhereHBaseClient hbase, byte[] tableName, T entity, String token,
 			IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers) throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(token);
 		byte[] json = MarshalUtils.marshalJson(entity);

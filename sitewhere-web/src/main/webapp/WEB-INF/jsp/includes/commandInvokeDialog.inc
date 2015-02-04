@@ -1,4 +1,4 @@
-<!-- Dialog for creating a device -->
+<!-- Dialog for invoking a command -->
 <div id="ci-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

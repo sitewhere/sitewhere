@@ -20,6 +20,13 @@ import com.sitewhere.spi.device.command.ICommandParameter;
 public interface IDeviceCommandCreateRequest extends IMetadataProvider {
 
 	/**
+	 * Get unique command token.
+	 * 
+	 * @return
+	 */
+	public String getToken();
+
+	/**
 	 * Optional namespace for distinguishing commands.
 	 * 
 	 * @return

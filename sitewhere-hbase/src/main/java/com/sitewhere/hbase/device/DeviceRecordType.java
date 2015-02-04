@@ -23,8 +23,8 @@ public enum DeviceRecordType {
 	/** Device group record */
 	DeviceGroup((byte) 0x02),
 
-	/** End marker for scan ranges */
-	End((byte) 0x03);
+	/** Batch operation record */
+	BatchOperation((byte) 0x03);
 
 	/** Type indicator */
 	private byte type;

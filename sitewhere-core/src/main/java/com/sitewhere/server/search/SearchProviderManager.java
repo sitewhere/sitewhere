@@ -17,6 +17,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.external.ISearchProvider;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Manages a list of {@link ISearchProvider} that are available for querying device events
@@ -33,6 +34,10 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
 
 	/** Map of search providers by id */
 	private Map<String, ISearchProvider> providersById = new HashMap<String, ISearchProvider>();
+
+	public SearchProviderManager() {
+		super(LifecycleComponentType.SearchProviderManager);
+	}
 
 	/*
 	 * (non-Javadoc)

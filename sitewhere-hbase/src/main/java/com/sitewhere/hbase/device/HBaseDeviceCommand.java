@@ -24,11 +24,11 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
-import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.spi.SiteWhereException;
@@ -61,16 +61,16 @@ public class HBaseDeviceCommand {
 		if (specId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 		}
-		String token = UUID.randomUUID().toString();
+		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 
 		// Use common logic so all backend implementations work the same.
 		List<IDeviceCommand> existing = listDeviceCommands(hbase, spec.getToken(), false);
-		DeviceCommand command = SiteWherePersistence.deviceCommandCreateLogic(spec, request, token, existing);
+		DeviceCommand command = SiteWherePersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
 
 		// Create unique row for new device.
 		Long nextId = HBaseDeviceSpecification.allocateNextCommandId(hbase, specId);
 		byte[] rowkey = HBaseDeviceSpecification.getDeviceCommandRowKey(specId, nextId);
-		IdManager.getInstance().getCommandKeys().create(token, rowkey);
+		IdManager.getInstance().getCommandKeys().create(uuid, rowkey);
 
 		return putDeviceCommandJson(hbase, command);
 	}

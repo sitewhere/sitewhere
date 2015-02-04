@@ -9,6 +9,7 @@ package com.sitewhere.device.provisioning;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.server.batch.BatchOperationManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 
@@ -24,6 +25,7 @@ public class DefaultDeviceProvisioning extends DeviceProvisioning {
 
 	public DefaultDeviceProvisioning() {
 		setRegistrationManager(new RegistrationManager());
+		setBatchOperationManager(new BatchOperationManager());
 		setInboundProcessingStrategy(new BlockingQueueInboundProcessingStrategy());
 		setCommandProcessingStrategy(new DefaultCommandProcessingStrategy());
 		setOutboundProcessingStrategy(new BlockingQueueOutboundProcessingStrategy());

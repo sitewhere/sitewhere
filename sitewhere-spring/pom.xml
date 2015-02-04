@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.sitewhere</groupId>
 		<artifactId>sitewhere</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -22,6 +22,12 @@
 		<dependency>
 			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-core</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-activemq</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
 		</dependency>

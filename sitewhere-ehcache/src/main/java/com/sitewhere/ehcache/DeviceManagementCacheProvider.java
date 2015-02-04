@@ -23,6 +23,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IDeviceManagementCacheProvider} that uses EHCache for caching.
@@ -82,6 +83,10 @@ public class DeviceManagementCacheProvider extends LifecycleComponent implements
 
 	/** Cache for device assignment data */
 	private CacheAdapter<String, IDeviceAssignment> deviceAssignmentCache;
+
+	public DeviceManagementCacheProvider() {
+		super(LifecycleComponentType.CacheProvider);
+	}
 
 	/*
 	 * (non-Javadoc)

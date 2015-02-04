@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that creates a server socket and spawns
@@ -36,11 +37,17 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 	/** Default number of threads used to service requests */
 	private static final int DEFAULT_NUM_THREADS = 5;
 
+	/** Default ip binding for server socket */
+	private static final String DEFAULT_BIND_ADDRESS = "localhost";
+
 	/** Default port for server socket */
 	private static final int DEFAULT_PORT = 8484;
 
 	/** Number of threads used to service requests */
 	private int numThreads = DEFAULT_NUM_THREADS;
+
+	/** Bind address used for server socket */
+	private String bindAddress = DEFAULT_BIND_ADDRESS;
 
 	/** Port used for server socket */
 	private int port = DEFAULT_PORT;
@@ -63,6 +70,10 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 	/** Handles processing of server requests */
 	private ServerProcessingThread processing;
 
+	public SocketInboundEventReceiver() {
+		super(LifecycleComponentType.InboundEventReceiver);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -75,7 +86,7 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 				throw new SiteWhereException(
 						"No socket interaction handler factory configured for socket event source.");
 			}
-			LOGGER.info("Receiver creating server socket on port " + getPort() + ".");
+			LOGGER.info("Receiver creating server socket on " + getBindAddress() + ":" + getPort() + ".");
 			this.server = new ServerSocket(getPort());
 			this.processing = new ServerProcessingThread();
 			this.processingService = Executors.newSingleThreadExecutor();
@@ -96,6 +107,16 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 	@Override
 	public Logger getLogger() {
 		return LOGGER;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
+		return getBindAddress() + ":" + getPort();
 	}
 
 	/*
@@ -142,7 +163,9 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 					RequestProcessingThread processor = new RequestProcessingThread(socket);
 					pool.submit(processor);
 				} catch (IOException e) {
-					LOGGER.error("Exception while accepting request in event receiver server socket.", e);
+					if (!terminate) {
+						LOGGER.error("Exception while accepting request in event receiver server socket.", e);
+					}
 				}
 			}
 		}
@@ -150,6 +173,18 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 		public void setTerminate(boolean terminate) {
 			this.terminate = terminate;
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#onEventPayloadReceived
+	 * (java.lang.Object)
+	 */
+	@Override
+	public void onEventPayloadReceived(T payload) {
+		getEventSource().onEncodedEventReceived(SocketInboundEventReceiver.this, payload);
 	}
 
 	/**
@@ -170,7 +205,7 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 		public void run() {
 			try {
 				LOGGER.debug("About to process request received on port " + getPort() + ".");
-				getHandlerFactory().newInstance().process(socket, getEventSource());
+				getHandlerFactory().newInstance().process(socket, SocketInboundEventReceiver.this);
 				LOGGER.debug("Processing complete.");
 			} catch (SiteWhereException e) {
 				LOGGER.error("Exception processing request in event receiver server socket.", e);
@@ -178,6 +213,11 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEventSource()
+	 */
 	public IInboundEventSource<T> getEventSource() {
 		return eventSource;
 	}
@@ -199,6 +239,14 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 
 	public void setNumThreads(int numThreads) {
 		this.numThreads = numThreads;
+	}
+
+	public String getBindAddress() {
+		return bindAddress;
+	}
+
+	public void setBindAddress(String bindAddress) {
+		this.bindAddress = bindAddress;
 	}
 
 	public int getPort() {

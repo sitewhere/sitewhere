@@ -20,6 +20,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ICommandDeliveryProvider} that publishes commands to an MQTT
@@ -50,6 +51,10 @@ public class MqttCommandDeliveryProvider extends LifecycleComponent implements
 
 	/** Shared MQTT connection */
 	private BlockingConnection connection;
+
+	public MqttCommandDeliveryProvider() {
+		super(LifecycleComponentType.CommandDeliveryProvider);
+	}
 
 	/*
 	 * (non-Javadoc)

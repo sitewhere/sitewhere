@@ -19,12 +19,6 @@
 							<input type="text" id="ac-hardware-id" title="Hardware id" class="input-xlarge">
 						</div>
 					</div>
-					<div class="control-group">
-						<label class="control-label" for="ac-site-token">Site</label>
-						<div class="controls">
-							<select id="ac-site-token"></select>
-						</div>
-					</div>
 				</form>
 			</div>
 			<div>
@@ -94,31 +88,11 @@
 	/** Asset matches list */
 	var acAssetMatches;
 	
-	/** Sites dropdown */
-	var acSitesDropdown;
-	
 	/** Used for delayed submit on search */
 	var acTimeout;
 	var acLastSearch;
 
 	$(document).ready(function() {
-
-        acSitesDropdown = $("#ac-site-token").kendoDropDownList({
-			dataTextField: "name",
-			dataValueField: "token",
-            dataSource: {
-    			transport : {
-    				read : {
-    					url : "${pageContext.request.contextPath}/api/sites",
-    					dataType : "json",
-    				}
-    			},
-    			schema : {
-    				data: "results",
-    				total: "numResults",
-    			},
-            }
-        }).data("kendoDropDownList");
         
         /** Handle hiding asset selection based on checkbox */
         $("#ac-associate-asset").click(onAssetCheckChange).change(onAssetCheckChange);
@@ -172,7 +146,6 @@
 	        
 			var assignmentData = {
 				"deviceHardwareId": $('#ac-hardware-id').val(), 
-				"siteToken": $('#ac-site-token').val(), 
 				"metadata": swMetadataAsLookup(acMetadataDS.data()),
 			}
 			if (hasAssociatedAsset()) {
@@ -218,9 +191,6 @@
 
         /** Validate main form */
 		$("#ac-hardware-id").require();
-
-	    /** Verify that a site was chosen */
-		$("#ac-site-token").require();
 	    
         /** If associating asset, verify fields */
 	    if (hasAssociatedAsset()) {
@@ -317,7 +287,9 @@
 	/** Open the dialog */
 	function acOpen(e, hardwareId, callback) {
 		var event = e || window.event;
-		event.stopPropagation();
+		if (event) {
+			event.stopPropagation();
+		}
 		
 		$('#ac-general-form')[0].reset();
 		$('#ac-hardware-id').val(hardwareId);

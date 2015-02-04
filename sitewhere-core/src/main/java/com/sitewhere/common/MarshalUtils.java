@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.hbase.common;
+package com.sitewhere.common;
 
 import org.apache.log4j.Logger;
 
@@ -24,7 +24,7 @@ public class MarshalUtils {
 	private static ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
-	 * Marshal an object to a JSON string.
+	 * Marshal an object to a byte array.
 	 * 
 	 * @param object
 	 * @return
@@ -34,6 +34,24 @@ public class MarshalUtils {
 		Tracer.push(TracerCategory.DataStore, "marshalJson", LOGGER);
 		try {
 			return MAPPER.writeValueAsBytes(object);
+		} catch (JsonProcessingException e) {
+			throw new SiteWhereException("Could not marshal device as JSON.", e);
+		} finally {
+			Tracer.pop(LOGGER);
+		}
+	}
+
+	/**
+	 * Marshal an object to a JSON string.
+	 * 
+	 * @param object
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static String marshalJsonAsString(Object object) throws SiteWhereException {
+		Tracer.push(TracerCategory.DataStore, "marshalJson", LOGGER);
+		try {
+			return MAPPER.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
 			throw new SiteWhereException("Could not marshal device as JSON.", e);
 		} finally {

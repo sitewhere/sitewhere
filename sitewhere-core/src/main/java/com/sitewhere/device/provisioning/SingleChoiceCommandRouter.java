@@ -12,7 +12,6 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
@@ -41,12 +40,12 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	 * com.sitewhere.spi.device.provisioning.IOutboundCommandRouter#routeCommand(com.sitewhere
 	 * .spi.device.command.IDeviceCommandExecution,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
+	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
 	public void routeCommand(IDeviceCommandExecution execution, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
-		destination.deliverCommand(execution, nesting, assignment, device);
+			IDeviceAssignment assignment) throws SiteWhereException {
+		destination.deliverCommand(execution, nesting, assignment);
 	}
 
 	/*
@@ -56,12 +55,12 @@ public class SingleChoiceCommandRouter extends OutboundCommandRouter {
 	 * com.sitewhere.spi.device.provisioning.IOutboundCommandRouter#routeSystemCommand
 	 * (com.sitewhere.spi.device.command.ISystemCommand,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment, com.sitewhere.spi.device.IDevice)
+	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
 	public void routeSystemCommand(ISystemCommand command, IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDevice device) throws SiteWhereException {
-		destination.deliverSystemCommand(command, nesting, assignment, device);
+			IDeviceAssignment assignment) throws SiteWhereException {
+		destination.deliverSystemCommand(command, nesting, assignment);
 	}
 
 	/*

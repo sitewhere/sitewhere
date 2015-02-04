@@ -29,6 +29,9 @@ public class Device extends MetadataProviderEntity implements IDevice {
 	/** Unique hardware id for device */
 	private String hardwareId;
 
+	/** Site token */
+	private String siteToken;
+
 	/** Specification token */
 	private String specificationToken;
 
@@ -55,6 +58,9 @@ public class Device extends MetadataProviderEntity implements IDevice {
 	/** Current device assignment */
 	private DeviceAssignment assignment;
 
+	/** Current site deployment */
+	private Site site;
+
 	/** Asset id from device specification (only for marshaling) */
 	private String assetId;
 
@@ -75,6 +81,19 @@ public class Device extends MetadataProviderEntity implements IDevice {
 
 	public void setHardwareId(String hardwareId) {
 		this.hardwareId = hardwareId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDevice#getSiteToken()
+	 */
+	public String getSiteToken() {
+		return siteToken;
+	}
+
+	public void setSiteToken(String siteToken) {
+		this.siteToken = siteToken;
 	}
 
 	/*
@@ -170,6 +189,14 @@ public class Device extends MetadataProviderEntity implements IDevice {
 
 	public void setAssignment(DeviceAssignment assignment) {
 		this.assignment = assignment;
+	}
+
+	public Site getSite() {
+		return site;
+	}
+
+	public void setSite(Site site) {
+		this.site = site;
 	}
 
 	public String getAssetId() {

@@ -23,6 +23,12 @@ public enum LifecycleStatus {
 	/** Component is started */
 	Started,
 
+	/** Component is pausing */
+	Pausing,
+
+	/** Component is paused */
+	Paused,
+
 	/** Component is stopping */
 	Stopping,
 

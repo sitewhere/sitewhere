@@ -28,12 +28,12 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
-import com.sitewhere.hbase.common.MarshalUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.Device;
@@ -48,6 +48,9 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.search.device.DeviceSearchType;
+import com.sitewhere.spi.search.device.IDeviceBySpecificationParameters;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
@@ -66,8 +69,11 @@ public class HBaseDevice {
 	/** Byte that indicates an assignment history entry qualifier */
 	public static final byte ASSIGNMENT_HISTORY_INDICATOR = (byte) 0x01;
 
+	/** Column qualifier for current site */
+	public static final byte[] CURRENT_SITE = "site".getBytes();
+
 	/** Column qualifier for current device assignment */
-	public static final byte[] CURRENT_ASSIGNMENT = "assignment".getBytes();
+	public static final byte[] CURRENT_ASSIGNMENT = "assn".getBytes();
 
 	/** Used for cloning device results */
 	private static DeviceMarshalHelper DEVICE_HELPER =
@@ -138,38 +144,11 @@ public class HBaseDevice {
 	 * @throws SiteWhereException
 	 */
 	public static SearchResults<IDevice> listDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
-			ISearchCriteria criteria) throws SiteWhereException {
+			IDeviceSearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDevices (HBase)", LOGGER);
 		try {
-			Pager<byte[]> matches = getFilteredDevices(hbase, includeDeleted, false, criteria);
-			List<IDevice> response = new ArrayList<IDevice>();
-			for (byte[] json : matches.getResults()) {
-				response.add(MarshalUtils.unmarshalJson(json, Device.class));
-			}
-			return new SearchResults<IDevice>(response, matches.getTotal());
-		} finally {
-			Tracer.pop(LOGGER);
-		}
-	}
-
-	/**
-	 * List devices that do not have a current assignment.
-	 * 
-	 * @param hbase
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static SearchResults<IDevice> listUnassignedDevices(ISiteWhereHBaseClient hbase,
-			ISearchCriteria criteria) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "listUnassignedDevices (HBase)", LOGGER);
-		try {
-			Pager<byte[]> matches = getFilteredDevices(hbase, false, true, criteria);
-			List<IDevice> response = new ArrayList<IDevice>();
-			for (byte[] json : matches.getResults()) {
-				response.add(MarshalUtils.unmarshalJson(json, Device.class));
-			}
-			return new SearchResults<IDevice>(response, matches.getTotal());
+			Pager<IDevice> matches = getFilteredDevices(hbase, includeDeleted, criteria);
+			return new SearchResults<IDevice>(matches.getResults(), matches.getTotal());
 		} finally {
 			Tracer.pop(LOGGER);
 		}
@@ -180,15 +159,28 @@ public class HBaseDevice {
 	 * 
 	 * @param hbase
 	 * @param includeDeleted
-	 * @param excludeAssigned
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static Pager<byte[]> getFilteredDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
-			boolean excludeAssigned, ISearchCriteria criteria) throws SiteWhereException {
+	protected static Pager<IDevice> getFilteredDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
+			IDeviceSearchCriteria criteria) throws SiteWhereException {
 		HTableInterface devices = null;
 		ResultScanner scanner = null;
+
+		String specificationToken = null;
+		if (criteria.getSearchType() == DeviceSearchType.UsesSpecification) {
+			IDeviceBySpecificationParameters params = criteria.getDeviceBySpecificationParameters();
+			if (params == null) {
+				throw new SiteWhereException(
+						"Querying devices by specification token, but parameters were not passed.");
+			}
+			specificationToken = params.getSpecificationToken();
+			if (specificationToken == null) {
+				throw new SiteWhereException("No specification token passed for device query.");
+			}
+		}
+
 		try {
 			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Scan scan = new Scan();
@@ -196,13 +188,13 @@ public class HBaseDevice {
 			scan.setStopRow(new byte[] { DeviceRecordType.DeviceSpecification.getType() });
 			scanner = devices.getScanner(scan);
 
-			Pager<byte[]> pager = new Pager<byte[]>(criteria);
+			Pager<IDevice> pager = new Pager<IDevice>(criteria);
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
 				byte[] json = null;
 				for (KeyValue column : result.raw()) {
 					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(CURRENT_ASSIGNMENT, qualifier)) && (excludeAssigned)) {
+					if ((Bytes.equals(CURRENT_ASSIGNMENT, qualifier)) && (criteria.isExcludeAssigned())) {
 						shouldAdd = false;
 					}
 					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
@@ -213,7 +205,18 @@ public class HBaseDevice {
 					}
 				}
 				if ((shouldAdd) && (json != null)) {
-					pager.process(json);
+					Device device = MarshalUtils.unmarshalJson(json, Device.class);
+					switch (criteria.getSearchType()) {
+					case All: {
+						break;
+					}
+					case UsesSpecification: {
+						if (!specificationToken.equals(device.getSpecificationToken())) {
+							continue;
+						}
+					}
+					}
+					pager.process(device);
 				}
 			}
 			return pager;
@@ -250,6 +253,7 @@ public class HBaseDevice {
 			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Put put = new Put(primary);
 			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			put.add(ISiteWhereHBase.FAMILY_ID, CURRENT_SITE, Bytes.toBytes(device.getSiteToken()));
 			devices.put(put);
 			if (cache != null) {
 				cache.getDeviceCache().put(device.getHardwareId(), device);

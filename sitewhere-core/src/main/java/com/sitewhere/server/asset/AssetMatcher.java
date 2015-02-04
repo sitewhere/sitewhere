@@ -7,6 +7,8 @@
  */
 package com.sitewhere.server.asset;
 
+import com.sitewhere.spi.asset.AssetType;
+import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -17,6 +19,32 @@ import com.sitewhere.spi.asset.IPersonAsset;
  * @author Derek Adams
  */
 public class AssetMatcher {
+
+	/**
+	 * Delegate match criteria by type.
+	 * 
+	 * @param type
+	 * @param asset
+	 * @param criteria
+	 * @return
+	 */
+	public boolean isMatch(AssetType type, IAsset asset, String criteria) {
+		switch (type) {
+		case Device: {
+			return isHardwareMatch((IHardwareAsset) asset, criteria);
+		}
+		case Hardware: {
+			return isHardwareMatch((IHardwareAsset) asset, criteria);
+		}
+		case Person: {
+			return isPersonMatch((IPersonAsset) asset, criteria);
+		}
+		case Location: {
+			return isLocationMatch((ILocationAsset) asset, criteria);
+		}
+		}
+		return false;
+	}
 
 	/**
 	 * Indicates if hardware asset matches the given criteria.

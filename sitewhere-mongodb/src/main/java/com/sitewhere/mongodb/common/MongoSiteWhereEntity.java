@@ -43,10 +43,18 @@ public class MongoSiteWhereEntity {
 	 * @param target
 	 */
 	public static void toDBObject(ISiteWhereEntity source, BasicDBObject target) {
-		target.append(PROP_CREATED_DATE, source.getCreatedDate());
-		target.append(PROP_CREATED_BY, source.getCreatedBy());
-		target.append(PROP_UPDATED_DATE, source.getUpdatedDate());
-		target.append(PROP_UPDATED_BY, source.getUpdatedBy());
+		if (source.getCreatedDate() != null) {
+			target.append(PROP_CREATED_DATE, source.getCreatedDate());
+		}
+		if (source.getCreatedBy() != null) {
+			target.append(PROP_CREATED_BY, source.getCreatedBy());
+		}
+		if (source.getUpdatedDate() != null) {
+			target.append(PROP_UPDATED_DATE, source.getUpdatedDate());
+		}
+		if (source.getUpdatedBy() != null) {
+			target.append(PROP_UPDATED_BY, source.getUpdatedBy());
+		}
 		target.append(PROP_DELETED, source.isDeleted());
 	}
 

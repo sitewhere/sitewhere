@@ -447,6 +447,8 @@ The **Device Details** tab includes basic information about a device.
 | Hardware Id          | Unique hardware identifier for the device. The         |
 |                      | identifier can be any string value.                    |
 +----------------------+--------------------------------------------------------+
+| Site                 | Specifies the site where the device will be deployed.  |
++----------------------+--------------------------------------------------------+
 | Comments             | Extra information about the device.                    |
 +----------------------+--------------------------------------------------------+
 
@@ -476,6 +478,89 @@ payloads.
 .. image:: /_static/images/userguide/device-edit-metadata.png
    :width: 100%
    :alt: Edit Device - Metadata
+   :align: left
+   
+Filtering the Device List
+-------------------------
+SiteWhere is designed to manage and interact with a large number of devices, so it
+is important to be able to target specific groups of devices based on criteria.
+On the device list page, clicking on the **Filter Results** button opens a
+dialog that allows criteria to be specified to narrow the list of results.
+   
+Filter Devices - Specifications Tab
+***********************************
+The first tab allows devices to be filtered based on the device specification
+that they implement. The two choices include:
+
+* Do not filter by specification
+* Include only devices that implement a given specification
+
+Limiting results to devices that implement a specification allows all devices 
+of a given type to be targeted. It also adds a **Batch Command** button to the
+toolbar, allowing a command to be executed as a batch operation for all of the
+devices that meet the criteria. Other criteria may be applied in addition to
+the specification to limit the scope of devices affected by the command.
+   
+.. image:: /_static/images/userguide/device-filter-spec.png
+   :width: 100%
+   :alt: Filter Device - Specifications
+   :align: left
+   
+Filter Devices - Groups Tab
+***************************
+The **Groups** tab allows search results to be limited based by whether devices
+are contained in specific device groups. The choices for group filtering 
+include:
+
+* Do not filter by group
+* Include devices that belong to a particular group
+* Include devices that belong to groups with a given role
+
+The group filter criteria is applied in addition to any other criteria so, for
+instance, you can choose a specification and a group to choose only devices of a 
+given type in the group. You can then click **Batch Command** to send a command to
+only those devices.
+   
+.. image:: /_static/images/userguide/device-filter-group.png
+   :width: 100%
+   :alt: Filter Device - Groups
+   :align: left
+   
+Filter Devices - Created Date Tab
+*********************************
+The **Created Date** tab allows search results to be limited by the date a device
+was added to the system. The choices for filtering by created date include:
+
+* Do not filter by created date
+* Include devices created in the last hour
+* Include devices created in the last day
+* Include devices created in the last week
+* Include devices created before a given date
+* Include devices created after a given date
+* Include devices created between two dates
+
+The created date filter criteria is applied in combination with other filters so,
+for instance, you can choose devices in a group that implement a given specification
+and were created in the last week.
+   
+.. image:: /_static/images/userguide/device-filter-createdate.png
+   :width: 100%
+   :alt: Filter Device - Created Date
+   :align: left
+   
+Filter Devices - Other Options
+******************************
+The **Other Options** tab is a catch-all for other criteria that can be used to 
+filter the device list.
+
+Currently, the only option available is filtering devices that are already 
+assigned. Choosing this option will return only unassigned devices. Examples of
+using this option include looking for devices of a given type that are not
+assigned yet or looking for devices in a group that are not assigned yet.
+
+.. image:: /_static/images/userguide/device-filter-other.png
+   :width: 100%
+   :alt: Filter Device - Other Options
    :align: left
    
 Managing Devices - Device Detail
@@ -530,8 +615,8 @@ the asset portion of the device entry as shown below:
    :align: left
 
 Clicking the button opens a dialog that allows the device to be assigned. The
-**Assignment Details** tab shows the hardware id for the device along with a dropdown
-for choosing which site the device will be assigned to.
+**Assignment Details** tab shows the hardware id for the device that will
+be assigned.
 
 .. image:: /_static/images/userguide/device-assign-details.png
    :width: 100%
@@ -661,6 +746,70 @@ metadata for the building phone number or address where the badges are in use.
    :width: 100%
    :alt: Edit Device Group - Metadata
    :align: left
+
+-------------------------
+Managing Batch Operations
+-------------------------
+Batch operations are actions that operate on multiple devices, executing asynchronously
+and providing a mechanism for monitoring progress over time. Examples of batch
+operations include executing commands on a large number of devices or applying
+firmware updates to a group of devices. The batch operation manager is responsible
+for taking a batch operation request and breaking it out into the actions necessary
+to complete the goal. Since batch operations can result in a large load on the system,
+the batch operation manager allows for throttling the execution of operations so that
+a reasonable load is achieved when dealing with thousands or millions of devices.
+
+Batch Operation List
+--------------------
+Clicking the **Batch** tab in the navigation bar opens the batch list page.
+All batch operations are listed in reverse chronological order.
+
+.. image:: /_static/images/userguide/batch-list.png
+   :width: 100%
+   :alt: Batch List
+   :align: left
+
+Batch Command Invocation Details
+--------------------------------
+Commands can be invoked as batch operations by navigating to the device list 
+page, specifying criteria to limit the devices that will be affected, then 
+clicking the **Batch Command** button in the toolbar. Note that commands can
+only be executed on devices that implement the same specification, so the 
+filter criteria must limit the device list to a single specification. Once a 
+batch command has been executed, it will appear on the batch opearation list
+page. Clicking on the arrow to the right of the operation entry will 
+navigate to the batch command invocation details page as shown below:
+
+.. image:: /_static/images/userguide/batch-command-detail.png
+   :width: 100%
+   :alt: Batch Command Detail
+   :align: left
+
+The banner at the top of the page incudes information about the batch command
+invocation. The command that was executed is shown along with the values passed
+for any arguments. The other fields are summarized in the table below:
+
++----------------------+--------------------------------------------------------+
+| Field                | Description                                            |
++======================+========================================================+
+| Token                | Unique token that identifies the batch.                |
++----------------------+--------------------------------------------------------+
+| Operation            | Type of batch operation that was performed.            |
++----------------------+--------------------------------------------------------+
+| Processing Status    | Indicates status of the batch operation as a whole.    |
++----------------------+--------------------------------------------------------+
+| Created Date         | Date the batch operation was created.                  |
++----------------------+--------------------------------------------------------+
+| Processing Started   | Date the batch operation started processing.           |
++----------------------+--------------------------------------------------------+
+| Processing Finished  | Date the batch operation finished processing.          |
++----------------------+--------------------------------------------------------+
+
+Below the header is a list of the batch operation elements. These correspond
+to the individual commands that were invoked on devices. Each entry indicates
+the hardware id of the affected device, the processing status (indicating whether
+a command invocation was created successfully), the processed date, and
+a link to the command invocation event that was generated. 
 
 --------------
 Managing Users

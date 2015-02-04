@@ -36,6 +36,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that uses an ActiveMQ broker to listen
@@ -79,6 +80,7 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 	private ExecutorService consumersPool;
 
 	public ActiveMQInboundEventReceiver() {
+		super(LifecycleComponentType.InboundEventReceiver);
 		this.brokerService = new BrokerService();
 	}
 
@@ -127,6 +129,16 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 		return LOGGER;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
+		return getTransportUri();
+	}
+
 	/**
 	 * Starts consumers for reading messages into SiteWhere.
 	 * 
@@ -171,6 +183,18 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 		for (Consumer consumer : consumers) {
 			consumer.stop();
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#onEventPayloadReceived
+	 * (java.lang.Object)
+	 */
+	@Override
+	public void onEventPayloadReceived(byte[] payload) {
+		getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this, payload);
 	}
 
 	/** Used for naming consumer threads */
@@ -246,12 +270,12 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 					}
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
-						getEventSource().onEncodedEventReceived(textMessage.getText().getBytes());
+						onEventPayloadReceived(textMessage.getText().getBytes());
 					} else if (message instanceof BytesMessage) {
 						BytesMessage bytesMessage = (BytesMessage) message;
 						byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 						bytesMessage.readBytes(buffer);
-						getEventSource().onEncodedEventReceived(buffer);
+						onEventPayloadReceived(buffer);
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}
@@ -276,6 +300,11 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEventSource()
+	 */
 	public IInboundEventSource<byte[]> getEventSource() {
 		return eventSource;
 	}

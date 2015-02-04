@@ -13,7 +13,10 @@ package com.sitewhere.spi.device.event;
  * @author Derek
  */
 public enum CommandInitiator {
-	
+
 	/** Command initiated by REST call */
 	REST,
+
+	/** Command initiated by batch operation */
+	BatchOperation,
 }

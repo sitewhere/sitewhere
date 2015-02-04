@@ -33,6 +33,7 @@ import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Asset module that interacts with an external WSO2 Identity Server via SCIM.
@@ -73,6 +74,10 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 
 	/** Matcher used for searches */
 	protected AssetMatcher matcher = new AssetMatcher();
+
+	public Wso2ScimAssetModule() {
+		super(LifecycleComponentType.AssetModule);
+	}
 
 	/*
 	 * (non-Javadoc)

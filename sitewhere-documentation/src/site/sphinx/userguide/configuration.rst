@@ -33,8 +33,8 @@ SiteWhere schema. The SiteWhere schema contains many of the most often used buil
 a SiteWhere server. It also allows for the introduction of user-defined component implementations. For example,
 in the configuration below, the *<sw:outbound-event-processor>* contains a *ref* attribute that points to an
 external Spring bean. By implementing components that conform to SiteWhere interfaces and plugging them in via
-Spring beans, the behavior of the system may be customized to add new behaviors. In this case, the system has 
-been configured to broadcast all processed events via Hazelcast.
+Spring beans, the system may be customized to add new behaviors. In this case, the system has been configured 
+to broadcast all processed events via Hazelcast.
 
 .. code-block:: xml
 
@@ -45,7 +45,7 @@ been configured to broadcast all processed events via Hazelcast.
               http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.0/sitewhere.xsd">
+              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.1/sitewhere.xsd">
       
       <sw:configuration>
                
@@ -464,6 +464,41 @@ The following attributes may be specified for the *<sw:default-inbound-processin
 |                          |          | are posted. Defaults to *5*.                       |
 +--------------------------+----------+----------------------------------------------------+
 
+Batch Operation Manager
+-----------------------
+The batch operation manager is responsible for asynchronously processing operations that 
+are applied to many devices. Batch operations can be submitted via the administrative
+console or via the REST services. The batch operation manager cycles through the list 
+of batch operation elements, executing each and keeping state regarding progress of
+execution. The default batch operation manager can be configured by using the
+*<sw:default-batch-operation-manager>* element as shown below.
+
+.. code-block:: xml
+   :emphasize-lines: 5
+
+   <sw:provisioning>
+               
+      <!-- Batch operation management -->
+      <sw:batch-operations>
+         <sw:default-batch-operation-manager throttleDelayMs="10000"/>
+      </sw:batch-operations>
+
+The throttle delay value can be used to slow down the rate that elements are processed
+so that the system is not overloaded by large operations.
+      
+A custom batch operation manager can be added by creating a class that implements
+`IBatchOperationManager <../apidocs/com/sitewhere/spi/device/batch/IBatchOperationManager.html>`_
+and adding a reference to it using the *<sw:batch-operation-manager>* element.
+
+The following attributes may be specified for the *<sw:default-batch-operation-manager>* element.
+      
++--------------------------+----------+----------------------------------------------------+
+| Attribute                | Required | Description                                        |
++==========================+==========+====================================================+
+| throttleDelayMs          | optional | Number of milliseconds to wait between processing  |
+|                          |          | batch operation elements. Defaults to *0*.         |
++--------------------------+----------+----------------------------------------------------+
+
 Command Destinations
 --------------------
 Command destinations are responsible for delivering commands to devices. All command destinations implement the
@@ -757,3 +792,44 @@ add the outbound event processor to the chain, reference it as shown below:
 
 Note that on system startup, the event processor attempts to ping the Solr server to verify the 
 settings are correct. If the ping fails, server startup will fail.
+
+-------------------
+Configuring Logging
+-------------------
+SiteWhere uses `Apache Log4j <http://logging.apache.org/log4j/1.2/>`_ for logging information about the running system.
+The logging output is configured by the **log4j.xml** file which is found in the lib folder of the default server
+distributions. For users running SiteWhere on their own application server instance, the default logging configuration
+file can be found on `GitHub <https://github.com/sitewhere/sitewhere/blob/master/sitewhere-core/config/log4j.xml>`_.
+The file must be available on the server classpath in order to be used.
+
+The default logging configuration file logs to the console output and also creates a separate log file named
+**sitewhere.log** which contains the same content.
+
+Enabling Server Debug Output
+----------------------------
+By default, most debugging output is not logged for SiteWhere. To turn debugging on for all aspects of the server,
+scroll down to the following block:
+
+.. code-block:: xml
+   
+   <category name="com.sitewhere">
+      <priority value="INFO" />
+   </category>
+
+Change the **INFO** value to **DEBUG** and restart the server. All debug information will be now be available. This is
+discouraged in production environments because logging takes system resources and will degrade performance.
+
+Debugging Device Provisioning
+-----------------------------
+Debugging can also be enabled just for certain areas of the system. A common area where users require detailed
+debugging information is in the provisioning of device data. It is often helpful to see exactly what SiteWhere is
+doing to handle inbound and outbound data. To turn on provisioning debugging, scroll down to the following block in
+the **log4j.xml** file:
+
+.. code-block:: xml
+   
+   <category name="com.sitewhere.device.provisioning">
+      <priority value="INFO" />
+   </category>
+
+Update the **INFO** value to **DEBUG** and restart the server to see more detailed provisioning information.

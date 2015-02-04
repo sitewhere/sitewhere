@@ -76,6 +76,12 @@ public enum ErrorCode {
 	/** Invalid device group token */
 	InvalidDeviceGroupToken(525, "Device group not found."),
 
+	/** Invalid batch operation token */
+	InvalidBatchOperationToken(550, "Batch operation not found."),
+
+	/** Invalid batch element */
+	InvalidBatchElement(555, "Batch element not found."),
+
 	/** Invalid search provider id */
 	InvalidSearchProviderId(600, "Search provider not found."),
 
@@ -101,6 +107,9 @@ public enum ErrorCode {
 
 	/** Attempting to delete a device that is currently assigned */
 	DeviceCanNotBeDeletedIfAssigned(603, "Device can not be deleted if it is currently assigned."),
+
+	/** Attempting to change site for device that is currently assigned */
+	DeviceSiteCanNotBeChangedIfAssigned(603, "Device site can not be changed if it is currently assigned."),
 
 	/** Attempting to create a device element mapping for a path that is already mapped */
 	DeviceElementMappingExists(610,

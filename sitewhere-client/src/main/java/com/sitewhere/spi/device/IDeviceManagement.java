@@ -9,9 +9,12 @@ package com.sitewhere.spi.device;
 
 import java.util.List;
 
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.device.batch.IBatchElement;
+import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -30,6 +33,10 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
@@ -41,6 +48,8 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
+import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -199,17 +208,8 @@ public interface IDeviceManagement extends ILifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IDevice> listDevices(boolean includeDeleted, ISearchCriteria criteria)
+	public ISearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException;
-
-	/**
-	 * List all devices that are not currently assigned.
-	 * 
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ISearchResults<IDevice> listUnassignedDevices(ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
 	 * Create an {@link IDeviceElementMapping} for a nested device.
@@ -799,4 +799,88 @@ public interface IDeviceManagement extends ILifecycleComponent {
 	 */
 	public SearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
 			ISearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Creates an {@link IBatchOperation} to perform an operation on multiple devices.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Update an existing {@link IBatchOperation}.
+	 * 
+	 * @param token
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Get an {@link IBatchOperation} by unique token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IBatchOperation getBatchOperation(String token) throws SiteWhereException;
+
+	/**
+	 * List batch operations based on the given criteria.
+	 * 
+	 * @param includeDeleted
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Deletes a batch operation and its elements.
+	 * 
+	 * @param token
+	 * @param force
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException;
+
+	/**
+	 * Lists elements for an {@link IBatchOperation} that meet the given criteria.
+	 * 
+	 * @param batchToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public SearchResults<IBatchElement> listBatchElements(String batchToken,
+			IBatchElementSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Updates an existing batch operation element.
+	 * 
+	 * @param operationToken
+	 * @param index
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IBatchElement updateBatchElement(String operationToken, long index,
+			IBatchElementUpdateRequest request) throws SiteWhereException;
+
+	/**
+	 * Creates a {@link BatchOperation} that will invoke a command on multiple devices.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
+			throws SiteWhereException;
 }

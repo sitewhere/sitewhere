@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
 import com.twilio.sdk.resource.factory.MessageFactory;
@@ -52,6 +53,10 @@ public class TwilioCommandDeliveryProvider extends LifecycleComponent implements
 
 	/** Twilio account */
 	private Account account;
+
+	public TwilioCommandDeliveryProvider() {
+		super(LifecycleComponentType.CommandDeliveryProvider);
+	}
 
 	/*
 	 * (non-Javadoc)

@@ -24,6 +24,7 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that subscribes to an MQTT topic and
@@ -65,6 +66,10 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 
 	/** Used to execute MQTT subscribe in separate thread */
 	private ExecutorService executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
+
+	public MqttInboundEventReceiver() {
+		super(LifecycleComponentType.InboundEventReceiver);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -112,6 +117,16 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 		return LOGGER;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
+		return getHostname() + ":" + getPort() + "/" + getTopic();
+	}
+
 	/** Used for naming consumer threads */
 	private class SubscribersThreadFactory implements ThreadFactory {
 
@@ -122,6 +137,18 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 			return new Thread(r, "SiteWhere MQTT(" + getEventSource().getSourceId() + " - " + getTopic()
 					+ ") Receiver " + counter.incrementAndGet());
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#onEventPayloadReceived
+	 * (java.lang.Object)
+	 */
+	@Override
+	public void onEventPayloadReceived(byte[] payload) {
+		getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload);
 	}
 
 	/**
@@ -138,7 +165,7 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 				try {
 					Message message = connection.receive();
 					message.ack();
-					getEventSource().onEncodedEventReceived(message.getPayload());
+					onEventPayloadReceived(message.getPayload());
 				} catch (InterruptedException e) {
 					break;
 				} catch (Throwable e) {
@@ -164,6 +191,11 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEventSource()
+	 */
 	public IInboundEventSource<byte[]> getEventSource() {
 		return eventSource;
 	}

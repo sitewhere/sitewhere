@@ -27,6 +27,7 @@ import com.sitewhere.spi.device.command.IRegistrationAckCommand;
 import com.sitewhere.spi.device.command.IRegistrationFailureCommand;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.provisioning.ICommandExecutionEncoder;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ICommandExecutionEncoder} that uses Google Protocol Buffers to
@@ -38,6 +39,10 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ProtobufExecutionEncoder.class);
+
+	public ProtobufExecutionEncoder() {
+		super(LifecycleComponentType.CommandExecutionEncoder);
+	}
 
 	/*
 	 * (non-Javadoc)

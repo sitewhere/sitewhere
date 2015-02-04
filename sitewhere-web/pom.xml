@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.sitewhere</groupId>
 		<artifactId>sitewhere</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -146,21 +146,6 @@
 			<artifactId>jackson-module-jsonSchema</artifactId>
 			<version>2.1.0</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
-			<version>3.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-healthchecks</artifactId>
-			<version>3.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.codahale.metrics</groupId>
-			<artifactId>metrics-servlets</artifactId>
-			<version>3.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.wordnik</groupId>
