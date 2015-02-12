@@ -1,5 +1,6 @@
 /bin
 /sitewhere-activemq/target
+/sitewhere-azure/target
 /sitewhere-client/target
 /sitewhere-core/target
 /sitewhere-documentation/target

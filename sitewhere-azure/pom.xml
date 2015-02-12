@@ -8,39 +8,15 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>sitewhere-spring</artifactId>
+	<artifactId>sitewhere-azure</artifactId>
 	<packaging>jar</packaging>
-	<name>SiteWhere Spring Extensions</name>
+	<name>SiteWhere Azure Integration</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-client</artifactId>
 			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-core</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-activemq</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-solr</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>3.2.1.RELEASE</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
