@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="sitewhere-activemq/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-azure/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-azure/src/test/java"/>
 	<classpathentry kind="src" path="sitewhere-client/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-client/src/test/java"/>
 	<classpathentry kind="src" path="sitewhere-core/src/main/java"/>
@@ -67,5 +68,8 @@
 	<classpathentry kind="var" path="M2_REPO/io/dropwizard/metrics/metrics-core/3.1.0/metrics-core-3.1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/io/dropwizard/metrics/metrics-healthchecks/3.1.0/metrics-healthchecks-3.1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/google/bitcoinj/0.11.3/bitcoinj-0.11.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/qpid/qpid-amqp-1-0-client-jms/0.30/qpid-amqp-1-0-client-jms-0.30.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/qpid/qpid-amqp-1-0-client/0.30/qpid-amqp-1-0-client-0.30.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/qpid/qpid-amqp-1-0-common/0.30/qpid-amqp-1-0-common-0.30.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
