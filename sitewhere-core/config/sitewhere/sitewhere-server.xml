@@ -180,8 +180,10 @@
 			 -->
 
 			<!-- Sends events to an Azure EventHub -->
+			<!-- 
 			<sw:azure-eventhub-event-processor sasKey="{azure.sas.key}"
 				sasName="default" serviceBusName="sitewhere.servicebus.windows.net" eventHubName="sitewhere"/>
+			 -->
 
 		</sw:outbound-processing-chain>
 		
