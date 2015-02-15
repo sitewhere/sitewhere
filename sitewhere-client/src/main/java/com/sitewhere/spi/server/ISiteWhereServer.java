@@ -32,15 +32,18 @@ import com.sitewhere.spi.user.IUserManagement;
  */
 public interface ISiteWhereServer extends ILifecycleComponent {
 
+	/** Name of environment variable used to specifiy instance id */
+	public static final String ENV_INSTANCE_ID = "SW_INSTANCE_ID";
+
 	/** Name of environment variable used to specifiy an external configuration */
 	public static final String ENV_EXTERNAL_CONFIGURATION_URL = "SW_CONFIG";
 
 	/**
-	 * Initialize the server.
+	 * Gets the identifier for this server instance.
 	 * 
-	 * @throws SiteWhereException
+	 * @return
 	 */
-	public void initialize() throws SiteWhereException;
+	public String getInstanceId();
 
 	/**
 	 * Get version information.
@@ -48,6 +51,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * @return
 	 */
 	public IVersion getVersion();
+
+	/**
+	 * Initialize the server.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void initialize() throws SiteWhereException;
 
 	/**
 	 * Returns exception if one was thrown on startup.

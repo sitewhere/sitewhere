@@ -10,6 +10,8 @@ package com.sitewhere.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +70,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** Spring context for server */
 	public static ApplicationContext SERVER_SPRING_CONTEXT;
+
+	/** Server instance id */
+	private String instanceId;
 
 	/** Contains version information */
 	private IVersion version;
@@ -129,6 +134,15 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public static ApplicationContext getServerSpringContext() {
 		return SERVER_SPRING_CONTEXT;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getInstanceId()
+	 */
+	public String getInstanceId() {
+		return instanceId;
 	}
 
 	/*
@@ -417,6 +431,18 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public void initialize() throws SiteWhereException {
 		LOGGER.info("Initializing SiteWhere server components.");
+
+		String id = System.getenv(ISiteWhereServer.ENV_INSTANCE_ID);
+		if (id != null) {
+			this.instanceId = id;
+		} else {
+			try {
+				this.instanceId = InetAddress.getLocalHost().getHostName();
+			} catch (UnknownHostException e) {
+				this.instanceId = "sitewhere";
+			}
+		}
+
 		this.version = VersionHelper.getVersion();
 
 		// Initialize Spring.
@@ -450,6 +476,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server " + version.getEdition());
 		messages.add("");
+		messages.add("Instance id: " + getInstanceId());
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
 		messages.add("Operating System: " + os);
 		messages.add("Java Runtime: " + java);
