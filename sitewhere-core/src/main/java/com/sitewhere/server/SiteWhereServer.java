@@ -47,6 +47,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
+import com.sitewhere.spi.server.ISiteWhereServerEnvironment;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -432,7 +433,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public void initialize() throws SiteWhereException {
 		LOGGER.info("Initializing SiteWhere server components.");
 
-		String id = System.getenv(ISiteWhereServer.ENV_INSTANCE_ID);
+		String id = System.getenv(ISiteWhereServerEnvironment.ENV_INSTANCE_ID);
 		if (id != null) {
 			this.instanceId = id;
 		} else {
@@ -492,7 +493,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		String extConfig = System.getenv(ISiteWhereServer.ENV_EXTERNAL_CONFIGURATION_URL);
+		String extConfig = System.getenv(ISiteWhereServerEnvironment.ENV_EXTERNAL_CONFIGURATION_URL);
 		if (extConfig != null) {
 			IConfigurationResolver resolver = new ExternalConfigurationResolver(extConfig);
 			SERVER_SPRING_CONTEXT = resolver.resolveSiteWhereContext(getVersion());
