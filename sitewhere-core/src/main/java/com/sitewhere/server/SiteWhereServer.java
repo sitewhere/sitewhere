@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import com.sitewhere.configuration.ExternalConfigurationResolver;
 import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -464,7 +465,13 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		SERVER_SPRING_CONTEXT = getConfigurationResolver().resolveSiteWhereContext(getVersion());
+		String extConfig = System.getenv(ISiteWhereServer.ENV_EXTERNAL_CONFIGURATION_URL);
+		if (extConfig != null) {
+			IConfigurationResolver resolver = new ExternalConfigurationResolver(extConfig);
+			SERVER_SPRING_CONTEXT = resolver.resolveSiteWhereContext(getVersion());
+		} else {
+			SERVER_SPRING_CONTEXT = getConfigurationResolver().resolveSiteWhereContext(getVersion());
+		}
 	}
 
 	/**

@@ -32,6 +32,9 @@ import com.sitewhere.spi.user.IUserManagement;
  */
 public interface ISiteWhereServer extends ILifecycleComponent {
 
+	/** Name of environment variable used to specifiy an external configuration */
+	public static final String ENV_EXTERNAL_CONFIGURATION_URL = "SW_CONFIG";
+
 	/**
 	 * Initialize the server.
 	 * 
