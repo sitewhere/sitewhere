@@ -24,5 +24,5 @@ public interface ISiteWhereServerEnvironment {
 	 * If specified, overrides the default configuration file with a URL from which the
 	 * configuration will be loaded.
 	 */
-	public static final String ENV_EXTERNAL_CONFIGURATION_URL = "SW_CONFIG";
+	public static final String ENV_EXTERNAL_CONFIGURATION_URL = "SW_CONFIG_URL";
 }
