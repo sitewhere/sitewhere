@@ -132,6 +132,12 @@
 						<xsd:documentation>MongoDB database name for SiteWhere storage.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="useDockerLinking" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>If enabled, uses environment variables set by Docker linking to
+							derive host and port to connect to.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

@@ -18,6 +18,8 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.mongodb.DockerMongoClient;
+import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.server.device.DefaultDeviceModelInitializer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
@@ -89,9 +91,16 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	 * @param context
 	 */
 	protected void parseMongoDatasource(Element element, ParserContext context) {
+		boolean docker = false;
+		Attr useDockerLinking = element.getAttributeNode("useDockerLinking");
+		if ((useDockerLinking != null) && ("true".equals(useDockerLinking.getValue()))) {
+			docker = true;
+		}
+
 		// Register client bean.
 		BeanDefinitionBuilder client =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.mongodb.SiteWhereMongoClient");
+				docker ? BeanDefinitionBuilder.rootBeanDefinition(DockerMongoClient.class)
+						: BeanDefinitionBuilder.rootBeanDefinition(SiteWhereMongoClient.class);
 		Attr hostname = element.getAttributeNode("hostname");
 		if (hostname != null) {
 			client.addPropertyValue("hostname", hostname.getValue());
