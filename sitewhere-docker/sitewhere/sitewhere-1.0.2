@@ -1,0 +1,12 @@
+FROM ubuntu:14.04
+RUN apt-get update
+EXPOSE 8080
+
+RUN apt-get install -y unzip wget openjdk-7-jdk
+
+# Install SiteWhere
+RUN cd /opt && wget --content-disposition https://s3.amazonaws.com/sitewhere/sitewhere-server-1.0.2.zip && unzip sitewhere-server-1.0.2.zip
+ENV CATALINA_BASE="/opt/sitewhere-server-1.0.2" CATALINA_HOME="/opt/sitewhere-server-1.0.2"
+COPY sitewhere-server-1.0.2.xml /opt/sitewhere-server-1.0.2/conf/sitewhere/sitewhere-server.xml
+RUN ln -s /opt/sitewhere-server-1.0.2 /opt/sitewhere && useradd -d /opt/sitewhere sitewhere && chown -R sitewhere.sitewhere /opt/sitewhere-server-1.0.2 && chown -R sitewhere.sitewhere /opt/sitewhere && cd /opt/sitewhere && chmod +x /opt/sitewhere-server-1.0.2/bin/*.sh 
+CMD nohup /opt/sitewhere/bin/startup.sh & echo 'Starting SiteWhere...' && while ! [ -f /opt/sitewhere/logs/catalina.out ]; do sleep 1; done && tail -f /opt/sitewhere/logs/catalina.out
