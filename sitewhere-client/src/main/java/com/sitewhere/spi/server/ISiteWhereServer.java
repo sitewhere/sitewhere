@@ -33,13 +33,6 @@ import com.sitewhere.spi.user.IUserManagement;
 public interface ISiteWhereServer extends ILifecycleComponent {
 
 	/**
-	 * Gets the identifier for this server instance.
-	 * 
-	 * @return
-	 */
-	public String getInstanceId();
-
-	/**
 	 * Get version information.
 	 * 
 	 * @return

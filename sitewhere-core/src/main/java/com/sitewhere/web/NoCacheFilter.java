@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.rest;
+package com.sitewhere.web;
 
 import java.io.IOException;
 
@@ -14,18 +14,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Filter that prints the response time out to the console.
+ * Adds header to prevent caching of REST calls in crappy browsers.
  * 
  * @author Derek
  */
-public class ResponseTimerFilter extends OncePerRequestFilter {
-
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(ResponseTimerFilter.class);
+public class NoCacheFilter extends OncePerRequestFilter {
 
 	/*
 	 * (non-Javadoc)
@@ -36,10 +32,8 @@ public class ResponseTimerFilter extends OncePerRequestFilter {
 	 */
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 			FilterChain chain) throws ServletException, IOException {
-		long start = System.currentTimeMillis();
+		response.addHeader("Cache-Control", "max-age=0,no-cache,no-store,post-check=0,pre-check=0");
+		response.addHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
 		chain.doFilter(request, response);
-		long time = System.currentTimeMillis() - start;
-		LOGGER.info("Call for " + request.getMethod() + " to '" + request.getRequestURL() + "' returned in "
-				+ time + " ms.");
 	}
 }

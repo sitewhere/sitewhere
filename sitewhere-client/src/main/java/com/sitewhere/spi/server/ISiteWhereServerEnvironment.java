@@ -15,12 +15,6 @@ package com.sitewhere.spi.server;
 public interface ISiteWhereServerEnvironment {
 
 	/**
-	 * If specified, overrides the default instance id for the server with another value.
-	 * Useful for when a container (such as Docker) needs to assign the instance id.
-	 */
-	public static final String ENV_INSTANCE_ID = "SW_INSTANCE_ID";
-
-	/**
 	 * If specified, overrides the default configuration file with a URL from which the
 	 * configuration will be loaded.
 	 */

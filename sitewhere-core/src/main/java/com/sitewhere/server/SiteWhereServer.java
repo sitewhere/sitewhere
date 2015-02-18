@@ -10,8 +10,6 @@ package com.sitewhere.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,9 +69,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** Spring context for server */
 	public static ApplicationContext SERVER_SPRING_CONTEXT;
-
-	/** Server instance id */
-	private String instanceId;
 
 	/** Contains version information */
 	private IVersion version;
@@ -135,15 +130,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public static ApplicationContext getServerSpringContext() {
 		return SERVER_SPRING_CONTEXT;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getInstanceId()
-	 */
-	public String getInstanceId() {
-		return instanceId;
 	}
 
 	/*
@@ -433,17 +419,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public void initialize() throws SiteWhereException {
 		LOGGER.info("Initializing SiteWhere server components.");
 
-		String id = System.getenv(ISiteWhereServerEnvironment.ENV_INSTANCE_ID);
-		if (id != null) {
-			this.instanceId = id;
-		} else {
-			try {
-				this.instanceId = InetAddress.getLocalHost().getHostName();
-			} catch (UnknownHostException e) {
-				this.instanceId = "sitewhere";
-			}
-		}
-
 		this.version = VersionHelper.getVersion();
 
 		// Initialize Spring.
@@ -470,6 +445,14 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Initialize search provider management.
 		initializeSearchProviderManagement();
 
+		// Show banner containing server information.
+		showServerBanner();
+	}
+
+	/**
+	 * Displays the server information banner in the log.
+	 */
+	protected void showServerBanner() {
 		String os = System.getProperty("os.name") + " (" + System.getProperty("os.version") + ")";
 		String java = System.getProperty("java.vendor") + " (" + System.getProperty("java.version") + ")";
 
@@ -477,7 +460,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server " + version.getEdition());
 		messages.add("");
-		messages.add("Instance id: " + getInstanceId());
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
 		messages.add("Operating System: " + os);
 		messages.add("Java Runtime: " + java);
@@ -485,6 +467,14 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		messages.add("Copyright (c) 2009-2015 SiteWhere, LLC");
 		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 		LOGGER.info("\n" + message + "\n");
+	}
+
+	/**
+	 * Allows subclasses to add their own banner messages.
+	 * 
+	 * @param messages
+	 */
+	protected void addBannerMessages(List<String> messages) {
 	}
 
 	/**
