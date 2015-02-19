@@ -48,7 +48,7 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
  * 
  * @author Derek
  */
-public class MongoConverters {
+public class MongoConverters implements IMongoConverterLookup {
 
 	/** Maps interface classes to their associated converters */
 	private static Map<Class<?>, MongoConverter<?>> CONVERTERS = new HashMap<Class<?>, MongoConverter<?>>();
@@ -73,14 +73,13 @@ public class MongoConverters {
 		CONVERTERS.put(IBatchElement.class, new MongoBatchElement());
 	}
 
-	/**
-	 * Get a converter for the given API type.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param api
-	 * @return
+	 * @see com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> MongoConverter<T> getConverterFor(Class<T> api) {
+	public <T> MongoConverter<T> getConverterFor(Class<T> api) {
 		MongoConverter<T> result = (MongoConverter<T>) CONVERTERS.get(api);
 		if (result == null) {
 			throw new RuntimeException("No Mongo converter registered for " + api.getName());
