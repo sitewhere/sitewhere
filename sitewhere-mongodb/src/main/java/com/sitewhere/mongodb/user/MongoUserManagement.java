@@ -20,8 +20,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.mongodb.IUserManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
@@ -51,7 +51,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	private static Logger LOGGER = Logger.getLogger(MongoUserManagement.class);
 
 	/** Injected with global SiteWhere Mongo client */
-	private SiteWhereMongoClient mongoClient;
+	private IUserManagementMongoClient mongoClient;
 
 	public MongoUserManagement() {
 		super(LifecycleComponentType.DataStore);
@@ -412,11 +412,11 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 		return auths.findOne(query);
 	}
 
-	public SiteWhereMongoClient getMongoClient() {
+	public IUserManagementMongoClient getMongoClient() {
 		return mongoClient;
 	}
 
-	public void setMongoClient(SiteWhereMongoClient mongoClient) {
+	public void setMongoClient(IUserManagementMongoClient mongoClient) {
 		this.mongoClient = mongoClient;
 	}
 }

@@ -23,8 +23,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.mongodb.IDeviceManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.Device;
@@ -114,7 +114,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	private static Logger LOGGER = Logger.getLogger(MongoDeviceManagement.class);
 
 	/** Injected with global SiteWhere Mongo client */
-	private SiteWhereMongoClient mongoClient;
+	private IDeviceManagementMongoClient mongoClient;
 
 	/** Provides caching for device management entities */
 	private IDeviceManagementCacheProvider cacheProvider;
@@ -2224,11 +2224,11 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		return match;
 	}
 
-	public SiteWhereMongoClient getMongoClient() {
+	public IDeviceManagementMongoClient getMongoClient() {
 		return mongoClient;
 	}
 
-	public void setMongoClient(SiteWhereMongoClient mongoClient) {
+	public void setMongoClient(IDeviceManagementMongoClient mongoClient) {
 		this.mongoClient = mongoClient;
 	}
 }

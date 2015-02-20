@@ -7,12 +7,14 @@
  */
 package com.sitewhere.mongodb;
 
+import com.mongodb.DBCollection;
+
 /**
- * Constants for default MongoDB collection names.
+ * Mongo client that provides device management collections.
  * 
- * @author dadams
+ * @author Derek
  */
-public interface IMongoCollectionNames {
+public interface IDeviceManagementMongoClient {
 
 	/** Default collection name for SiteWhere sites */
 	public static final String DEFAULT_SITES_COLLECTION_NAME = "sites";
@@ -47,9 +49,25 @@ public interface IMongoCollectionNames {
 	/** Default collection name for SiteWhere batch operation elements */
 	public static final String DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME = "batchopelements";
 
-	/** Default collection name for SiteWhere users */
-	public static final String DEFAULT_USERS_COLLECTION_NAME = "users";
+	public DBCollection getDeviceSpecificationsCollection();
 
-	/** Default collection name for SiteWhere granted authorities */
-	public static final String DEFAULT_AUTHORITIES_COLLECTION_NAME = "authorities";
+	public DBCollection getDeviceCommandsCollection();
+
+	public DBCollection getDevicesCollection();
+
+	public DBCollection getDeviceAssignmentsCollection();
+
+	public DBCollection getSitesCollection();
+
+	public DBCollection getZonesCollection();
+
+	public DBCollection getDeviceGroupsCollection();
+
+	public DBCollection getGroupElementsCollection();
+
+	public DBCollection getEventsCollection();
+
+	public DBCollection getBatchOperationsCollection();
+
+	public DBCollection getBatchOperationElementsCollection();
 }

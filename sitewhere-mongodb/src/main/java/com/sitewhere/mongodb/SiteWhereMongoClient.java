@@ -28,7 +28,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author dadams
  */
-public class SiteWhereMongoClient extends LifecycleComponent implements InitializingBean {
+public class SiteWhereMongoClient extends LifecycleComponent implements InitializingBean,
+		IUserManagementMongoClient, IDeviceManagementMongoClient {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereMongoClient.class);
@@ -56,48 +57,49 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	/** Injected name used for device specifications collection */
 	private String deviceSpecificationsCollectionName =
-			IMongoCollectionNames.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
+			IDeviceManagementMongoClient.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
 
 	/** Injected name used for device commands collection */
 	private String deviceCommandsCollectionName =
-			IMongoCollectionNames.DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME;
+			IDeviceManagementMongoClient.DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME;
 
 	/** Injected name used for devices collection */
-	private String devicesCollectionName = IMongoCollectionNames.DEFAULT_DEVICES_COLLECTION_NAME;
+	private String devicesCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICES_COLLECTION_NAME;
 
 	/** Injected name used for device assignments collection */
 	private String deviceAssignmentsCollectionName =
-			IMongoCollectionNames.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
+			IDeviceManagementMongoClient.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
 
 	/** Injected name used for sites collection */
-	private String sitesCollectionName = IMongoCollectionNames.DEFAULT_SITES_COLLECTION_NAME;
+	private String sitesCollectionName = IDeviceManagementMongoClient.DEFAULT_SITES_COLLECTION_NAME;
 
 	/** Injected name used for zones collection */
-	private String zonesCollectionName = IMongoCollectionNames.DEFAULT_ZONES_COLLECTION_NAME;
+	private String zonesCollectionName = IDeviceManagementMongoClient.DEFAULT_ZONES_COLLECTION_NAME;
 
 	/** Injected name used for device groups collection */
-	private String deviceGroupsCollectionName = IMongoCollectionNames.DEFAULT_DEVICE_GROUPS_COLLECTION_NAME;
+	private String deviceGroupsCollectionName =
+			IDeviceManagementMongoClient.DEFAULT_DEVICE_GROUPS_COLLECTION_NAME;
 
 	/** Injected name used for group elements collection */
 	private String groupElementsCollectionName =
-			IMongoCollectionNames.DEFAULT_DEVICE_GROUP_ELEMENTS_COLLECTION_NAME;
+			IDeviceManagementMongoClient.DEFAULT_DEVICE_GROUP_ELEMENTS_COLLECTION_NAME;
 
 	/** Injected name used for events collection */
-	private String eventsCollectionName = IMongoCollectionNames.DEFAULT_EVENTS_COLLECTION_NAME;
+	private String eventsCollectionName = IDeviceManagementMongoClient.DEFAULT_EVENTS_COLLECTION_NAME;
 
 	/** Injected name used for batch operations collection */
 	private String batchOperationsCollectionName =
-			IMongoCollectionNames.DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME;
+			IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME;
 
 	/** Injected name used for batch operation elements collection */
 	private String batchOperationElementsCollectionName =
-			IMongoCollectionNames.DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME;
+			IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME;
 
 	/** Injected name used for users collection */
-	private String usersCollectionName = IMongoCollectionNames.DEFAULT_USERS_COLLECTION_NAME;
+	private String usersCollectionName = IUserManagementMongoClient.DEFAULT_USERS_COLLECTION_NAME;
 
 	/** Injected name used for authorities collection */
-	private String authoritiesCollectionName = IMongoCollectionNames.DEFAULT_AUTHORITIES_COLLECTION_NAME;
+	private String authoritiesCollectionName = IUserManagementMongoClient.DEFAULT_AUTHORITIES_COLLECTION_NAME;
 
 	public SiteWhereMongoClient() {
 		super(LifecycleComponentType.DataStore);
