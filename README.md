@@ -54,8 +54,8 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
 ###Install HiveMQ
 
     wget --content-disposition http://www.hivemq.com/downloads/releases/latest
-    unzip hivemq-2.1.1.zip
-    cd hivemq-2.1.1/bin
+    unzip hivemq-2.2.1.zip
+    cd hivemq-2.2.1/bin
     ./run.sh &
 
 ###Install Solr
