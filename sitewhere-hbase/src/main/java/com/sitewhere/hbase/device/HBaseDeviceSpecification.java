@@ -90,8 +90,8 @@ public class HBaseDeviceSpecification {
 		}
 
 		@Override
-		public ErrorCode getInvalidKeyErrorCode() {
-			return ErrorCode.InvalidDeviceSpecificationToken;
+		public void throwInvalidKey() throws SiteWhereException {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 		}
 	};
 

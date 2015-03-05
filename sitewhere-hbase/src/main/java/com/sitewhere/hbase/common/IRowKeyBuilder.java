@@ -8,7 +8,6 @@
 package com.sitewhere.hbase.common;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.error.ErrorCode;
 
 /**
  * Abstracts the idea of building a row key based on a hierarchical scheme.
@@ -25,11 +24,11 @@ public interface IRowKeyBuilder {
 	public int getKeyIdLength();
 
 	/**
-	 * Get error code thrown if key is not found.
+	 * Throws an exception if an invalid key is referenced.
 	 * 
-	 * @return
+	 * @throws SiteWhereException
 	 */
-	public ErrorCode getInvalidKeyErrorCode();
+	public void throwInvalidKey() throws SiteWhereException;
 
 	/**
 	 * Gets identifier that marks a row of the given type.

@@ -61,33 +61,44 @@ public class IdManager {
 	 * @throws SiteWhereException
 	 */
 	public void load(ISiteWhereHBaseClient hbase) throws SiteWhereException {
-		siteKeys = new UniqueIdCounterMap(hbase, UniqueIdType.SiteKey, UniqueIdType.SiteValue);
+		siteKeys =
+				new UniqueIdCounterMap(hbase, UniqueIdType.SiteKey.getIndicator(),
+						UniqueIdType.SiteValue.getIndicator());
 		siteKeys.refresh();
 
-		deviceKeys = new UniqueIdCounterMap(hbase, UniqueIdType.DeviceKey, UniqueIdType.DeviceValue);
+		deviceKeys =
+				new UniqueIdCounterMap(hbase, UniqueIdType.DeviceKey.getIndicator(),
+						UniqueIdType.DeviceValue.getIndicator());
 		deviceKeys.refresh();
 
 		specificationKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.SpecificationKey, UniqueIdType.SpecificationValue);
+				new UniqueIdCounterMap(hbase, UniqueIdType.SpecificationKey.getIndicator(),
+						UniqueIdType.SpecificationValue.getIndicator());
 		specificationKeys.refresh();
 
 		deviceGroupKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.DeviceGroupKey, UniqueIdType.DeviceGroupValue);
+				new UniqueIdCounterMap(hbase, UniqueIdType.DeviceGroupKey.getIndicator(),
+						UniqueIdType.DeviceGroupValue.getIndicator());
 		deviceGroupKeys.refresh();
 
 		batchOperationKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.BatchOperationKey,
-						UniqueIdType.BatchOperationValue);
+				new UniqueIdCounterMap(hbase, UniqueIdType.BatchOperationKey.getIndicator(),
+						UniqueIdType.BatchOperationValue.getIndicator());
 		batchOperationKeys.refresh();
 
-		commandKeys = new UuidRowKeyMap(hbase, UniqueIdType.CommandKey, UniqueIdType.CommandValue);
+		commandKeys =
+				new UuidRowKeyMap(hbase, UniqueIdType.CommandKey.getIndicator(),
+						UniqueIdType.CommandValue.getIndicator());
 		commandKeys.refresh();
 
-		zoneKeys = new UuidRowKeyMap(hbase, UniqueIdType.ZoneKey, UniqueIdType.ZoneValue);
+		zoneKeys =
+				new UuidRowKeyMap(hbase, UniqueIdType.ZoneKey.getIndicator(),
+						UniqueIdType.ZoneValue.getIndicator());
 		zoneKeys.refresh();
 
 		assignmentKeys =
-				new UuidRowKeyMap(hbase, UniqueIdType.DeviceAssignmentKey, UniqueIdType.DeviceAssignmentValue);
+				new UuidRowKeyMap(hbase, UniqueIdType.DeviceAssignmentKey.getIndicator(),
+						UniqueIdType.DeviceAssignmentValue.getIndicator());
 		assignmentKeys.refresh();
 	}
 

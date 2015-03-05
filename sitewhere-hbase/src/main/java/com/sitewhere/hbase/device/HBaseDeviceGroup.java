@@ -73,8 +73,8 @@ public class HBaseDeviceGroup {
 		}
 
 		@Override
-		public ErrorCode getInvalidKeyErrorCode() {
-			return ErrorCode.InvalidDeviceGroupToken;
+		public void throwInvalidKey() throws SiteWhereException {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 		}
 	};
 

@@ -74,8 +74,8 @@ public class HBaseBatchOperation {
 		}
 
 		@Override
-		public ErrorCode getInvalidKeyErrorCode() {
-			return ErrorCode.InvalidBatchOperationToken;
+		public void throwInvalidKey() throws SiteWhereException {
+			throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
 		}
 	};
 

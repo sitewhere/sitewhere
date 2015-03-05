@@ -134,6 +134,9 @@ public class HBaseUtils {
 			Get get = new Get(primary);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
 			Result result = table.get(get);
+			if (result.size() == 0) {
+				builder.throwInvalidKey();
+			}
 			if (result.size() != 1) {
 				throw new SiteWhereException("Expected one JSON entry and found: " + result.size());
 			}
