@@ -25,7 +25,6 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
-import com.sitewhere.Tracer;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -35,7 +34,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IFilter;
 import com.sitewhere.spi.search.ISearchCriteria;
-import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
  * Handle common HBase functionality.
@@ -45,6 +43,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseUtils {
 
 	/** Static logger instance */
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(HBaseUtils.class);
 
 	/**
@@ -231,7 +230,7 @@ public class HBaseUtils {
 			}
 			return results;
 		} catch (IOException e) {
-			throw new SiteWhereException("Error scanning device network rows.", e);
+			throw new SiteWhereException("Error in list opeeration.", e);
 		} finally {
 			if (scanner != null) {
 				scanner.close();
@@ -299,14 +298,11 @@ public class HBaseUtils {
 	 */
 	public static void closeCleanly(HTableInterface table) throws SiteWhereException {
 		try {
-			Tracer.push(TracerCategory.DataStore, "close " + new String(table.getTableName()), LOGGER);
 			if (table != null) {
 				table.close();
 			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Exception closing table.", e);
-		} finally {
-			Tracer.pop(LOGGER);
 		}
 	}
 }
