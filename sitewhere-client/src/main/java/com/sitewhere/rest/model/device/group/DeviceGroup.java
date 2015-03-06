@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
@@ -87,7 +88,7 @@ public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup 
 		this.roles = roles;
 	}
 
-	public static DeviceGroup copy(IDeviceGroup input) {
+	public static DeviceGroup copy(IDeviceGroup input) throws SiteWhereException {
 		DeviceGroup result = new DeviceGroup();
 		result.setToken(input.getToken());
 		result.setName(input.getName());

@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.device.event;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 
@@ -83,7 +84,7 @@ public class DeviceCommandResponse extends DeviceEvent implements IDeviceCommand
 	 * @param input
 	 * @return
 	 */
-	public static DeviceCommandResponse copy(IDeviceCommandResponse input) {
+	public static DeviceCommandResponse copy(IDeviceCommandResponse input) throws SiteWhereException {
 		DeviceCommandResponse result = new DeviceCommandResponse();
 		DeviceEvent.copy(input, result);
 		result.setOriginatingEventId(input.getOriginatingEventId());

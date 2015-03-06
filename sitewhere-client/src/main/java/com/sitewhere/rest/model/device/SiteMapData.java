@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.ISiteMapData;
 
 /**
@@ -40,7 +41,7 @@ public class SiteMapData extends MetadataProvider implements ISiteMapData {
 	 * @param source
 	 * @return
 	 */
-	public static SiteMapData copy(ISiteMapData source) {
+	public static SiteMapData copy(ISiteMapData source) throws SiteWhereException {
 		SiteMapData target = new SiteMapData();
 		target.setType(source.getType());
 		MetadataProvider.copy(source, target);

@@ -16,6 +16,7 @@ import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -116,7 +117,7 @@ public class DeviceAssignmentState implements IDeviceAssignmentState {
 		this.lastReplyTo = lastReplyTo;
 	}
 
-	public static DeviceAssignmentState copy(IDeviceAssignmentState source) {
+	public static DeviceAssignmentState copy(IDeviceAssignmentState source) throws SiteWhereException {
 		DeviceAssignmentState target = new DeviceAssignmentState();
 		target.setLastInteractionDate(source.getLastInteractionDate());
 		if (source.getLastLocation() != null) {

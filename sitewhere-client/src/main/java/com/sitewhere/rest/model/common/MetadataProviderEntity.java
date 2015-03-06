@@ -11,6 +11,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
 
 /**
@@ -103,7 +104,8 @@ public class MetadataProviderEntity extends MetadataProvider implements IMetadat
 	 * @param source
 	 * @param target
 	 */
-	public static void copy(IMetadataProviderEntity source, MetadataProviderEntity target) {
+	public static void copy(IMetadataProviderEntity source, MetadataProviderEntity target)
+			throws SiteWhereException {
 		target.setCreatedDate(source.getCreatedDate());
 		target.setCreatedBy(source.getCreatedBy());
 		target.setUpdatedDate(source.getUpdatedDate());

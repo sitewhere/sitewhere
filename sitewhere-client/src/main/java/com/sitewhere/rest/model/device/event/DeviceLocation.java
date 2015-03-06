@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 
@@ -78,7 +79,7 @@ public class DeviceLocation extends DeviceEvent implements IDeviceLocation {
 	 * @param input
 	 * @return
 	 */
-	public static DeviceLocation copy(IDeviceLocation input) {
+	public static DeviceLocation copy(IDeviceLocation input) throws SiteWhereException {
 		DeviceLocation result = new DeviceLocation();
 		DeviceEvent.copy(input, result);
 		result.setLatitude(input.getLatitude());

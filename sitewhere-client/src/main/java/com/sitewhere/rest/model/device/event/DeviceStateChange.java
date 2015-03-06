@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.device.event;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
@@ -115,7 +116,7 @@ public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange
 	 * @param input
 	 * @return
 	 */
-	public static DeviceStateChange copy(IDeviceStateChange input) {
+	public static DeviceStateChange copy(IDeviceStateChange input) throws SiteWhereException {
 		DeviceStateChange result = new DeviceStateChange();
 		DeviceEvent.copy(input, result);
 		result.setCategory(input.getCategory());

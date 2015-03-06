@@ -14,6 +14,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.OperationType;
@@ -123,7 +124,7 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 		this.processingEndedDate = processingEndedDate;
 	}
 
-	public static BatchOperation copy(IBatchOperation input) {
+	public static BatchOperation copy(IBatchOperation input) throws SiteWhereException {
 		BatchOperation result = new BatchOperation();
 		result.setToken(input.getToken());
 		result.setOperationType(input.getOperationType());

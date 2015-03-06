@@ -65,7 +65,7 @@ public class DeviceEventWithAsset implements IDeviceEventWithAsset {
 	 * java.lang.String)
 	 */
 	@Override
-	public void addOrReplaceMetadata(String name, String value) {
+	public void addOrReplaceMetadata(String name, String value) throws SiteWhereException {
 		getWrapped().addOrReplaceMetadata(name, value);
 	}
 

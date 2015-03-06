@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -96,7 +97,7 @@ public class DeviceAlert extends DeviceEvent implements IDeviceAlert {
 	 * @param input
 	 * @return
 	 */
-	public static DeviceAlert copy(IDeviceAlert input) {
+	public static DeviceAlert copy(IDeviceAlert input) throws SiteWhereException {
 		DeviceAlert result = new DeviceAlert();
 		DeviceEvent.copy(input, result);
 		result.setSource(input.getSource());

@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.IZone;
 
@@ -141,7 +142,7 @@ public class Zone extends MetadataProviderEntity implements IZone {
 	 * @param input
 	 * @return
 	 */
-	public static Zone copy(IZone input) {
+	public static Zone copy(IZone input) throws SiteWhereException {
 		Zone result = new Zone();
 		result.setToken(input.getToken());
 		result.setSiteToken(input.getSiteToken());

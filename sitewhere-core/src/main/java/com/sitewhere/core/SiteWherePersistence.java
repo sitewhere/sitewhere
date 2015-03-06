@@ -863,7 +863,8 @@ public class SiteWherePersistence {
 	 * @param assignment
 	 * @return
 	 */
-	protected static DeviceAssignmentState assureState(IDeviceAssignment assignment) {
+	protected static DeviceAssignmentState assureState(IDeviceAssignment assignment)
+			throws SiteWhereException {
 		if (assignment.getState() == null) {
 			return new DeviceAssignmentState();
 		}

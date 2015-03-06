@@ -10,7 +10,11 @@ package com.sitewhere.rest.model.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 
 /**
  * Holds arbitrary metadata associated with an entity.
@@ -29,7 +33,10 @@ public class MetadataProvider implements IMetadataProvider {
 	 * com.sitewhere.spi.device.IMetadataProvider#addOrReplaceMetadata(java.lang.String,
 	 * java.lang.String)
 	 */
-	public void addOrReplaceMetadata(String name, String value) {
+	public void addOrReplaceMetadata(String name, String value) throws SiteWhereException {
+		if (!name.matches("^[\\w-]+$")) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidMetadataFieldName, ErrorLevel.ERROR);
+		}
 		entries.put(name, value);
 	}
 
@@ -80,7 +87,7 @@ public class MetadataProvider implements IMetadataProvider {
 	 * @param source
 	 * @param target
 	 */
-	public static void copy(IMetadataProvider source, MetadataProvider target) {
+	public static void copy(IMetadataProvider source, MetadataProvider target) throws SiteWhereException {
 		if (source != null) {
 			for (String key : source.getMetadata().keySet()) {
 				target.addOrReplaceMetadata(key, source.getMetadata(key));
