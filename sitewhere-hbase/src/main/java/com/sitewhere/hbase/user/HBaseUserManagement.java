@@ -12,9 +12,12 @@ import java.util.List;
 import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
 import org.apache.log4j.Logger;
 
+import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
+import com.sitewhere.hbase.encoder.IPayloadMarshaler;
+import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -40,6 +43,12 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/** Used to communicate with HBase */
 	private ISiteWhereHBaseClient client;
 
+	/** Injected payload encoder */
+	private IPayloadMarshaler payloadMarshaler = new JsonPayloadMarshaler();
+
+	/** Supplies context to implementation methods */
+	private HBaseContext context;
+
 	public HBaseUserManagement() {
 		super(LifecycleComponentType.DataStore);
 	}
@@ -51,15 +60,16 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("HBase user management starting...");
-
 		LOGGER.info("Verifying tables...");
 		ensureTablesExist();
 
 		LOGGER.info("Loading id management...");
 		IdManager.getInstance().load(client);
 
-		LOGGER.info("HBase user management started.");
+		// Create context from configured options.
+		this.context = new HBaseContext();
+		context.setClient(getClient());
+		context.setPayloadMarshaler(getPayloadMarshaler());
 	}
 
 	/*
@@ -100,7 +110,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public IUser createUser(IUserCreateRequest request) throws SiteWhereException {
-		return HBaseUser.createUser(client, request);
+		return HBaseUser.createUser(context, request);
 	}
 
 	/*
@@ -111,7 +121,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public IUser authenticate(String username, String password) throws SiteWhereException {
-		return HBaseUser.authenticate(client, username, password);
+		return HBaseUser.authenticate(context, username, password);
 	}
 
 	/*
@@ -122,7 +132,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public IUser updateUser(String username, IUserCreateRequest request) throws SiteWhereException {
-		return HBaseUser.updateUser(client, username, request);
+		return HBaseUser.updateUser(context, username, request);
 	}
 
 	/*
@@ -132,7 +142,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public IUser getUserByUsername(String username) throws SiteWhereException {
-		return HBaseUser.getUserByUsername(client, username);
+		return HBaseUser.getUserByUsername(context, username);
 	}
 
 	/*
@@ -142,7 +152,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public List<IGrantedAuthority> getGrantedAuthorities(String username) throws SiteWhereException {
-		return HBaseUser.getGrantedAuthorities(client, username);
+		return HBaseUser.getGrantedAuthorities(context, username);
 	}
 
 	/*
@@ -178,7 +188,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
-		return HBaseUser.listUsers(client, criteria);
+		return HBaseUser.listUsers(context, criteria);
 	}
 
 	/*
@@ -188,7 +198,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public IUser deleteUser(String username, boolean force) throws SiteWhereException {
-		return HBaseUser.deleteUser(client, username, force);
+		return HBaseUser.deleteUser(context, username, force);
 	}
 
 	/*
@@ -201,7 +211,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	@Override
 	public IGrantedAuthority createGrantedAuthority(IGrantedAuthorityCreateRequest request)
 			throws SiteWhereException {
-		return HBaseGrantedAuthority.createGrantedAuthority(client, request);
+		return HBaseGrantedAuthority.createGrantedAuthority(context, request);
 	}
 
 	/*
@@ -212,7 +222,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public IGrantedAuthority getGrantedAuthorityByName(String name) throws SiteWhereException {
-		return HBaseGrantedAuthority.getGrantedAuthorityByName(client, name);
+		return HBaseGrantedAuthority.getGrantedAuthorityByName(context, name);
 	}
 
 	/*
@@ -238,7 +248,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	@Override
 	public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 			throws SiteWhereException {
-		return HBaseGrantedAuthority.listGrantedAuthorities(client, criteria);
+		return HBaseGrantedAuthority.listGrantedAuthorities(context, criteria);
 	}
 
 	/*
@@ -258,5 +268,13 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 
 	public void setClient(ISiteWhereHBaseClient client) {
 		this.client = client;
+	}
+
+	public IPayloadMarshaler getPayloadMarshaler() {
+		return payloadMarshaler;
+	}
+
+	public void setPayloadMarshaler(IPayloadMarshaler payloadMarshaler) {
+		this.payloadMarshaler = payloadMarshaler;
 	}
 }

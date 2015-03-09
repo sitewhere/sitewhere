@@ -46,8 +46,11 @@ public interface ISiteWhereHBase {
 	 * COMMON QUALIFIERS *
 	 *********************/
 
-	/** Column qualifier for site JSON content */
-	public static final byte[] JSON_CONTENT = Bytes.toBytes("j");
+	/** Column qualifier for object payload */
+	public static final byte[] PAYLOAD = Bytes.toBytes("z");
+
+	/** Column qualifier for object payload type */
+	public static final byte[] PAYLOAD_TYPE = Bytes.toBytes("q");
 
 	/** Column qualifier that indicates a deleted record */
 	public static final byte[] DELETED = Bytes.toBytes("x");

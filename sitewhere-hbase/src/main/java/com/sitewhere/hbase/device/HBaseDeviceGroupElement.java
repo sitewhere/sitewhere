@@ -22,12 +22,12 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -54,19 +54,19 @@ public class HBaseDeviceGroupElement {
 	/**
 	 * Create a group of group elements.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param groupToken
 	 * @param requests
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDeviceGroupElement> createDeviceGroupElements(ISiteWhereHBaseClient hbase,
+	public static List<IDeviceGroupElement> createDeviceGroupElements(IHBaseContext context,
 			String groupToken, List<IDeviceGroupElementCreateRequest> requests) throws SiteWhereException {
 		byte[] groupKey = HBaseDeviceGroup.KEY_BUILDER.buildPrimaryKey(groupToken);
 		List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 		for (IDeviceGroupElementCreateRequest request : requests) {
-			Long eid = HBaseDeviceGroup.allocateNextElementId(hbase, groupKey);
-			results.add(HBaseDeviceGroupElement.createDeviceGroupElement(hbase, groupToken, eid, request));
+			Long eid = HBaseDeviceGroup.allocateNextElementId(context, groupKey);
+			results.add(HBaseDeviceGroupElement.createDeviceGroupElement(context, groupToken, eid, request));
 		}
 		return results;
 	}
@@ -74,29 +74,28 @@ public class HBaseDeviceGroupElement {
 	/**
 	 * Create a new device group element.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param groupToken
+	 * @param index
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceGroupElement createDeviceGroupElement(ISiteWhereHBaseClient hbase,
-			String groupToken, Long index, IDeviceGroupElementCreateRequest request)
-			throws SiteWhereException {
+	public static IDeviceGroupElement createDeviceGroupElement(IHBaseContext context, String groupToken,
+			Long index, IDeviceGroupElementCreateRequest request) throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(groupToken, index);
 
 		// Use common processing logic so all backend implementations work the same.
 		DeviceGroupElement element =
 				SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
 
-		// Serialize as JSON.
-		byte[] json = MarshalUtils.marshalJson(element);
+		byte[] payload = context.getPayloadMarshaler().encodeDeviceGroupElement(element);
 
 		HTableInterface devices = null;
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Put put = new Put(elementKey);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			put.add(ISiteWhereHBase.FAMILY_ID, ELEMENT_IDENTIFIER, getCombinedIdentifier(request));
 			devices.put(put);
 		} catch (IOException e) {
@@ -111,37 +110,36 @@ public class HBaseDeviceGroupElement {
 	/**
 	 * Remove the given device group elements.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param groupToken
 	 * @param elements
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDeviceGroupElement> removeDeviceGroupElements(ISiteWhereHBaseClient hbase,
+	public static List<IDeviceGroupElement> removeDeviceGroupElements(IHBaseContext context,
 			String groupToken, List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
 		List<byte[]> combinedIds = new ArrayList<byte[]>();
 		for (IDeviceGroupElementCreateRequest request : elements) {
 			combinedIds.add(getCombinedIdentifier(request));
 		}
-		return deleteElements(hbase, groupToken, combinedIds);
+		return deleteElements(context, groupToken, combinedIds);
 	}
 
 	/**
 	 * Handles logic for finding and deleting device group elements.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param groupToken
 	 * @param combinedIds
-	 * @param deleteAll
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static List<IDeviceGroupElement> deleteElements(ISiteWhereHBaseClient hbase, String groupToken,
+	protected static List<IDeviceGroupElement> deleteElements(IHBaseContext context, String groupToken,
 			List<byte[]> combinedIds) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			byte[] primary =
 					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
@@ -158,7 +156,8 @@ public class HBaseDeviceGroupElement {
 				byte[] row = result.getRow();
 
 				boolean shouldAdd = false;
-				byte[] json = null;
+				byte[] payloadType = null;
+				byte[] payload = null;
 				for (KeyValue column : result.raw()) {
 					byte[] qualifier = column.getQualifier();
 					if (Bytes.equals(ELEMENT_IDENTIFIER, qualifier)) {
@@ -169,12 +168,15 @@ public class HBaseDeviceGroupElement {
 							}
 						}
 					}
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = column.getValue();
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
+						payloadType = column.getValue();
+					}
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
+						payload = column.getValue();
 					}
 				}
-				if ((shouldAdd) && (json != null)) {
-					matches.add(new DeleteRecord(row, json));
+				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
+					matches.add(new DeleteRecord(row, payloadType, payload));
 				}
 			}
 			List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
@@ -182,7 +184,8 @@ public class HBaseDeviceGroupElement {
 				try {
 					Delete delete = new Delete(dr.getRowkey());
 					table.delete(delete);
-					results.add(MarshalUtils.unmarshalJson(dr.getJson(), DeviceGroupElement.class));
+					results.add(PayloadMarshalerResolver.getInstance().getMarshaler(dr.getPayloadType()).decodeDeviceGroupElement(
+							dr.getPayload()));
 				} catch (IOException e) {
 					LOGGER.warn("Group element delete failed for key: " + dr.getRowkey());
 				}
@@ -202,16 +205,15 @@ public class HBaseDeviceGroupElement {
 	 * Deletes all elements for a device group. TODO: There is probably a much more
 	 * efficient method of deleting the records than calling a delete for each.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param groupToken
 	 * @throws SiteWhereException
 	 */
-	public static void deleteElements(ISiteWhereHBaseClient hbase, String groupToken)
-			throws SiteWhereException {
+	public static void deleteElements(IHBaseContext context, String groupToken) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			byte[] primary =
 					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
@@ -226,15 +228,19 @@ public class HBaseDeviceGroupElement {
 			List<DeleteRecord> matches = new ArrayList<DeleteRecord>();
 			for (Result result : scanner) {
 				byte[] row = result.getRow();
-				byte[] json = null;
+				byte[] payloadType = null;
+				byte[] payload = null;
 				for (KeyValue column : result.raw()) {
 					byte[] qualifier = column.getQualifier();
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = column.getValue();
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
+						payloadType = column.getValue();
+					}
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
+						payload = column.getValue();
 					}
 				}
-				if (json != null) {
-					matches.add(new DeleteRecord(row, json));
+				if ((payloadType != null) && (payload != null)) {
+					matches.add(new DeleteRecord(row, payloadType, payload));
 				}
 			}
 			for (DeleteRecord dr : matches) {
@@ -259,18 +265,18 @@ public class HBaseDeviceGroupElement {
 	 * Get paged results for listing device group elements. TODO: This is not optimized!
 	 * Getting the correct record count requires a full scan of all elements in the group.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param groupToken
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceGroupElement> listDeviceGroupElements(ISiteWhereHBaseClient hbase,
+	public static SearchResults<IDeviceGroupElement> listDeviceGroupElements(IHBaseContext context,
 			String groupToken, ISearchCriteria criteria) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			byte[] primary =
 					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
@@ -282,20 +288,27 @@ public class HBaseDeviceGroupElement {
 			scan.setStopRow(after);
 			scanner = table.getScanner(scan);
 
-			Pager<byte[]> pager = new Pager<byte[]>(criteria);
+			Pager<IDeviceGroupElement> pager = new Pager<IDeviceGroupElement>(criteria);
 			for (Result result : scanner) {
+				byte[] payloadType = null;
+				byte[] payload = null;
 				for (KeyValue column : result.raw()) {
 					byte[] qualifier = column.getQualifier();
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						pager.process(column.getValue());
+
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
+						payloadType = column.getValue();
+					}
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
+						payload = column.getValue();
 					}
 				}
+
+				if ((payloadType != null) && (payload != null)) {
+					pager.process(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeDeviceGroupElement(
+							payload));
+				}
 			}
-			List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
-			for (byte[] json : pager.getResults()) {
-				results.add(MarshalUtils.unmarshalJson(json, DeviceGroupElement.class));
-			}
-			return new SearchResults<IDeviceGroupElement>(results);
+			return new SearchResults<IDeviceGroupElement>(pager.getResults());
 		} catch (IOException e) {
 			throw new SiteWhereException("Error scanning device group element rows.", e);
 		} finally {

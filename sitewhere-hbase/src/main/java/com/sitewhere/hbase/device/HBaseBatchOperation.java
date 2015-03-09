@@ -17,8 +17,8 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
@@ -82,12 +82,12 @@ public class HBaseBatchOperation {
 	/**
 	 * Create a batch operation.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchOperation createBatchOperation(ISiteWhereHBaseClient hbase,
+	public static IBatchOperation createBatchOperation(IHBaseContext context,
 			IBatchOperationCreateRequest request) throws SiteWhereException {
 		String uuid = null;
 		if (request.getToken() != null) {
@@ -103,18 +103,18 @@ public class HBaseBatchOperation {
 		qualifiers.put(PROCESSING_STATUS,
 				Bytes.toBytes(String.valueOf(BatchOperationStatus.Unprocessed.getCode())));
 		BatchOperation operation =
-				HBaseUtils.createOrUpdate(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid,
-						KEY_BUILDER, qualifiers);
+				HBaseUtils.createOrUpdate(context.getClient(), context.getPayloadMarshaler(),
+						ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER, qualifiers);
 
 		// Create elements for each device in the operation.
 		long index = 0;
 		HTableInterface devices = null;
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			for (String hardwareId : request.getHardwareIds()) {
 				BatchElement element =
 						SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
-				HBaseBatchElement.createBatchElement(hbase, devices, element);
+				HBaseBatchElement.createBatchElement(context, devices, element);
 			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to create device group element.", e);
@@ -128,15 +128,15 @@ public class HBaseBatchOperation {
 	/**
 	 * Update an existing batch operation.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchOperation updateBatchOperation(ISiteWhereHBaseClient hbase, String token,
+	public static IBatchOperation updateBatchOperation(IHBaseContext context, String token,
 			IBatchOperationUpdateRequest request) throws SiteWhereException {
-		BatchOperation updated = assertBatchOperation(hbase, token);
+		BatchOperation updated = assertBatchOperation(context, token);
 		BatchOperationStatus oldProcessingStatus = updated.getProcessingStatus();
 		SiteWherePersistence.batchOperationUpdateLogic(request, updated);
 
@@ -145,34 +145,34 @@ public class HBaseBatchOperation {
 			qualifiers.put(PROCESSING_STATUS,
 					Bytes.toBytes(String.valueOf(updated.getProcessingStatus().getCode())));
 		}
-		return HBaseUtils.createOrUpdate(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token,
-				KEY_BUILDER, qualifiers);
+		return HBaseUtils.createOrUpdate(context.getClient(), context.getPayloadMarshaler(),
+				ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER, qualifiers);
 	}
 
 	/**
 	 * Get a {@link BatchOperation} by unique token.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static BatchOperation getBatchOperationByToken(ISiteWhereHBaseClient hbase, String token)
+	public static BatchOperation getBatchOperationByToken(IHBaseContext context, String token)
 			throws SiteWhereException {
-		return HBaseUtils.get(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
+		return HBaseUtils.get(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
 				BatchOperation.class);
 	}
 
 	/**
 	 * Get paged {@link IBatchOperation} results based on the given search criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param includeDeleted
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IBatchOperation> listBatchOperations(ISiteWhereHBaseClient hbase,
+	public static SearchResults<IBatchOperation> listBatchOperations(IHBaseContext context,
 			boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
 		Comparator<BatchOperation> comparator = new Comparator<BatchOperation>() {
 
@@ -187,40 +187,41 @@ public class HBaseBatchOperation {
 				return false;
 			}
 		};
-		return HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
-				includeDeleted, IBatchOperation.class, BatchOperation.class, filter, criteria, comparator);
+		return HBaseUtils.getFilteredList(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+				KEY_BUILDER, includeDeleted, IBatchOperation.class, BatchOperation.class, filter, criteria,
+				comparator);
 	}
 
 	/**
 	 * Delete an existing batch operation.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param force
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchOperation deleteBatchOperation(ISiteWhereHBaseClient hbase, String token,
-			boolean force) throws SiteWhereException {
+	public static IBatchOperation deleteBatchOperation(IHBaseContext context, String token, boolean force)
+			throws SiteWhereException {
 		// If actually deleting batch operation, delete all elements.
 		if (force) {
-			HBaseBatchElement.deleteBatchElements(hbase, token);
+			HBaseBatchElement.deleteBatchElements(context, token);
 		}
-		return HBaseUtils.delete(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER,
-				BatchOperation.class);
+		return HBaseUtils.delete(context.getClient(), context.getPayloadMarshaler(),
+				ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER, BatchOperation.class);
 	}
 
 	/**
 	 * Get a {@link BatchOperation} by token or throw an exception if token is not valid.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static BatchOperation assertBatchOperation(ISiteWhereHBaseClient hbase, String token)
+	public static BatchOperation assertBatchOperation(IHBaseContext context, String token)
 			throws SiteWhereException {
-		BatchOperation existing = getBatchOperationByToken(hbase, token);
+		BatchOperation existing = getBatchOperationByToken(context, token);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidBatchOperationToken, ErrorLevel.ERROR);
 		}

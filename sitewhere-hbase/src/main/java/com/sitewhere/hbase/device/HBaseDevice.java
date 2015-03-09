@@ -28,13 +28,13 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -43,7 +43,6 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -83,14 +82,13 @@ public class HBaseDevice {
 	/**
 	 * Create a new device.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param request
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDevice createDevice(ISiteWhereHBaseClient hbase, IDeviceCreateRequest request,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static IDevice createDevice(IHBaseContext context, IDeviceCreateRequest request)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "createDevice (HBase)", LOGGER);
 		try {
 			Long existing = IdManager.getInstance().getDeviceKeys().getValue(request.getHardwareId());
@@ -103,7 +101,7 @@ public class HBaseDevice {
 			IdManager.getInstance().getDeviceKeys().create(request.getHardwareId(), inverse);
 
 			Device device = SiteWherePersistence.deviceCreateLogic(request);
-			return putDeviceJson(hbase, device, cache);
+			return putDevicePayload(context, device);
 		} finally {
 			Tracer.pop(LOGGER);
 		}
@@ -112,23 +110,22 @@ public class HBaseDevice {
 	/**
 	 * Update an existing device.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param hardwareId
 	 * @param request
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDevice updateDevice(ISiteWhereHBaseClient hbase, String hardwareId,
-			IDeviceCreateRequest request, IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static IDevice updateDevice(IHBaseContext context, String hardwareId, IDeviceCreateRequest request)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDevice (HBase) " + hardwareId, LOGGER);
 		try {
-			Device updated = getDeviceByHardwareId(hbase, hardwareId, cache);
+			Device updated = getDeviceByHardwareId(context, hardwareId);
 			if (updated == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 			}
 			SiteWherePersistence.deviceUpdateLogic(request, updated);
-			return putDeviceJson(hbase, updated, cache);
+			return putDevicePayload(context, updated);
 		} finally {
 			Tracer.pop(LOGGER);
 		}
@@ -137,17 +134,17 @@ public class HBaseDevice {
 	/**
 	 * List devices that meet the given criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param includeDeleted
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDevice> listDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
+	public static SearchResults<IDevice> listDevices(IHBaseContext context, boolean includeDeleted,
 			IDeviceSearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDevices (HBase)", LOGGER);
 		try {
-			Pager<IDevice> matches = getFilteredDevices(hbase, includeDeleted, criteria);
+			Pager<IDevice> matches = getFilteredDevices(context, includeDeleted, criteria);
 			return new SearchResults<IDevice>(matches.getResults(), matches.getTotal());
 		} finally {
 			Tracer.pop(LOGGER);
@@ -157,13 +154,13 @@ public class HBaseDevice {
 	/**
 	 * Get a list of devices filtered with certain criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param includeDeleted
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static Pager<IDevice> getFilteredDevices(ISiteWhereHBaseClient hbase, boolean includeDeleted,
+	protected static Pager<IDevice> getFilteredDevices(IHBaseContext context, boolean includeDeleted,
 			IDeviceSearchCriteria criteria) throws SiteWhereException {
 		HTableInterface devices = null;
 		ResultScanner scanner = null;
@@ -182,7 +179,7 @@ public class HBaseDevice {
 		}
 
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { DeviceRecordType.Device.getType() });
 			scan.setStopRow(new byte[] { DeviceRecordType.DeviceSpecification.getType() });
@@ -191,7 +188,7 @@ public class HBaseDevice {
 			Pager<IDevice> pager = new Pager<IDevice>(criteria);
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
-				byte[] json = null;
+				byte[] payload = null;
 				for (KeyValue column : result.raw()) {
 					byte[] qualifier = column.getQualifier();
 					if ((Bytes.equals(CURRENT_ASSIGNMENT, qualifier)) && (criteria.isExcludeAssigned())) {
@@ -200,12 +197,12 @@ public class HBaseDevice {
 					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
 						shouldAdd = false;
 					}
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = column.getValue();
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
+						payload = column.getValue();
 					}
 				}
-				if ((shouldAdd) && (json != null)) {
-					Device device = MarshalUtils.unmarshalJson(json, Device.class);
+				if ((shouldAdd) && (payload != null)) {
+					Device device = context.getPayloadMarshaler().decodeDevice(payload);
 					switch (criteria.getSearchType()) {
 					case All: {
 						break;
@@ -231,32 +228,30 @@ public class HBaseDevice {
 	}
 
 	/**
-	 * Save the JSON representation of a device.
+	 * Save the payload for a device.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param device
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Device putDeviceJson(ISiteWhereHBaseClient hbase, Device device,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static Device putDevicePayload(IHBaseContext context, Device device) throws SiteWhereException {
 		Long value = IdManager.getInstance().getDeviceKeys().getValue(device.getHardwareId());
 		if (value == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
 		byte[] primary = getDeviceRowKey(value);
-		byte[] json = MarshalUtils.marshalJson(device);
+		byte[] payload = context.getPayloadMarshaler().encodeDevice(device);
 
 		HTableInterface devices = null;
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			put.add(ISiteWhereHBase.FAMILY_ID, CURRENT_SITE, Bytes.toBytes(device.getSiteToken()));
 			devices.put(put);
-			if (cache != null) {
-				cache.getDeviceCache().put(device.getHardwareId(), device);
+			if (context.getCacheProvider() != null) {
+				context.getCacheProvider().getDeviceCache().put(device.getHardwareId(), device);
 			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to put device data.", e);
@@ -270,18 +265,18 @@ public class HBaseDevice {
 	/**
 	 * Get a device by unique hardware id.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param hardwareId
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Device getDeviceByHardwareId(ISiteWhereHBaseClient hbase, String hardwareId,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static Device getDeviceByHardwareId(IHBaseContext context, String hardwareId)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceByHardwareId (HBase) " + hardwareId,
 				LOGGER);
 		try {
-			if (cache != null) {
-				IDevice result = cache.getDeviceCache().get(hardwareId);
+			if (context.getCacheProvider() != null) {
+				IDevice result = context.getCacheProvider().getDeviceCache().get(hardwareId);
 				if (result != null) {
 					Tracer.info("Returning cached device.", LOGGER);
 					return DEVICE_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
@@ -298,17 +293,21 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 				Get get = new Get(primary);
-				get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+				HBaseUtils.addPayloadFields(get);
 				Result result = devices.get(get);
-				if (result.size() != 1) {
-					throw new SiteWhereException("Expected one JSON entry for device and found: "
-							+ result.size());
+
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				if ((type == null) || (payload == null)) {
+					return null;
 				}
-				Device found = MarshalUtils.unmarshalJson(result.value(), Device.class);
-				if ((cache != null) && (found != null)) {
-					cache.getDeviceCache().put(hardwareId, found);
+
+				Device found =
+						PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDevice(payload);
+				if ((context.getCacheProvider() != null) && (found != null)) {
+					context.getCacheProvider().getDeviceCache().put(hardwareId, found);
 				}
 				return found;
 			} catch (IOException e) {
@@ -327,15 +326,14 @@ public class HBaseDevice {
 	 * Physically deleting a device can leave orphaned references and should not be done
 	 * in a production system!
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param hardwareId
 	 * @param force
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDevice deleteDevice(ISiteWhereHBaseClient hbase, String hardwareId, boolean force,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static IDevice deleteDevice(IHBaseContext context, String hardwareId, boolean force)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDevice (HBase) " + hardwareId, LOGGER);
 		try {
 			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
@@ -344,7 +342,7 @@ public class HBaseDevice {
 				throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 			}
 
-			Device existing = getDeviceByHardwareId(hbase, hardwareId, cache);
+			Device existing = getDeviceByHardwareId(context, hardwareId);
 			existing.setDeleted(true);
 			byte[] primary = getDeviceRowKey(deviceId);
 			if (force) {
@@ -352,10 +350,10 @@ public class HBaseDevice {
 				HTableInterface devices = null;
 				try {
 					Delete delete = new Delete(primary);
-					devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+					devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 					devices.delete(delete);
-					if (cache != null) {
-						cache.getDeviceCache().remove(hardwareId);
+					if (context.getCacheProvider() != null) {
+						context.getCacheProvider().getDeviceCache().remove(hardwareId);
 					}
 				} catch (IOException e) {
 					throw new SiteWhereException("Unable to delete device.", e);
@@ -365,17 +363,19 @@ public class HBaseDevice {
 			} else {
 				byte[] marker = { (byte) 0x01 };
 				SiteWherePersistence.setUpdatedEntityMetadata(existing);
-				byte[] updated = MarshalUtils.marshalJson(existing);
+				byte[] updated = context.getPayloadMarshaler().encodeDevice(existing);
 
 				HTableInterface devices = null;
 				try {
-					devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+					devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 					Put put = new Put(primary);
-					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
+					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
+							context.getPayloadMarshaler().getEncoding().getIndicator());
+					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 					devices.put(put);
-					if (cache != null) {
-						cache.getDeviceCache().remove(hardwareId);
+					if (context.getCacheProvider() != null) {
+						context.getCacheProvider().getDeviceCache().remove(hardwareId);
 					}
 				} catch (IOException e) {
 					throw new SiteWhereException("Unable to set deleted flag for device.", e);
@@ -392,19 +392,18 @@ public class HBaseDevice {
 	/**
 	 * Get the current device assignment id if assigned or null if not assigned.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param hardwareId
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static String getCurrentAssignmentId(ISiteWhereHBaseClient hbase, String hardwareId,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static String getCurrentAssignmentId(IHBaseContext context, String hardwareId)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "getCurrentAssignmentId (HBase) " + hardwareId,
 				LOGGER);
 		try {
-			if (cache != null) {
-				IDevice result = cache.getDeviceCache().get(hardwareId);
+			if (context.getCacheProvider() != null) {
+				IDevice result = context.getCacheProvider().getDeviceCache().get(hardwareId);
 				if (result != null) {
 					Tracer.info("Returning cached device assignment token.", LOGGER);
 					return result.getAssignmentToken();
@@ -418,7 +417,7 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 				Get get = new Get(primary);
 				get.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT);
 				Result result = devices.get(get);
@@ -443,26 +442,25 @@ public class HBaseDevice {
 	/**
 	 * Set the current device assignment for a device.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param hardwareId
 	 * @param assignmentToken
-	 * @param cache
 	 * @throws SiteWhereException
 	 */
-	public static void setDeviceAssignment(ISiteWhereHBaseClient hbase, String hardwareId,
-			String assignmentToken, IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static void setDeviceAssignment(IHBaseContext context, String hardwareId, String assignmentToken)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "setDeviceAssignment (HBase) " + hardwareId,
 				LOGGER);
 		try {
-			String existing = getCurrentAssignmentId(hbase, hardwareId, cache);
+			String existing = getCurrentAssignmentId(context, hardwareId);
 			if (existing != null) {
 				throw new SiteWhereSystemException(ErrorCode.DeviceAlreadyAssigned, ErrorLevel.ERROR);
 			}
 
 			// Load object to update assignment token.
-			Device updated = getDeviceByHardwareId(hbase, hardwareId, cache);
+			Device updated = getDeviceByHardwareId(context, hardwareId);
 			updated.setAssignmentToken(assignmentToken);
-			byte[] json = MarshalUtils.marshalJson(updated);
+			byte[] payload = context.getPayloadMarshaler().encodeDevice(updated);
 
 			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
@@ -473,16 +471,16 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 				Put put = new Put(primary);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT, assignmentToken.getBytes());
 				put.add(ISiteWhereHBase.FAMILY_ID, assnHistory, assignmentToken.getBytes());
 				devices.put(put);
 
 				// Make sure that cache is using updated device information.
-				if (cache != null) {
-					cache.getDeviceCache().put(updated.getHardwareId(), updated);
+				if (context.getCacheProvider() != null) {
+					context.getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
 				}
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to set device assignment.", e);
@@ -497,13 +495,13 @@ public class HBaseDevice {
 	/**
 	 * Removes the device assignment row if present.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param hardwareId
 	 * @param cache
 	 * @throws SiteWhereException
 	 */
-	public static void removeDeviceAssignment(ISiteWhereHBaseClient hbase, String hardwareId,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static void removeDeviceAssignment(IHBaseContext context, String hardwareId)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "removeDeviceAssignment (HBase) " + hardwareId,
 				LOGGER);
 		try {
@@ -513,23 +511,25 @@ public class HBaseDevice {
 			}
 			byte[] primary = getDeviceRowKey(deviceId);
 
-			Device updated = getDeviceByHardwareId(hbase, hardwareId, cache);
+			Device updated = getDeviceByHardwareId(context, hardwareId);
 			updated.setAssignmentToken(null);
-			byte[] json = MarshalUtils.marshalJson(updated);
+			byte[] payload = context.getPayloadMarshaler().encodeDevice(updated);
 
 			HTableInterface devices = null;
 			try {
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 				Put put = new Put(primary);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
+						context.getPayloadMarshaler().getEncoding().getIndicator());
+				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, payload);
 				devices.put(put);
 				Delete delete = new Delete(primary);
 				delete.deleteColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT);
 				devices.delete(delete);
 
 				// Make sure that cache is using updated device information.
-				if (cache != null) {
-					cache.getDeviceCache().put(updated.getHardwareId(), updated);
+				if (context.getCacheProvider() != null) {
+					context.getCacheProvider().getDeviceCache().put(updated.getHardwareId(), updated);
 				}
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to remove device assignment.", e);
@@ -544,16 +544,15 @@ public class HBaseDevice {
 	/**
 	 * Get the assignment history for a device.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param hardwareId
 	 * @param criteria
 	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(ISiteWhereHBaseClient hbase,
-			String hardwareId, ISearchCriteria criteria, IDeviceManagementCacheProvider cache)
-			throws SiteWhereException {
+	public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(IHBaseContext context,
+			String hardwareId, ISearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceAssignmentHistory (HBase) "
 				+ hardwareId, LOGGER);
 		try {
@@ -565,7 +564,7 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 				Get get = new Get(primary);
 				Result result = devices.get(get);
 
@@ -579,7 +578,7 @@ public class HBaseDevice {
 				}
 				List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 				for (String token : pager.getResults()) {
-					DeviceAssignment assn = HBaseDeviceAssignment.getDeviceAssignment(hbase, token, cache);
+					DeviceAssignment assn = HBaseDeviceAssignment.getDeviceAssignment(context, token);
 					results.add(assn);
 				}
 				return new SearchResults<IDeviceAssignment>(results, pager.getTotal());
