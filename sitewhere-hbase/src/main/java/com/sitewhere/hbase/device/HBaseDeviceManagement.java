@@ -19,7 +19,7 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
-import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
+import com.sitewhere.hbase.encoder.ProtobufPayloadMarshaler;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -96,7 +96,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	private IDeviceManagementCacheProvider cacheProvider;
 
 	/** Injected payload encoder */
-	private IPayloadMarshaler payloadMarshaler = new JsonPayloadMarshaler();
+	private IPayloadMarshaler payloadMarshaler = new ProtobufPayloadMarshaler();
 
 	/** Supplies context to implementation methods */
 	private HBaseContext context;

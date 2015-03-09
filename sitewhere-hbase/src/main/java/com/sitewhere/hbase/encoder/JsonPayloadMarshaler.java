@@ -10,6 +10,7 @@ package com.sitewhere.hbase.encoder;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.batch.BatchElement;
@@ -135,6 +136,17 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
 	@Override
 	public byte[] encodeDeviceSpecification(IDeviceSpecification specification) throws SiteWhereException {
 		return MarshalUtils.marshalJson(specification);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceSpecification(byte[])
+	 */
+	@Override
+	public DeviceSpecification decodeDeviceSpecification(byte[] payload) throws SiteWhereException {
+		return MarshalUtils.unmarshalJson(payload, DeviceSpecification.class);
 	}
 
 	/*

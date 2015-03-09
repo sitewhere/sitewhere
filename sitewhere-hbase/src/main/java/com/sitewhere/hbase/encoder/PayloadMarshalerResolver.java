@@ -26,6 +26,7 @@ public class PayloadMarshalerResolver {
 
 	static {
 		MARSHALERS.put(PayloadEncoding.Json, new JsonPayloadMarshaler());
+		MARSHALERS.put(PayloadEncoding.ProtocolBuffers, new ProtobufPayloadMarshaler());
 	}
 
 	/**

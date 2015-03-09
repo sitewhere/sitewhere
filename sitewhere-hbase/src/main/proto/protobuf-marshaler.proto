@@ -1,0 +1,54 @@
+option optimize_for = LITE_RUNTIME;
+
+option java_package = "com.sitewhere.hbase.encoder";
+
+message MetadataEntry {
+	required string name = 1;
+	required string value = 2;
+}
+
+message EntityData {
+	required int64 createdDate = 1;
+	required string createdBy = 2;
+	optional int64 updatedDate = 3;
+	optional string updatedBy = 4;
+	optional bool deleted = 5;
+	repeated MetadataEntry metadata = 6;
+}
+
+message Site {
+	required string token = 1;
+	required string name = 2;
+	required string description = 3;
+	required string imageUrl = 4;
+	required string mapType = 5;
+	repeated MetadataEntry mapMetadata = 6;
+	required EntityData entityData = 7;
+}
+
+message DeviceSlot {
+	required string name = 1;
+	required string path = 2;
+}
+
+message DeviceUnit {
+	required string name = 1;
+	required string path = 2;
+	repeated DeviceSlot slots = 3;
+	repeated DeviceUnit units = 4;
+}
+
+message DeviceElementSchema {
+	repeated DeviceSlot slots = 1;
+	repeated DeviceUnit units = 2;
+}
+
+message DeviceSpecification {
+	required string token = 1;
+	required string name = 2;
+	required string assetModuleId = 3;
+	required string assetId = 4;
+	required string containerPolicy = 5;
+	optional DeviceElementSchema deviceElementSchema = 6;
+	required EntityData entityData = 7;
+}
