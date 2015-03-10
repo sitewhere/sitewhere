@@ -2,7 +2,10 @@ FROM centos:centos7
 #RUN yum check-update
 EXPOSE 8080 1883 61623
 
-RUN yum -y install wget unzip java-1.7.0-openjdk.x86_64
+RUN yum -y install wget unzip
+
+# Install Java 8
+RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u25-b17/jdk-8u25-linux-x64.rpm" && rpm -ivh jdk-8u25-linux-x64.rpm
 
 # Install HiveMQ
 RUN cd /opt && wget --content-disposition http://www.hivemq.com/wp-content/uploads/hivemq-2.2.1.zip && unzip hivemq-2.2.1.zip
