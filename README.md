@@ -47,11 +47,12 @@ as a starting point. For more details, see the
 [installation guide] (http://docs.sitewhere.org/current/userguide/installation.html#using-an-existing-tomcat-instance).
 
 
-Sitewhere Install for Ubuntu Server 14.04 64bit
------------------------------------------------
+Sitewhere Complete Install for Ubuntu
+-------------------------------------
 
     sudo su
     apt-get update -y
+    apt-get install unzip openjdk-7-jdk
 
 ###Install MongoDB
 
@@ -68,9 +69,10 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
 
 ###Install HiveMQ
 
+    cd /opt
     wget --content-disposition http://www.hivemq.com/downloads/releases/latest
-    unzip hivemq-2.1.1.zip
-    cd hivemq-2.1.1/bin
+    unzip hivemq-2.2.1.zip
+    cd hivemq-2.2.1/bin
     ./run.sh &
 
 ###Install Solr
@@ -90,9 +92,12 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
 
 > Download a SiteWhere server release from the sitewhere.org website
 
-    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.0.0.tar.gz
-    tar -zxvf sitewhere-server-1.0.0.tar.gz
-    mv sitewhere-server-1.0.0 /opt/sitewhere
+    cd /opt
+    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.0.1.tar.gz
+    tar -zxvf sitewhere-server-1.0.1.tar.gz
+    mv sitewhere-server-1.0.1 /opt/sitewhere
+    sed -i -- 's/CATALINA_BASE/CATALINA_HOME/g' /opt/sitewhere/conf/sitewhere/sitewhere-server.xml
+    export CATALINA_HOME=/opt/sitewhere
     cd /opt/sitewhere/bin
     sh startup.sh
 
