@@ -47,7 +47,7 @@ as a starting point. For more details, see the
 [installation guide] (http://docs.sitewhere.org/current/userguide/installation.html#using-an-existing-tomcat-instance).
 
 
-Sitewhere Complete Install for Ubuntu
+SiteWhere Complete Install for Ubuntu
 -------------------------------------
 
     sudo su
