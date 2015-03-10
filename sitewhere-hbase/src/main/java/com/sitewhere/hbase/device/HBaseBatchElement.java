@@ -140,16 +140,15 @@ public class HBaseBatchElement {
 		byte[] elementKey = getElementRowKey(operationToken, index);
 		try {
 			Get get = new Get(elementKey);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+			HBaseUtils.addPayloadFields(get);
 			Result result = devices.get(get);
-			if (result.size() != 1) {
-				throw new SiteWhereException(
-						"Unable to get batch operation element by operation token and index.");
-			}
 
 			byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+			if ((type == null) || (payload == null)) {
+				return null;
+			}
+
 			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeBatchElement(payload);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to create device group element.", e);

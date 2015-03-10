@@ -222,6 +222,210 @@ public final class ProtobufMarshaler {
     // @@protoc_insertion_point(enum_scope:GroupElementType)
   }
 
+  /**
+   * Protobuf enum {@code OperationType}
+   */
+  public enum OperationType
+      implements com.google.protobuf.Internal.EnumLite {
+    /**
+     * <code>OTInvokeCommand = 1;</code>
+     */
+    OTInvokeCommand(0, 1),
+    /**
+     * <code>OTUpdateFirmware = 2;</code>
+     */
+    OTUpdateFirmware(1, 2),
+    ;
+
+    /**
+     * <code>OTInvokeCommand = 1;</code>
+     */
+    public static final int OTInvokeCommand_VALUE = 1;
+    /**
+     * <code>OTUpdateFirmware = 2;</code>
+     */
+    public static final int OTUpdateFirmware_VALUE = 2;
+
+
+    public final int getNumber() { return value; }
+
+    public static OperationType valueOf(int value) {
+      switch (value) {
+        case 1: return OTInvokeCommand;
+        case 2: return OTUpdateFirmware;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<OperationType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<OperationType>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<OperationType>() {
+            public OperationType findValueByNumber(int number) {
+              return OperationType.valueOf(number);
+            }
+          };
+
+    private final int value;
+
+    private OperationType(int index, int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:OperationType)
+  }
+
+  /**
+   * Protobuf enum {@code BatchOperationStatus}
+   */
+  public enum BatchOperationStatus
+      implements com.google.protobuf.Internal.EnumLite {
+    /**
+     * <code>BOSUnprocessed = 1;</code>
+     */
+    BOSUnprocessed(0, 1),
+    /**
+     * <code>BOSProcessing = 2;</code>
+     */
+    BOSProcessing(1, 2),
+    /**
+     * <code>BOSFinishedSuccessfully = 3;</code>
+     */
+    BOSFinishedSuccessfully(2, 3),
+    /**
+     * <code>BOSFinishedWithErrors = 4;</code>
+     */
+    BOSFinishedWithErrors(3, 4),
+    ;
+
+    /**
+     * <code>BOSUnprocessed = 1;</code>
+     */
+    public static final int BOSUnprocessed_VALUE = 1;
+    /**
+     * <code>BOSProcessing = 2;</code>
+     */
+    public static final int BOSProcessing_VALUE = 2;
+    /**
+     * <code>BOSFinishedSuccessfully = 3;</code>
+     */
+    public static final int BOSFinishedSuccessfully_VALUE = 3;
+    /**
+     * <code>BOSFinishedWithErrors = 4;</code>
+     */
+    public static final int BOSFinishedWithErrors_VALUE = 4;
+
+
+    public final int getNumber() { return value; }
+
+    public static BatchOperationStatus valueOf(int value) {
+      switch (value) {
+        case 1: return BOSUnprocessed;
+        case 2: return BOSProcessing;
+        case 3: return BOSFinishedSuccessfully;
+        case 4: return BOSFinishedWithErrors;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<BatchOperationStatus>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<BatchOperationStatus>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<BatchOperationStatus>() {
+            public BatchOperationStatus findValueByNumber(int number) {
+              return BatchOperationStatus.valueOf(number);
+            }
+          };
+
+    private final int value;
+
+    private BatchOperationStatus(int index, int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:BatchOperationStatus)
+  }
+
+  /**
+   * Protobuf enum {@code ElementProcessingStatus}
+   */
+  public enum ElementProcessingStatus
+      implements com.google.protobuf.Internal.EnumLite {
+    /**
+     * <code>EPSUnprocessed = 1;</code>
+     */
+    EPSUnprocessed(0, 1),
+    /**
+     * <code>EPSProcessing = 2;</code>
+     */
+    EPSProcessing(1, 2),
+    /**
+     * <code>EPSFailed = 3;</code>
+     */
+    EPSFailed(2, 3),
+    /**
+     * <code>EPSSucceeded = 4;</code>
+     */
+    EPSSucceeded(3, 4),
+    ;
+
+    /**
+     * <code>EPSUnprocessed = 1;</code>
+     */
+    public static final int EPSUnprocessed_VALUE = 1;
+    /**
+     * <code>EPSProcessing = 2;</code>
+     */
+    public static final int EPSProcessing_VALUE = 2;
+    /**
+     * <code>EPSFailed = 3;</code>
+     */
+    public static final int EPSFailed_VALUE = 3;
+    /**
+     * <code>EPSSucceeded = 4;</code>
+     */
+    public static final int EPSSucceeded_VALUE = 4;
+
+
+    public final int getNumber() { return value; }
+
+    public static ElementProcessingStatus valueOf(int value) {
+      switch (value) {
+        case 1: return EPSUnprocessed;
+        case 2: return EPSProcessing;
+        case 3: return EPSFailed;
+        case 4: return EPSSucceeded;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<ElementProcessingStatus>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<ElementProcessingStatus>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<ElementProcessingStatus>() {
+            public ElementProcessingStatus findValueByNumber(int number) {
+              return ElementProcessingStatus.valueOf(number);
+            }
+          };
+
+    private final int value;
+
+    private ElementProcessingStatus(int index, int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:ElementProcessingStatus)
+  }
+
   public interface MetadataEntryOrBuilder
       extends com.google.protobuf.MessageLiteOrBuilder {
 
@@ -24780,6 +24984,2203 @@ public final class ProtobufMarshaler {
     }
 
     // @@protoc_insertion_point(class_scope:DeviceGroupElement)
+  }
+
+  public interface BatchOperationOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string token = 1;
+    /**
+     * <code>required string token = 1;</code>
+     */
+    boolean hasToken();
+    /**
+     * <code>required string token = 1;</code>
+     */
+    java.lang.String getToken();
+    /**
+     * <code>required string token = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getTokenBytes();
+
+    // required .OperationType operationType = 2;
+    /**
+     * <code>required .OperationType operationType = 2;</code>
+     */
+    boolean hasOperationType();
+    /**
+     * <code>required .OperationType operationType = 2;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType getOperationType();
+
+    // repeated .MetadataEntry parameters = 3;
+    /**
+     * <code>repeated .MetadataEntry parameters = 3;</code>
+     */
+    java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> 
+        getParametersList();
+    /**
+     * <code>repeated .MetadataEntry parameters = 3;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getParameters(int index);
+    /**
+     * <code>repeated .MetadataEntry parameters = 3;</code>
+     */
+    int getParametersCount();
+
+    // required .BatchOperationStatus processingStatus = 4;
+    /**
+     * <code>required .BatchOperationStatus processingStatus = 4;</code>
+     */
+    boolean hasProcessingStatus();
+    /**
+     * <code>required .BatchOperationStatus processingStatus = 4;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus getProcessingStatus();
+
+    // optional int64 processingStartedDate = 5;
+    /**
+     * <code>optional int64 processingStartedDate = 5;</code>
+     */
+    boolean hasProcessingStartedDate();
+    /**
+     * <code>optional int64 processingStartedDate = 5;</code>
+     */
+    long getProcessingStartedDate();
+
+    // optional int64 processingEndedDate = 6;
+    /**
+     * <code>optional int64 processingEndedDate = 6;</code>
+     */
+    boolean hasProcessingEndedDate();
+    /**
+     * <code>optional int64 processingEndedDate = 6;</code>
+     */
+    long getProcessingEndedDate();
+
+    // required .EntityData entityData = 7;
+    /**
+     * <code>required .EntityData entityData = 7;</code>
+     */
+    boolean hasEntityData();
+    /**
+     * <code>required .EntityData entityData = 7;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData();
+  }
+  /**
+   * Protobuf type {@code BatchOperation}
+   */
+  public static final class BatchOperation extends
+      com.google.protobuf.GeneratedMessageLite
+      implements BatchOperationOrBuilder {
+    // Use BatchOperation.newBuilder() to construct.
+    private BatchOperation(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private BatchOperation(boolean noInit) {}
+
+    private static final BatchOperation defaultInstance;
+    public static BatchOperation getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public BatchOperation getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private BatchOperation(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              token_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType value = com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType.valueOf(rawValue);
+              if (value != null) {
+                bitField0_ |= 0x00000002;
+                operationType_ = value;
+              }
+              break;
+            }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                parameters_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              parameters_.add(input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.PARSER, extensionRegistry));
+              break;
+            }
+            case 32: {
+              int rawValue = input.readEnum();
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus value = com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus.valueOf(rawValue);
+              if (value != null) {
+                bitField0_ |= 0x00000004;
+                processingStatus_ = value;
+              }
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000008;
+              processingStartedDate_ = input.readInt64();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000010;
+              processingEndedDate_ = input.readInt64();
+              break;
+            }
+            case 58: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000020) == 0x00000020)) {
+                subBuilder = entityData_.toBuilder();
+              }
+              entityData_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(entityData_);
+                entityData_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000020;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          parameters_ = java.util.Collections.unmodifiableList(parameters_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<BatchOperation> PARSER =
+        new com.google.protobuf.AbstractParser<BatchOperation>() {
+      public BatchOperation parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new BatchOperation(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<BatchOperation> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string token = 1;
+    public static final int TOKEN_FIELD_NUMBER = 1;
+    private java.lang.Object token_;
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public boolean hasToken() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public java.lang.String getToken() {
+      java.lang.Object ref = token_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          token_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTokenBytes() {
+      java.lang.Object ref = token_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        token_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required .OperationType operationType = 2;
+    public static final int OPERATIONTYPE_FIELD_NUMBER = 2;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType operationType_;
+    /**
+     * <code>required .OperationType operationType = 2;</code>
+     */
+    public boolean hasOperationType() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required .OperationType operationType = 2;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType getOperationType() {
+      return operationType_;
+    }
+
+    // repeated .MetadataEntry parameters = 3;
+    public static final int PARAMETERS_FIELD_NUMBER = 3;
+    private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> parameters_;
+    /**
+     * <code>repeated .MetadataEntry parameters = 3;</code>
+     */
+    public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> getParametersList() {
+      return parameters_;
+    }
+    /**
+     * <code>repeated .MetadataEntry parameters = 3;</code>
+     */
+    public java.util.List<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntryOrBuilder> 
+        getParametersOrBuilderList() {
+      return parameters_;
+    }
+    /**
+     * <code>repeated .MetadataEntry parameters = 3;</code>
+     */
+    public int getParametersCount() {
+      return parameters_.size();
+    }
+    /**
+     * <code>repeated .MetadataEntry parameters = 3;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getParameters(int index) {
+      return parameters_.get(index);
+    }
+    /**
+     * <code>repeated .MetadataEntry parameters = 3;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntryOrBuilder getParametersOrBuilder(
+        int index) {
+      return parameters_.get(index);
+    }
+
+    // required .BatchOperationStatus processingStatus = 4;
+    public static final int PROCESSINGSTATUS_FIELD_NUMBER = 4;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus processingStatus_;
+    /**
+     * <code>required .BatchOperationStatus processingStatus = 4;</code>
+     */
+    public boolean hasProcessingStatus() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required .BatchOperationStatus processingStatus = 4;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus getProcessingStatus() {
+      return processingStatus_;
+    }
+
+    // optional int64 processingStartedDate = 5;
+    public static final int PROCESSINGSTARTEDDATE_FIELD_NUMBER = 5;
+    private long processingStartedDate_;
+    /**
+     * <code>optional int64 processingStartedDate = 5;</code>
+     */
+    public boolean hasProcessingStartedDate() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional int64 processingStartedDate = 5;</code>
+     */
+    public long getProcessingStartedDate() {
+      return processingStartedDate_;
+    }
+
+    // optional int64 processingEndedDate = 6;
+    public static final int PROCESSINGENDEDDATE_FIELD_NUMBER = 6;
+    private long processingEndedDate_;
+    /**
+     * <code>optional int64 processingEndedDate = 6;</code>
+     */
+    public boolean hasProcessingEndedDate() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional int64 processingEndedDate = 6;</code>
+     */
+    public long getProcessingEndedDate() {
+      return processingEndedDate_;
+    }
+
+    // required .EntityData entityData = 7;
+    public static final int ENTITYDATA_FIELD_NUMBER = 7;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData entityData_;
+    /**
+     * <code>required .EntityData entityData = 7;</code>
+     */
+    public boolean hasEntityData() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>required .EntityData entityData = 7;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData() {
+      return entityData_;
+    }
+
+    private void initFields() {
+      token_ = "";
+      operationType_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType.OTInvokeCommand;
+      parameters_ = java.util.Collections.emptyList();
+      processingStatus_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus.BOSUnprocessed;
+      processingStartedDate_ = 0L;
+      processingEndedDate_ = 0L;
+      entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasOperationType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasProcessingStatus()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEntityData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getParametersCount(); i++) {
+        if (!getParameters(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (!getEntityData().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getTokenBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, operationType_.getNumber());
+      }
+      for (int i = 0; i < parameters_.size(); i++) {
+        output.writeMessage(3, parameters_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeEnum(4, processingStatus_.getNumber());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeInt64(5, processingStartedDate_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeInt64(6, processingEndedDate_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeMessage(7, entityData_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getTokenBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, operationType_.getNumber());
+      }
+      for (int i = 0; i < parameters_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, parameters_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(4, processingStatus_.getNumber());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(5, processingStartedDate_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(6, processingEndedDate_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, entityData_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code BatchOperation}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        token_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        operationType_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType.OTInvokeCommand;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        parameters_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        processingStatus_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus.BOSUnprocessed;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        processingStartedDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        processingEndedDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.token_ = token_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.operationType_ = operationType_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          parameters_ = java.util.Collections.unmodifiableList(parameters_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.parameters_ = parameters_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.processingStatus_ = processingStatus_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.processingStartedDate_ = processingStartedDate_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.processingEndedDate_ = processingEndedDate_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.entityData_ = entityData_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation.getDefaultInstance()) return this;
+        if (other.hasToken()) {
+          bitField0_ |= 0x00000001;
+          token_ = other.token_;
+          
+        }
+        if (other.hasOperationType()) {
+          setOperationType(other.getOperationType());
+        }
+        if (!other.parameters_.isEmpty()) {
+          if (parameters_.isEmpty()) {
+            parameters_ = other.parameters_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureParametersIsMutable();
+            parameters_.addAll(other.parameters_);
+          }
+          
+        }
+        if (other.hasProcessingStatus()) {
+          setProcessingStatus(other.getProcessingStatus());
+        }
+        if (other.hasProcessingStartedDate()) {
+          setProcessingStartedDate(other.getProcessingStartedDate());
+        }
+        if (other.hasProcessingEndedDate()) {
+          setProcessingEndedDate(other.getProcessingEndedDate());
+        }
+        if (other.hasEntityData()) {
+          mergeEntityData(other.getEntityData());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasToken()) {
+          
+          return false;
+        }
+        if (!hasOperationType()) {
+          
+          return false;
+        }
+        if (!hasProcessingStatus()) {
+          
+          return false;
+        }
+        if (!hasEntityData()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getParametersCount(); i++) {
+          if (!getParameters(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (!getEntityData().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperation) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string token = 1;
+      private java.lang.Object token_ = "";
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public boolean hasToken() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public java.lang.String getToken() {
+        java.lang.Object ref = token_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          token_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTokenBytes() {
+        java.lang.Object ref = token_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          token_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder setToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        token_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder clearToken() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        token_ = getDefaultInstance().getToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder setTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        token_ = value;
+        
+        return this;
+      }
+
+      // required .OperationType operationType = 2;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType operationType_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType.OTInvokeCommand;
+      /**
+       * <code>required .OperationType operationType = 2;</code>
+       */
+      public boolean hasOperationType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required .OperationType operationType = 2;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType getOperationType() {
+        return operationType_;
+      }
+      /**
+       * <code>required .OperationType operationType = 2;</code>
+       */
+      public Builder setOperationType(com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        operationType_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required .OperationType operationType = 2;</code>
+       */
+      public Builder clearOperationType() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        operationType_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.OperationType.OTInvokeCommand;
+        
+        return this;
+      }
+
+      // repeated .MetadataEntry parameters = 3;
+      private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> parameters_ =
+        java.util.Collections.emptyList();
+      private void ensureParametersIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          parameters_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry>(parameters_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> getParametersList() {
+        return java.util.Collections.unmodifiableList(parameters_);
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public int getParametersCount() {
+        return parameters_.size();
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getParameters(int index) {
+        return parameters_.get(index);
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder setParameters(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder setParameters(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureParametersIsMutable();
+        parameters_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder addParameters(com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder addParameters(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder addParameters(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureParametersIsMutable();
+        parameters_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder addParameters(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureParametersIsMutable();
+        parameters_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder addAllParameters(
+          java.lang.Iterable<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> values) {
+        ensureParametersIsMutable();
+        super.addAll(values, parameters_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder clearParameters() {
+        parameters_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry parameters = 3;</code>
+       */
+      public Builder removeParameters(int index) {
+        ensureParametersIsMutable();
+        parameters_.remove(index);
+
+        return this;
+      }
+
+      // required .BatchOperationStatus processingStatus = 4;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus processingStatus_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus.BOSUnprocessed;
+      /**
+       * <code>required .BatchOperationStatus processingStatus = 4;</code>
+       */
+      public boolean hasProcessingStatus() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required .BatchOperationStatus processingStatus = 4;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus getProcessingStatus() {
+        return processingStatus_;
+      }
+      /**
+       * <code>required .BatchOperationStatus processingStatus = 4;</code>
+       */
+      public Builder setProcessingStatus(com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000008;
+        processingStatus_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required .BatchOperationStatus processingStatus = 4;</code>
+       */
+      public Builder clearProcessingStatus() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        processingStatus_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchOperationStatus.BOSUnprocessed;
+        
+        return this;
+      }
+
+      // optional int64 processingStartedDate = 5;
+      private long processingStartedDate_ ;
+      /**
+       * <code>optional int64 processingStartedDate = 5;</code>
+       */
+      public boolean hasProcessingStartedDate() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional int64 processingStartedDate = 5;</code>
+       */
+      public long getProcessingStartedDate() {
+        return processingStartedDate_;
+      }
+      /**
+       * <code>optional int64 processingStartedDate = 5;</code>
+       */
+      public Builder setProcessingStartedDate(long value) {
+        bitField0_ |= 0x00000010;
+        processingStartedDate_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional int64 processingStartedDate = 5;</code>
+       */
+      public Builder clearProcessingStartedDate() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        processingStartedDate_ = 0L;
+        
+        return this;
+      }
+
+      // optional int64 processingEndedDate = 6;
+      private long processingEndedDate_ ;
+      /**
+       * <code>optional int64 processingEndedDate = 6;</code>
+       */
+      public boolean hasProcessingEndedDate() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional int64 processingEndedDate = 6;</code>
+       */
+      public long getProcessingEndedDate() {
+        return processingEndedDate_;
+      }
+      /**
+       * <code>optional int64 processingEndedDate = 6;</code>
+       */
+      public Builder setProcessingEndedDate(long value) {
+        bitField0_ |= 0x00000020;
+        processingEndedDate_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional int64 processingEndedDate = 6;</code>
+       */
+      public Builder clearProcessingEndedDate() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        processingEndedDate_ = 0L;
+        
+        return this;
+      }
+
+      // required .EntityData entityData = 7;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public boolean hasEntityData() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData() {
+        return entityData_;
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public Builder setEntityData(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        entityData_ = value;
+
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public Builder setEntityData(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.Builder builderForValue) {
+        entityData_ = builderForValue.build();
+
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public Builder mergeEntityData(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData value) {
+        if (((bitField0_ & 0x00000040) == 0x00000040) &&
+            entityData_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance()) {
+          entityData_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.newBuilder(entityData_).mergeFrom(value).buildPartial();
+        } else {
+          entityData_ = value;
+        }
+
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public Builder clearEntityData() {
+        entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:BatchOperation)
+    }
+
+    static {
+      defaultInstance = new BatchOperation(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:BatchOperation)
+  }
+
+  public interface BatchElementOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string batchOperationToken = 1;
+    /**
+     * <code>required string batchOperationToken = 1;</code>
+     */
+    boolean hasBatchOperationToken();
+    /**
+     * <code>required string batchOperationToken = 1;</code>
+     */
+    java.lang.String getBatchOperationToken();
+    /**
+     * <code>required string batchOperationToken = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getBatchOperationTokenBytes();
+
+    // required string hardwareId = 2;
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    boolean hasHardwareId();
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    java.lang.String getHardwareId();
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getHardwareIdBytes();
+
+    // required int64 index = 3;
+    /**
+     * <code>required int64 index = 3;</code>
+     */
+    boolean hasIndex();
+    /**
+     * <code>required int64 index = 3;</code>
+     */
+    long getIndex();
+
+    // required .ElementProcessingStatus processingStatus = 4;
+    /**
+     * <code>required .ElementProcessingStatus processingStatus = 4;</code>
+     */
+    boolean hasProcessingStatus();
+    /**
+     * <code>required .ElementProcessingStatus processingStatus = 4;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus getProcessingStatus();
+
+    // optional int64 processedDate = 5;
+    /**
+     * <code>optional int64 processedDate = 5;</code>
+     */
+    boolean hasProcessedDate();
+    /**
+     * <code>optional int64 processedDate = 5;</code>
+     */
+    long getProcessedDate();
+
+    // repeated .MetadataEntry metadata = 6;
+    /**
+     * <code>repeated .MetadataEntry metadata = 6;</code>
+     */
+    java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> 
+        getMetadataList();
+    /**
+     * <code>repeated .MetadataEntry metadata = 6;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getMetadata(int index);
+    /**
+     * <code>repeated .MetadataEntry metadata = 6;</code>
+     */
+    int getMetadataCount();
+  }
+  /**
+   * Protobuf type {@code BatchElement}
+   */
+  public static final class BatchElement extends
+      com.google.protobuf.GeneratedMessageLite
+      implements BatchElementOrBuilder {
+    // Use BatchElement.newBuilder() to construct.
+    private BatchElement(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private BatchElement(boolean noInit) {}
+
+    private static final BatchElement defaultInstance;
+    public static BatchElement getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public BatchElement getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private BatchElement(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              batchOperationToken_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              hardwareId_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              index_ = input.readInt64();
+              break;
+            }
+            case 32: {
+              int rawValue = input.readEnum();
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus value = com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus.valueOf(rawValue);
+              if (value != null) {
+                bitField0_ |= 0x00000008;
+                processingStatus_ = value;
+              }
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              processedDate_ = input.readInt64();
+              break;
+            }
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                metadata_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry>();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              metadata_.add(input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          metadata_ = java.util.Collections.unmodifiableList(metadata_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<BatchElement> PARSER =
+        new com.google.protobuf.AbstractParser<BatchElement>() {
+      public BatchElement parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new BatchElement(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<BatchElement> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string batchOperationToken = 1;
+    public static final int BATCHOPERATIONTOKEN_FIELD_NUMBER = 1;
+    private java.lang.Object batchOperationToken_;
+    /**
+     * <code>required string batchOperationToken = 1;</code>
+     */
+    public boolean hasBatchOperationToken() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string batchOperationToken = 1;</code>
+     */
+    public java.lang.String getBatchOperationToken() {
+      java.lang.Object ref = batchOperationToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          batchOperationToken_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string batchOperationToken = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getBatchOperationTokenBytes() {
+      java.lang.Object ref = batchOperationToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        batchOperationToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string hardwareId = 2;
+    public static final int HARDWAREID_FIELD_NUMBER = 2;
+    private java.lang.Object hardwareId_;
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    public boolean hasHardwareId() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    public java.lang.String getHardwareId() {
+      java.lang.Object ref = hardwareId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          hardwareId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getHardwareIdBytes() {
+      java.lang.Object ref = hardwareId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        hardwareId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required int64 index = 3;
+    public static final int INDEX_FIELD_NUMBER = 3;
+    private long index_;
+    /**
+     * <code>required int64 index = 3;</code>
+     */
+    public boolean hasIndex() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required int64 index = 3;</code>
+     */
+    public long getIndex() {
+      return index_;
+    }
+
+    // required .ElementProcessingStatus processingStatus = 4;
+    public static final int PROCESSINGSTATUS_FIELD_NUMBER = 4;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus processingStatus_;
+    /**
+     * <code>required .ElementProcessingStatus processingStatus = 4;</code>
+     */
+    public boolean hasProcessingStatus() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required .ElementProcessingStatus processingStatus = 4;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus getProcessingStatus() {
+      return processingStatus_;
+    }
+
+    // optional int64 processedDate = 5;
+    public static final int PROCESSEDDATE_FIELD_NUMBER = 5;
+    private long processedDate_;
+    /**
+     * <code>optional int64 processedDate = 5;</code>
+     */
+    public boolean hasProcessedDate() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional int64 processedDate = 5;</code>
+     */
+    public long getProcessedDate() {
+      return processedDate_;
+    }
+
+    // repeated .MetadataEntry metadata = 6;
+    public static final int METADATA_FIELD_NUMBER = 6;
+    private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> metadata_;
+    /**
+     * <code>repeated .MetadataEntry metadata = 6;</code>
+     */
+    public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> getMetadataList() {
+      return metadata_;
+    }
+    /**
+     * <code>repeated .MetadataEntry metadata = 6;</code>
+     */
+    public java.util.List<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntryOrBuilder> 
+        getMetadataOrBuilderList() {
+      return metadata_;
+    }
+    /**
+     * <code>repeated .MetadataEntry metadata = 6;</code>
+     */
+    public int getMetadataCount() {
+      return metadata_.size();
+    }
+    /**
+     * <code>repeated .MetadataEntry metadata = 6;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getMetadata(int index) {
+      return metadata_.get(index);
+    }
+    /**
+     * <code>repeated .MetadataEntry metadata = 6;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntryOrBuilder getMetadataOrBuilder(
+        int index) {
+      return metadata_.get(index);
+    }
+
+    private void initFields() {
+      batchOperationToken_ = "";
+      hardwareId_ = "";
+      index_ = 0L;
+      processingStatus_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus.EPSUnprocessed;
+      processedDate_ = 0L;
+      metadata_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasBatchOperationToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasHardwareId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasIndex()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasProcessingStatus()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getMetadataCount(); i++) {
+        if (!getMetadata(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getBatchOperationTokenBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getHardwareIdBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt64(3, index_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeEnum(4, processingStatus_.getNumber());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeInt64(5, processedDate_);
+      }
+      for (int i = 0; i < metadata_.size(); i++) {
+        output.writeMessage(6, metadata_.get(i));
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getBatchOperationTokenBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getHardwareIdBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, index_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(4, processingStatus_.getNumber());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(5, processedDate_);
+      }
+      for (int i = 0; i < metadata_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, metadata_.get(i));
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code BatchElement}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElementOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        batchOperationToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        hardwareId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        index_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        processingStatus_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus.EPSUnprocessed;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        processedDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        metadata_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.batchOperationToken_ = batchOperationToken_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.hardwareId_ = hardwareId_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.index_ = index_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.processingStatus_ = processingStatus_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.processedDate_ = processedDate_;
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          metadata_ = java.util.Collections.unmodifiableList(metadata_);
+          bitField0_ = (bitField0_ & ~0x00000020);
+        }
+        result.metadata_ = metadata_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement.getDefaultInstance()) return this;
+        if (other.hasBatchOperationToken()) {
+          bitField0_ |= 0x00000001;
+          batchOperationToken_ = other.batchOperationToken_;
+          
+        }
+        if (other.hasHardwareId()) {
+          bitField0_ |= 0x00000002;
+          hardwareId_ = other.hardwareId_;
+          
+        }
+        if (other.hasIndex()) {
+          setIndex(other.getIndex());
+        }
+        if (other.hasProcessingStatus()) {
+          setProcessingStatus(other.getProcessingStatus());
+        }
+        if (other.hasProcessedDate()) {
+          setProcessedDate(other.getProcessedDate());
+        }
+        if (!other.metadata_.isEmpty()) {
+          if (metadata_.isEmpty()) {
+            metadata_ = other.metadata_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+          } else {
+            ensureMetadataIsMutable();
+            metadata_.addAll(other.metadata_);
+          }
+          
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasBatchOperationToken()) {
+          
+          return false;
+        }
+        if (!hasHardwareId()) {
+          
+          return false;
+        }
+        if (!hasIndex()) {
+          
+          return false;
+        }
+        if (!hasProcessingStatus()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getMetadataCount(); i++) {
+          if (!getMetadata(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.BatchElement) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string batchOperationToken = 1;
+      private java.lang.Object batchOperationToken_ = "";
+      /**
+       * <code>required string batchOperationToken = 1;</code>
+       */
+      public boolean hasBatchOperationToken() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string batchOperationToken = 1;</code>
+       */
+      public java.lang.String getBatchOperationToken() {
+        java.lang.Object ref = batchOperationToken_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          batchOperationToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string batchOperationToken = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getBatchOperationTokenBytes() {
+        java.lang.Object ref = batchOperationToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          batchOperationToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string batchOperationToken = 1;</code>
+       */
+      public Builder setBatchOperationToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        batchOperationToken_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string batchOperationToken = 1;</code>
+       */
+      public Builder clearBatchOperationToken() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        batchOperationToken_ = getDefaultInstance().getBatchOperationToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string batchOperationToken = 1;</code>
+       */
+      public Builder setBatchOperationTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        batchOperationToken_ = value;
+        
+        return this;
+      }
+
+      // required string hardwareId = 2;
+      private java.lang.Object hardwareId_ = "";
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public boolean hasHardwareId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public java.lang.String getHardwareId() {
+        java.lang.Object ref = hardwareId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          hardwareId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getHardwareIdBytes() {
+        java.lang.Object ref = hardwareId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          hardwareId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public Builder setHardwareId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        hardwareId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public Builder clearHardwareId() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        hardwareId_ = getDefaultInstance().getHardwareId();
+        
+        return this;
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public Builder setHardwareIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        hardwareId_ = value;
+        
+        return this;
+      }
+
+      // required int64 index = 3;
+      private long index_ ;
+      /**
+       * <code>required int64 index = 3;</code>
+       */
+      public boolean hasIndex() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required int64 index = 3;</code>
+       */
+      public long getIndex() {
+        return index_;
+      }
+      /**
+       * <code>required int64 index = 3;</code>
+       */
+      public Builder setIndex(long value) {
+        bitField0_ |= 0x00000004;
+        index_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required int64 index = 3;</code>
+       */
+      public Builder clearIndex() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        index_ = 0L;
+        
+        return this;
+      }
+
+      // required .ElementProcessingStatus processingStatus = 4;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus processingStatus_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus.EPSUnprocessed;
+      /**
+       * <code>required .ElementProcessingStatus processingStatus = 4;</code>
+       */
+      public boolean hasProcessingStatus() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required .ElementProcessingStatus processingStatus = 4;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus getProcessingStatus() {
+        return processingStatus_;
+      }
+      /**
+       * <code>required .ElementProcessingStatus processingStatus = 4;</code>
+       */
+      public Builder setProcessingStatus(com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000008;
+        processingStatus_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required .ElementProcessingStatus processingStatus = 4;</code>
+       */
+      public Builder clearProcessingStatus() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        processingStatus_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.ElementProcessingStatus.EPSUnprocessed;
+        
+        return this;
+      }
+
+      // optional int64 processedDate = 5;
+      private long processedDate_ ;
+      /**
+       * <code>optional int64 processedDate = 5;</code>
+       */
+      public boolean hasProcessedDate() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional int64 processedDate = 5;</code>
+       */
+      public long getProcessedDate() {
+        return processedDate_;
+      }
+      /**
+       * <code>optional int64 processedDate = 5;</code>
+       */
+      public Builder setProcessedDate(long value) {
+        bitField0_ |= 0x00000010;
+        processedDate_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional int64 processedDate = 5;</code>
+       */
+      public Builder clearProcessedDate() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        processedDate_ = 0L;
+        
+        return this;
+      }
+
+      // repeated .MetadataEntry metadata = 6;
+      private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> metadata_ =
+        java.util.Collections.emptyList();
+      private void ensureMetadataIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          metadata_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry>(metadata_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> getMetadataList() {
+        return java.util.Collections.unmodifiableList(metadata_);
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public int getMetadataCount() {
+        return metadata_.size();
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getMetadata(int index) {
+        return metadata_.get(index);
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder setMetadata(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMetadataIsMutable();
+        metadata_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder setMetadata(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureMetadataIsMutable();
+        metadata_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder addMetadata(com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMetadataIsMutable();
+        metadata_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder addMetadata(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMetadataIsMutable();
+        metadata_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder addMetadata(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureMetadataIsMutable();
+        metadata_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder addMetadata(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureMetadataIsMutable();
+        metadata_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder addAllMetadata(
+          java.lang.Iterable<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> values) {
+        ensureMetadataIsMutable();
+        super.addAll(values, metadata_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder clearMetadata() {
+        metadata_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000020);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 6;</code>
+       */
+      public Builder removeMetadata(int index) {
+        ensureMetadataIsMutable();
+        metadata_.remove(index);
+
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:BatchElement)
+    }
+
+    static {
+      defaultInstance = new BatchElement(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:BatchElement)
   }
 
 

@@ -214,3 +214,41 @@ message DeviceGroupElement {
 	required string elementId = 4;
 	repeated string roles = 5;
 }
+
+enum OperationType {
+	OTInvokeCommand = 1;
+	OTUpdateFirmware = 2;
+}
+
+enum BatchOperationStatus {
+	BOSUnprocessed = 1;
+	BOSProcessing = 2;
+	BOSFinishedSuccessfully = 3;
+	BOSFinishedWithErrors = 4;
+}
+
+message BatchOperation {
+	required string token = 1;
+	required OperationType operationType = 2;
+	repeated MetadataEntry parameters = 3;
+	required BatchOperationStatus processingStatus = 4;
+	optional int64 processingStartedDate = 5;
+	optional int64 processingEndedDate = 6;
+	required EntityData entityData = 7;
+}
+
+enum ElementProcessingStatus {
+	EPSUnprocessed = 1;
+	EPSProcessing = 2;
+	EPSFailed = 3;
+	EPSSucceeded = 4;
+}
+
+message BatchElement {
+	required string batchOperationToken = 1;
+	required string hardwareId = 2;
+	required int64 index = 3;
+	required ElementProcessingStatus processingStatus = 4;
+	optional int64 processedDate = 5;
+	repeated MetadataEntry metadata = 6;
+}

@@ -1036,17 +1036,10 @@ public class HBaseDeviceEvent {
 	public static KeyValue getDecodedEventId(String id) throws SiteWhereException {
 		int rowLength =
 				HBaseSite.SITE_IDENTIFIER_LENGTH + 1 + HBaseDeviceAssignment.ASSIGNMENT_IDENTIFIER_LENGTH + 5;
-		int qualLength = 4;
 		try {
 			byte[] decoded = Base58.decode(id);
-			if (decoded.length != (rowLength + qualLength)) {
-				LOGGER.error("Event id not in expected internal format.");
-				return null;
-			}
-			byte[] row = new byte[rowLength];
-			System.arraycopy(decoded, 0, row, 0, rowLength);
-			byte[] qual = new byte[qualLength];
-			System.arraycopy(decoded, rowLength, qual, 0, qualLength);
+			byte[] row = Bytes.head(decoded, rowLength);
+			byte[] qual = Bytes.tail(decoded, decoded.length - rowLength);
 			return new KeyValue(row, ISiteWhereHBase.FAMILY_ID, qual);
 		} catch (AddressFormatException e) {
 			LOGGER.error("Unable to decode event id.", e);

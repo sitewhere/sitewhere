@@ -25,6 +25,8 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.Zone;
+import com.sitewhere.rest.model.device.batch.BatchElement;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
@@ -52,6 +54,11 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
+import com.sitewhere.spi.device.batch.BatchOperationStatus;
+import com.sitewhere.spi.device.batch.ElementProcessingStatus;
+import com.sitewhere.spi.device.batch.IBatchElement;
+import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.device.batch.OperationType;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
@@ -128,6 +135,10 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 			return encodeDeviceGroup((IDeviceGroup) obj);
 		} else if (obj instanceof IDeviceGroupElement) {
 			return encodeDeviceGroupElement((IDeviceGroupElement) obj);
+		} else if (obj instanceof IBatchOperation) {
+			return encodeBatchOperation((IBatchOperation) obj);
+		} else if (obj instanceof IBatchElement) {
+			return encodeBatchElement((IBatchElement) obj);
 		}
 		return super.encode(obj);
 	}
@@ -182,6 +193,12 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		}
 		if (IDeviceGroupElement.class.isAssignableFrom(type)) {
 			return (T) decodeDeviceGroupElement(payload);
+		}
+		if (IBatchOperation.class.isAssignableFrom(type)) {
+			return (T) decodeBatchOperation(payload);
+		}
+		if (IBatchElement.class.isAssignableFrom(type)) {
+			return (T) decodeBatchElement(payload);
 		}
 		return super.decode(payload, type);
 	}
@@ -1064,6 +1081,130 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeBatchOperation(com.sitewhere
+	 * .spi.device.batch.IBatchOperation)
+	 */
+	@Override
+	public byte[] encodeBatchOperation(IBatchOperation operation) throws SiteWhereException {
+		ProtobufMarshaler.BatchOperation.Builder builder = ProtobufMarshaler.BatchOperation.newBuilder();
+		builder.setToken(operation.getToken());
+		builder.setOperationType(marshalOperationType(operation.getOperationType()));
+		for (String key : operation.getParameters().keySet()) {
+			ProtobufMarshaler.MetadataEntry.Builder mbuilder = ProtobufMarshaler.MetadataEntry.newBuilder();
+			mbuilder.setName(key);
+			mbuilder.setValue(operation.getParameters().get(key));
+			builder.addParameters(mbuilder.build());
+		}
+		builder.setProcessingStatus(marshalBatchOperationStatus(operation.getProcessingStatus()));
+		if (operation.getProcessingStartedDate() != null) {
+			builder.setProcessingStartedDate(operation.getProcessingStartedDate().getTime());
+		}
+		if (operation.getProcessingEndedDate() != null) {
+			builder.setProcessingEndedDate(operation.getProcessingEndedDate().getTime());
+		}
+		builder.setEntityData(createEntityData(operation));
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			builder.build().writeTo(out);
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to marshal batch operation.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#decodeBatchOperation(byte[])
+	 */
+	@Override
+	public BatchOperation decodeBatchOperation(byte[] payload) throws SiteWhereException {
+		ByteArrayInputStream stream = new ByteArrayInputStream(payload);
+		try {
+			ProtobufMarshaler.BatchOperation pb = ProtobufMarshaler.BatchOperation.parseFrom(stream);
+			BatchOperation operation = new BatchOperation();
+			operation.setToken(pb.getToken());
+			operation.setOperationType(unmarshalOperationType(pb.getOperationType()));
+			for (ProtobufMarshaler.MetadataEntry entry : pb.getParametersList()) {
+				operation.getParameters().put(entry.getName(), entry.getValue());
+			}
+			operation.setProcessingStatus(unmarshalBatchOperationStatus(pb.getProcessingStatus()));
+			if (pb.hasProcessingStartedDate()) {
+				operation.setProcessingStartedDate(new Date(pb.getProcessingStartedDate()));
+			}
+			if (pb.hasProcessingEndedDate()) {
+				operation.setProcessingEndedDate(new Date(pb.getProcessingEndedDate()));
+			}
+			loadEntityData(pb.getEntityData(), operation);
+			return operation;
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to unmarshal batch operation.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeBatchElement(com.sitewhere
+	 * .spi.device.batch.IBatchElement)
+	 */
+	@Override
+	public byte[] encodeBatchElement(IBatchElement element) throws SiteWhereException {
+		ProtobufMarshaler.BatchElement.Builder builder = ProtobufMarshaler.BatchElement.newBuilder();
+		builder.setBatchOperationToken(element.getBatchOperationToken());
+		builder.setHardwareId(element.getHardwareId());
+		builder.setIndex(element.getIndex());
+		builder.setProcessingStatus(marshalElementProcessingStatus(element.getProcessingStatus()));
+		if (element.getProcessedDate() != null) {
+			builder.setProcessedDate(element.getProcessedDate().getTime());
+		}
+		for (String key : element.getMetadata().keySet()) {
+			ProtobufMarshaler.MetadataEntry.Builder mbuilder = ProtobufMarshaler.MetadataEntry.newBuilder();
+			mbuilder.setName(key);
+			mbuilder.setValue(element.getMetadata(key));
+			builder.addMetadata(mbuilder.build());
+		}
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			builder.build().writeTo(out);
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to marshal batch operation.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#decodeBatchElement(byte[])
+	 */
+	@Override
+	public BatchElement decodeBatchElement(byte[] payload) throws SiteWhereException {
+		ByteArrayInputStream stream = new ByteArrayInputStream(payload);
+		try {
+			ProtobufMarshaler.BatchElement pb = ProtobufMarshaler.BatchElement.parseFrom(stream);
+			BatchElement element = new BatchElement();
+			element.setBatchOperationToken(pb.getBatchOperationToken());
+			element.setHardwareId(pb.getHardwareId());
+			element.setIndex(pb.getIndex());
+			element.setProcessingStatus(unmarshalElementProcessingStatus(pb.getProcessingStatus()));
+			if (pb.hasProcessedDate()) {
+				element.setProcessedDate(new Date(pb.getProcessedDate()));
+			}
+			for (ProtobufMarshaler.MetadataEntry entry : pb.getMetadataList()) {
+				element.addOrReplaceMetadata(entry.getName(), entry.getValue());
+			}
+			return element;
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to unmarshal batch operation.", e);
+		}
+	}
+
 	/**
 	 * Recursively encode an {@link IDeviceElementSchema}.
 	 * 
@@ -1285,6 +1426,140 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		}
 		}
 		throw new RuntimeException("Unknown ProtobufMarshaler.GroupElementType: " + type);
+	}
+
+	/**
+	 * Marshal an {@link OperationType}.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected ProtobufMarshaler.OperationType marshalOperationType(OperationType type) {
+		switch (type) {
+		case InvokeCommand: {
+			return ProtobufMarshaler.OperationType.OTInvokeCommand;
+		}
+		case UpdateFirmware: {
+			return ProtobufMarshaler.OperationType.OTUpdateFirmware;
+		}
+		}
+		throw new RuntimeException("Unknown operation type: " + type);
+	}
+
+	/**
+	 * Unmarshal an {@link OperationType}.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected OperationType unmarshalOperationType(ProtobufMarshaler.OperationType type) {
+		switch (type) {
+		case OTInvokeCommand: {
+			return OperationType.InvokeCommand;
+		}
+		case OTUpdateFirmware: {
+			return OperationType.UpdateFirmware;
+		}
+		}
+		throw new RuntimeException("Unknown ProtobufMarshaler.OperationType type: " + type);
+	}
+
+	/**
+	 * Marshal a {@link BatchOperationStatus}.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected ProtobufMarshaler.BatchOperationStatus marshalBatchOperationStatus(BatchOperationStatus type) {
+		switch (type) {
+		case FinishedSuccessfully: {
+			return ProtobufMarshaler.BatchOperationStatus.BOSFinishedSuccessfully;
+		}
+		case FinishedWithErrors: {
+			return ProtobufMarshaler.BatchOperationStatus.BOSFinishedWithErrors;
+		}
+		case Processing: {
+			return ProtobufMarshaler.BatchOperationStatus.BOSProcessing;
+		}
+		case Unprocessed: {
+			return ProtobufMarshaler.BatchOperationStatus.BOSUnprocessed;
+		}
+		}
+		throw new RuntimeException("Unknown batch operation status: " + type);
+	}
+
+	/**
+	 * Unmarshal a {@link BatchOperationStatus}.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected BatchOperationStatus unmarshalBatchOperationStatus(ProtobufMarshaler.BatchOperationStatus type) {
+		switch (type) {
+		case BOSFinishedSuccessfully: {
+			return BatchOperationStatus.FinishedSuccessfully;
+		}
+		case BOSFinishedWithErrors: {
+			return BatchOperationStatus.FinishedWithErrors;
+		}
+		case BOSProcessing: {
+			return BatchOperationStatus.Processing;
+		}
+		case BOSUnprocessed: {
+			return BatchOperationStatus.Unprocessed;
+		}
+		}
+		throw new RuntimeException("Unknown ProtobufMarshaler.BatchOperationStatus: " + type);
+	}
+
+	/**
+	 * Marshal an {@link ElementProcessingStatus}.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected ProtobufMarshaler.ElementProcessingStatus marshalElementProcessingStatus(
+			ElementProcessingStatus type) {
+		switch (type) {
+		case Failed: {
+			return ProtobufMarshaler.ElementProcessingStatus.EPSFailed;
+		}
+		case Processing: {
+			return ProtobufMarshaler.ElementProcessingStatus.EPSProcessing;
+		}
+		case Succeeded: {
+			return ProtobufMarshaler.ElementProcessingStatus.EPSSucceeded;
+		}
+		case Unprocessed: {
+			return ProtobufMarshaler.ElementProcessingStatus.EPSUnprocessed;
+		}
+		}
+		throw new RuntimeException("Unknown ElementProcessingStatus: " + type);
+	}
+
+	/**
+	 * Unmarshal an {@link ElementProcessingStatus}.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	protected ElementProcessingStatus unmarshalElementProcessingStatus(
+			ProtobufMarshaler.ElementProcessingStatus type) {
+		switch (type) {
+		case EPSFailed: {
+			return ElementProcessingStatus.Failed;
+		}
+		case EPSProcessing: {
+			return ElementProcessingStatus.Processing;
+		}
+		case EPSSucceeded: {
+			return ElementProcessingStatus.Succeeded;
+		}
+		case EPSUnprocessed: {
+			return ElementProcessingStatus.Unprocessed;
+		}
+		}
+		throw new RuntimeException("Unknown ProtobufMarshaler.ElementProcessingStatus: " + type);
 	}
 
 	/**
