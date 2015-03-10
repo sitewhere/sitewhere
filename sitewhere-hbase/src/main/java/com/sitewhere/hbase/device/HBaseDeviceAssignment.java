@@ -255,14 +255,12 @@ public class HBaseDeviceAssignment {
 			updated.setState(DeviceAssignmentState.copy(state));
 
 			byte[] rowkey = IdManager.getInstance().getAssignmentKeys().getValue(token);
-			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 			byte[] updatedState = context.getPayloadMarshaler().encodeDeviceAssignmentState(state);
 
 			HTableInterface sites = null;
 			try {
 				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				Put put = new Put(rowkey);
-				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE, updatedState);
 				sites.put(put);
 

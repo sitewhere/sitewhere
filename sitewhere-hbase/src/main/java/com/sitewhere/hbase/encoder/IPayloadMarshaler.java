@@ -22,6 +22,7 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
@@ -41,6 +42,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -331,6 +333,24 @@ public interface IPayloadMarshaler {
 	 * @throws SiteWhereException
 	 */
 	public BatchElement decodeBatchElement(byte[] payload) throws SiteWhereException;
+
+	/**
+	 * Encode an {@link IDeviceGroup}.
+	 * 
+	 * @param group
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] encodeDeviceGroup(IDeviceGroup group) throws SiteWhereException;
+
+	/**
+	 * Decode a {@link DeviceGroup} from the binary payload.
+	 * 
+	 * @param payload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceGroup decodeDeviceGroup(byte[] payload) throws SiteWhereException;
 
 	/**
 	 * Encode an {@link IDeviceGroupElement}.

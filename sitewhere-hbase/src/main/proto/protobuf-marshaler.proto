@@ -26,6 +26,23 @@ message Site {
 	required EntityData entityData = 7;
 }
 
+message Location {
+	required double latitude = 1;
+	required double longitude = 2;
+	optional double elevation = 3;
+}
+
+message Zone {
+	required string token = 1;
+	required string siteToken = 2;
+	required string name = 3;
+	repeated Location coordinates = 4;
+	required string borderColor = 5;
+	required string fillColor = 6;
+	required double opacity = 7;
+	required EntityData entityData = 8;
+}
+
 message DeviceSlot {
 	required string name = 1;
 	required string path = 2;
@@ -85,12 +102,27 @@ message Device {
 	required EntityData entityData = 8;
 }
 
+enum DeviceEventType {
+	DEMeasurements = 1; 
+	DEMeasurement = 2; 
+	DELocation = 3; 
+	DEAlert = 4; 
+	DECommandInvocation = 5; 
+	DECommandResponse = 6; 
+	DEStateChange = 7; 
+} 
+
+enum DeviceAssignmentType {
+	DAUnassociated = 1; 
+	DAAssociated = 2; 
+}
+
 message DeviceEventData {
 	required string id = 1;
-	required string eventType = 2;
+	required DeviceEventType eventType = 2;
 	required string siteToken = 3;
 	required string deviceAssignmentToken = 4;
-	required string assignmentType = 5;
+	required DeviceAssignmentType assignmentType = 5;
 	required string assetModuleId = 6;
 	required string assetId = 7;
 	required int64 eventDate = 8;
@@ -124,6 +156,24 @@ message DeviceAlert {
 	required DeviceEventData eventData = 5;
 }
 
+message DeviceCommandInvocation {
+	required string initiator = 1;
+	optional string initiatorId = 2;
+	required string target = 3;
+	optional string targetId = 4;
+	required string commandToken = 5;
+	repeated MetadataEntry parameterValues = 6;
+	required string status = 7;
+	required DeviceEventData eventData = 8;
+}
+
+message DeviceCommandResponse {
+	required string originatingEventId = 1;
+	optional string responseEventId = 2;
+	optional string response = 3;
+	required DeviceEventData eventData = 4;
+}
+
 message DeviceAssignmentState {
 	optional int64 lastInteractionDate = 1;
 	optional DeviceLocation lastLocation = 2;
@@ -135,11 +185,32 @@ message DeviceAssignment {
 	required string token = 1;
 	required string deviceHardwareId = 2;
 	required string siteToken = 3;
-	required string assignmentType = 4;
+	required DeviceAssignmentType assignmentType = 4;
 	required string assetModuleId = 5;
 	required string assetId = 6;
 	required string status = 7;
 	optional int64 activeDate = 8;
 	optional int64 releasedDate = 9;
 	required EntityData entityData = 10;
+}
+
+message DeviceGroup {
+	required string token = 1;
+	required string name = 2;
+	required string description = 3;
+	repeated string roles = 4;
+	required EntityData entityData = 5;
+}
+
+enum GroupElementType {
+	GEDevice = 1; 
+	GEGroup = 2; 
+}
+
+message DeviceGroupElement {
+	required string groupToken = 1;
+	required int64 index = 2;
+	required GroupElementType type = 3;
+	required string elementId = 4;
+	repeated string roles = 5;
 }
