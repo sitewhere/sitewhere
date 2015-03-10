@@ -3,6 +3,7 @@
 
 package com.sitewhere.hbase.encoder;
 
+@SuppressWarnings({"rawtypes", "unused"})
 public final class ProtobufMarshaler {
   private ProtobufMarshaler() {}
   public static void registerAllExtensions(
@@ -48,7 +49,7 @@ public final class ProtobufMarshaler {
       com.google.protobuf.GeneratedMessageLite
       implements MetadataEntryOrBuilder {
     // Use MetadataEntry.newBuilder() to construct.
-    private MetadataEntry(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+	private MetadataEntry(com.google.protobuf.GeneratedMessageLite.Builder builder) {
       super(builder);
 
     }
@@ -5034,7 +5035,7 @@ public final class ProtobufMarshaler {
 
       public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementSchema buildPartial() {
         com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementSchema result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementSchema(this);
-        int from_bitField0_ = bitField0_;
+ 		int from_bitField0_ = bitField0_;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           slots_ = java.util.Collections.unmodifiableList(slots_);
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -6701,6 +6702,11596 @@ public final class ProtobufMarshaler {
     }
 
     // @@protoc_insertion_point(class_scope:DeviceSpecification)
+  }
+
+  public interface CommandParameterOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string name = 1;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    boolean hasName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    // required string type = 2;
+    /**
+     * <code>required string type = 2;</code>
+     */
+    boolean hasType();
+    /**
+     * <code>required string type = 2;</code>
+     */
+    java.lang.String getType();
+    /**
+     * <code>required string type = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getTypeBytes();
+
+    // required bool required = 3;
+    /**
+     * <code>required bool required = 3;</code>
+     */
+    boolean hasRequired();
+    /**
+     * <code>required bool required = 3;</code>
+     */
+    boolean getRequired();
+  }
+  /**
+   * Protobuf type {@code CommandParameter}
+   */
+  public static final class CommandParameter extends
+      com.google.protobuf.GeneratedMessageLite
+      implements CommandParameterOrBuilder {
+    // Use CommandParameter.newBuilder() to construct.
+    private CommandParameter(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private CommandParameter(boolean noInit) {}
+
+    private static final CommandParameter defaultInstance;
+    public static CommandParameter getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public CommandParameter getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private CommandParameter(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              name_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              type_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              required_ = input.readBool();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<CommandParameter> PARSER =
+        new com.google.protobuf.AbstractParser<CommandParameter>() {
+      public CommandParameter parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new CommandParameter(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CommandParameter> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string name = 1;
+    public static final int NAME_FIELD_NUMBER = 1;
+    private java.lang.Object name_;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string type = 2;
+    public static final int TYPE_FIELD_NUMBER = 2;
+    private java.lang.Object type_;
+    /**
+     * <code>required string type = 2;</code>
+     */
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string type = 2;</code>
+     */
+    public java.lang.String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          type_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string type = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required bool required = 3;
+    public static final int REQUIRED_FIELD_NUMBER = 3;
+    private boolean required_;
+    /**
+     * <code>required bool required = 3;</code>
+     */
+    public boolean hasRequired() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required bool required = 3;</code>
+     */
+    public boolean getRequired() {
+      return required_;
+    }
+
+    private void initFields() {
+      name_ = "";
+      type_ = "";
+      required_ = false;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasRequired()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getTypeBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBool(3, required_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getTypeBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, required_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code CommandParameter}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameterOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        required_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.type_ = type_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.required_ = required_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter.getDefaultInstance()) return this;
+        if (other.hasName()) {
+          bitField0_ |= 0x00000001;
+          name_ = other.name_;
+          
+        }
+        if (other.hasType()) {
+          bitField0_ |= 0x00000002;
+          type_ = other.type_;
+          
+        }
+        if (other.hasRequired()) {
+          setRequired(other.getRequired());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasName()) {
+          
+          return false;
+        }
+        if (!hasType()) {
+          
+          return false;
+        }
+        if (!hasRequired()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string name = 1;
+      private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder clearName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        name_ = getDefaultInstance().getName();
+        
+        return this;
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        
+        return this;
+      }
+
+      // required string type = 2;
+      private java.lang.Object type_ = "";
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public java.lang.String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public Builder setType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        type_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        type_ = getDefaultInstance().getType();
+        
+        return this;
+      }
+      /**
+       * <code>required string type = 2;</code>
+       */
+      public Builder setTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        type_ = value;
+        
+        return this;
+      }
+
+      // required bool required = 3;
+      private boolean required_ ;
+      /**
+       * <code>required bool required = 3;</code>
+       */
+      public boolean hasRequired() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required bool required = 3;</code>
+       */
+      public boolean getRequired() {
+        return required_;
+      }
+      /**
+       * <code>required bool required = 3;</code>
+       */
+      public Builder setRequired(boolean value) {
+        bitField0_ |= 0x00000004;
+        required_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required bool required = 3;</code>
+       */
+      public Builder clearRequired() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        required_ = false;
+        
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:CommandParameter)
+    }
+
+    static {
+      defaultInstance = new CommandParameter(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:CommandParameter)
+  }
+
+  public interface DeviceCommandOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string token = 1;
+    /**
+     * <code>required string token = 1;</code>
+     */
+    boolean hasToken();
+    /**
+     * <code>required string token = 1;</code>
+     */
+    java.lang.String getToken();
+    /**
+     * <code>required string token = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getTokenBytes();
+
+    // required string specificationToken = 2;
+    /**
+     * <code>required string specificationToken = 2;</code>
+     */
+    boolean hasSpecificationToken();
+    /**
+     * <code>required string specificationToken = 2;</code>
+     */
+    java.lang.String getSpecificationToken();
+    /**
+     * <code>required string specificationToken = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getSpecificationTokenBytes();
+
+    // required string namespace = 3;
+    /**
+     * <code>required string namespace = 3;</code>
+     */
+    boolean hasNamespace();
+    /**
+     * <code>required string namespace = 3;</code>
+     */
+    java.lang.String getNamespace();
+    /**
+     * <code>required string namespace = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getNamespaceBytes();
+
+    // required string name = 4;
+    /**
+     * <code>required string name = 4;</code>
+     */
+    boolean hasName();
+    /**
+     * <code>required string name = 4;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    // required string description = 5;
+    /**
+     * <code>required string description = 5;</code>
+     */
+    boolean hasDescription();
+    /**
+     * <code>required string description = 5;</code>
+     */
+    java.lang.String getDescription();
+    /**
+     * <code>required string description = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getDescriptionBytes();
+
+    // repeated .CommandParameter parameters = 6;
+    /**
+     * <code>repeated .CommandParameter parameters = 6;</code>
+     */
+    java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter> 
+        getParametersList();
+    /**
+     * <code>repeated .CommandParameter parameters = 6;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter getParameters(int index);
+    /**
+     * <code>repeated .CommandParameter parameters = 6;</code>
+     */
+    int getParametersCount();
+
+    // required .EntityData entityData = 7;
+    /**
+     * <code>required .EntityData entityData = 7;</code>
+     */
+    boolean hasEntityData();
+    /**
+     * <code>required .EntityData entityData = 7;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData();
+  }
+  /**
+   * Protobuf type {@code DeviceCommand}
+   */
+  public static final class DeviceCommand extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceCommandOrBuilder {
+    // Use DeviceCommand.newBuilder() to construct.
+    private DeviceCommand(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceCommand(boolean noInit) {}
+
+    private static final DeviceCommand defaultInstance;
+    public static DeviceCommand getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceCommand getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceCommand(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              token_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              specificationToken_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              namespace_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              name_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              description_ = input.readBytes();
+              break;
+            }
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                parameters_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter>();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              parameters_.add(input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter.PARSER, extensionRegistry));
+              break;
+            }
+            case 58: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000020) == 0x00000020)) {
+                subBuilder = entityData_.toBuilder();
+              }
+              entityData_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(entityData_);
+                entityData_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000020;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          parameters_ = java.util.Collections.unmodifiableList(parameters_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceCommand> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceCommand>() {
+      public DeviceCommand parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceCommand(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceCommand> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string token = 1;
+    public static final int TOKEN_FIELD_NUMBER = 1;
+    private java.lang.Object token_;
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public boolean hasToken() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public java.lang.String getToken() {
+      java.lang.Object ref = token_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          token_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTokenBytes() {
+      java.lang.Object ref = token_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        token_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string specificationToken = 2;
+    public static final int SPECIFICATIONTOKEN_FIELD_NUMBER = 2;
+    private java.lang.Object specificationToken_;
+    /**
+     * <code>required string specificationToken = 2;</code>
+     */
+    public boolean hasSpecificationToken() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string specificationToken = 2;</code>
+     */
+    public java.lang.String getSpecificationToken() {
+      java.lang.Object ref = specificationToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          specificationToken_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string specificationToken = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSpecificationTokenBytes() {
+      java.lang.Object ref = specificationToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        specificationToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string namespace = 3;
+    public static final int NAMESPACE_FIELD_NUMBER = 3;
+    private java.lang.Object namespace_;
+    /**
+     * <code>required string namespace = 3;</code>
+     */
+    public boolean hasNamespace() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required string namespace = 3;</code>
+     */
+    public java.lang.String getNamespace() {
+      java.lang.Object ref = namespace_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          namespace_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string namespace = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNamespaceBytes() {
+      java.lang.Object ref = namespace_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        namespace_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string name = 4;
+    public static final int NAME_FIELD_NUMBER = 4;
+    private java.lang.Object name_;
+    /**
+     * <code>required string name = 4;</code>
+     */
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required string name = 4;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string name = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string description = 5;
+    public static final int DESCRIPTION_FIELD_NUMBER = 5;
+    private java.lang.Object description_;
+    /**
+     * <code>required string description = 5;</code>
+     */
+    public boolean hasDescription() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required string description = 5;</code>
+     */
+    public java.lang.String getDescription() {
+      java.lang.Object ref = description_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          description_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string description = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDescriptionBytes() {
+      java.lang.Object ref = description_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        description_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // repeated .CommandParameter parameters = 6;
+    public static final int PARAMETERS_FIELD_NUMBER = 6;
+    private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter> parameters_;
+    /**
+     * <code>repeated .CommandParameter parameters = 6;</code>
+     */
+    public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter> getParametersList() {
+      return parameters_;
+    }
+    /**
+     * <code>repeated .CommandParameter parameters = 6;</code>
+     */
+    public java.util.List<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameterOrBuilder> 
+        getParametersOrBuilderList() {
+      return parameters_;
+    }
+    /**
+     * <code>repeated .CommandParameter parameters = 6;</code>
+     */
+    public int getParametersCount() {
+      return parameters_.size();
+    }
+    /**
+     * <code>repeated .CommandParameter parameters = 6;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter getParameters(int index) {
+      return parameters_.get(index);
+    }
+    /**
+     * <code>repeated .CommandParameter parameters = 6;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameterOrBuilder getParametersOrBuilder(
+        int index) {
+      return parameters_.get(index);
+    }
+
+    // required .EntityData entityData = 7;
+    public static final int ENTITYDATA_FIELD_NUMBER = 7;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData entityData_;
+    /**
+     * <code>required .EntityData entityData = 7;</code>
+     */
+    public boolean hasEntityData() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>required .EntityData entityData = 7;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData() {
+      return entityData_;
+    }
+
+    private void initFields() {
+      token_ = "";
+      specificationToken_ = "";
+      namespace_ = "";
+      name_ = "";
+      description_ = "";
+      parameters_ = java.util.Collections.emptyList();
+      entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSpecificationToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasNamespace()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasDescription()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEntityData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getParametersCount(); i++) {
+        if (!getParameters(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (!getEntityData().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getTokenBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getSpecificationTokenBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getNamespaceBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getDescriptionBytes());
+      }
+      for (int i = 0; i < parameters_.size(); i++) {
+        output.writeMessage(6, parameters_.get(i));
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeMessage(7, entityData_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getTokenBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getSpecificationTokenBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getNamespaceBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getDescriptionBytes());
+      }
+      for (int i = 0; i < parameters_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, parameters_.get(i));
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, entityData_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceCommand}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommandOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        token_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        specificationToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        namespace_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        description_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        parameters_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.token_ = token_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.specificationToken_ = specificationToken_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.namespace_ = namespace_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.description_ = description_;
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          parameters_ = java.util.Collections.unmodifiableList(parameters_);
+          bitField0_ = (bitField0_ & ~0x00000020);
+        }
+        result.parameters_ = parameters_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.entityData_ = entityData_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand.getDefaultInstance()) return this;
+        if (other.hasToken()) {
+          bitField0_ |= 0x00000001;
+          token_ = other.token_;
+          
+        }
+        if (other.hasSpecificationToken()) {
+          bitField0_ |= 0x00000002;
+          specificationToken_ = other.specificationToken_;
+          
+        }
+        if (other.hasNamespace()) {
+          bitField0_ |= 0x00000004;
+          namespace_ = other.namespace_;
+          
+        }
+        if (other.hasName()) {
+          bitField0_ |= 0x00000008;
+          name_ = other.name_;
+          
+        }
+        if (other.hasDescription()) {
+          bitField0_ |= 0x00000010;
+          description_ = other.description_;
+          
+        }
+        if (!other.parameters_.isEmpty()) {
+          if (parameters_.isEmpty()) {
+            parameters_ = other.parameters_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+          } else {
+            ensureParametersIsMutable();
+            parameters_.addAll(other.parameters_);
+          }
+          
+        }
+        if (other.hasEntityData()) {
+          mergeEntityData(other.getEntityData());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasToken()) {
+          
+          return false;
+        }
+        if (!hasSpecificationToken()) {
+          
+          return false;
+        }
+        if (!hasNamespace()) {
+          
+          return false;
+        }
+        if (!hasName()) {
+          
+          return false;
+        }
+        if (!hasDescription()) {
+          
+          return false;
+        }
+        if (!hasEntityData()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getParametersCount(); i++) {
+          if (!getParameters(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (!getEntityData().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceCommand) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string token = 1;
+      private java.lang.Object token_ = "";
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public boolean hasToken() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public java.lang.String getToken() {
+        java.lang.Object ref = token_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          token_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTokenBytes() {
+        java.lang.Object ref = token_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          token_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder setToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        token_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder clearToken() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        token_ = getDefaultInstance().getToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder setTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        token_ = value;
+        
+        return this;
+      }
+
+      // required string specificationToken = 2;
+      private java.lang.Object specificationToken_ = "";
+      /**
+       * <code>required string specificationToken = 2;</code>
+       */
+      public boolean hasSpecificationToken() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string specificationToken = 2;</code>
+       */
+      public java.lang.String getSpecificationToken() {
+        java.lang.Object ref = specificationToken_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          specificationToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string specificationToken = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSpecificationTokenBytes() {
+        java.lang.Object ref = specificationToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          specificationToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string specificationToken = 2;</code>
+       */
+      public Builder setSpecificationToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        specificationToken_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string specificationToken = 2;</code>
+       */
+      public Builder clearSpecificationToken() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        specificationToken_ = getDefaultInstance().getSpecificationToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string specificationToken = 2;</code>
+       */
+      public Builder setSpecificationTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        specificationToken_ = value;
+        
+        return this;
+      }
+
+      // required string namespace = 3;
+      private java.lang.Object namespace_ = "";
+      /**
+       * <code>required string namespace = 3;</code>
+       */
+      public boolean hasNamespace() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required string namespace = 3;</code>
+       */
+      public java.lang.String getNamespace() {
+        java.lang.Object ref = namespace_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          namespace_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string namespace = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNamespaceBytes() {
+        java.lang.Object ref = namespace_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          namespace_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string namespace = 3;</code>
+       */
+      public Builder setNamespace(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        namespace_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string namespace = 3;</code>
+       */
+      public Builder clearNamespace() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        namespace_ = getDefaultInstance().getNamespace();
+        
+        return this;
+      }
+      /**
+       * <code>required string namespace = 3;</code>
+       */
+      public Builder setNamespaceBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        namespace_ = value;
+        
+        return this;
+      }
+
+      // required string name = 4;
+      private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        name_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public Builder clearName() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        name_ = getDefaultInstance().getName();
+        
+        return this;
+      }
+      /**
+       * <code>required string name = 4;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        name_ = value;
+        
+        return this;
+      }
+
+      // required string description = 5;
+      private java.lang.Object description_ = "";
+      /**
+       * <code>required string description = 5;</code>
+       */
+      public boolean hasDescription() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required string description = 5;</code>
+       */
+      public java.lang.String getDescription() {
+        java.lang.Object ref = description_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          description_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string description = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDescriptionBytes() {
+        java.lang.Object ref = description_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          description_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string description = 5;</code>
+       */
+      public Builder setDescription(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        description_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string description = 5;</code>
+       */
+      public Builder clearDescription() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        description_ = getDefaultInstance().getDescription();
+        
+        return this;
+      }
+      /**
+       * <code>required string description = 5;</code>
+       */
+      public Builder setDescriptionBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        description_ = value;
+        
+        return this;
+      }
+
+      // repeated .CommandParameter parameters = 6;
+      private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter> parameters_ =
+        java.util.Collections.emptyList();
+      private void ensureParametersIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          parameters_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter>(parameters_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter> getParametersList() {
+        return java.util.Collections.unmodifiableList(parameters_);
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public int getParametersCount() {
+        return parameters_.size();
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter getParameters(int index) {
+        return parameters_.get(index);
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder setParameters(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder setParameters(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter.Builder builderForValue) {
+        ensureParametersIsMutable();
+        parameters_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder addParameters(com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder addParameters(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureParametersIsMutable();
+        parameters_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder addParameters(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter.Builder builderForValue) {
+        ensureParametersIsMutable();
+        parameters_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder addParameters(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter.Builder builderForValue) {
+        ensureParametersIsMutable();
+        parameters_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder addAllParameters(
+          java.lang.Iterable<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.CommandParameter> values) {
+        ensureParametersIsMutable();
+        super.addAll(values, parameters_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder clearParameters() {
+        parameters_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000020);
+
+        return this;
+      }
+      /**
+       * <code>repeated .CommandParameter parameters = 6;</code>
+       */
+      public Builder removeParameters(int index) {
+        ensureParametersIsMutable();
+        parameters_.remove(index);
+
+        return this;
+      }
+
+      // required .EntityData entityData = 7;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public boolean hasEntityData() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData() {
+        return entityData_;
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public Builder setEntityData(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        entityData_ = value;
+
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public Builder setEntityData(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.Builder builderForValue) {
+        entityData_ = builderForValue.build();
+
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public Builder mergeEntityData(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData value) {
+        if (((bitField0_ & 0x00000040) == 0x00000040) &&
+            entityData_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance()) {
+          entityData_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.newBuilder(entityData_).mergeFrom(value).buildPartial();
+        } else {
+          entityData_ = value;
+        }
+
+        bitField0_ |= 0x00000040;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 7;</code>
+       */
+      public Builder clearEntityData() {
+        entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000040);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceCommand)
+    }
+
+    static {
+      defaultInstance = new DeviceCommand(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceCommand)
+  }
+
+  public interface DeviceElementMappingOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string deviceElementSchemaPath = 1;
+    /**
+     * <code>required string deviceElementSchemaPath = 1;</code>
+     */
+    boolean hasDeviceElementSchemaPath();
+    /**
+     * <code>required string deviceElementSchemaPath = 1;</code>
+     */
+    java.lang.String getDeviceElementSchemaPath();
+    /**
+     * <code>required string deviceElementSchemaPath = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getDeviceElementSchemaPathBytes();
+
+    // required string hardwareId = 2;
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    boolean hasHardwareId();
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    java.lang.String getHardwareId();
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getHardwareIdBytes();
+  }
+  /**
+   * Protobuf type {@code DeviceElementMapping}
+   */
+  public static final class DeviceElementMapping extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceElementMappingOrBuilder {
+    // Use DeviceElementMapping.newBuilder() to construct.
+    private DeviceElementMapping(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceElementMapping(boolean noInit) {}
+
+    private static final DeviceElementMapping defaultInstance;
+    public static DeviceElementMapping getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceElementMapping getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceElementMapping(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              deviceElementSchemaPath_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              hardwareId_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceElementMapping> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceElementMapping>() {
+      public DeviceElementMapping parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceElementMapping(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceElementMapping> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string deviceElementSchemaPath = 1;
+    public static final int DEVICEELEMENTSCHEMAPATH_FIELD_NUMBER = 1;
+    private java.lang.Object deviceElementSchemaPath_;
+    /**
+     * <code>required string deviceElementSchemaPath = 1;</code>
+     */
+    public boolean hasDeviceElementSchemaPath() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string deviceElementSchemaPath = 1;</code>
+     */
+    public java.lang.String getDeviceElementSchemaPath() {
+      java.lang.Object ref = deviceElementSchemaPath_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          deviceElementSchemaPath_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string deviceElementSchemaPath = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDeviceElementSchemaPathBytes() {
+      java.lang.Object ref = deviceElementSchemaPath_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        deviceElementSchemaPath_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string hardwareId = 2;
+    public static final int HARDWAREID_FIELD_NUMBER = 2;
+    private java.lang.Object hardwareId_;
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    public boolean hasHardwareId() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    public java.lang.String getHardwareId() {
+      java.lang.Object ref = hardwareId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          hardwareId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string hardwareId = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getHardwareIdBytes() {
+      java.lang.Object ref = hardwareId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        hardwareId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      deviceElementSchemaPath_ = "";
+      hardwareId_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasDeviceElementSchemaPath()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasHardwareId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getDeviceElementSchemaPathBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getHardwareIdBytes());
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getDeviceElementSchemaPathBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getHardwareIdBytes());
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceElementMapping}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMappingOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        deviceElementSchemaPath_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        hardwareId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.deviceElementSchemaPath_ = deviceElementSchemaPath_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.hardwareId_ = hardwareId_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping.getDefaultInstance()) return this;
+        if (other.hasDeviceElementSchemaPath()) {
+          bitField0_ |= 0x00000001;
+          deviceElementSchemaPath_ = other.deviceElementSchemaPath_;
+          
+        }
+        if (other.hasHardwareId()) {
+          bitField0_ |= 0x00000002;
+          hardwareId_ = other.hardwareId_;
+          
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasDeviceElementSchemaPath()) {
+          
+          return false;
+        }
+        if (!hasHardwareId()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string deviceElementSchemaPath = 1;
+      private java.lang.Object deviceElementSchemaPath_ = "";
+      /**
+       * <code>required string deviceElementSchemaPath = 1;</code>
+       */
+      public boolean hasDeviceElementSchemaPath() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string deviceElementSchemaPath = 1;</code>
+       */
+      public java.lang.String getDeviceElementSchemaPath() {
+        java.lang.Object ref = deviceElementSchemaPath_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          deviceElementSchemaPath_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string deviceElementSchemaPath = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDeviceElementSchemaPathBytes() {
+        java.lang.Object ref = deviceElementSchemaPath_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          deviceElementSchemaPath_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string deviceElementSchemaPath = 1;</code>
+       */
+      public Builder setDeviceElementSchemaPath(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        deviceElementSchemaPath_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string deviceElementSchemaPath = 1;</code>
+       */
+      public Builder clearDeviceElementSchemaPath() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        deviceElementSchemaPath_ = getDefaultInstance().getDeviceElementSchemaPath();
+        
+        return this;
+      }
+      /**
+       * <code>required string deviceElementSchemaPath = 1;</code>
+       */
+      public Builder setDeviceElementSchemaPathBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        deviceElementSchemaPath_ = value;
+        
+        return this;
+      }
+
+      // required string hardwareId = 2;
+      private java.lang.Object hardwareId_ = "";
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public boolean hasHardwareId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public java.lang.String getHardwareId() {
+        java.lang.Object ref = hardwareId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          hardwareId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getHardwareIdBytes() {
+        java.lang.Object ref = hardwareId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          hardwareId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public Builder setHardwareId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        hardwareId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public Builder clearHardwareId() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        hardwareId_ = getDefaultInstance().getHardwareId();
+        
+        return this;
+      }
+      /**
+       * <code>required string hardwareId = 2;</code>
+       */
+      public Builder setHardwareIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        hardwareId_ = value;
+        
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceElementMapping)
+    }
+
+    static {
+      defaultInstance = new DeviceElementMapping(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceElementMapping)
+  }
+
+  public interface DeviceOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string hardwareId = 1;
+    /**
+     * <code>required string hardwareId = 1;</code>
+     */
+    boolean hasHardwareId();
+    /**
+     * <code>required string hardwareId = 1;</code>
+     */
+    java.lang.String getHardwareId();
+    /**
+     * <code>required string hardwareId = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getHardwareIdBytes();
+
+    // required string siteToken = 2;
+    /**
+     * <code>required string siteToken = 2;</code>
+     */
+    boolean hasSiteToken();
+    /**
+     * <code>required string siteToken = 2;</code>
+     */
+    java.lang.String getSiteToken();
+    /**
+     * <code>required string siteToken = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getSiteTokenBytes();
+
+    // required string specificationToken = 3;
+    /**
+     * <code>required string specificationToken = 3;</code>
+     */
+    boolean hasSpecificationToken();
+    /**
+     * <code>required string specificationToken = 3;</code>
+     */
+    java.lang.String getSpecificationToken();
+    /**
+     * <code>required string specificationToken = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getSpecificationTokenBytes();
+
+    // optional string parentHardwareId = 4;
+    /**
+     * <code>optional string parentHardwareId = 4;</code>
+     */
+    boolean hasParentHardwareId();
+    /**
+     * <code>optional string parentHardwareId = 4;</code>
+     */
+    java.lang.String getParentHardwareId();
+    /**
+     * <code>optional string parentHardwareId = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getParentHardwareIdBytes();
+
+    // repeated .DeviceElementMapping deviceElementMappings = 5;
+    /**
+     * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+     */
+    java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping> 
+        getDeviceElementMappingsList();
+    /**
+     * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping getDeviceElementMappings(int index);
+    /**
+     * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+     */
+    int getDeviceElementMappingsCount();
+
+    // optional string comments = 6;
+    /**
+     * <code>optional string comments = 6;</code>
+     */
+    boolean hasComments();
+    /**
+     * <code>optional string comments = 6;</code>
+     */
+    java.lang.String getComments();
+    /**
+     * <code>optional string comments = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getCommentsBytes();
+
+    // optional string assignmentToken = 7;
+    /**
+     * <code>optional string assignmentToken = 7;</code>
+     */
+    boolean hasAssignmentToken();
+    /**
+     * <code>optional string assignmentToken = 7;</code>
+     */
+    java.lang.String getAssignmentToken();
+    /**
+     * <code>optional string assignmentToken = 7;</code>
+     */
+    com.google.protobuf.ByteString
+        getAssignmentTokenBytes();
+
+    // required .EntityData entityData = 8;
+    /**
+     * <code>required .EntityData entityData = 8;</code>
+     */
+    boolean hasEntityData();
+    /**
+     * <code>required .EntityData entityData = 8;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData();
+  }
+  /**
+   * Protobuf type {@code Device}
+   */
+  public static final class Device extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceOrBuilder {
+    // Use Device.newBuilder() to construct.
+    private Device(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private Device(boolean noInit) {}
+
+    private static final Device defaultInstance;
+    public static Device getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public Device getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private Device(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              hardwareId_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              siteToken_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              specificationToken_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              parentHardwareId_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                deviceElementMappings_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              deviceElementMappings_.add(input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping.PARSER, extensionRegistry));
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000010;
+              comments_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000020;
+              assignmentToken_ = input.readBytes();
+              break;
+            }
+            case 66: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000040) == 0x00000040)) {
+                subBuilder = entityData_.toBuilder();
+              }
+              entityData_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(entityData_);
+                entityData_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000040;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          deviceElementMappings_ = java.util.Collections.unmodifiableList(deviceElementMappings_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<Device> PARSER =
+        new com.google.protobuf.AbstractParser<Device>() {
+      public Device parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Device(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Device> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string hardwareId = 1;
+    public static final int HARDWAREID_FIELD_NUMBER = 1;
+    private java.lang.Object hardwareId_;
+    /**
+     * <code>required string hardwareId = 1;</code>
+     */
+    public boolean hasHardwareId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string hardwareId = 1;</code>
+     */
+    public java.lang.String getHardwareId() {
+      java.lang.Object ref = hardwareId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          hardwareId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string hardwareId = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getHardwareIdBytes() {
+      java.lang.Object ref = hardwareId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        hardwareId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string siteToken = 2;
+    public static final int SITETOKEN_FIELD_NUMBER = 2;
+    private java.lang.Object siteToken_;
+    /**
+     * <code>required string siteToken = 2;</code>
+     */
+    public boolean hasSiteToken() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string siteToken = 2;</code>
+     */
+    public java.lang.String getSiteToken() {
+      java.lang.Object ref = siteToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          siteToken_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string siteToken = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSiteTokenBytes() {
+      java.lang.Object ref = siteToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        siteToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string specificationToken = 3;
+    public static final int SPECIFICATIONTOKEN_FIELD_NUMBER = 3;
+    private java.lang.Object specificationToken_;
+    /**
+     * <code>required string specificationToken = 3;</code>
+     */
+    public boolean hasSpecificationToken() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required string specificationToken = 3;</code>
+     */
+    public java.lang.String getSpecificationToken() {
+      java.lang.Object ref = specificationToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          specificationToken_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string specificationToken = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSpecificationTokenBytes() {
+      java.lang.Object ref = specificationToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        specificationToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string parentHardwareId = 4;
+    public static final int PARENTHARDWAREID_FIELD_NUMBER = 4;
+    private java.lang.Object parentHardwareId_;
+    /**
+     * <code>optional string parentHardwareId = 4;</code>
+     */
+    public boolean hasParentHardwareId() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional string parentHardwareId = 4;</code>
+     */
+    public java.lang.String getParentHardwareId() {
+      java.lang.Object ref = parentHardwareId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          parentHardwareId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string parentHardwareId = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getParentHardwareIdBytes() {
+      java.lang.Object ref = parentHardwareId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        parentHardwareId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // repeated .DeviceElementMapping deviceElementMappings = 5;
+    public static final int DEVICEELEMENTMAPPINGS_FIELD_NUMBER = 5;
+    private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping> deviceElementMappings_;
+    /**
+     * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+     */
+    public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping> getDeviceElementMappingsList() {
+      return deviceElementMappings_;
+    }
+    /**
+     * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+     */
+    public java.util.List<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMappingOrBuilder> 
+        getDeviceElementMappingsOrBuilderList() {
+      return deviceElementMappings_;
+    }
+    /**
+     * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+     */
+    public int getDeviceElementMappingsCount() {
+      return deviceElementMappings_.size();
+    }
+    /**
+     * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping getDeviceElementMappings(int index) {
+      return deviceElementMappings_.get(index);
+    }
+    /**
+     * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMappingOrBuilder getDeviceElementMappingsOrBuilder(
+        int index) {
+      return deviceElementMappings_.get(index);
+    }
+
+    // optional string comments = 6;
+    public static final int COMMENTS_FIELD_NUMBER = 6;
+    private java.lang.Object comments_;
+    /**
+     * <code>optional string comments = 6;</code>
+     */
+    public boolean hasComments() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string comments = 6;</code>
+     */
+    public java.lang.String getComments() {
+      java.lang.Object ref = comments_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          comments_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string comments = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCommentsBytes() {
+      java.lang.Object ref = comments_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        comments_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string assignmentToken = 7;
+    public static final int ASSIGNMENTTOKEN_FIELD_NUMBER = 7;
+    private java.lang.Object assignmentToken_;
+    /**
+     * <code>optional string assignmentToken = 7;</code>
+     */
+    public boolean hasAssignmentToken() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional string assignmentToken = 7;</code>
+     */
+    public java.lang.String getAssignmentToken() {
+      java.lang.Object ref = assignmentToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          assignmentToken_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string assignmentToken = 7;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAssignmentTokenBytes() {
+      java.lang.Object ref = assignmentToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        assignmentToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required .EntityData entityData = 8;
+    public static final int ENTITYDATA_FIELD_NUMBER = 8;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData entityData_;
+    /**
+     * <code>required .EntityData entityData = 8;</code>
+     */
+    public boolean hasEntityData() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>required .EntityData entityData = 8;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData() {
+      return entityData_;
+    }
+
+    private void initFields() {
+      hardwareId_ = "";
+      siteToken_ = "";
+      specificationToken_ = "";
+      parentHardwareId_ = "";
+      deviceElementMappings_ = java.util.Collections.emptyList();
+      comments_ = "";
+      assignmentToken_ = "";
+      entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasHardwareId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSiteToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSpecificationToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEntityData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getDeviceElementMappingsCount(); i++) {
+        if (!getDeviceElementMappings(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (!getEntityData().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getHardwareIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getSiteTokenBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getSpecificationTokenBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getParentHardwareIdBytes());
+      }
+      for (int i = 0; i < deviceElementMappings_.size(); i++) {
+        output.writeMessage(5, deviceElementMappings_.get(i));
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(6, getCommentsBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(7, getAssignmentTokenBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeMessage(8, entityData_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getHardwareIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getSiteTokenBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getSpecificationTokenBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getParentHardwareIdBytes());
+      }
+      for (int i = 0; i < deviceElementMappings_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, deviceElementMappings_.get(i));
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getCommentsBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(7, getAssignmentTokenBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, entityData_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.Device prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code Device}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.Device, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.Device.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        hardwareId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        siteToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        specificationToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        parentHardwareId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        deviceElementMappings_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000010);
+        comments_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        assignmentToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000040);
+        entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000080);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.Device getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.Device.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.Device build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.Device result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.Device buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.Device result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.Device(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.hardwareId_ = hardwareId_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.siteToken_ = siteToken_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.specificationToken_ = specificationToken_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.parentHardwareId_ = parentHardwareId_;
+        if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          deviceElementMappings_ = java.util.Collections.unmodifiableList(deviceElementMappings_);
+          bitField0_ = (bitField0_ & ~0x00000010);
+        }
+        result.deviceElementMappings_ = deviceElementMappings_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.comments_ = comments_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.assignmentToken_ = assignmentToken_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.entityData_ = entityData_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.Device other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.Device.getDefaultInstance()) return this;
+        if (other.hasHardwareId()) {
+          bitField0_ |= 0x00000001;
+          hardwareId_ = other.hardwareId_;
+          
+        }
+        if (other.hasSiteToken()) {
+          bitField0_ |= 0x00000002;
+          siteToken_ = other.siteToken_;
+          
+        }
+        if (other.hasSpecificationToken()) {
+          bitField0_ |= 0x00000004;
+          specificationToken_ = other.specificationToken_;
+          
+        }
+        if (other.hasParentHardwareId()) {
+          bitField0_ |= 0x00000008;
+          parentHardwareId_ = other.parentHardwareId_;
+          
+        }
+        if (!other.deviceElementMappings_.isEmpty()) {
+          if (deviceElementMappings_.isEmpty()) {
+            deviceElementMappings_ = other.deviceElementMappings_;
+            bitField0_ = (bitField0_ & ~0x00000010);
+          } else {
+            ensureDeviceElementMappingsIsMutable();
+            deviceElementMappings_.addAll(other.deviceElementMappings_);
+          }
+          
+        }
+        if (other.hasComments()) {
+          bitField0_ |= 0x00000020;
+          comments_ = other.comments_;
+          
+        }
+        if (other.hasAssignmentToken()) {
+          bitField0_ |= 0x00000040;
+          assignmentToken_ = other.assignmentToken_;
+          
+        }
+        if (other.hasEntityData()) {
+          mergeEntityData(other.getEntityData());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasHardwareId()) {
+          
+          return false;
+        }
+        if (!hasSiteToken()) {
+          
+          return false;
+        }
+        if (!hasSpecificationToken()) {
+          
+          return false;
+        }
+        if (!hasEntityData()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getDeviceElementMappingsCount(); i++) {
+          if (!getDeviceElementMappings(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (!getEntityData().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.Device parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.Device) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string hardwareId = 1;
+      private java.lang.Object hardwareId_ = "";
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public boolean hasHardwareId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public java.lang.String getHardwareId() {
+        java.lang.Object ref = hardwareId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          hardwareId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getHardwareIdBytes() {
+        java.lang.Object ref = hardwareId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          hardwareId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public Builder setHardwareId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        hardwareId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public Builder clearHardwareId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        hardwareId_ = getDefaultInstance().getHardwareId();
+        
+        return this;
+      }
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public Builder setHardwareIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        hardwareId_ = value;
+        
+        return this;
+      }
+
+      // required string siteToken = 2;
+      private java.lang.Object siteToken_ = "";
+      /**
+       * <code>required string siteToken = 2;</code>
+       */
+      public boolean hasSiteToken() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string siteToken = 2;</code>
+       */
+      public java.lang.String getSiteToken() {
+        java.lang.Object ref = siteToken_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          siteToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string siteToken = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSiteTokenBytes() {
+        java.lang.Object ref = siteToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          siteToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string siteToken = 2;</code>
+       */
+      public Builder setSiteToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        siteToken_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string siteToken = 2;</code>
+       */
+      public Builder clearSiteToken() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        siteToken_ = getDefaultInstance().getSiteToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string siteToken = 2;</code>
+       */
+      public Builder setSiteTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        siteToken_ = value;
+        
+        return this;
+      }
+
+      // required string specificationToken = 3;
+      private java.lang.Object specificationToken_ = "";
+      /**
+       * <code>required string specificationToken = 3;</code>
+       */
+      public boolean hasSpecificationToken() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required string specificationToken = 3;</code>
+       */
+      public java.lang.String getSpecificationToken() {
+        java.lang.Object ref = specificationToken_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          specificationToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string specificationToken = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSpecificationTokenBytes() {
+        java.lang.Object ref = specificationToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          specificationToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string specificationToken = 3;</code>
+       */
+      public Builder setSpecificationToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        specificationToken_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string specificationToken = 3;</code>
+       */
+      public Builder clearSpecificationToken() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        specificationToken_ = getDefaultInstance().getSpecificationToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string specificationToken = 3;</code>
+       */
+      public Builder setSpecificationTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        specificationToken_ = value;
+        
+        return this;
+      }
+
+      // optional string parentHardwareId = 4;
+      private java.lang.Object parentHardwareId_ = "";
+      /**
+       * <code>optional string parentHardwareId = 4;</code>
+       */
+      public boolean hasParentHardwareId() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string parentHardwareId = 4;</code>
+       */
+      public java.lang.String getParentHardwareId() {
+        java.lang.Object ref = parentHardwareId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          parentHardwareId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string parentHardwareId = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getParentHardwareIdBytes() {
+        java.lang.Object ref = parentHardwareId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          parentHardwareId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string parentHardwareId = 4;</code>
+       */
+      public Builder setParentHardwareId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        parentHardwareId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional string parentHardwareId = 4;</code>
+       */
+      public Builder clearParentHardwareId() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        parentHardwareId_ = getDefaultInstance().getParentHardwareId();
+        
+        return this;
+      }
+      /**
+       * <code>optional string parentHardwareId = 4;</code>
+       */
+      public Builder setParentHardwareIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        parentHardwareId_ = value;
+        
+        return this;
+      }
+
+      // repeated .DeviceElementMapping deviceElementMappings = 5;
+      private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping> deviceElementMappings_ =
+        java.util.Collections.emptyList();
+      private void ensureDeviceElementMappingsIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          deviceElementMappings_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping>(deviceElementMappings_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping> getDeviceElementMappingsList() {
+        return java.util.Collections.unmodifiableList(deviceElementMappings_);
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public int getDeviceElementMappingsCount() {
+        return deviceElementMappings_.size();
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping getDeviceElementMappings(int index) {
+        return deviceElementMappings_.get(index);
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder setDeviceElementMappings(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureDeviceElementMappingsIsMutable();
+        deviceElementMappings_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder setDeviceElementMappings(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping.Builder builderForValue) {
+        ensureDeviceElementMappingsIsMutable();
+        deviceElementMappings_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder addDeviceElementMappings(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureDeviceElementMappingsIsMutable();
+        deviceElementMappings_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder addDeviceElementMappings(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureDeviceElementMappingsIsMutable();
+        deviceElementMappings_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder addDeviceElementMappings(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping.Builder builderForValue) {
+        ensureDeviceElementMappingsIsMutable();
+        deviceElementMappings_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder addDeviceElementMappings(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping.Builder builderForValue) {
+        ensureDeviceElementMappingsIsMutable();
+        deviceElementMappings_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder addAllDeviceElementMappings(
+          java.lang.Iterable<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceElementMapping> values) {
+        ensureDeviceElementMappingsIsMutable();
+        super.addAll(values, deviceElementMappings_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder clearDeviceElementMappings() {
+        deviceElementMappings_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000010);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceElementMapping deviceElementMappings = 5;</code>
+       */
+      public Builder removeDeviceElementMappings(int index) {
+        ensureDeviceElementMappingsIsMutable();
+        deviceElementMappings_.remove(index);
+
+        return this;
+      }
+
+      // optional string comments = 6;
+      private java.lang.Object comments_ = "";
+      /**
+       * <code>optional string comments = 6;</code>
+       */
+      public boolean hasComments() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional string comments = 6;</code>
+       */
+      public java.lang.String getComments() {
+        java.lang.Object ref = comments_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          comments_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string comments = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCommentsBytes() {
+        java.lang.Object ref = comments_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          comments_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string comments = 6;</code>
+       */
+      public Builder setComments(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        comments_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional string comments = 6;</code>
+       */
+      public Builder clearComments() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        comments_ = getDefaultInstance().getComments();
+        
+        return this;
+      }
+      /**
+       * <code>optional string comments = 6;</code>
+       */
+      public Builder setCommentsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        comments_ = value;
+        
+        return this;
+      }
+
+      // optional string assignmentToken = 7;
+      private java.lang.Object assignmentToken_ = "";
+      /**
+       * <code>optional string assignmentToken = 7;</code>
+       */
+      public boolean hasAssignmentToken() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional string assignmentToken = 7;</code>
+       */
+      public java.lang.String getAssignmentToken() {
+        java.lang.Object ref = assignmentToken_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          assignmentToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string assignmentToken = 7;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAssignmentTokenBytes() {
+        java.lang.Object ref = assignmentToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          assignmentToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string assignmentToken = 7;</code>
+       */
+      public Builder setAssignmentToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        assignmentToken_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional string assignmentToken = 7;</code>
+       */
+      public Builder clearAssignmentToken() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        assignmentToken_ = getDefaultInstance().getAssignmentToken();
+        
+        return this;
+      }
+      /**
+       * <code>optional string assignmentToken = 7;</code>
+       */
+      public Builder setAssignmentTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        assignmentToken_ = value;
+        
+        return this;
+      }
+
+      // required .EntityData entityData = 8;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+      /**
+       * <code>required .EntityData entityData = 8;</code>
+       */
+      public boolean hasEntityData() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>required .EntityData entityData = 8;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData() {
+        return entityData_;
+      }
+      /**
+       * <code>required .EntityData entityData = 8;</code>
+       */
+      public Builder setEntityData(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        entityData_ = value;
+
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 8;</code>
+       */
+      public Builder setEntityData(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.Builder builderForValue) {
+        entityData_ = builderForValue.build();
+
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 8;</code>
+       */
+      public Builder mergeEntityData(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData value) {
+        if (((bitField0_ & 0x00000080) == 0x00000080) &&
+            entityData_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance()) {
+          entityData_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.newBuilder(entityData_).mergeFrom(value).buildPartial();
+        } else {
+          entityData_ = value;
+        }
+
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 8;</code>
+       */
+      public Builder clearEntityData() {
+        entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000080);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:Device)
+    }
+
+    static {
+      defaultInstance = new Device(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:Device)
+  }
+
+  public interface DeviceEventDataOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string id = 1;
+    /**
+     * <code>required string id = 1;</code>
+     */
+    boolean hasId();
+    /**
+     * <code>required string id = 1;</code>
+     */
+    java.lang.String getId();
+    /**
+     * <code>required string id = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getIdBytes();
+
+    // required string eventType = 2;
+    /**
+     * <code>required string eventType = 2;</code>
+     */
+    boolean hasEventType();
+    /**
+     * <code>required string eventType = 2;</code>
+     */
+    java.lang.String getEventType();
+    /**
+     * <code>required string eventType = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getEventTypeBytes();
+
+    // required string siteToken = 3;
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    boolean hasSiteToken();
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    java.lang.String getSiteToken();
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getSiteTokenBytes();
+
+    // required string deviceAssignmentToken = 4;
+    /**
+     * <code>required string deviceAssignmentToken = 4;</code>
+     */
+    boolean hasDeviceAssignmentToken();
+    /**
+     * <code>required string deviceAssignmentToken = 4;</code>
+     */
+    java.lang.String getDeviceAssignmentToken();
+    /**
+     * <code>required string deviceAssignmentToken = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getDeviceAssignmentTokenBytes();
+
+    // required string assignmentType = 5;
+    /**
+     * <code>required string assignmentType = 5;</code>
+     */
+    boolean hasAssignmentType();
+    /**
+     * <code>required string assignmentType = 5;</code>
+     */
+    java.lang.String getAssignmentType();
+    /**
+     * <code>required string assignmentType = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getAssignmentTypeBytes();
+
+    // required string assetModuleId = 6;
+    /**
+     * <code>required string assetModuleId = 6;</code>
+     */
+    boolean hasAssetModuleId();
+    /**
+     * <code>required string assetModuleId = 6;</code>
+     */
+    java.lang.String getAssetModuleId();
+    /**
+     * <code>required string assetModuleId = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getAssetModuleIdBytes();
+
+    // required string assetId = 7;
+    /**
+     * <code>required string assetId = 7;</code>
+     */
+    boolean hasAssetId();
+    /**
+     * <code>required string assetId = 7;</code>
+     */
+    java.lang.String getAssetId();
+    /**
+     * <code>required string assetId = 7;</code>
+     */
+    com.google.protobuf.ByteString
+        getAssetIdBytes();
+
+    // required int64 eventDate = 8;
+    /**
+     * <code>required int64 eventDate = 8;</code>
+     */
+    boolean hasEventDate();
+    /**
+     * <code>required int64 eventDate = 8;</code>
+     */
+    long getEventDate();
+
+    // required int64 receivedDate = 9;
+    /**
+     * <code>required int64 receivedDate = 9;</code>
+     */
+    boolean hasReceivedDate();
+    /**
+     * <code>required int64 receivedDate = 9;</code>
+     */
+    long getReceivedDate();
+
+    // repeated .MetadataEntry metadata = 10;
+    /**
+     * <code>repeated .MetadataEntry metadata = 10;</code>
+     */
+    java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> 
+        getMetadataList();
+    /**
+     * <code>repeated .MetadataEntry metadata = 10;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getMetadata(int index);
+    /**
+     * <code>repeated .MetadataEntry metadata = 10;</code>
+     */
+    int getMetadataCount();
+  }
+  /**
+   * Protobuf type {@code DeviceEventData}
+   */
+  public static final class DeviceEventData extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceEventDataOrBuilder {
+    // Use DeviceEventData.newBuilder() to construct.
+    private DeviceEventData(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceEventData(boolean noInit) {}
+
+    private static final DeviceEventData defaultInstance;
+    public static DeviceEventData getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceEventData getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceEventData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              id_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              eventType_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              siteToken_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              deviceAssignmentToken_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              assignmentType_ = input.readBytes();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              assetModuleId_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000040;
+              assetId_ = input.readBytes();
+              break;
+            }
+            case 64: {
+              bitField0_ |= 0x00000080;
+              eventDate_ = input.readInt64();
+              break;
+            }
+            case 72: {
+              bitField0_ |= 0x00000100;
+              receivedDate_ = input.readInt64();
+              break;
+            }
+            case 82: {
+              if (!((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
+                metadata_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry>();
+                mutable_bitField0_ |= 0x00000200;
+              }
+              metadata_.add(input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
+          metadata_ = java.util.Collections.unmodifiableList(metadata_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceEventData> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceEventData>() {
+      public DeviceEventData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceEventData(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceEventData> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string id = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private java.lang.Object id_;
+    /**
+     * <code>required string id = 1;</code>
+     */
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string id = 1;</code>
+     */
+    public java.lang.String getId() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          id_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getIdBytes() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        id_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string eventType = 2;
+    public static final int EVENTTYPE_FIELD_NUMBER = 2;
+    private java.lang.Object eventType_;
+    /**
+     * <code>required string eventType = 2;</code>
+     */
+    public boolean hasEventType() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string eventType = 2;</code>
+     */
+    public java.lang.String getEventType() {
+      java.lang.Object ref = eventType_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          eventType_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string eventType = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getEventTypeBytes() {
+      java.lang.Object ref = eventType_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        eventType_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string siteToken = 3;
+    public static final int SITETOKEN_FIELD_NUMBER = 3;
+    private java.lang.Object siteToken_;
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    public boolean hasSiteToken() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    public java.lang.String getSiteToken() {
+      java.lang.Object ref = siteToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          siteToken_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSiteTokenBytes() {
+      java.lang.Object ref = siteToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        siteToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string deviceAssignmentToken = 4;
+    public static final int DEVICEASSIGNMENTTOKEN_FIELD_NUMBER = 4;
+    private java.lang.Object deviceAssignmentToken_;
+    /**
+     * <code>required string deviceAssignmentToken = 4;</code>
+     */
+    public boolean hasDeviceAssignmentToken() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required string deviceAssignmentToken = 4;</code>
+     */
+    public java.lang.String getDeviceAssignmentToken() {
+      java.lang.Object ref = deviceAssignmentToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          deviceAssignmentToken_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string deviceAssignmentToken = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDeviceAssignmentTokenBytes() {
+      java.lang.Object ref = deviceAssignmentToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        deviceAssignmentToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string assignmentType = 5;
+    public static final int ASSIGNMENTTYPE_FIELD_NUMBER = 5;
+    private java.lang.Object assignmentType_;
+    /**
+     * <code>required string assignmentType = 5;</code>
+     */
+    public boolean hasAssignmentType() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required string assignmentType = 5;</code>
+     */
+    public java.lang.String getAssignmentType() {
+      java.lang.Object ref = assignmentType_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          assignmentType_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string assignmentType = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAssignmentTypeBytes() {
+      java.lang.Object ref = assignmentType_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        assignmentType_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string assetModuleId = 6;
+    public static final int ASSETMODULEID_FIELD_NUMBER = 6;
+    private java.lang.Object assetModuleId_;
+    /**
+     * <code>required string assetModuleId = 6;</code>
+     */
+    public boolean hasAssetModuleId() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>required string assetModuleId = 6;</code>
+     */
+    public java.lang.String getAssetModuleId() {
+      java.lang.Object ref = assetModuleId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          assetModuleId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string assetModuleId = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAssetModuleIdBytes() {
+      java.lang.Object ref = assetModuleId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        assetModuleId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string assetId = 7;
+    public static final int ASSETID_FIELD_NUMBER = 7;
+    private java.lang.Object assetId_;
+    /**
+     * <code>required string assetId = 7;</code>
+     */
+    public boolean hasAssetId() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>required string assetId = 7;</code>
+     */
+    public java.lang.String getAssetId() {
+      java.lang.Object ref = assetId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          assetId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string assetId = 7;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAssetIdBytes() {
+      java.lang.Object ref = assetId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        assetId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required int64 eventDate = 8;
+    public static final int EVENTDATE_FIELD_NUMBER = 8;
+    private long eventDate_;
+    /**
+     * <code>required int64 eventDate = 8;</code>
+     */
+    public boolean hasEventDate() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>required int64 eventDate = 8;</code>
+     */
+    public long getEventDate() {
+      return eventDate_;
+    }
+
+    // required int64 receivedDate = 9;
+    public static final int RECEIVEDDATE_FIELD_NUMBER = 9;
+    private long receivedDate_;
+    /**
+     * <code>required int64 receivedDate = 9;</code>
+     */
+    public boolean hasReceivedDate() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>required int64 receivedDate = 9;</code>
+     */
+    public long getReceivedDate() {
+      return receivedDate_;
+    }
+
+    // repeated .MetadataEntry metadata = 10;
+    public static final int METADATA_FIELD_NUMBER = 10;
+    private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> metadata_;
+    /**
+     * <code>repeated .MetadataEntry metadata = 10;</code>
+     */
+    public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> getMetadataList() {
+      return metadata_;
+    }
+    /**
+     * <code>repeated .MetadataEntry metadata = 10;</code>
+     */
+    public java.util.List<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntryOrBuilder> 
+        getMetadataOrBuilderList() {
+      return metadata_;
+    }
+    /**
+     * <code>repeated .MetadataEntry metadata = 10;</code>
+     */
+    public int getMetadataCount() {
+      return metadata_.size();
+    }
+    /**
+     * <code>repeated .MetadataEntry metadata = 10;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getMetadata(int index) {
+      return metadata_.get(index);
+    }
+    /**
+     * <code>repeated .MetadataEntry metadata = 10;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntryOrBuilder getMetadataOrBuilder(
+        int index) {
+      return metadata_.get(index);
+    }
+
+    private void initFields() {
+      id_ = "";
+      eventType_ = "";
+      siteToken_ = "";
+      deviceAssignmentToken_ = "";
+      assignmentType_ = "";
+      assetModuleId_ = "";
+      assetId_ = "";
+      eventDate_ = 0L;
+      receivedDate_ = 0L;
+      metadata_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEventType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSiteToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasDeviceAssignmentToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasAssignmentType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasAssetModuleId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasAssetId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEventDate()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasReceivedDate()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getMetadataCount(); i++) {
+        if (!getMetadata(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getEventTypeBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getSiteTokenBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getDeviceAssignmentTokenBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getAssignmentTypeBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getAssetModuleIdBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBytes(7, getAssetIdBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeInt64(8, eventDate_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeInt64(9, receivedDate_);
+      }
+      for (int i = 0; i < metadata_.size(); i++) {
+        output.writeMessage(10, metadata_.get(i));
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getEventTypeBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getSiteTokenBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getDeviceAssignmentTokenBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getAssignmentTypeBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getAssetModuleIdBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(7, getAssetIdBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(8, eventDate_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(9, receivedDate_);
+      }
+      for (int i = 0; i < metadata_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, metadata_.get(i));
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceEventData}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventDataOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        id_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        eventType_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        siteToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        deviceAssignmentToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        assignmentType_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        assetModuleId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        assetId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000040);
+        eventDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        receivedDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        metadata_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000200);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.eventType_ = eventType_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.siteToken_ = siteToken_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.deviceAssignmentToken_ = deviceAssignmentToken_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.assignmentType_ = assignmentType_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.assetModuleId_ = assetModuleId_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.assetId_ = assetId_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.eventDate_ = eventDate_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.receivedDate_ = receivedDate_;
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+          metadata_ = java.util.Collections.unmodifiableList(metadata_);
+          bitField0_ = (bitField0_ & ~0x00000200);
+        }
+        result.metadata_ = metadata_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          bitField0_ |= 0x00000001;
+          id_ = other.id_;
+          
+        }
+        if (other.hasEventType()) {
+          bitField0_ |= 0x00000002;
+          eventType_ = other.eventType_;
+          
+        }
+        if (other.hasSiteToken()) {
+          bitField0_ |= 0x00000004;
+          siteToken_ = other.siteToken_;
+          
+        }
+        if (other.hasDeviceAssignmentToken()) {
+          bitField0_ |= 0x00000008;
+          deviceAssignmentToken_ = other.deviceAssignmentToken_;
+          
+        }
+        if (other.hasAssignmentType()) {
+          bitField0_ |= 0x00000010;
+          assignmentType_ = other.assignmentType_;
+          
+        }
+        if (other.hasAssetModuleId()) {
+          bitField0_ |= 0x00000020;
+          assetModuleId_ = other.assetModuleId_;
+          
+        }
+        if (other.hasAssetId()) {
+          bitField0_ |= 0x00000040;
+          assetId_ = other.assetId_;
+          
+        }
+        if (other.hasEventDate()) {
+          setEventDate(other.getEventDate());
+        }
+        if (other.hasReceivedDate()) {
+          setReceivedDate(other.getReceivedDate());
+        }
+        if (!other.metadata_.isEmpty()) {
+          if (metadata_.isEmpty()) {
+            metadata_ = other.metadata_;
+            bitField0_ = (bitField0_ & ~0x00000200);
+          } else {
+            ensureMetadataIsMutable();
+            metadata_.addAll(other.metadata_);
+          }
+          
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasId()) {
+          
+          return false;
+        }
+        if (!hasEventType()) {
+          
+          return false;
+        }
+        if (!hasSiteToken()) {
+          
+          return false;
+        }
+        if (!hasDeviceAssignmentToken()) {
+          
+          return false;
+        }
+        if (!hasAssignmentType()) {
+          
+          return false;
+        }
+        if (!hasAssetModuleId()) {
+          
+          return false;
+        }
+        if (!hasAssetId()) {
+          
+          return false;
+        }
+        if (!hasEventDate()) {
+          
+          return false;
+        }
+        if (!hasReceivedDate()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getMetadataCount(); i++) {
+          if (!getMetadata(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string id = 1;
+      private java.lang.Object id_ = "";
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public java.lang.String getId() {
+        java.lang.Object ref = id_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          id_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getIdBytes() {
+        java.lang.Object ref = id_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          id_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public Builder setId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        id_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = getDefaultInstance().getId();
+        
+        return this;
+      }
+      /**
+       * <code>required string id = 1;</code>
+       */
+      public Builder setIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        id_ = value;
+        
+        return this;
+      }
+
+      // required string eventType = 2;
+      private java.lang.Object eventType_ = "";
+      /**
+       * <code>required string eventType = 2;</code>
+       */
+      public boolean hasEventType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string eventType = 2;</code>
+       */
+      public java.lang.String getEventType() {
+        java.lang.Object ref = eventType_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          eventType_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string eventType = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getEventTypeBytes() {
+        java.lang.Object ref = eventType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          eventType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string eventType = 2;</code>
+       */
+      public Builder setEventType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        eventType_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string eventType = 2;</code>
+       */
+      public Builder clearEventType() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        eventType_ = getDefaultInstance().getEventType();
+        
+        return this;
+      }
+      /**
+       * <code>required string eventType = 2;</code>
+       */
+      public Builder setEventTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        eventType_ = value;
+        
+        return this;
+      }
+
+      // required string siteToken = 3;
+      private java.lang.Object siteToken_ = "";
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public boolean hasSiteToken() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public java.lang.String getSiteToken() {
+        java.lang.Object ref = siteToken_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          siteToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSiteTokenBytes() {
+        java.lang.Object ref = siteToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          siteToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public Builder setSiteToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        siteToken_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public Builder clearSiteToken() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        siteToken_ = getDefaultInstance().getSiteToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public Builder setSiteTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        siteToken_ = value;
+        
+        return this;
+      }
+
+      // required string deviceAssignmentToken = 4;
+      private java.lang.Object deviceAssignmentToken_ = "";
+      /**
+       * <code>required string deviceAssignmentToken = 4;</code>
+       */
+      public boolean hasDeviceAssignmentToken() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required string deviceAssignmentToken = 4;</code>
+       */
+      public java.lang.String getDeviceAssignmentToken() {
+        java.lang.Object ref = deviceAssignmentToken_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          deviceAssignmentToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string deviceAssignmentToken = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDeviceAssignmentTokenBytes() {
+        java.lang.Object ref = deviceAssignmentToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          deviceAssignmentToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string deviceAssignmentToken = 4;</code>
+       */
+      public Builder setDeviceAssignmentToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        deviceAssignmentToken_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string deviceAssignmentToken = 4;</code>
+       */
+      public Builder clearDeviceAssignmentToken() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        deviceAssignmentToken_ = getDefaultInstance().getDeviceAssignmentToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string deviceAssignmentToken = 4;</code>
+       */
+      public Builder setDeviceAssignmentTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        deviceAssignmentToken_ = value;
+        
+        return this;
+      }
+
+      // required string assignmentType = 5;
+      private java.lang.Object assignmentType_ = "";
+      /**
+       * <code>required string assignmentType = 5;</code>
+       */
+      public boolean hasAssignmentType() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required string assignmentType = 5;</code>
+       */
+      public java.lang.String getAssignmentType() {
+        java.lang.Object ref = assignmentType_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          assignmentType_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string assignmentType = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAssignmentTypeBytes() {
+        java.lang.Object ref = assignmentType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          assignmentType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string assignmentType = 5;</code>
+       */
+      public Builder setAssignmentType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        assignmentType_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string assignmentType = 5;</code>
+       */
+      public Builder clearAssignmentType() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        assignmentType_ = getDefaultInstance().getAssignmentType();
+        
+        return this;
+      }
+      /**
+       * <code>required string assignmentType = 5;</code>
+       */
+      public Builder setAssignmentTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        assignmentType_ = value;
+        
+        return this;
+      }
+
+      // required string assetModuleId = 6;
+      private java.lang.Object assetModuleId_ = "";
+      /**
+       * <code>required string assetModuleId = 6;</code>
+       */
+      public boolean hasAssetModuleId() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>required string assetModuleId = 6;</code>
+       */
+      public java.lang.String getAssetModuleId() {
+        java.lang.Object ref = assetModuleId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          assetModuleId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string assetModuleId = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAssetModuleIdBytes() {
+        java.lang.Object ref = assetModuleId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          assetModuleId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string assetModuleId = 6;</code>
+       */
+      public Builder setAssetModuleId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        assetModuleId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string assetModuleId = 6;</code>
+       */
+      public Builder clearAssetModuleId() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        assetModuleId_ = getDefaultInstance().getAssetModuleId();
+        
+        return this;
+      }
+      /**
+       * <code>required string assetModuleId = 6;</code>
+       */
+      public Builder setAssetModuleIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        assetModuleId_ = value;
+        
+        return this;
+      }
+
+      // required string assetId = 7;
+      private java.lang.Object assetId_ = "";
+      /**
+       * <code>required string assetId = 7;</code>
+       */
+      public boolean hasAssetId() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>required string assetId = 7;</code>
+       */
+      public java.lang.String getAssetId() {
+        java.lang.Object ref = assetId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          assetId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string assetId = 7;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAssetIdBytes() {
+        java.lang.Object ref = assetId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          assetId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string assetId = 7;</code>
+       */
+      public Builder setAssetId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        assetId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string assetId = 7;</code>
+       */
+      public Builder clearAssetId() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        assetId_ = getDefaultInstance().getAssetId();
+        
+        return this;
+      }
+      /**
+       * <code>required string assetId = 7;</code>
+       */
+      public Builder setAssetIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        assetId_ = value;
+        
+        return this;
+      }
+
+      // required int64 eventDate = 8;
+      private long eventDate_ ;
+      /**
+       * <code>required int64 eventDate = 8;</code>
+       */
+      public boolean hasEventDate() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>required int64 eventDate = 8;</code>
+       */
+      public long getEventDate() {
+        return eventDate_;
+      }
+      /**
+       * <code>required int64 eventDate = 8;</code>
+       */
+      public Builder setEventDate(long value) {
+        bitField0_ |= 0x00000080;
+        eventDate_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required int64 eventDate = 8;</code>
+       */
+      public Builder clearEventDate() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        eventDate_ = 0L;
+        
+        return this;
+      }
+
+      // required int64 receivedDate = 9;
+      private long receivedDate_ ;
+      /**
+       * <code>required int64 receivedDate = 9;</code>
+       */
+      public boolean hasReceivedDate() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>required int64 receivedDate = 9;</code>
+       */
+      public long getReceivedDate() {
+        return receivedDate_;
+      }
+      /**
+       * <code>required int64 receivedDate = 9;</code>
+       */
+      public Builder setReceivedDate(long value) {
+        bitField0_ |= 0x00000100;
+        receivedDate_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required int64 receivedDate = 9;</code>
+       */
+      public Builder clearReceivedDate() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        receivedDate_ = 0L;
+        
+        return this;
+      }
+
+      // repeated .MetadataEntry metadata = 10;
+      private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> metadata_ =
+        java.util.Collections.emptyList();
+      private void ensureMetadataIsMutable() {
+        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
+          metadata_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry>(metadata_);
+          bitField0_ |= 0x00000200;
+         }
+      }
+
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> getMetadataList() {
+        return java.util.Collections.unmodifiableList(metadata_);
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public int getMetadataCount() {
+        return metadata_.size();
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry getMetadata(int index) {
+        return metadata_.get(index);
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder setMetadata(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMetadataIsMutable();
+        metadata_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder setMetadata(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureMetadataIsMutable();
+        metadata_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder addMetadata(com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMetadataIsMutable();
+        metadata_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder addMetadata(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMetadataIsMutable();
+        metadata_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder addMetadata(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureMetadataIsMutable();
+        metadata_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder addMetadata(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry.Builder builderForValue) {
+        ensureMetadataIsMutable();
+        metadata_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder addAllMetadata(
+          java.lang.Iterable<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.MetadataEntry> values) {
+        ensureMetadataIsMutable();
+        super.addAll(values, metadata_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder clearMetadata() {
+        metadata_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000200);
+
+        return this;
+      }
+      /**
+       * <code>repeated .MetadataEntry metadata = 10;</code>
+       */
+      public Builder removeMetadata(int index) {
+        ensureMetadataIsMutable();
+        metadata_.remove(index);
+
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceEventData)
+    }
+
+    static {
+      defaultInstance = new DeviceEventData(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceEventData)
+  }
+
+  public interface DeviceLocationOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required double latitude = 1;
+    /**
+     * <code>required double latitude = 1;</code>
+     */
+    boolean hasLatitude();
+    /**
+     * <code>required double latitude = 1;</code>
+     */
+    double getLatitude();
+
+    // required double longitude = 2;
+    /**
+     * <code>required double longitude = 2;</code>
+     */
+    boolean hasLongitude();
+    /**
+     * <code>required double longitude = 2;</code>
+     */
+    double getLongitude();
+
+    // required double elevation = 3;
+    /**
+     * <code>required double elevation = 3;</code>
+     */
+    boolean hasElevation();
+    /**
+     * <code>required double elevation = 3;</code>
+     */
+    double getElevation();
+
+    // required .DeviceEventData eventData = 4;
+    /**
+     * <code>required .DeviceEventData eventData = 4;</code>
+     */
+    boolean hasEventData();
+    /**
+     * <code>required .DeviceEventData eventData = 4;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData();
+  }
+  /**
+   * Protobuf type {@code DeviceLocation}
+   */
+  public static final class DeviceLocation extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceLocationOrBuilder {
+    // Use DeviceLocation.newBuilder() to construct.
+    private DeviceLocation(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceLocation(boolean noInit) {}
+
+    private static final DeviceLocation defaultInstance;
+    public static DeviceLocation getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceLocation getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceLocation(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 9: {
+              bitField0_ |= 0x00000001;
+              latitude_ = input.readDouble();
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              longitude_ = input.readDouble();
+              break;
+            }
+            case 25: {
+              bitField0_ |= 0x00000004;
+              elevation_ = input.readDouble();
+              break;
+            }
+            case 34: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000008) == 0x00000008)) {
+                subBuilder = eventData_.toBuilder();
+              }
+              eventData_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(eventData_);
+                eventData_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000008;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceLocation> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceLocation>() {
+      public DeviceLocation parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceLocation(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceLocation> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required double latitude = 1;
+    public static final int LATITUDE_FIELD_NUMBER = 1;
+    private double latitude_;
+    /**
+     * <code>required double latitude = 1;</code>
+     */
+    public boolean hasLatitude() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required double latitude = 1;</code>
+     */
+    public double getLatitude() {
+      return latitude_;
+    }
+
+    // required double longitude = 2;
+    public static final int LONGITUDE_FIELD_NUMBER = 2;
+    private double longitude_;
+    /**
+     * <code>required double longitude = 2;</code>
+     */
+    public boolean hasLongitude() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required double longitude = 2;</code>
+     */
+    public double getLongitude() {
+      return longitude_;
+    }
+
+    // required double elevation = 3;
+    public static final int ELEVATION_FIELD_NUMBER = 3;
+    private double elevation_;
+    /**
+     * <code>required double elevation = 3;</code>
+     */
+    public boolean hasElevation() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required double elevation = 3;</code>
+     */
+    public double getElevation() {
+      return elevation_;
+    }
+
+    // required .DeviceEventData eventData = 4;
+    public static final int EVENTDATA_FIELD_NUMBER = 4;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData eventData_;
+    /**
+     * <code>required .DeviceEventData eventData = 4;</code>
+     */
+    public boolean hasEventData() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required .DeviceEventData eventData = 4;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData() {
+      return eventData_;
+    }
+
+    private void initFields() {
+      latitude_ = 0D;
+      longitude_ = 0D;
+      elevation_ = 0D;
+      eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasLatitude()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLongitude()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasElevation()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEventData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getEventData().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeDouble(1, latitude_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeDouble(2, longitude_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeDouble(3, elevation_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeMessage(4, eventData_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(1, latitude_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, longitude_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(3, elevation_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, eventData_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceLocation}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocationOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        latitude_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        longitude_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        elevation_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.latitude_ = latitude_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.longitude_ = longitude_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.elevation_ = elevation_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.eventData_ = eventData_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.getDefaultInstance()) return this;
+        if (other.hasLatitude()) {
+          setLatitude(other.getLatitude());
+        }
+        if (other.hasLongitude()) {
+          setLongitude(other.getLongitude());
+        }
+        if (other.hasElevation()) {
+          setElevation(other.getElevation());
+        }
+        if (other.hasEventData()) {
+          mergeEventData(other.getEventData());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasLatitude()) {
+          
+          return false;
+        }
+        if (!hasLongitude()) {
+          
+          return false;
+        }
+        if (!hasElevation()) {
+          
+          return false;
+        }
+        if (!hasEventData()) {
+          
+          return false;
+        }
+        if (!getEventData().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required double latitude = 1;
+      private double latitude_ ;
+      /**
+       * <code>required double latitude = 1;</code>
+       */
+      public boolean hasLatitude() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required double latitude = 1;</code>
+       */
+      public double getLatitude() {
+        return latitude_;
+      }
+      /**
+       * <code>required double latitude = 1;</code>
+       */
+      public Builder setLatitude(double value) {
+        bitField0_ |= 0x00000001;
+        latitude_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required double latitude = 1;</code>
+       */
+      public Builder clearLatitude() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        latitude_ = 0D;
+        
+        return this;
+      }
+
+      // required double longitude = 2;
+      private double longitude_ ;
+      /**
+       * <code>required double longitude = 2;</code>
+       */
+      public boolean hasLongitude() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required double longitude = 2;</code>
+       */
+      public double getLongitude() {
+        return longitude_;
+      }
+      /**
+       * <code>required double longitude = 2;</code>
+       */
+      public Builder setLongitude(double value) {
+        bitField0_ |= 0x00000002;
+        longitude_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required double longitude = 2;</code>
+       */
+      public Builder clearLongitude() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        longitude_ = 0D;
+        
+        return this;
+      }
+
+      // required double elevation = 3;
+      private double elevation_ ;
+      /**
+       * <code>required double elevation = 3;</code>
+       */
+      public boolean hasElevation() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required double elevation = 3;</code>
+       */
+      public double getElevation() {
+        return elevation_;
+      }
+      /**
+       * <code>required double elevation = 3;</code>
+       */
+      public Builder setElevation(double value) {
+        bitField0_ |= 0x00000004;
+        elevation_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required double elevation = 3;</code>
+       */
+      public Builder clearElevation() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        elevation_ = 0D;
+        
+        return this;
+      }
+
+      // required .DeviceEventData eventData = 4;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+      /**
+       * <code>required .DeviceEventData eventData = 4;</code>
+       */
+      public boolean hasEventData() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 4;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData() {
+        return eventData_;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 4;</code>
+       */
+      public Builder setEventData(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        eventData_ = value;
+
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 4;</code>
+       */
+      public Builder setEventData(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.Builder builderForValue) {
+        eventData_ = builderForValue.build();
+
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 4;</code>
+       */
+      public Builder mergeEventData(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData value) {
+        if (((bitField0_ & 0x00000008) == 0x00000008) &&
+            eventData_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance()) {
+          eventData_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.newBuilder(eventData_).mergeFrom(value).buildPartial();
+        } else {
+          eventData_ = value;
+        }
+
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 4;</code>
+       */
+      public Builder clearEventData() {
+        eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceLocation)
+    }
+
+    static {
+      defaultInstance = new DeviceLocation(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceLocation)
+  }
+
+  public interface DeviceMeasurementOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string name = 1;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    boolean hasName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>required string name = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    // required double value = 2;
+    /**
+     * <code>required double value = 2;</code>
+     */
+    boolean hasValue();
+    /**
+     * <code>required double value = 2;</code>
+     */
+    double getValue();
+
+    // optional .DeviceEventData eventData = 3;
+    /**
+     * <code>optional .DeviceEventData eventData = 3;</code>
+     */
+    boolean hasEventData();
+    /**
+     * <code>optional .DeviceEventData eventData = 3;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData();
+  }
+  /**
+   * Protobuf type {@code DeviceMeasurement}
+   */
+  public static final class DeviceMeasurement extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceMeasurementOrBuilder {
+    // Use DeviceMeasurement.newBuilder() to construct.
+    private DeviceMeasurement(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceMeasurement(boolean noInit) {}
+
+    private static final DeviceMeasurement defaultInstance;
+    public static DeviceMeasurement getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceMeasurement getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceMeasurement(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              name_ = input.readBytes();
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              value_ = input.readDouble();
+              break;
+            }
+            case 26: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                subBuilder = eventData_.toBuilder();
+              }
+              eventData_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(eventData_);
+                eventData_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000004;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceMeasurement> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceMeasurement>() {
+      public DeviceMeasurement parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceMeasurement(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceMeasurement> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string name = 1;
+    public static final int NAME_FIELD_NUMBER = 1;
+    private java.lang.Object name_;
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string name = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required double value = 2;
+    public static final int VALUE_FIELD_NUMBER = 2;
+    private double value_;
+    /**
+     * <code>required double value = 2;</code>
+     */
+    public boolean hasValue() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required double value = 2;</code>
+     */
+    public double getValue() {
+      return value_;
+    }
+
+    // optional .DeviceEventData eventData = 3;
+    public static final int EVENTDATA_FIELD_NUMBER = 3;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData eventData_;
+    /**
+     * <code>optional .DeviceEventData eventData = 3;</code>
+     */
+    public boolean hasEventData() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional .DeviceEventData eventData = 3;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData() {
+      return eventData_;
+    }
+
+    private void initFields() {
+      name_ = "";
+      value_ = 0D;
+      eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasValue()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (hasEventData()) {
+        if (!getEventData().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeDouble(2, value_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(3, eventData_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, value_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, eventData_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceMeasurement}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurementOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        value_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.value_ = value_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.eventData_ = eventData_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.getDefaultInstance()) return this;
+        if (other.hasName()) {
+          bitField0_ |= 0x00000001;
+          name_ = other.name_;
+          
+        }
+        if (other.hasValue()) {
+          setValue(other.getValue());
+        }
+        if (other.hasEventData()) {
+          mergeEventData(other.getEventData());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasName()) {
+          
+          return false;
+        }
+        if (!hasValue()) {
+          
+          return false;
+        }
+        if (hasEventData()) {
+          if (!getEventData().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string name = 1;
+      private java.lang.Object name_ = "";
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder clearName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        name_ = getDefaultInstance().getName();
+        
+        return this;
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        
+        return this;
+      }
+
+      // required double value = 2;
+      private double value_ ;
+      /**
+       * <code>required double value = 2;</code>
+       */
+      public boolean hasValue() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required double value = 2;</code>
+       */
+      public double getValue() {
+        return value_;
+      }
+      /**
+       * <code>required double value = 2;</code>
+       */
+      public Builder setValue(double value) {
+        bitField0_ |= 0x00000002;
+        value_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required double value = 2;</code>
+       */
+      public Builder clearValue() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        value_ = 0D;
+        
+        return this;
+      }
+
+      // optional .DeviceEventData eventData = 3;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+      /**
+       * <code>optional .DeviceEventData eventData = 3;</code>
+       */
+      public boolean hasEventData() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional .DeviceEventData eventData = 3;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData() {
+        return eventData_;
+      }
+      /**
+       * <code>optional .DeviceEventData eventData = 3;</code>
+       */
+      public Builder setEventData(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        eventData_ = value;
+
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .DeviceEventData eventData = 3;</code>
+       */
+      public Builder setEventData(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.Builder builderForValue) {
+        eventData_ = builderForValue.build();
+
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .DeviceEventData eventData = 3;</code>
+       */
+      public Builder mergeEventData(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData value) {
+        if (((bitField0_ & 0x00000004) == 0x00000004) &&
+            eventData_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance()) {
+          eventData_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.newBuilder(eventData_).mergeFrom(value).buildPartial();
+        } else {
+          eventData_ = value;
+        }
+
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .DeviceEventData eventData = 3;</code>
+       */
+      public Builder clearEventData() {
+        eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceMeasurement)
+    }
+
+    static {
+      defaultInstance = new DeviceMeasurement(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceMeasurement)
+  }
+
+  public interface DeviceMeasurementsOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // repeated .DeviceMeasurement measurements = 1;
+    /**
+     * <code>repeated .DeviceMeasurement measurements = 1;</code>
+     */
+    java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> 
+        getMeasurementsList();
+    /**
+     * <code>repeated .DeviceMeasurement measurements = 1;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement getMeasurements(int index);
+    /**
+     * <code>repeated .DeviceMeasurement measurements = 1;</code>
+     */
+    int getMeasurementsCount();
+
+    // required .DeviceEventData eventData = 2;
+    /**
+     * <code>required .DeviceEventData eventData = 2;</code>
+     */
+    boolean hasEventData();
+    /**
+     * <code>required .DeviceEventData eventData = 2;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData();
+  }
+  /**
+   * Protobuf type {@code DeviceMeasurements}
+   */
+  public static final class DeviceMeasurements extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceMeasurementsOrBuilder {
+    // Use DeviceMeasurements.newBuilder() to construct.
+    private DeviceMeasurements(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceMeasurements(boolean noInit) {}
+
+    private static final DeviceMeasurements defaultInstance;
+    public static DeviceMeasurements getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceMeasurements getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceMeasurements(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                measurements_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              measurements_.add(input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.PARSER, extensionRegistry));
+              break;
+            }
+            case 18: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = eventData_.toBuilder();
+              }
+              eventData_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(eventData_);
+                eventData_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          measurements_ = java.util.Collections.unmodifiableList(measurements_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceMeasurements> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceMeasurements>() {
+      public DeviceMeasurements parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceMeasurements(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceMeasurements> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // repeated .DeviceMeasurement measurements = 1;
+    public static final int MEASUREMENTS_FIELD_NUMBER = 1;
+    private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> measurements_;
+    /**
+     * <code>repeated .DeviceMeasurement measurements = 1;</code>
+     */
+    public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> getMeasurementsList() {
+      return measurements_;
+    }
+    /**
+     * <code>repeated .DeviceMeasurement measurements = 1;</code>
+     */
+    public java.util.List<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurementOrBuilder> 
+        getMeasurementsOrBuilderList() {
+      return measurements_;
+    }
+    /**
+     * <code>repeated .DeviceMeasurement measurements = 1;</code>
+     */
+    public int getMeasurementsCount() {
+      return measurements_.size();
+    }
+    /**
+     * <code>repeated .DeviceMeasurement measurements = 1;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement getMeasurements(int index) {
+      return measurements_.get(index);
+    }
+    /**
+     * <code>repeated .DeviceMeasurement measurements = 1;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurementOrBuilder getMeasurementsOrBuilder(
+        int index) {
+      return measurements_.get(index);
+    }
+
+    // required .DeviceEventData eventData = 2;
+    public static final int EVENTDATA_FIELD_NUMBER = 2;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData eventData_;
+    /**
+     * <code>required .DeviceEventData eventData = 2;</code>
+     */
+    public boolean hasEventData() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required .DeviceEventData eventData = 2;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData() {
+      return eventData_;
+    }
+
+    private void initFields() {
+      measurements_ = java.util.Collections.emptyList();
+      eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasEventData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getMeasurementsCount(); i++) {
+        if (!getMeasurements(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (!getEventData().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < measurements_.size(); i++) {
+        output.writeMessage(1, measurements_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(2, eventData_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < measurements_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, measurements_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, eventData_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceMeasurements}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurementsOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        measurements_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          measurements_ = java.util.Collections.unmodifiableList(measurements_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.measurements_ = measurements_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.eventData_ = eventData_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements.getDefaultInstance()) return this;
+        if (!other.measurements_.isEmpty()) {
+          if (measurements_.isEmpty()) {
+            measurements_ = other.measurements_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureMeasurementsIsMutable();
+            measurements_.addAll(other.measurements_);
+          }
+          
+        }
+        if (other.hasEventData()) {
+          mergeEventData(other.getEventData());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasEventData()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getMeasurementsCount(); i++) {
+          if (!getMeasurements(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (!getEventData().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurements) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // repeated .DeviceMeasurement measurements = 1;
+      private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> measurements_ =
+        java.util.Collections.emptyList();
+      private void ensureMeasurementsIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          measurements_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement>(measurements_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> getMeasurementsList() {
+        return java.util.Collections.unmodifiableList(measurements_);
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public int getMeasurementsCount() {
+        return measurements_.size();
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement getMeasurements(int index) {
+        return measurements_.get(index);
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder setMeasurements(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMeasurementsIsMutable();
+        measurements_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder setMeasurements(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.Builder builderForValue) {
+        ensureMeasurementsIsMutable();
+        measurements_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder addMeasurements(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMeasurementsIsMutable();
+        measurements_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder addMeasurements(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureMeasurementsIsMutable();
+        measurements_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder addMeasurements(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.Builder builderForValue) {
+        ensureMeasurementsIsMutable();
+        measurements_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder addMeasurements(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.Builder builderForValue) {
+        ensureMeasurementsIsMutable();
+        measurements_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder addAllMeasurements(
+          java.lang.Iterable<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> values) {
+        ensureMeasurementsIsMutable();
+        super.addAll(values, measurements_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder clearMeasurements() {
+        measurements_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement measurements = 1;</code>
+       */
+      public Builder removeMeasurements(int index) {
+        ensureMeasurementsIsMutable();
+        measurements_.remove(index);
+
+        return this;
+      }
+
+      // required .DeviceEventData eventData = 2;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+      /**
+       * <code>required .DeviceEventData eventData = 2;</code>
+       */
+      public boolean hasEventData() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 2;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData() {
+        return eventData_;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 2;</code>
+       */
+      public Builder setEventData(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        eventData_ = value;
+
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 2;</code>
+       */
+      public Builder setEventData(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.Builder builderForValue) {
+        eventData_ = builderForValue.build();
+
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 2;</code>
+       */
+      public Builder mergeEventData(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData value) {
+        if (((bitField0_ & 0x00000002) == 0x00000002) &&
+            eventData_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance()) {
+          eventData_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.newBuilder(eventData_).mergeFrom(value).buildPartial();
+        } else {
+          eventData_ = value;
+        }
+
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 2;</code>
+       */
+      public Builder clearEventData() {
+        eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceMeasurements)
+    }
+
+    static {
+      defaultInstance = new DeviceMeasurements(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceMeasurements)
+  }
+
+  public interface DeviceAlertOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string source = 1;
+    /**
+     * <code>required string source = 1;</code>
+     */
+    boolean hasSource();
+    /**
+     * <code>required string source = 1;</code>
+     */
+    java.lang.String getSource();
+    /**
+     * <code>required string source = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getSourceBytes();
+
+    // required string level = 2;
+    /**
+     * <code>required string level = 2;</code>
+     */
+    boolean hasLevel();
+    /**
+     * <code>required string level = 2;</code>
+     */
+    java.lang.String getLevel();
+    /**
+     * <code>required string level = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getLevelBytes();
+
+    // required string type = 3;
+    /**
+     * <code>required string type = 3;</code>
+     */
+    boolean hasType();
+    /**
+     * <code>required string type = 3;</code>
+     */
+    java.lang.String getType();
+    /**
+     * <code>required string type = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getTypeBytes();
+
+    // required string message = 4;
+    /**
+     * <code>required string message = 4;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>required string message = 4;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>required string message = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
+
+    // required .DeviceEventData eventData = 5;
+    /**
+     * <code>required .DeviceEventData eventData = 5;</code>
+     */
+    boolean hasEventData();
+    /**
+     * <code>required .DeviceEventData eventData = 5;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData();
+  }
+  /**
+   * Protobuf type {@code DeviceAlert}
+   */
+  public static final class DeviceAlert extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceAlertOrBuilder {
+    // Use DeviceAlert.newBuilder() to construct.
+    private DeviceAlert(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceAlert(boolean noInit) {}
+
+    private static final DeviceAlert defaultInstance;
+    public static DeviceAlert getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceAlert getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceAlert(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              source_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              level_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              type_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              message_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                subBuilder = eventData_.toBuilder();
+              }
+              eventData_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(eventData_);
+                eventData_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000010;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceAlert> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceAlert>() {
+      public DeviceAlert parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceAlert(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceAlert> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string source = 1;
+    public static final int SOURCE_FIELD_NUMBER = 1;
+    private java.lang.Object source_;
+    /**
+     * <code>required string source = 1;</code>
+     */
+    public boolean hasSource() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string source = 1;</code>
+     */
+    public java.lang.String getSource() {
+      java.lang.Object ref = source_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          source_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string source = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSourceBytes() {
+      java.lang.Object ref = source_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        source_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string level = 2;
+    public static final int LEVEL_FIELD_NUMBER = 2;
+    private java.lang.Object level_;
+    /**
+     * <code>required string level = 2;</code>
+     */
+    public boolean hasLevel() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string level = 2;</code>
+     */
+    public java.lang.String getLevel() {
+      java.lang.Object ref = level_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          level_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string level = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getLevelBytes() {
+      java.lang.Object ref = level_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        level_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string type = 3;
+    public static final int TYPE_FIELD_NUMBER = 3;
+    private java.lang.Object type_;
+    /**
+     * <code>required string type = 3;</code>
+     */
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required string type = 3;</code>
+     */
+    public java.lang.String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          type_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string type = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string message = 4;
+    public static final int MESSAGE_FIELD_NUMBER = 4;
+    private java.lang.Object message_;
+    /**
+     * <code>required string message = 4;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required string message = 4;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string message = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required .DeviceEventData eventData = 5;
+    public static final int EVENTDATA_FIELD_NUMBER = 5;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData eventData_;
+    /**
+     * <code>required .DeviceEventData eventData = 5;</code>
+     */
+    public boolean hasEventData() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required .DeviceEventData eventData = 5;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData() {
+      return eventData_;
+    }
+
+    private void initFields() {
+      source_ = "";
+      level_ = "";
+      type_ = "";
+      message_ = "";
+      eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasSource()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLevel()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasMessage()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEventData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getEventData().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getSourceBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getLevelBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getTypeBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(5, eventData_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getSourceBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getLevelBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getTypeBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, eventData_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceAlert}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlertOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        source_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        level_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        type_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.source_ = source_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.level_ = level_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.type_ = type_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.message_ = message_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.eventData_ = eventData_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert.getDefaultInstance()) return this;
+        if (other.hasSource()) {
+          bitField0_ |= 0x00000001;
+          source_ = other.source_;
+          
+        }
+        if (other.hasLevel()) {
+          bitField0_ |= 0x00000002;
+          level_ = other.level_;
+          
+        }
+        if (other.hasType()) {
+          bitField0_ |= 0x00000004;
+          type_ = other.type_;
+          
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000008;
+          message_ = other.message_;
+          
+        }
+        if (other.hasEventData()) {
+          mergeEventData(other.getEventData());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasSource()) {
+          
+          return false;
+        }
+        if (!hasLevel()) {
+          
+          return false;
+        }
+        if (!hasType()) {
+          
+          return false;
+        }
+        if (!hasMessage()) {
+          
+          return false;
+        }
+        if (!hasEventData()) {
+          
+          return false;
+        }
+        if (!getEventData().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string source = 1;
+      private java.lang.Object source_ = "";
+      /**
+       * <code>required string source = 1;</code>
+       */
+      public boolean hasSource() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string source = 1;</code>
+       */
+      public java.lang.String getSource() {
+        java.lang.Object ref = source_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          source_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string source = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSourceBytes() {
+        java.lang.Object ref = source_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          source_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string source = 1;</code>
+       */
+      public Builder setSource(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        source_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string source = 1;</code>
+       */
+      public Builder clearSource() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        source_ = getDefaultInstance().getSource();
+        
+        return this;
+      }
+      /**
+       * <code>required string source = 1;</code>
+       */
+      public Builder setSourceBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        source_ = value;
+        
+        return this;
+      }
+
+      // required string level = 2;
+      private java.lang.Object level_ = "";
+      /**
+       * <code>required string level = 2;</code>
+       */
+      public boolean hasLevel() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string level = 2;</code>
+       */
+      public java.lang.String getLevel() {
+        java.lang.Object ref = level_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          level_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string level = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getLevelBytes() {
+        java.lang.Object ref = level_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          level_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string level = 2;</code>
+       */
+      public Builder setLevel(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        level_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string level = 2;</code>
+       */
+      public Builder clearLevel() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        level_ = getDefaultInstance().getLevel();
+        
+        return this;
+      }
+      /**
+       * <code>required string level = 2;</code>
+       */
+      public Builder setLevelBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        level_ = value;
+        
+        return this;
+      }
+
+      // required string type = 3;
+      private java.lang.Object type_ = "";
+      /**
+       * <code>required string type = 3;</code>
+       */
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required string type = 3;</code>
+       */
+      public java.lang.String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string type = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string type = 3;</code>
+       */
+      public Builder setType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        type_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string type = 3;</code>
+       */
+      public Builder clearType() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        type_ = getDefaultInstance().getType();
+        
+        return this;
+      }
+      /**
+       * <code>required string type = 3;</code>
+       */
+      public Builder setTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        type_ = value;
+        
+        return this;
+      }
+
+      // required string message = 4;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>required string message = 4;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required string message = 4;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string message = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string message = 4;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        message_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string message = 4;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        message_ = getDefaultInstance().getMessage();
+        
+        return this;
+      }
+      /**
+       * <code>required string message = 4;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        message_ = value;
+        
+        return this;
+      }
+
+      // required .DeviceEventData eventData = 5;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+      /**
+       * <code>required .DeviceEventData eventData = 5;</code>
+       */
+      public boolean hasEventData() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 5;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData getEventData() {
+        return eventData_;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 5;</code>
+       */
+      public Builder setEventData(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        eventData_ = value;
+
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 5;</code>
+       */
+      public Builder setEventData(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.Builder builderForValue) {
+        eventData_ = builderForValue.build();
+
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 5;</code>
+       */
+      public Builder mergeEventData(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData value) {
+        if (((bitField0_ & 0x00000010) == 0x00000010) &&
+            eventData_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance()) {
+          eventData_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.newBuilder(eventData_).mergeFrom(value).buildPartial();
+        } else {
+          eventData_ = value;
+        }
+
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .DeviceEventData eventData = 5;</code>
+       */
+      public Builder clearEventData() {
+        eventData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceEventData.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceAlert)
+    }
+
+    static {
+      defaultInstance = new DeviceAlert(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceAlert)
+  }
+
+  public interface DeviceAssignmentStateOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // optional int64 lastInteractionDate = 1;
+    /**
+     * <code>optional int64 lastInteractionDate = 1;</code>
+     */
+    boolean hasLastInteractionDate();
+    /**
+     * <code>optional int64 lastInteractionDate = 1;</code>
+     */
+    long getLastInteractionDate();
+
+    // optional .DeviceLocation lastLocation = 2;
+    /**
+     * <code>optional .DeviceLocation lastLocation = 2;</code>
+     */
+    boolean hasLastLocation();
+    /**
+     * <code>optional .DeviceLocation lastLocation = 2;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation getLastLocation();
+
+    // repeated .DeviceMeasurement latestMeasurements = 3;
+    /**
+     * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+     */
+    java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> 
+        getLatestMeasurementsList();
+    /**
+     * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement getLatestMeasurements(int index);
+    /**
+     * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+     */
+    int getLatestMeasurementsCount();
+
+    // repeated .DeviceAlert latestAlerts = 4;
+    /**
+     * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+     */
+    java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert> 
+        getLatestAlertsList();
+    /**
+     * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert getLatestAlerts(int index);
+    /**
+     * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+     */
+    int getLatestAlertsCount();
+  }
+  /**
+   * Protobuf type {@code DeviceAssignmentState}
+   */
+  public static final class DeviceAssignmentState extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceAssignmentStateOrBuilder {
+    // Use DeviceAssignmentState.newBuilder() to construct.
+    private DeviceAssignmentState(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceAssignmentState(boolean noInit) {}
+
+    private static final DeviceAssignmentState defaultInstance;
+    public static DeviceAssignmentState getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceAssignmentState getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceAssignmentState(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              lastInteractionDate_ = input.readInt64();
+              break;
+            }
+            case 18: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                subBuilder = lastLocation_.toBuilder();
+              }
+              lastLocation_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(lastLocation_);
+                lastLocation_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000002;
+              break;
+            }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                latestMeasurements_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              latestMeasurements_.add(input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.PARSER, extensionRegistry));
+              break;
+            }
+            case 34: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                latestAlerts_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              latestAlerts_.add(input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          latestMeasurements_ = java.util.Collections.unmodifiableList(latestMeasurements_);
+        }
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+          latestAlerts_ = java.util.Collections.unmodifiableList(latestAlerts_);
+        }
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceAssignmentState> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceAssignmentState>() {
+      public DeviceAssignmentState parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceAssignmentState(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceAssignmentState> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // optional int64 lastInteractionDate = 1;
+    public static final int LASTINTERACTIONDATE_FIELD_NUMBER = 1;
+    private long lastInteractionDate_;
+    /**
+     * <code>optional int64 lastInteractionDate = 1;</code>
+     */
+    public boolean hasLastInteractionDate() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional int64 lastInteractionDate = 1;</code>
+     */
+    public long getLastInteractionDate() {
+      return lastInteractionDate_;
+    }
+
+    // optional .DeviceLocation lastLocation = 2;
+    public static final int LASTLOCATION_FIELD_NUMBER = 2;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation lastLocation_;
+    /**
+     * <code>optional .DeviceLocation lastLocation = 2;</code>
+     */
+    public boolean hasLastLocation() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional .DeviceLocation lastLocation = 2;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation getLastLocation() {
+      return lastLocation_;
+    }
+
+    // repeated .DeviceMeasurement latestMeasurements = 3;
+    public static final int LATESTMEASUREMENTS_FIELD_NUMBER = 3;
+    private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> latestMeasurements_;
+    /**
+     * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+     */
+    public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> getLatestMeasurementsList() {
+      return latestMeasurements_;
+    }
+    /**
+     * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+     */
+    public java.util.List<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurementOrBuilder> 
+        getLatestMeasurementsOrBuilderList() {
+      return latestMeasurements_;
+    }
+    /**
+     * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+     */
+    public int getLatestMeasurementsCount() {
+      return latestMeasurements_.size();
+    }
+    /**
+     * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement getLatestMeasurements(int index) {
+      return latestMeasurements_.get(index);
+    }
+    /**
+     * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurementOrBuilder getLatestMeasurementsOrBuilder(
+        int index) {
+      return latestMeasurements_.get(index);
+    }
+
+    // repeated .DeviceAlert latestAlerts = 4;
+    public static final int LATESTALERTS_FIELD_NUMBER = 4;
+    private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert> latestAlerts_;
+    /**
+     * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+     */
+    public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert> getLatestAlertsList() {
+      return latestAlerts_;
+    }
+    /**
+     * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+     */
+    public java.util.List<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlertOrBuilder> 
+        getLatestAlertsOrBuilderList() {
+      return latestAlerts_;
+    }
+    /**
+     * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+     */
+    public int getLatestAlertsCount() {
+      return latestAlerts_.size();
+    }
+    /**
+     * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert getLatestAlerts(int index) {
+      return latestAlerts_.get(index);
+    }
+    /**
+     * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlertOrBuilder getLatestAlertsOrBuilder(
+        int index) {
+      return latestAlerts_.get(index);
+    }
+
+    private void initFields() {
+      lastInteractionDate_ = 0L;
+      lastLocation_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.getDefaultInstance();
+      latestMeasurements_ = java.util.Collections.emptyList();
+      latestAlerts_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (hasLastLocation()) {
+        if (!getLastLocation().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getLatestMeasurementsCount(); i++) {
+        if (!getLatestMeasurements(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getLatestAlertsCount(); i++) {
+        if (!getLatestAlerts(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt64(1, lastInteractionDate_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, lastLocation_);
+      }
+      for (int i = 0; i < latestMeasurements_.size(); i++) {
+        output.writeMessage(3, latestMeasurements_.get(i));
+      }
+      for (int i = 0; i < latestAlerts_.size(); i++) {
+        output.writeMessage(4, latestAlerts_.get(i));
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, lastInteractionDate_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, lastLocation_);
+      }
+      for (int i = 0; i < latestMeasurements_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, latestMeasurements_.get(i));
+      }
+      for (int i = 0; i < latestAlerts_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, latestAlerts_.get(i));
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceAssignmentState}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentStateOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        lastInteractionDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lastLocation_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        latestMeasurements_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        latestAlerts_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.lastInteractionDate_ = lastInteractionDate_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.lastLocation_ = lastLocation_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          latestMeasurements_ = java.util.Collections.unmodifiableList(latestMeasurements_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.latestMeasurements_ = latestMeasurements_;
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          latestAlerts_ = java.util.Collections.unmodifiableList(latestAlerts_);
+          bitField0_ = (bitField0_ & ~0x00000008);
+        }
+        result.latestAlerts_ = latestAlerts_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState.getDefaultInstance()) return this;
+        if (other.hasLastInteractionDate()) {
+          setLastInteractionDate(other.getLastInteractionDate());
+        }
+        if (other.hasLastLocation()) {
+          mergeLastLocation(other.getLastLocation());
+        }
+        if (!other.latestMeasurements_.isEmpty()) {
+          if (latestMeasurements_.isEmpty()) {
+            latestMeasurements_ = other.latestMeasurements_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureLatestMeasurementsIsMutable();
+            latestMeasurements_.addAll(other.latestMeasurements_);
+          }
+          
+        }
+        if (!other.latestAlerts_.isEmpty()) {
+          if (latestAlerts_.isEmpty()) {
+            latestAlerts_ = other.latestAlerts_;
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            ensureLatestAlertsIsMutable();
+            latestAlerts_.addAll(other.latestAlerts_);
+          }
+          
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (hasLastLocation()) {
+          if (!getLastLocation().isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getLatestMeasurementsCount(); i++) {
+          if (!getLatestMeasurements(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getLatestAlertsCount(); i++) {
+          if (!getLatestAlerts(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentState) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // optional int64 lastInteractionDate = 1;
+      private long lastInteractionDate_ ;
+      /**
+       * <code>optional int64 lastInteractionDate = 1;</code>
+       */
+      public boolean hasLastInteractionDate() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional int64 lastInteractionDate = 1;</code>
+       */
+      public long getLastInteractionDate() {
+        return lastInteractionDate_;
+      }
+      /**
+       * <code>optional int64 lastInteractionDate = 1;</code>
+       */
+      public Builder setLastInteractionDate(long value) {
+        bitField0_ |= 0x00000001;
+        lastInteractionDate_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional int64 lastInteractionDate = 1;</code>
+       */
+      public Builder clearLastInteractionDate() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lastInteractionDate_ = 0L;
+        
+        return this;
+      }
+
+      // optional .DeviceLocation lastLocation = 2;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation lastLocation_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.getDefaultInstance();
+      /**
+       * <code>optional .DeviceLocation lastLocation = 2;</code>
+       */
+      public boolean hasLastLocation() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional .DeviceLocation lastLocation = 2;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation getLastLocation() {
+        return lastLocation_;
+      }
+      /**
+       * <code>optional .DeviceLocation lastLocation = 2;</code>
+       */
+      public Builder setLastLocation(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        lastLocation_ = value;
+
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .DeviceLocation lastLocation = 2;</code>
+       */
+      public Builder setLastLocation(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.Builder builderForValue) {
+        lastLocation_ = builderForValue.build();
+
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .DeviceLocation lastLocation = 2;</code>
+       */
+      public Builder mergeLastLocation(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation value) {
+        if (((bitField0_ & 0x00000002) == 0x00000002) &&
+            lastLocation_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.getDefaultInstance()) {
+          lastLocation_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.newBuilder(lastLocation_).mergeFrom(value).buildPartial();
+        } else {
+          lastLocation_ = value;
+        }
+
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .DeviceLocation lastLocation = 2;</code>
+       */
+      public Builder clearLastLocation() {
+        lastLocation_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceLocation.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      // repeated .DeviceMeasurement latestMeasurements = 3;
+      private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> latestMeasurements_ =
+        java.util.Collections.emptyList();
+      private void ensureLatestMeasurementsIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          latestMeasurements_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement>(latestMeasurements_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> getLatestMeasurementsList() {
+        return java.util.Collections.unmodifiableList(latestMeasurements_);
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public int getLatestMeasurementsCount() {
+        return latestMeasurements_.size();
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement getLatestMeasurements(int index) {
+        return latestMeasurements_.get(index);
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder setLatestMeasurements(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLatestMeasurementsIsMutable();
+        latestMeasurements_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder setLatestMeasurements(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.Builder builderForValue) {
+        ensureLatestMeasurementsIsMutable();
+        latestMeasurements_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder addLatestMeasurements(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLatestMeasurementsIsMutable();
+        latestMeasurements_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder addLatestMeasurements(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLatestMeasurementsIsMutable();
+        latestMeasurements_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder addLatestMeasurements(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.Builder builderForValue) {
+        ensureLatestMeasurementsIsMutable();
+        latestMeasurements_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder addLatestMeasurements(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement.Builder builderForValue) {
+        ensureLatestMeasurementsIsMutable();
+        latestMeasurements_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder addAllLatestMeasurements(
+          java.lang.Iterable<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceMeasurement> values) {
+        ensureLatestMeasurementsIsMutable();
+        super.addAll(values, latestMeasurements_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder clearLatestMeasurements() {
+        latestMeasurements_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceMeasurement latestMeasurements = 3;</code>
+       */
+      public Builder removeLatestMeasurements(int index) {
+        ensureLatestMeasurementsIsMutable();
+        latestMeasurements_.remove(index);
+
+        return this;
+      }
+
+      // repeated .DeviceAlert latestAlerts = 4;
+      private java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert> latestAlerts_ =
+        java.util.Collections.emptyList();
+      private void ensureLatestAlertsIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          latestAlerts_ = new java.util.ArrayList<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert>(latestAlerts_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public java.util.List<com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert> getLatestAlertsList() {
+        return java.util.Collections.unmodifiableList(latestAlerts_);
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public int getLatestAlertsCount() {
+        return latestAlerts_.size();
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert getLatestAlerts(int index) {
+        return latestAlerts_.get(index);
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder setLatestAlerts(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLatestAlertsIsMutable();
+        latestAlerts_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder setLatestAlerts(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert.Builder builderForValue) {
+        ensureLatestAlertsIsMutable();
+        latestAlerts_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder addLatestAlerts(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLatestAlertsIsMutable();
+        latestAlerts_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder addLatestAlerts(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureLatestAlertsIsMutable();
+        latestAlerts_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder addLatestAlerts(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert.Builder builderForValue) {
+        ensureLatestAlertsIsMutable();
+        latestAlerts_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder addLatestAlerts(
+          int index, com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert.Builder builderForValue) {
+        ensureLatestAlertsIsMutable();
+        latestAlerts_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder addAllLatestAlerts(
+          java.lang.Iterable<? extends com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAlert> values) {
+        ensureLatestAlertsIsMutable();
+        super.addAll(values, latestAlerts_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder clearLatestAlerts() {
+        latestAlerts_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000008);
+
+        return this;
+      }
+      /**
+       * <code>repeated .DeviceAlert latestAlerts = 4;</code>
+       */
+      public Builder removeLatestAlerts(int index) {
+        ensureLatestAlertsIsMutable();
+        latestAlerts_.remove(index);
+
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceAssignmentState)
+    }
+
+    static {
+      defaultInstance = new DeviceAssignmentState(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceAssignmentState)
+  }
+
+  public interface DeviceAssignmentOrBuilder
+      extends com.google.protobuf.MessageLiteOrBuilder {
+
+    // required string token = 1;
+    /**
+     * <code>required string token = 1;</code>
+     */
+    boolean hasToken();
+    /**
+     * <code>required string token = 1;</code>
+     */
+    java.lang.String getToken();
+    /**
+     * <code>required string token = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getTokenBytes();
+
+    // required string deviceHardwareId = 2;
+    /**
+     * <code>required string deviceHardwareId = 2;</code>
+     */
+    boolean hasDeviceHardwareId();
+    /**
+     * <code>required string deviceHardwareId = 2;</code>
+     */
+    java.lang.String getDeviceHardwareId();
+    /**
+     * <code>required string deviceHardwareId = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getDeviceHardwareIdBytes();
+
+    // required string siteToken = 3;
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    boolean hasSiteToken();
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    java.lang.String getSiteToken();
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getSiteTokenBytes();
+
+    // required string assignmentType = 4;
+    /**
+     * <code>required string assignmentType = 4;</code>
+     */
+    boolean hasAssignmentType();
+    /**
+     * <code>required string assignmentType = 4;</code>
+     */
+    java.lang.String getAssignmentType();
+    /**
+     * <code>required string assignmentType = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getAssignmentTypeBytes();
+
+    // required string assetModuleId = 5;
+    /**
+     * <code>required string assetModuleId = 5;</code>
+     */
+    boolean hasAssetModuleId();
+    /**
+     * <code>required string assetModuleId = 5;</code>
+     */
+    java.lang.String getAssetModuleId();
+    /**
+     * <code>required string assetModuleId = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getAssetModuleIdBytes();
+
+    // required string assetId = 6;
+    /**
+     * <code>required string assetId = 6;</code>
+     */
+    boolean hasAssetId();
+    /**
+     * <code>required string assetId = 6;</code>
+     */
+    java.lang.String getAssetId();
+    /**
+     * <code>required string assetId = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getAssetIdBytes();
+
+    // required string status = 7;
+    /**
+     * <code>required string status = 7;</code>
+     */
+    boolean hasStatus();
+    /**
+     * <code>required string status = 7;</code>
+     */
+    java.lang.String getStatus();
+    /**
+     * <code>required string status = 7;</code>
+     */
+    com.google.protobuf.ByteString
+        getStatusBytes();
+
+    // optional int64 activeDate = 8;
+    /**
+     * <code>optional int64 activeDate = 8;</code>
+     */
+    boolean hasActiveDate();
+    /**
+     * <code>optional int64 activeDate = 8;</code>
+     */
+    long getActiveDate();
+
+    // optional int64 releasedDate = 9;
+    /**
+     * <code>optional int64 releasedDate = 9;</code>
+     */
+    boolean hasReleasedDate();
+    /**
+     * <code>optional int64 releasedDate = 9;</code>
+     */
+    long getReleasedDate();
+
+    // required .EntityData entityData = 10;
+    /**
+     * <code>required .EntityData entityData = 10;</code>
+     */
+    boolean hasEntityData();
+    /**
+     * <code>required .EntityData entityData = 10;</code>
+     */
+    com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData();
+  }
+  /**
+   * Protobuf type {@code DeviceAssignment}
+   */
+  public static final class DeviceAssignment extends
+      com.google.protobuf.GeneratedMessageLite
+      implements DeviceAssignmentOrBuilder {
+    // Use DeviceAssignment.newBuilder() to construct.
+    private DeviceAssignment(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+      super(builder);
+
+    }
+    private DeviceAssignment(boolean noInit) {}
+
+    private static final DeviceAssignment defaultInstance;
+    public static DeviceAssignment getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DeviceAssignment getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private DeviceAssignment(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              token_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              deviceHardwareId_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              siteToken_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              assignmentType_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              assetModuleId_ = input.readBytes();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              assetId_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000040;
+              status_ = input.readBytes();
+              break;
+            }
+            case 64: {
+              bitField0_ |= 0x00000080;
+              activeDate_ = input.readInt64();
+              break;
+            }
+            case 72: {
+              bitField0_ |= 0x00000100;
+              releasedDate_ = input.readInt64();
+              break;
+            }
+            case 82: {
+              com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000200) == 0x00000200)) {
+                subBuilder = entityData_.toBuilder();
+              }
+              entityData_ = input.readMessage(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(entityData_);
+                entityData_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000200;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        makeExtensionsImmutable();
+      }
+    }
+    public static com.google.protobuf.Parser<DeviceAssignment> PARSER =
+        new com.google.protobuf.AbstractParser<DeviceAssignment>() {
+      public DeviceAssignment parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DeviceAssignment(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DeviceAssignment> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string token = 1;
+    public static final int TOKEN_FIELD_NUMBER = 1;
+    private java.lang.Object token_;
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public boolean hasToken() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public java.lang.String getToken() {
+      java.lang.Object ref = token_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          token_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string token = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTokenBytes() {
+      java.lang.Object ref = token_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        token_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string deviceHardwareId = 2;
+    public static final int DEVICEHARDWAREID_FIELD_NUMBER = 2;
+    private java.lang.Object deviceHardwareId_;
+    /**
+     * <code>required string deviceHardwareId = 2;</code>
+     */
+    public boolean hasDeviceHardwareId() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string deviceHardwareId = 2;</code>
+     */
+    public java.lang.String getDeviceHardwareId() {
+      java.lang.Object ref = deviceHardwareId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          deviceHardwareId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string deviceHardwareId = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDeviceHardwareIdBytes() {
+      java.lang.Object ref = deviceHardwareId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        deviceHardwareId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string siteToken = 3;
+    public static final int SITETOKEN_FIELD_NUMBER = 3;
+    private java.lang.Object siteToken_;
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    public boolean hasSiteToken() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    public java.lang.String getSiteToken() {
+      java.lang.Object ref = siteToken_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          siteToken_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string siteToken = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSiteTokenBytes() {
+      java.lang.Object ref = siteToken_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        siteToken_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string assignmentType = 4;
+    public static final int ASSIGNMENTTYPE_FIELD_NUMBER = 4;
+    private java.lang.Object assignmentType_;
+    /**
+     * <code>required string assignmentType = 4;</code>
+     */
+    public boolean hasAssignmentType() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required string assignmentType = 4;</code>
+     */
+    public java.lang.String getAssignmentType() {
+      java.lang.Object ref = assignmentType_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          assignmentType_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string assignmentType = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAssignmentTypeBytes() {
+      java.lang.Object ref = assignmentType_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        assignmentType_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string assetModuleId = 5;
+    public static final int ASSETMODULEID_FIELD_NUMBER = 5;
+    private java.lang.Object assetModuleId_;
+    /**
+     * <code>required string assetModuleId = 5;</code>
+     */
+    public boolean hasAssetModuleId() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required string assetModuleId = 5;</code>
+     */
+    public java.lang.String getAssetModuleId() {
+      java.lang.Object ref = assetModuleId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          assetModuleId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string assetModuleId = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAssetModuleIdBytes() {
+      java.lang.Object ref = assetModuleId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        assetModuleId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string assetId = 6;
+    public static final int ASSETID_FIELD_NUMBER = 6;
+    private java.lang.Object assetId_;
+    /**
+     * <code>required string assetId = 6;</code>
+     */
+    public boolean hasAssetId() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>required string assetId = 6;</code>
+     */
+    public java.lang.String getAssetId() {
+      java.lang.Object ref = assetId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          assetId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string assetId = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getAssetIdBytes() {
+      java.lang.Object ref = assetId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        assetId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string status = 7;
+    public static final int STATUS_FIELD_NUMBER = 7;
+    private java.lang.Object status_;
+    /**
+     * <code>required string status = 7;</code>
+     */
+    public boolean hasStatus() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>required string status = 7;</code>
+     */
+    public java.lang.String getStatus() {
+      java.lang.Object ref = status_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          status_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string status = 7;</code>
+     */
+    public com.google.protobuf.ByteString
+        getStatusBytes() {
+      java.lang.Object ref = status_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        status_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional int64 activeDate = 8;
+    public static final int ACTIVEDATE_FIELD_NUMBER = 8;
+    private long activeDate_;
+    /**
+     * <code>optional int64 activeDate = 8;</code>
+     */
+    public boolean hasActiveDate() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional int64 activeDate = 8;</code>
+     */
+    public long getActiveDate() {
+      return activeDate_;
+    }
+
+    // optional int64 releasedDate = 9;
+    public static final int RELEASEDDATE_FIELD_NUMBER = 9;
+    private long releasedDate_;
+    /**
+     * <code>optional int64 releasedDate = 9;</code>
+     */
+    public boolean hasReleasedDate() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>optional int64 releasedDate = 9;</code>
+     */
+    public long getReleasedDate() {
+      return releasedDate_;
+    }
+
+    // required .EntityData entityData = 10;
+    public static final int ENTITYDATA_FIELD_NUMBER = 10;
+    private com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData entityData_;
+    /**
+     * <code>required .EntityData entityData = 10;</code>
+     */
+    public boolean hasEntityData() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>required .EntityData entityData = 10;</code>
+     */
+    public com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData() {
+      return entityData_;
+    }
+
+    private void initFields() {
+      token_ = "";
+      deviceHardwareId_ = "";
+      siteToken_ = "";
+      assignmentType_ = "";
+      assetModuleId_ = "";
+      assetId_ = "";
+      status_ = "";
+      activeDate_ = 0L;
+      releasedDate_ = 0L;
+      entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasDeviceHardwareId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSiteToken()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasAssignmentType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasAssetModuleId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasAssetId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasStatus()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEntityData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getEntityData().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getTokenBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getDeviceHardwareIdBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getSiteTokenBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getAssignmentTypeBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getAssetModuleIdBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getAssetIdBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBytes(7, getStatusBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeInt64(8, activeDate_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeInt64(9, releasedDate_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeMessage(10, entityData_);
+      }
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getTokenBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getDeviceHardwareIdBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getSiteTokenBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getAssignmentTypeBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getAssetModuleIdBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getAssetIdBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(7, getStatusBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(8, activeDate_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(9, releasedDate_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, entityData_);
+      }
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    /**
+     * Protobuf type {@code DeviceAssignment}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment, Builder>
+        implements com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentOrBuilder {
+      // Construct using com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        token_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        deviceHardwareId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        siteToken_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        assignmentType_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        assetModuleId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        assetId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        status_ = "";
+        bitField0_ = (bitField0_ & ~0x00000040);
+        activeDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        releasedDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+        bitField0_ = (bitField0_ & ~0x00000200);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment getDefaultInstanceForType() {
+        return com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment.getDefaultInstance();
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment build() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment buildPartial() {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment result = new com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.token_ = token_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.deviceHardwareId_ = deviceHardwareId_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.siteToken_ = siteToken_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.assignmentType_ = assignmentType_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.assetModuleId_ = assetModuleId_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.assetId_ = assetId_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.status_ = status_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.activeDate_ = activeDate_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.releasedDate_ = releasedDate_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.entityData_ = entityData_;
+        result.bitField0_ = to_bitField0_;
+        return result;
+      }
+
+      public Builder mergeFrom(com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment other) {
+        if (other == com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment.getDefaultInstance()) return this;
+        if (other.hasToken()) {
+          bitField0_ |= 0x00000001;
+          token_ = other.token_;
+          
+        }
+        if (other.hasDeviceHardwareId()) {
+          bitField0_ |= 0x00000002;
+          deviceHardwareId_ = other.deviceHardwareId_;
+          
+        }
+        if (other.hasSiteToken()) {
+          bitField0_ |= 0x00000004;
+          siteToken_ = other.siteToken_;
+          
+        }
+        if (other.hasAssignmentType()) {
+          bitField0_ |= 0x00000008;
+          assignmentType_ = other.assignmentType_;
+          
+        }
+        if (other.hasAssetModuleId()) {
+          bitField0_ |= 0x00000010;
+          assetModuleId_ = other.assetModuleId_;
+          
+        }
+        if (other.hasAssetId()) {
+          bitField0_ |= 0x00000020;
+          assetId_ = other.assetId_;
+          
+        }
+        if (other.hasStatus()) {
+          bitField0_ |= 0x00000040;
+          status_ = other.status_;
+          
+        }
+        if (other.hasActiveDate()) {
+          setActiveDate(other.getActiveDate());
+        }
+        if (other.hasReleasedDate()) {
+          setReleasedDate(other.getReleasedDate());
+        }
+        if (other.hasEntityData()) {
+          mergeEntityData(other.getEntityData());
+        }
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasToken()) {
+          
+          return false;
+        }
+        if (!hasDeviceHardwareId()) {
+          
+          return false;
+        }
+        if (!hasSiteToken()) {
+          
+          return false;
+        }
+        if (!hasAssignmentType()) {
+          
+          return false;
+        }
+        if (!hasAssetModuleId()) {
+          
+          return false;
+        }
+        if (!hasAssetId()) {
+          
+          return false;
+        }
+        if (!hasStatus()) {
+          
+          return false;
+        }
+        if (!hasEntityData()) {
+          
+          return false;
+        }
+        if (!getEntityData().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignment) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string token = 1;
+      private java.lang.Object token_ = "";
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public boolean hasToken() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public java.lang.String getToken() {
+        java.lang.Object ref = token_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          token_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTokenBytes() {
+        java.lang.Object ref = token_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          token_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder setToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        token_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder clearToken() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        token_ = getDefaultInstance().getToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string token = 1;</code>
+       */
+      public Builder setTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        token_ = value;
+        
+        return this;
+      }
+
+      // required string deviceHardwareId = 2;
+      private java.lang.Object deviceHardwareId_ = "";
+      /**
+       * <code>required string deviceHardwareId = 2;</code>
+       */
+      public boolean hasDeviceHardwareId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string deviceHardwareId = 2;</code>
+       */
+      public java.lang.String getDeviceHardwareId() {
+        java.lang.Object ref = deviceHardwareId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          deviceHardwareId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string deviceHardwareId = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDeviceHardwareIdBytes() {
+        java.lang.Object ref = deviceHardwareId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          deviceHardwareId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string deviceHardwareId = 2;</code>
+       */
+      public Builder setDeviceHardwareId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        deviceHardwareId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string deviceHardwareId = 2;</code>
+       */
+      public Builder clearDeviceHardwareId() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        deviceHardwareId_ = getDefaultInstance().getDeviceHardwareId();
+        
+        return this;
+      }
+      /**
+       * <code>required string deviceHardwareId = 2;</code>
+       */
+      public Builder setDeviceHardwareIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        deviceHardwareId_ = value;
+        
+        return this;
+      }
+
+      // required string siteToken = 3;
+      private java.lang.Object siteToken_ = "";
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public boolean hasSiteToken() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public java.lang.String getSiteToken() {
+        java.lang.Object ref = siteToken_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          siteToken_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSiteTokenBytes() {
+        java.lang.Object ref = siteToken_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          siteToken_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public Builder setSiteToken(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        siteToken_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public Builder clearSiteToken() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        siteToken_ = getDefaultInstance().getSiteToken();
+        
+        return this;
+      }
+      /**
+       * <code>required string siteToken = 3;</code>
+       */
+      public Builder setSiteTokenBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        siteToken_ = value;
+        
+        return this;
+      }
+
+      // required string assignmentType = 4;
+      private java.lang.Object assignmentType_ = "";
+      /**
+       * <code>required string assignmentType = 4;</code>
+       */
+      public boolean hasAssignmentType() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required string assignmentType = 4;</code>
+       */
+      public java.lang.String getAssignmentType() {
+        java.lang.Object ref = assignmentType_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          assignmentType_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string assignmentType = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAssignmentTypeBytes() {
+        java.lang.Object ref = assignmentType_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          assignmentType_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string assignmentType = 4;</code>
+       */
+      public Builder setAssignmentType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        assignmentType_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string assignmentType = 4;</code>
+       */
+      public Builder clearAssignmentType() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        assignmentType_ = getDefaultInstance().getAssignmentType();
+        
+        return this;
+      }
+      /**
+       * <code>required string assignmentType = 4;</code>
+       */
+      public Builder setAssignmentTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        assignmentType_ = value;
+        
+        return this;
+      }
+
+      // required string assetModuleId = 5;
+      private java.lang.Object assetModuleId_ = "";
+      /**
+       * <code>required string assetModuleId = 5;</code>
+       */
+      public boolean hasAssetModuleId() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required string assetModuleId = 5;</code>
+       */
+      public java.lang.String getAssetModuleId() {
+        java.lang.Object ref = assetModuleId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          assetModuleId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string assetModuleId = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAssetModuleIdBytes() {
+        java.lang.Object ref = assetModuleId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          assetModuleId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string assetModuleId = 5;</code>
+       */
+      public Builder setAssetModuleId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        assetModuleId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string assetModuleId = 5;</code>
+       */
+      public Builder clearAssetModuleId() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        assetModuleId_ = getDefaultInstance().getAssetModuleId();
+        
+        return this;
+      }
+      /**
+       * <code>required string assetModuleId = 5;</code>
+       */
+      public Builder setAssetModuleIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        assetModuleId_ = value;
+        
+        return this;
+      }
+
+      // required string assetId = 6;
+      private java.lang.Object assetId_ = "";
+      /**
+       * <code>required string assetId = 6;</code>
+       */
+      public boolean hasAssetId() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>required string assetId = 6;</code>
+       */
+      public java.lang.String getAssetId() {
+        java.lang.Object ref = assetId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          assetId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string assetId = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAssetIdBytes() {
+        java.lang.Object ref = assetId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          assetId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string assetId = 6;</code>
+       */
+      public Builder setAssetId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        assetId_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string assetId = 6;</code>
+       */
+      public Builder clearAssetId() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        assetId_ = getDefaultInstance().getAssetId();
+        
+        return this;
+      }
+      /**
+       * <code>required string assetId = 6;</code>
+       */
+      public Builder setAssetIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        assetId_ = value;
+        
+        return this;
+      }
+
+      // required string status = 7;
+      private java.lang.Object status_ = "";
+      /**
+       * <code>required string status = 7;</code>
+       */
+      public boolean hasStatus() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>required string status = 7;</code>
+       */
+      public java.lang.String getStatus() {
+        java.lang.Object ref = status_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          status_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string status = 7;</code>
+       */
+      public com.google.protobuf.ByteString
+          getStatusBytes() {
+        java.lang.Object ref = status_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          status_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string status = 7;</code>
+       */
+      public Builder setStatus(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        status_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>required string status = 7;</code>
+       */
+      public Builder clearStatus() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        status_ = getDefaultInstance().getStatus();
+        
+        return this;
+      }
+      /**
+       * <code>required string status = 7;</code>
+       */
+      public Builder setStatusBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        status_ = value;
+        
+        return this;
+      }
+
+      // optional int64 activeDate = 8;
+      private long activeDate_ ;
+      /**
+       * <code>optional int64 activeDate = 8;</code>
+       */
+      public boolean hasActiveDate() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional int64 activeDate = 8;</code>
+       */
+      public long getActiveDate() {
+        return activeDate_;
+      }
+      /**
+       * <code>optional int64 activeDate = 8;</code>
+       */
+      public Builder setActiveDate(long value) {
+        bitField0_ |= 0x00000080;
+        activeDate_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional int64 activeDate = 8;</code>
+       */
+      public Builder clearActiveDate() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        activeDate_ = 0L;
+        
+        return this;
+      }
+
+      // optional int64 releasedDate = 9;
+      private long releasedDate_ ;
+      /**
+       * <code>optional int64 releasedDate = 9;</code>
+       */
+      public boolean hasReleasedDate() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional int64 releasedDate = 9;</code>
+       */
+      public long getReleasedDate() {
+        return releasedDate_;
+      }
+      /**
+       * <code>optional int64 releasedDate = 9;</code>
+       */
+      public Builder setReleasedDate(long value) {
+        bitField0_ |= 0x00000100;
+        releasedDate_ = value;
+        
+        return this;
+      }
+      /**
+       * <code>optional int64 releasedDate = 9;</code>
+       */
+      public Builder clearReleasedDate() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        releasedDate_ = 0L;
+        
+        return this;
+      }
+
+      // required .EntityData entityData = 10;
+      private com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+      /**
+       * <code>required .EntityData entityData = 10;</code>
+       */
+      public boolean hasEntityData() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>required .EntityData entityData = 10;</code>
+       */
+      public com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData getEntityData() {
+        return entityData_;
+      }
+      /**
+       * <code>required .EntityData entityData = 10;</code>
+       */
+      public Builder setEntityData(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        entityData_ = value;
+
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 10;</code>
+       */
+      public Builder setEntityData(
+          com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.Builder builderForValue) {
+        entityData_ = builderForValue.build();
+
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 10;</code>
+       */
+      public Builder mergeEntityData(com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData value) {
+        if (((bitField0_ & 0x00000200) == 0x00000200) &&
+            entityData_ != com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance()) {
+          entityData_ =
+            com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.newBuilder(entityData_).mergeFrom(value).buildPartial();
+        } else {
+          entityData_ = value;
+        }
+
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      /**
+       * <code>required .EntityData entityData = 10;</code>
+       */
+      public Builder clearEntityData() {
+        entityData_ = com.sitewhere.hbase.encoder.ProtobufMarshaler.EntityData.getDefaultInstance();
+
+        bitField0_ = (bitField0_ & ~0x00000200);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DeviceAssignment)
+    }
+
+    static {
+      defaultInstance = new DeviceAssignment(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DeviceAssignment)
   }
 
 

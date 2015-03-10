@@ -9,6 +9,7 @@ package com.sitewhere.hbase.encoder;
 
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
@@ -176,6 +177,15 @@ public interface IPayloadMarshaler {
 	 * @throws SiteWhereException
 	 */
 	public byte[] encodeDeviceAssignmentState(IDeviceAssignmentState state) throws SiteWhereException;
+
+	/**
+	 * Decode a {@link DeviceAssignmentState} from the binary payload.
+	 * 
+	 * @param payload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceAssignmentState decodeDeviceAssignmentState(byte[] payload) throws SiteWhereException;
 
 	/**
 	 * Encode an {@link IDeviceMeasurements}.

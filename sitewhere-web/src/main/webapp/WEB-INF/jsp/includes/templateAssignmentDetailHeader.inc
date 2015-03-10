@@ -110,7 +110,7 @@
 			</div>
 			<div>
 				<span class="sw-assignment-header-label" title="Date assignment was released">Released Date:</span>
-				<span title="#= formattedDate(releasedDate) #">#= formattedDate(updatedDate) #</releasedDate>
+				<span title="#= formattedDate(releasedDate) #">#= formattedDate(releasedDate) #</releasedDate>
 			</div>
 			<div>
 				<span class="sw-assignment-header-label" title="Assignment status">Assignment Status:</span>

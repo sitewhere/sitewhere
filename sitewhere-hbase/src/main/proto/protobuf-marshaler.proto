@@ -52,3 +52,94 @@ message DeviceSpecification {
 	optional DeviceElementSchema deviceElementSchema = 6;
 	required EntityData entityData = 7;
 }
+
+message CommandParameter {
+	required string name = 1;
+	required string type = 2;
+	required bool required = 3;
+}
+
+message DeviceCommand {
+	required string token = 1;
+	required string specificationToken = 2;
+	required string namespace = 3;
+	required string name = 4;
+	required string description = 5;
+	repeated CommandParameter parameters = 6;
+	required EntityData entityData = 7;
+}
+
+message DeviceElementMapping {
+	required string deviceElementSchemaPath = 1;
+	required string hardwareId = 2;
+}
+
+message Device {
+	required string hardwareId = 1;
+	required string siteToken = 2;
+	required string specificationToken = 3;
+	optional string parentHardwareId = 4;
+	repeated DeviceElementMapping deviceElementMappings = 5;
+	optional string comments = 6;
+	optional string assignmentToken = 7;
+	required EntityData entityData = 8;
+}
+
+message DeviceEventData {
+	required string id = 1;
+	required string eventType = 2;
+	required string siteToken = 3;
+	required string deviceAssignmentToken = 4;
+	required string assignmentType = 5;
+	required string assetModuleId = 6;
+	required string assetId = 7;
+	required int64 eventDate = 8;
+	required int64 receivedDate = 9;
+	repeated MetadataEntry metadata = 10;
+}
+
+message DeviceLocation {
+	required double latitude = 1;
+	required double longitude = 2;
+	required double elevation = 3;
+	required DeviceEventData eventData = 4;
+}
+
+message DeviceMeasurement {
+	required string name = 1;
+	required double value = 2;
+	optional DeviceEventData eventData = 3;
+}
+
+message DeviceMeasurements {
+	repeated DeviceMeasurement measurements = 1;
+	required DeviceEventData eventData = 2;
+}
+
+message DeviceAlert {
+	required string source = 1;
+	required string level = 2;
+	required string type = 3;
+	required string message = 4;
+	required DeviceEventData eventData = 5;
+}
+
+message DeviceAssignmentState {
+	optional int64 lastInteractionDate = 1;
+	optional DeviceLocation lastLocation = 2;
+	repeated DeviceMeasurement latestMeasurements = 3;
+	repeated DeviceAlert latestAlerts = 4;
+}
+
+message DeviceAssignment {
+	required string token = 1;
+	required string deviceHardwareId = 2;
+	required string siteToken = 3;
+	required string assignmentType = 4;
+	required string assetModuleId = 5;
+	required string assetId = 6;
+	required string status = 7;
+	optional int64 activeDate = 8;
+	optional int64 releasedDate = 9;
+	required EntityData entityData = 10;
+}

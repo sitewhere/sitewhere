@@ -159,10 +159,12 @@ public class HBaseDeviceAssignment {
 				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				Get get = new Get(rowkey);
 				HBaseUtils.addPayloadFields(get);
+				get.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE);
 				Result result = sites.get(get);
 
 				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] state = result.getValue(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE);
 				if ((type == null) || (payload == null)) {
 					return null;
 				}
@@ -170,6 +172,12 @@ public class HBaseDeviceAssignment {
 				DeviceAssignment found =
 						PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceAssignment(
 								payload);
+				if (state != null) {
+					DeviceAssignmentState assnState =
+							PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceAssignmentState(
+									state);
+					found.setState(assnState);
+				}
 				if ((context.getCacheProvider() != null) && (found != null)) {
 					context.getCacheProvider().getDeviceAssignmentCache().put(token, found);
 				}
