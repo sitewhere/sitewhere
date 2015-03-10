@@ -21,7 +21,7 @@ If you want to customize SiteWhere or otherwise have a need to build it from sou
 #### Clone and Build #####
 Clone this repository locally using:
 
-    git clone https://github.com/reveal-technologies/sitewhere.git
+    git clone https://github.com/sitewhere/sitewhere.git
     
 Navigate to the newly created directory and execute:
 
