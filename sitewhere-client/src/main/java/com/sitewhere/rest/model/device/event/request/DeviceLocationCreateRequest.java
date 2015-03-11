@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
@@ -19,7 +21,10 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
  */
 @JsonInclude(Include.NON_NULL)
 public class DeviceLocationCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceLocationCreateRequest {
+		IDeviceLocationCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -7160866457228082338L;
 
 	/** Latitude value */
 	private Double latitude;

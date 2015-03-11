@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
@@ -19,7 +21,10 @@ import com.sitewhere.spi.device.ISite;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Site extends MetadataProviderEntity implements ISite {
+public class Site extends MetadataProviderEntity implements ISite, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 3080612757299957486L;
 
 	/** Unique token */
 	private String token;

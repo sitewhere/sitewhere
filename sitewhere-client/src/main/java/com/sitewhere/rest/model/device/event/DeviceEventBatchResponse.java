@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,10 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
  * 
  * @author Derek
  */
-public class DeviceEventBatchResponse implements IDeviceEventBatchResponse {
+public class DeviceEventBatchResponse implements IDeviceEventBatchResponse, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -5564589917811891744L;
 
 	/** List of measurements that were created */
 	private List<DeviceMeasurements> createdMeasurements = new ArrayList<DeviceMeasurements>();

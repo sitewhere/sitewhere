@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.common;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -19,7 +20,10 @@ import com.sitewhere.spi.common.IMetadataProviderEntity;
  * 
  * @author Derek Adams
  */
-public class MetadataProviderEntity extends MetadataProvider implements IMetadataProviderEntity {
+public class MetadataProviderEntity extends MetadataProvider implements IMetadataProviderEntity, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 1858151633970096161L;
 
 	/** Date entity was created */
 	private Date createdDate;

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -20,7 +21,11 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceEventCreateRequest extends MetadataProvider implements IDeviceEventCreateRequest {
+public class DeviceEventCreateRequest extends MetadataProvider implements IDeviceEventCreateRequest,
+		Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -8906177904822194407L;
 
 	/** Date event occurred */
 	private Date eventDate;

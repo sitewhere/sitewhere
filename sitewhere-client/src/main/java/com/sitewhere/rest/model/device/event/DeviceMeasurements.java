@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,7 +24,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
  */
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
-public class DeviceMeasurements extends DeviceEvent implements IDeviceMeasurements {
+public class DeviceMeasurements extends DeviceEvent implements IDeviceMeasurements, Serializable {
 
 	/** For Java serialization */
 	private static final long serialVersionUID = -4369962596450151827L;

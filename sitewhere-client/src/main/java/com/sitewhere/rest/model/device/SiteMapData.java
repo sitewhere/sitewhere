@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
+
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.ISiteMapData;
@@ -16,7 +18,10 @@ import com.sitewhere.spi.device.ISiteMapData;
  * 
  * @author Derek
  */
-public class SiteMapData extends MetadataProvider implements ISiteMapData {
+public class SiteMapData extends MetadataProvider implements ISiteMapData, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -6587910408267715129L;
 
 	/** Map type */
 	private String type;

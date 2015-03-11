@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,11 @@ import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
  * 
  * @author Derek
  */
-public class BatchOperationCreateRequest extends MetadataProvider implements IBatchOperationCreateRequest {
+public class BatchOperationCreateRequest extends MetadataProvider implements IBatchOperationCreateRequest,
+		Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 276630436113821199L;
 
 	/** Unqiue token */
 	private String token;

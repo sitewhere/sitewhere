@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
+
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
@@ -16,7 +18,11 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  * 
  * @author Derek Adams
  */
-public class DeviceAssignmentCreateRequest extends MetadataProvider implements IDeviceAssignmentCreateRequest {
+public class DeviceAssignmentCreateRequest extends MetadataProvider implements
+		IDeviceAssignmentCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -6880578458870122016L;
 
 	/** Device hardware id */
 	private String deviceHardwareId;

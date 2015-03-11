@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.batch;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,10 @@ import com.sitewhere.spi.device.batch.OperationType;
  * 
  * @author Derek
  */
-public class BatchOperation extends MetadataProviderEntity implements IBatchOperation {
+public class BatchOperation extends MetadataProviderEntity implements IBatchOperation, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -228183022121018340L;
 
 	/** Unqiue token */
 	private String token;

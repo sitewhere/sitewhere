@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.group;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,10 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
  * 
  * @author Derek
  */
-public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup {
+public class DeviceGroup extends MetadataProviderEntity implements IDeviceGroup, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -4993194128786517276L;
 
 	/** Unique token */
 	private String token;

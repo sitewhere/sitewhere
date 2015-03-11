@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,11 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
  * 
  * @author Derek
  */
-public class DeviceStateChangeCreateRequest extends DeviceEventCreateRequest implements IDeviceStateChangeCreateRequest {
+public class DeviceStateChangeCreateRequest extends DeviceEventCreateRequest implements
+		IDeviceStateChangeCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -2789928889465310950L;
 
 	/** State change category */
 	private StateChangeCategory category;
@@ -38,8 +43,8 @@ public class DeviceStateChangeCreateRequest extends DeviceEventCreateRequest imp
 	/** Data associated with the state change */
 	private Map<String, String> data = new HashMap<String, String>();
 
-	public DeviceStateChangeCreateRequest(StateChangeCategory category, StateChangeType type, String previousState,
-			String newState) {
+	public DeviceStateChangeCreateRequest(StateChangeCategory category, StateChangeType type,
+			String previousState, String newState) {
 		this.category = category;
 		this.type = type;
 		this.previousState = previousState;

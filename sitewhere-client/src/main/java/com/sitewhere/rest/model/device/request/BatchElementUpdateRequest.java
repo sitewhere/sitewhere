@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -18,7 +19,11 @@ import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
  * 
  * @author Derek
  */
-public class BatchElementUpdateRequest extends MetadataProvider implements IBatchElementUpdateRequest {
+public class BatchElementUpdateRequest extends MetadataProvider implements IBatchElementUpdateRequest,
+		Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -3369336266183401785L;
 
 	/** Processing status for update */
 	private ElementProcessingStatus processingStatus;

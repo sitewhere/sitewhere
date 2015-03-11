@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.batch;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -20,7 +21,10 @@ import com.sitewhere.spi.device.batch.IBatchElement;
  * 
  * @author Derek
  */
-public class BatchElement extends MetadataProvider implements IBatchElement {
+public class BatchElement extends MetadataProvider implements IBatchElement, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 7080873473253195755L;
 
 	/** Token for parent batch operation */
 	private String batchOperationToken;

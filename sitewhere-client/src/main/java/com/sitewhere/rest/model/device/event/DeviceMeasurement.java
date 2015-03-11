@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
@@ -16,7 +18,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  * 
  * @author Derek
  */
-public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement {
+public class DeviceMeasurement extends DeviceEvent implements IDeviceMeasurement, Serializable {
 
 	/** For Java serialization */
 	private static final long serialVersionUID = 5255345217091668945L;

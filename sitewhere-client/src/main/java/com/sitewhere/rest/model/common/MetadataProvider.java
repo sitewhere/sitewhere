@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.common;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,10 @@ import com.sitewhere.spi.error.ErrorLevel;
  * 
  * @author dadams
  */
-public class MetadataProvider implements IMetadataProvider {
+public class MetadataProvider implements IMetadataProvider, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -7708181397230364294L;
 
 	/** Map of metadata entries */
 	private Map<String, String> entries = new HashMap<String, String>();

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 
@@ -16,7 +18,10 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
  * @author Derek
  */
 public class DeviceCommandResponseCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceCommandResponseCreateRequest {
+		IDeviceCommandResponseCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -9170930846188888841L;
 
 	/** Event id that generated response */
 	private String originatingEventId;

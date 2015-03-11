@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,10 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  * 
  * @author Derek
  */
-public class DeviceAssignmentState implements IDeviceAssignmentState {
+public class DeviceAssignmentState implements IDeviceAssignmentState, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -8536671667872805013L;
 
 	/** Date of last interaction with assignment */
 	private Date lastInteractionDate;

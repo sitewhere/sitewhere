@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.element;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,10 @@ import com.sitewhere.spi.device.element.IDeviceUnit;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceUnit extends DeviceElement implements IDeviceUnit {
+public class DeviceUnit extends DeviceElement implements IDeviceUnit, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 5969717501161142392L;
 
 	/** List of device slots */
 	private List<DeviceSlot> deviceSlots = new ArrayList<DeviceSlot>();

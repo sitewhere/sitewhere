@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,10 @@ import com.sitewhere.spi.device.IZone;
  * 
  * @author dadams
  */
-public class Zone extends MetadataProviderEntity implements IZone {
+public class Zone extends MetadataProviderEntity implements IZone, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -5108019932881896046L;
 
 	/** Unique zone token */
 	private String token;

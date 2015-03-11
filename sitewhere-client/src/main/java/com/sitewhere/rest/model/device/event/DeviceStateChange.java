@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
  * 
  * @author Derek
  */
-public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange {
+public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange, Serializable {
 
 	/** For Java serialization */
 	private static final long serialVersionUID = 7904836116060730355L;

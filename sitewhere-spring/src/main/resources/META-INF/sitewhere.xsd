@@ -135,7 +135,8 @@
 				<xsd:attribute name="useDockerLinking" type="xsd:boolean" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>If enabled, uses environment variables set by Docker linking to
-							derive host and port to connect to.</xsd:documentation>
+							derive host and port to connect to.
+						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>
@@ -229,6 +230,22 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Configuration data for Hazelcast cache provider -->
+	<xsd:element name="hazelcast-cache" type="hazelcastCacheType"
+		substitutionGroup="abstract-cache">
+		<xsd:annotation>
+			<xsd:documentation>Device management cache that uses Hazelcast for the underlying cache
+				mechanism.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hazelcastCacheType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCacheType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
