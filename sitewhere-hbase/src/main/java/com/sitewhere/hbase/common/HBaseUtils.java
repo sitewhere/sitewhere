@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -22,7 +21,6 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
@@ -218,23 +216,17 @@ public class HBaseUtils {
 				}
 
 				boolean shouldAdd = true;
-				byte[] payload = null;
-				byte[] encoding = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
-						shouldAdd = false;
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						encoding = column.getValue();
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] deleted = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED);
+
+				if ((deleted != null) && (!includeDeleted)) {
+					shouldAdd = false;
 				}
+				
 				if ((shouldAdd) && (payload != null)) {
 					T instance =
-							PayloadMarshalerResolver.getInstance().getMarshaler(encoding).decode(payload,
+							PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(payload,
 									clazz);
 					if (!filter.isExcluded(instance)) {
 						results.add(instance);

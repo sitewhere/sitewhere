@@ -150,7 +150,24 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		if (quorum != null) {
 			client.addPropertyValue("quorum", quorum.getValue());
 		}
+		
+		Attr zookeeperClientPort = element.getAttributeNode("zookeeperClientPort");
+		if (zookeeperClientPort != null) {
+			client.addPropertyValue("zookeeperClientPort", zookeeperClientPort.getValue());
+		}
+		
+		Attr zookeeperZnodeParent = element.getAttributeNode("zookeeperZnodeParent");
+		if (zookeeperZnodeParent != null) {
+			client.addPropertyValue("zookeeperZnodeParent", zookeeperZnodeParent.getValue());
+		}
+		
+		Attr zookeeperZnodeRootServer = element.getAttributeNode("zookeeperZnodeRootServer");
+		if (zookeeperZnodeRootServer != null) {
+			client.addPropertyValue("zookeeperZnodeRootServer", zookeeperZnodeRootServer.getValue());
+		}
+		
 		context.getRegistry().registerBeanDefinition("hbase", client.getBeanDefinition());
+		
 
 		// Register HBase device management implementation.
 		BeanDefinitionBuilder dm =

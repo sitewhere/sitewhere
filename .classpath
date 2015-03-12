@@ -33,8 +33,6 @@
 	<classpathentry exported="true" kind="var" path="M2_REPO/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/log4j/log4j/1.2.15/log4j-1.2.15.jar"/>
-	<classpathentry exported="true" kind="var" path="M2_REPO/org/apache/hadoop/hadoop-core/1.0.4/hadoop-core-1.0.4.jar"/>
-	<classpathentry exported="true" kind="var" path="M2_REPO/org/apache/hbase/hbase/0.94.12/hbase-0.94.12.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/apache/solr/solr-solrj/4.6.0/solr-solrj-4.6.0.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/mongodb/mongo-java-driver/2.10.1/mongo-java-driver-2.10.1.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/mule/mule-core/3.4.0/mule-core-3.4.0.jar"/>
@@ -71,5 +69,9 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/qpid/qpid-amqp-1-0-client-jms/0.30/qpid-amqp-1-0-client-jms-0.30.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/qpid/qpid-amqp-1-0-client/0.30/qpid-amqp-1-0-client-0.30.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/qpid/qpid-amqp-1-0-common/0.30/qpid-amqp-1-0-common-0.30.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-client/0.98.4-hadoop2/hbase-client-0.98.4-hadoop2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/hadoop/hadoop-common/2.6.0/hadoop-common-2.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-common/0.98.4-hadoop2/hbase-common-0.98.4-hadoop2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-protocol/0.98.4-hadoop2/hbase-protocol-0.98.4-hadoop2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

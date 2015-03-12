@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -183,17 +182,9 @@ public class HBaseBatchElement {
 
 			Pager<IBatchElement> pager = new Pager<IBatchElement>(criteria);
 			for (Result result : scanner) {
-				byte[] payloadType = null;
-				byte[] payload = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						payloadType = column.getValue();
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
-				}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+
 				if ((payload != null) && (payloadType != null)) {
 					BatchElement elm =
 							PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeBatchElement(
@@ -242,17 +233,8 @@ public class HBaseBatchElement {
 			List<DeleteRecord> matches = new ArrayList<DeleteRecord>();
 			for (Result result : scanner) {
 				byte[] row = result.getRow();
-				byte[] payload = null;
-				byte[] payloadType = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						payloadType = column.getValue();
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
-				}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
 				if (payload != null) {
 					matches.add(new DeleteRecord(row, payloadType, payload));
 				}

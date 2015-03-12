@@ -33,6 +33,15 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	/** Zookeeper quorum */
 	private String quorum;
 
+	/** Zookeeper client port */
+	private int zookeeperClientPort = 2181;
+
+	/** Zookeeper znode parent */
+	private String zookeeperZnodeParent = "/hbase";
+
+	/** Zookeeper znode root server */
+	private String zookeeperZnodeRootServer = "root-region-server";
+
 	/** HBase configuration */
 	private Configuration configuration;
 
@@ -51,6 +60,9 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 		try {
 			configuration = HBaseConfiguration.create();
 			configuration.set("hbase.zookeeper.quorum", quorum);
+			configuration.set("hbase.zookeeper.property.clientPort", String.valueOf(getZookeeperClientPort()));
+			configuration.set("zookeeper.znode.parent", getZookeeperZnodeParent());
+			configuration.set("zookeeper.znode.rootserver", getZookeeperZnodeRootServer());
 			this.admin = new HBaseAdmin(configuration);
 			this.connection = HConnectionManager.createConnection(configuration);
 		} catch (Exception e) {
@@ -120,5 +132,29 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 
 	public void setQuorum(String quorum) {
 		this.quorum = quorum;
+	}
+
+	public int getZookeeperClientPort() {
+		return zookeeperClientPort;
+	}
+
+	public void setZookeeperClientPort(int zookeeperClientPort) {
+		this.zookeeperClientPort = zookeeperClientPort;
+	}
+
+	public String getZookeeperZnodeParent() {
+		return zookeeperZnodeParent;
+	}
+
+	public void setZookeeperZnodeParent(String zookeeperZnodeParent) {
+		this.zookeeperZnodeParent = zookeeperZnodeParent;
+	}
+
+	public String getZookeeperZnodeRootServer() {
+		return zookeeperZnodeRootServer;
+	}
+
+	public void setZookeeperZnodeRootServer(String zookeeperZnodeRootServer) {
+		this.zookeeperZnodeRootServer = zookeeperZnodeRootServer;
 	}
 }

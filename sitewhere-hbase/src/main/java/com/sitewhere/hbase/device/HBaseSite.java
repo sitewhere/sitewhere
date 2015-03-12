@@ -10,7 +10,6 @@ package com.sitewhere.hbase.device;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -20,10 +19,10 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
+import org.apache.hadoop.hbase.filter.ByteArrayComparable;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
-import org.apache.hadoop.hbase.filter.WritableByteArrayComparable;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
@@ -306,8 +305,8 @@ public class HBaseSite {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T, I> Pager<I> getFilteredSiteRows(IHBaseContext context, boolean includeDeleted,
-			ISearchCriteria criteria, WritableByteArrayComparable comparator, byte[] startRow,
-			byte[] stopRow, Class<T> type, Class<I> iface) throws SiteWhereException {
+			ISearchCriteria criteria, ByteArrayComparable comparator, byte[] startRow, byte[] stopRow,
+			Class<T> type, Class<I> iface) throws SiteWhereException {
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
@@ -326,20 +325,14 @@ public class HBaseSite {
 			Pager<I> pager = new Pager<I>(criteria);
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
-				byte[] payloadType = null;
-				byte[] payload = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
-						shouldAdd = false;
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						payloadType = column.getValue();
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] deleted = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED);
+
+				if ((deleted != null) && (!includeDeleted)) {
+					shouldAdd = false;
 				}
+
 				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
 					pager.process((I) PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(
 							payload, type));

@@ -60,7 +60,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
-			<artifactId>hbase</artifactId>
+			<artifactId>hbase-client</artifactId>
 			<version>${hbase.version}</version>
 			<scope>compile</scope>
 			<exclusions>
@@ -72,7 +72,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
+			<artifactId>hadoop-common</artifactId>
 			<version>${hadoop.version}</version>
 			<scope>compile</scope>
 		</dependency>

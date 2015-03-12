@@ -15,7 +15,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -188,19 +187,17 @@ public class HBaseDevice {
 			Pager<IDevice> pager = new Pager<IDevice>(criteria);
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
-				byte[] payload = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(CURRENT_ASSIGNMENT, qualifier)) && (criteria.isExcludeAssigned())) {
-						shouldAdd = false;
-					}
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
-						shouldAdd = false;
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] deleted = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED);
+				byte[] currAssn = result.getValue(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT);
+
+				if ((deleted != null) && (!includeDeleted)) {
+					shouldAdd = false;
 				}
+				if ((currAssn != null) && (criteria.isExcludeAssigned())) {
+					shouldAdd = false;
+				}
+
 				if ((shouldAdd) && (payload != null)) {
 					Device device = context.getPayloadMarshaler().decodeDevice(payload);
 					switch (criteria.getSearchType()) {

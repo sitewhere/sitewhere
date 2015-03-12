@@ -541,20 +541,16 @@ public class HBaseDeviceEvent {
 		}
 
 		HTableInterface events = null;
-		KeyValue okeys = null;
-		try {
-			okeys = getDecodedEventId(originator);
-		} catch (SiteWhereException e) {
-			throw new SiteWhereException("Originating event id is invalid.", e);
-		}
+		byte[][] keys = getDecodedEventId(originator);
+		byte[] row = keys[0];
+		byte[] qual = keys[1];
 
-		byte[] qual = okeys.getQualifier();
 		try {
 			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
 
 			// Increment the result counter.
 			qual[3] = EventRecordType.CommandResponseCounter.getType();
-			long counter = events.incrementColumnValue(okeys.getRow(), ISiteWhereHBase.FAMILY_ID, qual, 1);
+			long counter = events.incrementColumnValue(row, ISiteWhereHBase.FAMILY_ID, qual, 1);
 			byte[] counterBytes = Bytes.toBytes(counter);
 
 			// Add new response entry row under the invocation.
@@ -563,7 +559,7 @@ public class HBaseDeviceEvent {
 			seqkey.put(qual);
 			seqkey.put(counterBytes);
 
-			Put put = new Put(okeys.getRow());
+			Put put = new Put(row);
 			put.add(ISiteWhereHBase.FAMILY_ID, seqkey.array(), response.getId().getBytes());
 			events.put(put);
 		} catch (IOException e) {
@@ -583,23 +579,25 @@ public class HBaseDeviceEvent {
 	 */
 	protected static SearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(
 			IHBaseContext context, String invocationId) throws SiteWhereException {
-		KeyValue ikeys = getDecodedEventId(invocationId);
+		byte[][] keys = getDecodedEventId(invocationId);
+		byte[] row = keys[0];
+		byte[] qual = keys[1];
 
 		HTableInterface events = null;
 		List<IDeviceCommandResponse> responses = new ArrayList<IDeviceCommandResponse>();
 		try {
 			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
 
-			Get get = new Get(ikeys.getRow());
+			Get get = new Get(row);
 			Result result = events.get(get);
 			Map<byte[], byte[]> cells = result.getFamilyMap(ISiteWhereHBase.FAMILY_ID);
 
-			byte[] match = ikeys.getQualifier();
+			byte[] match = qual;
 			match[3] = EventRecordType.CommandResponseEntry.getType();
-			for (byte[] qual : cells.keySet()) {
-				if ((qual[0] == match[0]) && (qual[1] == match[1]) && (qual[2] == match[2])
-						&& (qual[3] == match[3])) {
-					byte[] value = cells.get(qual);
+			for (byte[] curr : cells.keySet()) {
+				if ((curr[0] == match[0]) && (curr[1] == match[1]) && (curr[2] == match[2])
+						&& (curr[3] == match[3])) {
+					byte[] value = cells.get(curr);
 					String responseId = new String(value);
 					responses.add(getDeviceCommandResponse(context, responseId));
 				}
@@ -1033,17 +1031,16 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static KeyValue getDecodedEventId(String id) throws SiteWhereException {
+	public static byte[][] getDecodedEventId(String id) throws SiteWhereException {
 		int rowLength =
 				HBaseSite.SITE_IDENTIFIER_LENGTH + 1 + HBaseDeviceAssignment.ASSIGNMENT_IDENTIFIER_LENGTH + 5;
 		try {
 			byte[] decoded = Base58.decode(id);
 			byte[] row = Bytes.head(decoded, rowLength);
 			byte[] qual = Bytes.tail(decoded, decoded.length - rowLength);
-			return new KeyValue(row, ISiteWhereHBase.FAMILY_ID, qual);
+			return new byte[][] { row, qual };
 		} catch (AddressFormatException e) {
-			LOGGER.error("Unable to decode event id.", e);
-			return null;
+			throw new SiteWhereException("Invalid event id: " + id);
 		}
 	}
 
@@ -1056,22 +1053,20 @@ public class HBaseDeviceEvent {
 	 * @throws SiteWhereException
 	 */
 	protected static IDeviceEvent getEventById(IHBaseContext context, String id) throws SiteWhereException {
-		KeyValue keys = getDecodedEventId(id);
-		if (keys == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceEventId, ErrorLevel.ERROR,
-					HttpServletResponse.SC_NOT_FOUND);
-		}
+		byte[][] keys = getDecodedEventId(id);
+		byte[] row = keys[0];
+		byte[] qual = keys[1];
 		HTableInterface events = null;
 		try {
 			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
-			Get get = new Get(keys.getRow());
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, keys.getQualifier());
+			Get get = new Get(row);
+			get.addColumn(ISiteWhereHBase.FAMILY_ID, qual);
 			Result result = events.get(get);
-			byte type = keys.getQualifier()[3];
+			byte type = qual[3];
 			Class<? extends IDeviceEvent> eventClass = getEventClassForIndicator(type);
 
 			if (result != null) {
-				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, keys.getQualifier());
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, qual);
 				if (payload != null) {
 					return context.getPayloadMarshaler().decode(payload, eventClass);
 				}

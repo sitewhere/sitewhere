@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
@@ -156,27 +155,19 @@ public class HBaseDeviceGroupElement {
 				byte[] row = result.getRow();
 
 				boolean shouldAdd = false;
-				byte[] payloadType = null;
-				byte[] payload = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if (Bytes.equals(ELEMENT_IDENTIFIER, qualifier)) {
-						for (byte[] toDelete : combinedIds) {
-							if (Bytes.equals(toDelete, column.getValue())) {
-								shouldAdd = true;
-								break;
-							}
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] ident = result.getValue(ISiteWhereHBase.FAMILY_ID, ELEMENT_IDENTIFIER);
+				if (ident != null) {
+					for (byte[] toDelete : combinedIds) {
+						if (Bytes.equals(toDelete, ident)) {
+							shouldAdd = true;
+							break;
 						}
 					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						payloadType = column.getValue();
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
 				}
-				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
-					matches.add(new DeleteRecord(row, payloadType, payload));
+				if ((shouldAdd) && (type != null) && (payload != null)) {
+					matches.add(new DeleteRecord(row, type, payload));
 				}
 			}
 			List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
@@ -228,19 +219,10 @@ public class HBaseDeviceGroupElement {
 			List<DeleteRecord> matches = new ArrayList<DeleteRecord>();
 			for (Result result : scanner) {
 				byte[] row = result.getRow();
-				byte[] payloadType = null;
-				byte[] payload = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						payloadType = column.getValue();
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
-				}
-				if ((payloadType != null) && (payload != null)) {
-					matches.add(new DeleteRecord(row, payloadType, payload));
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				if ((type != null) && (payload != null)) {
+					matches.add(new DeleteRecord(row, type, payload));
 				}
 			}
 			for (DeleteRecord dr : matches) {
@@ -290,21 +272,10 @@ public class HBaseDeviceGroupElement {
 
 			Pager<IDeviceGroupElement> pager = new Pager<IDeviceGroupElement>(criteria);
 			for (Result result : scanner) {
-				byte[] payloadType = null;
-				byte[] payload = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						payloadType = column.getValue();
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
-				}
-
-				if ((payloadType != null) && (payload != null)) {
-					pager.process(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeDeviceGroupElement(
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				if ((type != null) && (payload != null)) {
+					pager.process(PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceGroupElement(
 							payload));
 				}
 			}

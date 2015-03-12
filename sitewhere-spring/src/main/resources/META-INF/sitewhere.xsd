@@ -154,7 +154,27 @@
 	<xsd:complexType name="hbaseDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="quorum" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="quorum" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper quorum address</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperClientPort" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper client port. Defaults to 2181.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperZnodeParent" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper znode parent. Defaults to '/hbase'.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperZnodeRootServer" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper znode root server. Defaults to 'root-region-server'.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

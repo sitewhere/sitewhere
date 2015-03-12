@@ -10,7 +10,7 @@ package com.sitewhere.hbase.device;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
+import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;

@@ -9,7 +9,7 @@ package com.sitewhere.hbase.user;
 
 import java.util.List;
 
-import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
+import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.hbase.HBaseContext;

@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -22,7 +21,6 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -126,22 +124,16 @@ public class HBaseDeviceCommand {
 			List<IDeviceCommand> results = new ArrayList<IDeviceCommand>();
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
-				byte[] payloadType = null;
-				byte[] payload = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
-						shouldAdd = false;
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
-						payloadType = column.getValue();
-					}
-					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
-						payload = column.getValue();
-					}
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] deleted = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED);
+
+				if ((deleted != null) && (!includeDeleted)) {
+					shouldAdd = false;
 				}
-				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
-					results.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeDeviceCommand(
+
+				if ((shouldAdd) && (type != null) && (payload != null)) {
+					results.add(PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceCommand(
 							payload));
 				}
 			}
@@ -184,7 +176,7 @@ public class HBaseDeviceCommand {
 			if ((type == null) || (payload == null)) {
 				return null;
 			}
-			
+
 			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceCommand(payload);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to load device command by token.", e);
