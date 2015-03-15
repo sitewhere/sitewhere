@@ -7,6 +7,7 @@
  */
 package com.sitewhere.hbase;
 
+import com.sitewhere.hbase.device.IDeviceEventBuffer;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 
@@ -37,4 +38,11 @@ public interface IHBaseContext {
 	 * @return
 	 */
 	public IPayloadMarshaler getPayloadMarshaler();
+
+	/**
+	 * Get buffer for storing device events.
+	 * 
+	 * @return
+	 */
+	public IDeviceEventBuffer getDeviceEventBuffer();
 }

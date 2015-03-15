@@ -80,11 +80,11 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 			} catch (IOException e) {
 				LOGGER.error("HBaseAdmin did not shut down cleanly.", e);
 			}
-			try {
-				getConnection().close();
-			} catch (IOException e) {
-				LOGGER.error("HConnection did not close cleanly.", e);
-			}
+		}
+		try {
+			getConnection().close();
+		} catch (IOException e) {
+			LOGGER.error("HConnection did not close cleanly.", e);
 		}
 	}
 
@@ -115,8 +115,20 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	 */
 	@Override
 	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException {
+		return getTableInterface(tableName, false);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(byte[], boolean)
+	 */
+	@Override
+	public HTableInterface getTableInterface(byte[] tableName, boolean autoFlush) throws SiteWhereException {
 		try {
-			return getConnection().getTable(tableName);
+			HTableInterface hintf = getConnection().getTable(tableName);
+			hintf.setAutoFlushTo(autoFlush);
+			return hintf;
 		} catch (IOException e) {
 			throw new SiteWhereException("IOException getting HBase table interface.", e);
 		}

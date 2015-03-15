@@ -19,7 +19,7 @@ import com.sitewhere.rest.test.SiteWhereClientTester;
 public class MultithreadedRestTest {
 
 	/** Number of threads to launch */
-	private int numThreads = 50;
+	private int numThreads = 100;
 
 	/** Indicates whether to update assignment state from events */
 	private boolean updateState = true;
@@ -39,7 +39,7 @@ public class MultithreadedRestTest {
 				new ExecutorCompletionService<SiteWhereClientTester.TestResults>(executor);
 
 		for (int i = 0; i < numThreads; i++) {
-			completionService.submit(new SiteWhereClientTester("e5d5f760-93e9-42cb-bfba-5755b5b945e2", 500,
+			completionService.submit(new SiteWhereClientTester("90389b40-7c25-401b-bf72-98673913d59e", 100,
 					updateState));
 		}
 		for (int i = 0; i < numThreads; ++i) {

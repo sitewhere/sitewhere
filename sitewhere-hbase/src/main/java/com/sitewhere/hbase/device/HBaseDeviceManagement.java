@@ -101,6 +101,9 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	/** Supplies context to implementation methods */
 	private HBaseContext context;
 
+	/** Allows puts to be buffered for device events */
+	private DeviceEventBuffer buffer;
+
 	public HBaseDeviceManagement() {
 		super(LifecycleComponentType.DataStore);
 	}
@@ -111,10 +114,8 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
-		LOGGER.info("Verifying tables...");
 		ensureTablesExist();
 
-		LOGGER.info("Loading id management...");
 		IdManager.getInstance().load(client);
 
 		// Create context from configured options.
@@ -122,6 +123,11 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 		context.setClient(getClient());
 		context.setCacheProvider(getCacheProvider());
 		context.setPayloadMarshaler(getPayloadMarshaler());
+
+		// Start buffer for saving device events.
+		buffer = new DeviceEventBuffer(context);
+		buffer.start();
+		context.setDeviceEventBuffer(buffer);
 	}
 
 	/*
@@ -152,7 +158,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	public void stop() throws SiteWhereException {
-		LOGGER.info("HBase device management stopped.");
+		buffer.stop();
 	}
 
 	/*

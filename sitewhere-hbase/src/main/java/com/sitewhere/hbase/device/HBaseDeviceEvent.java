@@ -123,17 +123,9 @@ public class HBaseDeviceEvent {
 		measurements.setId(id);
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceMeasurements(measurements);
 
-		HTableInterface events = null;
-		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
-			Put put = new Put(rowkey);
-			put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
-			events.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create measurements.", e);
-		} finally {
-			HBaseUtils.closeCleanly(events);
-		}
+		Put put = new Put(rowkey);
+		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		context.getDeviceEventBuffer().add(put);
 
 		// Update state if requested.
 		if (request.isUpdateState()) {
@@ -198,17 +190,9 @@ public class HBaseDeviceEvent {
 		location.setId(id);
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceLocation(location);
 
-		HTableInterface events = null;
-		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
-			Put put = new Put(rowkey);
-			put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
-			events.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create location.", e);
-		} finally {
-			HBaseUtils.closeCleanly(events);
-		}
+		Put put = new Put(rowkey);
+		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		context.getDeviceEventBuffer().add(put);
 
 		// Update state if requested.
 		if (request.isUpdateState()) {
@@ -275,17 +259,9 @@ public class HBaseDeviceEvent {
 		alert.setId(id);
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceAlert(alert);
 
-		HTableInterface events = null;
-		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
-			Put put = new Put(rowkey);
-			put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
-			events.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create alert.", e);
-		} finally {
-			HBaseUtils.closeCleanly(events);
-		}
+		Put put = new Put(rowkey);
+		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		context.getDeviceEventBuffer().add(put);
 
 		// Update state if requested.
 		if (request.isUpdateState()) {
@@ -354,17 +330,9 @@ public class HBaseDeviceEvent {
 		ci.setId(id);
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceCommandInvocation(ci);
 
-		HTableInterface events = null;
-		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
-			Put put = new Put(rowkey);
-			put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
-			events.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create command invocation.", e);
-		} finally {
-			HBaseUtils.closeCleanly(events);
-		}
+		Put put = new Put(rowkey);
+		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		context.getDeviceEventBuffer().add(put);
 
 		return ci;
 	}
@@ -436,17 +404,9 @@ public class HBaseDeviceEvent {
 		state.setId(id);
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceStateChange(state);
 
-		HTableInterface events = null;
-		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
-			Put put = new Put(rowkey);
-			put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
-			events.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create state change.", e);
-		} finally {
-			HBaseUtils.closeCleanly(events);
-		}
+		Put put = new Put(rowkey);
+		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		context.getDeviceEventBuffer().add(put);
 
 		return state;
 	}
@@ -507,17 +467,9 @@ public class HBaseDeviceEvent {
 		cr.setId(id);
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceCommandResponse(cr);
 
-		HTableInterface events = null;
-		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
-			Put put = new Put(rowkey);
-			put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
-			events.put(put);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create command response.", e);
-		} finally {
-			HBaseUtils.closeCleanly(events);
-		}
+		Put put = new Put(rowkey);
+		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		context.getDeviceEventBuffer().add(put);
 
 		linkDeviceCommandResponseToInvocation(context, cr);
 		return cr;
@@ -540,14 +492,13 @@ public class HBaseDeviceEvent {
 			return;
 		}
 
-		HTableInterface events = null;
 		byte[][] keys = getDecodedEventId(originator);
 		byte[] row = keys[0];
 		byte[] qual = keys[1];
 
+		HTableInterface events = null;
 		try {
 			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
-
 			// Increment the result counter.
 			qual[3] = EventRecordType.CommandResponseCounter.getType();
 			long counter = events.incrementColumnValue(row, ISiteWhereHBase.FAMILY_ID, qual, 1);
