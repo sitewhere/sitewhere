@@ -70,11 +70,13 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 				request.setHardwareId(register.getHardwareId());
 				request.setSpecificationToken(register.getSpecificationToken());
+				if (register.hasSiteToken()) {
+					request.setSiteToken(register.getSiteToken());
+				}
 				List<Metadata> metadata = register.getMetadataList();
 				for (Metadata meta : metadata) {
 					request.addOrReplaceMetadata(meta.getName(), meta.getValue());
 				}
-				request.setReplyTo(null);
 				decoded.setHardwareId(register.getHardwareId());
 				decoded.setRequest(request);
 				return results;
@@ -97,6 +99,10 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				for (Measurement current : measurements) {
 					request.addOrReplaceMeasurement(current.getMeasurementId(), current.getMeasurementValue());
 				}
+				List<Metadata> metadata = dm.getMetadataList();
+				for (Metadata meta : metadata) {
+					request.addOrReplaceMetadata(meta.getName(), meta.getValue());
+				}
 				if (dm.hasEventDate()) {
 					request.setEventDate(new Date(dm.getEventDate()));
 				} else {
@@ -113,6 +119,10 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				request.setLatitude(location.getLatitude());
 				request.setLongitude(location.getLongitude());
 				request.setElevation(location.getElevation());
+				List<Metadata> metadata = location.getMetadataList();
+				for (Metadata meta : metadata) {
+					request.addOrReplaceMetadata(meta.getName(), meta.getValue());
+				}
 				if (location.hasEventDate()) {
 					request.setEventDate(new Date(location.getEventDate()));
 				} else {
@@ -129,6 +139,10 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				request.setType(alert.getAlertType());
 				request.setMessage(alert.getAlertMessage());
 				request.setLevel(AlertLevel.Info);
+				List<Metadata> metadata = alert.getMetadataList();
+				for (Metadata meta : metadata) {
+					request.addOrReplaceMetadata(meta.getName(), meta.getValue());
+				}
 				if (alert.hasEventDate()) {
 					request.setEventDate(new Date(alert.getEventDate()));
 				} else {

@@ -70,15 +70,13 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 		if (device == null) {
 			if (!isAllowNewDevices()) {
 				LOGGER.warn("Ignoring device registration request since new devices are not allowed.");
-				// TODO: Should we send this using a dummy device?
-				// sendNoNewDevicesAllowed(request.getHardwareId());
 				return;
 			}
 			if (specification == null) {
 				sendInvalidSpecification(request.getHardwareId());
 				return;
 			}
-			if (!isAutoAssignSite()) {
+			if ((!isAutoAssignSite()) && (request.getSiteToken() == null)) {
 				sendSiteTokenRequired(request.getHardwareId());
 				return;
 			}
@@ -88,11 +86,13 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 					throw new SiteWhereException("Unable to register device. No sites are configured.");
 				}
 			}
+			String siteToken =
+					(request.getSiteToken() != null) ? request.getSiteToken() : getAutoAssignSiteToken();
 			LOGGER.debug("Creating new device as part of registration.");
 			DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 			deviceCreate.setHardwareId(request.getHardwareId());
 			deviceCreate.setSpecificationToken(request.getSpecificationToken());
-			deviceCreate.setSiteToken(getAutoAssignSiteToken());
+			deviceCreate.setSiteToken(siteToken);
 			deviceCreate.setComments("Device created by on-demand registration.");
 			for (String key : request.getMetadata().keySet()) {
 				String value = request.getMetadata(key);
