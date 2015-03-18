@@ -66,6 +66,14 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 		IDeviceSpecification specification =
 				SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(
 						request.getSpecificationToken());
+
+		// If a site token is passed, verify it is valid.
+		if (request.getSiteToken() != null) {
+			if (SiteWhere.getServer().getDeviceManagement().getSiteByToken(request.getSiteToken()) == null) {
+				LOGGER.warn("Ignoring device registration request because of invalid site token.");
+				return;
+			}
+		}
 		// Create device if it does not already exist.
 		if (device == null) {
 			if (!isAllowNewDevices()) {
