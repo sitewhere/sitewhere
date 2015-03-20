@@ -224,6 +224,16 @@ public class HazelcastDistributedCacheProvider extends LifecycleComponent implem
 		/*
 		 * (non-Javadoc)
 		 * 
+		 * @see com.sitewhere.spi.cache.ICache#clear()
+		 */
+		@Override
+		public void clear() throws SiteWhereException {
+			hMap.clear();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see com.sitewhere.spi.cache.ICache#getElementCount()
 		 */
 		@Override

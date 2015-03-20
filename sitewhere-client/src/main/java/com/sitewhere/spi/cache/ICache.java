@@ -53,6 +53,13 @@ public interface ICache<K, V> {
 	public void remove(K key) throws SiteWhereException;
 
 	/**
+	 * Clear all elements from cache.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void clear() throws SiteWhereException;
+
+	/**
 	 * Get count of elements currently in cache.
 	 * 
 	 * @return
