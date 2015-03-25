@@ -73,5 +73,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/hadoop/hadoop-common/2.6.0/hadoop-common-2.6.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-common/0.98.4-hadoop2/hbase-common-0.98.4-hadoop2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-protocol/0.98.4-hadoop2/hbase-protocol-0.98.4-hadoop2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/glassfish/tyrus/bundles/tyrus-standalone-client/1.10/tyrus-standalone-client-1.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

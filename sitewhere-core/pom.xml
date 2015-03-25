@@ -132,6 +132,12 @@
 			<version>1.7</version>
 		</dependency>
 		<dependency>
+			<groupId>org.glassfish.tyrus.bundles</groupId>
+			<artifactId>tyrus-standalone-client</artifactId>
+			<version>1.10</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.mule</groupId>
 			<artifactId>mule-core</artifactId>
 			<version>${mule.version}</version>

@@ -642,6 +642,22 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
+	<!-- Echo String payload for debugging purposes -->
+	<xsd:element name="echo-string-decoder" type="swEchoStringDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder for event receivers with String payloads that simply echoes
+				the payload to the log.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swEchoStringDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<!-- Used as a placeholder for event sources to allow substitutionGroups -->
 	<xsd:element name="abstract-event-source" abstract="true" type="abstractEventSourceType">
@@ -837,6 +853,56 @@
 						<xsd:documentation>
 							Number of threads used to handle client connections to the server
 							socket.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Contains web socket header information -->
+	<xsd:complexType name="webSocketHeaderType">
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Header name.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="value" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Header value.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Event source that pulls String information from a web socket and decodes it -->
+	<xsd:element name="string-web-socket-event-source" type="stringWebSocketEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls String payloads from a web socket.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="stringWebSocketEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+					<xsd:element name="header" type="webSocketHeaderType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Header that is passed to the web socket for configuration.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="webSocketUrl" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							URL of the web socket to connect to.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

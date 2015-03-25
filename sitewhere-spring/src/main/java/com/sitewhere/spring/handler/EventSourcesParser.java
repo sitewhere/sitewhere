@@ -7,7 +7,9 @@
  */
 package com.sitewhere.spring.handler;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -24,10 +26,13 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.activemq.ActiveMQInboundEventReceiver;
 import com.sitewhere.device.provisioning.BinaryInboundEventSource;
+import com.sitewhere.device.provisioning.EchoStringDecoder;
+import com.sitewhere.device.provisioning.StringInboundEventSource;
 import com.sitewhere.device.provisioning.json.JsonBatchEventDecoder;
 import com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.device.provisioning.socket.BinarySocketInboundEventReceiver;
 import com.sitewhere.device.provisioning.socket.ReadAllInteractionHandler;
+import com.sitewhere.device.provisioning.websocket.StringWebSocketEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
@@ -87,6 +92,10 @@ public class EventSourcesParser {
 			}
 			case MqttEventSource: {
 				result.add(parseMqttEventSource(child, context));
+				break;
+			}
+			case StringWebSocketEventSource: {
+				result.add(parseStringWebSocketEventSource(child, context));
 				break;
 			}
 			}
@@ -450,6 +459,78 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Configure components needed to realize a web socket event source with String
+	 * payloads.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseStringWebSocketEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source =
+				BeanDefinitionBuilder.rootBeanDefinition(StringInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create event receiver bean and register it.
+		AbstractBeanDefinition receiver = createStringWebSocketEventReceiver(element, context);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseStringDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException("No valid event decoder specified for web socket event source: "
+					+ element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Create web socket event receiver for String payloads.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition createStringWebSocketEventReceiver(Element element, ParserContext context) {
+		BeanDefinitionBuilder receiver =
+				BeanDefinitionBuilder.rootBeanDefinition(StringWebSocketEventReceiver.class);
+
+		Attr webSocketUrl = element.getAttributeNode("webSocketUrl");
+		if (webSocketUrl != null) {
+			receiver.addPropertyValue("webSocketUrl", webSocketUrl.getValue());
+		}
+
+		List<Element> children = DomUtils.getChildElements(element);
+		Map<String, String> headers = new HashMap<String, String>();
+		for (Element child : children) {
+			if (child.getLocalName().equals("header")) {
+				Attr name = child.getAttributeNode("name");
+				if (name == null) {
+					throw new RuntimeException("Header value does not contain 'name' attribute.");
+				}
+				Attr value = child.getAttributeNode("value");
+				if (value == null) {
+					throw new RuntimeException("Header value does not contain 'value' attribute.");
+				}
+				headers.put(name.getValue(), value.getValue());
+			}
+		}
+		receiver.addPropertyValue("headers", headers);
+
+		return receiver.getBeanDefinition();
+	}
+
+	/**
 	 * Parse a binary decoder from the list of possibilities.
 	 * 
 	 * @param decoder
@@ -497,6 +578,49 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Parse a binary decoder from the list of possibilities.
+	 * 
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 * @return
+	 */
+	protected boolean parseStringDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
+		List<Element> children = DomUtils.getChildElements(parent);
+		for (Element child : children) {
+			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+				NamespaceHandler nested =
+						context.getReaderContext().getNamespaceHandlerResolver().resolve(
+								child.getNamespaceURI());
+				if (nested != null) {
+					BeanDefinition decoderBean = nested.parse(child, context);
+					String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
+					context.getRegistry().registerBeanDefinition(decoderName, decoderBean);
+					source.addPropertyReference("deviceEventDecoder", decoderName);
+					return true;
+				} else {
+					continue;
+				}
+			}
+			StringDecoders type = StringDecoders.getByLocalName(child.getLocalName());
+			if (type == null) {
+				continue;
+			}
+			switch (type) {
+			case EchoStringDecoder: {
+				parseEchoStringDecoder(parent, child, context, source);
+				return true;
+			}
+			case EventDecoder: {
+				parseDecoderRef(parent, child, context, source);
+				return true;
+			}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Create parser for SiteWhere Google Protocol Buffer format.
 	 * 
 	 * @param parent
@@ -528,6 +652,24 @@ public class EventSourcesParser {
 			BeanDefinitionBuilder source) {
 		LOGGER.debug("Configuring SiteWhere JSON batch event decoder for " + parent.getLocalName());
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonBatchEventDecoder.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("deviceEventDecoder", name);
+	}
+
+	/**
+	 * Parse decoder that echoes String values to the logger.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseEchoStringDecoder(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring echo String decoder for " + parent.getLocalName());
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(EchoStringDecoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -583,8 +725,11 @@ public class EventSourcesParser {
 		/** Socket event source */
 		SocketEventSource("socket-event-source"),
 
-		/** Event source */
-		MqttEventSource("mqtt-event-source");
+		/** MQTT event source */
+		MqttEventSource("mqtt-event-source"),
+
+		/** Web socket event source with String payloads */
+		StringWebSocketEventSource("string-web-socket-event-source");
 
 		/** Event code */
 		private String localName;
@@ -636,6 +781,44 @@ public class EventSourcesParser {
 
 		public static BinaryDecoders getByLocalName(String localName) {
 			for (BinaryDecoders value : BinaryDecoders.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
+
+	/**
+	 * Expected String decoder elements.
+	 * 
+	 * @author Derek
+	 */
+	public static enum StringDecoders {
+
+		/** Echoes String payload to logger */
+		EchoStringDecoder("echo-string-decoder"),
+
+		/** Reference to externally defined event decoder */
+		EventDecoder("event-decoder");
+
+		/** Event code */
+		private String localName;
+
+		private StringDecoders(String localName) {
+			this.localName = localName;
+		}
+
+		public static StringDecoders getByLocalName(String localName) {
+			for (StringDecoders value : StringDecoders.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}
