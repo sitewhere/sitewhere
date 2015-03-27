@@ -6,7 +6,7 @@
 		<td>#= data #</td>
 		<td>
 			<div style="text-align: right;">
-				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="Delete Role"
+				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="#= i18next("includes.DeleteRole") #"
 					onclick="geaDeleteRole('#= data #')"></i>
 			</div>
 		</td>

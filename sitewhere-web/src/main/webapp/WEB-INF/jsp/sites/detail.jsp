@@ -17,10 +17,10 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="sites.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-site" class="btn" href="javascript:void(0)">
-			<i class="icon-edit sw-button-icon"></i> Edit Site</a>
+		<a id="btn-edit-site" class="btn" href="javascript:void(0)" data-i18n="public.EditSite">
+			<i class="icon-edit sw-button-icon"></i></a>
 	</div>
 </div>
 
@@ -30,20 +30,20 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Assignments</li>
-		<li>Locations</li>
-		<li>Measurements</li>
-		<li>Alerts</li>
-		<li>Zones</li>
+		<li class="k-state-active" >&nbsp;<font data-i18n="sites.detail.Assignments"></font></li>
+		<li >&nbsp;<font data-i18n="public.Locations"></font></li>
+		<li >&nbsp;<font data-i18n="public.Measurements"></font></li>
+		<li >&nbsp;<font data-i18n="public.Alerts"></font></li>
+		<li >&nbsp;<font data-i18n="sites.detail.Zones"></font></li>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Assignments</div>
+			<div class="sw-button-bar-title" data-i18n="sites.detail.DeviceAssignments"></div>
 			<div>
-				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-assignments" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-assignments" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div id="assignments" class="sw-assignment-list"></div>
@@ -51,12 +51,12 @@
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Locations</div>
+			<div class="sw-button-bar-title" data-i18n="public.DeviceLocations"></div>
 			<div>
-				<a id="btn-filter-locations" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-filter-locations" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="locations">
@@ -68,10 +68,10 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Asset</th>
-					<th>Location (Lat/Long/Elevation)</th>
-					<th>Event Date</th>
-					<th>Received Date</th>
+					<th data-i18n="public.Asset"></th>
+					<th><font data-i18n="sites.detail.Location"></font> (Lat/Long/Elevation)</th>
+					<th data-i18n="public.EventDate"></th>
+					<th data-i18n="sites.detail.ReceivedDate"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -82,12 +82,12 @@
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Measurements</div>
+			<div class="sw-button-bar-title" data-i18n="public.DeviceMeasurements"></div>
 			<div>
-				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-measurements" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-measurements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="measurements">
@@ -99,10 +99,10 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Asset</th>
-					<th>Measurements</th>
-					<th>Event Date</th>
-					<th>Received Date</th>
+					<th data-i18n="public.Asset"></th>
+					<th data-i18n="public.Measurements"></th>
+					<th data-i18n="public.EventDate"></th>
+					<th data-i18n="sites.detail.ReceivedDate"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -113,12 +113,12 @@
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Alerts</div>
+			<div class="sw-button-bar-title" data-i18n="public.DeviceAlerts"></div>
 			<div>
-				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-alerts" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-alerts" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="alerts">
@@ -132,12 +132,12 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Asset</th>
-					<th>Type</th>
-					<th>Message</th>
-					<th>Source</th>
-					<th>Event Date</th>
-					<th>Received Date</th>
+					<th data-i18n="public.Asset"></th>
+					<th data-i18n="public.Type"></th>
+					<th data-i18n="public.Message"></th>
+					<th data-i18n="public.Source"></th>
+					<th data-i18n="public.EventDate"></th>
+					<th data-i18n="sites.detail.ReceivedDate"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -148,12 +148,12 @@
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Zones</div>
+			<div class="sw-button-bar-title" data-i18n="sites.detail.Zones"></div>
 			<div>
-				<a id="btn-refresh-zones" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
-				<a id="btn-add-zone" class="btn" href="javascript:void(0)">
-					<i class="icon-plus sw-button-icon"></i> Add New Zone</a>
+				<a id="btn-refresh-zones" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
+				<a id="btn-add-zone" class="btn" href="javascript:void(0)" data-i18n="sites.detail.AddNewZone">
+					<i class="icon-plus sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="zones">
@@ -168,10 +168,10 @@
 			<thead>
 				<tr>
 					<th></th>
-					<th>Name</th>
-					<th>Token</th>
-					<th>Created Date</th>
-					<th>Updated Date</th>
+					<th data-i18n="public.Name"></th>
+					<th data-i18n="sites.detail.Token"></th>
+					<th data-i18n="public.CreatedDate"></th>
+					<th data-i18n="public.UpdatedDate"></th>
 					<th></th>
 				</tr>
 			</thead>
@@ -199,6 +199,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "sites.detail.title";
+
 	var siteToken = '<c:out value="${site.token}"/>';
 	
 	/** Current site */

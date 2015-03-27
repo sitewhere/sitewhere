@@ -20,8 +20,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="dvs-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Select</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="dvs-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="includes.deviceSearchDialog.Select"></a>
 	</div>
 </div>
 
@@ -68,7 +68,7 @@
 		dvsMatches = $("#dvs-device-matches").kendoListView({
 			dataSource : dvsMatchesDS,
 			selectable : "single",
-			template : kendo.template($("#tpl-device-entry-small").html()),
+			template : kendo.template($("#tpl-device-entry").html()),
 			change: dvsDeviceChosen
 		}).data("kendoListView");
 		

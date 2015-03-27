@@ -10,32 +10,31 @@
 <div id="sc-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="sc-dialog-header">Create Site</h3>
+		<h3 id="sc-dialog-header" data-i18n="includes.siteCreateDialog.CreateSite"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="sc-tabs">
 			<ul>
-				<li class="k-state-active">Site Details</li>
-				<li>Map Information</li>
-				<li>Metadata</li>
+				<li class="k-state-active" >&nbsp;<font data-i18n="includes.siteCreateDialog.SiteDetails"></font></li>
+				<li >&nbsp;<font data-i18n="includes.siteCreateDialog.MapInformation"></font></li>
+				<li >&nbsp;<font data-i18n="public.Metadata"></font></li>
 			</ul>
 			<div>
 				<form id="general-form" class="form-horizontal" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="gen-site-name">Site Name</label>
+						<label class="control-label" for="gen-site-name" data-i18n="includes.siteCreateDialog.SiteName"></label>
 						<div class="controls">
 							<input type="text" id="gen-site-name" class="input-xlarge" title="Site name">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="gen-site-desc">Site
-							Description</label>
+						<label class="control-label" for="gen-site-desc" data-i18n="includes.siteCreateDialog.SiteDescription"></label>
 						<div class="controls">
 							<textarea id="gen-site-desc" name="siteDesc" class="input-xlarge" style="height: 120px;"></textarea>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="gen-site-image-url">Image URL</label>
+						<label class="control-label" for="gen-site-image-url" data-i18n="includes.siteCreateDialog.ImageURL"></label>
 						<div class="controls">
 							<input type="text" id="gen-site-image-url" name="siteImageUrl" class="input-xlarge">
 						</div>
@@ -45,7 +44,7 @@
 			<div>
 				<form class="form-horizontal" style="padding-top: 15px;">
 					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-						<label class="control-label" for="sc-map-type">Map Type</label>
+						<label class="control-label" for="sc-map-type" data-i18n="includes.siteCreateDialog.MapType"></label>
 						<div class="controls">
 							<input id="sc-map-type"/>
 						</div>
@@ -54,19 +53,19 @@
 				<div id="map-type-forms">
 					<form id="mapquest" class="form-horizontal">
 						<div class="control-group">
-							<label class="control-label" for="mq-center-latitude">Center Latitude</label>
+							<label class="control-label" for="mq-center-latitude" data-i18n="includes.siteCreateDialog.CenterLatitude"></label>
 							<div class="controls">
 								<input type="text" id="mq-center-latitude" class="input-large">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="mq-center-longitude">Center Longitude</label>
+							<label class="control-label" for="mq-center-longitude" data-i18n="includes.siteCreateDialog.CenterLongitude"></label>
 							<div class="controls">
 								<input type="text" id="mq-center-longitude" class="input-large">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="mq-zoom-level">Zoom Level</label>
+							<label class="control-label" for="mq-zoom-level" data-i18n="includes.siteCreateDialog.ZoomLevel"></label>
 							<div class="controls">
 								<input type="text" id="mq-zoom-level" class="input-large">
 							</div>
@@ -74,8 +73,7 @@
 						<div class="control-group">
 							<label class="control-label"></label>
 							<div class="controls">
-								<a href="javascript:void(0)" onclick="scShowMap()">
-									Choose location and zoom on map
+								<a href="javascript:void(0)" onclick="scShowMap()" data-i18n="includes.siteCreateDialog.CLAZOM">
 								</a>
 							</div>
 						</div>
@@ -94,19 +92,19 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="gs-center-latitude">Center Latitude</label>
+							<label class="control-label" for="gs-center-latitude" data-i18n="includes.siteCreateDialog.CenterLatitude"></label>
 							<div class="controls">
 								<input type="text" id="gs-center-latitude" class="input-large">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="gs-center-longitude">Center Longitude</label>
+							<label class="control-label" for="gs-center-longitude" data-i18n="includes.siteCreateDialog.CenterLongitude"></label>
 							<div class="controls">
 								<input type="text" id="gs-center-longitude" class="input-large">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="gs-zoom-level">Zoom Level</label>
+							<label class="control-label" for="gs-zoom-level" data-i18n="includes.siteCreateDialog.ZoomLevel"></label>
 							<div class="controls">
 								<input type="text" id="gs-zoom-level" class="input-large">
 							</div>
@@ -114,8 +112,7 @@
 						<div class="control-group">
 							<label class="control-label"></label>
 							<div class="controls">
-								<a href="javascript:void(0)" onclick="scShowMap()">
-									Choose location and zoom on map
+								<a href="javascript:void(0)" onclick="scShowMap()" data-i18n="includes.siteCreateDialog.CLAZOM">
 								</a>
 							</div>
 						</div>
@@ -137,12 +134,12 @@
 	<input id="site-token" type="hidden" value="" />
 	<div class="modal-footer">
 		<div id="sc-buttons">
-			<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-			<a id="sc-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+			<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+			<a id="sc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 		</div>
 		<div id="sc-map-buttons" class="hide">
-			<a href="javascript:void(0)" class="btn" onclick="scHideMap(false)">Cancel</a> 
-			<a href="javascript:void(0)" class="btn btn-primary" onclick="scHideMap(true)">Use These Settings</a>
+			<a href="javascript:void(0)" class="btn" onclick="scHideMap(false)" data-i18n="public.Cancel"></a> 
+			<a href="javascript:void(0)" class="btn btn-primary" onclick="scHideMap(true)" data-i18n="includes.siteCreateDialog.UseTheseSettings"></a>
 		</div>
 	</div>
 </div>
@@ -258,8 +255,8 @@
 	/** Open the site create dialog */
 	function scOpen(e, callback) {
 		scClearDialog();
-		$('#sc-dialog-header').html("Create Site");
-		$('#sc-dialog-submit').html("Create");
+		$('#sc-dialog-header').html(i18next("includes.siteCreateDialog.CreateSite"));
+		$('#sc-dialog-submit').html(i18next("public.Create"));
 		$('#site-token').val("");
 		scMetadataDS.data(new Array());
 		scTabs.select(0);
@@ -313,8 +310,8 @@
     /** Called on successful site load request */
     function suSiteGetSuccess(data, status, jqXHR) {
 		scClearDialog();
-		$('#sc-dialog-header').html("Edit Site");
-		$('#sc-dialog-submit').html("Save");
+		$('#sc-dialog-header').html(i18next("public.EditSite"));
+		$('#sc-dialog-submit').html(i18next("public.Save"));
 		$('#gen-site-name').val(data.name);
 		$('#gen-site-desc').val(data.description);
 		$('#gen-site-image-url').val(data.imageUrl);

@@ -11,12 +11,10 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
-	<h1 class="ellipsis">
-		<c:out value="${sitewhere_title}" />
-	</h1>
+	<h1 class="ellipsis" data-i18n="batch.list.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-filter-results" class="btn" href="javascript:void(0)">
-			<i class="icon-search sw-button-icon"></i> Filter Results
+		<a id="btn-filter-results" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+			<i class="icon-search sw-button-icon"></i>
 		</a>
 	</div>
 </div>
@@ -31,11 +29,11 @@
 	</colgroup>
 	<thead>
 		<tr>
-			<th>Operation</th>
-			<th>Processing Status</th>
-			<th>Operation Created</th>
-			<th>Processing Started</th>
-			<th>Processing Finished</th>
+			<th data-i18n="public.Operation"></th>
+			<th data-i18n="batch.ProcessingStatus"></th>
+			<th data-i18n="batch.list.OperationCreated"></th>
+			<th data-i18n="public.ProcessingStarted"></th>
+			<th data-i18n="public.ProcessingFinished"></th>
 			<th></th>
 		</tr>
 	</thead>
@@ -55,6 +53,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "batch.list.title";
+
 	/** Reference for batch operations datasource */
 	var batchOpsDS;
 

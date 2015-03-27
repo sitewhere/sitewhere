@@ -59,20 +59,20 @@
 	<div class="sw-groups-list-entry gradient-bg sw-list-entry">
 		<div class="sw-groups-list-entry-logowrapper"
 			style="background-image: url(${pageContext.request.contextPath}/img/devicegroup.png); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-groups-list-entry-logo-tag">Device Group</span>
+			<span class="label label-info sw-groups-list-entry-logo-tag">#= i18next("public.DeviceGroup") #</span>
 		</div>
 		<div class="sw-groups-list-entry-actions">
-			<p class="ellipsis" style="margin-bottom: 5px;"><span class="sw-groups-list-entry-label">Created:</span> #= formattedDate(createdDate) #</p>
-			<p class="ellipsis"><span class="sw-groups-list-entry-label">Updated:</span> #= formattedDate(updatedDate) #</p>
+			<p class="ellipsis" style="margin-bottom: 5px;"><span class="sw-groups-list-entry-label">#= i18next("public.Created") #:</span> #= formattedDate(createdDate) #</p>
+			<p class="ellipsis"><span class="sw-groups-list-entry-label">#= i18next("public.Updated") #:</span> #= formattedDate(updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: 3px;">
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Device Group" style="color: \\#009;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.EditDeviceGroup") #" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onDeviceGroupEditClicked(event, '#:token#');">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Device Group" style="color: \\#900;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("includes.DeleteDeviceGroup") #" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onDeviceGroupDeleteClicked(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Device Group" style="color: \\#060;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.ViewDeviceGroup") #" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onDeviceGroupOpenClicked(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>
@@ -83,9 +83,9 @@
 			<p class="ellipsis sw-groups-list-entry-subhead">
 				<span class="sw-groups-list-entry-label" style="min-width: 50px;">Token:</span><span title="#:token#">#:token#</span></p>
 			<p class="ellipsis sw-groups-list-entry-subhead">
-				<span class="sw-groups-list-entry-label" style="min-width: 50px;">Desc:</span><span title="#:description#">#:description#</span></p>
+				<span class="sw-groups-list-entry-label" style="min-width: 50px;">#= i18next("includes.Desc") #:</span><span title="#:description#">#:description#</span></p>
 			<p class="ellipsis sw-groups-list-entry-subhead">
-				<span class="sw-groups-list-entry-label" style="min-width: 50px;">Roles:</span><span title="#:cdRoles#">#:cdRoles#</span></p>
+				<span class="sw-groups-list-entry-label" style="min-width: 50px;">#= i18next("public.Roles") #:</span><span title="#:cdRoles#">#:cdRoles#</span></p>
 		</div>
 	</div>
 </script>

@@ -11,12 +11,12 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="groups.list.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-filter-results" class="btn" href="javascript:void(0)">
-			<i class="icon-search sw-button-icon"></i> Filter Results</a>
-		<a id="btn-add-device-group" class="btn" href="javascript:void(0)">
-			<i class="icon-plus sw-button-icon"></i> Add New Device Group</a>
+		<a id="btn-filter-results" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+			<i class="icon-search sw-button-icon"></i></a>
+		<a id="btn-add-device-group" class="btn" href="javascript:void(0)" data-i18n="groups.list.ANDG">
+			<i class="icon-plus sw-button-icon"></i></a>
 	</div>
 </div>
 <div id="groups" class="sw-device-group-list"></div>
@@ -32,6 +32,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "groups.list.title";
+
 	/** Reference for device group list datasource */
 	var deviceGroupsDS;
 	

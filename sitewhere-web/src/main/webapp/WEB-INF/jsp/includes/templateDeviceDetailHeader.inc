@@ -39,7 +39,7 @@
 	<div class="sw-device-header gradient-bg">
 		<div class="sw-device-header-logowrapper"
 			style="background-image: url(#:specification.asset.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-device-header-logo-tag">Device</span>
+			<span class="label label-info sw-device-header-logo-tag">#= i18next("public.Device") #</span>
 		</div>
 		<div>
 			<div>
@@ -67,11 +67,11 @@
 # } #
 			</div>
 			<div>
-				<span class="sw-device-header-label" title="Date device was added to the system">Created Date:</span>
+				<span class="sw-device-header-label" title="#= i18next("includes.i18next.DDWATTS") #">#= i18next("public.CreatedDate") #:</span>
 				<span title="#= formattedDate(createdDate) #">#= formattedDate(createdDate) #</span>
 			</div>
 			<div>
-				<span class="sw-device-header-label" title="Date device was last updated">Updated Date:</span>
+				<span class="sw-device-header-label" title="#= i18next("includes.i18next.DDWLU") #">#= i18next("public.UpdatedDate") #:</span>
 				<span title="#= formattedDate(createdDate) #">#= formattedDate(updatedDate) #</span>
 			</div>
 		</div>

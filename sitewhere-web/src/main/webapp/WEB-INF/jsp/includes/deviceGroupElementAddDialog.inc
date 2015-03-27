@@ -2,24 +2,24 @@
 <div id="gea-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="gea-dialog-header">Add Device Group Element</h3>
+		<h3 id="gea-dialog-header" data-i18n="includes.deviceGroupElementAddDialog.AddDeviceGroupElement"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="gea-tabs">
 			<ul>
-				<li class="k-state-active">Element Details</li>
-				<li>Roles</li>
+				<li class="k-state-active" data-i18n="includes.ElementDetails"></li>
+				<li data-i18n="public.Roles"></li>
 			</ul>
 			<div>
 				<form id="gea-general-form" class="form-horizontal" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="gea-element-type">Element Type</label>
+						<label class="control-label" for="gea-element-type" data-i18n="includes.deviceGroupElementAddDialog.ElementType"></label>
 						<div class="controls">
 							<input id="gea-element-type"/>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="gea-element-id">Element Id</label>
+						<label class="control-label" for="gea-element-id" data-i18n="includes.deviceGroupElementAddDialog.ElementId"></label>
 						<div class="controls">
 							<input type="text" id="gea-element-id" title="Element id" class="input-xlarge">
 						</div>
@@ -27,21 +27,21 @@
 				</form>
 			</div>
 			<div>
-				<div class="sw-sublist-header">Role</div>
+				<div class="sw-sublist-header" data-i18n="public.Role"></div>
 				<table id="gea-roles" class="sw-sublist-list" style="height: 190px;"></table>
 				<div style="position: relative;" class="sw-sublist-add-new">
 					<input type="text" id="gea-add-role-value" 
 						style="width: 82%; margin-bottom: 0px;" title="New Role Value">
 					<a style="float: right;" class="btn" href="javascript:void(0)" onclick="geaAddRole()">
-						<i class="icon-plus sw-button-icon"></i> Add</a>
+						<i class="icon-plus sw-button-icon"></i>&nbsp<font data-i18n="public.Add"></font></a>
 					<div id="gea-role-create-error" style="color: #f00; display: none;"></div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="gea-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Add</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="gea-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Add"></a>
 	</div>
 </div>
 
@@ -168,11 +168,11 @@
 		
 		// Check for empty or bad values.
 		if (role.length == 0) {
-			error = "You must enter a value.";
+			error = i18next("includes.deviceGroupElementAddDialog.YMEAV");
 		}
 		var regex = /^[\w-]+$/;
 		if (!regex.test(role)) {
-			error = "Invalid character in role."
+			error = i18next("includes.deviceGroupElementAddDialog.ICIR");
 		}
 		
 		if (error.length > 0) {

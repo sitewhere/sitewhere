@@ -189,9 +189,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a>
 		<a id="dfl-dialog-submit" href="javascript:void(0)"
-			class="btn btn-primary">Apply Filter</a>
+			class="btn btn-primary" data-i18n="includes.deviceFilterDialog.ApplyFilter"></a>
 	</div>
 </div>
 
