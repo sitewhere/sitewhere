@@ -19,8 +19,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
@@ -73,21 +73,21 @@ public class HBaseDeviceGroup {
 		}
 
 		@Override
-		public ErrorCode getInvalidKeyErrorCode() {
-			return ErrorCode.InvalidDeviceGroupToken;
+		public void throwInvalidKey() throws SiteWhereException {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 		}
 	};
 
 	/**
 	 * Create a device group.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceGroup createDeviceGroup(ISiteWhereHBaseClient hbase,
-			IDeviceGroupCreateRequest request) throws SiteWhereException {
+	public static IDeviceGroup createDeviceGroup(IHBaseContext context, IDeviceGroupCreateRequest request)
+			throws SiteWhereException {
 		String uuid = null;
 		if (request.getToken() != null) {
 			uuid = KEY_BUILDER.getMap().useExistingId(request.getToken());
@@ -101,51 +101,52 @@ public class HBaseDeviceGroup {
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 		byte[] zero = Bytes.toBytes((long) 0);
 		qualifiers.put(ENTRY_COUNTER, zero);
-		return HBaseUtils.createOrUpdate(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, group, uuid, KEY_BUILDER,
-				qualifiers);
+		return HBaseUtils.createOrUpdate(context.getClient(), context.getPayloadMarshaler(),
+				ISiteWhereHBase.DEVICES_TABLE_NAME, group, uuid, KEY_BUILDER, qualifiers);
 	}
 
 	/**
 	 * Update device group information.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceGroup updateDeviceGroup(ISiteWhereHBaseClient hbase, String token,
+	public static IDeviceGroup updateDeviceGroup(IHBaseContext context, String token,
 			IDeviceGroupCreateRequest request) throws SiteWhereException {
-		DeviceGroup updated = assertDeviceGroup(hbase, token);
+		DeviceGroup updated = assertDeviceGroup(context, token);
 		SiteWherePersistence.deviceGroupUpdateLogic(request, updated);
-		return HBaseUtils.putJson(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER);
+		return HBaseUtils.put(context.getClient(), context.getPayloadMarshaler(),
+				ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER);
 	}
 
 	/**
-	 * Get a {@link DeviceGroup} by unique token.
+	 * Get a {@link DeviceGroup} by unique token. s *
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceGroup getDeviceGroupByToken(ISiteWhereHBaseClient hbase, String token)
+	public static DeviceGroup getDeviceGroupByToken(IHBaseContext context, String token)
 			throws SiteWhereException {
-		return HBaseUtils.get(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
+		return HBaseUtils.get(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
 				DeviceGroup.class);
 	}
 
 	/**
 	 * Get paged {@link IDeviceGroup} results based on the given search criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param includeDeleted
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceGroup> listDeviceGroups(ISiteWhereHBaseClient hbase,
-			boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
+	public static SearchResults<IDeviceGroup> listDeviceGroups(IHBaseContext context, boolean includeDeleted,
+			ISearchCriteria criteria) throws SiteWhereException {
 		Comparator<DeviceGroup> comparator = new Comparator<DeviceGroup>() {
 
 			public int compare(DeviceGroup a, DeviceGroup b) {
@@ -159,22 +160,23 @@ public class HBaseDeviceGroup {
 				return false;
 			}
 		};
-		return HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
-				includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria, comparator);
+		return HBaseUtils.getFilteredList(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+				KEY_BUILDER, includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria,
+				comparator);
 	}
 
 	/**
 	 * Get paged {@link IDeviceGroup} results for groups that have a given role based on
 	 * the given search criteria.
 	 * 
+	 * @param context
 	 * @param role
-	 * @param hbase
 	 * @param includeDeleted
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceGroup> listDeviceGroupsWithRole(ISiteWhereHBaseClient hbase,
+	public static SearchResults<IDeviceGroup> listDeviceGroupsWithRole(IHBaseContext context,
 			final String role, boolean includeDeleted, ISearchCriteria criteria) throws SiteWhereException {
 		Comparator<DeviceGroup> comparator = new Comparator<DeviceGroup>() {
 
@@ -189,23 +191,23 @@ public class HBaseDeviceGroup {
 				return !item.getRoles().contains(role);
 			}
 		};
-		return HBaseUtils.getFilteredList(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
-				includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria, comparator);
+		return HBaseUtils.getFilteredList(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+				KEY_BUILDER, includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria,
+				comparator);
 	}
 
 	/**
-	 * Aloocates the next available group element id.
+	 * Allocates the next available group element id.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param primary
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Long allocateNextElementId(ISiteWhereHBaseClient hbase, byte[] primary)
-			throws SiteWhereException {
+	public static Long allocateNextElementId(IHBaseContext context, byte[] primary) throws SiteWhereException {
 		HTableInterface devices = null;
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Increment increment = new Increment(primary);
 			increment.addColumn(ISiteWhereHBase.FAMILY_ID, ENTRY_COUNTER, 1);
 			Result result = devices.increment(increment);
@@ -220,33 +222,33 @@ public class HBaseDeviceGroup {
 	/**
 	 * Delete an existing device group.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param force
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceGroup deleteDeviceGroup(ISiteWhereHBaseClient hbase, String token, boolean force)
+	public static IDeviceGroup deleteDeviceGroup(IHBaseContext context, String token, boolean force)
 			throws SiteWhereException {
 		// If actually deleting group, delete all group elements.
 		if (force) {
-			HBaseDeviceGroupElement.deleteElements(hbase, token);
+			HBaseDeviceGroupElement.deleteElements(context, token);
 		}
-		return HBaseUtils.delete(hbase, ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER,
-				DeviceGroup.class);
+		return HBaseUtils.delete(context.getClient(), context.getPayloadMarshaler(),
+				ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER, DeviceGroup.class);
 	}
 
 	/**
 	 * Get a {@link DeviceGroup} by token or throw an exception if token is not valid.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceGroup assertDeviceGroup(ISiteWhereHBaseClient hbase, String token)
+	public static DeviceGroup assertDeviceGroup(IHBaseContext context, String token)
 			throws SiteWhereException {
-		DeviceGroup existing = getDeviceGroupByToken(hbase, token);
+		DeviceGroup existing = getDeviceGroupByToken(context, token);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceGroupToken, ErrorLevel.ERROR);
 		}

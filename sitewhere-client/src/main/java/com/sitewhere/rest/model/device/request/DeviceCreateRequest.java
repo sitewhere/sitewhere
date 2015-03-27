@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -20,7 +21,10 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
  * 
  * @author Derek Adams
  */
-public class DeviceCreateRequest extends MetadataProvider implements IDeviceCreateRequest {
+public class DeviceCreateRequest extends MetadataProvider implements IDeviceCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 5102270168736590229L;
 
 	/** Hardware id for new device */
 	private String hardwareId;

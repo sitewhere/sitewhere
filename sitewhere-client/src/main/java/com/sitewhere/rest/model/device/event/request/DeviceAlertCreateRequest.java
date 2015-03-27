@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.io.Serializable;
+
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
@@ -16,7 +18,11 @@ import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceAlertCreateRequest extends DeviceEventCreateRequest implements IDeviceAlertCreateRequest {
+public class DeviceAlertCreateRequest extends DeviceEventCreateRequest implements IDeviceAlertCreateRequest,
+		Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 7660473778731839384L;
 
 	/** Alert level */
 	private AlertLevel level;

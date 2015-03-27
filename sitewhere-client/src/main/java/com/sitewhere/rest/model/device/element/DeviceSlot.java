@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.element;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.element.IDeviceSlot;
@@ -17,7 +19,10 @@ import com.sitewhere.spi.device.element.IDeviceSlot;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceSlot extends DeviceElement implements IDeviceSlot {
+public class DeviceSlot extends DeviceElement implements IDeviceSlot, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 6916032415258391337L;
 
 	public DeviceSlot() {
 	}

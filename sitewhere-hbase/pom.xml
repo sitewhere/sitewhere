@@ -12,6 +12,39 @@
 	<packaging>jar</packaging>
 	<name>SiteWhere HBase Implementation</name>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>protoc-plugin</id>
+			<url>http://sergei-ivanov.github.com/maven-protoc-plugin/repo/releases/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<profiles>
+		<profile>
+			<id>buildMarshaler</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.google.protobuf.tools</groupId>
+						<artifactId>maven-protoc-plugin</artifactId>
+						<version>0.3.2</version>
+						<configuration>
+							<protocExecutable>C:\Google\protobuf-2.5.0\bin\protoc.exe</protocExecutable>
+							<outputDirectory>${basedir}/src/gen/java</outputDirectory>
+							<checkStaleness>true</checkStaleness>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>compile</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencies>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
@@ -27,7 +60,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
-			<artifactId>hbase</artifactId>
+			<artifactId>hbase-client</artifactId>
 			<version>${hbase.version}</version>
 			<scope>compile</scope>
 			<exclusions>
@@ -39,32 +72,37 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
+			<artifactId>hadoop-common</artifactId>
 			<version>${hadoop.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>3.2.1.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.1.1</version>
+			<version>${jackson.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.1.1</version>
+			<version>${jackson.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.0.4</version>
+			<version>${jackson.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

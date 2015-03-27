@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.group;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,10 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceGroupElement implements IDeviceGroupElement {
+public class DeviceGroupElement implements IDeviceGroupElement, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -5565956152579362877L;
 
 	/** Parent group token */
 	private String groupToken;

@@ -7,11 +7,13 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
@@ -22,7 +24,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
  */
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
-public class DeviceMeasurements extends DeviceEvent implements IDeviceMeasurements {
+public class DeviceMeasurements extends DeviceEvent implements IDeviceMeasurements, Serializable {
 
 	/** For Java serialization */
 	private static final long serialVersionUID = -4369962596450151827L;
@@ -131,7 +133,7 @@ public class DeviceMeasurements extends DeviceEvent implements IDeviceMeasuremen
 	 * @param input
 	 * @return
 	 */
-	public static DeviceMeasurements copy(IDeviceMeasurements input) {
+	public static DeviceMeasurements copy(IDeviceMeasurements input) throws SiteWhereException {
 		DeviceMeasurements result = new DeviceMeasurements();
 		DeviceEvent.copy(input, result);
 		for (String key : input.getMeasurements().keySet()) {

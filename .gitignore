@@ -7,6 +7,7 @@
 /sitewhere-ehcache/target
 /sitewhere-gnuhealth/target
 /sitewhere-hbase/target
+/sitewhere-hbase/src/gen
 /sitewhere-magento/target
 /sitewhere-mongodb/target
 /sitewhere-mule/target

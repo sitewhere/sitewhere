@@ -135,7 +135,8 @@
 				<xsd:attribute name="useDockerLinking" type="xsd:boolean" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>If enabled, uses environment variables set by Docker linking to
-							derive host and port to connect to.</xsd:documentation>
+							derive host and port to connect to.
+						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>
@@ -153,7 +154,27 @@
 	<xsd:complexType name="hbaseDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="quorum" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="quorum" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper quorum address</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperClientPort" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper client port. Defaults to 2181.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperZnodeParent" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper znode parent. Defaults to '/hbase'.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperZnodeRootServer" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper znode root server. Defaults to 'root-region-server'.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -229,6 +250,22 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Configuration data for Hazelcast cache provider -->
+	<xsd:element name="hazelcast-cache" type="hazelcastCacheType"
+		substitutionGroup="abstract-cache">
+		<xsd:annotation>
+			<xsd:documentation>Device management cache that uses Hazelcast for the underlying cache
+				mechanism.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hazelcastCacheType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCacheType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -605,6 +642,22 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
+	<!-- Echo String payload for debugging purposes -->
+	<xsd:element name="echo-string-decoder" type="swEchoStringDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder for event receivers with String payloads that simply echoes
+				the payload to the log.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swEchoStringDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<!-- Used as a placeholder for event sources to allow substitutionGroups -->
 	<xsd:element name="abstract-event-source" abstract="true" type="abstractEventSourceType">
@@ -874,6 +927,56 @@
 						<xsd:documentation>
 							Number of threads used to handle client connections to the server
 							socket.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Contains web socket header information -->
+	<xsd:complexType name="webSocketHeaderType">
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Header name.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="value" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Header value.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Event source that pulls String information from a web socket and decodes it -->
+	<xsd:element name="string-web-socket-event-source" type="stringWebSocketEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls String payloads from a web socket.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="stringWebSocketEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+					<xsd:element name="header" type="webSocketHeaderType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Header that is passed to the web socket for configuration.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="webSocketUrl" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							URL of the web socket to connect to.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

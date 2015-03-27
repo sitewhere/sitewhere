@@ -14,6 +14,13 @@ package com.sitewhere.spi.error;
  */
 public enum ErrorCode {
 
+	/**********
+	 * COMMON *
+	 **********/
+
+	/** Bad username */
+	InvalidMetadataFieldName(10, "Metadata field name contains invalid characters."),
+
 	/*********
 	 * USERS *
 	 *********/

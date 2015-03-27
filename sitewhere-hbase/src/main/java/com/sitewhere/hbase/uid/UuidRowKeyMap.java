@@ -19,7 +19,7 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UuidRowKeyMap extends UniqueIdMap<String, byte[]> {
 
-	public UuidRowKeyMap(ISiteWhereHBaseClient hbase, UniqueIdType keyIndicator, UniqueIdType valueIndicator) {
+	public UuidRowKeyMap(ISiteWhereHBaseClient hbase, byte keyIndicator, byte valueIndicator) {
 		super(hbase, keyIndicator, valueIndicator);
 	}
 

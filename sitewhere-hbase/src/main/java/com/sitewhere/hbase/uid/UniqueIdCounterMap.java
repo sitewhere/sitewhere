@@ -26,8 +26,7 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 
-	public UniqueIdCounterMap(ISiteWhereHBaseClient hbase, UniqueIdType keyIndicator,
-			UniqueIdType valueIndicator) {
+	public UniqueIdCounterMap(ISiteWhereHBaseClient hbase, byte keyIndicator, byte valueIndicator) {
 		super(hbase, keyIndicator, valueIndicator);
 	}
 
@@ -66,7 +65,7 @@ public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 	public Long getNextCounterValue() throws SiteWhereException {
 		ByteBuffer counterRow = ByteBuffer.allocate(2);
 		counterRow.put(UniqueIdType.CounterPlaceholder.getIndicator());
-		counterRow.put(getKeyIndicator().getIndicator());
+		counterRow.put(getKeyIndicator());
 		byte[] counterKey = counterRow.array();
 		HTableInterface uids = null;
 		try {

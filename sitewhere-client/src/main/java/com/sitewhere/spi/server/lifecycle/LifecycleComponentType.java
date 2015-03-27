@@ -31,7 +31,7 @@ public enum LifecycleComponentType {
 
 	/** Search provider manager */
 	SearchProviderManager,
-	
+
 	/** Search provider */
 	SearchProvider,
 
@@ -88,4 +88,7 @@ public enum LifecycleComponentType {
 
 	/** Event receiver */
 	InboundEventReceiver,
+
+	/** Unclassified component */
+	Other,
 }

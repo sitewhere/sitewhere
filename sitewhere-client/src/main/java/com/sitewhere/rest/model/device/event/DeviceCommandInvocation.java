@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  */
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
-public class DeviceCommandInvocation extends DeviceEvent implements IDeviceCommandInvocation {
+public class DeviceCommandInvocation extends DeviceEvent implements IDeviceCommandInvocation, Serializable {
 
 	/** For Java serialization */
 	private static final long serialVersionUID = -7389600825785131041L;

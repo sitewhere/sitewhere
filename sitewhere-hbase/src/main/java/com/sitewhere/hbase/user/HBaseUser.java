@@ -25,11 +25,11 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
@@ -51,14 +51,14 @@ public class HBaseUser {
 	/**
 	 * Create a new device.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User createUser(ISiteWhereHBaseClient hbase, IUserCreateRequest request)
+	public static User createUser(IHBaseContext context, IUserCreateRequest request)
 			throws SiteWhereException {
-		User existing = getUserByUsername(hbase, request.getUsername());
+		User existing = getUserByUsername(context, request.getUsername());
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR,
 					HttpServletResponse.SC_CONFLICT);
@@ -67,13 +67,13 @@ public class HBaseUser {
 		// Create the new user and store it.
 		User user = SiteWherePersistence.userCreateLogic(request);
 		byte[] primary = getUserRowKey(request.getUsername());
-		byte[] json = MarshalUtils.marshalJson(user);
+		byte[] payload = context.getPayloadMarshaler().encodeUser(user);
 
 		HTableInterface users = null;
 		try {
-			users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			users.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to set JSON for user.", e);
@@ -87,28 +87,28 @@ public class HBaseUser {
 	/**
 	 * Update an existing user.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param username
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User updateUser(ISiteWhereHBaseClient hbase, String username, IUserCreateRequest request)
+	public static User updateUser(IHBaseContext context, String username, IUserCreateRequest request)
 			throws SiteWhereException {
-		User updated = getUserByUsername(hbase, username);
+		User updated = getUserByUsername(context, username);
 		if (updated == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
 		}
 		SiteWherePersistence.userUpdateLogic(request, updated);
 
 		byte[] primary = getUserRowKey(username);
-		byte[] json = MarshalUtils.marshalJson(updated);
+		byte[] payload = context.getPayloadMarshaler().encodeUser(updated);
 
 		HTableInterface users = null;
 		try {
-			users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			users.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to set JSON for user.", e);
@@ -121,15 +121,15 @@ public class HBaseUser {
 	/**
 	 * Delete an existing user.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param username
 	 * @param force
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User deleteUser(ISiteWhereHBaseClient hbase, String username, boolean force)
+	public static User deleteUser(IHBaseContext context, String username, boolean force)
 			throws SiteWhereException {
-		User existing = getUserByUsername(hbase, username);
+		User existing = getUserByUsername(context, username);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR);
 		}
@@ -138,7 +138,7 @@ public class HBaseUser {
 		if (force) {
 			HTableInterface users = null;
 			try {
-				users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+				users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 				Delete delete = new Delete(primary);
 				users.delete(delete);
 			} catch (IOException e) {
@@ -149,12 +149,12 @@ public class HBaseUser {
 		} else {
 			byte[] marker = { (byte) 0x01 };
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
-			byte[] updated = MarshalUtils.marshalJson(existing);
+			byte[] payload = context.getPayloadMarshaler().encodeUser(existing);
 			HTableInterface users = null;
 			try {
-				users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+				users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 				Put put = new Put(primary);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
+				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				users.put(put);
 			} catch (IOException e) {
@@ -169,28 +169,28 @@ public class HBaseUser {
 	/**
 	 * Get a user by unique username. Returns null if not found.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param username
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User getUserByUsername(ISiteWhereHBaseClient hbase, String username)
-			throws SiteWhereException {
+	public static User getUserByUsername(IHBaseContext context, String username) throws SiteWhereException {
 		byte[] rowkey = getUserRowKey(username);
 
 		HTableInterface users = null;
 		try {
-			users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 			Get get = new Get(rowkey);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+			HBaseUtils.addPayloadFields(get);
 			Result result = users.get(get);
-			if (result.size() == 0) {
+
+			byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+			if ((type == null) || (payload == null)) {
 				return null;
 			}
-			if (result.size() > 1) {
-				throw new SiteWhereException("Expected one JSON entry for site and found: " + result.size());
-			}
-			return MarshalUtils.unmarshalJson(result.value(), User.class);
+
+			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeUser(payload);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to load user by username.", e);
 		} finally {
@@ -201,19 +201,19 @@ public class HBaseUser {
 	/**
 	 * Authenticate a username password combination.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param username
 	 * @param password
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static User authenticate(ISiteWhereHBaseClient hbase, String username, String password)
+	public static User authenticate(IHBaseContext context, String username, String password)
 			throws SiteWhereException {
 		if (password == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidPassword, ErrorLevel.ERROR,
 					HttpServletResponse.SC_BAD_REQUEST);
 		}
-		User existing = getUserByUsername(hbase, username);
+		User existing = getUserByUsername(context, username);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
 					HttpServletResponse.SC_UNAUTHORIZED);
@@ -227,13 +227,13 @@ public class HBaseUser {
 		// Update last login date.
 		existing.setLastLogin(new Date());
 		byte[] primary = getUserRowKey(username);
-		byte[] json = MarshalUtils.marshalJson(existing);
+		byte[] payload = context.getPayloadMarshaler().encodeUser(existing);
 
 		HTableInterface users = null;
 		try {
-			users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			users.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to set deleted flag for user.", e);
@@ -246,18 +246,18 @@ public class HBaseUser {
 	/**
 	 * List users that match certain criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IUser> listUsers(ISiteWhereHBaseClient hbase, IUserSearchCriteria criteria)
+	public static List<IUser> listUsers(IHBaseContext context, IUserSearchCriteria criteria)
 			throws SiteWhereException {
 
 		HTableInterface users = null;
 		ResultScanner scanner = null;
 		try {
-			users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { UserRecordType.User.getType() });
 			scan.setStopRow(new byte[] { UserRecordType.GrantedAuthority.getType() });
@@ -267,17 +267,23 @@ public class HBaseUser {
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
 				Map<byte[], byte[]> row = result.getFamilyMap(ISiteWhereHBase.FAMILY_ID);
-				byte[] json = null;
+
+				byte[] payloadType = null;
+				byte[] payload = null;
 				for (byte[] qualifier : row.keySet()) {
 					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!criteria.isIncludeDeleted())) {
 						shouldAdd = false;
 					}
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = row.get(qualifier);
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
+						payloadType = row.get(qualifier);
+					}
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
+						payload = row.get(qualifier);
 					}
 				}
-				if ((shouldAdd) && (json != null)) {
-					matches.add(MarshalUtils.unmarshalJson(json, User.class));
+				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
+					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeUser(
+							payload));
 				}
 			}
 			return matches;
@@ -294,17 +300,17 @@ public class HBaseUser {
 	/**
 	 * Get the list of granted authorities for a user.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param username
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IGrantedAuthority> getGrantedAuthorities(ISiteWhereHBaseClient hbase, String username)
+	public static List<IGrantedAuthority> getGrantedAuthorities(IHBaseContext context, String username)
 			throws SiteWhereException {
-		IUser user = getUserByUsername(hbase, username);
+		IUser user = getUserByUsername(context, username);
 		List<String> userAuths = user.getAuthorities();
 		List<IGrantedAuthority> all =
-				HBaseGrantedAuthority.listGrantedAuthorities(hbase, new GrantedAuthoritySearchCriteria());
+				HBaseGrantedAuthority.listGrantedAuthorities(context, new GrantedAuthoritySearchCriteria());
 		List<IGrantedAuthority> matched = new ArrayList<IGrantedAuthority>();
 		for (IGrantedAuthority auth : all) {
 			if (userAuths.contains(auth.getAuthority())) {

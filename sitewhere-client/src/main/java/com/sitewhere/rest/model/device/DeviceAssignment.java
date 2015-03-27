@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,7 +28,10 @@ import com.sitewhere.spi.device.IDeviceAssignment;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceAssignment extends MetadataProviderEntity implements IDeviceAssignment {
+public class DeviceAssignment extends MetadataProviderEntity implements IDeviceAssignment, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 4053925804888464375L;
 
 	/** Unique assignment token */
 	private String token;

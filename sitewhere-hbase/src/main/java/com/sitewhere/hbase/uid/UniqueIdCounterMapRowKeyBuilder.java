@@ -13,8 +13,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 import com.sitewhere.hbase.common.IRowKeyBuilder;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.error.ErrorLevel;
 
 /**
  * Implementation of {@link IRowKeyBuilder} that uses a {@link UniqueIdCounterMap} to look
@@ -40,7 +38,7 @@ public abstract class UniqueIdCounterMapRowKeyBuilder implements IRowKeyBuilder 
 	public byte[] buildPrimaryKey(String token) throws SiteWhereException {
 		Long entityId = getMap().getValue(token);
 		if (entityId == null) {
-			throw new SiteWhereSystemException(getInvalidKeyErrorCode(), ErrorLevel.ERROR);
+			throwInvalidKey();
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(getKeyIdLength() + 2);
 		buffer.put(getTypeIdentifier());
@@ -58,7 +56,7 @@ public abstract class UniqueIdCounterMapRowKeyBuilder implements IRowKeyBuilder 
 	public byte[] buildSubkey(String token, byte type) throws SiteWhereException {
 		Long entityId = getMap().getValue(token);
 		if (entityId == null) {
-			throw new SiteWhereSystemException(getInvalidKeyErrorCode(), ErrorLevel.ERROR);
+			throwInvalidKey();
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(getKeyIdLength() + 2);
 		buffer.put(getTypeIdentifier());

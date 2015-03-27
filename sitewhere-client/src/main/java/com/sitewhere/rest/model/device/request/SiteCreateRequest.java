@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
+
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
@@ -16,7 +18,10 @@ import com.sitewhere.spi.device.request.ISiteCreateRequest;
  * 
  * @author Derek
  */
-public class SiteCreateRequest extends MetadataProvider implements ISiteCreateRequest {
+public class SiteCreateRequest extends MetadataProvider implements ISiteCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 574323736888872612L;
 
 	/** Site name */
 	private String name;

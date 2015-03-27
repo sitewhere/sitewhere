@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 
@@ -134,7 +135,7 @@ public class DeviceCommand extends MetadataProviderEntity implements IDeviceComm
 	 * @param input
 	 * @return
 	 */
-	public static DeviceCommand copy(IDeviceCommand input) {
+	public static DeviceCommand copy(IDeviceCommand input) throws SiteWhereException {
 		DeviceCommand result = new DeviceCommand();
 		MetadataProviderEntity.copy(input, result);
 		result.setToken(input.getToken());

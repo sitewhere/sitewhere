@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,10 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreateRequest {
+public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 652319724175005277L;
 
 	/** Element type */
 	private GroupElementType type;

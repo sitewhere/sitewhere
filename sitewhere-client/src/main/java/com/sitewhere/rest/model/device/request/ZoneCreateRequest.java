@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,10 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
  * 
  * @author Derek
  */
-public class ZoneCreateRequest extends MetadataProvider implements IZoneCreateRequest {
+public class ZoneCreateRequest extends MetadataProvider implements IZoneCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 5490633726915797290L;
 
 	/** Zone name */
 	private String name;

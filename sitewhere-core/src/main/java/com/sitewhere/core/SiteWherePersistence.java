@@ -221,7 +221,7 @@ public class SiteWherePersistence {
 		if (request.getAssetId() != null) {
 			target.setAssetId(request.getAssetId());
 		}
-		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
+		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
 			MetadataProvider.copy(request, target);
 		}
@@ -405,7 +405,7 @@ public class SiteWherePersistence {
 		if (request.getStatus() != null) {
 			target.setStatus(request.getStatus());
 		}
-		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
+		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
 			MetadataProvider.copy(request, target);
 		}
@@ -540,14 +540,17 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void siteUpdateLogic(ISiteCreateRequest source, Site target) throws SiteWhereException {
-		target.setName(source.getName());
-		target.setDescription(source.getDescription());
-		target.setImageUrl(source.getImageUrl());
+	public static void siteUpdateLogic(ISiteCreateRequest request, Site target) throws SiteWhereException {
+		target.setName(request.getName());
+		target.setDescription(request.getDescription());
+		target.setImageUrl(request.getImageUrl());
 		target.clearMetadata();
-		target.setMap(SiteMapData.copy(source.getMap()));
+		target.setMap(SiteMapData.copy(request.getMap()));
 
-		MetadataProvider.copy(source, target);
+		if (request.getMetadata() != null) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request, target);
+		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
 
@@ -863,7 +866,8 @@ public class SiteWherePersistence {
 	 * @param assignment
 	 * @return
 	 */
-	protected static DeviceAssignmentState assureState(IDeviceAssignment assignment) {
+	protected static DeviceAssignmentState assureState(IDeviceAssignment assignment)
+			throws SiteWhereException {
 		if (assignment.getState() == null) {
 			return new DeviceAssignmentState();
 		}
@@ -993,19 +997,22 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void zoneUpdateLogic(IZoneCreateRequest source, Zone target) throws SiteWhereException {
-		target.setName(source.getName());
-		target.setBorderColor(source.getBorderColor());
-		target.setFillColor(source.getFillColor());
-		target.setOpacity(source.getOpacity());
+	public static void zoneUpdateLogic(IZoneCreateRequest request, Zone target) throws SiteWhereException {
+		target.setName(request.getName());
+		target.setBorderColor(request.getBorderColor());
+		target.setFillColor(request.getFillColor());
+		target.setOpacity(request.getOpacity());
 
 		target.getCoordinates().clear();
-		for (ILocation coordinate : source.getCoordinates()) {
+		for (ILocation coordinate : request.getCoordinates()) {
 			target.getCoordinates().add(coordinate);
 		}
 
+		if (request.getMetadata() != null) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request, target);
+		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
-		MetadataProvider.copy(source, target);
 	}
 
 	/**
@@ -1038,18 +1045,21 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void deviceGroupUpdateLogic(IDeviceGroupCreateRequest source, DeviceGroup target)
+	public static void deviceGroupUpdateLogic(IDeviceGroupCreateRequest request, DeviceGroup target)
 			throws SiteWhereException {
-		target.setName(source.getName());
-		target.setDescription(source.getDescription());
+		target.setName(request.getName());
+		target.setDescription(request.getDescription());
 
-		if (source.getRoles() != null) {
+		if (request.getRoles() != null) {
 			target.getRoles().clear();
-			target.getRoles().addAll(source.getRoles());
+			target.getRoles().addAll(request.getRoles());
 		}
 
+		if (request.getMetadata() != null) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request, target);
+		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
-		MetadataProvider.copy(source, target);
 	}
 
 	/**
@@ -1099,20 +1109,23 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void batchOperationUpdateLogic(IBatchOperationUpdateRequest source, BatchOperation target)
+	public static void batchOperationUpdateLogic(IBatchOperationUpdateRequest request, BatchOperation target)
 			throws SiteWhereException {
-		if (source.getProcessingStatus() != null) {
-			target.setProcessingStatus(source.getProcessingStatus());
+		if (request.getProcessingStatus() != null) {
+			target.setProcessingStatus(request.getProcessingStatus());
 		}
-		if (source.getProcessingStartedDate() != null) {
-			target.setProcessingStartedDate(source.getProcessingStartedDate());
+		if (request.getProcessingStartedDate() != null) {
+			target.setProcessingStartedDate(request.getProcessingStartedDate());
 		}
-		if (source.getProcessingEndedDate() != null) {
-			target.setProcessingEndedDate(source.getProcessingEndedDate());
+		if (request.getProcessingEndedDate() != null) {
+			target.setProcessingEndedDate(request.getProcessingEndedDate());
 		}
 
+		if (request.getMetadata() != null) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request, target);
+		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
-		MetadataProvider.copy(source, target);
 	}
 
 	/**
@@ -1226,7 +1239,7 @@ public class SiteWherePersistence {
 		if (source.getAuthorities() != null) {
 			target.setAuthorities(source.getAuthorities());
 		}
-		if ((source.getMetadata() != null) && (source.getMetadata().size() > 0)) {
+		if (source.getMetadata() != null) {
 			target.getMetadata().clear();
 			MetadataProvider.copy(source, target);
 		}

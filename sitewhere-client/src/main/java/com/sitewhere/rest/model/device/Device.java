@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,10 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
-public class Device extends MetadataProviderEntity implements IDevice {
+public class Device extends MetadataProviderEntity implements IDevice, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 5558679468461313408L;
 
 	/** Unique hardware id for device */
 	private String hardwareId;

@@ -7,11 +7,13 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.IZone;
 
@@ -20,7 +22,10 @@ import com.sitewhere.spi.device.IZone;
  * 
  * @author dadams
  */
-public class Zone extends MetadataProviderEntity implements IZone {
+public class Zone extends MetadataProviderEntity implements IZone, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -5108019932881896046L;
 
 	/** Unique zone token */
 	private String token;
@@ -141,7 +146,7 @@ public class Zone extends MetadataProviderEntity implements IZone {
 	 * @param input
 	 * @return
 	 */
-	public static Zone copy(IZone input) {
+	public static Zone copy(IZone input) throws SiteWhereException {
 		Zone result = new Zone();
 		result.setToken(input.getToken());
 		result.setSiteToken(input.getSiteToken());

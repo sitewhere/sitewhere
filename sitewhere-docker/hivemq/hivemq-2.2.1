@@ -1,0 +1,10 @@
+FROM ubuntu:14.10
+RUN apt-get update
+EXPOSE 1883 61623
+
+RUN apt-get install -y unzip wget openjdk-7-jdk
+
+RUN cd /opt && wget --content-disposition http://www.hivemq.com/wp-content/uploads/hivemq-2.2.1.zip && unzip hivemq-2.2.1.zip
+COPY configuration.properties /opt/hivemq-2.2.1/conf/configuration.properties
+RUN ln -s /opt/hivemq-2.2.1 /opt/hivemq && useradd -d /opt/hivemq hivemq && chown -R hivemq.hivemq /opt/hivemq-2.2.1 && chown -R hivemq.hivemq /opt/hivemq && cd /opt/hivemq && chmod +x ./bin/run.sh
+CMD /opt/hivemq/bin/run.sh

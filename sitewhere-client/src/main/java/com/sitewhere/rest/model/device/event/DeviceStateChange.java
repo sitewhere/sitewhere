@@ -7,9 +7,11 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
@@ -20,7 +22,7 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
  * 
  * @author Derek
  */
-public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange {
+public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange, Serializable {
 
 	/** For Java serialization */
 	private static final long serialVersionUID = 7904836116060730355L;
@@ -115,7 +117,7 @@ public class DeviceStateChange extends DeviceEvent implements IDeviceStateChange
 	 * @param input
 	 * @return
 	 */
-	public static DeviceStateChange copy(IDeviceStateChange input) {
+	public static DeviceStateChange copy(IDeviceStateChange input) throws SiteWhereException {
 		DeviceStateChange result = new DeviceStateChange();
 		DeviceEvent.copy(input, result);
 		result.setCategory(input.getCategory());

@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -22,13 +21,12 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.util.Bytes;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.spi.SiteWhereException;
@@ -49,13 +47,13 @@ public class HBaseDeviceCommand {
 	/**
 	 * Create a new device command for an existing device specification.
 	 * 
+	 * @param context
 	 * @param spec
-	 * @param hbase
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceCommand createDeviceCommand(ISiteWhereHBaseClient hbase, IDeviceSpecification spec,
+	public static IDeviceCommand createDeviceCommand(IHBaseContext context, IDeviceSpecification spec,
 			IDeviceCommandCreateRequest request) throws SiteWhereException {
 		Long specId = IdManager.getInstance().getSpecificationKeys().getValue(spec.getToken());
 		if (specId == null) {
@@ -64,53 +62,49 @@ public class HBaseDeviceCommand {
 		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 
 		// Use common logic so all backend implementations work the same.
-		List<IDeviceCommand> existing = listDeviceCommands(hbase, spec.getToken(), false);
+		List<IDeviceCommand> existing = listDeviceCommands(context, spec.getToken(), false);
 		DeviceCommand command = SiteWherePersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
 
 		// Create unique row for new device.
-		Long nextId = HBaseDeviceSpecification.allocateNextCommandId(hbase, specId);
+		Long nextId = HBaseDeviceSpecification.allocateNextCommandId(context, specId);
 		byte[] rowkey = HBaseDeviceSpecification.getDeviceCommandRowKey(specId, nextId);
 		IdManager.getInstance().getCommandKeys().create(uuid, rowkey);
 
-		return putDeviceCommandJson(hbase, command);
+		return putDeviceCommandPayload(context, command);
 	}
 
 	/**
 	 * List device commands that match the given criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param specToken
 	 * @param includeDeleted
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDeviceCommand> listDeviceCommands(ISiteWhereHBaseClient hbase, String specToken,
+	public static List<IDeviceCommand> listDeviceCommands(IHBaseContext context, String specToken,
 			boolean includeDeleted) throws SiteWhereException {
-		List<byte[]> matches = getFilteredDeviceCommands(hbase, specToken, includeDeleted);
-		List<IDeviceCommand> response = new ArrayList<IDeviceCommand>();
-		for (byte[] json : matches) {
-			response.add(MarshalUtils.unmarshalJson(json, DeviceCommand.class));
-		}
-		Collections.sort(response, new Comparator<IDeviceCommand>() {
+		List<IDeviceCommand> matches = getFilteredDeviceCommands(context, specToken, includeDeleted);
+		Collections.sort(matches, new Comparator<IDeviceCommand>() {
 
 			@Override
 			public int compare(IDeviceCommand a, IDeviceCommand b) {
 				return a.getCreatedDate().compareTo(b.getCreatedDate());
 			}
 		});
-		return response;
+		return matches;
 	}
 
 	/**
 	 * Get device commands that correspond to the given criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param specToken
 	 * @param includeDeleted
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static List<byte[]> getFilteredDeviceCommands(ISiteWhereHBaseClient hbase, String specToken,
+	protected static List<IDeviceCommand> getFilteredDeviceCommands(IHBaseContext context, String specToken,
 			boolean includeDeleted) throws SiteWhereException {
 		Long specId = IdManager.getInstance().getSpecificationKeys().getValue(specToken);
 		if (specId == null) {
@@ -121,27 +115,26 @@ public class HBaseDeviceCommand {
 		ResultScanner scanner = null;
 
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Scan scan = new Scan();
 			scan.setStartRow(HBaseDeviceSpecification.getDeviceCommandRowPrefix(specId));
 			scan.setStopRow(HBaseDeviceSpecification.getEndRowPrefix(specId));
 			scanner = devices.getScanner(scan);
 
-			List<byte[]> results = new ArrayList<byte[]>();
+			List<IDeviceCommand> results = new ArrayList<IDeviceCommand>();
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
-				byte[] json = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
-						shouldAdd = false;
-					}
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = column.getValue();
-					}
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] deleted = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED);
+
+				if ((deleted != null) && (!includeDeleted)) {
+					shouldAdd = false;
 				}
-				if ((shouldAdd) && (json != null)) {
-					results.add(json);
+
+				if ((shouldAdd) && (type != null) && (payload != null)) {
+					results.add(PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceCommand(
+							payload));
 				}
 			}
 			return results;
@@ -158,12 +151,12 @@ public class HBaseDeviceCommand {
 	/**
 	 * Get a device command by unique token.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceCommand getDeviceCommandByToken(ISiteWhereHBaseClient hbase, String token)
+	public static DeviceCommand getDeviceCommandByToken(IHBaseContext context, String token)
 			throws SiteWhereException {
 		byte[] rowkey = IdManager.getInstance().getCommandKeys().getValue(token);
 		if (rowkey == null) {
@@ -172,15 +165,19 @@ public class HBaseDeviceCommand {
 
 		HTableInterface devices = null;
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Get get = new Get(rowkey);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
 			Result result = devices.get(get);
-			if (result.size() != 1) {
-				throw new SiteWhereException("Expected one JSON entry for device command and found: "
-						+ result.size());
+
+			byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+			if ((type == null) || (payload == null)) {
+				return null;
 			}
-			return MarshalUtils.unmarshalJson(result.value(), DeviceCommand.class);
+
+			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceCommand(payload);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to load device command by token.", e);
 		} finally {
@@ -191,33 +188,32 @@ public class HBaseDeviceCommand {
 	/**
 	 * Update an existing device command.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param request
-	 * @param existing
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceCommand updateDeviceCommand(ISiteWhereHBaseClient hbase, String token,
+	public static DeviceCommand updateDeviceCommand(IHBaseContext context, String token,
 			IDeviceCommandCreateRequest request) throws SiteWhereException {
-		DeviceCommand updated = assertDeviceCommand(hbase, token);
-		List<IDeviceCommand> existing = listDeviceCommands(hbase, updated.getSpecificationToken(), false);
+		DeviceCommand updated = assertDeviceCommand(context, token);
+		List<IDeviceCommand> existing = listDeviceCommands(context, updated.getSpecificationToken(), false);
 		SiteWherePersistence.deviceCommandUpdateLogic(request, updated, existing);
-		return putDeviceCommandJson(hbase, updated);
+		return putDeviceCommandPayload(context, updated);
 	}
 
 	/**
 	 * Delete an existing device command (or mark as deleted if 'force' is not true).
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param force
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDeviceCommand deleteDeviceCommand(ISiteWhereHBaseClient hbase, String token, boolean force)
+	public static IDeviceCommand deleteDeviceCommand(IHBaseContext context, String token, boolean force)
 			throws SiteWhereException {
-		DeviceCommand existing = assertDeviceCommand(hbase, token);
+		DeviceCommand existing = assertDeviceCommand(context, token);
 		existing.setDeleted(true);
 
 		byte[] rowkey = IdManager.getInstance().getCommandKeys().getValue(token);
@@ -226,7 +222,7 @@ public class HBaseDeviceCommand {
 			HTableInterface devices = null;
 			try {
 				Delete delete = new Delete(rowkey);
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 				devices.delete(delete);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to delete device command.", e);
@@ -236,13 +232,13 @@ public class HBaseDeviceCommand {
 		} else {
 			byte[] marker = { (byte) 0x01 };
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
-			byte[] updated = MarshalUtils.marshalJson(existing);
+			byte[] updated = context.getPayloadMarshaler().encodeDeviceCommand(existing);
 
 			HTableInterface devices = null;
 			try {
-				devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 				Put put = new Put(rowkey);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
+				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				devices.put(put);
 			} catch (IOException e) {
@@ -257,14 +253,14 @@ public class HBaseDeviceCommand {
 	/**
 	 * Gets a device command by token or throws an exception if not found.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceCommand assertDeviceCommand(ISiteWhereHBaseClient hbase, String token)
+	public static DeviceCommand assertDeviceCommand(IHBaseContext context, String token)
 			throws SiteWhereException {
-		DeviceCommand existing = getDeviceCommandByToken(hbase, token);
+		DeviceCommand existing = getDeviceCommandByToken(context, token);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 		}
@@ -272,24 +268,23 @@ public class HBaseDeviceCommand {
 	}
 
 	/**
-	 * Save the JSON representation of a device command.
+	 * Save payload for device command.
 	 * 
-	 * @param hbase
-	 * @param specToken
+	 * @param context
 	 * @param command
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceCommand putDeviceCommandJson(ISiteWhereHBaseClient hbase, DeviceCommand command)
+	public static DeviceCommand putDeviceCommandPayload(IHBaseContext context, DeviceCommand command)
 			throws SiteWhereException {
 		byte[] rowkey = IdManager.getInstance().getCommandKeys().getValue(command.getToken());
-		byte[] json = MarshalUtils.marshalJson(command);
+		byte[] payload = context.getPayloadMarshaler().encodeDeviceCommand(command);
 
 		HTableInterface devices = null;
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			Put put = new Put(rowkey);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			devices.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to put device command data.", e);

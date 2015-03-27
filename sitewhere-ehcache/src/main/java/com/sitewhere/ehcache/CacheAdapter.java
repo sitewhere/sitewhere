@@ -101,6 +101,16 @@ public class CacheAdapter<K, V> implements ICache<K, V> {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.cache.ICache#clear()
+	 */
+	@Override
+	public void clear() throws SiteWhereException {
+		cache.removeAll();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.cache.ICache#getElementCount()
 	 */
 	@Override

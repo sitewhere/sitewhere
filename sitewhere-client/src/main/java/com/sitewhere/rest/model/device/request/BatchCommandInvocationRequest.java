@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,10 @@ import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
  * 
  * @author Derek
  */
-public class BatchCommandInvocationRequest implements IBatchCommandInvocationRequest {
+public class BatchCommandInvocationRequest implements IBatchCommandInvocationRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -8215264923380389864L;
 
 	/** Unique token for request */
 	private String token;

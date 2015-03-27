@@ -843,7 +843,6 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		DeviceRegistrationRequest register = new DeviceRegistrationRequest();
 		register.setHardwareId(assignment.getDeviceHardwareId());
 		register.setSpecificationToken(specification.getToken());
-		register.setReplyTo("SiteWhere/devices/" + assignment.getDeviceHardwareId());
 		register.setEventDate(start);
 		stateChanges.add(getDeviceManagement().addDeviceStateChange(assignment.getToken(), register));
 		return stateChanges;

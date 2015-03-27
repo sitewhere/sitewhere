@@ -302,7 +302,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Start device management cache provider if specificed.
 		if (getDeviceManagementCacheProvider() != null) {
 			startNestedComponent(getDeviceManagementCacheProvider(),
-					"Device management chace provider startup failed.", true);
+					"Device management cache provider startup failed.", true);
 		}
 
 		// Start user management.
