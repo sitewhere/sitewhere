@@ -12,13 +12,13 @@
 			<div>
 				<form id="dsc-general-form" class="form-horizontal" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="dsc-slot-name">Name</label>
+						<label class="control-label" for="dsc-slot-name" data-i18n="public.Name"></label>
 						<div class="controls">
 							<input type="text" id="dsc-slot-name" title="Slot name" class="input-xlarge">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="dsc-path">Relative Path</label>
+						<label class="control-label" for="dsc-path" data-i18n="includes.RelativePath"></label>
 						<div class="controls">
 							<input type="text" id="dsc-path" title="Relative path" class="input-xlarge">
 						</div>
@@ -28,8 +28,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="dsc-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="dsc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 

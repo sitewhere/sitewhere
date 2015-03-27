@@ -7,9 +7,9 @@
 	<div class="modal-body">
 		<div id="ac-tabs">
 			<ul>
-				<li class="k-state-active">Assignment Details</li>
-				<li>Asset Association</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.assignmentUpdateDialog.AssignmentDetails"></li>
+				<li data-i18n="includes.assignmentUpdateDialog.AssetAssociation"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="ac-general-form" class="form-horizontal" style="padding-top: 20px;">
@@ -63,8 +63,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="ac-submit" href="javascript:void(0)" class="btn btn-primary">Assign</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="ac-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="includes.assignmentCreateDialog.Assign"></a>
 	</div>
 </div>
 

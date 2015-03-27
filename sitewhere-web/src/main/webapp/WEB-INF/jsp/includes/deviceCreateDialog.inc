@@ -3,34 +3,34 @@
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal"
 			aria-hidden="true">&times;</button>
-		<h3>Create Device</h3>
+		<h3 data-i18n="includes.CreateDevice"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="dc-tabs">
 			<ul>
-				<li class="k-state-active">Device Details</li>
-				<li>Specification</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.DeviceDetails"></li>
+				<li data-i18n="public.Specification"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="dc-general-form" class="form-horizontal"
 					style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="dc-hardware-id">Hardware
-							Id</label>
+						<label class="control-label" for="dc-hardware-id" data-i18n="public.HardwareId">
+					    </label>
 						<div class="controls">
 							<input type="text" id="dc-hardware-id" title="Hardware id"
 								class="input-xlarge">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="dc-site-token">Site</label>
+						<label class="control-label" for="dc-site-token" data-i18n="public.Site"></label>
 						<div class="controls">
 							<select id="dc-site-token"></select>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="dc-comments">Comments</label>
+						<label class="control-label" for="dc-comments" data-i18n="includes.Comments"></label>
 						<div class="controls">
 							<textarea id="dc-comments" class="input-xlarge"
 								style="height: 8em;"></textarea>
@@ -42,8 +42,8 @@
 				<form id="dc-specification-form" class="form-horizontal form-search"
 					style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="dc-specification-search">Choose
-							Specification</label>
+						<label class="control-label" for="dc-specification-search" data-i18n="public.ChooseSpecification">
+						</label>
 						<div class="controls">
 							<div id="dc-specifications" class="sw-form-search-results"></div>
 							<input type="hidden" id="dc-chosen-specification-token"
@@ -62,9 +62,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a>
 		<a id="dc-dialog-submit" href="javascript:void(0)"
-			class="btn btn-primary">Create</a>
+			class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -160,7 +160,7 @@
 
 				/** Handle failed call to create device */
 				function onCreateFail(jqXHR, textStatus, errorThrown) {
-					handleError(jqXHR, "Unable to create device.");
+					handleError(jqXHR, i18next("includes.deviceCreateDialog.UTCD"));
 				}
 			});
 

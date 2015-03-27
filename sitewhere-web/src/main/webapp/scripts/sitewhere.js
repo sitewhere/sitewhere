@@ -100,7 +100,7 @@ function swConfirmSubmit(answer) {
 // Format date if available, otherwise, show N/A
 function formattedDate(date) {
 	if (date) {
-		return kendo.toString(date, 'g');
+		return kendo.toString(date, "yyyy-MM-dd HH:mm:ss");
 	}
 	return "N/A";
 }

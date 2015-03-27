@@ -11,10 +11,10 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="groups.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-device-group" class="btn" href="javascript:void(0)">
-			<i class="icon-pencil sw-button-icon"></i> Edit Device Group</a>
+		<a id="btn-edit-device-group" class="btn" href="javascript:void(0)" data-i18n="public.EditDeviceGroup">
+			<i class="icon-pencil sw-button-icon"></i></a>
 	</div>
 </div>
 
@@ -24,18 +24,18 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Group Elements</li>
+		<li class="k-state-active" data-i18n="groups.detail.GroupElements"></li>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Group Elements</div>
+			<div class="sw-button-bar-title" data-i18n="groups.detail.DeviceGroupElements"></div>
 			<div>
-				<a id="btn-filter-elements" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-elements" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
-				<a id="btn-add-element" class="btn" href="javascript:void(0)">
-					<i class="icon-plus sw-button-icon"></i> Add Group Element</a>
+				<a id="btn-filter-elements" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-elements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
+				<a id="btn-add-element" class="btn" href="javascript:void(0)" data-i18n="groups.detail.AddGroupElement">
+					<i class="icon-plus sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="elements">
@@ -47,9 +47,9 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Element</th>
-					<th>Description</th>
-					<th>Roles</th>
+					<th data-i18n="public.Element"></th>
+					<th data-i18n="public.Description"></th>
+					<th data-i18n="public.Roles"></th>
 					<th></th>
 				</tr>
 			</thead>
@@ -70,6 +70,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "groups.detail.title";
+
 	var groupToken = '<c:out value="${group.token}"/>';
 
 	/** Datasource for elements */
@@ -169,7 +172,7 @@
 	/** Called when a group element is to be deleted */
 	function onDeleteDeviceGroupElement(event, type, elementId) {
 		var toDelete = [{"type": type, "elementId": elementId}];
-		swConfirm("Delete Device Group Element", "Are you sure that you want to delete " + type + " with id " +
+		swConfirm(i18next("groups.detail.DeleteDeviceGroupElement"), i18next("groups.detail.AYSTYWTDD")+" id " +
 			elementId + "'?", function(result) {
 			if (result) {
 				$.deleteWithInputJSON("${pageContext.request.contextPath}/api/devicegroups/" + groupToken + "/elements", 
@@ -185,7 +188,7 @@
     
     /** Called on failed device group element delete request */
 	function elementDeleteFailed(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete device group element.");
+		handleError(jqXHR, i18next("groups.detail.UTDDGE"));
 	}
 </script>
 

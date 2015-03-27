@@ -59,13 +59,13 @@
 		<div class="sw-assignment-header-logowrapper"
 # if (data.associatedPerson) { #
 			style="background-image: url(#:associatedPerson.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-header-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-header-logo-tag">#= i18next("public.Asset") #</span>
 # } else if (data.associatedHardware) { #
 			style="background-image: url(#:associatedHardware.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-header-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-header-logo-tag">#= i18next("public.Asset") #</span>
 # } else if (data.associatedLocation) { #
 			style="background-image: url(#:associatedLocation.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-header-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-header-logo-tag">#= i18next("public.Asset") #</span>
 # } else if ((data.assignmentType == 'Unassociated') && (data.device)) { #
 			style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-assignment-header-logo-tag">Unassociated</span>
@@ -73,7 +73,7 @@
 		</div>
 		<div>
 			<div>
-				<span class="sw-assignment-header-label" title="Unique assignment token">Token:</span>
+				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.UAT") #">Token:</span>
 				<span title="#:token#">#:token#</span>
 			</div>
 # if (data.associatedPerson) { #
@@ -83,7 +83,7 @@
 			</div>
 # } else if (data.associatedHardware) { #
 			<div>
-				<span class="sw-assignment-header-label" title="Assigned hardware">Assigned Hardware:</span>
+				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.Assignedhardware") #">#= i18next("includes.i18next.AssignedHardware") #:</span>
 				<span title="#:associatedHardware.name#">#:associatedHardware.name#</span>
 			</div>
 # } else if (data.associatedLocation) { #
@@ -93,49 +93,45 @@
 			</div>
 # }	#
 			<div>
-				<span class="sw-assignment-header-label" title="Device used by assignment">Assigned Device:</span>
+				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DUBA") #">#= i18next("includes.i18next.AssignedDevice") #:</span>
 				<span title="#:device.assetName#"><a href='/sitewhere/admin/devices/detail.html?hardwareId=#:device.hardwareId#'>#:device.assetName#</a></span>
 			</div>
 			<div>
-				<span class="sw-assignment-header-label" title="Date assignment was created">Created Date:</span>
+				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DAWC") #">#= i18next("public.CreatedDate") #:</span>
 				<span title="#= formattedDate(createdDate) #">#= formattedDate(createdDate) #</span>
 			</div>
 			<div>
-				<span class="sw-assignment-header-label" title="Date assignment was last updated">Updated Date:</span>
+				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DAWLU") #">#= i18next("public.UpdatedDate") #:</span>
 				<span title="#= formattedDate(createdDate) #">#= formattedDate(updatedDate) #</span>
 			</div>
 			<div>
-				<span class="sw-assignment-header-label" title="Date assignment became active">Active Date:</span>
+				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DABA") #">#= i18next("includes.i18next.ActiveDate") #:</span>
 				<span title="#= formattedDate(activeDate) #">#= formattedDate(activeDate) #</span>
 			</div>
 			<div>
-				<span class="sw-assignment-header-label" title="Date assignment was released">Released Date:</span>
+				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DAWR") #">#= i18next("includes.i18next.ReleasedDate") #:</span>
 				<span title="#= formattedDate(releasedDate) #">#= formattedDate(releasedDate) #</releasedDate>
 			</div>
 			<div>
-				<span class="sw-assignment-header-label" title="Assignment status">Assignment Status:</span>
+				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.Assignmentstatus") #">#= i18next("includes.i18next.AssignmentStatus") #:</span>
 # if (data.status == 'Active') { #
 			<div class="btn-group" style="margin-top: -6px;">
-				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-					Active
-					<span class="caret"></span>
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">#= i18next("includes.Active") #<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a tabindex="-1" href="javascript:void(0)" title="Release Assignment"
-						onclick="onReleaseAssignment(event, '#:token#')">Release Assignment</a></li>
-					<li><a tabindex="-1" href="javascript:void(0)" title="Report Device/Asset Missing"
-						onclick="onMissingAssignment(event, '#:token#')">Report Missing</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.ReleaseAssignment") #"
+						onclick="onReleaseAssignment(event, '#:token#')">#= i18next("includes.ReleaseAssignment") #</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.i18next.RDAM") #"
+						onclick="onMissingAssignment(event, '#:token#')">#= i18next("includes.ReportMissing") #</a></li>
 				</ul>
 			</div>
 # } else if (data.status == 'Missing') { #
 			<div class="btn-group" style="margin-top: -6px;">
-				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-					Missing
-					<span class="caret"></span>
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">#= i18next("includes.Missing") #<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a tabindex="-1" href="javascript:void(0)" title="Release Assignment"
-						onclick="onReleaseAssignment(event, '#:token#')">Release Assignment</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.ReleaseAssignment") #"
+						onclick="onReleaseAssignment(event, '#:token#')">#= i18next("includes.ReleaseAssignment") #</a></li>
 				</ul>
 			</div>
 # } else { #

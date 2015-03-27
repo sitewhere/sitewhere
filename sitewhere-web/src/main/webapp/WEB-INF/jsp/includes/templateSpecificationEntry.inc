@@ -59,20 +59,20 @@
 	<div class="sw-spec-list-entry gradient-bg sw-list-entry">
 		<div class="sw-spec-list-entry-logowrapper"
 			style="background-image: url(#:asset.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-spec-list-entry-logo-tag">Specification</span>
+			<span class="label label-info sw-spec-list-entry-logo-tag">#= i18next('public.Specification') #</span>
 		</div>
 		<div class="sw-spec-list-entry-actions">
-			<p class="ellipsis" style="margin-bottom: 5px;"><span class="sw-spec-list-entry-label">Created:</span> #= formattedDate(createdDate) #</p>
-			<p class="ellipsis"><span class="sw-spec-list-entry-label">Updated:</span> #= formattedDate(updatedDate) #</p>
+			<p class="ellipsis" style="margin-bottom: 5px;"><span class="sw-spec-list-entry-label">#= i18next("public.Created") #:</span> #= formattedDate(createdDate) #</p>
+			<p class="ellipsis"><span class="sw-spec-list-entry-label">#= i18next("public.Updated") #:</span> #= formattedDate(updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: 3px;">
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Specification" style="color: \\#009;"  
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next('public.EditSpecification') #" style="color: \\#009;"  
 					href="javascript:void(0)" onclick="onSpecificationEditClicked(event, '#:token#');">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Specification" style="color: \\#900;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next('public.DeleteSpecification') #" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onSpecificationDeleteClicked(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Specification" style="color: \\#060;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.ViewSpecification") #" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onSpecificationOpenClicked(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>
@@ -81,11 +81,11 @@
 		<div>
 			<p class="sw-spec-list-entry-heading ellipsis"><span title="#:name#">#:name#</span></p>
 			<p class="ellipsis sw-spec-list-entry-subhead">
-				<span class="sw-spec-list-entry-label" style="min-width: 50px;">Asset:</span><span title="#:asset.name#">#:asset.name# (SKU: #:asset.sku#)</span></p>
+				<span class="sw-spec-list-entry-label" style="min-width: 50px;">#= i18next("public.Asset") #:</span><span title="#:asset.name#">#:asset.name# (SKU: #:asset.sku#)</span></p>
 			<p class="ellipsis sw-spec-list-entry-subhead">
 				<span class="sw-spec-list-entry-label" style="min-width: 50px;">Token:</span><span title="#:token#">#:token#</span></p>
 			<p class="ellipsis sw-spec-list-entry-subhead">
-				<span class="sw-spec-list-entry-label" style="min-width: 50px;">Desc:</span><span title="#:asset.description#">#:asset.description#</span></p>
+				<span class="sw-spec-list-entry-label" style="min-width: 50px;">#= i18next("includes.Desc") #:</span><span title="#:asset.description#">#:asset.description#</span></p>
 		</div>
 	</div>
 </script>

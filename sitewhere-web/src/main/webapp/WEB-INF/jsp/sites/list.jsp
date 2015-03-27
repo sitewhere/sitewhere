@@ -1,5 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<c:set var="sitewhere_title" value="Manage Sites" />
+<c:set var="sitewhere_title" value="Manage Sites"></c:set>
 <c:set var="sitewhere_section" value="sites" />
 <c:set var="use_map_includes" value="true" />
 <%@ include file="../includes/top.inc"%>
@@ -23,12 +23,12 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="sites.list.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-filter-results" class="btn" href="javascript:void(0)">
-			<i class="icon-search sw-button-icon"></i> Filter Results</a>
-		<a id="btn-add-site" class="btn" href="javascript:void(0)">
-			<i class="icon-plus sw-button-icon"></i> Add New Site</a>
+		<a id="btn-filter-results" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+			<i class="icon-search sw-button-icon"></i></a>
+		<a id="btn-add-site" class="btn" href="javascript:void(0)" data-i18n="sites.list.AddNewSite">
+			<i class="icon-plus sw-button-icon"></i></a>
 	</div>
 </div>
 <div id="sites" class="sw-site-list"></div>
@@ -41,6 +41,9 @@
 <%@ include file="../includes/templateSiteEntry.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "sites.list.title";
+
 	/** Sites datasource */
 	var sitesDS;
 
@@ -60,7 +63,7 @@
 	function onSiteDeleteClicked(e, siteToken) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swConfirm("Delete Site", "Are you sure you want to delete this site?", function(result) {
+		swConfirm(i18next("public.DeleteSite"), i18next("sites.list.AYSDTS")+"?", function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/sites/" + siteToken + "?force=true", 
 						onDeleteSuccess, onDeleteFail);
@@ -75,7 +78,7 @@
     
 	/** Handle failed delete call */
 	function onDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete site.");
+		handleError(jqXHR, i18next("sites.list.UTDS"));
 	}
 	
 	/** Called when open button is clicked */
