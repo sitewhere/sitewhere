@@ -31,6 +31,7 @@
 				<module>sitewhere-ehcache</module>
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
+				<module>sitewhere-groovy</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-mule</module>
@@ -51,6 +52,7 @@
 				<module>sitewhere-ehcache</module>
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
+				<module>sitewhere-groovy</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-mule</module>

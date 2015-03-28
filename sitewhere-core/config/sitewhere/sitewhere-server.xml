@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=5q">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=5r">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_HOME}/conf/sitewhere/sitewhere.properties"
@@ -22,6 +22,7 @@
 		<sw:globals>
 			<sw:hazelcast-configuration configFileLocation="${CATALINA_HOME}/conf/sitewhere/hazelcast.xml"/>
 			<sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
+			<sw:groovy-configuration debug="true" verbose="true"/>
 		</sw:globals>
 		
 		<!-- ########################### -->

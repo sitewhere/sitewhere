@@ -1470,4 +1470,31 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Configuration data for Groovy services -->
+	<xsd:element name="groovy-configuration" type="groovyConfigurationType"
+		substitutionGroup="abstract-global">
+		<xsd:annotation>
+			<xsd:documentation>Global configuration settings for Groovy scripting.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyConfigurationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractGlobalType">
+				<xsd:attribute name="debug" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Turns on Groovy script engine debugging if true.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="verbose" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Turns on Groovy script engine verbose flag if true.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 </xsd:schema>

@@ -8,9 +8,9 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>sitewhere-spring</artifactId>
+	<artifactId>sitewhere-groovy</artifactId>
 	<packaging>jar</packaging>
-	<name>SiteWhere Spring Extensions</name>
+	<name>SiteWhere Groovy Integration</name>
 
 	<dependencies>
 		<dependency>
@@ -26,40 +26,9 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-activemq</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-azure</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-groovy</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-mongodb</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-solr</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>2.4.3</version>
 		</dependency>
 	</dependencies>
 	<build>

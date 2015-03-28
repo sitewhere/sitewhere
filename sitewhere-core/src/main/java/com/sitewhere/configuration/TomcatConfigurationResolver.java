@@ -69,6 +69,16 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 		return context;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.configuration.IConfigurationResolver#getConfigurationRoot()
+	 */
+	@Override
+	public File getConfigurationRoot() throws SiteWhereException {
+		return TomcatConfigurationResolver.getSiteWhereConfigFolder();
+	}
+
 	/**
 	 * Gets the CATALINA/conf/sitewhere folder where configs are stored.
 	 * 

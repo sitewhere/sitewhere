@@ -6,6 +6,7 @@
 /sitewhere-documentation/target
 /sitewhere-ehcache/target
 /sitewhere-gnuhealth/target
+/sitewhere-groovy/target
 /sitewhere-hbase/target
 /sitewhere-hbase/src/gen
 /sitewhere-magento/target
