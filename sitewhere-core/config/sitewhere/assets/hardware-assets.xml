@@ -114,27 +114,4 @@
 		<property name="operating.weight" value="64990"/>
 		<property name="fuel.tank" value="137.37"/>
 	</hardware-asset>
-
-	<hardware-asset id="800" name="KTV豪华包厢" sku="KTV-R01">
-		<description>KTV豪华包厢, 可容纳25人。</description>
-		<image-url>http://publicblob.blob.core.chinacloudapi.cn/blob1/ktv-room-1.jpg</image-url>
-		<property name="manufacturer" value="Same Song inc."/>
-		<property name="capacity" value="15"/>
-		<property name="microphone.num" value="6"/>
-	</hardware-asset>
-	<hardware-asset id="810" name="KTV中等包厢" sku="KTV-R02">
-		<description>KTV中等包厢，可容纳15人。</description>
-		<image-url>http://publicblob.blob.core.chinacloudapi.cn/blob1/ktv-room-2.jpg</image-url>
-		<property name="manufacturer" value="Same Song inc."/>
-		<property name="capacity" value="8"/>
-		<property name="microphone.num" value="4"/>
-	</hardware-asset>
-	<hardware-asset id="820" name="KTV迷你包厢" sku="KTV-R03">
-		<description>KTV迷你包厢，可容纳4人。</description>
-		<image-url>http://publicblob.blob.core.chinacloudapi.cn/blob1/ktv-room-3.jpg</image-url>
-		<property name="manufacturer" value="Same Song inc."/>
-		<property name="capacity" value="4"/>
-		<property name="microphone.num" value="2"/>
-	</hardware-asset>
-
 </hardware-assets>
