@@ -22,31 +22,31 @@
 <div id="iv-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="ivdialog-header">Command Invocation Details</h3>
+		<h3 id="ivdialog-header" data-i18n="includes.invocationViewDialog.CommandInvocationDetails"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="iv-tabs">
 			<ul>
-				<li class="k-state-active">Invocation</li>
-				<li>Responses</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="public.Invocation"></li>
+				<li data-i18n="includes.invocationViewDialog.Responses"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="cc-general-form" class="form-horizontal" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="iv-command-name"">Command</label>
+						<label class="control-label" for="iv-command-name"" data-i18n="public.Command"></label>
 						<div class="controls">
 							<h1 id="iv-command-name" class="sw-iv-invocation-params-readonly"></h1>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="iv-command-namespace">Namespace</label>
+						<label class="control-label" for="iv-command-namespace" data-i18n="includes.Namespace"></label>
 						<div class="controls">
 							<h1 id="iv-command-namespace" class="sw-iv-invocation-params-readonly"></h1>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="iv-command-namespace">Invocation Date</label>
+						<label class="control-label" for="iv-command-namespace" data-i18n="includes.invocationViewDialog.InvocationDate"></label>
 						<div class="controls">
 							<h1 id="iv-command-invocation-date" class="sw-iv-invocation-params-readonly"></h1>
 						</div>
@@ -54,8 +54,8 @@
 				</form>
 				<div id="iv-parameters-section">
 					<div class="sw-sublist-header">
-						<div class="sw-iv-invocation-params-param">Parameter</div>
-						<div class="sw-iv-invocation-params-value">Value</div>
+						<div class="sw-iv-invocation-params-param" data-i18n="public.Parameter"></div>
+						<div class="sw-iv-invocation-params-value" data-i18n="public.Value"></div>
 					</div>
 					<table id="iv-parameters" class="sw-sublist-list" style="height: inherit; margin-bottom: 10px;">
 					</table>
@@ -63,8 +63,8 @@
 			</div>
             <div>
 				<div class="sw-sublist-header">
-					<div class="sw-iv-invocation-response-desc">Response</div>
-					<div class="sw-iv-invocation-response-date">Date</div>
+					<div class="sw-iv-invocation-response-desc" data-i18n="includes.invocationViewDialog.Response"></div>
+					<div class="sw-iv-invocation-response-date" data-i18n="public.Date"></div>
 				</div>
 				<table id="iv-responses" class="sw-sublist-list">
 				</table>
@@ -80,7 +80,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Close</a> 
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Close"></a> 
 	</div>
 </div>
 

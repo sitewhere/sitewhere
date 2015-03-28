@@ -7,16 +7,16 @@
 	<div class="modal-body">
 		<div id="ac-tabs">
 			<ul>
-				<li class="k-state-active">Assignment Details</li>
-				<li>Asset Association</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.assignmentUpdateDialog.AssignmentDetails"></li>
+				<li data-i18n="includes.assignmentUpdateDialog.AssetAssociation"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="ac-general-form" class="form-horizontal" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="ac-hardware-id">Hardware Id</label>
+						<label class="control-label" for="ac-hardware-id">#= i18next("public.HardwareId") #</label>
 						<div class="controls">
-							<input type="text" id="ac-hardware-id" title="Hardware id" class="input-xlarge">
+							<input type="text" id="ac-hardware-id" title="#= i18next("public.HardwareId") #" class="input-xlarge">
 						</div>
 					</div>
 				</form>
@@ -63,8 +63,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="ac-submit" href="javascript:void(0)" class="btn btn-primary">Assign</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="ac-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="includes.assignmentCreateDialog.Assign"></a>
 	</div>
 </div>
 

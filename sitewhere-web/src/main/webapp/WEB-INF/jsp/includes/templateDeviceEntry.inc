@@ -80,20 +80,20 @@
 	<div class="sw-device-list-entry gradient-bg sw-list-entry">
 		<div class="sw-device-list-entry-logowrapper"
 			style="background-image: url(#:specification.asset.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-device-list-entry-logo-tag">Device</span>
+			<span class="label label-info sw-device-list-entry-logo-tag">#= i18next("public.Device") #</span>
 		</div>
 		<div class="sw-device-list-entry-actions">
-			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">Created:</span> #= formattedDate(createdDate) #</p>
-			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">Updated:</span> #= formattedDate(updatedDate) #</p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Created") #:</span> #= formattedDate(createdDate) #</p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Updated") #:</span> #= formattedDate(updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: -2px;">
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Device" style="color: \\#009;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.EditDevice") #" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onDeviceEditClicked(event, '#:hardwareId#');">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Device" style="color: \\#900;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.DeleteDevice") #" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onDeviceDeleteClicked(event, '#:hardwareId#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Device" style="color: \\#060;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.ViewDevice") #" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onDeviceOpenClicked(event, '#:hardwareId#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>
@@ -104,55 +104,51 @@
 # if (assignment.assignmentType != 'Unassociated') { #
 			<div class="sw-device-list-entry-logowrapper">
 				<img class="sw-device-list-entry-logo" src="#:assignment.assetImageUrl#"/>
-				<span class="label label-info sw-device-list-entry-logo-tag">Asset</span>
+				<span class="label label-info sw-device-list-entry-logo-tag">#= i18next("public.Asset") #</span>
 			</div>
 			<p class="sw-device-list-entry-heading ellipsis">
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/detail.html?token=#:assignment.token#">
-					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 				<span title="#:assignment.assetName#">#:assignment.assetName#</span>
 			</p>
 # } else { #
 			<div class="sw-device-list-entry-logowrapper">
 				<img class="sw-device-list-entry-logo" src="#:specification.asset.imageUrl#"/>
-				<span class="label label-info sw-device-list-entry-logo-tag">Unassociated</span>
+				<span class="label label-info sw-device-list-entry-logo-tag">#= i18next("public.Unassociated") #</span>
 			</div>
 			<p class="sw-device-list-entry-heading ellipsis">
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/detail.html?token=#:assignment.token#">
-					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
-				Unassociated Device
+					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
+				#= i18next("public.UnassociatedDevice") #
 			</p>
 # } #
-			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">Assigned:</span> #= formattedDate(assignment.activeDate) #</p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Assigned") #:</span> #= formattedDate(assignment.activeDate) #</p>
 # if (assignment.status == 'Active') { #
-			<span class="sw-device-list-entry-label sw-min-70">Status:</span> 
+			<span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Status") #:</span> 
 			<div class="btn-group" style="margin-top: -6px;">
-				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-					Active
-					<span class="caret"></span>
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">#= i18next("includes.Active") #<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a tabindex="-1" href="javascript:void(0)" title="Release Assignment"
-						onclick="onReleaseAssignment(event, '#:assignment.token#')">Release Assignment</a></li>
-					<li><a tabindex="-1" href="javascript:void(0)" title="Report Device/Asset Missing"
-						onclick="onMissingAssignment(event, '#:assignment.token#')">Report Missing</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.ReleaseAssignment") #"
+						onclick="onReleaseAssignment(event, '#:assignment.token#')">#= i18next("includes.ReleaseAssignment") #</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.i18next.RDAM") #"
+						onclick="onMissingAssignment(event, '#:assignment.token#')">#= i18next("includes.ReportMissing") #</a></li>
 				</ul>
 			</div>
 # } else if (assignment.status == 'Missing') { #
-			<span class="sw-device-list-entry-label sw-min-70">Status:</span> 
+			<span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Status") #:</span> 
 			<div class="btn-group" style="margin-top: -6px;">
-				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-					Missing
-					<span class="caret"></span>
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">#= i18next("includes.Missing") #<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a tabindex="-1" href="javascript:void(0)" title="Release Assignment"
-						onclick="onReleaseAssignment(event, '#:assignment.token#')">Release Assignment</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.ReleaseAssignment") #"
+						onclick="onReleaseAssignment(event, '#:assignment.token#')">#= i18next("includes.ReleaseAssignment") #</a></li>
 				</ul>
 			</div>
 # } else { #
-			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">Status:</span> #:assignment.status#</p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Status") #:</span> #:assignment.status#</p>
 # } #
 		</div>
 # } else { #
@@ -169,14 +165,14 @@
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/devices/detail.html?hardwareId=#:hardwareId#">
-					<i class="icon-external-link icon-white" title="Open Device"></i></a>
+					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenDevice") #"></i></a>
 # } #
 				<span title="#:specification.asset.name#">#:specification.asset.name#</span>
 			</p>
 			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">Id:</span>
 				<span title="#:hardwareId#">#:hardwareId#</span>
 			</p>
-			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">Spec:</span><span title="#:specification.name#">#:specification.name#</span></p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 35px;">#= i18next("includes.i18next.Spec") #:</span><span title="#:specification.name#">#:specification.name#</span></p>
 		</div>
 	</div>
 </script>

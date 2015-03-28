@@ -8,11 +8,13 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
-	<h1>
-		<c:out value="${sitewhere_title}" />
+	<h1 data-i18n="noserver.title">
 	</h1>
 </div>
-<div class="alert alert-error">
-	SiteWhere did not start successfully. Check error logs for more information.
+<div class="alert alert-error" data-i18n="noserver.loaderrorms">
 </div>
 <%@ include file="includes/bottom.inc"%>
+<script type="text/javascript">
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "noserver.title";
+</script>

@@ -25,11 +25,19 @@
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.qpid</groupId>
-			<artifactId>qpid-amqp-1-0-client-jms</artifactId>
-			<version>0.30</version>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>2.5.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.qpid</groupId>
+            <artifactId>qpid-amqp-1-0-client-jms</artifactId>
+            <version>0.3X</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/qpid-amqp-1-0-client-all-mod.jar</systemPath>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-all</artifactId>

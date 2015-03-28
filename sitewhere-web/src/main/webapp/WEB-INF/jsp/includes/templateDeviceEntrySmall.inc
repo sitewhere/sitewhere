@@ -42,7 +42,7 @@
 		</div>
 		<div>
 			<div class="sw-device-list-entry-heading ellipsis"><span title="#:specification.asset.name#">#:specification.asset.name#</span></div>
-			<div class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 85px; margin-top: 7px;"> Hardware Id:</span><span title="#:hardwareId#">#:hardwareId#</span></div>
+			<div class="ellipsis"><span class="sw-device-list-entry-label" style="min-width: 85px; margin-top: 7px;"> #= i18next("public.HardwareId") #:</span><span title="#:hardwareId#">#:hardwareId#</span></div>
 		</div>
 	</div>
 </script>

@@ -29,13 +29,13 @@
 <div id="au-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="dialog-header">Update Device Assignment</h3>
+		<h3 id="dialog-header" data-i18n="includes.assignmentUpdateDialog.UpdateDeviceAssignment"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="au-tabs">
 			<ul>
-				<li class="k-state-active">Assignment Details</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.assignmentUpdateDialog.AssignmentDetails"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<div style="padding-top: 20px;">
@@ -53,8 +53,8 @@
 		<input type="hidden" id="au-token"/>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="au-submit" href="javascript:void(0)" class="btn btn-primary">Update</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="au-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Update"></a>
 	</div>
 </div>
 
@@ -64,27 +64,27 @@
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">
 			<img class="sw-assignment-update-img" src="#:associatedHardware.imageUrl#"/>
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Asset") #</span>
 		</div>
 		<div style="display: inline-block; max-width: 280px;">
-			<p class="ellipsis"><span class="sw-assignment-update-label">Asset:</span> #:associatedHardware.name#</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Asset") #:</span> #:associatedHardware.name#</p>
 			<p class="ellipsis"><span class="sw-assignment-update-label">SKU:</span> #:associatedHardware.sku#</p>
 			<p class="ellipsis"><span class="sw-assignment-update-label">Info:</span> #:associatedHardware.description#</p>
 # } else if (data.associatedPerson) { #
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">
 			<img class="sw-assignment-update-img" src="#:associatedPerson.imageUrl#"/>
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Asset") #</span>
 		</div>
 		<div style="display: inline-block; max-width: 280px;">
-			<p class="ellipsis"><span class="sw-assignment-update-label">Asset:</span> #:associatedPerson.name#</p>
-			<p class="ellipsis"><span class="sw-assignment-update-label">Email:</span> #:associatedPerson.emailAddress#</p>
-			<p class="ellipsis"><span class="sw-assignment-update-label">Roles:</span> #:swArrayAsCommaDelimited(associatedPerson.roles)#</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Asset") #:</span> #:associatedPerson.name#</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Email") #:</span> #:associatedPerson.emailAddress#</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Roles") #:</span> #:swArrayAsCommaDelimited(associatedPerson.roles)#</p>
 # } else if (data.associatedLocation) { #
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">
 			<img class="sw-assignment-update-img" src="#:associatedLocation.imageUrl#"/>
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Asset") #</span>
 		</div>
 		<div style="display: inline-block; max-width: 280px;">
 			<p class="ellipsis"><span class="sw-assignment-update-label">Latitude:</span> #:associatedLocation.latitude#</p>
@@ -94,23 +94,23 @@
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">
 			<img class="sw-assignment-update-img" src="#:device.assetImageUrl#"/>
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Unassociated</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Unassociated") #</span>
 		</div>
 		<div style="display: inline-block;" max-width: 280px;>
-			<p class="ellipsis"><span class="sw-assignment-update-label">Type:</span> Unassociated Device</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">Type:</span> #= i18next("public.UnassociatedDevice") #</p>
 # } #
-			<p class="ellipsis"><span class="sw-assignment-update-label">Assigned:</span> #= formattedDate(kendo.parseDate(activeDate)) #</p>
-			<p class="ellipsis"><span class="sw-assignment-update-label">Released:</span> #= formattedDate(kendo.parseDate(releasedDate)) #</p>
-			<p class="ellipsis"><span class="sw-assignment-update-label">Status:</span> #:status#</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Assigned") #:</span> #= formattedDate(kendo.parseDate(activeDate)) #</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Released") #:</span> #= formattedDate(kendo.parseDate(releasedDate)) #</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Status") #:</span> #:status#</p>
 		</div>
 	</div>
 	<div style="min-height: 120px; clear: both; border-top: 1px solid \\#eeeeee; padding-top: 15px;">
 		<div class="sw-assignment-update-imgwrapper">
 			<img class="sw-assignment-update-img" src="#:device.assetImageUrl#"/>
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Device</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Device") #</span>
 		</div>
-		<p class="ellipsis"><span class="sw-assignment-update-label">Device:</span> #:device.assetName#</p>
-		<p class="ellipsis"><span class="sw-assignment-update-label">Hardware Id:</span> #:device.hardwareId#</p>
+		<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Device") #:</span> #:device.assetName#</p>
+		<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.HardwareId") #:</span> #:device.hardwareId#</p>
 	</div>
 </script>
 

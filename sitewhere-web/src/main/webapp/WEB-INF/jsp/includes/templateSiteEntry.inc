@@ -58,17 +58,17 @@
 			style="background-image: url(#:imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 		</div>
 		<div class="sw-site-list-entry-actions">
-			<p class="ellipsis"><span class="sw-site-list-entry-label">Created:</span> #= formattedDate(createdDate) #</p>
-			<p class="ellipsis"><span class="sw-site-list-entry-label">Updated:</span> #= formattedDate(updatedDate) #</p>
+			<p class="ellipsis"><span class="sw-site-list-entry-label">#= i18next("public.Created") #:</span> #= formattedDate(createdDate) #</p>
+			<p class="ellipsis"><span class="sw-site-list-entry-label">#= i18next("public.Updated") #:</span> #= formattedDate(updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: 3px;">
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Site" style="color: \\#009;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next('public.EditSite') #" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onSiteEditClicked(event, '#:token#');">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Site" style="color: \\#900;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.DeleteSite") #" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onSiteDeleteClicked(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Site" style="color: \\#060;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.ViewSite") #" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onSiteOpenClicked(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>

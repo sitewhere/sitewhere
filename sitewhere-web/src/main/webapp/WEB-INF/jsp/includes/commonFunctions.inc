@@ -5,7 +5,7 @@
 	/** Delete a specification based on its token */
 	function swSpecificationDelete(token, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm("Delete Specification", "Are you sure that you want to delete device specification with " +
+		swConfirm(i18next("public.DeleteSpecification"), i18next("includes.commonFunctions.AYSTYWTDDSW") +" "+
 			"token '" + token + "'?", function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/specifications/"
@@ -23,13 +23,13 @@
 
 	/** Handle failed specification delete */
 	function swSpecificationDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete specification.");
+		handleError(jqXHR, i18next("includes.commonFunctions.UTDS"));
 	}
 
 	/** Delete a device based on its hardware id */
 	function swDeviceDelete(hardwareId, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm("Delete Device", "Are you sure that you want to delete device with hardware id '" + hardwareId + 
+		swConfirm(i18next("includes.commonFunctions.DD"), i18next("includes.commonFunctions.AYSTYWTDDWD")+" id "+ hardwareId + 
 			"'?", function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/devices/"
@@ -47,13 +47,13 @@
 
 	/** Handle failed device delete */
 	function swDeviceDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete device.");
+		handleError(jqXHR, i18next("includes.commonFunctions.UTDD"));
 	}
 
 	/** Delete a device assignment based on its token */
 	function swAssignmentDelete(token, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm("Delete Assignment", "Are you sure you want to delete this device assignment?", function(result) {
+		swConfirm(i18next("public.DeleteAssignment"), i18next("includes.commonFunctions.AYSYWTDTDA"), function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/assignments/"
 					+ token + "?force=true", swAssignmentDeleteSuccess, swAssignmentDeleteFail);
@@ -70,13 +70,13 @@
 
 	/** Handle failed device assignment delete */
 	function swAssignmentDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete device assignment.");
+		handleError(jqXHR, i18next("includes.commonFunctions.UTDDA"));
 	}
 
 	/** Release an assignment based on its unique token */
 	function swReleaseAssignment(token, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm("Release Assignment", "Are you sure you want to release this device assignment?", function(result) {
+		swConfirm(i18next("includes.commonFunctions.RA"), i18next("includes.commonFunctions.AYSYWTRTDA"), function(result) {
 			if (result) {
 				$.postJSON("${pageContext.request.contextPath}/api/assignments/"
 					+ token + "/end", null, swReleaseSuccess, swReleaseFail);
@@ -93,13 +93,13 @@
 
 	/** Handle failed assignment release */
 	function swReleaseFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to release assignment.");
+		handleError(jqXHR, i18next("includes.commonFunctions.UTRA"));
 	}
 
 	/** Report assignment missing based on its unique token */
 	function swAssignmentMissing(token, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm("Report Missing", "Are you sure you want to report this assignment missing?", function(result) {
+		swConfirm(i18next("includes.ReportMissing"), i18next("includes.commonFunctions.AYSYWTRTAM"), function(result) {
 			if (result) {
 				$.postJSON("${pageContext.request.contextPath}/api/assignments/"
 					+ token + "/missing", null, swAssignmentMissingSuccess, swAssignmentMissingFail);
@@ -116,13 +116,13 @@
 
 	/** Handle failed missing report */
 	function swAssignmentMissingFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to mark assignment as missing.");
+		handleError(jqXHR, i18next("includes.commonFunctions.UTMAAM"));
 	}
 
 	/** Delete a zone based on its unique token */
 	function swZoneDelete(zoneToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm("Delete Zone", "Are you sure you want to delete this zone?", function(result) {
+		swConfirm(i18next("includes.DeleteZone"), i18next("includes.commonFunctions.AYSYWTDTZ"), function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/zones/"
 					+ zoneToken + "?force=true", swZoneDeleteSuccess, swZoneDeleteFail);
@@ -139,13 +139,13 @@
 
 	/** Handle failed zone delete */
 	function swZoneDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete zone.");
+		handleError(jqXHR, i18next("includes.commonFunctions.UTDZ"));
 	}
 
 	/** Delete a device group based on its token */
 	function swDeviceGroupDelete(token, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm("Delete Device Group", "Are you sure that you want to delete device group with token '" + token + 
+		swConfirm(i18next("includes.DeleteDeviceGroup"), i18next("includes.commonFunctions.AYSYWTDDGWT")+" '" + token + 
 			"'?", function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/devicegroups/"
@@ -163,7 +163,7 @@
 
 	/** Handle failed device group delete */
 	function swDeviceGroupDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete device group.");
+		handleError(jqXHR, i18next("includes.commonFunctions.UTDDG"));
 	}
 	
 	/** Gets a string array as a comma-delimited string */

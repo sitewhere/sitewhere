@@ -32,6 +32,7 @@
 <c:if test="${use_mqtt == true}">
 <script src="${pageContext.request.contextPath}/scripts/mqttws31.js"></script>
 </c:if>
+<%@ include file="i18next.inc"%>
 </head>
 <body class="sw-body">
 	<div class="sw-container">
@@ -45,50 +46,50 @@
 					<ul class="nav nav-pills">
 <c:choose>
 	<c:when test="${sitewhere_section == 'sites'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/sites/list.html">Sites</a></li>
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/sites/list.html" data-i18n="public.Sites"></a></li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/sites/list.html">Sites</a></li>
+		<li><a href="${pageContext.request.contextPath}/admin/sites/list.html" data-i18n="public.Sites"></a></li>
 	</c:otherwise>
 </c:choose>
 <c:choose>
 	<c:when test="${sitewhere_section == 'specifications'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/specifications/list.html">Specifications</a></li>
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/specifications/list.html" data-i18n="public.Specifications"></a></li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html">Specifications</a></li>
+		<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html" data-i18n="public.Specifications"></a></li>
 	</c:otherwise>
 </c:choose>
 <c:choose>
 	<c:when test="${sitewhere_section == 'devices'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/devices/list.html">Devices</a></li>
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/devices/list.html" data-i18n="public.Devices"></a></li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/devices/list.html">Devices</a></li>
+		<li><a href="${pageContext.request.contextPath}/admin/devices/list.html" data-i18n="public.Devices"></a></li>
 	</c:otherwise>
 </c:choose>
 <c:choose>
 	<c:when test="${sitewhere_section == 'devicegroups'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/groups/list.html">Device Groups</a></li>
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/groups/list.html" data-i18n="public.DeviceGroups"></a></li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/groups/list.html">Device Groups</a></li>
+		<li><a href="${pageContext.request.contextPath}/admin/groups/list.html" data-i18n="public.DeviceGroups"></a></li>
 	</c:otherwise>
 </c:choose>
 <c:choose>
 	<c:when test="${sitewhere_section == 'batch'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/batch/list.html">Batch</a></li>
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/batch/list.html" data-i18n="public.Batch"></a></li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/batch/list.html">Batch</a></li>
+		<li><a href="${pageContext.request.contextPath}/admin/batch/list.html" data-i18n="public.Batch"></a></li>
 	</c:otherwise>
 </c:choose>
 <c:choose>
 	<c:when test="${sitewhere_section == 'users'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/users/list.html">Users</a></li>
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/users/list.html" data-i18n="public.Users"></a></li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/users/list.html">Users</a></li>
+		<li><a href="${pageContext.request.contextPath}/admin/users/list.html" data-i18n="public.Users"></a></li>
 	</c:otherwise>
 </c:choose>
 					</ul>
@@ -105,7 +106,7 @@
 							<span class="caret" style="margin-left: 4px"></span>
 						</a>
 						<ul class="dropdown-menu pull-right" style="text-align: left;">
-							<li><a tabindex="-1" href="<c:url value="/j_spring_security_logout"/>">Log Out</a></li>
+							<li><a tabindex="-1" href="<c:url value="/j_spring_security_logout"/>" data-i18n="includes.top.LogOut"></a></li>
 						</ul>
 					</div>			
 				</div>
@@ -120,7 +121,7 @@
 				<div id="alert-dialog-body" class="modal-body">
 				</div>
 				<div class="modal-footer">
-					<a href="javascript:void(0)" data-dismiss="modal" class="btn btn-primary">Close</a>
+					<a href="javascript:void(0)" data-dismiss="modal" class="btn btn-primary" data-i18n="public.Close"></a>
 				</div>
 			</div>
 			
@@ -133,9 +134,9 @@
 				<div id="confirm-dialog-body" class="modal-body">
 				</div>
 				<div class="modal-footer">
-					<a href="javascript:void(0)" onclick="swConfirmSubmit(false)" class="btn">Cancel</a>
+					<a href="javascript:void(0)" onclick="swConfirmSubmit(false)" class="btn" data-i18n="public.Cancel"></a>
 					<a href="javascript:void(0)" onclick="swConfirmSubmit(true)" id="confirm-dialog-submit" 
-						class="btn btn-primary">OK</a>
+						class="btn btn-primary" data-i18n="public.OK"></a>
 				</div>
 			</div>
 			
