@@ -84,7 +84,8 @@ public class ConnectionStringBuilder {
         this.ssl = value;
     }
 
-    private void initialize() throws EventHubException {
+    @SuppressWarnings("deprecation")
+	private void initialize() throws EventHubException {
 
         URL url;
         try {

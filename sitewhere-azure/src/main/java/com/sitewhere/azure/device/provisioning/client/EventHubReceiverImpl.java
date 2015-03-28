@@ -47,7 +47,6 @@ public class EventHubReceiverImpl implements IEventHubReceiver {
     private final int defaultCredits;
 
     private EventHubReceiver receiver;
-    private String lastOffset = null;
 
     public EventHubReceiverImpl(EventHubReceiverTaskConfig config, String partitionId) {
         this.connectionString = config.getConnectionString();
@@ -90,10 +89,10 @@ public class EventHubReceiverImpl implements IEventHubReceiver {
 
     @Override
     public EventData receive(long timeoutInMilliseconds) {
-        long start = System.currentTimeMillis();
+        //long start = System.currentTimeMillis();
         Message message = receiver.receive(timeoutInMilliseconds);
-        long end = System.currentTimeMillis();
-        long millis = (end - start);
+        //long end = System.currentTimeMillis();
+        //long millis = (end - start);
 
         if (message == null) {
             return null;
@@ -106,7 +105,8 @@ public class EventHubReceiverImpl implements IEventHubReceiver {
         return EventData.create(message, messageId, enqueueTime);
     }
 
-    private MessageId createMessageId(Message message) {
+    @SuppressWarnings("rawtypes")
+	private MessageId createMessageId(Message message) {
         String offset = null;
         long sequenceNumber = 0;
 
@@ -128,7 +128,8 @@ public class EventHubReceiverImpl implements IEventHubReceiver {
         return MessageId.create(partitionId, offset, sequenceNumber);
     }
 
-    private long getEnqueueTime(Message message) {
+    @SuppressWarnings("rawtypes")
+	private long getEnqueueTime(Message message) {
         long enqueueTime = 0L;
         for (Section section : message.getPayload()) {
             if (section instanceof MessageAnnotations) {
@@ -144,7 +145,8 @@ public class EventHubReceiverImpl implements IEventHubReceiver {
 
     }
 
-    @Override
+	@Override
+    @SuppressWarnings("rawtypes")
     public Map getMetricsData() {
         Map ret = new HashMap();
         return ret;

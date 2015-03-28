@@ -133,7 +133,8 @@ public class SimplePartitionManager implements IPartitionManager {
         return partitionStatePath;
     }
 
-    @Override
+ 	@Override
+    @SuppressWarnings("rawtypes")
     public Map getMetricsData() {
         return receiver.getMetricsData();
     }

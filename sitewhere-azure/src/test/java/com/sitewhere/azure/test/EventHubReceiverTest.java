@@ -24,16 +24,16 @@
  *******************************************************************************/
 package com.sitewhere.azure.test;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.sitewhere.azure.device.provisioning.client.Constants;
 import com.sitewhere.azure.device.provisioning.client.EventData;
 import com.sitewhere.azure.device.provisioning.client.EventHubReceiverTask;
 import com.sitewhere.azure.device.provisioning.client.EventHubReceiverTaskConfig;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class EventHubReceiverTest {
 

@@ -46,7 +46,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventHubInboundEventReceiver extends LifecycleComponent implements IInboundEventReceiver<byte[]> {
 
-    private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(EventHubInboundEventReceiver.class);
     private static String username = "";
     private static String password = "";

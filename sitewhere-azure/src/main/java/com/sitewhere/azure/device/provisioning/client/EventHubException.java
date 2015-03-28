@@ -26,7 +26,9 @@ package com.sitewhere.azure.device.provisioning.client;
 
 public class EventHubException extends Exception {
 
-    public EventHubException() {
+	private static final long serialVersionUID = -1835181917856136836L;
+
+	public EventHubException() {
         super();
     }
 
