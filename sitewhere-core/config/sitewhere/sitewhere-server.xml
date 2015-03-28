@@ -88,12 +88,13 @@
 					<sw:json-event-decoder/>
 				</sw:activemq-event-source>
 
-				<!-- Example for BluZone integration over web socket -->
+				<!-- Example of Groovy decoder parsing of websocket payload -->
+				<!--  
 				<sw:string-web-socket-event-source sourceId="websocket"
-					webSocketUrl="wss://beta.bluzone.io/portal/pws">
+					webSocketUrl="ws://sockets.mbed.org/ws/sitewhere/ro">
 					<sw:groovy-string-event-decoder scriptPath="customDecoder.groovy"/>
-					<sw:header name="BZID" value="YOUR_WEB_KEY_HERE"/>
 				</sw:string-web-socket-event-source>
+				-->
 
 			</sw:event-sources>
 		
