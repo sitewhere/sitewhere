@@ -18,6 +18,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 
@@ -62,6 +63,10 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 			}
 			case SolrConfiguration: {
 				parseSolrConfiguration(child, context);
+				break;
+			}
+			case GroovyConfiguration: {
+				parseGroovyConfiguration(child, context);
 				break;
 			}
 			}
@@ -109,6 +114,29 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse the global Groovy configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseGroovyConfiguration(Element element, ParserContext context) {
+		BeanDefinitionBuilder config = BeanDefinitionBuilder.rootBeanDefinition(GroovyConfiguration.class);
+
+		Attr debug = element.getAttributeNode("debug");
+		if (debug != null) {
+			config.addPropertyValue("debug", debug.getValue());
+		}
+
+		Attr verbose = element.getAttributeNode("verbose");
+		if (verbose != null) {
+			config.addPropertyValue("verbose", verbose.getValue());
+		}
+
+		context.getRegistry().registerBeanDefinition(GroovyConfiguration.GROOVY_CONFIGURATION_BEAN,
+				config.getBeanDefinition());
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -119,7 +147,10 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 		HazelcastConfiguration("hazelcast-configuration"),
 
 		/** Global Solr configuration */
-		SolrConfiguration("solr-configuration");
+		SolrConfiguration("solr-configuration"),
+
+		/** Global Groovy configuration */
+		GroovyConfiguration("groovy-configuration");
 
 		/** Event code */
 		private String localName;

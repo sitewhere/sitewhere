@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=5r">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_HOME}/conf/sitewhere/sitewhere.properties"
@@ -22,6 +22,7 @@
 		<sw:globals>
 			<sw:hazelcast-configuration configFileLocation="${CATALINA_HOME}/conf/sitewhere/hazelcast.xml"/>
 			<sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
+			<sw:groovy-configuration debug="true" verbose="true"/>
 		</sw:globals>
 		
 		<!-- ########################### -->
@@ -34,11 +35,11 @@
 		
 			<!-- Default HBase Datastore -->
 			<!--  
-			<sw:hbase-datastore quorum="localhost"/>
+			<sw:hbase-datastore quorum="sandbox.hortonworks.com" zookeeperZnodeParent="/hbase-unsecure"/>
 			-->
 			
-			<!-- Improves performance by using EHCache to store device management entities -->
-			<sw:ehcache-device-management-cache/>
+			<!-- Improves performance by using Hazelcast for distributed caching -->
+			<sw:hazelcast-cache/>
 			
 			<!-- Initializes device model with sample data if datastore is empty -->
 			<sw:default-device-model-initializer/>
@@ -56,15 +57,7 @@
 			<!-- Inbound event sources -->
 			<sw:event-sources>
 
-                <!-- Event source for protobuf messages over AMQP -->
-                <!--<sw:azure-eventhub-event-source sourceId="eventhub" targetFqn="servicebus.windows.net"-->
-                    <!--namespace="YourNamespace" entityPath="YourEntityPath" partitionCount="8"-->
-                    <!--zkStateStore="127.0.0.1:2181"-->
-                    <!--username="YourUsername" password="YourPassword">-->
-                    <!--<sw:protobuf-event-decoder/>-->
-                <!--</sw:azure-eventhub-event-source>-->
-
-				<!--Event source for protobuf messages over MQTT -->
+				<!-- Event source for protobuf messages over MQTT -->
 				<sw:mqtt-event-source sourceId="protobuf" hostname="localhost"
 					port="1883" topic="SiteWhere/input/protobuf">
 					<sw:protobuf-event-decoder/>
@@ -75,22 +68,34 @@
 					topic="SiteWhere/input/jsonbatch">
 					<sw:json-event-decoder/>
 				</sw:mqtt-event-source>
+				
 				<!-- Event source for protobuf messages from socket connections -->
 				<sw:socket-event-source port="8585" numThreads="10" sourceId="socket">
 					<sw:read-all-interaction-handler-factory/>
 					<sw:protobuf-event-decoder/>
 				</sw:socket-event-source>
+				
 				<!-- Event source for protobuf messages over ActiveMQ queue -->
 				<sw:activemq-event-source sourceId="activemq" transportUri="tcp://localhost:1234"
 					queueName="SITEWHERE.IN" numConsumers="10" dataDirectory="${CATALINA_HOME}/amqdata">
 					<sw:protobuf-event-decoder/>
 				</sw:activemq-event-source>
+				
 				<!-- Event source for Stomp messages over ActiveMQ queue -->
 				<sw:activemq-event-source sourceId="stomp"
 					transportUri="stomp://localhost:2345?trace=true" queueName="SITEWHERE.STOMP"
 					numConsumers="10" dataDirectory="${CATALINA_HOME}/stompdata">
 					<sw:json-event-decoder/>
 				</sw:activemq-event-source>
+
+				<!-- Example for BluZone integration over web socket -->
+				<!--  
+				<sw:string-web-socket-event-source sourceId="websocket"
+					webSocketUrl="wss://beta.bluzone.io/portal/pws">
+					<sw:echo-string-decoder/>
+					<sw:header name="BZID" value="YOUR_WEB_KEY_HERE"/>
+				</sw:string-web-socket-event-source>
+				-->
 			</sw:event-sources>
 		
 			<!-- Inbound Processing Strategy -->
@@ -129,7 +134,7 @@
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>
 
-                <!-- Delivers commands via MQTT -->
+				<!-- Delivers commands via MQTT -->
 				<sw:mqtt-command-destination destinationId="android"
 					hostname="localhost" port="1883">
 					<sw:java-protobuf-hybrid-encoder/>

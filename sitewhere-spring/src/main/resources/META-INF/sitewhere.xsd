@@ -743,80 +743,6 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
-    <!-- Event source that pulls binary information from an EventHub endpoint and decodes it -->
-    <xsd:element name="azure-eventhub-event-source" type="azureEventhubEventSourceType"
-                 substitutionGroup="abstract-event-source">
-        <xsd:annotation>
-            <xsd:documentation>Event source that pulls binary information from an Azure EventHub endpoint and
-                decodes it
-            </xsd:documentation>
-        </xsd:annotation>
-    </xsd:element>
-    <xsd:complexType name="azureEventhubEventSourceType">
-        <xsd:complexContent>
-            <xsd:extension base="abstractEventSourceType">
-                <xsd:sequence>
-                    <xsd:element ref="abstract-decoder"/>
-                </xsd:sequence>
-                <xsd:attributeGroup ref="event-source-attributes"/>
-                <xsd:attributeGroup ref="azure-eventhub-inbound-attributes"/>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-
-    <!-- Attributes used for inbound eventhub processing -->
-    <xsd:attributeGroup name="azure-eventhub-inbound-attributes">
-        <xsd:attribute name="targetFqn" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    EventHub targetFqn address.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="namespace" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    EventHub namespace.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="entityPath" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    EventHub entityPath.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="partitionCount" type="xsd:int">
-            <xsd:annotation>
-                <xsd:documentation>
-                    EventHub partition count.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="zkStateStore" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    zookeeper store url for EventHub state persistence.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="username" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    username for EventHub connection.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="password" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    password for EventHub connection.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-    </xsd:attributeGroup>
-
 	<!-- Event source that pulls binary information from an AcitveMQ queue and decodes it -->
 	<xsd:element name="activemq-event-source" type="activemqEventSourceType"
 		substitutionGroup="abstract-event-source">
@@ -1538,6 +1464,33 @@
 				<xsd:attribute name="solrServerUrl" type="xsd:string" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>URL used by Solr client to access server.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Configuration data for Groovy services -->
+	<xsd:element name="groovy-configuration" type="groovyConfigurationType"
+		substitutionGroup="abstract-global">
+		<xsd:annotation>
+			<xsd:documentation>Global configuration settings for Groovy scripting.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyConfigurationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractGlobalType">
+				<xsd:attribute name="debug" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Turns on Groovy script engine debugging if true.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="verbose" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Turns on Groovy script engine verbose flag if true.
+						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>

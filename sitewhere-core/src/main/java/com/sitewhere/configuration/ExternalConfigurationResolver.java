@@ -7,6 +7,7 @@
  */
 package com.sitewhere.configuration;
 
+import java.io.File;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -59,6 +60,16 @@ public class ExternalConfigurationResolver implements IConfigurationResolver {
 		} catch (Exception e) {
 			throw new SiteWhereException(e);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.configuration.IConfigurationResolver#getConfigurationRoot()
+	 */
+	@Override
+	public File getConfigurationRoot() throws SiteWhereException {
+		return TomcatConfigurationResolver.getSiteWhereConfigFolder();
 	}
 
 	public String getRemoteConfigUrl() {

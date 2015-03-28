@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.configuration;
 
+import java.io.File;
+
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -28,4 +30,12 @@ public interface IConfigurationResolver {
 	 * @throws SiteWhereException
 	 */
 	public ApplicationContext resolveSiteWhereContext(IVersion version) throws SiteWhereException;
+
+	/**
+	 * Gets the root {@link File} where SiteWhere configuration files are stored.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public File getConfigurationRoot() throws SiteWhereException;
 }
