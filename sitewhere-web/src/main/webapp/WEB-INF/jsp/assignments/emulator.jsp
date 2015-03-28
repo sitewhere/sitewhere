@@ -20,10 +20,10 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="assignments.emulator.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-assignment-detail" class="btn" href="detail.html?token=<c:out value="${assignment.token}"/>">
-			<i class="icon-circle-arrow-left sw-button-icon"></i> Assignment Details</a>
+		<a id="btn-assignment-detail" class="btn" href="detail.html?token=<c:out value="${assignment.token}"/>" data-i18n="assignments.emulator.AssignmentDetails">
+			<i class="icon-circle-arrow-left sw-button-icon"></i></a>
 	</div>
 </div>
 
@@ -33,64 +33,64 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Emulator</li>
+		<li class="k-state-active" data-i18n="public.Emulator"></li>
 		<li>MQTT</li>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Assignment Emulator</div>
+			<div class="sw-button-bar-title" data-i18n="assignments.emulator.DeviceAssignmentEmulator"></div>
 			<div>
-				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh Locations</a>
+				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)" data-i18n="assignments.emulator.RefreshLocations">
+					<i class="icon-refresh sw-button-icon"></i></a>
 				<div class="btn-group">
-					<a class="btn" href="javascript:void(0)">
-						<i class="icon-plus sw-button-icon"></i> Create</a>
+					<a class="btn" href="javascript:void(0)" data-i18n="public.Create">
+						<i class="icon-plus sw-button-icon"></i></a>
 					<button class="btn dropdown-toggle" data-toggle="dropdown">
 					<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" style="text-align: left;">
-						<li><a tabindex="-1" href="javascript:void(0)" onclick="mcOpen()">Measurements</a></li>
-						<li><a tabindex="-1" href="javascript:void(0)" onclick="acOpen()">Alert</a></li>
+						<li><a tabindex="-1" href="javascript:void(0)" onclick="mcOpen()" data-i18n="public.Measurements"></a></li>
+						<li><a tabindex="-1" href="javascript:void(0)" onclick="acOpen()" data-i18n="public.Alert"></a></li>
 					</ul>
 				</div>			
-				<a id="mqtt-btn-connect" class="btn btn-primary" href="javascript:void(0)">
-					<i class="icon-bolt sw-button-icon"></i> Connect</a>
+				<a id="mqtt-btn-connect" class="btn btn-primary" href="javascript:void(0)" data-i18n="assignments.emulator.Connect">
+					<i class="icon-bolt sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div id="emulator-map" class="emulator-map"></div>
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">MQTT Information</div>
+			<div class="sw-button-bar-title" data-i18n="assignments.emulator.MQTTInformation"></div>
 			<div>
-				<a id="mqtt-btn-test-connect" class="btn" href="javascript:void(0)">
-					<i class="icon-bolt sw-button-icon"></i> Test Connection</a>
+				<a id="mqtt-btn-test-connect" class="btn" href="javascript:void(0)" data-i18n="assignments.emulator.TestConnection">
+					<i class="icon-bolt sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div>
 			<div id="mqtt-tabs">
 				<ul>
-					<li class="k-state-active">Settings</li>
-					<li>Last Message</li>
+					<li class="k-state-active" data-i18n="public.Settings"></li>
+					<li data-i18n="assignments.emulator.LastMessage"></li>
 				</ul>
 				<div>
 					<form class="form-horizontal" style="padding-top: 20px; display: inline-block; vertical-align: top">
 						<div class="control-group">
-							<label class="control-label" for="mqtt-host-name">MQTT Host Name</label>
+							<label class="control-label" for="mqtt-host-name" data-i18n="assignments.emulator.MQTTHostName"></label>
 							<div class="controls">
 								<input type="text" id="mqtt-host-name" value="<%= request.getServerName() %>"
 									class="input-large" title="Host name">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="mqtt-port">MQTT Websocket Port</label>
+							<label class="control-label" for="mqtt-port" data-i18n="assignments.emulator.MQTTWebsocketPort"></label>
 							<div class="controls">
 								<input id="mqtt-port" type="number" value="61623" min="0" step="1" class="input-large"
 									title="Port" onkeyup="this.value=this.value.replace(/[^\d]/,'')"/>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="mqtt-client-id">Client ID</label>
+							<label class="control-label" for="mqtt-client-id" data-i18n="assignments.emulator.ClientID"></label>
 							<div class="controls">
 								<input type="text" id="mqtt-client-id" value="SiteWhereWeb"
 									class="input-large">
@@ -99,19 +99,19 @@
 					</form>
 					<form class="form-horizontal" style="padding-top: 20px; display: inline-block; vertical-align: top">
 						<div class="control-group">
-							<label class="control-label" for="mqtt-username">Username</label>
+							<label class="control-label" for="mqtt-username" data-i18n="public.Username"></label>
 							<div class="controls">
 								<input type="text" id="mqtt-username" class="input-large" value="admin">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="mqtt-password">Password</label>
+							<label class="control-label" for="mqtt-password" data-i18n="public.Password"></label>
 							<div class="controls">
 								<input type="password" id="mqtt-password" class="input-large" value="password">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="mqtt-topic">Topic</label>
+							<label class="control-label" for="mqtt-topic" data-i18n="assignments.emulator.Topic"></label>
 							<div class="controls">
 								<input type="text" id="mqtt-topic" class="input-large" value="SiteWhere/input/jsonbatch">
 							</div>
@@ -120,8 +120,7 @@
 				</div>
 				<div>
 					<div id="mqtt-last-message">
-						<div style="padding: 25px; font-size: 14pt; text-align: center;">
-							JSON content of the MQTT payload is shown here when data is sent via the client.
+						<div style="padding: 25px; font-size: 14pt; text-align: center;" data-i18n="assignments.emulator.jsonmessage">
 						</div>
 					</div>
 				</div>
@@ -134,36 +133,36 @@
 <div id="lc-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3>Create Location</h3>
+		<h3 data-i18n="assignments.emulator.CreateLocation"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="lc-tabs" style="clear: both;">
 			<ul>
-				<li class="k-state-active">Location</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="public.Location"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form class="form-horizontal" style="padding-top: 20px">
 					<div class="control-group">
-						<label class="control-label" for="lc-lat">Latitude</label>
+						<label class="control-label" for="lc-lat" data-i18n="public.Latitude"></label>
 						<div class="controls">
 							<input type="number" id="lc-lat" class="input-large">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="lc-lng">Longitude</label>
+						<label class="control-label" for="lc-lng" data-i18n="public.Longitude"></label>
 						<div class="controls">
 							<input type="number" id="lc-lng" class="input-large">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="lc-elevation">Elevation</label>
+						<label class="control-label" for="lc-elevation" data-i18n="public.Elevation"></label>
 						<div class="controls">
 							<input type="number" id="lc-elevation" class="input-large" value="0">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="lc-event-date">Event Date</label>
+						<label class="control-label" for="lc-event-date" data-i18n="public.EventDate"></label>
 						<div class="controls">
 							<select id="lc-date-type" class="input-xlarge" 
 								style="margin-bottom: 10px; width: 300px;"/>
@@ -182,8 +181,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="lc-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="lc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -203,37 +202,37 @@
 <div id="mc-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3>Create Measurements</h3>
+		<h3 data-i18n="assignments.emulator.CreateMeasurements"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="mc-tabs" style="clear: both;">
 			<ul>
-				<li class="k-state-active">Measurements</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="public.Measurements"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<div class="sw-sublist-header">
-					<div style="width: 205px;">Name</div>
-					<div style="width: 145px">Value</div>
+					<div style="width: 205px;" data-i18n="public.Name"></div>
+					<div style="width: 145px" data-i18n="public.Value"></div>
 				</div>
 				<table id="mc-measurements" class="sw-sublist-list" style="height: 150px;">
 				</table>
 				<div class="sw-sublist-add-new">
 					<div class="sw-sublist-footer">
-						<div style="width: 225px; margin-left: 3px;">Name</div>
-						<div style="width: 145px">Value</div>
+						<div style="width: 225px; margin-left: 3px;" data-i18n="public.Name"></div>
+						<div style="width: 145px" data-i18n="public.Value"></div>
 					</div>
 					<input type="text" id="sw-mx-name" 
 						style="width: 205px; margin-bottom: 0px; margin-right: 10px;" title="Measurement name">
 					<input type="text" id="sw-mx-value" 
 						style="width: 150px; margin-bottom: 0px; margin-right: 10px;" title="Measurement value">
-					<a class="btn" href="javascript:void(0)" onclick="mcAddMeasurement()">
-						<i class="icon-plus sw-button-icon"></i> Add</a>
+					<a class="btn" href="javascript:void(0)" onclick="mcAddMeasurement()" data-i18n="public.Add">
+						<i class="icon-plus sw-button-icon"></i></a>
 					<div id="sw-mx-error" style="color: #f00; display: none;"></div>
 				</div>	
 				<form class="form-horizontal" style="padding-top: 20px">
 					<div class="control-group">
-						<label class="control-label" for="lc-event-date">Event Date</label>
+						<label class="control-label" for="lc-event-date" data-i18n="public.EventDate"></label>
 						<div class="controls">
 							<select id="mc-date-type" class="input-xlarge" 
 								style="margin-bottom: 10px; width: 300px;"/>
@@ -252,8 +251,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="mc-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="mc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -261,30 +260,30 @@
 <div id="ac-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3>Create Alert</h3>
+		<h3 data-i18n="assignments.emulator.CreateAlert"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="ac-tabs" style="clear: both;">
 			<ul>
-				<li class="k-state-active">Alert</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="public.Alert"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form class="form-horizontal" style="padding-top: 20px">
 					<div class="control-group">
-						<label class="control-label" for="ac-type">Alert Type</label>
+						<label class="control-label" for="ac-type" data-i18n="assignments.emulator.AlertType"></label>
 						<div class="controls">
 							<input type="text" id="ac-type" class="input-xlarge">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="ac-message">Message</label>
+						<label class="control-label" for="ac-message" data-i18n="public.Message"></label>
 						<div class="controls">
 							<textarea id="ac-message" class="input-xlarge" style="height: 120px;"></textarea>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="ac-event-date">Event Date</label>
+						<label class="control-label" for="ac-event-date" data-i18n="public.EventDate"></label>
 						<div class="controls">
 							<select id="ac-date-type" class="input-xlarge" 
 								style="margin-bottom: 10px; width: 300px;"/>
@@ -303,8 +302,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="ac-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="ac-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -313,6 +312,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "assignments.emulator.title";
+
 	/** Assignment token */
 	var token = '<c:out value="${assignment.token}"/>';
 	
@@ -411,7 +413,7 @@
 	/** Called on successful connection */
 	function onConnect() {
 		if (testingConnection) {
-			swAlert("Connected", "MQTT client connected successfully");
+			swAlert(i18next("assignments.Connected"), i18next("assignments.emulator.MQTTCS"));
 		}
 //		saveValues(host, port, clientId, username, password);
 		showConnectedButton();
@@ -421,8 +423,7 @@
 	
 	/** Called if connection fails */
 	function onConnectFailed() {
-		swAlert("Connect Failed", "MQTT client connection failed. Verify that MQTT settings are correct " +
-				"and the MQTT broker is running.");
+		swAlert(i18next("assignments.emulator.ConnectFailed"), i18next("assignments.emulator.MQTTCF"));
 		showConnectButton();
 		testingConnection = false;
 		connected = false;
@@ -461,7 +462,7 @@
 	
 	/** Show the connect button */
 	function showConnectButton() {
-		$('#mqtt-btn-connect').removeClass('btn-sw-success').addClass('btn-primary').html('<i class="icon-bolt sw-button-icon"></i> Connect');
+		$('#mqtt-btn-connect').removeClass('btn-sw-success').addClass('btn-primary').html('<i class="icon-bolt sw-button-icon"></i> '+i18next("assignments.emulator.Connect"));
 		$('#mqtt-btn-connect').click(function(event) {
 			event.preventDefault();
 			doConnect();
@@ -470,7 +471,7 @@
 	
 	/** Hide the connect button */
 	function showConnectedButton() {
-		$('#mqtt-btn-connect').removeClass('btn-primary').addClass('btn-sw-success').html('<i class="icon-check sw-button-icon"></i> Connected');
+		$('#mqtt-btn-connect').removeClass('btn-primary').addClass('btn-sw-success').html('<i class="icon-check sw-button-icon"></i> '+i18next("assignments.Connected"));
 		$('#mqtt-btn-connect').unbind('click');
 	}
 	
@@ -774,8 +775,7 @@
 	/** Make sure client is connected and warn if not */
 	function checkConnected() {
 		if (!connected) {
-			swAlert("Not Connected", "MQTT client is not currently connected. Verify MQTT settings and click " +
-				"the <b>Connect</b> button to continue.");
+			swAlert(i18next("assignments.emulator.NotConnected"), i18next("assignments.emulator.MQTTNC"));
 		}
 		return connected;
 	}

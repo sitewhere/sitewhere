@@ -18,26 +18,26 @@
 	<div class="modal-body">
 		<div id="cc-tabs">
 			<ul>
-				<li class="k-state-active">Command</li>
-				<li>Parameters</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="public.Command"></li>
+				<li data-i18n="includes.commandCreateDialog.Parameters"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="cc-general-form" class="form-horizontal" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="cc-name">Name</label>
+						<label class="control-label" for="cc-name" data-i18n="public.Name"></label>
 						<div class="controls">
 							<input type="text" id="cc-name" class="input-xlarge" title="Name">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="cc-namespace">Namespace</label>
+						<label class="control-label" for="cc-namespace" data-i18n="includes.Namespace"></label>
 						<div class="controls">
 							<input type="text" id="cc-namespace" class="input-xlarge" title="Namespace">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="cc-description">Description</label>
+						<label class="control-label" for="cc-description" data-i18n="public.Description"></label>
 						<div class="controls">
 							<textarea id="cc-description" class="input-xlarge" style="height: 7em;"></textarea>
 						</div>
@@ -46,17 +46,17 @@
 			</div>
 			<div>
 				<div class="sw-sublist-header">
-					<div class="sw-cc-command-params-col-name">Parameter Name</div>
-					<div class="sw-cc-command-params-col-type">Parameter Type</div>
-					<div class="sw-cc-command-params-col-req">Required</div>
+					<div class="sw-cc-command-params-col-name" data-i18n="includes.commandCreateDialog.ParameterName"></div>
+					<div class="sw-cc-command-params-col-type" data-i18n="includes.commandCreateDialog.ParameterType"></div>
+					<div class="sw-cc-command-params-col-req" data-i18n="includes.commandCreateDialog.Required"></div>
 				</div>
 				<table id="cc-parameters" class="sw-sublist-list">
 				</table>
 				<div class="sw-sublist-add-new">
 					<div class="sw-sublist-footer">
-						<div style="width: 205px">Parameter Name</div>
-						<div style="width: 145px">Parameter Type</div>
-						<div>Req</div>
+						<div style="width: 205px" data-i18n="includes.commandCreateDialog.ParameterName"></div>
+						<div style="width: 145px" data-i18n="includes.commandCreateDialog.ParameterType"></div>
+						<div data-i18n="includes.commandCreateDialog.Req"></div>
 					</div>
 					<input type="text" id="cc-new-name" class="sw-cc-command-params-col-name" 
 						style="margin-bottom: 0px; margin-right: 10px;" title="Name">
@@ -65,7 +65,7 @@
 					<input type="checkbox" id="cc-new-required" 
 						style="margin-right: 35px;"title="Required">
 					<a class="btn" href="javascript:void(0)" onclick="onAddParameter()">
-						<i class="icon-plus sw-button-icon"></i> Add</a>
+						<i class="icon-plus sw-button-icon"></i>&nbsp<font data-i18n="public.Add"></font></a>
 					<div id="cc-new-error" style="color: #f00; display: none;"></div>
 				</div>
 			</div>
@@ -81,8 +81,8 @@
 	<input id="cc-specification-token" type="hidden" value="" />
 	<input id="cc-command-token" type="hidden" value="" />
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="cc-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="cc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -220,7 +220,7 @@
 		}
 		var regex = /^\w+$/;
 		if (!regex.test(parameter.name)) {
-			error = "Invalid character in parameter name."
+			error = i18next("includes.commandCreateDialog.ICIPN");
 		}
 		
 		// Check for already used.
@@ -268,8 +268,8 @@
 	function ccOpen(specificationToken, callback) {
 		ccClearDialog();
 		
-		$('#cc-dialog-header').html("Create Device Command");
-		$('#cc-dialog-submit').html("Create");
+		$('#cc-dialog-header').html(i18next("includes.commandCreateDialog.CreateDeviceCommand"));
+		$('#cc-dialog-submit').html(i18next("public.Create"));
 		
 		paramsDS.data(new Array());
 		ccMetadataDS.data(new Array());
@@ -300,8 +300,8 @@
     
     /** Called on successful user load request */
     function cuCommandGetSuccess(data, status, jqXHR) {
-		$('#cc-dialog-header').html("Edit Device Command");
-		$('#cc-dialog-submit').html("Save");
+		$('#cc-dialog-header').html(i18next("includes.commandCreateDialog.EditDeviceCommand"));
+		$('#cc-dialog-submit').html(i18next("public.Save"));
 		
 		// Load hidden fields for tokens.
 		$('#cc-specification-token').val(data.specificationToken);

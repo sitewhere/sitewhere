@@ -10,7 +10,6 @@
 	<classpathentry kind="src" path="sitewhere-documentation/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-ehcache/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-gnuhealth/src/main/java"/>
-	<classpathentry kind="src" path="sitewhere-groovy/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-hbase/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-magento/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/java"/>
@@ -75,6 +74,5 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-common/0.98.4-hadoop2/hbase-common-0.98.4-hadoop2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-protocol/0.98.4-hadoop2/hbase-protocol-0.98.4-hadoop2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/glassfish/tyrus/bundles/tyrus-standalone-client/1.10/tyrus-standalone-client-1.10.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy/2.4.3/groovy-2.4.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -11,12 +11,12 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="assignments.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-emulator" class="btn" href="emulator.html?token=<c:out value="${assignment.token}"/>">
-			<i class="icon-bolt sw-button-icon"></i> Emulate Assignment</a>
-		<a id="btn-edit-assignment" class="btn" href="javascript:void(0)">
-			<i class="icon-edit sw-button-icon"></i> Edit Assignment</a>
+		<a id="btn-emulator" class="btn" href="emulator.html?token=<c:out value="${assignment.token}"/>" data-i18n="assignments.detail.EmulateAssignment">
+			<i class="icon-bolt sw-button-icon"></i></a>
+		<a id="btn-edit-assignment" class="btn" href="javascript:void(0)" data-i18n="public.EditAssignment">
+			<i class="icon-edit sw-button-icon"></i></a>
 	</div>
 </div>
 
@@ -26,19 +26,19 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Locations</li>
-		<li>Measurements</li>
-		<li>Alerts</li>
-		<li>Command Invocations</li>
+		<li class="k-state-active" >&nbsp;<font data-i18n="public.Locations"></font></li>
+		<li >&nbsp;<font data-i18n="public.Measurements"></font></li>
+		<li >&nbsp;<font data-i18n="public.Alerts"></font></li>
+		<li >&nbsp;<font data-i18n="public.CommandInvocations"></font></li>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Locations</div>
+			<div class="sw-button-bar-title" data-i18n="public.DeviceLocations"></div>
 			<div>
-				<a id="btn-filter-locations" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-filter-locations" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="locations">
@@ -50,10 +50,10 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Latitude</th>
-					<th>Longitude</th>
-					<th>Elevation</th>
-					<th>Event Date</th>
+					<th data-i18n="public.Latitude"></th>
+					<th data-i18n="public.Longitude"></th>
+					<th data-i18n="public.Elevation"></th>
+					<th data-i18n="public.EventDate"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -64,12 +64,12 @@
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Measurements</div>
+			<div class="sw-button-bar-title" data-i18n="public.DeviceMeasurements"></div>
 			<div>
-				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-measurements" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-measurements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="measurements">
@@ -79,8 +79,8 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Measurements</th>
-					<th>Event Date</th>
+					<th data-i18n="public.Measurements"></th>
+					<th data-i18n="public.EventDate"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -91,12 +91,12 @@
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Alerts</div>
+			<div class="sw-button-bar-title" data-i18n="public.DeviceAlerts"></div>
 			<div>
-				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-alerts" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-alerts" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="alerts">
@@ -108,10 +108,10 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Type</th>
-					<th>Message</th>
-					<th>Source</th>
-					<th>Event Date</th>
+					<th data-i18n="public.Type"></th>
+					<th data-i18n="public.Message"></th>
+					<th data-i18n="public.Source"></th>
+					<th data-i18n="public.EventDate"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -122,14 +122,14 @@
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Command Invocations</div>
+			<div class="sw-button-bar-title" data-i18n="assignments.detail.DeviceCommandInvocations"></div>
 			<div>
-				<a id="btn-filter-invocations" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-invocations" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
-				<a id="btn-create-invocation" class="btn" href="javascript:void(0)">
-					<i class="icon-bolt sw-button-icon"></i> Invoke Command</a>
+				<a id="btn-filter-invocations" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-invocations" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
+				<a id="btn-create-invocation" class="btn" href="javascript:void(0)" data-i18n="assignments.detail.InvokeCommand">
+					<i class="icon-bolt sw-button-icon"></i></a>
 			</div>
 		</div>
 		<table id="invocations">
@@ -142,10 +142,10 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Command</th>
-					<th>Source</th>
-					<th>Target</th>
-					<th>Event Date</th>
+					<th data-i18n="public.Command"></th>
+					<th data-i18n="public.Source"></th>
+					<th data-i18n="assignments.detail.Target"></th>
+					<th data-i18n="public.EventDate"></th>
 					<th></th>
 				</tr>
 			</thead>
@@ -171,6 +171,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "assignments.detail.title";
+    
 	/** Assignment token */
 	var token = '<c:out value="${assignment.token}"/>';
 	

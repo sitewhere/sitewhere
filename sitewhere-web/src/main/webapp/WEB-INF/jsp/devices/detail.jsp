@@ -11,10 +11,10 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="" data-i18n="devices.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-device" class="btn" href="javascript:void(0)">
-			<i class="icon-pencil sw-button-icon"></i> Edit Device</a>
+		<a id="btn-edit-device" class="btn" href="javascript:void(0)" data-i18n="public.EditDevice">
+			<i class="icon-pencil sw-button-icon"></i></a>
 	</div>
 </div>
 
@@ -24,23 +24,23 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Assignment History</li>
+		<li class="k-state-active">&nbsp;<font data-i18n="devices.detail.AssignmentHistory"></font></li>
 <c:choose>
 	<c:when test="${specification.containerPolicy == 'Composite'}">
-		<li>Composition</li>
+		<li>&nbsp;<font data-i18n="public.Composition"></font></li>
 	</c:when>
 </c:choose>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Assignment History</div>
+			<div class="sw-button-bar-title" data-i18n="devices.detail.DeviceAssignmentHistory"></div>
 			<div>
-				<a id="btn-assign-device" class="btn hide" href="javascript:void(0)">
-					<i class="icon-tag sw-button-icon"></i> Assign Device</a>
-				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results</a>
-				<a id="btn-refresh-assignments" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
+				<a id="btn-assign-device" class="btn hide" href="javascript:void(0)" data-i18n="devices.detail.AssignDevice">
+					<i class="icon-tag sw-button-icon"></i></a>
+				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i></a>
+				<a id="btn-refresh-assignments" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div id="assignments" class="sw-assignment-list"></div>
@@ -71,6 +71,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "devices.detail.title";
+
 	var hardwareId = '<c:out value="${device.hardwareId}"/>';
 
 	/** Datasource for assignments */

@@ -8,12 +8,12 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="users.list.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-filter-results" class="btn" href="javascript:void(0)">
-			<i class="icon-search sw-button-icon"></i> Filter Results</a>
-		<a id="btn-add-user" class="btn" href="javascript:void(0)">
-			<i class="icon-plus sw-button-icon"></i> Add New User</a>
+		<a id="btn-filter-results" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+			<i class="icon-search sw-button-icon"></i></a>
+		<a id="btn-add-user" class="btn" href="javascript:void(0)" data-i18n="users.list.AddNewUser">
+			<i class="icon-plus sw-button-icon"></i></a>
 	</div>
 </div>
 <table id="users">
@@ -29,13 +29,13 @@
 	</colgroup>
 	<thead>
 		<tr>
-			<th>Username</th>
-			<th>First Name</th>
-			<th>Last Name</th>
-			<th>Status</th>
-			<th>Last Login</th>
-			<th>Created</th>
-			<th>Updated</th>
+			<th data-i18n="users.list.UserName"></th>
+			<th data-i18n="public.FirstName"></th>
+			<th data-i18n="public.LastName"></th>
+			<th data-i18n="public.Status"></th>
+			<th data-i18n="users.list.LastLogin"></th>
+			<th data-i18n="public.Created"></th>
+			<th data-i18n="public.Updated"></th>
 			<th></th>
 		</tr>
 	</thead>
@@ -52,6 +52,9 @@
 <%@ include file="../includes/userCreateDialog.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "users.list.title";
+
 	/** Reference for user list datasource */
 	var usersDS;
 	
@@ -76,7 +79,7 @@
 	function onDeleteUser(e, username) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swConfirm("Delete User", "Are you sure you want to delete this user?", function(result) {
+		swConfirm(i18next("public.DeleteUser"), i18next("users.list.AYSYWTDTU"), function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/users/" + username + "?force=true", 
 						onDeleteSuccess, onDeleteFail);
@@ -91,7 +94,7 @@
     
 	/** Handle failed delete call */
 	function onDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete user.");
+		handleError(jqXHR, i18next("users.list.UTDU"));
 	}
 	
     $(document).ready(function() {

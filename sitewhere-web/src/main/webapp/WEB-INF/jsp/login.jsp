@@ -15,7 +15,7 @@
 <link href="${pageContext.request.contextPath}/css/jquery.validity.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/css/sitewhere.css" rel="stylesheet" />
 </head>
-
+<%@ include file="includes/i18next.inc"%>
 <style>
 	.login-wrapper {
 		width: 500px;
@@ -39,13 +39,22 @@
 </style>
 
 <script>
-
 $(document).ready(function() {
     /** Handle location create dialog submit */
 	$('#login-submit').click(function(event) {
 		$('#login-form').submit();
 	});
 });
+
+/** I18n title properties */
+var arry = [
+             {'key':'Username','value':'public.Username'},
+             {'key':'Password','value':'public.Password'}
+           ];
+sitewhere_i18next.title_arry = arryAccum(sitewhere_i18next.title_arry,arry);
+
+/** Set sitewhere_title */
+sitewhere_i18next.sitewhere_title = "login.title";
 </script>
 
 <body class="sw-body">
@@ -57,13 +66,13 @@ $(document).ready(function() {
 					<form id="login-form" class="form-horizontal" style="padding-top: 20px; padding-left: 20px;"
 						method="POST" action="login.html">
 						<div class="control-group">
-							<label class="control-label" for="login-username">Username</label>
+							<label class="control-label" for="login-username" data-i18n="public.Username"></label>
 							<div class="controls">
 								<input type="text" id="login-username" name="j_username" class="input-large" title="Username">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="login-password">Password</label>
+							<label class="control-label" for="login-password" data-i18n="public.Password"></label>
 							<div class="controls">
 								<input type="password" id="login-password" name="j_password" class="input-large" 
 									title="Password">
@@ -72,20 +81,20 @@ $(document).ready(function() {
 						<div class="control-group">
 							<label class="control-label"></label>
 							<div class="controls">
-								<a id="login-submit" href="javascript:void(0)" class="btn btn-sw-red login-submit-button">
-									Log In</a>
+								<a id="login-submit" href="javascript:void(0)" class="btn btn-sw-red login-submit-button" data-i18n="login.LogIn">
+									</a>
 							</div>
 						</div>
 						<div style="text-align: center; font-size: 16pt; color: #c00">
 <c:if test="${loginFailed == true}">
-							Invalid username or password was entered.
+							<font data-i18n="login.logFailMs"></font>.
 </c:if>
 						</div>
 					</form>
 				</div>
 			</div>
 			<div class="alert alert-info" style="width: 550px; margin-left: auto; margin-right: auto; text-align: center; margin-top: 10px;">
-				The default login and password are <b>admin</b>:<b>password</b>.
+				 <font data-i18n="login.msg"></font><b> admin</b>:<b>password</b>.
 			</div>
 		</div>
 		<div style="height: 10px;"></div>
@@ -93,7 +102,7 @@ $(document).ready(function() {
 			<span style="position: absolute; right: 10px; color: #999;">
 				${version.versionIdentifier}.${version.buildTimestamp} (${version.editionIdentifier})
 			</span>
-			Copyright © 2009-2014 SiteWhere, LLC.
+			Copyright ï¿½ 2009-2014 SiteWhere, LLC.
 		</div>
 	</div>
 </body>

@@ -2,18 +2,18 @@
 <div id="ci-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3>Invoke Device Command</h3>
+		<h3 data-i18n="includes.commandInvokeDialog.InvokeDeviceCommand"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="ci-tabs">
 			<ul>
-				<li class="k-state-active">Invocation Details</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.commandInvokeDialog.InvocationDetails"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="ci-form" class="form-horizontal" style="padding-top: 15px;">
 					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-						<label class="control-label" for="ci-command-choice">Command</label>
+						<label class="control-label" for="ci-command-choice" data-i18n="public.Command"></label>
 						<div class="controls">
 							<input id="ci-command-choice"/>
 						</div>
@@ -31,8 +31,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="ci-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Invoke</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="ci-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Invoke"></a>
 	</div>
 </div>
 

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sitewhere.azure.device.provisioning.EventHubInboundEventReceiver;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -82,6 +83,10 @@ public class EventSourcesParser {
 				result.add(parseEventSource(child, context));
 				break;
 			}
+            case AzureEventHubEventSource: {
+                result.add(parseAzureEventHubEventSource(child, context));
+                break;
+            }
 			case ActiveMQEventSource: {
 				result.add(parseActiveMQEventSource(child, context));
 				break;
@@ -201,6 +206,97 @@ public class EventSourcesParser {
 
 		return mqtt.getBeanDefinition();
 	}
+
+    //parseEventHubEventSource
+    /**
+     * Parse an EventHub event source.
+     *
+     * @param element
+     * @param context
+     * @return
+     */
+    protected AbstractBeanDefinition parseAzureEventHubEventSource(Element element, ParserContext context) {
+        BeanDefinitionBuilder source =
+                BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+
+        // Verify that a sourceId was provided and set it on the bean.
+        parseEventSourceId(element, source);
+
+        // Create EventHub event receiver bean and register it.
+        AbstractBeanDefinition receiver = createEventHubEventReceiver(element);
+        String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+        context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+        // Create list with bean reference and add it as property.
+        ManagedList<Object> list = new ManagedList<Object>();
+        RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+        list.add(ref);
+        source.addPropertyValue("inboundEventReceivers", list);
+
+        // Add decoder reference.
+        boolean hadDecoder = parseBinaryDecoder(element, context, source);
+        if (!hadDecoder) {
+            throw new RuntimeException("No event decoder specified for EvenHub event source: "
+                    + element.toString());
+        }
+
+        return source.getBeanDefinition();
+    }
+
+    /**
+     * Create EventHub event receiver from XML element.
+     *
+     * @param element
+     * @return
+     */
+    protected AbstractBeanDefinition createEventHubEventReceiver(Element element) {
+        BeanDefinitionBuilder eh =
+                BeanDefinitionBuilder.rootBeanDefinition(EventHubInboundEventReceiver.class);
+
+        Attr targetFqn = element.getAttributeNode("targetFqn");
+        if (targetFqn == null) {
+            throw new RuntimeException("targetFqn attribute not provided.");
+        }
+        eh.addPropertyValue("targetFqn", targetFqn.getValue());
+
+        Attr namespace = element.getAttributeNode("namespace");
+        if (namespace == null) {
+            throw new RuntimeException("namespace attribute not provided.");
+        }
+        eh.addPropertyValue("namespace", namespace.getValue());
+
+        Attr entityPath = element.getAttributeNode("entityPath");
+        if (entityPath == null) {
+            throw new RuntimeException("entityPath attribute not provided.");
+        }
+        eh.addPropertyValue("entityPath", entityPath.getValue());
+
+        Attr partitionCount = element.getAttributeNode("partitionCount");
+        if (partitionCount == null) {
+            throw new RuntimeException("partitionCount attribute not provided.");
+        }
+        eh.addPropertyValue("partitionCount", partitionCount.getValue());
+
+        Attr zkStateStore = element.getAttributeNode("zkStateStore");
+        if (zkStateStore == null) {
+            throw new RuntimeException("zkStateStore attribute not provided.");
+        }
+        eh.addPropertyValue("zkStateStore", zkStateStore.getValue());
+
+        Attr username = element.getAttributeNode("username");
+        if (username == null) {
+            throw new RuntimeException("username attribute not provided.");
+        }
+        eh.addPropertyValue("username", username.getValue());
+
+        Attr password = element.getAttributeNode("password");
+        if (password == null) {
+            throw new RuntimeException("password attribute not provided.");
+        }
+        eh.addPropertyValue("password", password.getValue());
+
+        return eh.getBeanDefinition();
+    }
 
 	/**
 	 * Get the ActiveMQ event source implementation class.
@@ -718,6 +814,9 @@ public class EventSourcesParser {
 
 		/** Event source */
 		EventSource("event-source"),
+
+        /** Azure EventHub event source */
+        AzureEventHubEventSource("azure-eventhub-event-source"),
 
 		/** ActiveMQ event source */
 		ActiveMQEventSource("activemq-event-source"),
