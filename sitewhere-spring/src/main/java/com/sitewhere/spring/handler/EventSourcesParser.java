@@ -33,6 +33,8 @@ import com.sitewhere.device.provisioning.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.device.provisioning.socket.BinarySocketInboundEventReceiver;
 import com.sitewhere.device.provisioning.socket.ReadAllInteractionHandler;
 import com.sitewhere.device.provisioning.websocket.StringWebSocketEventReceiver;
+import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.device.provisioning.GroovyStringEventDecoder;
 import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
 import com.sitewhere.spi.device.provisioning.IInboundEventSource;
 import com.sitewhere.spi.device.provisioning.socket.ISocketInteractionHandlerFactory;
@@ -611,6 +613,10 @@ public class EventSourcesParser {
 				parseEchoStringDecoder(parent, child, context, source);
 				return true;
 			}
+			case GroovyStringDecoder: {
+				parseGroovyStringDecoder(parent, child, context, source);
+				return true;
+			}
 			case EventDecoder: {
 				parseDecoderRef(parent, child, context, source);
 				return true;
@@ -670,6 +676,33 @@ public class EventSourcesParser {
 			BeanDefinitionBuilder source) {
 		LOGGER.debug("Configuring echo String decoder for " + parent.getLocalName());
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(EchoStringDecoder.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("deviceEventDecoder", name);
+	}
+
+	/**
+	 * Parse decoder that uses a Groovy script to decode events.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseGroovyStringDecoder(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring Groovy String decoder for " + parent.getLocalName());
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition(GroovyStringEventDecoder.class);
+		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = decoder.getAttributeNode("scriptPath");
+		if (scriptPath == null) {
+			throw new RuntimeException("Script path not set for Groovy event decoder.");
+		}
+		builder.addPropertyValue("scriptPath", scriptPath.getValue());
+
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -806,6 +839,9 @@ public class EventSourcesParser {
 
 		/** Echoes String payload to logger */
 		EchoStringDecoder("echo-string-decoder"),
+
+		/** Uses Groovy script to parse events */
+		GroovyStringDecoder("groovy-string-event-decoder"),
 
 		/** Reference to externally defined event decoder */
 		EventDecoder("event-decoder");

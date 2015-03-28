@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=5r">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=5s">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${CATALINA_HOME}/conf/sitewhere/sitewhere.properties"
@@ -89,13 +89,12 @@
 				</sw:activemq-event-source>
 
 				<!-- Example for BluZone integration over web socket -->
-				<!--  
 				<sw:string-web-socket-event-source sourceId="websocket"
 					webSocketUrl="wss://beta.bluzone.io/portal/pws">
-					<sw:echo-string-decoder/>
+					<sw:groovy-string-event-decoder scriptPath="customDecoder.groovy"/>
 					<sw:header name="BZID" value="YOUR_WEB_KEY_HERE"/>
 				</sw:string-web-socket-event-source>
-				-->
+
 			</sw:event-sources>
 		
 			<!-- Inbound Processing Strategy -->

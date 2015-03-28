@@ -643,6 +643,29 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 	
+	<!-- Decode using a Groovy script -->
+	<xsd:element name="groovy-string-event-decoder" type="swGroovyStringDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder that uses a Groovy script to parse a String payload into
+				decoded events.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyStringDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to script used for decoding payload.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<!-- Echo String payload for debugging purposes -->
 	<xsd:element name="echo-string-decoder" type="swEchoStringDecoderType"
 		substitutionGroup="abstract-decoder">
