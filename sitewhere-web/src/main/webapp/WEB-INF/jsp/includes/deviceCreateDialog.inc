@@ -19,7 +19,7 @@
 						<label class="control-label" for="dc-hardware-id" data-i18n="public.HardwareId">
 					    </label>
 						<div class="controls">
-							<input type="text" id="dc-hardware-id" title="Hardware id"
+							<input type="text" id="dc-hardware-id" title="#= i18next("public.HardwareId") #"
 								class="input-xlarge">
 						</div>
 					</div>

@@ -102,7 +102,7 @@ sitewhere_i18next.sitewhere_title = "login.title";
 			<span style="position: absolute; right: 10px; color: #999;">
 				${version.versionIdentifier}.${version.buildTimestamp} (${version.editionIdentifier})
 			</span>
-			Copyright © 2009-2014 SiteWhere, LLC.
+            <!--Copyright 2009-2014 SiteWhere, LLC. -->
 		</div>
 	</div>
 </body>

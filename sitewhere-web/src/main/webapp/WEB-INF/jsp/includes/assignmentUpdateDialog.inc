@@ -94,10 +94,10 @@
 	<div style="min-height: 120px;">
 		<div class="sw-assignment-update-imgwrapper">
 			<img class="sw-assignment-update-img" src="#:device.assetImageUrl#"/>
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Unassociated</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Unassociated") #</span>
 		</div>
 		<div style="display: inline-block;" max-width: 280px;>
-			<p class="ellipsis"><span class="sw-assignment-update-label">Type:</span> Unassociated Device</p>
+			<p class="ellipsis"><span class="sw-assignment-update-label">Type:</span> #= i18next("public.UnassociatedDevice") #</p>
 # } #
 			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Assigned") #:</span> #= formattedDate(kendo.parseDate(activeDate)) #</p>
 			<p class="ellipsis"><span class="sw-assignment-update-label">#= i18next("public.Released") #:</span> #= formattedDate(kendo.parseDate(releasedDate)) #</p>

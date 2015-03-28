@@ -8,9 +8,9 @@
 		<div>
 			<form id="dvs-general-form" class="form-horizontal" style="padding-top: 20px;">
 				<div class="control-group">
-					<label class="control-label" for="dvs-hardware-id">Hardware Id</label>
+					<label class="control-label" for="dvs-hardware-id">#= i18next("public.HardwareId") #</label>
 					<div class="controls">
-						<input type="text" id="dvs-hardware-id" title="Hardware id" class="input-xlarge">
+						<input type="text" id="dvs-hardware-id" title="#= i18next("public.HardwareId") #" class="input-xlarge">
 					</div>
 				</div>
 				<div id="dvs-device-matches" style="max-height: 200px; overflow: scroll;"></div>
