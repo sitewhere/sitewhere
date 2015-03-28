@@ -151,7 +151,7 @@
           "LogOut":"Log Out"
        },
        "templateBatchCommandInvocationEntry":{
-          "ProcessingStatus":"$t(batch.list.Processing) $t(public.Status)"
+          "ProcessingStatus":"$t(public.Processing) $t(public.Status)"
        },
        "specificationCreateDialog":{
           "AssetProvider":"$t(public.Asset) Provider"

@@ -16,7 +16,7 @@
 		<div style="margin-bottom: 10px; border-bottom: 1px solid \\#ccc; padding-bottom: 10px;">
 			<div><span class="sw-field-name">Token:</span><span class="sw-field-content">#:token#</span></div>
 			<div><span class="sw-field-name">#= i18next("public.Operation") #:</span><span class="sw-field-content">#:operationType#</span></div>
-			<div><span class="sw-field-name">#= i18next("includes.templateBatchCommandInvocationEntry.ProcessingStatus") #:</span><span class="sw-field-content">#:processingStatus#</span></div>
+			<div><span class="sw-field-name">#= i18next("public.Processing") # #= i18next("public.Status") #:</span><span class="sw-field-content">#:processingStatus#</span></div>
 		</div>
 		<div>
 			#=commandHtml#

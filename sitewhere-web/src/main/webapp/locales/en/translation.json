@@ -158,7 +158,7 @@
           "LogOut":"Log Out"
        },
        "templateBatchCommandInvocationEntry":{
-          "ProcessingStatus":"$t(batch.list.Processing) $t(public.Status)"
+          "ProcessingStatus":"$t(public.Processing) $t(public.Status)"
        },
        "specificationCreateDialog":{
           "AssetProvider":"$t(public.Asset) Provider"
@@ -312,7 +312,7 @@
        "list":{
           "title":"$t(public.Manage) $t(public.Batch) Operations",
           "OperationCreated":"$t(batch.list.Operation) $t(public.Created)"
-       }
+        }
   },
   "assignments":{
        "Connected":"Connected",

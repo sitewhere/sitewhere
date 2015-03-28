@@ -25,7 +25,7 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active" data-i18n="public." data-i18n="public.Elements"></li>
+		<li class="k-state-active" data-i18n="public.Elements"></li>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
