@@ -57,6 +57,14 @@
 			<!-- Inbound event sources -->
 			<sw:event-sources>
 
+                <!-- Event source for protobuf messages over AMQP -->
+                <!--<sw:azure-eventhub-event-source sourceId="eventhub" targetFqn="servicebus.windows.net"-->
+                                                <!--namespace="YourNamespace" entityPath="YourEntityPath" partitionCount="8"-->
+                                                <!--zkStateStore="127.0.0.1:2181"-->
+                                                <!--username="YourUsername" password="YourPassword">-->
+                    <!--<sw:protobuf-event-decoder/>-->
+                <!--</sw:azure-eventhub-event-source>-->
+
 				<!-- Event source for protobuf messages over MQTT -->
 				<sw:mqtt-event-source sourceId="protobuf" hostname="localhost"
 					port="1883" topic="SiteWhere/input/protobuf">
