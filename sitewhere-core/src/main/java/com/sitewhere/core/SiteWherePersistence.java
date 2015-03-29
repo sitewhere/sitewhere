@@ -183,7 +183,7 @@ public class SiteWherePersistence {
 			spec.setDeviceElementSchema((DeviceElementSchema) schema);
 		}
 
-		MetadataProvider.copy(request, spec);
+		MetadataProvider.copy(request.getMetadata(), spec);
 		SiteWherePersistence.initializeEntityMetadata(spec);
 		return spec;
 	}
@@ -223,7 +223,7 @@ public class SiteWherePersistence {
 		}
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -260,7 +260,7 @@ public class SiteWherePersistence {
 
 		checkDuplicateCommand(command, existing);
 
-		MetadataProvider.copy(request, command);
+		MetadataProvider.copy(request.getMetadata(), command);
 		SiteWherePersistence.initializeEntityMetadata(command);
 		return command;
 	}
@@ -322,7 +322,7 @@ public class SiteWherePersistence {
 		}
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -354,7 +354,7 @@ public class SiteWherePersistence {
 		device.setComments(request.getComments());
 		device.setStatus(DeviceStatus.Ok);
 
-		MetadataProvider.copy(request, device);
+		MetadataProvider.copy(request.getMetadata(), device);
 		SiteWherePersistence.initializeEntityMetadata(device);
 		return device;
 	}
@@ -407,7 +407,7 @@ public class SiteWherePersistence {
 		}
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -529,7 +529,7 @@ public class SiteWherePersistence {
 		site.setMap(SiteMapData.copy(source.getMap()));
 
 		SiteWherePersistence.initializeEntityMetadata(site);
-		MetadataProvider.copy(source, site);
+		MetadataProvider.copy(source.getMetadata(), site);
 		return site;
 	}
 
@@ -549,7 +549,7 @@ public class SiteWherePersistence {
 
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -601,7 +601,7 @@ public class SiteWherePersistence {
 		newAssignment.setStatus(DeviceAssignmentStatus.Active);
 
 		SiteWherePersistence.initializeEntityMetadata(newAssignment);
-		MetadataProvider.copy(source, newAssignment);
+		MetadataProvider.copy(source.getMetadata(), newAssignment);
 
 		return newAssignment;
 	}
@@ -652,7 +652,7 @@ public class SiteWherePersistence {
 			target.setEventDate(new Date());
 		}
 		target.setReceivedDate(new Date());
-		MetadataProvider.copy(request, target);
+		MetadataProvider.copy(request.getMetadata(), target);
 	}
 
 	/**
@@ -982,7 +982,7 @@ public class SiteWherePersistence {
 		zone.setOpacity(source.getOpacity());
 
 		SiteWherePersistence.initializeEntityMetadata(zone);
-		MetadataProvider.copy(source, zone);
+		MetadataProvider.copy(source.getMetadata(), zone);
 
 		for (ILocation coordinate : source.getCoordinates()) {
 			zone.getCoordinates().add(coordinate);
@@ -1010,7 +1010,7 @@ public class SiteWherePersistence {
 
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -1034,7 +1034,7 @@ public class SiteWherePersistence {
 		}
 
 		SiteWherePersistence.initializeEntityMetadata(group);
-		MetadataProvider.copy(source, group);
+		MetadataProvider.copy(source.getMetadata(), group);
 		return group;
 	}
 
@@ -1057,7 +1057,7 @@ public class SiteWherePersistence {
 
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -1098,7 +1098,7 @@ public class SiteWherePersistence {
 		batch.getParameters().putAll(source.getParameters());
 
 		SiteWherePersistence.initializeEntityMetadata(batch);
-		MetadataProvider.copy(source, batch);
+		MetadataProvider.copy(source.getMetadata(), batch);
 		return batch;
 	}
 
@@ -1123,7 +1123,7 @@ public class SiteWherePersistence {
 
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -1163,8 +1163,9 @@ public class SiteWherePersistence {
 		if (request.getProcessedDate() != null) {
 			element.setProcessedDate(request.getProcessedDate());
 		}
-		if (request.getMetadata().size() > 0) {
-			element.getMetadata().putAll(request.getMetadata());
+		if (request.getMetadata() != null) {
+			element.getMetadata().clear();
+			MetadataProvider.copy(request.getMetadata(), element);
 		}
 	}
 
@@ -1185,9 +1186,11 @@ public class SiteWherePersistence {
 		batch.setHardwareIds(request.getHardwareIds());
 		batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN,
 				request.getCommandToken());
+		Map<String, String> params = new HashMap<String, String>();
 		for (String key : request.getParameterValues().keySet()) {
-			batch.addOrReplaceMetadata(key, request.getParameterValues().get(key));
+			params.put(key, request.getParameterValues().get(key));
 		}
+		batch.setMetadata(params);
 		return batch;
 	}
 

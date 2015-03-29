@@ -10,8 +10,8 @@ package com.sitewhere.rest.model.device.request;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
@@ -21,8 +21,7 @@ import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceCommandCreateRequest extends MetadataProvider implements IDeviceCommandCreateRequest,
-		Serializable {
+public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 7791276552702413783L;
@@ -41,6 +40,9 @@ public class DeviceCommandCreateRequest extends MetadataProvider implements IDev
 
 	/** Command parameters */
 	private List<CommandParameter> parameters = new ArrayList<CommandParameter>();
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -110,5 +112,18 @@ public class DeviceCommandCreateRequest extends MetadataProvider implements IDev
 
 	public void setParameters(List<CommandParameter> parameters) {
 		this.parameters = parameters;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceCommandCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

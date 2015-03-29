@@ -8,15 +8,14 @@
 package com.sitewhere.spi.device.event.request;
 
 import java.util.Date;
-
-import com.sitewhere.spi.common.IMetadataProvider;
+import java.util.Map;
 
 /**
  * Interface for arguments needed to create a device event.
  * 
  * @author Derek
  */
-public interface IDeviceEventCreateRequest extends IMetadataProvider {
+public interface IDeviceEventCreateRequest {
 
 	/**
 	 * Get the date on which the event occurred.
@@ -40,4 +39,11 @@ public interface IDeviceEventCreateRequest extends IMetadataProvider {
 	 * @param update
 	 */
 	public void setUpdateState(boolean update);
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

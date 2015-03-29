@@ -7,7 +7,8 @@
  */
 package com.sitewhere.spi.device.request;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import java.util.Map;
+
 import com.sitewhere.spi.device.DeviceAssignmentType;
 
 /**
@@ -15,7 +16,7 @@ import com.sitewhere.spi.device.DeviceAssignmentType;
  * 
  * @author Derek
  */
-public interface IDeviceAssignmentCreateRequest extends IMetadataProvider {
+public interface IDeviceAssignmentCreateRequest {
 
 	/**
 	 * Get the unique device hardware id.
@@ -44,4 +45,11 @@ public interface IDeviceAssignmentCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public String getAssetId();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

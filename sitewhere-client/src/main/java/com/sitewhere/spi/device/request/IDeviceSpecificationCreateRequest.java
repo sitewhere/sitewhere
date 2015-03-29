@@ -7,7 +7,8 @@
  */
 package com.sitewhere.spi.device.request;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import java.util.Map;
+
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 
@@ -16,7 +17,7 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * 
  * @author Derek
  */
-public interface IDeviceSpecificationCreateRequest extends IMetadataProvider {
+public interface IDeviceSpecificationCreateRequest {
 
 	/**
 	 * Get name that describes specification.
@@ -59,4 +60,11 @@ public interface IDeviceSpecificationCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public IDeviceElementSchema getDeviceElementSchema();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

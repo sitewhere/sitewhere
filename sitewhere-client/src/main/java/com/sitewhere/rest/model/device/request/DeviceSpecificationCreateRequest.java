@@ -8,8 +8,8 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
+import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -20,8 +20,7 @@ import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
  * 
  * @author Derek Adams
  */
-public class DeviceSpecificationCreateRequest extends MetadataProvider implements
-		IDeviceSpecificationCreateRequest, Serializable {
+public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCreateRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 1L;
@@ -43,6 +42,9 @@ public class DeviceSpecificationCreateRequest extends MetadataProvider implement
 
 	/** Device element schema for specifications that support nested devices */
 	private DeviceElementSchema deviceElementSchema;
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -126,5 +128,19 @@ public class DeviceSpecificationCreateRequest extends MetadataProvider implement
 
 	public void setDeviceElementSchema(DeviceElementSchema deviceElementSchema) {
 		this.deviceElementSchema = deviceElementSchema;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

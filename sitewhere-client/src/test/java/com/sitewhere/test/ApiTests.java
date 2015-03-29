@@ -87,8 +87,10 @@ public class ApiTests {
 		request.setHardwareId(TEST_HARDWARE_ID);
 		request.setSpecificationToken(TEST_SPECIFICATION_TOKEN);
 		request.setComments("This is a test device.");
-		request.addOrReplaceMetadata("name1", "value1");
-		request.addOrReplaceMetadata("name2", "value2");
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put("name1", "value1");
+		metadata.put("name2", "value2");
+		request.setMetadata(metadata);
 		Device device = client.createDevice(request);
 		Assert.assertNotNull("Device create returned null.", device);
 		Assert.assertEquals("Metadata not stored properly.", 2, device.getMetadata().size());
@@ -103,7 +105,9 @@ public class ApiTests {
 		// Test update.
 		DeviceCreateRequest update = new DeviceCreateRequest();
 		update.setComments("Updated.");
-		update.addOrReplaceMetadata("name1", "value1");
+		metadata = new HashMap<String, String>();
+		metadata.put("name1", "value1");
+		update.setMetadata(metadata);
 		device = client.updateDevice(TEST_HARDWARE_ID, update);
 		Assert.assertEquals("Updated.", device.getComments());
 		Assert.assertEquals("Metadata not updated properly.", 1, device.getMetadata().size());
@@ -133,9 +137,10 @@ public class ApiTests {
 		assnRequest.setAssetModuleId("testAssetModuleId");
 		assnRequest.setAssetId(TEST_ASSET_ID);
 		assnRequest.setDeviceHardwareId(device.getHardwareId());
-		assnRequest.addOrReplaceMetadata("name1", "value1");
-		assnRequest.addOrReplaceMetadata("name2", "value2");
-		assnRequest.addOrReplaceMetadata("name1", "value2");
+		metadata = new HashMap<String, String>();
+		metadata.put("name1", "value1");
+		metadata.put("name2", "value2");
+		assnRequest.setMetadata(metadata);
 		DeviceAssignment assignment = client.createDeviceAssignment(assnRequest);
 		Assert.assertNotNull("Assignment token was null.", assignment.getToken());
 		Assert.assertEquals("Assignment metadata count incorrect.", 2, assignment.getMetadata().size());

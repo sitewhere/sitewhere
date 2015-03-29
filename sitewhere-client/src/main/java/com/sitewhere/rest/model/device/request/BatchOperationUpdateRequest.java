@@ -9,8 +9,8 @@ package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
 
@@ -19,8 +19,7 @@ import com.sitewhere.spi.device.request.IBatchOperationUpdateRequest;
  * 
  * @author Derek
  */
-public class BatchOperationUpdateRequest extends MetadataProvider implements IBatchOperationUpdateRequest,
-		Serializable {
+public class BatchOperationUpdateRequest implements IBatchOperationUpdateRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 7636526750514669256L;
@@ -33,6 +32,9 @@ public class BatchOperationUpdateRequest extends MetadataProvider implements IBa
 
 	/** Date when operation processing ended */
 	private Date processingEndedDate;
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	public BatchOperationStatus getProcessingStatus() {
 		return processingStatus;
@@ -56,5 +58,13 @@ public class BatchOperationUpdateRequest extends MetadataProvider implements IBa
 
 	public void setProcessingEndedDate(Date processingEndedDate) {
 		this.processingEndedDate = processingEndedDate;
+	}
+
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

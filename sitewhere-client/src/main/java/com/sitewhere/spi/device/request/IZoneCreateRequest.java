@@ -8,16 +8,16 @@
 package com.sitewhere.spi.device.request;
 
 import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.spi.common.ILocation;
-import com.sitewhere.spi.common.IMetadataProvider;
 
 /**
  * Interface for arguments needed to create a zone.
  * 
  * @author Derek
  */
-public interface IZoneCreateRequest extends IMetadataProvider {
+public interface IZoneCreateRequest {
 
 	/**
 	 * Get zone name.
@@ -53,4 +53,11 @@ public interface IZoneCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public Double getOpacity();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

@@ -98,4 +98,19 @@ public class MetadataProvider implements IMetadataProvider, Serializable {
 			}
 		}
 	}
+
+	/**
+	 * Copy values from a map into a {@link MetadataProvider}.
+	 * 
+	 * @param source
+	 * @param target
+	 * @throws SiteWhereException
+	 */
+	public static void copy(Map<String, String> source, MetadataProvider target) throws SiteWhereException {
+		if (source != null) {
+			for (String key : source.keySet()) {
+				target.addOrReplaceMetadata(key, source.get(key));
+			}
+		}
+	}
 }

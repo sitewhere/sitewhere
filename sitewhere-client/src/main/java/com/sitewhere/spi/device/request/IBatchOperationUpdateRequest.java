@@ -8,8 +8,8 @@
 package com.sitewhere.spi.device.request;
 
 import java.util.Date;
+import java.util.Map;
 
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 
@@ -18,7 +18,7 @@ import com.sitewhere.spi.device.batch.IBatchOperation;
  * 
  * @author Derek
  */
-public interface IBatchOperationUpdateRequest extends IMetadataProvider {
+public interface IBatchOperationUpdateRequest {
 
 	/**
 	 * Get updated processing status for the batch operation.
@@ -40,4 +40,11 @@ public interface IBatchOperationUpdateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public Date getProcessingEndedDate();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

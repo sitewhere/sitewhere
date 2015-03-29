@@ -8,8 +8,8 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
+import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 
@@ -18,7 +18,7 @@ import com.sitewhere.spi.device.request.ISiteCreateRequest;
  * 
  * @author Derek
  */
-public class SiteCreateRequest extends MetadataProvider implements ISiteCreateRequest, Serializable {
+public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 574323736888872612L;
@@ -34,6 +34,9 @@ public class SiteCreateRequest extends MetadataProvider implements ISiteCreateRe
 
 	/** Map data */
 	private SiteMapData map = new SiteMapData();
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -85,5 +88,18 @@ public class SiteCreateRequest extends MetadataProvider implements ISiteCreateRe
 
 	public void setMap(SiteMapData map) {
 		this.map = map;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

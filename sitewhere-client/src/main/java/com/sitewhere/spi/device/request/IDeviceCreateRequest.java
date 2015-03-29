@@ -8,8 +8,8 @@
 package com.sitewhere.spi.device.request;
 
 import java.util.List;
+import java.util.Map;
 
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 
@@ -18,7 +18,7 @@ import com.sitewhere.spi.device.IDeviceElementMapping;
  * 
  * @author Derek
  */
-public interface IDeviceCreateRequest extends IMetadataProvider {
+public interface IDeviceCreateRequest {
 
 	/**
 	 * Get the unique device hardware id.
@@ -75,4 +75,11 @@ public interface IDeviceCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public DeviceStatus getStatus();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

@@ -8,8 +8,8 @@
 package com.sitewhere.spi.device.request;
 
 import java.util.List;
+import java.util.Map;
 
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.command.ICommandParameter;
 
 /**
@@ -17,7 +17,7 @@ import com.sitewhere.spi.device.command.ICommandParameter;
  * 
  * @author Derek
  */
-public interface IDeviceCommandCreateRequest extends IMetadataProvider {
+public interface IDeviceCommandCreateRequest {
 
 	/**
 	 * Get unique command token.
@@ -53,4 +53,11 @@ public interface IDeviceCommandCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public List<ICommandParameter> getParameters();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

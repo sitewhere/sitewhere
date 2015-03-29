@@ -102,10 +102,7 @@ public class RegistrationManager extends LifecycleComponent implements IRegistra
 			deviceCreate.setSpecificationToken(request.getSpecificationToken());
 			deviceCreate.setSiteToken(siteToken);
 			deviceCreate.setComments("Device created by on-demand registration.");
-			for (String key : request.getMetadata().keySet()) {
-				String value = request.getMetadata(key);
-				deviceCreate.addOrReplaceMetadata(key, value);
-			}
+			deviceCreate.setMetadata(request.getMetadata());
 			device = SiteWhere.getServer().getDeviceManagement().createDevice(deviceCreate);
 		} else if (!device.getSpecificationToken().equals(request.getSpecificationToken())) {
 			sendInvalidSpecification(request.getHardwareId());

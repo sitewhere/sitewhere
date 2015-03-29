@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.batch.OperationType;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 
@@ -22,8 +21,7 @@ import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
  * 
  * @author Derek
  */
-public class BatchOperationCreateRequest extends MetadataProvider implements IBatchOperationCreateRequest,
-		Serializable {
+public class BatchOperationCreateRequest implements IBatchOperationCreateRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 276630436113821199L;
@@ -39,6 +37,9 @@ public class BatchOperationCreateRequest extends MetadataProvider implements IBa
 
 	/** List of hardware ids of affected devices */
 	private List<String> hardwareIds = new ArrayList<String>();
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -91,5 +92,18 @@ public class BatchOperationCreateRequest extends MetadataProvider implements IBa
 
 	public void setHardwareIds(List<String> hardwareIds) {
 		this.hardwareIds = hardwareIds;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IBatchOperationCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }
