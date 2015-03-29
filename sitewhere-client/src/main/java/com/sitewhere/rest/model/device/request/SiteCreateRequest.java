@@ -23,6 +23,9 @@ public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 574323736888872612L;
 
+	/** Unique token */
+	private String token;
+
 	/** Site name */
 	private String name;
 
@@ -37,6 +40,19 @@ public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 
 	/** Metadata values */
 	private Map<String, String> metadata;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.ISiteCreateRequest#getToken()
+	 */
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
 
 	/*
 	 * (non-Javadoc)

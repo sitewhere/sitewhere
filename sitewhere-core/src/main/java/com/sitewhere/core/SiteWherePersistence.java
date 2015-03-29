@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -520,16 +521,22 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site siteCreateLogic(ISiteCreateRequest source, String uuid) throws SiteWhereException {
+	public static Site siteCreateLogic(ISiteCreateRequest request, String uuid) throws SiteWhereException {
 		Site site = new Site();
-		site.setName(source.getName());
-		site.setDescription(source.getDescription());
-		site.setImageUrl(source.getImageUrl());
-		site.setToken(uuid);
-		site.setMap(SiteMapData.copy(source.getMap()));
+
+		if (request.getToken() != null) {
+			site.setToken(request.getToken());
+		} else {
+			site.setToken(UUID.randomUUID().toString());
+		}
+
+		site.setName(request.getName());
+		site.setDescription(request.getDescription());
+		site.setImageUrl(request.getImageUrl());
+		site.setMap(SiteMapData.copy(request.getMap()));
 
 		SiteWherePersistence.initializeEntityMetadata(site);
-		MetadataProvider.copy(source.getMetadata(), site);
+		MetadataProvider.copy(request.getMetadata(), site);
 		return site;
 	}
 

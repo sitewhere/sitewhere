@@ -161,6 +161,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Specification token for MeiTrack device */
 	public static final String MEITRACK_SPEC_TOKEN = "82043707-9e3d-441f-bdcc-33cf0f4f7260";
 
+	/** Token used for site */
+	public static final String SITE_TOKEN = "bb105f8d-3150-41f5-b9d1-db04965668d3";
+
 	/** Available choices for devices/assignments that track heavy equipment */
 	protected static AssignmentChoice[] HEAVY_EQUIPMENT = {
 			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "300"),
@@ -503,6 +506,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		List<ISite> results = new ArrayList<ISite>();
 		for (int x = 0; x < NUM_SITES; x++) {
 			SiteCreateRequest request = new SiteCreateRequest();
+			if (x == 0) {
+				request.setToken(SITE_TOKEN);
+			}
 			request.setName("Construction Site " + (x + 1));
 			request.setDescription("A construction site with many high-value assets that should "
 					+ "not be taken offsite. The system provides location tracking for the assets and notifies "

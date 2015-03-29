@@ -19,6 +19,13 @@ import com.sitewhere.spi.device.ISiteMapData;
 public interface ISiteCreateRequest {
 
 	/**
+	 * Site token. Can be set to null if token should be auto-generated.
+	 * 
+	 * @return
+	 */
+	public String getToken();
+
+	/**
 	 * Get site name.
 	 * 
 	 * @return
