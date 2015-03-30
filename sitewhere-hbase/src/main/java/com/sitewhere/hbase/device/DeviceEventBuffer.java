@@ -14,6 +14,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
@@ -112,22 +113,25 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 			long lastPut = System.currentTimeMillis();
 
 			while (true) {
-				// Blocking call to pull data from queue.
 				try {
-					puts.add(buffer.take());
+					Put put = buffer.poll(MAX_TIME_BEFORE_WRITE, TimeUnit.MILLISECONDS);
+					if (put != null) {
+						puts.add(put);
+					}
 				} catch (InterruptedException e) {
 					return;
 				}
 
 				if ((puts.size() >= MAX_PUTS_BEFORE_WRITE)
 						|| ((System.currentTimeMillis() - lastPut) > MAX_TIME_BEFORE_WRITE)) {
-
-					try {
-						events.put(puts);
-						events.flushCommits();
-						puts.clear();
-					} catch (IOException e) {
-						LOGGER.error("Unable to save event data.", e);
+					if (puts.size() > 0) {
+						try {
+							events.put(puts);
+							events.flushCommits();
+							puts.clear();
+						} catch (IOException e) {
+							LOGGER.error("Unable to save event data.", e);
+						}
 					}
 
 					lastPut = System.currentTimeMillis();
