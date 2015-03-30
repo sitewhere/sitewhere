@@ -521,7 +521,7 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site siteCreateLogic(ISiteCreateRequest request, String uuid) throws SiteWhereException {
+	public static Site siteCreateLogic(ISiteCreateRequest request) throws SiteWhereException {
 		Site site = new Site();
 
 		if (request.getToken() != null) {

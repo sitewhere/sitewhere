@@ -1639,6 +1639,7 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 			builder.setUpdatedBy(entity.getUpdatedBy());
 		}
 		builder.setDeleted(entity.isDeleted());
+		builder.addAllMetadata(asMetadataEntries(entity.getMetadata()));
 		return builder.build();
 	}
 

@@ -83,12 +83,13 @@ public class HBaseSite {
 			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "createSite (HBase)", LOGGER);
 		try {
-			String uuid = IdManager.getInstance().getSiteKeys().createUniqueId();
-			Long value = IdManager.getInstance().getSiteKeys().getValue(uuid);
-			byte[] primary = getPrimaryRowkey(value);
-
 			// Use common logic so all backend implementations work the same.
-			Site site = SiteWherePersistence.siteCreateLogic(request, uuid);
+			Site site = SiteWherePersistence.siteCreateLogic(request);
+
+			Long value = IdManager.getInstance().getSiteKeys().getNextCounterValue();
+			IdManager.getInstance().getSiteKeys().create(site.getToken(), value);
+
+			byte[] primary = getPrimaryRowkey(value);
 
 			// Create primary site record.
 			byte[] payload = context.getPayloadMarshaler().encodeSite(site);
