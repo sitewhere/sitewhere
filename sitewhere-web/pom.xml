@@ -212,7 +212,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>all</id>
+						<id>default-war</id>
 						<goals>
 							<goal>war</goal>
 						</goals>

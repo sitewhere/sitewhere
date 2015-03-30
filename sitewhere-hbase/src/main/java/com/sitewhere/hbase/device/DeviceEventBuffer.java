@@ -38,7 +38,7 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	private static final int MAX_QUEUE_SIZE = 10000;
 
 	/** Max number of puts to cache before sending */
-	private static final int MAX_PUTS_BEFORE_WRITE = 200;
+	private static final int MAX_PUTS_BEFORE_WRITE = 500;
 
 	/** Max number of milliseconds cache before sending */
 	private static final int MAX_TIME_BEFORE_WRITE = 250;
@@ -119,11 +119,12 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 					return;
 				}
 
-				if ((puts.size() > MAX_PUTS_BEFORE_WRITE)
+				if ((puts.size() >= MAX_PUTS_BEFORE_WRITE)
 						|| ((System.currentTimeMillis() - lastPut) > MAX_TIME_BEFORE_WRITE)) {
 
 					try {
 						events.put(puts);
+						events.flushCommits();
 						puts.clear();
 					} catch (IOException e) {
 						LOGGER.error("Unable to save event data.", e);
