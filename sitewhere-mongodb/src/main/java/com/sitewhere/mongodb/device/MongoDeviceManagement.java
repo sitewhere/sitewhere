@@ -1689,6 +1689,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
 		DBObject created = MongoDeviceGroup.toDBObject(group);
+		created.put(MongoDeviceGroup.PROP_LAST_INDEX, new Long(0));
+
 		MongoPersistence.insert(groups, created);
 		return MongoDeviceGroup.fromDBObject(created);
 	}
