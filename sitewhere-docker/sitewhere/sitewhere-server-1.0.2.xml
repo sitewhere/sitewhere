@@ -5,11 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=2">
-           
-	<!-- Load property values for substitution -->
-	<context:property-placeholder location="file:/opt/sitewhere/conf/sitewhere/sitewhere.properties"
-		ignore-resource-not-found="true"/>
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=5s">
 	
 	<!-- ########################### -->
 	<!-- # SITEWHERE CONFIGURATION # -->
@@ -22,6 +18,7 @@
 		<sw:globals>
 			<sw:hazelcast-configuration configFileLocation="/opt/sitewhere/conf/sitewhere/hazelcast.xml"/>
 			<sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
+			<sw:groovy-configuration debug="true" verbose="true"/>
 		</sw:globals>
 		
 		<!-- ########################### -->
@@ -30,10 +27,15 @@
 		<sw:datastore>
 		
 			<!-- Default MongoDB Datastore -->
-			<sw:mongo-datastore useDockerLinking="true"/>
+			<sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
+		
+			<!-- Default HBase Datastore -->
+			<!--  
+			<sw:hbase-datastore quorum="sandbox.hortonworks.com" zookeeperZnodeParent="/hbase-unsecure"/>
+			-->
 			
-			<!-- Improves performance by using EHCache to store device management entities -->
-			<sw:ehcache-device-management-cache/>
+			<!-- Improves performance by using Hazelcast for distributed caching -->
+			<sw:hazelcast-cache/>
 			
 			<!-- Initializes device model with sample data if datastore is empty -->
 			<sw:default-device-model-initializer/>
@@ -51,6 +53,14 @@
 			<!-- Inbound event sources -->
 			<sw:event-sources>
 
+                <!-- Event source for protobuf messages over AMQP -->
+                <!--<sw:azure-eventhub-event-source sourceId="eventhub" targetFqn="servicebus.windows.net"-->
+                                                <!--namespace="YourNamespace" entityPath="YourEntityPath" partitionCount="8"-->
+                                                <!--zkStateStore="127.0.0.1:2181"-->
+                                                <!--username="YourUsername" password="YourPassword">-->
+                    <!--<sw:protobuf-event-decoder/>-->
+                <!--</sw:azure-eventhub-event-source>-->
+
 				<!-- Event source for protobuf messages over MQTT -->
 				<sw:mqtt-event-source sourceId="protobuf" hostname="localhost"
 					port="1883" topic="SiteWhere/input/protobuf">
@@ -62,6 +72,33 @@
 					topic="SiteWhere/input/jsonbatch">
 					<sw:json-event-decoder/>
 				</sw:mqtt-event-source>
+				
+				<!-- Event source for protobuf messages from socket connections -->
+				<sw:socket-event-source port="8585" numThreads="10" sourceId="socket">
+					<sw:read-all-interaction-handler-factory/>
+					<sw:protobuf-event-decoder/>
+				</sw:socket-event-source>
+				
+				<!-- Event source for protobuf messages over ActiveMQ queue -->
+				<sw:activemq-event-source sourceId="activemq" transportUri="tcp://localhost:1234"
+					queueName="SITEWHERE.IN" numConsumers="10" dataDirectory="/opt/sitewhere/amqdata">
+					<sw:protobuf-event-decoder/>
+				</sw:activemq-event-source>
+				
+				<!-- Event source for Stomp messages over ActiveMQ queue -->
+				<sw:activemq-event-source sourceId="stomp"
+					transportUri="stomp://localhost:2345?trace=true" queueName="SITEWHERE.STOMP"
+					numConsumers="10" dataDirectory="/opt/sitewhere/stompdata">
+					<sw:json-event-decoder/>
+				</sw:activemq-event-source>
+
+				<!-- Example of Groovy decoder parsing of websocket payload -->
+				<!--  
+				<sw:string-web-socket-event-source sourceId="websocket"
+					webSocketUrl="ws://sockets.mbed.org/ws/sitewhere/ro">
+					<sw:groovy-string-event-decoder scriptPath="customDecoder.groovy"/>
+				</sw:string-web-socket-event-source>
+				-->
 
 			</sw:event-sources>
 		
@@ -109,6 +146,15 @@
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>
 
+				<!-- Deliver commands via Twilio SMS message. -->
+				<!-- 
+				<sw:twilio-command-destination destinationId="twilio"
+					accountSid="${twilio.account.sid}" authToken="${twilio.auth.token}" fromPhoneNumber="${twilio.from.phone.number}">
+					<sw:protobuf-command-encoder/>
+					<sw:parameter-extractor ref="externalParameterExtractor"/>
+				</sw:twilio-command-destination>
+			 	-->
+
 			</sw:command-destinations>
 
 		</sw:provisioning>
@@ -131,8 +177,27 @@
 			<!-- Routes commands for provisioning -->
 			<sw:provisioning-event-processor numThreads="10"/>
 			
+			<!-- Performs zone checking for locations -->
+			<!-- 
+			<sw:zone-test-event-processor>
+				<sw:zone-test zoneToken="777fa4e5-bc2f-458b-9968-b598b2e2d2ca" condition="outside"
+					alertLevel="error" alertType="off.site" alertMessage="Asset has left the worksite."/>
+			</sw:zone-test-event-processor>
+			 -->
+			
 			<!-- Send outbound device events over Hazelcast -->
 			<sw:hazelcast-event-processor/>
+			
+			<!-- Index outbound device events in Solr -->
+			<!-- 
+			<sw:solr-event-processor/>
+			 -->
+
+			<!-- Sends events to an Azure EventHub -->
+			<!-- 
+			<sw:azure-eventhub-event-processor sasKey="{azure.sas.key}"
+				sasName="default" serviceBusName="sitewhere.servicebus.windows.net" eventHubName="sitewhere"/>
+			 -->
 
 		</sw:outbound-processing-chain>
 		
@@ -152,6 +217,11 @@
 		<!-- # EXTERNAL SEARCH PROVIDERS # -->
 		<!-- ############################# -->
 		<sw:search-providers>
+		
+			<!-- Apache Solr search provider -->
+			<!-- 
+			<sw:solr-search-provider name="Apache Solr" id="solr"/>
+			 -->
 
 		</sw:search-providers>
 
