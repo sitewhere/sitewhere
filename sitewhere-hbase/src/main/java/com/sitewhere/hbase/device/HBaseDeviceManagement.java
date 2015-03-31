@@ -10,13 +10,16 @@ package com.sitewhere.hbase.device;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
+import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
+import com.sitewhere.hbase.encoder.IPayloadMarshaler;
+import com.sitewhere.hbase.encoder.ProtobufPayloadMarshaler;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -92,6 +95,15 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	/** Injected cache provider */
 	private IDeviceManagementCacheProvider cacheProvider;
 
+	/** Injected payload encoder */
+	private IPayloadMarshaler payloadMarshaler = new ProtobufPayloadMarshaler();
+
+	/** Supplies context to implementation methods */
+	private HBaseContext context;
+
+	/** Allows puts to be buffered for device events */
+	private DeviceEventBuffer buffer;
+
 	public HBaseDeviceManagement() {
 		super(LifecycleComponentType.DataStore);
 	}
@@ -102,15 +114,20 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
-		LOGGER.info("HBase device management starting...");
-
-		LOGGER.info("Verifying tables...");
 		ensureTablesExist();
 
-		LOGGER.info("Loading id management...");
 		IdManager.getInstance().load(client);
 
-		LOGGER.info("HBase device management started.");
+		// Create context from configured options.
+		this.context = new HBaseContext();
+		context.setClient(getClient());
+		context.setCacheProvider(getCacheProvider());
+		context.setPayloadMarshaler(getPayloadMarshaler());
+
+		// Start buffer for saving device events.
+		buffer = new DeviceEventBuffer(context);
+		buffer.start();
+		context.setDeviceEventBuffer(buffer);
 	}
 
 	/*
@@ -141,7 +158,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	public void stop() throws SiteWhereException {
-		LOGGER.info("HBase device management stopped.");
+		buffer.stop();
 	}
 
 	/*
@@ -170,7 +187,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
 			throws SiteWhereException {
-		return HBaseDeviceSpecification.createDeviceSpecification(client, request, cacheProvider);
+		return HBaseDeviceSpecification.createDeviceSpecification(context, request);
 	}
 
 	/*
@@ -182,7 +199,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
-		return HBaseDeviceSpecification.getDeviceSpecificationByToken(client, token, cacheProvider);
+		return HBaseDeviceSpecification.getDeviceSpecificationByToken(context, token);
 	}
 
 	/*
@@ -195,7 +212,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceSpecification updateDeviceSpecification(String token,
 			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
-		return HBaseDeviceSpecification.updateDeviceSpecification(client, token, request, cacheProvider);
+		return HBaseDeviceSpecification.updateDeviceSpecification(context, token, request);
 	}
 
 	/*
@@ -207,7 +224,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceSpecification.listDeviceSpecifications(client, includeDeleted, criteria);
+		return HBaseDeviceSpecification.listDeviceSpecifications(context, includeDeleted, criteria);
 	}
 
 	/*
@@ -220,7 +237,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
 			throws SiteWhereException {
-		return HBaseDeviceSpecification.deleteDeviceSpecification(client, token, force);
+		return HBaseDeviceSpecification.deleteDeviceSpecification(context, token, force);
 	}
 
 	/*
@@ -234,7 +251,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceCommand createDeviceCommand(IDeviceSpecification spec, IDeviceCommandCreateRequest request)
 			throws SiteWhereException {
-		return HBaseDeviceCommand.createDeviceCommand(client, spec, request);
+		return HBaseDeviceCommand.createDeviceCommand(context, spec, request);
 	}
 
 	/*
@@ -246,7 +263,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
-		return HBaseDeviceCommand.getDeviceCommandByToken(client, token);
+		return HBaseDeviceCommand.getDeviceCommandByToken(context, token);
 	}
 
 	/*
@@ -259,7 +276,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceCommand updateDeviceCommand(String token, IDeviceCommandCreateRequest request)
 			throws SiteWhereException {
-		return HBaseDeviceCommand.updateDeviceCommand(client, token, request);
+		return HBaseDeviceCommand.updateDeviceCommand(context, token, request);
 	}
 
 	/*
@@ -272,7 +289,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public List<IDeviceCommand> listDeviceCommands(String specToken, boolean includeDeleted)
 			throws SiteWhereException {
-		return HBaseDeviceCommand.listDeviceCommands(client, specToken, includeDeleted);
+		return HBaseDeviceCommand.listDeviceCommands(context, specToken, includeDeleted);
 	}
 
 	/*
@@ -284,7 +301,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
-		return HBaseDeviceCommand.deleteDeviceCommand(client, token, force);
+		return HBaseDeviceCommand.deleteDeviceCommand(context, token, force);
 	}
 
 	/*
@@ -295,7 +312,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * .request.IDeviceCreateRequest)
 	 */
 	public IDevice createDevice(IDeviceCreateRequest device) throws SiteWhereException {
-		return HBaseDevice.createDevice(client, device, cacheProvider);
+		return HBaseDevice.createDevice(context, device);
 	}
 
 	/*
@@ -305,7 +322,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceByHardwareId(java.lang.String)
 	 */
 	public IDevice getDeviceByHardwareId(String hardwareId) throws SiteWhereException {
-		return HBaseDevice.getDeviceByHardwareId(client, hardwareId, cacheProvider);
+		return HBaseDevice.getDeviceByHardwareId(context, hardwareId);
 	}
 
 	/*
@@ -315,7 +332,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * com.sitewhere.spi.device.request.IDeviceCreateRequest)
 	 */
 	public IDevice updateDevice(String hardwareId, IDeviceCreateRequest request) throws SiteWhereException {
-		return HBaseDevice.updateDevice(client, hardwareId, request, cacheProvider);
+		return HBaseDevice.updateDevice(context, hardwareId, request);
 	}
 
 	/*
@@ -326,11 +343,11 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * .spi.device.IDevice)
 	 */
 	public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
-		String token = HBaseDevice.getCurrentAssignmentId(client, device.getHardwareId(), cacheProvider);
+		String token = HBaseDevice.getCurrentAssignmentId(context, device.getHardwareId());
 		if (token == null) {
 			return null;
 		}
-		return HBaseDeviceAssignment.getDeviceAssignment(client, token, cacheProvider);
+		return HBaseDeviceAssignment.getDeviceAssignment(context, token);
 	}
 
 	/*
@@ -341,7 +358,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
-		return HBaseDevice.listDevices(client, includeDeleted, criteria);
+		return HBaseDevice.listDevices(context, includeDeleted, criteria);
 	}
 
 	/*
@@ -376,7 +393,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * boolean)
 	 */
 	public IDevice deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
-		return HBaseDevice.deleteDevice(client, hardwareId, force, cacheProvider);
+		return HBaseDevice.deleteDevice(context, hardwareId, force);
 	}
 
 	/*
@@ -388,7 +405,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.createDeviceAssignment(client, request, cacheProvider);
+		return HBaseDeviceAssignment.createDeviceAssignment(context, request);
 	}
 
 	/*
@@ -399,7 +416,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * .String)
 	 */
 	public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
-		return HBaseDeviceAssignment.getDeviceAssignment(client, token, cacheProvider);
+		return HBaseDeviceAssignment.getDeviceAssignment(context, token);
 	}
 
 	/*
@@ -410,7 +427,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * boolean)
 	 */
 	public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
-		return HBaseDeviceAssignment.deleteDeviceAssignment(client, token, force, cacheProvider);
+		return HBaseDeviceAssignment.deleteDeviceAssignment(context, token, force);
 	}
 
 	/*
@@ -421,7 +438,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * .spi.device.IDeviceAssignment)
 	 */
 	public IDevice getDeviceForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		return HBaseDevice.getDeviceByHardwareId(client, assignment.getDeviceHardwareId(), cacheProvider);
+		return HBaseDevice.getDeviceByHardwareId(context, assignment.getDeviceHardwareId());
 	}
 
 	/*
@@ -432,7 +449,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * .device.IDeviceAssignment)
 	 */
 	public ISite getSiteForAssignment(IDeviceAssignment assignment) throws SiteWhereException {
-		return HBaseSite.getSiteByToken(client, assignment.getSiteToken(), cacheProvider);
+		return HBaseSite.getSiteByToken(context, assignment.getSiteToken());
 	}
 
 	/*
@@ -444,7 +461,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	public IDeviceAssignment updateDeviceAssignmentMetadata(String token, IMetadataProvider metadata)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.updateDeviceAssignmentMetadata(client, token, metadata, cacheProvider);
+		return HBaseDeviceAssignment.updateDeviceAssignmentMetadata(context, token, metadata);
 	}
 
 	/*
@@ -456,7 +473,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	public IDeviceAssignment updateDeviceAssignmentStatus(String token, DeviceAssignmentStatus status)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.updateDeviceAssignmentStatus(client, token, status, cacheProvider);
+		return HBaseDeviceAssignment.updateDeviceAssignmentStatus(context, token, status);
 	}
 
 	/*
@@ -468,7 +485,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	public IDeviceAssignment updateDeviceAssignmentState(String token, IDeviceAssignmentState state)
 			throws SiteWhereException {
-		return HBaseDeviceAssignment.updateDeviceAssignmentState(client, token, state, cacheProvider);
+		return HBaseDeviceAssignment.updateDeviceAssignmentState(context, token, state);
 	}
 
 	/*
@@ -490,7 +507,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * com.sitewhere.spi.device.IDeviceManagement#endDeviceAssignment(java.lang.String)
 	 */
 	public IDeviceAssignment endDeviceAssignment(String token) throws SiteWhereException {
-		return HBaseDeviceAssignment.endDeviceAssignment(client, token, cacheProvider);
+		return HBaseDeviceAssignment.endDeviceAssignment(context, token);
 	}
 
 	/*
@@ -502,7 +519,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	public SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId,
 			ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseDevice.getDeviceAssignmentHistory(client, hardwareId, criteria, cacheProvider);
+		return HBaseDevice.getDeviceAssignmentHistory(context, hardwareId, criteria);
 	}
 
 	/*
@@ -514,7 +531,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
 			ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseSite.listDeviceAssignmentsForSite(client, siteToken, criteria);
+		return HBaseSite.listDeviceAssignmentsForSite(context, siteToken, criteria);
 	}
 
 	/*
@@ -525,7 +542,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
-		return HBaseDeviceEvent.getDeviceEvent(client, id);
+		return HBaseDeviceEvent.getDeviceEvent(context, id);
 	}
 
 	/*
@@ -537,7 +554,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceEvents(client, assignmentToken, criteria);
+		return HBaseDeviceEvent.listDeviceEvents(context, assignmentToken, criteria);
 	}
 
 	/*
@@ -551,7 +568,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
 			IDeviceMeasurementsCreateRequest measurements) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceMeasurements(client, assignment, measurements, cacheProvider);
+		return HBaseDeviceEvent.createDeviceMeasurements(context, assignment, measurements);
 	}
 
 	/*
@@ -564,7 +581,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceMeasurements> listDeviceMeasurements(String token,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceMeasurements(client, token, criteria);
+		return HBaseDeviceEvent.listDeviceMeasurements(context, token, criteria);
 	}
 
 	/*
@@ -577,7 +594,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceMeasurementsForSite(client, siteToken, criteria);
+		return HBaseDeviceEvent.listDeviceMeasurementsForSite(context, siteToken, criteria);
 	}
 
 	/*
@@ -590,7 +607,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 			throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceLocation(client, assignment, request, cacheProvider);
+		return HBaseDeviceEvent.createDeviceLocation(context, assignment, request);
 	}
 
 	/*
@@ -603,7 +620,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceLocations(client, assignmentToken, criteria);
+		return HBaseDeviceEvent.listDeviceLocations(context, assignmentToken, criteria);
 	}
 
 	/*
@@ -616,7 +633,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceLocationsForSite(client, siteToken, criteria);
+		return HBaseDeviceEvent.listDeviceLocationsForSite(context, siteToken, criteria);
 	}
 
 	/*
@@ -641,7 +658,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
 			throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceAlert(client, assignment, request, cacheProvider);
+		return HBaseDeviceEvent.createDeviceAlert(context, assignment, request);
 	}
 
 	/*
@@ -653,7 +670,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceAlerts(client, assignmentToken, criteria);
+		return HBaseDeviceEvent.listDeviceAlerts(context, assignmentToken, criteria);
 	}
 
 	/*
@@ -666,7 +683,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceAlertsForSite(client, siteToken, criteria);
+		return HBaseDeviceEvent.listDeviceAlertsForSite(context, siteToken, criteria);
 	}
 
 	/*
@@ -681,7 +698,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceCommandInvocation(client, assignment, command, request);
+		return HBaseDeviceEvent.createDeviceCommandInvocation(context, assignment, command, request);
 	}
 
 	/*
@@ -694,7 +711,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceCommandInvocations(client, assignmentToken, criteria);
+		return HBaseDeviceEvent.listDeviceCommandInvocations(context, assignmentToken, criteria);
 	}
 
 	/*
@@ -707,7 +724,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceCommandInvocationsForSite(client, siteToken, criteria);
+		return HBaseDeviceEvent.listDeviceCommandInvocationsForSite(context, siteToken, criteria);
 	}
 
 	/*
@@ -720,7 +737,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
 			throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceCommandInvocationResponses(client, invocationId);
+		return HBaseDeviceEvent.listDeviceCommandInvocationResponses(context, invocationId);
 	}
 
 	/*
@@ -734,7 +751,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceCommandResponse(client, assignment, request);
+		return HBaseDeviceEvent.createDeviceCommandResponse(context, assignment, request);
 	}
 
 	/*
@@ -747,7 +764,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceCommandResponses(client, assignmentToken, criteria);
+		return HBaseDeviceEvent.listDeviceCommandResponses(context, assignmentToken, criteria);
 	}
 
 	/*
@@ -760,7 +777,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceCommandResponsesForSite(client, siteToken, criteria);
+		return HBaseDeviceEvent.listDeviceCommandResponsesForSite(context, siteToken, criteria);
 	}
 
 	/*
@@ -774,7 +791,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceStateChange addDeviceStateChange(String assignmentToken,
 			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
-		return HBaseDeviceEvent.createDeviceStateChange(client, assignment, request);
+		return HBaseDeviceEvent.createDeviceStateChange(context, assignment, request);
 	}
 
 	/*
@@ -787,7 +804,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceStateChanges(client, assignmentToken, criteria);
+		return HBaseDeviceEvent.listDeviceStateChanges(context, assignmentToken, criteria);
 	}
 
 	/*
@@ -800,7 +817,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceEvent.listDeviceStateChangesForSite(client, siteToken, criteria);
+		return HBaseDeviceEvent.listDeviceStateChangesForSite(context, siteToken, criteria);
 	}
 
 	/*
@@ -812,7 +829,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
-		return HBaseSite.createSite(client, request);
+		return HBaseSite.createSite(context, request);
 	}
 
 	/*
@@ -823,7 +840,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
-		return HBaseSite.deleteSite(client, siteToken, force, cacheProvider);
+		return HBaseSite.deleteSite(context, siteToken, force);
 	}
 
 	/*
@@ -834,7 +851,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public ISite updateSite(String siteToken, ISiteCreateRequest request) throws SiteWhereException {
-		return HBaseSite.updateSite(client, siteToken, request, cacheProvider);
+		return HBaseSite.updateSite(context, siteToken, request);
 	}
 
 	/*
@@ -844,7 +861,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public ISite getSiteByToken(String token) throws SiteWhereException {
-		return HBaseSite.getSiteByToken(client, token, cacheProvider);
+		return HBaseSite.getSiteByToken(context, token);
 	}
 
 	/*
@@ -855,7 +872,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public SearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseSite.listSites(client, criteria);
+		return HBaseSite.listSites(context, criteria);
 	}
 
 	/*
@@ -867,7 +884,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IZone createZone(ISite site, IZoneCreateRequest request) throws SiteWhereException {
-		return HBaseZone.createZone(client, site, request);
+		return HBaseZone.createZone(context, site, request);
 	}
 
 	/*
@@ -878,7 +895,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IZone updateZone(String token, IZoneCreateRequest request) throws SiteWhereException {
-		return HBaseZone.updateZone(client, token, request);
+		return HBaseZone.updateZone(context, token, request);
 	}
 
 	/*
@@ -888,7 +905,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IZone getZone(String zoneToken) throws SiteWhereException {
-		return HBaseZone.getZone(client, zoneToken);
+		return HBaseZone.getZone(context, zoneToken);
 	}
 
 	/*
@@ -900,7 +917,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria)
 			throws SiteWhereException {
-		return HBaseSite.listZonesForSite(client, siteToken, criteria);
+		return HBaseSite.listZonesForSite(context, siteToken, criteria);
 	}
 
 	/*
@@ -911,7 +928,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException {
-		return HBaseZone.deleteZone(client, zoneToken, force);
+		return HBaseZone.deleteZone(context, zoneToken, force);
 	}
 
 	/*
@@ -923,7 +940,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceGroup createDeviceGroup(IDeviceGroupCreateRequest request) throws SiteWhereException {
-		return HBaseDeviceGroup.createDeviceGroup(client, request);
+		return HBaseDeviceGroup.createDeviceGroup(context, request);
 	}
 
 	/*
@@ -935,7 +952,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request)
 			throws SiteWhereException {
-		return HBaseDeviceGroup.updateDeviceGroup(client, token, request);
+		return HBaseDeviceGroup.updateDeviceGroup(context, token, request);
 	}
 
 	/*
@@ -945,7 +962,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException {
-		return HBaseDeviceGroup.getDeviceGroupByToken(client, token);
+		return HBaseDeviceGroup.getDeviceGroupByToken(context, token);
 	}
 
 	/*
@@ -957,7 +974,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
 			throws SiteWhereException {
-		return HBaseDeviceGroup.listDeviceGroups(client, includeDeleted, criteria);
+		return HBaseDeviceGroup.listDeviceGroups(context, includeDeleted, criteria);
 	}
 
 	/*
@@ -970,7 +987,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceGroup.listDeviceGroupsWithRole(client, role, includeDeleted, criteria);
+		return HBaseDeviceGroup.listDeviceGroupsWithRole(context, role, includeDeleted, criteria);
 	}
 
 	/*
@@ -981,7 +998,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
-		return HBaseDeviceGroup.deleteDeviceGroup(client, token, force);
+		return HBaseDeviceGroup.deleteDeviceGroup(context, token, force);
 	}
 
 	/*
@@ -994,7 +1011,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public List<IDeviceGroupElement> addDeviceGroupElements(String networkToken,
 			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-		return HBaseDeviceGroupElement.createDeviceGroupElements(client, networkToken, elements);
+		return HBaseDeviceGroupElement.createDeviceGroupElements(context, networkToken, elements);
 	}
 
 	/*
@@ -1007,7 +1024,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public List<IDeviceGroupElement> removeDeviceGroupElements(String networkToken,
 			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
-		return HBaseDeviceGroupElement.removeDeviceGroupElements(client, networkToken, elements);
+		return HBaseDeviceGroupElement.removeDeviceGroupElements(context, networkToken, elements);
 	}
 
 	/*
@@ -1020,7 +1037,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceGroupElement> listDeviceGroupElements(String networkToken,
 			ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseDeviceGroupElement.listDeviceGroupElements(client, networkToken, criteria);
+		return HBaseDeviceGroupElement.listDeviceGroupElements(context, networkToken, criteria);
 	}
 
 	/*
@@ -1033,7 +1050,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
 			throws SiteWhereException {
-		return HBaseBatchOperation.createBatchOperation(client, request);
+		return HBaseBatchOperation.createBatchOperation(context, request);
 	}
 
 	/*
@@ -1046,7 +1063,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
 			throws SiteWhereException {
-		return HBaseBatchOperation.updateBatchOperation(client, token, request);
+		return HBaseBatchOperation.updateBatchOperation(context, token, request);
 	}
 
 	/*
@@ -1056,7 +1073,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
-		return HBaseBatchOperation.getBatchOperationByToken(client, token);
+		return HBaseBatchOperation.getBatchOperationByToken(context, token);
 	}
 
 	/*
@@ -1068,7 +1085,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException {
-		return HBaseBatchOperation.listBatchOperations(client, includeDeleted, criteria);
+		return HBaseBatchOperation.listBatchOperations(context, includeDeleted, criteria);
 	}
 
 	/*
@@ -1080,7 +1097,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
-		return HBaseBatchOperation.deleteBatchOperation(client, token, force);
+		return HBaseBatchOperation.deleteBatchOperation(context, token, force);
 	}
 
 	/*
@@ -1092,7 +1109,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IBatchElement> listBatchElements(String batchToken,
 			IBatchElementSearchCriteria criteria) throws SiteWhereException {
-		return HBaseBatchElement.listBatchElements(client, batchToken, criteria);
+		return HBaseBatchElement.listBatchElements(context, batchToken, criteria);
 	}
 
 	/*
@@ -1105,7 +1122,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IBatchElement updateBatchElement(String operationToken, long index,
 			IBatchElementUpdateRequest request) throws SiteWhereException {
-		return HBaseBatchElement.updateBatchElement(client, operationToken, index, request);
+		return HBaseBatchElement.updateBatchElement(context, operationToken, index, request);
 	}
 
 	/*
@@ -1132,7 +1149,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected IDeviceAssignment assertDeviceAssignment(String token) throws SiteWhereException {
-		IDeviceAssignment result = HBaseDeviceAssignment.getDeviceAssignment(client, token, cacheProvider);
+		IDeviceAssignment result = HBaseDeviceAssignment.getDeviceAssignment(context, token);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
@@ -1145,5 +1162,13 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 
 	public void setClient(ISiteWhereHBaseClient client) {
 		this.client = client;
+	}
+
+	public IPayloadMarshaler getPayloadMarshaler() {
+		return payloadMarshaler;
+	}
+
+	public void setPayloadMarshaler(IPayloadMarshaler payloadMarshaler) {
+		this.payloadMarshaler = payloadMarshaler;
 	}
 }

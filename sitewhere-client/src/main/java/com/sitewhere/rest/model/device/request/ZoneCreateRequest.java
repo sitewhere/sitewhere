@@ -7,11 +7,12 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.rest.model.common.Location;
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 
@@ -20,7 +21,10 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
  * 
  * @author Derek
  */
-public class ZoneCreateRequest extends MetadataProvider implements IZoneCreateRequest {
+public class ZoneCreateRequest implements IZoneCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 5490633726915797290L;
 
 	/** Zone name */
 	private String name;
@@ -36,6 +40,9 @@ public class ZoneCreateRequest extends MetadataProvider implements IZoneCreateRe
 
 	/** Opacity in UI */
 	private Double opacity;
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -101,5 +108,18 @@ public class ZoneCreateRequest extends MetadataProvider implements IZoneCreateRe
 
 	public void setOpacity(Double opacity) {
 		this.opacity = opacity;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IZoneCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

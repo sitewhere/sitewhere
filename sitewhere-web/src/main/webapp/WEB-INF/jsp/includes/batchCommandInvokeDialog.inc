@@ -8,8 +8,8 @@
 	<div class="modal-body">
 		<div id="bci-tabs">
 			<ul>
-				<li class="k-state-active">Command Details</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.CommandDetails"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="bci-form" class="form-horizontal"
@@ -34,9 +34,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a>
 		<a id="bci-dialog-submit" href="javascript:void(0)"
-			class="btn btn-primary">Invoke</a>
+			class="btn btn-primary" data-i18n="public.Invoke"></a>
 	</div>
 </div>
 

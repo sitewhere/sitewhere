@@ -120,9 +120,9 @@ body ul#resources li.resource div.heading h2 a {
 
 			<form id='api_selector' class="form-inline"
 				style="padding-top: 18px;">
-				<label for="sw-login">Login:</label> <input type="text"
+				<label for="sw-login" data-i18n="public.Login"></label> <input type="text"
 					id="sw-login" style="margin-left: 5px;" /> <label for="sw-password"
-					style="margin-left: 15px;">Password:</label> <input type="password"
+					style="margin-left: 15px;" data-i18n="public.Password">Password:</label> <input type="password"
 					id="sw-password" style="margin-left: 5px;" /> <input
 					placeholder="http://example.com/api" id="input_baseUrl"
 					name="baseUrl" type="hidden" /> <input placeholder="api_key"

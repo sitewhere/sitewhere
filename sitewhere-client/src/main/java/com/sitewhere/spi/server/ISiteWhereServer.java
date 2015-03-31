@@ -33,18 +33,18 @@ import com.sitewhere.spi.user.IUserManagement;
 public interface ISiteWhereServer extends ILifecycleComponent {
 
 	/**
-	 * Initialize the server.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	public void initialize() throws SiteWhereException;
-
-	/**
 	 * Get version information.
 	 * 
 	 * @return
 	 */
 	public IVersion getVersion();
+
+	/**
+	 * Initialize the server.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	public void initialize() throws SiteWhereException;
 
 	/**
 	 * Returns exception if one was thrown on startup.

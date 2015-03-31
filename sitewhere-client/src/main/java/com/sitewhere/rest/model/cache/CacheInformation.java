@@ -19,6 +19,9 @@ public class CacheInformation {
 	/** Cache type */
 	private CacheType cacheType;
 
+	/** Number of elements */
+	private long elementCount;
+
 	/** Number of requests */
 	private long requestCount;
 
@@ -34,6 +37,14 @@ public class CacheInformation {
 
 	public void setCacheType(CacheType cacheType) {
 		this.cacheType = cacheType;
+	}
+
+	public long getElementCount() {
+		return elementCount;
+	}
+
+	public void setElementCount(long elementCount) {
+		this.elementCount = elementCount;
 	}
 
 	public long getRequestCount() {

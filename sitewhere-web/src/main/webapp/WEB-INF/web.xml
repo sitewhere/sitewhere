@@ -10,6 +10,15 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>redirect</servlet-name>
+		<servlet-class>com.sitewhere.web.RedirectServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>redirect</servlet-name>
+		<url-pattern>/admin</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>mvc</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
@@ -41,22 +50,22 @@
 
 	<filter>
 		<filter-name>hiddenHttpMethodFilter</filter-name>
-		<filter-class>com.sitewhere.web.rest.MethodOverrideFilter</filter-class>
+		<filter-class>com.sitewhere.web.MethodOverrideFilter</filter-class>
 	</filter>
 
 	<filter>
 		<filter-name>responseTimerFilter</filter-name>
-		<filter-class>com.sitewhere.web.rest.ResponseTimerFilter</filter-class>
+		<filter-class>com.sitewhere.web.ResponseTimerFilter</filter-class>
 	</filter>
 
 	<filter>
 		<filter-name>noCacheFilter</filter-name>
-		<filter-class>com.sitewhere.web.rest.NoCacheFilter</filter-class>
+		<filter-class>com.sitewhere.web.NoCacheFilter</filter-class>
 	</filter>
 
 	<filter>
 		<filter-name>jsonpFilter</filter-name>
-		<filter-class>com.sitewhere.web.rest.JsonpFilter</filter-class>
+		<filter-class>com.sitewhere.web.JsonpFilter</filter-class>
 	</filter>
 
 	<filter>
@@ -92,11 +101,11 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	
+
 	<listener>
 		<listener-class>com.sitewhere.web.ShutdownListener</listener-class>
 	</listener>
-	
+
 	<session-config>
 		<session-timeout>60</session-timeout>
 	</session-config>

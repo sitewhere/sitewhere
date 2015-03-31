@@ -11,8 +11,8 @@ import java.util.List;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.sitewhere.mongodb.IDeviceManagementMongoClient;
 import com.sitewhere.mongodb.MongoConverter;
-import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
@@ -127,7 +127,7 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 	 * @param token
 	 * @return
 	 */
-	public static long getNextGroupIndex(SiteWhereMongoClient mongo, String token) {
+	public static long getNextGroupIndex(IDeviceManagementMongoClient mongo, String token) {
 		BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
 		BasicDBObject update = new BasicDBObject(MongoDeviceGroup.PROP_LAST_INDEX, (long) 1);
 		BasicDBObject increment = new BasicDBObject("$inc", update);

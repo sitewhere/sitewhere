@@ -23,18 +23,18 @@
 		
 		// Check for empty.
 		if (metadata.name.length == 0) {
-			error = "Name is required.";
+			error = i18next("includes.metadata.Nameisrequired");
 		}
 		var regex = /^[\w-]+$/;
 		if (!regex.test(metadata.name)) {
-			error = "Invalid character in name."
+			error = i18next("includes.metadata.ICIN");
 		}
 		
 		// Check for already used.
 		var data = <%= request.getParameter("uid")%>MetadataDS.data();
 		for (var index = 0, existing; existing = data[index]; index++) {
 			if (metadata.name == existing.name) {
-				error = "Name is already being used.";
+				error = i18next("includes.metadata.NIABU");
 				break;
 			}
 		}
@@ -66,7 +66,7 @@
 		<td>
 <% if (request.getParameter("mdReadOnly") == null) { %>
 			<div style="text-align: right;">
-				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="Delete Metadata"
+				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="#= i18next("includes.metadata.DeleteMetadata") #"
 					onclick="onDeleteMetadata_<%= request.getParameter("uid")%>('#:name#')"></i>
 			</div>
 <% } %>
@@ -74,8 +74,8 @@
 	</tr>
 </script>
 <div class="sw-sublist-header">
-	<div style="width: 205px;">Name</div>
-	<div style="width: 145px">Value</div>
+	<div style="width: 205px;" data-i18n="public.Name"></div>
+	<div style="width: 145px" data-i18n="public.Value"></div>
 </div>
 <table id="sw-metadata-<%= request.getParameter("uid")%>" class="sw-sublist-list">
 </table>
@@ -83,15 +83,15 @@
 <% if (request.getParameter("mdReadOnly") == null) { %>
 <div class="sw-sublist-add-new">
 	<div class="sw-sublist-footer">
-		<div style="width: 225px; margin-left: 3px;">Name</div>
-		<div style="width: 145px">Value</div>
+		<div style="width: 225px; margin-left: 3px;" data-i18n="public.Name"></div>
+		<div style="width: 145px" data-i18n="public.Value"></div>
 	</div>
 	<input type="text" id="sw-metadata-name-<%= request.getParameter("uid")%>" 
 		style="width: 205px; margin-bottom: 0px; margin-right: 10px;" title="Metadata name">
 	<input type="text" id="sw-metadata-value-<%= request.getParameter("uid")%>" 
 		style="width: 150px; margin-bottom: 0px; margin-right: 10px;" title="Metadata value">
-	<a class="btn" href="javascript:void(0)" onclick="onAddMetadata_<%= request.getParameter("uid")%>()">
-		<i class="icon-plus sw-button-icon"></i> Add</a>
+	<a class="btn" href="javascript:void(0)" onclick="onAddMetadata_<%= request.getParameter("uid")%>()" data-i18n="public.Add">
+		<i class="icon-plus sw-button-icon"></i></a>
 	<div id="sw-metadata-error-<%= request.getParameter("uid")%>" style="color: #f00; display: none;"></div>
 </div>	
 <% } %>

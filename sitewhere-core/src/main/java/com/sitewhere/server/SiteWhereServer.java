@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import com.sitewhere.configuration.ExternalConfigurationResolver;
 import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -44,6 +45,7 @@ import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
+import com.sitewhere.spi.server.ISiteWhereServerEnvironment;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -300,7 +302,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Start device management cache provider if specificed.
 		if (getDeviceManagementCacheProvider() != null) {
 			startNestedComponent(getDeviceManagementCacheProvider(),
-					"Device management chace provider startup failed.", true);
+					"Device management cache provider startup failed.", true);
 		}
 
 		// Start user management.
@@ -416,6 +418,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public void initialize() throws SiteWhereException {
 		LOGGER.info("Initializing SiteWhere server components.");
+
 		this.version = VersionHelper.getVersion();
 
 		// Initialize Spring.
@@ -442,6 +445,14 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Initialize search provider management.
 		initializeSearchProviderManagement();
 
+		// Show banner containing server information.
+		showServerBanner();
+	}
+
+	/**
+	 * Displays the server information banner in the log.
+	 */
+	protected void showServerBanner() {
 		String os = System.getProperty("os.name") + " (" + System.getProperty("os.version") + ")";
 		String java = System.getProperty("java.vendor") + " (" + System.getProperty("java.version") + ")";
 
@@ -459,12 +470,26 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	}
 
 	/**
+	 * Allows subclasses to add their own banner messages.
+	 * 
+	 * @param messages
+	 */
+	protected void addBannerMessages(List<String> messages) {
+	}
+
+	/**
 	 * Verifies and loads the Spring configuration file.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		SERVER_SPRING_CONTEXT = getConfigurationResolver().resolveSiteWhereContext(getVersion());
+		String extConfig = System.getenv(ISiteWhereServerEnvironment.ENV_EXTERNAL_CONFIGURATION_URL);
+		if (extConfig != null) {
+			IConfigurationResolver resolver = new ExternalConfigurationResolver(extConfig);
+			SERVER_SPRING_CONTEXT = resolver.resolveSiteWhereContext(getVersion());
+		} else {
+			SERVER_SPRING_CONTEXT = getConfigurationResolver().resolveSiteWhereContext(getVersion());
+		}
 	}
 
 	/**

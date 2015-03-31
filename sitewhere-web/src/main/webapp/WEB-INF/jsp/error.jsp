@@ -8,9 +8,13 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
-	<h1><c:out value="${sitewhere_title}"/></h1>
+	<h1 data-i18n="error.title"></h1>
 </div>
 
 <h2></h2><c:out value="${message}"/></h2>
 
 <%@ include file="includes/bottom.inc"%>
+<script type="text/javascript">
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "error.title";
+</script>

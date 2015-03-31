@@ -7,7 +7,8 @@
  */
 package com.sitewhere.spi.device.request;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import java.util.Map;
+
 import com.sitewhere.spi.device.ISiteMapData;
 
 /**
@@ -15,7 +16,14 @@ import com.sitewhere.spi.device.ISiteMapData;
  * 
  * @author Derek
  */
-public interface ISiteCreateRequest extends IMetadataProvider {
+public interface ISiteCreateRequest {
+
+	/**
+	 * Site token. Can be set to null if token should be auto-generated.
+	 * 
+	 * @return
+	 */
+	public String getToken();
 
 	/**
 	 * Get site name.
@@ -44,4 +52,11 @@ public interface ISiteCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public ISiteMapData getMap();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

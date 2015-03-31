@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:sw="http://www.sitewhere.com/schema/sitewhere/ce"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=2">
+           
+	<!-- Load property values for substitution -->
+	<context:property-placeholder location="file:${CATALINA_HOME}/conf/sitewhere/sitewhere.properties"
+		ignore-resource-not-found="true"/>
+	
+	<!-- ########################### -->
+	<!-- # SITEWHERE CONFIGURATION # -->
+	<!-- ########################### -->
+	<sw:configuration>
+
+		<!-- ################################# -->
+		<!-- # GLOBAL SERVICES CONFIGURATION # -->
+		<!-- ################################# -->
+		<sw:globals>
+			<sw:hazelcast-configuration configFileLocation="${CATALINA_HOME}/conf/sitewhere/hazelcast.xml"/>
+		</sw:globals>
+		
+		<!-- ########################### -->
+		<!-- # DATASTORE CONFIGURATION # -->
+		<!-- ########################### -->
+		<sw:datastore>
+		
+			<!-- Default MongoDB Datastore -->
+			<sw:hbase-datastore quorum="${meta:hbase_quorum}"/>
+			
+			<!-- Improves performance by using EHCache to store device management entities -->
+			<sw:ehcache-device-management-cache/>
+			
+			<!-- Initializes device model with sample data if datastore is empty -->
+			<sw:default-device-model-initializer/>
+			
+			<!-- Initializes user model with sample data if datastore is empty -->
+			<sw:default-user-model-initializer/>
+
+		</sw:datastore>
+		
+		<!-- ####################### -->
+		<!-- # DEVICE PROVISIONING # -->
+		<!-- ####################### -->
+		<sw:provisioning>
+		
+			<!-- Inbound event sources -->
+			<sw:event-sources>
+
+				<!-- Event source for protobuf messages over MQTT -->
+				<sw:mqtt-event-source sourceId="protobuf" hostname="localhost"
+					port="1883" topic="SiteWhere/input/protobuf">
+					<sw:protobuf-event-decoder/>
+				</sw:mqtt-event-source>
+
+				<!-- Event source for JSON messages over MQTT -->
+				<sw:mqtt-event-source sourceId="json" hostname="localhost" port="1883"
+					topic="SiteWhere/input/jsonbatch">
+					<sw:json-event-decoder/>
+				</sw:mqtt-event-source>
+
+			</sw:event-sources>
+		
+			<!-- Inbound Processing Strategy -->
+			<sw:inbound-processing-strategy>
+				<sw:default-inbound-processing-strategy
+					numEventProcessorThreads="50" enableMonitoring="false" monitoringIntervalSec="3"/>
+			</sw:inbound-processing-strategy>
+			
+			<!-- Device registration -->
+			<sw:registration>
+				<sw:default-registration-manager allowNewDevices="true"/>
+			</sw:registration>
+			
+			<!-- Batch operation management -->
+			<sw:batch-operations>
+				<sw:default-batch-operation-manager
+					throttleDelayMs="10000"/>
+			</sw:batch-operations>
+			
+			<!-- Device command routing -->
+			<sw:command-routing>
+				<sw:specification-mapping-router defaultDestination="default">
+					<sw:mapping specification="d2604433-e4eb-419b-97c7-88efe9b2cd41"
+						destination="android"/>
+				</sw:specification-mapping-router>
+			</sw:command-routing>
+			
+			<!-- Outbound command destinations -->
+			<sw:command-destinations>
+
+				<!-- Delivers commands via MQTT -->
+				<sw:mqtt-command-destination destinationId="default"
+					hostname="localhost" port="1883">
+					<sw:protobuf-command-encoder/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
+
+				<!-- Delivers commands via MQTT -->
+				<sw:mqtt-command-destination destinationId="android"
+					hostname="localhost" port="1883">
+					<sw:java-protobuf-hybrid-encoder/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
+
+			</sw:command-destinations>
+
+		</sw:provisioning>
+		
+		<!-- ############################ -->
+		<!-- # INBOUND PROCESSING CHAIN # -->
+		<!-- ############################ -->
+		<sw:inbound-processing-chain>
+			
+			<!-- Store events and delegate to registration manager -->
+			<sw:default-event-storage-processor/>
+
+		</sw:inbound-processing-chain>
+		
+		<!-- ############################# -->
+		<!-- # OUTBOUND PROCESSING CHAIN # -->
+		<!-- ############################# -->
+		<sw:outbound-processing-chain>
+		
+			<!-- Routes commands for provisioning -->
+			<sw:provisioning-event-processor numThreads="10"/>
+			
+			<!-- Send outbound device events over Hazelcast -->
+			<sw:hazelcast-event-processor/>
+
+		</sw:outbound-processing-chain>
+		
+		<!-- #################### -->
+		<!-- # ASSET MANAGEMENT # -->
+		<!-- #################### -->
+		<sw:asset-management>
+
+			<sw:filesystem-device-asset-module/>
+			<sw:filesystem-hardware-asset-module/>
+			<sw:filesystem-person-asset-module/>
+			<sw:filesystem-location-asset-module/>
+
+		</sw:asset-management>
+		
+		<!-- ############################# -->
+		<!-- # EXTERNAL SEARCH PROVIDERS # -->
+		<!-- ############################# -->
+		<sw:search-providers>
+
+		</sw:search-providers>
+
+	</sw:configuration>
+
+</beans>

@@ -7,7 +7,9 @@
  */
 package com.sitewhere.rest.model.device.request;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
+import java.io.Serializable;
+import java.util.Map;
+
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
@@ -16,7 +18,10 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  * 
  * @author Derek Adams
  */
-public class DeviceAssignmentCreateRequest extends MetadataProvider implements IDeviceAssignmentCreateRequest {
+public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -6880578458870122016L;
 
 	/** Device hardware id */
 	private String deviceHardwareId;
@@ -29,6 +34,9 @@ public class DeviceAssignmentCreateRequest extends MetadataProvider implements I
 
 	/** Unique asset id */
 	private String assetId;
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -84,5 +92,18 @@ public class DeviceAssignmentCreateRequest extends MetadataProvider implements I
 
 	public void setAssetId(String assetId) {
 		this.assetId = assetId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

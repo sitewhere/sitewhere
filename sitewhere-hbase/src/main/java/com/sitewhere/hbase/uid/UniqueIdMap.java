@@ -22,9 +22,7 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.log4j.Logger;
 
-import com.sitewhere.Tracer;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
@@ -37,9 +35,6 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public abstract class UniqueIdMap<N, V> {
 
-	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(UniqueIdMap.class);
-
 	/** Qualifier for columns containing values */
 	public static final byte[] VALUE_QUAL = Bytes.toBytes("value");
 
@@ -47,10 +42,10 @@ public abstract class UniqueIdMap<N, V> {
 	protected ISiteWhereHBaseClient hbase;
 
 	/** Key type indicator */
-	protected UniqueIdType keyIndicator;
+	protected byte keyIndicator;
 
 	/** Value type indicator */
-	protected UniqueIdType valueIndicator;
+	protected byte valueIndicator;
 
 	/** Map of names to values */
 	private Map<N, V> nameToValue = new HashMap<N, V>();
@@ -58,7 +53,7 @@ public abstract class UniqueIdMap<N, V> {
 	/** Maps of values to names */
 	private Map<V, N> valueToName = new HashMap<V, N>();
 
-	public UniqueIdMap(ISiteWhereHBaseClient hbase, UniqueIdType keyIndicator, UniqueIdType valueIndicator) {
+	public UniqueIdMap(ISiteWhereHBaseClient hbase, byte keyIndicator, byte valueIndicator) {
 		this.hbase = hbase;
 		this.keyIndicator = keyIndicator;
 		this.valueIndicator = valueIndicator;
@@ -99,7 +94,7 @@ public abstract class UniqueIdMap<N, V> {
 	protected void createNameToValue(N name, V value) throws SiteWhereException {
 		byte[] nameBytes = convertName(name);
 		ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
-		nameBuffer.put(keyIndicator.getIndicator());
+		nameBuffer.put(keyIndicator);
 		nameBuffer.put(nameBytes);
 		byte[] valueBytes = convertValue(value);
 
@@ -126,7 +121,7 @@ public abstract class UniqueIdMap<N, V> {
 	protected void deleteNameToValue(N name) throws SiteWhereException {
 		byte[] nameBytes = convertName(name);
 		ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
-		nameBuffer.put(keyIndicator.getIndicator());
+		nameBuffer.put(keyIndicator);
 		nameBuffer.put(nameBytes);
 
 		HTableInterface uids = null;
@@ -152,7 +147,7 @@ public abstract class UniqueIdMap<N, V> {
 	protected void createValueToName(V value, N name) throws SiteWhereException {
 		byte[] valueBytes = convertValue(value);
 		ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
-		valueBuffer.put(valueIndicator.getIndicator());
+		valueBuffer.put(valueIndicator);
 		valueBuffer.put(valueBytes);
 		byte[] nameBytes = convertName(name);
 
@@ -179,7 +174,7 @@ public abstract class UniqueIdMap<N, V> {
 	protected void deleteValueToName(V value) throws SiteWhereException {
 		byte[] valueBytes = convertValue(value);
 		ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
-		valueBuffer.put(valueIndicator.getIndicator());
+		valueBuffer.put(valueIndicator);
 		valueBuffer.put(valueBytes);
 
 		HTableInterface uids = null;
@@ -233,9 +228,9 @@ public abstract class UniqueIdMap<N, V> {
 	 * @return
 	 * @throws Exception
 	 */
-	protected List<Result> getValuesForType(UniqueIdType type) throws Exception {
-		byte startByte = keyIndicator.getIndicator();
-		byte stopByte = keyIndicator.getIndicator();
+	protected List<Result> getValuesForType(byte type) throws Exception {
+		byte startByte = type;
+		byte stopByte = type;
 		stopByte++;
 		byte[] startKey = { startByte };
 		byte[] stopKey = { stopByte };
@@ -274,15 +269,11 @@ public abstract class UniqueIdMap<N, V> {
 	public V getValue(N name) throws SiteWhereException {
 		V result = nameToValue.get(name);
 		if (result == null) {
-			Tracer.debug("Id value for " + keyIndicator.name() + " '" + name
-					+ "' not cached. Loading from table.", LOGGER);
 			result = getValueFromTable(name);
 			if (result != null) {
 				nameToValue.put(name, result);
 				valueToName.put(result, name);
 			}
-		} else {
-			Tracer.debug("Id value for " + keyIndicator.name() + " '" + name + "' was cached.", LOGGER);
 		}
 		return result;
 	}
@@ -297,7 +288,7 @@ public abstract class UniqueIdMap<N, V> {
 	protected V getValueFromTable(N name) throws SiteWhereException {
 		byte[] nameBytes = convertName(name);
 		ByteBuffer nameBuffer = ByteBuffer.allocate(nameBytes.length + 1);
-		nameBuffer.put(keyIndicator.getIndicator());
+		nameBuffer.put(keyIndicator);
 		nameBuffer.put(nameBytes);
 
 		HTableInterface uids = null;
@@ -345,7 +336,7 @@ public abstract class UniqueIdMap<N, V> {
 	protected N getNameFromTable(V value) throws SiteWhereException {
 		byte[] valueBytes = convertValue(value);
 		ByteBuffer valueBuffer = ByteBuffer.allocate(valueBytes.length + 1);
-		valueBuffer.put(valueIndicator.getIndicator());
+		valueBuffer.put(valueIndicator);
 		valueBuffer.put(valueBytes);
 
 		HTableInterface uids = null;
@@ -382,12 +373,12 @@ public abstract class UniqueIdMap<N, V> {
 	}
 
 	/** Get indicator for key rows for this type */
-	public UniqueIdType getKeyIndicator() {
+	public byte getKeyIndicator() {
 		return keyIndicator;
 	}
 
 	/** Get indicator for value rows for this type */
-	public UniqueIdType getValueIndicator() {
+	public byte getValueIndicator() {
 		return valueIndicator;
 	}
 }

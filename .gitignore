@@ -1,11 +1,14 @@
 /bin
 /sitewhere-activemq/target
+/sitewhere-azure/target
 /sitewhere-client/target
 /sitewhere-core/target
 /sitewhere-documentation/target
 /sitewhere-ehcache/target
 /sitewhere-gnuhealth/target
+/sitewhere-groovy/target
 /sitewhere-hbase/target
+/sitewhere-hbase/src/gen
 /sitewhere-magento/target
 /sitewhere-mongodb/target
 /sitewhere-mule/target

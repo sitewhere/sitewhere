@@ -2,36 +2,36 @@
 <div id="spc-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="spc-dialog-header">Create Specification</h3>
+		<h3 id="spc-dialog-header" data-i18n="includes.specificaationCreateDialog.CreateSpecification"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="spc-tabs">
 			<ul>
-				<li class="k-state-active">Specification Details</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.specificaationCreateDialog.SpecificationDetails"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="spc-general-form" class="form-horizontal form-search" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="spc-name">Name</label>
+						<label class="control-label" for="spc-name" data-i18n="public.Name"></label>
 						<div class="controls">
 							<input type="text" id="spc-name" title="Specification Name" class="input-xlarge">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="spc-container-policy">Type</label>
+						<label class="control-label" for="spc-container-policy" data-i18n="public.Type"></label>
 						<div class="controls">
 							<select id="spc-container-policy" class="input-xlarge"/></select>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="spc-asset-module">Asset Provider</label>
+						<label class="control-label" for="spc-asset-module" data-i18n="includes.specificationCreateDialog.AssetProvider"></label>
 						<div class="controls">
 							<select id="spc-asset-module" class="input-xlarge"/></select>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="spc-hardware-search">Choose Device Type</label>
+						<label class="control-label" for="spc-hardware-search" data-i18n="includes.specificaationCreateDialog.ChooseDeviceType"></label>
 						<div class="controls">
 							<div class="input-append">
 	    						<input class="input-xlarge" id="spc-hardware-search" type="text">
@@ -54,8 +54,8 @@
 	</div>
 	<input id="spec-token" type="hidden" value="" />
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="spc-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="spc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -268,8 +268,8 @@
 		// Reset form and metadata.
     	$('#spc-general-form')[0].reset();
 		spcMetadataDS.data(new Array());
-		$('#spc-dialog-header').html("Create Specification");
-		$('#spc-dialog-submit').html("Create");
+		$('#spc-dialog-header').html(i18next("includes.specificaationCreateDialog.CreateSpecification"));
+		$('#spc-dialog-submit').html(i18next("public.Create"));
 		
 		// Reset hardware search.
     	$('#spc-hardware-search').val("");
@@ -302,8 +302,8 @@
 	
 	/** Open the dialog */
 	function spuSpecificationGetSuccess(data, status, jqXHR) {
-		$('#spc-dialog-header').html("Edit Specification");
-		$('#spc-dialog-submit').html("Save");
+		$('#spc-dialog-header').html(i18next("public.EditSpecification"));
+		$('#spc-dialog-submit').html(i18next("public.Save"));
 		
 		// Save token for update.
 		$('#spec-token').val(data.token);

@@ -23,11 +23,11 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -47,14 +47,14 @@ public class HBaseGrantedAuthority {
 	/**
 	 * Create a new granted authority.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static GrantedAuthority createGrantedAuthority(ISiteWhereHBaseClient hbase,
+	public static GrantedAuthority createGrantedAuthority(IHBaseContext context,
 			IGrantedAuthorityCreateRequest request) throws SiteWhereException {
-		GrantedAuthority existing = getGrantedAuthorityByName(hbase, request.getAuthority());
+		GrantedAuthority existing = getGrantedAuthorityByName(context, request.getAuthority());
 		if (existing != null) {
 			throw new SiteWhereSystemException(ErrorCode.DuplicateAuthority, ErrorLevel.ERROR,
 					HttpServletResponse.SC_CONFLICT);
@@ -63,13 +63,13 @@ public class HBaseGrantedAuthority {
 		// Create the new granted authority and store it.
 		GrantedAuthority auth = SiteWherePersistence.grantedAuthorityCreateLogic(request);
 		byte[] primary = getGrantedAuthorityRowKey(request.getAuthority());
-		byte[] json = MarshalUtils.marshalJson(auth);
+		byte[] payload = context.getPayloadMarshaler().encodeGrantedAuthority(auth);
 
 		HTableInterface users = null;
 		try {
-			users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			users.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to create granted authority.", e);
@@ -88,24 +88,24 @@ public class HBaseGrantedAuthority {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static GrantedAuthority getGrantedAuthorityByName(ISiteWhereHBaseClient hbase, String name)
+	public static GrantedAuthority getGrantedAuthorityByName(IHBaseContext context, String name)
 			throws SiteWhereException {
 		byte[] rowkey = getGrantedAuthorityRowKey(name);
 
 		HTableInterface users = null;
 		try {
-			users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 			Get get = new Get(rowkey);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+			HBaseUtils.addPayloadFields(get);
 			Result result = users.get(get);
-			if (result.size() == 0) {
+
+			byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+			if ((type == null) || (payload == null)) {
 				return null;
 			}
-			if (result.size() > 1) {
-				throw new SiteWhereException("Expected one JSON entry for granted authority and found: "
-						+ result.size());
-			}
-			return MarshalUtils.unmarshalJson(result.value(), GrantedAuthority.class);
+
+			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeGrantedAuthority(payload);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to load granted authority by name.", e);
 		} finally {
@@ -121,12 +121,12 @@ public class HBaseGrantedAuthority {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IGrantedAuthority> listGrantedAuthorities(ISiteWhereHBaseClient hbase,
+	public static List<IGrantedAuthority> listGrantedAuthorities(IHBaseContext context,
 			IGrantedAuthoritySearchCriteria criteria) throws SiteWhereException {
 		HTableInterface users = null;
 		ResultScanner scanner = null;
 		try {
-			users = hbase.getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { UserRecordType.GrantedAuthority.getType() });
 			scan.setStopRow(new byte[] { UserRecordType.End.getType() });
@@ -136,14 +136,20 @@ public class HBaseGrantedAuthority {
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
 				Map<byte[], byte[]> row = result.getFamilyMap(ISiteWhereHBase.FAMILY_ID);
-				byte[] json = null;
+
+				byte[] payloadType = null;
+				byte[] payload = null;
 				for (byte[] qualifier : row.keySet()) {
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = row.get(qualifier);
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {
+						payloadType = row.get(qualifier);
+					}
+					if (Bytes.equals(ISiteWhereHBase.PAYLOAD, qualifier)) {
+						payload = row.get(qualifier);
 					}
 				}
-				if ((shouldAdd) && (json != null)) {
-					matches.add(MarshalUtils.unmarshalJson(json, GrantedAuthority.class));
+				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
+					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeGrantedAuthority(
+							payload));
 				}
 			}
 			return matches;

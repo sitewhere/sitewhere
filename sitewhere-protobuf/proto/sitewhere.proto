@@ -24,6 +24,7 @@ message SiteWhere {
 		required string hardwareId = 1;
 		required string specificationToken = 2;
 		repeated Metadata metadata = 3;
+		optional string siteToken = 4;
 	}
 
 	// Acknowledge previous command.
@@ -39,6 +40,7 @@ message SiteWhere {
 		required double longitude = 3;
 		optional double elevation = 4;
 		optional fixed64 eventDate = 5;
+		repeated Metadata metadata = 6;
 	}
 
 	// Report device alert.
@@ -47,6 +49,7 @@ message SiteWhere {
 		required string alertType = 2;
 		required string alertMessage = 3;
 		optional fixed64 eventDate = 4;
+		repeated Metadata metadata = 5;
 	}
 	
 	// A single measurement.
@@ -60,6 +63,7 @@ message SiteWhere {
 		required string hardwareId = 1;
 		repeated Measurement measurement = 2;
 		optional fixed64 eventDate = 3;
+		repeated Metadata metadata = 4;
 	}
 }
 

@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -23,12 +22,12 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.batch.BatchElement;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -58,12 +57,13 @@ public class HBaseBatchElement {
 	/**
 	 * Create a batch element row.
 	 * 
-	 * @param hbase
+	 * @param context
+	 * @param devices
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchElement createBatchElement(ISiteWhereHBaseClient hbase, HTableInterface devices,
+	public static IBatchElement createBatchElement(IHBaseContext context, HTableInterface devices,
 			IBatchElement request) throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(request.getBatchOperationToken(), request.getIndex());
 
@@ -72,12 +72,12 @@ public class HBaseBatchElement {
 				SiteWherePersistence.batchElementCreateLogic(request.getBatchOperationToken(),
 						request.getHardwareId(), request.getIndex());
 
-		// Serialize as JSON.
-		byte[] json = MarshalUtils.marshalJson(element);
+		// Encode batch element.
+		byte[] payload = context.getPayloadMarshaler().encodeBatchElement(element);
 
 		try {
 			Put put = new Put(elementKey);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			put.add(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
 			put.add(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
 					Bytes.toBytes(String.valueOf(request.getProcessingStatus().getCode())));
@@ -92,26 +92,26 @@ public class HBaseBatchElement {
 	/**
 	 * Updates an existing batch operation element.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param operationToken
 	 * @param index
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchElement updateBatchElement(ISiteWhereHBaseClient hbase, String operationToken,
-			long index, IBatchElementUpdateRequest request) throws SiteWhereException {
+	public static IBatchElement updateBatchElement(IHBaseContext context, String operationToken, long index,
+			IBatchElementUpdateRequest request) throws SiteWhereException {
 		HTableInterface devices = null;
 		try {
-			devices = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
-			BatchElement element = getBatchElement(hbase, devices, operationToken, index);
+			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			BatchElement element = getBatchElement(context, devices, operationToken, index);
 			byte[] elementKey = getElementRowKey(operationToken, index);
 
 			SiteWherePersistence.batchElementUpdateLogic(request, element);
-			byte[] json = MarshalUtils.marshalJson(element);
+			byte[] payload = context.getPayloadMarshaler().encodeBatchElement(element);
 
 			Put put = new Put(elementKey);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			put.add(ISiteWhereHBase.FAMILY_ID, HARDWARE_ID, Bytes.toBytes(element.getHardwareId()));
 			put.add(ISiteWhereHBase.FAMILY_ID, PROCESSING_STATUS,
 					Bytes.toBytes(String.valueOf(request.getProcessingStatus().getCode())));
@@ -127,25 +127,28 @@ public class HBaseBatchElement {
 	/**
 	 * Gets the batch operation element given the parent operation token and unique index.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param devices
 	 * @param operationToken
 	 * @param index
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static BatchElement getBatchElement(ISiteWhereHBaseClient hbase, HTableInterface devices,
+	public static BatchElement getBatchElement(IHBaseContext context, HTableInterface devices,
 			String operationToken, long index) throws SiteWhereException {
 		byte[] elementKey = getElementRowKey(operationToken, index);
 		try {
 			Get get = new Get(elementKey);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+			HBaseUtils.addPayloadFields(get);
 			Result result = devices.get(get);
-			if (result.size() != 1) {
-				throw new SiteWhereException(
-						"Unable to get batch operation element by operation token and index.");
+
+			byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+			if ((type == null) || (payload == null)) {
+				return null;
 			}
-			return MarshalUtils.unmarshalJson(result.value(), BatchElement.class);
+
+			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeBatchElement(payload);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to create device group element.", e);
 		}
@@ -154,18 +157,18 @@ public class HBaseBatchElement {
 	/**
 	 * List batch elements that meet the given criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param batchToken
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IBatchElement> listBatchElements(ISiteWhereHBaseClient hbase,
-			String batchToken, IBatchElementSearchCriteria criteria) throws SiteWhereException {
+	public static SearchResults<IBatchElement> listBatchElements(IHBaseContext context, String batchToken,
+			IBatchElementSearchCriteria criteria) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			byte[] primary =
 					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
 							BatchOperationRecordType.BatchElement.getType());
@@ -179,15 +182,16 @@ public class HBaseBatchElement {
 
 			Pager<IBatchElement> pager = new Pager<IBatchElement>(criteria);
 			for (Result result : scanner) {
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						IBatchElement current =
-								MarshalUtils.unmarshalJson(column.getValue(), BatchElement.class);
-						if ((criteria.getProcessingStatus() == null)
-								|| (criteria.getProcessingStatus() == current.getProcessingStatus())) {
-							pager.process(current);
-						}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+
+				if ((payload != null) && (payloadType != null)) {
+					BatchElement elm =
+							PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeBatchElement(
+									payload);
+					if ((criteria.getProcessingStatus() == null)
+							|| (criteria.getProcessingStatus() == elm.getProcessingStatus())) {
+						pager.process(elm);
 					}
 				}
 			}
@@ -205,16 +209,16 @@ public class HBaseBatchElement {
 	/**
 	 * Delete all elements for a batch operation.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param batchToken
 	 * @throws SiteWhereException
 	 */
-	public static void deleteBatchElements(ISiteWhereHBaseClient hbase, String batchToken)
+	public static void deleteBatchElements(IHBaseContext context, String batchToken)
 			throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = hbase.getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
 			byte[] primary =
 					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
 							BatchOperationRecordType.BatchElement.getType());
@@ -229,15 +233,10 @@ public class HBaseBatchElement {
 			List<DeleteRecord> matches = new ArrayList<DeleteRecord>();
 			for (Result result : scanner) {
 				byte[] row = result.getRow();
-				byte[] json = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = column.getValue();
-					}
-				}
-				if (json != null) {
-					matches.add(new DeleteRecord(row, json));
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				if (payload != null) {
+					matches.add(new DeleteRecord(row, payloadType, payload));
 				}
 			}
 			for (DeleteRecord dr : matches) {

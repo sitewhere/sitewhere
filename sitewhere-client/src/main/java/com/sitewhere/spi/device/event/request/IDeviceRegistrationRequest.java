@@ -29,9 +29,9 @@ public interface IDeviceRegistrationRequest extends IDeviceStateChangeCreateRequ
 	public String getSpecificationToken();
 
 	/**
-	 * Get 'reply to' address for commands.
+	 * Get token for site to which device should be assigned.
 	 * 
 	 * @return
 	 */
-	public String getReplyTo();
+	public String getSiteToken();
 }

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -199,7 +200,7 @@ public abstract class DeviceEvent extends MetadataProvider implements IDeviceEve
 	 * @param source
 	 * @param target
 	 */
-	public static void copy(IDeviceEvent source, DeviceEvent target) {
+	public static void copy(IDeviceEvent source, DeviceEvent target) throws SiteWhereException {
 		target.setId(source.getId());
 		target.setSiteToken(source.getSiteToken());
 		target.setDeviceAssignmentToken(source.getDeviceAssignmentToken());

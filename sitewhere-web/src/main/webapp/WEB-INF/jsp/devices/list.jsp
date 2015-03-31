@@ -17,16 +17,15 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
-	<h1 class="ellipsis">
-		<c:out value="${sitewhere_title}" />
+	<h1 class="ellipsis" data-i18n="devices.list.title">
 	</h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-filter-results" class="btn" href="javascript:void(0)">
-			<i class="icon-search sw-button-icon"></i> Filter Results
-		</a> <a id="btn-batch-command" class="btn hide" href="javascript:void(0)">
-			<i class="icon-bolt sw-button-icon"></i> Batch Command
-		</a> <a id="btn-add-device" class="btn" href="javascript:void(0)"> <i
-			class="icon-plus sw-button-icon"></i> Add New Device
+		<a id="btn-filter-results" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+			<i class="icon-search sw-button-icon"></i>
+		</a> <a id="btn-batch-command" class="btn hide" href="javascript:void(0)" data-i18n="devices.list.BatchCommand">
+			<i class="icon-bolt sw-button-icon"></i>
+		</a> <a id="btn-add-device" class="btn" href="javascript:void(0)" data-i18n="devices.list.AddNewDevice"> <i
+			class="icon-plus sw-button-icon"></i>
 		</a>
 	</div>
 </div>
@@ -45,6 +44,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "devices.list.title";
+
 	/** Reference for device list datasource */
 	var devicesDS;
 

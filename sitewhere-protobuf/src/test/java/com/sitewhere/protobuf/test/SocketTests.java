@@ -26,5 +26,6 @@ public class SocketTests {
 		socket.getOutputStream().write(encoded);
 		socket.getOutputStream().flush();
 		socket.getOutputStream().close();
+		socket.close();
 	}
 }

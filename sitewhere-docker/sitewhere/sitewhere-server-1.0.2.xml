@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:sw="http://www.sitewhere.com/schema/sitewhere/ce"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd?a=5s">
+	
+	<!-- ########################### -->
+	<!-- # SITEWHERE CONFIGURATION # -->
+	<!-- ########################### -->
+	<sw:configuration>
+
+		<!-- ################################# -->
+		<!-- # GLOBAL SERVICES CONFIGURATION # -->
+		<!-- ################################# -->
+		<sw:globals>
+			<sw:hazelcast-configuration configFileLocation="/opt/sitewhere/conf/sitewhere/hazelcast.xml"/>
+			<sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
+			<sw:groovy-configuration debug="true" verbose="true"/>
+		</sw:globals>
+		
+		<!-- ########################### -->
+		<!-- # DATASTORE CONFIGURATION # -->
+		<!-- ########################### -->
+		<sw:datastore>
+		
+			<!-- Default MongoDB Datastore -->
+			<sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
+		
+			<!-- Default HBase Datastore -->
+			<!--  
+			<sw:hbase-datastore quorum="sandbox.hortonworks.com" zookeeperZnodeParent="/hbase-unsecure"/>
+			-->
+			
+			<!-- Improves performance by using Hazelcast for distributed caching -->
+			<sw:hazelcast-cache/>
+			
+			<!-- Initializes device model with sample data if datastore is empty -->
+			<sw:default-device-model-initializer/>
+			
+			<!-- Initializes user model with sample data if datastore is empty -->
+			<sw:default-user-model-initializer/>
+
+		</sw:datastore>
+		
+		<!-- ####################### -->
+		<!-- # DEVICE PROVISIONING # -->
+		<!-- ####################### -->
+		<sw:provisioning>
+		
+			<!-- Inbound event sources -->
+			<sw:event-sources>
+
+                <!-- Event source for protobuf messages over AMQP -->
+                <!--<sw:azure-eventhub-event-source sourceId="eventhub" targetFqn="servicebus.windows.net"-->
+                                                <!--namespace="YourNamespace" entityPath="YourEntityPath" partitionCount="8"-->
+                                                <!--zkStateStore="127.0.0.1:2181"-->
+                                                <!--username="YourUsername" password="YourPassword">-->
+                    <!--<sw:protobuf-event-decoder/>-->
+                <!--</sw:azure-eventhub-event-source>-->
+
+				<!-- Event source for protobuf messages over MQTT -->
+				<sw:mqtt-event-source sourceId="protobuf" hostname="localhost"
+					port="1883" topic="SiteWhere/input/protobuf">
+					<sw:protobuf-event-decoder/>
+				</sw:mqtt-event-source>
+
+				<!-- Event source for JSON messages over MQTT -->
+				<sw:mqtt-event-source sourceId="json" hostname="localhost" port="1883"
+					topic="SiteWhere/input/jsonbatch">
+					<sw:json-event-decoder/>
+				</sw:mqtt-event-source>
+				
+				<!-- Event source for protobuf messages from socket connections -->
+				<sw:socket-event-source port="8585" numThreads="10" sourceId="socket">
+					<sw:read-all-interaction-handler-factory/>
+					<sw:protobuf-event-decoder/>
+				</sw:socket-event-source>
+				
+				<!-- Event source for protobuf messages over ActiveMQ queue -->
+				<sw:activemq-event-source sourceId="activemq" transportUri="tcp://localhost:1234"
+					queueName="SITEWHERE.IN" numConsumers="10" dataDirectory="/opt/sitewhere/amqdata">
+					<sw:protobuf-event-decoder/>
+				</sw:activemq-event-source>
+				
+				<!-- Event source for Stomp messages over ActiveMQ queue -->
+				<sw:activemq-event-source sourceId="stomp"
+					transportUri="stomp://localhost:2345?trace=true" queueName="SITEWHERE.STOMP"
+					numConsumers="10" dataDirectory="/opt/sitewhere/stompdata">
+					<sw:json-event-decoder/>
+				</sw:activemq-event-source>
+
+				<!-- Example of Groovy decoder parsing of websocket payload -->
+				<!--  
+				<sw:string-web-socket-event-source sourceId="websocket"
+					webSocketUrl="ws://sockets.mbed.org/ws/sitewhere/ro">
+					<sw:groovy-string-event-decoder scriptPath="customDecoder.groovy"/>
+				</sw:string-web-socket-event-source>
+				-->
+
+			</sw:event-sources>
+		
+			<!-- Inbound Processing Strategy -->
+			<sw:inbound-processing-strategy>
+				<sw:default-inbound-processing-strategy
+					numEventProcessorThreads="50" enableMonitoring="false" monitoringIntervalSec="3"/>
+			</sw:inbound-processing-strategy>
+			
+			<!-- Device registration -->
+			<sw:registration>
+				<sw:default-registration-manager allowNewDevices="true"/>
+			</sw:registration>
+			
+			<!-- Batch operation management -->
+			<sw:batch-operations>
+				<sw:default-batch-operation-manager
+					throttleDelayMs="10000"/>
+			</sw:batch-operations>
+			
+			<!-- Device command routing -->
+			<sw:command-routing>
+				<sw:specification-mapping-router defaultDestination="default">
+					<sw:mapping specification="d2604433-e4eb-419b-97c7-88efe9b2cd41"
+						destination="android"/>
+				</sw:specification-mapping-router>
+			</sw:command-routing>
+			
+			<!-- Outbound command destinations -->
+			<sw:command-destinations>
+
+				<!-- Delivers commands via MQTT -->
+				<sw:mqtt-command-destination destinationId="default"
+					hostname="localhost" port="1883">
+					<sw:protobuf-command-encoder/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
+
+				<!-- Delivers commands via MQTT -->
+				<sw:mqtt-command-destination destinationId="android"
+					hostname="localhost" port="1883">
+					<sw:java-protobuf-hybrid-encoder/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
+
+				<!-- Deliver commands via Twilio SMS message. -->
+				<!-- 
+				<sw:twilio-command-destination destinationId="twilio"
+					accountSid="${twilio.account.sid}" authToken="${twilio.auth.token}" fromPhoneNumber="${twilio.from.phone.number}">
+					<sw:protobuf-command-encoder/>
+					<sw:parameter-extractor ref="externalParameterExtractor"/>
+				</sw:twilio-command-destination>
+			 	-->
+
+			</sw:command-destinations>
+
+		</sw:provisioning>
+		
+		<!-- ############################ -->
+		<!-- # INBOUND PROCESSING CHAIN # -->
+		<!-- ############################ -->
+		<sw:inbound-processing-chain>
+			
+			<!-- Store events and delegate to registration manager -->
+			<sw:default-event-storage-processor/>
+
+		</sw:inbound-processing-chain>
+		
+		<!-- ############################# -->
+		<!-- # OUTBOUND PROCESSING CHAIN # -->
+		<!-- ############################# -->
+		<sw:outbound-processing-chain>
+		
+			<!-- Routes commands for provisioning -->
+			<sw:provisioning-event-processor numThreads="10"/>
+			
+			<!-- Performs zone checking for locations -->
+			<!-- 
+			<sw:zone-test-event-processor>
+				<sw:zone-test zoneToken="777fa4e5-bc2f-458b-9968-b598b2e2d2ca" condition="outside"
+					alertLevel="error" alertType="off.site" alertMessage="Asset has left the worksite."/>
+			</sw:zone-test-event-processor>
+			 -->
+			
+			<!-- Send outbound device events over Hazelcast -->
+			<sw:hazelcast-event-processor/>
+			
+			<!-- Index outbound device events in Solr -->
+			<!-- 
+			<sw:solr-event-processor/>
+			 -->
+
+			<!-- Sends events to an Azure EventHub -->
+			<!-- 
+			<sw:azure-eventhub-event-processor sasKey="{azure.sas.key}"
+				sasName="default" serviceBusName="sitewhere.servicebus.windows.net" eventHubName="sitewhere"/>
+			 -->
+
+		</sw:outbound-processing-chain>
+		
+		<!-- #################### -->
+		<!-- # ASSET MANAGEMENT # -->
+		<!-- #################### -->
+		<sw:asset-management>
+
+			<sw:filesystem-device-asset-module/>
+			<sw:filesystem-hardware-asset-module/>
+			<sw:filesystem-person-asset-module/>
+			<sw:filesystem-location-asset-module/>
+
+		</sw:asset-management>
+		
+		<!-- ############################# -->
+		<!-- # EXTERNAL SEARCH PROVIDERS # -->
+		<!-- ############################# -->
+		<sw:search-providers>
+		
+			<!-- Apache Solr search provider -->
+			<!-- 
+			<sw:solr-search-provider name="Apache Solr" id="solr"/>
+			 -->
+
+		</sw:search-providers>
+
+	</sw:configuration>
+
+</beans>

@@ -7,6 +7,9 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
+
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -17,7 +20,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
  * 
  * @author dadams
  */
-public class DeviceAlert extends DeviceEvent implements IDeviceAlert {
+public class DeviceAlert extends DeviceEvent implements IDeviceAlert, Serializable {
 
 	/** For Java serialization */
 	private static final long serialVersionUID = 594540716893472520L;
@@ -96,7 +99,7 @@ public class DeviceAlert extends DeviceEvent implements IDeviceAlert {
 	 * @param input
 	 * @return
 	 */
-	public static DeviceAlert copy(IDeviceAlert input) {
+	public static DeviceAlert copy(IDeviceAlert input) throws SiteWhereException {
 		DeviceAlert result = new DeviceAlert();
 		DeviceEvent.copy(input, result);
 		result.setSource(input.getSource());

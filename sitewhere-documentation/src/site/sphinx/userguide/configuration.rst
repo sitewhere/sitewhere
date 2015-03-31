@@ -718,6 +718,44 @@ The following attributes may be specified for the *<sw:zone-test>* element.
 | alertMessage         | required | Alert message for generated alert.               |
 +----------------------+----------+--------------------------------------------------+
 
+Sending Events to an Azure Event Hub
+------------------------------------
+The *<sw:azure-eventhub-event-processor/>* outbound event processor connects to an 
+`Azure Event Hub <http://azure.microsoft.com/en-us/services/event-hubs/>`_ and forwards
+device events to it. The current implementation sends all events in JSON format. Future
+implementations will allow for filtering which events are sent and choosing the wire 
+format of the event data. An Azure Event Hub outbound event
+processor can be figured as shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 3-4
+   
+   <sw:outbound-processing-chain>
+      
+      <sw:azure-eventhub-event-processor sasKey="{azure.sas.key}"
+         sasName="default" serviceBusName="sitewhere.servicebus.windows.net" eventHubName="sitewhere"/>
+
+   </sw:outbound-processing-chain>
+
+Note that a SAS name and key are required in order to connect to the Event Hub. See
+`this <https://msdn.microsoft.com/en-us/library/azure/dn170477.aspx>`_ article to find
+more information about Shared Access Signatures.
+
+The following attributes may be specified for the *<sw:azure-eventhub-event-processor>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| serviceBusName       | required | Name of the service bus where the event hub      |
+|                      |          | is configured.                                   |
++----------------------+----------+--------------------------------------------------+
+| eventHubName         | required | Name of the event hub to connect to.             |
++----------------------+----------+--------------------------------------------------+
+| sasName              | required | Name of SAS entity to connect with.              |
++----------------------+----------+--------------------------------------------------+
+| sasKey               | required | Key for SAS entity to connect with.              |
++----------------------+----------+--------------------------------------------------+
+
 Broadcasting Events via Hazelcast
 ---------------------------------
 SiteWhere has support for broadcasting events over `Hazelcast <http://hazelcast.com/>`_ topics, making it

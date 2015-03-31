@@ -17,11 +17,11 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.spi.SiteWhereException;
@@ -45,19 +45,19 @@ public class HBaseZone {
 	/**
 	 * Create a new zone.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param site
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IZone createZone(ISiteWhereHBaseClient hbase, ISite site, IZoneCreateRequest request)
+	public static IZone createZone(IHBaseContext context, ISite site, IZoneCreateRequest request)
 			throws SiteWhereException {
 		Long siteId = IdManager.getInstance().getSiteKeys().getValue(site.getToken());
 		if (siteId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 		}
-		Long zoneId = HBaseSite.allocateNextZoneId(hbase, siteId);
+		Long zoneId = HBaseSite.allocateNextZoneId(context, siteId);
 		byte[] rowkey = getPrimaryRowkey(siteId, zoneId);
 
 		// Associate new UUID with zone row key.
@@ -66,14 +66,13 @@ public class HBaseZone {
 		// Use common processing logic so all backend implementations work the same.
 		Zone zone = SiteWherePersistence.zoneCreateLogic(request, site.getToken(), uuid);
 
-		// Serialize as JSON.
-		byte[] json = MarshalUtils.marshalJson(zone);
+		byte[] payload = context.getPayloadMarshaler().encodeZone(zone);
 
 		HTableInterface sites = null;
 		try {
-			sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 			Put put = new Put(rowkey);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			sites.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to create zone.", e);
@@ -87,27 +86,27 @@ public class HBaseZone {
 	/**
 	 * Update an existing zone.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Zone updateZone(ISiteWhereHBaseClient hbase, String token, IZoneCreateRequest request)
+	public static Zone updateZone(IHBaseContext context, String token, IZoneCreateRequest request)
 			throws SiteWhereException {
-		Zone updated = getZone(hbase, token);
+		Zone updated = getZone(context, token);
 
 		// Use common update logic so that backend implemetations act the same way.
 		SiteWherePersistence.zoneUpdateLogic(request, updated);
 
 		byte[] zoneId = IdManager.getInstance().getZoneKeys().getValue(token);
-		byte[] json = MarshalUtils.marshalJson(updated);
+		byte[] payload = context.getPayloadMarshaler().encodeZone(updated);
 
 		HTableInterface sites = null;
 		try {
-			sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 			Put put = new Put(zoneId);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			sites.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to update zone.", e);
@@ -120,12 +119,12 @@ public class HBaseZone {
 	/**
 	 * Get a zone by unique token.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Zone getZone(ISiteWhereHBaseClient hbase, String token) throws SiteWhereException {
+	public static Zone getZone(IHBaseContext context, String token) throws SiteWhereException {
 		byte[] rowkey = IdManager.getInstance().getZoneKeys().getValue(token);
 		if (rowkey == null) {
 			return null;
@@ -133,14 +132,18 @@ public class HBaseZone {
 
 		HTableInterface sites = null;
 		try {
-			sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 			Get get = new Get(rowkey);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+			HBaseUtils.addPayloadFields(get);
 			Result result = sites.get(get);
-			if (result.size() != 1) {
-				throw new SiteWhereException("Expected one JSON entry for zone and found: " + result.size());
+
+			byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+			if ((type == null) || (payload == null)) {
+				return null;
 			}
-			return MarshalUtils.unmarshalJson(result.value(), Zone.class);
+
+			return PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeZone(payload);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to load zone by token.", e);
 		} finally {
@@ -151,26 +154,26 @@ public class HBaseZone {
 	/**
 	 * Delete an existing zone.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param force
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Zone deleteZone(ISiteWhereHBaseClient hbase, String token, boolean force)
+	public static Zone deleteZone(IHBaseContext context, String token, boolean force)
 			throws SiteWhereException {
 		byte[] zoneId = IdManager.getInstance().getZoneKeys().getValue(token);
 		if (zoneId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
 		}
-		Zone existing = getZone(hbase, token);
+		Zone existing = getZone(context, token);
 		existing.setDeleted(true);
 		if (force) {
 			IdManager.getInstance().getZoneKeys().delete(token);
 			HTableInterface sites = null;
 			try {
 				Delete delete = new Delete(zoneId);
-				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				sites.delete(delete);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to delete zone.", e);
@@ -180,12 +183,12 @@ public class HBaseZone {
 		} else {
 			byte[] marker = { (byte) 0x01 };
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
-			byte[] updated = MarshalUtils.marshalJson(existing);
+			byte[] payload = context.getPayloadMarshaler().encodeZone(existing);
 			HTableInterface sites = null;
 			try {
-				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				Put put = new Put(zoneId);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
+				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				sites.put(put);
 			} catch (IOException e) {

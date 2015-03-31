@@ -132,6 +132,13 @@
 						<xsd:documentation>MongoDB database name for SiteWhere storage.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="useDockerLinking" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>If enabled, uses environment variables set by Docker linking to
+							derive host and port to connect to.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -147,7 +154,27 @@
 	<xsd:complexType name="hbaseDatastoreType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDatastoreType">
-				<xsd:attribute name="quorum" type="xsd:string"></xsd:attribute>
+				<xsd:attribute name="quorum" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper quorum address</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperClientPort" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper client port. Defaults to 2181.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperZnodeParent" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper znode parent. Defaults to '/hbase'.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="zookeeperZnodeRootServer" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>ZooKeeper znode root server. Defaults to 'root-region-server'.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -223,6 +250,22 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Configuration data for Hazelcast cache provider -->
+	<xsd:element name="hazelcast-cache" type="hazelcastCacheType"
+		substitutionGroup="abstract-cache">
+		<xsd:annotation>
+			<xsd:documentation>Device management cache that uses Hazelcast for the underlying cache
+				mechanism.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hazelcastCacheType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCacheType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -381,6 +424,51 @@
 	<xsd:complexType name="solrEventProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Azure EventHub outbound event processor -->
+	<xsd:element name="azure-eventhub-event-processor" type="azureEventHubEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to an Azure EventHub using AMQP 1.0.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="azureEventHubEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorType">
+				<xsd:attribute name="sasName" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Sets the identity used for SAS authentication.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="sasKey" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Sets the key used for SAS authentication.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="serviceBusName" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Set the service bus to connect to (e.g.
+							xxx.servicebus.windows.net).
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="eventHubName" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name of EventHub to connect to.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -554,6 +642,45 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
+	<!-- Decode using a Groovy script -->
+	<xsd:element name="groovy-string-event-decoder" type="swGroovyStringDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder that uses a Groovy script to parse a String payload into
+				decoded events.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swGroovyStringDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to script used for decoding payload.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Echo String payload for debugging purposes -->
+	<xsd:element name="echo-string-decoder" type="swEchoStringDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder for event receivers with String payloads that simply echoes
+				the payload to the log.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swEchoStringDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<!-- Used as a placeholder for event sources to allow substitutionGroups -->
 	<xsd:element name="abstract-event-source" abstract="true" type="abstractEventSourceType">
@@ -638,6 +765,80 @@
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>
+
+    <!-- Event source that pulls binary information from an EventHub endpoint and decodes it -->
+    <xsd:element name="azure-eventhub-event-source" type="azureEventhubEventSourceType"
+                 substitutionGroup="abstract-event-source">
+        <xsd:annotation>
+            <xsd:documentation>Event source that pulls binary information from an Azure EventHub endpoint and
+                decodes it
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="azureEventhubEventSourceType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractEventSourceType">
+                <xsd:sequence>
+                    <xsd:element ref="abstract-decoder"/>
+                </xsd:sequence>
+                <xsd:attributeGroup ref="event-source-attributes"/>
+                <xsd:attributeGroup ref="azure-eventhub-inbound-attributes"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- Attributes used for inbound eventhub processing -->
+    <xsd:attributeGroup name="azure-eventhub-inbound-attributes">
+        <xsd:attribute name="targetFqn" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    EventHub targetFqn address.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="namespace" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    EventHub namespace.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="entityPath" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    EventHub entityPath.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="partitionCount" type="xsd:int">
+            <xsd:annotation>
+                <xsd:documentation>
+                    EventHub partition count.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="zkStateStore" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    zookeeper store url for EventHub state persistence.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="username" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    username for EventHub connection.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="password" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    password for EventHub connection.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
 
 	<!-- Event source that pulls binary information from an AcitveMQ queue and decodes it -->
 	<xsd:element name="activemq-event-source" type="activemqEventSourceType"
@@ -749,6 +950,56 @@
 						<xsd:documentation>
 							Number of threads used to handle client connections to the server
 							socket.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Contains web socket header information -->
+	<xsd:complexType name="webSocketHeaderType">
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Header name.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="value" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Header value.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Event source that pulls String information from a web socket and decodes it -->
+	<xsd:element name="string-web-socket-event-source" type="stringWebSocketEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls String payloads from a web socket.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="stringWebSocketEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+					<xsd:element name="header" type="webSocketHeaderType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Header that is passed to the web socket for configuration.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="webSocketUrl" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							URL of the web socket to connect to.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -1315,5 +1566,32 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+
+    <!-- Configuration data for Groovy services -->
+    <xsd:element name="groovy-configuration" type="groovyConfigurationType"
+                 substitutionGroup="abstract-global">
+        <xsd:annotation>
+            <xsd:documentation>Global configuration settings for Groovy scripting.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="groovyConfigurationType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractGlobalType">
+                <xsd:attribute name="debug" type="xsd:boolean" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Turns on Groovy script engine debugging if true.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="verbose" type="xsd:boolean" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Turns on Groovy script engine verbose flag if true.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
 </xsd:schema>

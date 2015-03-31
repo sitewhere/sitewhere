@@ -8,15 +8,14 @@
 package com.sitewhere.spi.device.request;
 
 import java.util.List;
-
-import com.sitewhere.spi.common.IMetadataProvider;
+import java.util.Map;
 
 /**
  * Interface for arguments needed to create a device group.
  * 
  * @author Derek
  */
-public interface IDeviceGroupCreateRequest extends IMetadataProvider {
+public interface IDeviceGroupCreateRequest {
 
 	/**
 	 * Get the unique token.
@@ -45,4 +44,11 @@ public interface IDeviceGroupCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public List<String> getRoles();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

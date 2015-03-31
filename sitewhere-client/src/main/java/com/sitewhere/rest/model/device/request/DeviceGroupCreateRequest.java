@@ -7,10 +7,11 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
 
 /**
@@ -18,7 +19,10 @@ import com.sitewhere.spi.device.request.IDeviceGroupCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceGroupCreateRequest extends MetadataProvider implements IDeviceGroupCreateRequest {
+public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 1657559631108464556L;
 
 	/** Unique token */
 	private String token;
@@ -32,6 +36,14 @@ public class DeviceGroupCreateRequest extends MetadataProvider implements IDevic
 	/** List of roles */
 	private List<String> roles = new ArrayList<String>();
 
+	/** Metadata values */
+	private Map<String, String> metadata;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getToken()
+	 */
 	public String getToken() {
 		return token;
 	}
@@ -40,6 +52,11 @@ public class DeviceGroupCreateRequest extends MetadataProvider implements IDevic
 		this.token = token;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getName()
+	 */
 	public String getName() {
 		return name;
 	}
@@ -48,6 +65,11 @@ public class DeviceGroupCreateRequest extends MetadataProvider implements IDevic
 		this.name = name;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getDescription()
+	 */
 	public String getDescription() {
 		return description;
 	}
@@ -56,11 +78,29 @@ public class DeviceGroupCreateRequest extends MetadataProvider implements IDevic
 		this.description = description;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getRoles()
+	 */
 	public List<String> getRoles() {
 		return roles;
 	}
 
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceGroupCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

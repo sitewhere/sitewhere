@@ -9,6 +9,7 @@ package com.sitewhere.mongodb.common;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 
 /**
@@ -67,7 +68,11 @@ public class MongoMetadataProvider {
 		DBObject metadata = (DBObject) source.get(propertyName);
 		if (metadata != null) {
 			for (String key : metadata.keySet()) {
-				target.addOrReplaceMetadata(key, (String) metadata.get(key));
+				try {
+					target.addOrReplaceMetadata(key, (String) metadata.get(key));
+				} catch (SiteWhereException e) {
+					// Skip field if key is invalid in the database.
+				}
 			}
 		}
 	}

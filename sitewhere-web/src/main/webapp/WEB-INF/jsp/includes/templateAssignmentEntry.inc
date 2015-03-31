@@ -99,65 +99,61 @@
 # if (data.associatedPerson) { #
 		<div class="sw-assignment-list-entry-logowrapper"
 			style="background-image: url(#:associatedPerson.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Asset") #</span>
 		</div>
 # } else if (data.associatedHardware) { #
 		<div class="sw-assignment-list-entry-logowrapper"
 			style="background-image: url(#:associatedHardware.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Asset") #</span>
 		</div>
 # } else if (data.associatedLocation) { #
 		<div class="sw-assignment-list-entry-logowrapper"
 			style="background-image: url(#:associatedLocation.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Asset</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Asset") #</span>
 		</div>
 # } else if ((data.assignmentType == 'Unassociated') && (data.device)) { #
 		<div class="sw-assignment-list-entry-logowrapper"
 			style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-list-entry-logo-tag">Unassociated</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Unassociated") #</span>
 		</div>
 # } #
 		<div class="sw-assignment-list-entry-actions">
-			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 70px;">Assigned:</span> #= formattedDate(activeDate) #</p>
-			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 70px;">Released:</span> #= formattedDate(releasedDate) #</p>
+			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 70px;">#= i18next("public.Assigned") #:</span> #= formattedDate(activeDate) #</p>
+			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 70px;">#= i18next("public.Released") #:</span> #= formattedDate(releasedDate) #</p>
 # if (data.status == 'Active') { #
-			<span class="sw-min-70 sw-assignment-list-entry-label">Status:</span>			
+			<span class="sw-min-70 sw-assignment-list-entry-label">#= i18next("public.Status") #:</span>			
 			<div class="btn-group" style="margin-top: -6px;">
-				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-					Active
-					<span class="caret"></span>
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">#= i18next("includes.Active") #<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a tabindex="-1" href="javascript:void(0)" title="Release Assignment"
-						onclick="onReleaseAssignment(event, '#:token#')">Release Assignment</a></li>
-					<li><a tabindex="-1" href="javascript:void(0)" title="Report Device/Asset Missing"
-						onclick="onMissingAssignment(event, '#:token#')">Report Missing</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.ReleaseAssignment") #"
+						onclick="onReleaseAssignment(event, '#:token#')">#= i18next("includes.ReleaseAssignment") #</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.i18next.RDAM") #"
+						onclick="onMissingAssignment(event, '#:token#')">#= i18next("includes.ReportMissing") #</a></li>
 				</ul>
 			</div>
 # } else if (data.status == 'Missing') { #
-			<span class="sw-min-70 sw-assignment-list-entry-label">Status:</span>			
+			<span class="sw-min-70 sw-assignment-list-entry-label">#= i18next("public.Status") #:</span>			
 			<div class="btn-group" style="margin-top: -6px;">
-				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-					Missing
-					<span class="caret"></span>
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">#= i18next("includes.Missing") #<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a tabindex="-1" href="javascript:void(0)" title="Release Assignment"
-						onclick="onReleaseAssignment(event, '#:token#')">Release Assignment</a></li>
+					<li><a tabindex="-1" href="javascript:void(0)" title="#= i18next("includes.ReleaseAssignment") #"
+						onclick="onReleaseAssignment(event, '#:token#')">#= i18next("includes.ReleaseAssignment") #</a></li>
 				</ul>
 			</div>
 # } else { #
-			<p class="ellipsis"><span class="sw-min-70 sw-assignment-list-entry-label">Status:</span> #:status#</p>
+			<p class="ellipsis"><span class="sw-min-70 sw-assignment-list-entry-label">#= i18next("public.Status") #:</span> #:status#</p>
 # } #
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: -2px;">
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Assignment" style="color: \\#009;"
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.EditAssignment") #" style="color: \\#009;"
 					href="javascript:void(0)" onclick="onEditAssignment(event, '#:token#')">
 					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Assignment" style="color: \\#900;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.DeleteAssignment") #" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onDeleteAssignment(event, '#:token#')">
 					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Assignment" style="color: \\#060;" 
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.ViewAssignment") #" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onViewAssignment(event, '#:token#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>
@@ -167,12 +163,12 @@
 		<div class="sw-assignment-list-entry-device">
 			<div class="sw-assignment-list-entry-logowrapper"
 				style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-				<span class="label label-info sw-assignment-list-entry-logo-tag">Device</span>
+				<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Device") #</span>
 			</div>
 			<p class="sw-assignment-list-entry-heading ellipsis" title="#:device.assetName#">
 				<a title="#:device.assetName#" class="sw-action-glyph sw-primary-glyph" 
 					style="color: \\#009;" href="/sitewhere/admin/devices/detail.html?hardwareId=#:device.hardwareId#">
-					<i class="icon-external-link icon-white" title="Open Device"></i></a>
+					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenDevice") #"></i></a>
 				<span title="#:device.assetName#">#:device.assetName#</span>
 			</p>
 			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 40px;">Id:</span><span title="#:device.hardwareId#">#:device.hardwareId#</span></p>
@@ -191,12 +187,12 @@
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/detail.html?token=#:token#">
-					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
 				#:associatedPerson.name#
 			</p>
-			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 45px;">Email:</span><span title="#:associatedPerson.emailAddress#">#:associatedPerson.emailAddress#</span></p>
-			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 45px;">Roles:</span><span title="#:swArrayAsCommaDelimited(associatedPerson.roles)#">#:swArrayAsCommaDelimited(associatedPerson.roles)#</span></p>
+			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 45px;">#= i18next("public.Email") #:</span><span title="#:associatedPerson.emailAddress#">#:associatedPerson.emailAddress#</span></p>
+			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 45px;">#= i18next("public.Roles") #:</span><span title="#:swArrayAsCommaDelimited(associatedPerson.roles)#">#:swArrayAsCommaDelimited(associatedPerson.roles)#</span></p>
 		</div>
 # } else if (data.associatedHardware) { #
 		<div>
@@ -204,7 +200,7 @@
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/detail.html?token=#:token#">
-					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
 				#:associatedHardware.name#
 			</p>
@@ -217,7 +213,7 @@
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/detail.html?token=#:token#">
-					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
 				#:associatedLocation.name#
 			</p>
@@ -230,9 +226,9 @@
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/detail.html?token=#:token#">
-					<i class="icon-external-link icon-white" title="Open Assignment"></i></a>
+					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
-				Unassociated Device
+				#= i18next("public.UnassociatedDevice") #
 			</p>
 		</div>
 # } #

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event.view;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public class DeviceCommandInvocationSummary extends MetadataProvider {
+public class DeviceCommandInvocationSummary extends MetadataProvider implements Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -1400511380311663352L;
 
 	/** Command name */
 	private String name;

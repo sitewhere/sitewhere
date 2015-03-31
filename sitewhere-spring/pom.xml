@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.sitewhere</groupId>
 		<artifactId>sitewhere</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -33,6 +33,24 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-azure</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-groovy</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-mongodb</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-solr</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
@@ -40,7 +58,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>3.2.1.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

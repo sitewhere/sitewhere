@@ -42,6 +42,9 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 	/** Unique id for referencing source */
 	private String sourceId;
 
+	/** Indicates if assignment state should be updated with event data */
+	private boolean updateAssignmentState = false;
+
 	/** Device event decoder */
 	private IDeviceEventDecoder<T> deviceEventDecoder;
 
@@ -125,6 +128,7 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 			List<IDecodedDeviceEventRequest> requests = decodePayload(encodedPayload);
 			if (requests != null) {
 				for (IDecodedDeviceEventRequest decoded : requests) {
+					decoded.getRequest().setUpdateState(isUpdateAssignmentState());
 					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
 						getInboundProcessingStrategy().processRegistration(decoded);
 					} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
@@ -195,6 +199,20 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 
 	public void setSourceId(String sourceId) {
 		this.sourceId = sourceId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.provisioning.IInboundEventSource#isUpdateAssignmentState()
+	 */
+	public boolean isUpdateAssignmentState() {
+		return updateAssignmentState;
+	}
+
+	public void setUpdateAssignmentState(boolean updateAssignmentState) {
+		this.updateAssignmentState = updateAssignmentState;
 	}
 
 	/*

@@ -24,7 +24,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateReq
 public class StompTest {
 
 	/** Hardware id for test message */
-	private static final String HARDWARE_ID = "46497751-fdbd-46c0-a6db-3f0007b0fd00";
+	private static final String HARDWARE_ID = "1f344aea-5db0-4904-8331-76a15540b24b";
 
 	/** Mapper used for marshaling event create requests */
 	private static ObjectMapper MAPPER = new ObjectMapper();

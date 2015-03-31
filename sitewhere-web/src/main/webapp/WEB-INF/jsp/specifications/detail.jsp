@@ -6,10 +6,10 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
-	<h1 class="ellipsis"><c:out value="${sitewhere_title}"/></h1>
+	<h1 class="ellipsis" data-i18n="specifications.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-specification" class="btn" href="javascript:void(0)">
-			<i class="icon-pencil sw-button-icon"></i> Edit Specification</a>
+		<a id="btn-edit-specification" class="btn" href="javascript:void(0)" data-i18n="public.EditSpecification">
+			<i class="icon-pencil sw-button-icon"></i></a>
 	</div>
 </div>
 
@@ -19,34 +19,34 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Commands</li>
-		<li>Code Generation</li>
+		<li class="k-state-active">&nbsp;<font data-i18n="specifications.detail.Commands"></font></li>
+		<li >&nbsp;<font data-i18n="specifications.detail.CodeGeneration"></font></li>
 <c:choose>
 	<c:when test="${specification.containerPolicy == 'Composite'}">
-		<li>Composition</li>
+		<li data-i18n="public.Composition"></li>
 	</c:when>
 </c:choose>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Commands</div>
+			<div class="sw-button-bar-title" data-i18n="specifications.detail.DeviceCommands"></div>
 			<div>
-				<a id="btn-refresh-commands" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
-				<a id="btn-add-command" class="btn" href="javascript:void(0)">
-					<i class="icon-plus sw-button-icon"></i> Add New Command</a>
+				<a id="btn-refresh-commands" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
+				<a id="btn-add-command" class="btn" href="javascript:void(0)" data-i18n="specifications.detail.AddNewCommand">
+					<i class="icon-plus sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div id="commands" class="sw-assignment-list"></div>
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Google Protocol Buffer Definition</div>
+			<div class="sw-button-bar-title" data-i18n="specifications.detail.GPBD"></div>
 			<div>
-				<a id="btn-refresh-protobuf" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh</a>
-				<a id="btn-download-protobuf" class="btn" href="javascript:void(0)">
-					<i class="icon-download-alt sw-button-icon"></i> Download</a>
+				<a id="btn-refresh-protobuf" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i></a>
+				<a id="btn-download-protobuf" class="btn" href="javascript:void(0)" data-i18n="specifications.detail.Download">
+					<i class="icon-download-alt sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div id="sw-proto-section" class="protobuf"></div>
@@ -55,12 +55,12 @@
 	<c:when test="${specification.containerPolicy == 'Composite'}">
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Device Element Schema</div>
+			<div class="sw-button-bar-title" data-i18n="specifications.detail.DeviceElementSchema"></div>
 			<div>
-				<a id="btn-add-unit" class="btn" href="javascript:void(0)">
-					<i class="icon-folder-close sw-button-icon"></i> Add Device Unit</a>
-				<a id="btn-add-slot" class="btn" href="javascript:void(0)">
-					<i class="icon-link sw-button-icon"></i> Add Device Slot</a>
+				<a id="btn-add-unit" class="btn" href="javascript:void(0)" data-i18n="specifications.detail.AddDeviceUnit">
+					<i class="icon-folder-close sw-button-icon"></i></a>
+				<a id="btn-add-slot" class="btn" href="javascript:void(0)" data-i18n="specifications.detail.AddDeviceSlot">
+					<i class="icon-link sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div id="sw-composition-section"></div>
@@ -80,6 +80,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "specifications.detail.title";
+
 	// Token for specification being viewed.
 	var specToken = '<c:out value="${specification.token}"/>';
 
@@ -174,8 +177,8 @@
 	function onDeleteCommand(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swConfirm("Delete Command", "Are you sure that you want to delete device command with " +
-			"token '" + token + "'?", function(result) {
+		swConfirm(i18next("includes.DeleteCommand"), i18next("specifications.detail.AYSTYWTDDCW")+
+			" token '" + token + "'?", function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/commands/" + token, 
 						commandDeleteSuccess, commandDeleteFailed);

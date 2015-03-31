@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,10 @@ import com.sitewhere.spi.device.request.IBatchCommandForCriteriaRequest;
  * 
  * @author Derek
  */
-public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaRequest {
+public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -7139262971572322676L;
 
 	/** Token for operation */
 	private String token;

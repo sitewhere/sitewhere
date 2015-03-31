@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.batch;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.OperationType;
@@ -23,7 +25,10 @@ import com.sitewhere.spi.device.batch.OperationType;
  * 
  * @author Derek
  */
-public class BatchOperation extends MetadataProviderEntity implements IBatchOperation {
+public class BatchOperation extends MetadataProviderEntity implements IBatchOperation, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -228183022121018340L;
 
 	/** Unqiue token */
 	private String token;
@@ -123,7 +128,7 @@ public class BatchOperation extends MetadataProviderEntity implements IBatchOper
 		this.processingEndedDate = processingEndedDate;
 	}
 
-	public static BatchOperation copy(IBatchOperation input) {
+	public static BatchOperation copy(IBatchOperation input) throws SiteWhereException {
 		BatchOperation result = new BatchOperation();
 		result.setToken(input.getToken());
 		result.setOperationType(input.getOperationType());

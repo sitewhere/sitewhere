@@ -33,13 +33,13 @@ import com.rabbitmq.client.ConnectionFactory;
 public class ActiveMQTests {
 
 	/** Hardware id for test message */
-	private static final String HARDWARE_ID = "46497751-fdbd-46c0-a6db-3f0007b0fd00";
+	private static final String HARDWARE_ID = "4eceeda1-9ab2-4069-9372-7aa007a3dccc";
 
 	/** Nunber of threads for multithreaded tests */
-	private static final int NUM_THREADS = 50;
+	private static final int NUM_THREADS = 150;
 
 	/** Nunber of calls performed per thread */
-	private static final int NUM_CALLS_PER_THREAD = 300;
+	private static final int NUM_CALLS_PER_THREAD = 400;
 
 	@Test
 	public void doJMSTest() throws Exception {

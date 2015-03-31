@@ -44,6 +44,9 @@ public class MongoPersistence {
 	@SuppressWarnings("unused")
 	private static Logger LOGGER = Logger.getLogger(MongoPersistence.class);
 
+	/** Default lookup */
+	private static IMongoConverterLookup LOOKUP = new MongoConverters();
+
 	/**
 	 * Common handler for creating new objects. Assures that errors are handled in a
 	 * consistent way.
@@ -93,7 +96,7 @@ public class MongoPersistence {
 	}
 
 	/**
-	 * Get a single entity by unique id.
+	 * Perform a get using the default lookup.s
 	 * 
 	 * @param id
 	 * @param api
@@ -101,13 +104,41 @@ public class MongoPersistence {
 	 * @return
 	 */
 	public static <T> T get(String id, Class<T> api, DBCollection collection) {
+		return get(id, api, collection, LOOKUP);
+	}
+
+	/**
+	 * Get a single entity by unique id.
+	 * 
+	 * @param id
+	 * @param api
+	 * @param collection
+	 * @param lookup
+	 * @return
+	 */
+	public static <T> T get(String id, Class<T> api, DBCollection collection, IMongoConverterLookup lookup) {
 		DBObject searchById = new BasicDBObject("_id", new ObjectId(id));
 		DBObject found = collection.findOne(searchById);
 		if (found != null) {
-			MongoConverter<T> converter = MongoConverters.getConverterFor(api);
+			MongoConverter<T> converter = lookup.getConverterFor(api);
 			return converter.convert(found);
 		}
 		return null;
+	}
+
+	/**
+	 * Search using the default lookup.
+	 * 
+	 * @param api
+	 * @param collection
+	 * @param query
+	 * @param sort
+	 * @param criteria
+	 * @return
+	 */
+	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
+			DBObject sort, ISearchCriteria criteria) {
+		return search(api, collection, query, sort, criteria, LOOKUP);
 	}
 
 	/**
@@ -118,12 +149,12 @@ public class MongoPersistence {
 	 * @param collection
 	 * @param query
 	 * @param sort
-	 * @param pageNumber
-	 * @param pageSize
+	 * @param criteria
+	 * @param lookup
 	 * @return
 	 */
 	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort, ISearchCriteria criteria) {
+			DBObject sort, ISearchCriteria criteria, IMongoConverterLookup lookup) {
 		DBCursor cursor;
 		if (criteria.getPageSize() == 0) {
 			cursor = collection.find(query).sort(sort);
@@ -133,7 +164,7 @@ public class MongoPersistence {
 		}
 		List<T> matches = new ArrayList<T>();
 		SearchResults<T> results = new SearchResults<T>(matches);
-		MongoConverter<T> converter = MongoConverters.getConverterFor(api);
+		MongoConverter<T> converter = lookup.getConverterFor(api);
 		try {
 			results.setNumResults(cursor.count());
 			while (cursor.hasNext()) {
@@ -147,7 +178,7 @@ public class MongoPersistence {
 	}
 
 	/**
-	 * Search the given collection using the provided query and sort.
+	 * Search using the default lookup.
 	 * 
 	 * @param api
 	 * @param collection
@@ -157,10 +188,25 @@ public class MongoPersistence {
 	 */
 	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
 			DBObject sort) {
+		return search(api, collection, query, sort, LOOKUP);
+	}
+
+	/**
+	 * Search the given collection using the provided query and sort.
+	 * 
+	 * @param api
+	 * @param collection
+	 * @param query
+	 * @param sort
+	 * @param looku
+	 * @return
+	 */
+	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
+			DBObject sort, IMongoConverterLookup lookup) {
 		DBCursor cursor = collection.find(query).sort(sort);
 		List<T> matches = new ArrayList<T>();
 		SearchResults<T> results = new SearchResults<T>(matches);
-		MongoConverter<T> converter = MongoConverters.getConverterFor(api);
+		MongoConverter<T> converter = lookup.getConverterFor(api);
 		try {
 			results.setNumResults(cursor.count());
 			while (cursor.hasNext()) {
@@ -174,7 +220,7 @@ public class MongoPersistence {
 	}
 
 	/**
-	 * List all items in the collection that match the qiven query.
+	 * List using the default lookup.
 	 * 
 	 * @param api
 	 * @param collection
@@ -183,9 +229,24 @@ public class MongoPersistence {
 	 * @return
 	 */
 	public static <T> List<T> list(Class<T> api, DBCollection collection, DBObject query, DBObject sort) {
+		return list(api, collection, query, sort, LOOKUP);
+	}
+
+	/**
+	 * List all items in the collection that match the qiven query.
+	 * 
+	 * @param api
+	 * @param collection
+	 * @param query
+	 * @param sort
+	 * @param lookup
+	 * @return
+	 */
+	public static <T> List<T> list(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
+			IMongoConverterLookup lookup) {
 		DBCursor cursor = collection.find(query);
 		List<T> matches = new ArrayList<T>();
-		MongoConverter<T> converter = MongoConverters.getConverterFor(api);
+		MongoConverter<T> converter = lookup.getConverterFor(api);
 		try {
 			while (cursor.hasNext()) {
 				DBObject match = cursor.next();

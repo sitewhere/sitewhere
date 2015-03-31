@@ -12,7 +12,7 @@
 	<groupId>com.sitewhere</groupId>
 	<artifactId>sitewhere</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>SiteWhere</name>
 	<description>SiteWhere Open Source Framework for the Internet of Things</description>
 	<url>http://www.sitewhere.com/</url>
@@ -25,11 +25,13 @@
 			</activation>
 			<modules>
 				<module>sitewhere-activemq</module>
+				<module>sitewhere-azure</module>
 				<module>sitewhere-client</module>
 				<module>sitewhere-core</module>
 				<module>sitewhere-ehcache</module>
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
+				<module>sitewhere-groovy</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-mule</module>
@@ -44,11 +46,13 @@
 			<id>withdocs</id>
 			<modules>
 				<module>sitewhere-activemq</module>
+				<module>sitewhere-azure</module>
 				<module>sitewhere-client</module>
 				<module>sitewhere-core</module>
 				<module>sitewhere-ehcache</module>
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
+				<module>sitewhere-groovy</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-mule</module>
@@ -180,12 +184,15 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<sitewhere.version>1.0.1</sitewhere.version>
-		<hbase.version>0.94.12</hbase.version>
-		<hadoop.version>1.0.4</hadoop.version>
+		<sitewhere.version>1.0.2</sitewhere.version>
+		<hbase.version>0.98.4-hadoop2</hbase.version>
+		<hadoop.version>2.6.0</hadoop.version>
 		<mule.version>3.4.0</mule.version>
 		<junit.version>4.0</junit.version>
 		<log4j.version>1.2.15</log4j.version>
+		<spring.version>3.2.10.RELEASE</spring.version>
+		<spring.security.version>3.2.6.RELEASE</spring.security.version>
+		<jackson.version>2.1.5</jackson.version>
 	</properties>
 
 	<licenses>
@@ -269,6 +276,14 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18.1</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>

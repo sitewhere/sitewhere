@@ -7,9 +7,10 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
 import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 
@@ -18,13 +19,19 @@ import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
  * 
  * @author Derek
  */
-public class BatchElementUpdateRequest extends MetadataProvider implements IBatchElementUpdateRequest {
+public class BatchElementUpdateRequest implements IBatchElementUpdateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -3369336266183401785L;
 
 	/** Processing status for update */
 	private ElementProcessingStatus processingStatus;
 
 	/** Date element was processed */
 	private Date processedDate;
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -51,5 +58,18 @@ public class BatchElementUpdateRequest extends MetadataProvider implements IBatc
 
 	public void setProcessedDate(Date processedDate) {
 		this.processedDate = processedDate;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IBatchElementUpdateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

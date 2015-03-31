@@ -18,6 +18,10 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
+import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
+import com.sitewhere.mongodb.DockerMongoClient;
+import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.server.device.DefaultDeviceModelInitializer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
@@ -69,6 +73,10 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 				parseEHCacheDeviceManagementCache(child, context);
 				break;
 			}
+			case HazelcastCache: {
+				parseHazelcastCache(child, context);
+				break;
+			}
 			case DefaultDeviceModelInitializer: {
 				parseDefaultDeviceModelInitializer(child, context);
 				break;
@@ -89,9 +97,16 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	 * @param context
 	 */
 	protected void parseMongoDatasource(Element element, ParserContext context) {
+		boolean docker = false;
+		Attr useDockerLinking = element.getAttributeNode("useDockerLinking");
+		if ((useDockerLinking != null) && ("true".equals(useDockerLinking.getValue()))) {
+			docker = true;
+		}
+
 		// Register client bean.
 		BeanDefinitionBuilder client =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.mongodb.SiteWhereMongoClient");
+				docker ? BeanDefinitionBuilder.rootBeanDefinition(DockerMongoClient.class)
+						: BeanDefinitionBuilder.rootBeanDefinition(SiteWhereMongoClient.class);
 		Attr hostname = element.getAttributeNode("hostname");
 		if (hostname != null) {
 			client.addPropertyValue("hostname", hostname.getValue());
@@ -135,7 +150,24 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		if (quorum != null) {
 			client.addPropertyValue("quorum", quorum.getValue());
 		}
+		
+		Attr zookeeperClientPort = element.getAttributeNode("zookeeperClientPort");
+		if (zookeeperClientPort != null) {
+			client.addPropertyValue("zookeeperClientPort", zookeeperClientPort.getValue());
+		}
+		
+		Attr zookeeperZnodeParent = element.getAttributeNode("zookeeperZnodeParent");
+		if (zookeeperZnodeParent != null) {
+			client.addPropertyValue("zookeeperZnodeParent", zookeeperZnodeParent.getValue());
+		}
+		
+		Attr zookeeperZnodeRootServer = element.getAttributeNode("zookeeperZnodeRootServer");
+		if (zookeeperZnodeRootServer != null) {
+			client.addPropertyValue("zookeeperZnodeRootServer", zookeeperZnodeRootServer.getValue());
+		}
+		
 		context.getRegistry().registerBeanDefinition("hbase", client.getBeanDefinition());
+		
 
 		// Register HBase device management implementation.
 		BeanDefinitionBuilder dm =
@@ -201,6 +233,21 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse configuration for Hazelcast distributed cache.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseHazelcastCache(Element element, ParserContext context) {
+		BeanDefinitionBuilder cache =
+				BeanDefinitionBuilder.rootBeanDefinition(HazelcastDistributedCacheProvider.class);
+		cache.addPropertyReference("configuration",
+				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
+		context.getRegistry().registerBeanDefinition(
+				SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER, cache.getBeanDefinition());
+	}
+
+	/**
 	 * Parse configuration for default device model initializer.
 	 * 
 	 * @param element
@@ -249,6 +296,9 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 
 		/** EHCache device mananagement cache provider */
 		EHCacheDeviceManagementCache("ehcache-device-management-cache"),
+
+		/** Hazelcast cache provider */
+		HazelcastCache("hazelcast-cache"),
 
 		/** Creates sample data if no device data is present */
 		DefaultDeviceModelInitializer("default-device-model-initializer"),

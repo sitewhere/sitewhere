@@ -2,49 +2,49 @@
 <div id="uc-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="uc-dialog-header">Create User</h3>
+		<h3 id="uc-dialog-header" data-i18n="includes.userCreateDialog.CreateUser"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="uc-tabs">
 			<ul>
-				<li class="k-state-active">User Details</li>
-				<li>Permissions</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.userCreateDialog.UserDetails"></li>
+				<li data-i18n="includes.userCreateDialog.Permissions"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<form id="uc-user-form" class="form-horizontal" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="uc-username">Username</label>
+						<label class="control-label" for="uc-username" data-i18n="public.Username"></label>
 						<div class="controls">
 							<input type="text" id="uc-username" class="input-xlarge" title="Username">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="uc-password">Password</label>
+						<label class="control-label" for="uc-password" data-i18n="public.Password"></label>
 						<div class="controls">
 							<input type="password" id="uc-password" class="input-xlarge" title="Password">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="uc-password-confirm">Password (Confirm)</label>
+						<label class="control-label" for="uc-password-confirm" data-i18n="includes.userCreateDialog.PasswordConfirm"></label>
 						<div class="controls">
 							<input type="password" id="uc-password-confirm" class="input-xlarge" title="Password Confirm">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="uc-first-name">First Name</label>
+						<label class="control-label" for="uc-first-name" data-i18n="public.FirstName"></label>
 						<div class="controls">
 							<input type="text" id="uc-first-name" class="input-xlarge" title="First Name">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="uc-last-name">Last Name</label>
+						<label class="control-label" for="uc-last-name" data-i18n="public.LastName"></label>
 						<div class="controls">
 							<input type="text" id="uc-last-name" class="input-xlarge" title="Last Name">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="uc-account-status">Account Status</label>
+						<label class="control-label" for="uc-account-status" data-i18n="includes.userCreateDialog.AccountStatus"></label>
 						<div class="controls">
 							<input id="uc-account-status"/>
 						</div>
@@ -65,8 +65,8 @@
 	</div>
 	<input id="uc-original-username" type="hidden" value="" />
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="uc-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="uc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -85,11 +85,14 @@
 	var ucStatusList;
 	
 	/** Available map types shown in dropdown */
-    var ucAccountStatuses = [
-		{ text: "Active", status: "Active" },
-		{ text: "Expired", status: "Expired" },
-		{ text: "Locked", status: "Locked" },
-	];
+	function getUcAccountStatuses(){
+	    var ucAccountStatuses = [
+		    { text: i18next("includes.Active"), status: "Active" },
+		    { text: i18next("includes.Expired"), status: "Expired" },
+		    { text: i18next("includes.Locked"), status: "Locked" },
+	    ];
+	    return ucAccountStatuses;
+	}
 
 	$(document).ready(function() {
 		
@@ -102,8 +105,8 @@
     	ucStatusList = $("#uc-account-status").kendoDropDownList({
     		dataTextField: "text",
     		dataValueField: "status",
-    	    dataSource: ucAccountStatuses,
-    	}).data("kendoDropDownList");;
+    	    dataSource: getUcAccountStatuses(),
+    	}).data("kendoDropDownList");
     	
 		/** Create AJAX datasource for authorities list */
 		authsDS = new kendo.data.DataSource({
@@ -259,8 +262,8 @@
 	/** Open the user create dialog */
 	function ucOpen(callback) {
 		ucClearDialog();
-		$('#uc-dialog-header').html("Create User");
-		$('#uc-dialog-submit').html("Create");
+		$('#uc-dialog-header').html(i18next("includes.userCreateDialog.CreateUser"));
+		$('#uc-dialog-submit').html(i18next("public.Create"));
 		ucMetadataDS.data(new Array());
 		ucTabs.select(0);
 		
@@ -289,8 +292,8 @@
     
     /** Called on successful user load request */
     function uuUserGetSuccess(data, status, jqXHR) {
-		$('#uc-dialog-header').html("Edit User");
-		$('#uc-dialog-submit').html("Save");
+		$('#uc-dialog-header').html(i18next("includes.EditUser"));
+		$('#uc-dialog-submit').html(i18next("public.Save"));
 		
 		// Load text fields.
 		$('#uc-original-username').val(data.username);

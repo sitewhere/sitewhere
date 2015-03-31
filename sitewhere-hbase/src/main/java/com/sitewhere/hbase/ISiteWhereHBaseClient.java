@@ -35,11 +35,21 @@ public interface ISiteWhereHBaseClient {
 	public HBaseAdmin getAdmin();
 
 	/**
-	 * Get the named table interface.
+	 * Get the named table interface. Auto flush is disabled.
 	 * 
 	 * @param tableName
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException;
+
+	/**
+	 * Get the named table interface.
+	 * 
+	 * @param tableName
+	 * @param autoFlush
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public HTableInterface getTableInterface(byte[] tableName, boolean autoFlush) throws SiteWhereException;
 }

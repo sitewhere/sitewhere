@@ -9,10 +9,7 @@ package com.sitewhere.hbase.device;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -22,20 +19,20 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
+import org.apache.hadoop.hbase.filter.ByteArrayComparable;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
-import org.apache.hadoop.hbase.filter.WritableByteArrayComparable;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.Tracer;
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
@@ -44,7 +41,6 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
@@ -78,32 +74,32 @@ public class HBaseSite {
 	/**
 	 * Create a new site.
 	 * 
-	 * @param hbase
-	 * @param uids
+	 * @param context
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static ISite createSite(ISiteWhereHBaseClient hbase, ISiteCreateRequest request)
+	public static ISite createSite(IHBaseContext context, ISiteCreateRequest request)
 			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "createSite (HBase)", LOGGER);
 		try {
-			String uuid = IdManager.getInstance().getSiteKeys().createUniqueId();
-			Long value = IdManager.getInstance().getSiteKeys().getValue(uuid);
+			// Use common logic so all backend implementations work the same.
+			Site site = SiteWherePersistence.siteCreateLogic(request);
+
+			Long value = IdManager.getInstance().getSiteKeys().getNextCounterValue();
+			IdManager.getInstance().getSiteKeys().create(site.getToken(), value);
+
 			byte[] primary = getPrimaryRowkey(value);
 
-			// Use common logic so all backend implementations work the same.
-			Site site = SiteWherePersistence.siteCreateLogic(request, uuid);
-
 			// Create primary site record.
-			byte[] json = MarshalUtils.marshalJson(site);
+			byte[] payload = context.getPayloadMarshaler().encodeSite(site);
 			byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
 
 			HTableInterface sites = null;
 			try {
-				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				Put put = new Put(primary);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, maxLong);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, maxLong);
 				sites.put(put);
@@ -121,18 +117,16 @@ public class HBaseSite {
 	/**
 	 * Get a site based on unique token.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site getSiteByToken(ISiteWhereHBaseClient hbase, String token,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static Site getSiteByToken(IHBaseContext context, String token) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "getSiteByToken (HBase) " + token, LOGGER);
 		try {
-			if (cache != null) {
-				ISite result = cache.getSiteCache().get(token);
+			if (context.getCacheProvider() != null) {
+				ISite result = context.getCacheProvider().getSiteCache().get(token);
 				if (result != null) {
 					Tracer.info("Returning cached site.", LOGGER);
 					return Site.copy(result);
@@ -145,17 +139,20 @@ public class HBaseSite {
 			byte[] primary = getPrimaryRowkey(siteId);
 			HTableInterface sites = null;
 			try {
-				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				Get get = new Get(primary);
-				get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+				HBaseUtils.addPayloadFields(get);
 				Result result = sites.get(get);
-				if (result.size() != 1) {
-					throw new SiteWhereException("Expected one JSON entry for site and found: "
-							+ result.size());
+
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				if ((type == null) || (payload == null)) {
+					throw new SiteWhereException("Payload fields not found for site.");
 				}
-				Site site = MarshalUtils.unmarshalJson(result.value(), Site.class);
-				if (cache != null) {
-					cache.getSiteCache().put(token, site);
+
+				Site site = PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeSite(payload);
+				if (context.getCacheProvider() != null) {
+					context.getCacheProvider().getSiteCache().put(token, site);
 				}
 				return site;
 			} catch (IOException e) {
@@ -171,18 +168,17 @@ public class HBaseSite {
 	/**
 	 * Update information for an existing site.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param request
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site updateSite(ISiteWhereHBaseClient hbase, String token, ISiteCreateRequest request,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static Site updateSite(IHBaseContext context, String token, ISiteCreateRequest request)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateSite (HBase) " + token, LOGGER);
 		try {
-			Site updated = getSiteByToken(hbase, token, cache);
+			Site updated = getSiteByToken(context, token);
 			if (updated == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
@@ -192,16 +188,16 @@ public class HBaseSite {
 
 			Long siteId = IdManager.getInstance().getSiteKeys().getValue(token);
 			byte[] rowkey = getPrimaryRowkey(siteId);
-			byte[] json = MarshalUtils.marshalJson(updated);
+			byte[] payload = context.getPayloadMarshaler().encodeSite(updated);
 
 			HTableInterface sites = null;
 			try {
-				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				Put put = new Put(rowkey);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				sites.put(put);
-				if (cache != null) {
-					cache.getSiteCache().put(token, updated);
+				if (context.getCacheProvider() != null) {
+					context.getCacheProvider().getSiteCache().put(token, updated);
 				}
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to update site.", e);
@@ -217,22 +213,20 @@ public class HBaseSite {
 	/**
 	 * List all sites that match the given criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<ISite> listSites(ISiteWhereHBaseClient hbase, ISearchCriteria criteria)
+	public static SearchResults<ISite> listSites(IHBaseContext context, ISearchCriteria criteria)
 			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listSites (HBase)", LOGGER);
 		try {
 			RegexStringComparator comparator = new RegexStringComparator(REGEX_SITE);
-			Pager<byte[]> pager = getFilteredSiteRows(hbase, false, criteria, comparator, null, null);
-			List<ISite> response = new ArrayList<ISite>();
-			for (byte[] match : pager.getResults()) {
-				response.add(MarshalUtils.unmarshalJson(match, Site.class));
-			}
-			return new SearchResults<ISite>(response, pager.getTotal());
+			Pager<ISite> pager =
+					getFilteredSiteRows(context, false, criteria, comparator, null, null, Site.class,
+							ISite.class);
+			return new SearchResults<ISite>(pager.getResults());
 		} finally {
 			Tracer.pop(LOGGER);
 		}
@@ -241,13 +235,13 @@ public class HBaseSite {
 	/**
 	 * List device assignments for a given site.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param siteToken
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(ISiteWhereHBaseClient hbase,
+	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context,
 			String siteToken, ISearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForSite (HBase) "
 				+ siteToken, LOGGER);
@@ -259,12 +253,10 @@ public class HBaseSite {
 			byte[] assnPrefix = getAssignmentRowKey(siteId);
 			byte[] after = getAfterAssignmentRowKey(siteId);
 			BinaryPrefixComparator comparator = new BinaryPrefixComparator(assnPrefix);
-			Pager<byte[]> pager = getFilteredSiteRows(hbase, false, criteria, comparator, assnPrefix, after);
-			List<IDeviceAssignment> response = new ArrayList<IDeviceAssignment>();
-			for (byte[] match : pager.getResults()) {
-				response.add(MarshalUtils.unmarshalJson(match, DeviceAssignment.class));
-			}
-			return new SearchResults<IDeviceAssignment>(response, pager.getTotal());
+			Pager<IDeviceAssignment> pager =
+					getFilteredSiteRows(context, false, criteria, comparator, assnPrefix, after,
+							DeviceAssignment.class, IDeviceAssignment.class);
+			return new SearchResults<IDeviceAssignment>(pager.getResults());
 		} finally {
 			Tracer.pop(LOGGER);
 		}
@@ -273,13 +265,13 @@ public class HBaseSite {
 	/**
 	 * List zones for a given site.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param siteToken
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IZone> listZonesForSite(ISiteWhereHBaseClient hbase, String siteToken,
+	public static SearchResults<IZone> listZonesForSite(IHBaseContext context, String siteToken,
 			ISearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listZonesForSite (HBase) " + siteToken, LOGGER);
 		try {
@@ -290,33 +282,36 @@ public class HBaseSite {
 			byte[] zonePrefix = getZoneRowKey(siteId);
 			byte[] after = getAssignmentRowKey(siteId);
 			BinaryPrefixComparator comparator = new BinaryPrefixComparator(zonePrefix);
-			Pager<byte[]> pager = getFilteredSiteRows(hbase, false, criteria, comparator, zonePrefix, after);
-			List<IZone> response = new ArrayList<IZone>();
-			for (byte[] match : pager.getResults()) {
-				response.add(MarshalUtils.unmarshalJson(match, Zone.class));
-			}
-			return new SearchResults<IZone>(response, pager.getTotal());
+			Pager<IZone> pager =
+					getFilteredSiteRows(context, false, criteria, comparator, zonePrefix, after, Zone.class,
+							IZone.class);
+			return new SearchResults<IZone>(pager.getResults());
 		} finally {
 			Tracer.pop(LOGGER);
 		}
 	}
 
 	/**
-	 * Get json associated with various rows in the site table based on regex filters.
+	 * Get filtered results from the Site table.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param includeDeleted
 	 * @param criteria
+	 * @param comparator
+	 * @param startRow
+	 * @param stopRow
+	 * @param type
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Pager<byte[]> getFilteredSiteRows(ISiteWhereHBaseClient hbase, boolean includeDeleted,
-			ISearchCriteria criteria, WritableByteArrayComparable comparator, byte[] startRow, byte[] stopRow)
-			throws SiteWhereException {
+	@SuppressWarnings("unchecked")
+	public static <T, I> Pager<I> getFilteredSiteRows(IHBaseContext context, boolean includeDeleted,
+			ISearchCriteria criteria, ByteArrayComparable comparator, byte[] startRow, byte[] stopRow,
+			Class<T> type, Class<I> iface) throws SiteWhereException {
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
-			sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 			RowFilter matcher = new RowFilter(CompareOp.EQUAL, comparator);
 			Scan scan = new Scan();
 			if (startRow != null) {
@@ -328,21 +323,20 @@ public class HBaseSite {
 			scan.setFilter(matcher);
 			scanner = sites.getScanner(scan);
 
-			Pager<byte[]> pager = new Pager<byte[]>(criteria);
+			Pager<I> pager = new Pager<I>(criteria);
 			for (Result result : scanner) {
 				boolean shouldAdd = true;
-				byte[] json = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
-						shouldAdd = false;
-					}
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = column.getValue();
-					}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] deleted = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED);
+
+				if ((deleted != null) && (!includeDeleted)) {
+					shouldAdd = false;
 				}
-				if ((shouldAdd) && (json != null)) {
-					pager.process(json);
+
+				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
+					pager.process((I) PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(
+							payload, type));
 				}
 			}
 			return pager;
@@ -359,18 +353,17 @@ public class HBaseSite {
 	/**
 	 * Delete an existing site.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param token
 	 * @param force
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site deleteSite(ISiteWhereHBaseClient hbase, String token, boolean force,
-			IDeviceManagementCacheProvider cache) throws SiteWhereException {
+	public static Site deleteSite(IHBaseContext context, String token, boolean force)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteSite (HBase) " + token, LOGGER);
 		try {
-			Site existing = getSiteByToken(hbase, token, cache);
+			Site existing = getSiteByToken(context, token);
 			if (existing == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
@@ -383,10 +376,10 @@ public class HBaseSite {
 				HTableInterface sites = null;
 				try {
 					Delete delete = new Delete(rowkey);
-					sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+					sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 					sites.delete(delete);
-					if (cache != null) {
-						cache.getSiteCache().remove(token);
+					if (context.getCacheProvider() != null) {
+						context.getCacheProvider().getSiteCache().remove(token);
 					}
 				} catch (IOException e) {
 					throw new SiteWhereException("Unable to delete site.", e);
@@ -396,16 +389,16 @@ public class HBaseSite {
 			} else {
 				byte[] marker = { (byte) 0x01 };
 				SiteWherePersistence.setUpdatedEntityMetadata(existing);
-				byte[] updated = MarshalUtils.marshalJson(existing);
+				byte[] updated = context.getPayloadMarshaler().encodeSite(existing);
 				HTableInterface sites = null;
 				try {
-					sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+					sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 					Put put = new Put(rowkey);
-					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
+					HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 					sites.put(put);
-					if (cache != null) {
-						cache.getSiteCache().remove(token);
+					if (context.getCacheProvider() != null) {
+						context.getCacheProvider().getSiteCache().remove(token);
 					}
 				} catch (IOException e) {
 					throw new SiteWhereException("Unable to set deleted flag for site.", e);
@@ -422,18 +415,18 @@ public class HBaseSite {
 	/**
 	 * Allocate the next zone id and return the new value. (Each id is less than the last)
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param siteId
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Long allocateNextZoneId(ISiteWhereHBaseClient hbase, Long siteId) throws SiteWhereException {
+	public static Long allocateNextZoneId(IHBaseContext context, Long siteId) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextZoneId (HBase)", LOGGER);
 		try {
 			byte[] primary = getPrimaryRowkey(siteId);
 			HTableInterface sites = null;
 			try {
-				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				Increment increment = new Increment(primary);
 				increment.addColumn(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, -1);
 				Result result = sites.increment(increment);
@@ -452,19 +445,18 @@ public class HBaseSite {
 	 * Allocate the next assignment id and return the new value. (Each id is less than the
 	 * last)
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param siteId
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Long allocateNextAssignmentId(ISiteWhereHBaseClient hbase, Long siteId)
-			throws SiteWhereException {
+	public static Long allocateNextAssignmentId(IHBaseContext context, Long siteId) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextAssignmentId (HBase)", LOGGER);
 		try {
 			byte[] primary = getPrimaryRowkey(siteId);
 			HTableInterface sites = null;
 			try {
-				sites = hbase.getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 				Increment increment = new Increment(primary);
 				increment.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, -1);
 				Result result = sites.increment(increment);

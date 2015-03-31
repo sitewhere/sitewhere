@@ -15,22 +15,22 @@
 <div id="zc-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="zc-dialog-title">Create Zone</h3>
+		<h3 id="zc-dialog-title" data-i18n="includes.zoneCreateDialog.CreateZone"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="zc-tabs" style="clear: both;">
 			<ul>
-				<li class="k-state-active">Zone Settings</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.zoneCreateDialog.ZoneSettings"></li>
+				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<div id="zc-map" class="sw-map"></div>
 				<div style="padding-top: 3px; width: 500px;">
-					<label for="zc-zone-name" class="sw-name-label">Zone Name:</label>
+					<label for="zc-zone-name" class="sw-name-label"><font data-i18n="includes.zoneCreateDialog.ZoneName"></font>:</label>
 					<input id="zc-zone-name" type="text" style="padding: 0px 5px; margin: 0; width: 227px;"/>
-					<label for="zc-border-picker" class="sw-name-label" style="margin-left: 10px;">Border:</label>
+					<label for="zc-border-picker" class="sw-name-label" style="margin-left: 10px;"><font data-i18n="includes.zoneCreateDialog.Border"></font>:</label>
 					<input type="text" id="zc-border-picker"/>
-					<label for="zc-fill-picker" class="sw-name-label" style="margin-left: 10px;">Fill:</label>
+					<label for="zc-fill-picker" class="sw-name-label" style="margin-left: 10px;"><font data-i18n="includes.zoneCreateDialog.Fill"></font>:</label>
 					<input type="text" id="zc-fill-picker"/>
 				</div>
 			</div>
@@ -44,8 +44,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="zc-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Create</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="zc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -110,8 +110,7 @@
 				return;
 			}
 			if (!zcNewZoneLayer) {
-				swAlert("Create Zone", "No zone has been defined. Use the map tools to choose " +
-						"the zone coordinates.");
+				swAlert(i18next("includes.zoneCreateDialog.CreateZone"), i18next("includes.zoneCreateDialog.NZHBDUTMTTCTZC"));
 				return;
 			}
 			var latLongs = zcNewZoneLayer.getLatLngs();
@@ -146,7 +145,7 @@
         
 		/** Handle failed call to create zone */
 		function onCreateFail(jqXHR, textStatus, errorThrown) {
-			handleError(jqXHR, "Unable to create zone.");
+			handleError(jqXHR, i18next("includes.zoneCreateDialog.UTCZ"));
 		}
         
 		/** Handle failed call to update zone */
@@ -207,8 +206,8 @@
 		zcSite = site;
 		
 		// Set dialog title
-		$('#zc-dialog-title').html("Create Zone");
-		$('#zc-dialog-submit').html("Create");
+		$('#zc-dialog-title').html(i18next("includes.zoneCreateDialog.CreateZone"));
+		$('#zc-dialog-submit').html(i18next("public.Create"));
 		
 		// Creates map if not already created, then inits from site settings.
 		if (zcMap) {
@@ -242,8 +241,8 @@
 		zcSite = site;
 		
 		// Set dialog title
-		$('#zc-dialog-title').html("Edit Zone");
-		$('#zc-dialog-submit').html("Save");
+		$('#zc-dialog-title').html(i18next("includes.EditZone"));
+		$('#zc-dialog-submit').html(i18next("public.Save"));
 		
 		// Creates map if not already created, then inits from site settings.
 		if (zcMap) {

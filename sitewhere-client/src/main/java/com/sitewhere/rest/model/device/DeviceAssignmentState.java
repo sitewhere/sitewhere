@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignmentState;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -26,7 +28,10 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  * 
  * @author Derek
  */
-public class DeviceAssignmentState implements IDeviceAssignmentState {
+public class DeviceAssignmentState implements IDeviceAssignmentState, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -8536671667872805013L;
 
 	/** Date of last interaction with assignment */
 	private Date lastInteractionDate;
@@ -116,7 +121,7 @@ public class DeviceAssignmentState implements IDeviceAssignmentState {
 		this.lastReplyTo = lastReplyTo;
 	}
 
-	public static DeviceAssignmentState copy(IDeviceAssignmentState source) {
+	public static DeviceAssignmentState copy(IDeviceAssignmentState source) throws SiteWhereException {
 		DeviceAssignmentState target = new DeviceAssignmentState();
 		target.setLastInteractionDate(source.getLastInteractionDate());
 		if (source.getLastLocation() != null) {

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.device;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.asset.HardwareAsset;
@@ -22,7 +24,10 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceSpecification extends MetadataProviderEntity implements IDeviceSpecification {
+public class DeviceSpecification extends MetadataProviderEntity implements IDeviceSpecification, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -843279944125910257L;
 
 	/** Unique token */
 	private String token;

@@ -10,7 +10,6 @@ package com.sitewhere.spi.device.request;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.batch.OperationType;
 
@@ -19,7 +18,7 @@ import com.sitewhere.spi.device.batch.OperationType;
  * 
  * @author Derek
  */
-public interface IBatchOperationCreateRequest extends IMetadataProvider {
+public interface IBatchOperationCreateRequest {
 
 	/** Metadata property on events that holds batch id that generated event */
 	public static final String META_BATCH_OPERATION_ID = "batch";
@@ -51,4 +50,11 @@ public interface IBatchOperationCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public List<String> getHardwareIds();
+
+	/**
+	 * Get metadata entries.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }

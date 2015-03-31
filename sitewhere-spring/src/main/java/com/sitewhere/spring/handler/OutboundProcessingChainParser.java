@@ -19,6 +19,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.azure.device.provisioning.EventHubOutboundEventProcessor;
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
 import com.sitewhere.device.provisioning.ProvisioningEventProcessor;
 import com.sitewhere.geospatial.ZoneTest;
@@ -72,6 +73,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 			case SolrEventProcessor: {
 				processors.add(parseSolrEventProcessor(child, context));
+				break;
+			}
+			case AzureEventHubEventProcessor: {
+				processors.add(parseAzureEventHubEventProcessor(child, context));
 				break;
 			}
 			case ProvisioningEventProcessor: {
@@ -203,6 +208,44 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parses configuration for Azure EventHub event processor.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseAzureEventHubEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(EventHubOutboundEventProcessor.class);
+
+		Attr sasKey = element.getAttributeNode("sasKey");
+		if (sasKey == null) {
+			throw new RuntimeException("SAS key required for Azure EventHub event processor.");
+		}
+		processor.addPropertyValue("sasKey", sasKey.getValue());
+
+		Attr sasName = element.getAttributeNode("sasName");
+		if (sasName == null) {
+			throw new RuntimeException("SAS name required for Azure EventHub event processor.");
+		}
+		processor.addPropertyValue("sasName", sasName.getValue());
+
+		Attr serviceBusName = element.getAttributeNode("serviceBusName");
+		if (serviceBusName == null) {
+			throw new RuntimeException("Service bus name required for Azure EventHub event processor.");
+		}
+		processor.addPropertyValue("serviceBusName", serviceBusName.getValue());
+
+		Attr eventHubName = element.getAttributeNode("eventHubName");
+		if (eventHubName == null) {
+			throw new RuntimeException("EventHub name required for Azure EventHub event processor.");
+		}
+		processor.addPropertyValue("eventHubName", eventHubName.getValue());
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
 	 * Parse configuration for event processor that routes traffic to provisioning
 	 * subsystem.
 	 * 
@@ -240,6 +283,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		/** Indexes outbound events in Apache Solr */
 		SolrEventProcessor("solr-event-processor"),
+
+		/** Sends outbound events to an Azure EventHub */
+		AzureEventHubEventProcessor("azure-eventhub-event-processor"),
 
 		/** Reference to custom inbound event processor */
 		ProvisioningEventProcessor("provisioning-event-processor");

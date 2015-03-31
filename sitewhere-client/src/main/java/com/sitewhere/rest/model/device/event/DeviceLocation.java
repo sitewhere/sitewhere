@@ -7,6 +7,9 @@
  */
 package com.sitewhere.rest.model.device.event;
 
+import java.io.Serializable;
+
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 
@@ -15,7 +18,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
  * 
  * @author dadams
  */
-public class DeviceLocation extends DeviceEvent implements IDeviceLocation {
+public class DeviceLocation extends DeviceEvent implements IDeviceLocation, Serializable {
 
 	/** For Java serialization */
 	private static final long serialVersionUID = -6279278445519407648L;
@@ -78,7 +81,7 @@ public class DeviceLocation extends DeviceEvent implements IDeviceLocation {
 	 * @param input
 	 * @return
 	 */
-	public static DeviceLocation copy(IDeviceLocation input) {
+	public static DeviceLocation copy(IDeviceLocation input) throws SiteWhereException {
 		DeviceLocation result = new DeviceLocation();
 		DeviceEvent.copy(input, result);
 		result.setLatitude(input.getLatitude());

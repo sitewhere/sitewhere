@@ -9,7 +9,8 @@ package com.sitewhere.hbase.common;
 
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.hbase.ISiteWhereHBase;
@@ -39,7 +40,7 @@ public class SiteWhereTables {
 			String tnameStr = new String(tableName);
 			if (!hbase.getAdmin().tableExists(tableName)) {
 				LOGGER.info("Table '" + tnameStr + "' does not exist. Creating table...");
-				HTableDescriptor table = new HTableDescriptor(tableName);
+				HTableDescriptor table = new HTableDescriptor(TableName.valueOf(tableName));
 				HColumnDescriptor family = new HColumnDescriptor(ISiteWhereHBase.FAMILY_ID);
 				family.setBloomFilterType(bloom);
 				table.addFamily(family);

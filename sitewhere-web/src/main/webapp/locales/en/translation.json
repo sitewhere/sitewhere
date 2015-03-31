@@ -1,0 +1,439 @@
+{
+  "public": {
+    "OK": "OK",
+    "Add":"Add",
+    "Delete":"Delete",
+    "Edit":"Edit",
+    "Save":"Save",
+    "name":"name",
+    "Name":"Name",
+    "User":"User",
+    "Users":"$t(public.User)s",
+    "username":"username",
+    "Username":"Username",
+    "password":"password",
+    "Password":"Password",
+    "FilterResults":"Filter Results",
+    "Last":"Last",
+    "Open":"Open",
+    "Status":"Status",
+    "status":"status",
+    "Login":"Login",
+    "Create":"Create",
+    "Created":"$t(public.Create)d",
+    "release":"release",
+    "Release":"Release",
+    "Released":"$t(public.Release)d",
+    "Update":"Update",
+    "Updated":"$t(public.Update)d",
+    "Composition":"Composition",
+    "Refresh":"Refresh",
+    "Command":"Command",
+    "Location":"Location",
+    "Locations":"$t(public.Location)s",
+    "Measurements":"Measurements",
+    "DeviceMeasurements":"$t(public.Device) $t(public.Measurements)",
+    "Alert":"Alert",
+    "Alerts":"$t(public.Alert)s",
+    "DeviceAlerts":"$t(public.Device) $t(public.Alerts)",
+    "Date":"Date",
+    "EventDate":"Event $t(public.Date)",
+    "CreatedDate":"$t(public.Created) $t(public.Date)",
+    "UpdatedDate":"$t(public.Updated) $t(public.Date)",
+    "Type":"Type",
+    "Message":"Message",
+    "Source":"Source",
+    "device":"device",
+    "Device":"Device",
+    "Devices":"$t(public.Device)s",
+    "DeviceSpecification":"$t(public.Device) $t(public.Specification)",
+    "group":"group",
+    "Group":"Group",
+    "DeviceGroup":"$t(public.Device) $t(public.Group)",
+    "DeviceGroups":"$t(public.Device) $t(public.Group)s",
+    "Element":"Element",
+    "Elements":"$t(public.Element)s",
+    "GroupElement":"$t(public.Group) $t(public.Element)",
+    "Description":"Description",
+    "assignment":"assignment",
+    "Assignment":"Assignment",
+    "CurrentAssignment": "Current $t(public.Assignment)" ,
+    "DeviceNotAssociated": "Device is not associated with an asset",
+    "Details":"Details",
+    "Emulator":"Emulator",
+    "Information":"Information",
+    "Settings":"Settings",
+    "Metadata":"Metadata",
+    "Latitude":"Latitude",
+    "Longitude":"Longitude",
+    "Elevation":"Elevation",
+    "Cancel":"Cancel",
+    "Close":"Close",
+    "Value":"Value",
+    "Site":"Site",
+    "site":"site",
+    "Deployed": "Deployed",
+    "DeployedSite": "$t(public.Deployed) $t(public.Site)",
+    "Manage":"Manage",
+    "View":"View",
+    "hardware":"hardware",
+    "ViewSite":"$t(public.View) $t(public.Site)",
+    "EditSite":"$t(public.Edit) $t(public.Site)",
+    "DeleteSite":"$t(public.Delete) $t(public.Site)",
+    "required":"required",
+    "Sites":"$t(public.Site)s",
+    "EditAssignment":"$t(public.Edit) $t(public.Assignment)",
+    "CommandInvocations":"$t(public.Command) $t(public.Invocation)s",
+    "DeviceLocations":"$t(public.Device) $t(public.Locations)",
+    "DeleteAssignment":"$t(public.Delete) $t(public.Assignment)",
+    "Specification":"Specification",
+    "Specifications":"$t(public.Specification)s",
+    "Batch":"Batch",
+    "Failed":"Failed",
+    "Asset":"Asset",
+    "this":"this",
+    "Role":"Role",
+    "Roles":"$t(public.Role)s",
+    "Zone":"Zone",
+    "Zones":"$t(public.Zone)s",
+    "Unable":"Unable",
+    "Invalid":"Invalid",
+    "Invocation":"Invocation",
+    "Invoke":"Invoke",
+    "Email":"Email",
+    "New":"New",
+    "Assigned":"Assigned",
+    "Unassociated":"Unassociated",
+    "UnassociatedDevice":"Unassociated Device",
+    "parameter":"parameter",
+    "Parameter":"Parameter",
+    "character":"character",
+    "HardwareId":"Hardware Id",
+    "ChooseSpecification":"Choose Specification",
+    "FirstName":"First $t(public.Name)",
+    "LastName":"$t(public.Last) $t(public.Name)",
+    "EditSpecification":"$t(public.Edit) $t(public.Specification)",
+    "DeleteSpecification":"$t(public.Delete) $t(public.Specification)",
+    "ViewSpecification":"$t(public.View) $t(public.Specification)",
+    "EditDeviceGroup":"$t(public.EditDevice) $t(public.Group)",
+    "ViewDeviceGroup":"$t(public.View) $t(public.DeviceGroup)",
+    "EditDevice":"$t(public.Edit) $t(public.Device)",
+    "DeleteDevice":"$t(public.Delete) $t(public.Device)",
+    "ViewDevice":"$t(public.View) $t(public.Device)",
+    "ViewAssignment":"$t(public.View) $t(public.Assignment)",
+    "DeleteUser":"$t(public.Delete) $t(public.User)",
+    "Operation":"Operation",
+    "Processing":"Processing",
+    "ProcessingStarted":"$t(public.Processing) Started",
+    "ProcessingFinished":"$t(public.Processing) Finished",
+    "msg":{
+       "areyousure":"Are you sure you want to",
+       "delete":"delete"
+    }
+  },
+  "includes":{
+       "Desc":"Desc",
+       "Center":"Center",
+       "Zoom":"Zoom",
+       "Comments":"Comments",
+       "Missing":"Missing",
+       "DeviceDetails":"$t(public.device) $t(public.Details)",
+       "CommandDetails":"$t(public.Command) $t(public.Details)",
+       "CreateDevice":"$t(public.Create) $t(public.device)",
+       "ElementDetails":"$t(public.Element) $t(public.Details)",
+       "EditUser":"$t(public.Edit) $t(public.User)",
+       "DeleteDeviceGroup":"$t(public.Delete) $t(public.DeviceGroup)",
+       "ReleaseAssignment":"$t(public.Release) $t(public.Assignment)",
+       "ReportMissing":"Report $t(includes.Missing)",
+       "RelativePath":"Relative Path",
+       "Namespace":"Namespace",
+       "EditZone":"$t(public.Edit) $t(public.Zone)",
+       "DeleteZone":"$t(public.Delete) $t(public.Zone)",
+       "DeleteCommand":"$t(public.Delete) $t(public.Command)",
+       "Active":"Active",
+       "Expired":"Expired",
+       "Locked":"Locked",
+       "DeleteRole":"$t(public.Delete) $t(public.Role)",
+       "top":{
+          "LogOut":"Log Out"
+       },
+       "templateBatchCommandInvocationEntry":{
+          "ProcessingStatus":"$t(public.Processing) $t(public.Status)"
+       },
+       "specificationCreateDialog":{
+          "AssetProvider":"$t(public.Asset) Provider"
+       },
+       "templateInvocationEntry":{
+          "ViewInvocation":"$t(public.View) $t(public.Invocation)"
+       },
+       "deviceSearchDialog":{
+          "Select":"Select"
+       },
+       "deviceFilterDialog":{
+          "ApplyFilter":"Apply Filter"
+       },
+       "assignmentCreateDialog":{
+          "Assign":"Assign"
+       },
+       "zoneCreateDialog":{
+          "ZoneSettings":"$t(public.Zone) $t(public.Settings)",
+          "ZoneName":"$t(public.Zone) $t(public.Name)",
+          "Border":"Border",
+          "Fill":"Fill",
+          "CreateZone":"$t(public.Create) $t(public.Zone)",
+          "UTCZ":"$t(public.Unable) to $t(public.Create) $t(public.Zone).",
+          "NZHBDUTMTTCTZC":"No zone has been defined. Use the map tools to choose the zone coordinates."
+       },
+       "commandInvokeDialog":{
+          "InvocationDetails":"Invocation $t(public.Details)",
+          "InvokeDeviceCommand":"$t(public.Invoke) $t(public.Device) $t(public.Command)"
+       },
+       "invocationViewDialog":{
+          "Response":"Response",
+          "Responses":"$t(includes.invocationViewDialog.Response)s",
+          "InvocationDate":"$t(public.Invocation) $t(public.Date)",
+          "CommandInvocationDetails":"$t(public.Command) $t(public.Invocation) $t(public.Details)"
+       },
+       "i18next":{
+          "RDAM":"Report $t(public.device)/$t(public.Asset) $t(includes.Missing)",
+          "EditCommand":"$t(public.Edit) $t(public.Command)",
+          "DeleteGroupElement":"$t(public.Delete) $t(public.Group) $t(public.Element)",
+          "DDWATTS":"Date device was added to the system",
+          "DAWC":"Date assignment was created",
+          "AssignedHardware":"$t(public.Assigned) Hardware",
+          "Assignedhardware":"$t(public.Assigned) hardware",
+          "AssignedDevice":"$t(public.Assigned) $t(public.device)",
+          "DUBA":"$t(public.device) used by assignment",
+          "DDWLU":"Date device was last updated",
+          "DAWLU":"Date assignment was last updated",
+          "ActiveDate":"$t(includes.Active) $t(public.Date)",
+          "DABA":"Date assignment became active",
+          "ReleasedDate":"Released $t(public.Date)",
+          "DAWR":"Date assignment was released",
+          "AssignmentStatus":"$t(public.Assignment) $t(public.Status)",
+          "Assignmentstatus":"$t(public.Assignment) $t(public.status)",
+          "OpenAssignment":"$t(public.Open) $t(public.Assignment)",
+          "OpenDevice":"$t(public.Open) $t(public.Device)",
+          "UAT":"Unique assignment token",
+          "Spec":"Spec"
+       },
+       "userCreateDialog":{
+          "CreateUser":"$t(public.Create) $t(public.User)",
+          "UserDetails":"$t(public.User) $t(public.Details)",
+          "Permissions":"Permissions",
+          "PasswordConfirm":"$t(public.Password) (Confirm)",
+          "AccountStatus":"Account $t(public.Status)"
+       },
+       "deviceGroupElementAddDialog":{
+          "AddDeviceGroupElement":"$t(public.Add) $t(public.DeviceGroup) $t(public.Element)" ,
+          "ElementType":"$t(public.Element) $t(public.Type)",
+          "ElementId":"$t(public.Element) Id",
+          "ICIR":"$t(public.Invalid) $t(public.character) in role.",
+          "YMEAV":"You must enter a value."
+       },
+       "assignmentUpdateDialog":{
+          "UpdateDeviceAssignment":"$t(public.Update) $t(public.Device) $t(public.Assignment)",
+          "AssignmentDetails":"$t(public.Assignment) $t(public.Details)",
+          "AssetAssociation":"$t(public.Asset) Association"
+       },
+       "deviceUpdateDialog":{
+          "UpdateDevice":"$t(public.Update) $t(public.Device)"
+       },
+       "metadata":{
+          "Nameisrequired":"$t(public.Name) is $t(public.required).",
+          "ICIN":"$t(public.Invalid) $t(public.character) in $t(public.name).",
+          "NIABU":"$t(public.Name) is already being used",
+          "DeleteMetadata":"$t(public.Delete) $t(public.Metadata)"
+       },
+       "deviceCreateDialog":{
+          "UTCD":"$t(public.Unable) to create device."
+       },
+       "deviceGroupCreateDialog":{
+          "CreateDeviceGroup":"$t(includes.CreateDevice) $t(public.Group)",
+          "GroupDetails":"$t(public.Group) $t(public.Details)",
+          "GroupName":"$t(public.Group) $t(public.Name)"
+       },
+       "commandCreateDialog":{
+          "CreateDeviceCommand":"$t(includes.CreateDevice) $t(public.Command)",
+          "Parameters":"Parameters",
+          "ICIPN":"$t(public.Invalid) $t(public.character) in $t(public.parameter) $t(public.name).",
+          "ParameterName":"$t(public.Parameter) $t(public.Name)",
+          "ParameterType":"$t(public.Parameter) $t(public.Type)",
+          "Required":"Required",
+          "Req":"Req",
+          "EditDeviceCommand":"$t(public.Edit) $t(public.Device) $t(public.Command)"
+       },
+       "commonFunctions":{
+          "AYSTYWTDDSW":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.device) $t(public.Specification) with",
+          "UTDS":"$t(public.Unable) to $t(public.msg.delete) $t(public.Specification).",
+          "DD":"$t(public.Delete) $t(public.Device)",
+          "AYSTYWTDDWD":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.device) with $t(public.hardware)",
+          "AYSYWTDTDA":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) $t(public.device) $t(public.assignment)?",
+          "UTDD":"$t(public.Unable) to $t(public.delete) $t(public.device).",
+          "UTDDA":"$t(includes.commonFunctions.UTDD) $t(public.assignment).",
+          "RA":"$t(public.Release) $t(public.assignment)",
+          "AYSYWTRTDA":"$t(public.msg.areyousure) $t(public.release) $t(public.this) $t(public.device) $t(public.assignment)?",
+          "UTRA":"$t(public.Unable) to $t(public.release) $t(public.assignment).",
+          "AYSYWTRTAM":"$t(public.msg.areyousure) report $t(public.this) $t(public.assignment) missing?",
+          "AYSYWTDDGWT":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.device) $t(public.group) with token",
+          "UTMAAM":"$t(public.Unable) to mark $t(public.assignment) as missing.",
+          "UTDZ":"$t(public.Unable) to $t(public.msg.delete) zone.",
+          "AYSYWTDTZ":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) zone?",
+          "UTDDG":"$t(public.Unable) to $t(public.msg.delete) $t(public.device) $t(public.group)."
+       },
+       "specificaationCreateDialog":{
+          "CreateSpecification":"$t(public.Create) $t(public.Specification)",
+          "SpecificationDetails":"$t(public.Specification) $t(public.Details)",
+          "ChooseDeviceType":"Choose $t(public.Device) $t(public.Type)"
+       },
+       "siteCreateDialog":{
+          "CreateSite":"$t(public.Create) $t(public.Site)",
+          "SiteDetails":"$t(public.Site) $t(public.Details)",
+          "MapInformation":"Map $t(public.Information)",
+          "SiteName":"$t(public.Site) $t(public.Name)",
+          "SiteDescription":"$t(public.Site) $t(public.Description)",
+          "ImageURL":"Image URL",
+          "UseTheseSettings":"Use These $t(public.Settings)",
+          "MapType":"Map $t(public.Type)",
+          "CenterLatitude":"$t(includes.Center) $t(public.Latitude)",
+          "CenterLongitude":"$t(includes.Center) $t(public.Longitude)",
+          "ZoomLevel":"$t(includes.Zoom) Level",
+          "CLAZOM":"Choose location and zoom on map"
+       }
+  },
+  "batch":{
+       "ProcessingStatus":"$t(batch.list.Processing) $t(public.Status)",
+       "command":{
+          "title":"$t(public.View) $t(public.Batch) $t(public.Command) $t(public.Invocation)",
+          "BCIE":"$t(public.Batch) $t(public.Command) $t(public.Invocation) $t(public.Element)s",
+          "ProcessedDate":"Processed $t(public.Date)",
+          "InvocationEventId":"$t(public.Invocation) Event Id"
+       },
+       "list":{
+          "title":"$t(public.Manage) $t(public.Batch) Operations",
+          "OperationCreated":"$t(batch.list.Operation) $t(public.Created)"
+        }
+  },
+  "assignments":{
+       "Connected":"Connected",
+       "detail":{
+          "title":"$t(public.ViewAssignment)",
+          "EmulateAssignment":"Emulate $t(public.Assignment)",
+          "DeviceCommandInvocations":"$t(public.Device) $t(public.Command) $t(public.Invocation)s",
+          "InvokeCommand":"$t(public.Invoke) $t(public.Command)",
+          "Target":"Target"
+       },
+       "emulator":{
+          "title":"$t(public.Assignment) $t(public.Emulator)",
+          "AssignmentDetails":"$t(public.Assignment) $t(public.Details)",
+          "DeviceAssignmentEmulator":"$t(public.Device) $t(assignments.emulator.title)",
+          "RefreshLocations":"$t(public.Refresh) $t(public.Locations)",
+          "Connect":"Connect",
+          "MQTTInformation":"MQTT $t(public.Information)",
+          "TestConnection":"Test Connection",
+          "LastMessage":"Last $t(public.Message)",
+          "MQTTHostName":"MQTT Host $t(public.Name)",
+          "MQTTWebsocketPort":"MQTT Websocket Port",
+          "ClientID":"Client ID",
+          "Topic":"Topic",
+          "jsonmessage":"JSON content of the MQTT payload is shown here when data is sent via the client.",
+          "CreateLocation":"$t(public.Create) $t(public.Location)",
+          "CreateMeasurements":"$t(public.Create) $t(public.Measurements)",
+          "CreateAlert":"$t(public.Create) $t(public.Alert)",
+          "AlertType":"$t(public.Alert) $t(public.Type)",
+          "NotConnected":"Not $t(assignments.Connected)",
+          "MQTTNC":"MQTT client is not currently connected. Verify MQTT settings and click the <b>Connect</b> button to continue.",
+          "ConnectFailed":"$t(assignments.emulator.Connect) $t(public.Failed)",
+          "MQTTCF":"MQTT client connection failed. Verify that MQTT settings are correct and the MQTT broker is running.",
+          "MQTTCS":"MQTT client connected successfully"
+       }
+  },
+  "devices":{
+     "detail":{
+        "title":"$t(public.View) $t(public.Device)",
+        "AssignmentHistory":"$t(public.Assignment) History",
+        "DeviceAssignmentHistory":"$t(public.Device) $t(public.Assignment) History",
+        "AssignDevice":"Assign $t(public.Device)"
+     },
+     "list":{
+        "title":"$t(public.Manage) $t(public.Devices)",
+        "BatchCommand":"$t(public.Batch) $t(public.Command)",
+        "AddNewDevice":"$t(public.Add) $t(public.New) $t(public.Device)"
+     }
+  },
+  "groups":{
+     "detail":{
+         "title":"$t(public.ViewDeviceGroup)",
+         "GroupElements":"$t(public.GroupElement)s",
+         "DeviceGroupElements":"$t(public.Device) $t(groups.detail.GroupElements)",
+         "AddGroupElement":"$t(public.Add) $t(public.GroupElement)",
+         "DeleteDeviceGroupElement":"$t(public.Delete) $t(public.Device) $t(public.GroupElement)",
+         "AYSTYWTDD":"$t(public.msg.areyousure) $t(public.msg.delete)$t(public.device) with",
+         "UTDDGE":"$t(public.Unable) to $t(public.msg.delete) $t(public.device) $t(public.group) element."
+     },
+     "list":{
+        "title":"$t(public.Manage) $t(public.DeviceGroup)",
+        "ANDG":"$t(public.Add) $t(public.New) $t(public.Device) $t(public.Group)"
+     }
+  },
+  "login":{
+      "title":"$t(public.Login)",
+      "LogIn":"Log In",
+      "logFailMs":"$t(public.Invalid) $t(public.username) or $t(public.password) was entered",
+      "msg":"The default login and password are"
+  },
+  "sites":{
+      "detail":{
+          "title":"$t(public.ViewSite)",
+          "Assignments":"$t(public.Assignment)s",
+          "Zones":"$t(public.Zone)s",
+          "DeviceAssignments":"$t(public.Device) $t(public.Assignment)s",
+          "Location":"Location",
+          "ReceivedDate":"Received $t(public.Date)",
+          "AddNewZone":"$t(public.Add) $t(public.New) $t(public.Zone)",
+          "Token":"Token"
+      },
+      "list":{
+          "title":"$t(public.Manage) $t(public.Sites)",
+          "AYSDTS":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) $t(public.site)",
+          "AddNewSite":"$t(public.Add) $t(public.New) $t(public.Site)",
+          "UTDS":"$t(public.Unable) to $t(public.msg.delete) $t(public.site)."
+      }
+  },
+  "users":{
+      "list":{
+         "title":"$t(public.Manage) $t(public.Users)",
+         "AddNewUser":"$t(public.Add) $t(public.New) $t(public.User)",
+         "UserName":"$t(public.User) $t(public.Name)",
+         "LastLogin":"$t(public.Last) $t(public.Login)",
+         "AYSYWTDTU":"$t(public.msg.areyousure) $t(public.msg.delete) this user?",
+         "UTDU":"$t(public.Unable) to $t(public.msg.delete) user."
+      }
+  },
+  "specifications":{
+      "list":{
+         "title":"$t(public.Manage) $t(public.Device) $t(public.Specification)s",
+         "AddNewSpecification":"$t(public.Add) $t(public.New) $t(public.Specification)"
+      },
+      "detail":{
+         "title":"$t(public.ViewSpecification)",
+         "Commands":"Commands",
+         "CodeGeneration":"Code Generation",
+         "DeviceCommands":"$t(public.Device) Commands",
+         "AddNewCommand":"$t(public.Add) $t(public.New) $t(public.Command)",
+         "Download":"Download",
+         "DeviceElementSchema":"$t(public.Device) $t(public.Element) Schema",
+         "AddDeviceUnit":"$t(public.Add) $t(public.Device) Unit",
+         "GPBD":"Google Protocol Buffer Definition",
+         "AddDeviceSlot":"$t(public.Add) $t(public.Device) Slot",
+         "AYSTYWTDDCW":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.device) command with"
+      }
+  },
+  "noserver":{
+      "title":"Server Startup $t(public.Failed)",
+      "loaderrorms":"SiteWhere did not start successfully. Check error logs for more information."
+  },
+  "error":{
+      "title":"Error Loading Page"
+  }
+}

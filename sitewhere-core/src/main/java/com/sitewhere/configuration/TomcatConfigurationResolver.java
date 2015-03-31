@@ -22,6 +22,11 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.system.IVersion;
 
+/**
+ * Resolves SiteWhere configuration relative to the Tomcat installation base directory.
+ * 
+ * @author Derek
+ */
 public class TomcatConfigurationResolver implements IConfigurationResolver {
 
 	/** Static logger instance */
@@ -62,6 +67,16 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 
 		context.refresh();
 		return context;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.configuration.IConfigurationResolver#getConfigurationRoot()
+	 */
+	@Override
+	public File getConfigurationRoot() throws SiteWhereException {
+		return TomcatConfigurationResolver.getSiteWhereConfigFolder();
 	}
 
 	/**

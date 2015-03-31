@@ -7,9 +7,10 @@
  */
 package com.sitewhere.rest.model.device.request;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -20,7 +21,10 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
  * 
  * @author Derek Adams
  */
-public class DeviceCreateRequest extends MetadataProvider implements IDeviceCreateRequest {
+public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 5102270168736590229L;
 
 	/** Hardware id for new device */
 	private String hardwareId;
@@ -45,6 +49,9 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 
 	/** Device status indicator */
 	private DeviceStatus status;
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -151,5 +158,18 @@ public class DeviceCreateRequest extends MetadataProvider implements IDeviceCrea
 
 	public void setStatus(DeviceStatus status) {
 		this.status = status;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.request.IDeviceCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

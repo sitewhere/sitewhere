@@ -31,13 +31,13 @@
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal"
 			aria-hidden="true">&times;</button>
-		<h3>Update Device</h3>
+		<h3 data-i18n="includes.deviceUpdateDialog.UpdateDevice"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="du-tabs">
 			<ul>
-				<li class="k-state-active">Device Details</li>
-				<li>Metadata</li>
+				<li class="k-state-active" data-i18n="includes.DeviceDetails"></li>
+				<li  data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
 				<div style="padding-top: 20px;">
@@ -46,13 +46,13 @@
 				<form id="du-general-form" class="form-horizontal"
 					style="padding-top: 10px;">
 					<div class="control-group">
-						<label class="control-label" for="du-site-token">Site</label>
+						<label class="control-label" for="du-site-token" data-i18n="public.Site"></label>
 						<div class="controls">
 							<select id="du-site-token"></select>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="du-comments">Comments</label>
+						<label class="control-label" for="du-comments" data-i18n="includes.Comments"></label>
 						<div class="controls">
 							<textarea id="du-comments" class="input-xlarge"
 								style="height: 8em;"></textarea>
@@ -72,9 +72,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a>
 		<a id="du-dialog-submit" href="javascript:void(0)"
-			class="btn btn-primary">Save</a>
+			class="btn btn-primary" data-i18n="public.Save"></a>
 	</div>
 </div>
 
@@ -83,10 +83,10 @@
 	<div class="sw-device-update-imgwrapper">
 		<img class="sw-device-update-img" src="#:specification.asset.imageUrl#"/>
 	</div>
-	<p class="ellipsis"><span class="sw-device-update-label">Hardware Id:</span> #:hardwareId#</p>
-	<p class="ellipsis"><span class="sw-device-update-label">Specification:</span> #:specification.name#</p>
-	<p class="ellipsis"><span class="sw-device-update-label">Created:</span> #= formattedDate(kendo.parseDate(createdDate)) #</p>
-	<p class="ellipsis"><span class="sw-device-update-label">Updated:</span> #= formattedDate(kendo.parseDate(updatedDate)) #</p>
+	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.HardwareId") #:</span> #:hardwareId#</p>
+	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.Specification") #:</span> #:specification.name#</p>
+	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.Created") #:</span> #= formattedDate(kendo.parseDate(createdDate)) #</p>
+	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.Updated") #:</span> #= formattedDate(kendo.parseDate(updatedDate)) #</p>
 </script>
 
 <script>

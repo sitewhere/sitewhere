@@ -7,10 +7,11 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
@@ -20,13 +21,19 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceEventCreateRequest extends MetadataProvider implements IDeviceEventCreateRequest {
+public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = -8906177904822194407L;
 
 	/** Date event occurred */
 	private Date eventDate;
 
 	/** Indicates whether device assignment state should be updated */
-	private boolean updateState = true;
+	private boolean updateState = false;
+
+	/** Metadata values */
+	private Map<String, String> metadata;
 
 	/*
 	 * (non-Javadoc)
@@ -52,7 +59,27 @@ public class DeviceEventCreateRequest extends MetadataProvider implements IDevic
 		return updateState;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#setUpdateState
+	 * (boolean)
+	 */
 	public void setUpdateState(boolean updateState) {
 		this.updateState = updateState;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

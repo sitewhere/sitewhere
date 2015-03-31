@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -183,7 +184,7 @@ public class SiteWherePersistence {
 			spec.setDeviceElementSchema((DeviceElementSchema) schema);
 		}
 
-		MetadataProvider.copy(request, spec);
+		MetadataProvider.copy(request.getMetadata(), spec);
 		SiteWherePersistence.initializeEntityMetadata(spec);
 		return spec;
 	}
@@ -221,9 +222,9 @@ public class SiteWherePersistence {
 		if (request.getAssetId() != null) {
 			target.setAssetId(request.getAssetId());
 		}
-		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
+		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -260,7 +261,7 @@ public class SiteWherePersistence {
 
 		checkDuplicateCommand(command, existing);
 
-		MetadataProvider.copy(request, command);
+		MetadataProvider.copy(request.getMetadata(), command);
 		SiteWherePersistence.initializeEntityMetadata(command);
 		return command;
 	}
@@ -322,7 +323,7 @@ public class SiteWherePersistence {
 		}
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -354,7 +355,7 @@ public class SiteWherePersistence {
 		device.setComments(request.getComments());
 		device.setStatus(DeviceStatus.Ok);
 
-		MetadataProvider.copy(request, device);
+		MetadataProvider.copy(request.getMetadata(), device);
 		SiteWherePersistence.initializeEntityMetadata(device);
 		return device;
 	}
@@ -405,9 +406,9 @@ public class SiteWherePersistence {
 		if (request.getStatus() != null) {
 			target.setStatus(request.getStatus());
 		}
-		if ((request.getMetadata() != null) && (request.getMetadata().size() > 0)) {
+		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
-			MetadataProvider.copy(request, target);
+			MetadataProvider.copy(request.getMetadata(), target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
@@ -520,16 +521,22 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site siteCreateLogic(ISiteCreateRequest source, String uuid) throws SiteWhereException {
+	public static Site siteCreateLogic(ISiteCreateRequest request) throws SiteWhereException {
 		Site site = new Site();
-		site.setName(source.getName());
-		site.setDescription(source.getDescription());
-		site.setImageUrl(source.getImageUrl());
-		site.setToken(uuid);
-		site.setMap(SiteMapData.copy(source.getMap()));
+
+		if (request.getToken() != null) {
+			site.setToken(request.getToken());
+		} else {
+			site.setToken(UUID.randomUUID().toString());
+		}
+
+		site.setName(request.getName());
+		site.setDescription(request.getDescription());
+		site.setImageUrl(request.getImageUrl());
+		site.setMap(SiteMapData.copy(request.getMap()));
 
 		SiteWherePersistence.initializeEntityMetadata(site);
-		MetadataProvider.copy(source, site);
+		MetadataProvider.copy(request.getMetadata(), site);
 		return site;
 	}
 
@@ -540,14 +547,17 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void siteUpdateLogic(ISiteCreateRequest source, Site target) throws SiteWhereException {
-		target.setName(source.getName());
-		target.setDescription(source.getDescription());
-		target.setImageUrl(source.getImageUrl());
+	public static void siteUpdateLogic(ISiteCreateRequest request, Site target) throws SiteWhereException {
+		target.setName(request.getName());
+		target.setDescription(request.getDescription());
+		target.setImageUrl(request.getImageUrl());
 		target.clearMetadata();
-		target.setMap(SiteMapData.copy(source.getMap()));
+		target.setMap(SiteMapData.copy(request.getMap()));
 
-		MetadataProvider.copy(source, target);
+		if (request.getMetadata() != null) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request.getMetadata(), target);
+		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
 	}
 
@@ -598,7 +608,7 @@ public class SiteWherePersistence {
 		newAssignment.setStatus(DeviceAssignmentStatus.Active);
 
 		SiteWherePersistence.initializeEntityMetadata(newAssignment);
-		MetadataProvider.copy(source, newAssignment);
+		MetadataProvider.copy(source.getMetadata(), newAssignment);
 
 		return newAssignment;
 	}
@@ -649,7 +659,7 @@ public class SiteWherePersistence {
 			target.setEventDate(new Date());
 		}
 		target.setReceivedDate(new Date());
-		MetadataProvider.copy(request, target);
+		MetadataProvider.copy(request.getMetadata(), target);
 	}
 
 	/**
@@ -863,7 +873,8 @@ public class SiteWherePersistence {
 	 * @param assignment
 	 * @return
 	 */
-	protected static DeviceAssignmentState assureState(IDeviceAssignment assignment) {
+	protected static DeviceAssignmentState assureState(IDeviceAssignment assignment)
+			throws SiteWhereException {
 		if (assignment.getState() == null) {
 			return new DeviceAssignmentState();
 		}
@@ -978,7 +989,7 @@ public class SiteWherePersistence {
 		zone.setOpacity(source.getOpacity());
 
 		SiteWherePersistence.initializeEntityMetadata(zone);
-		MetadataProvider.copy(source, zone);
+		MetadataProvider.copy(source.getMetadata(), zone);
 
 		for (ILocation coordinate : source.getCoordinates()) {
 			zone.getCoordinates().add(coordinate);
@@ -993,19 +1004,22 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void zoneUpdateLogic(IZoneCreateRequest source, Zone target) throws SiteWhereException {
-		target.setName(source.getName());
-		target.setBorderColor(source.getBorderColor());
-		target.setFillColor(source.getFillColor());
-		target.setOpacity(source.getOpacity());
+	public static void zoneUpdateLogic(IZoneCreateRequest request, Zone target) throws SiteWhereException {
+		target.setName(request.getName());
+		target.setBorderColor(request.getBorderColor());
+		target.setFillColor(request.getFillColor());
+		target.setOpacity(request.getOpacity());
 
 		target.getCoordinates().clear();
-		for (ILocation coordinate : source.getCoordinates()) {
+		for (ILocation coordinate : request.getCoordinates()) {
 			target.getCoordinates().add(coordinate);
 		}
 
+		if (request.getMetadata() != null) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request.getMetadata(), target);
+		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
-		MetadataProvider.copy(source, target);
 	}
 
 	/**
@@ -1027,7 +1041,7 @@ public class SiteWherePersistence {
 		}
 
 		SiteWherePersistence.initializeEntityMetadata(group);
-		MetadataProvider.copy(source, group);
+		MetadataProvider.copy(source.getMetadata(), group);
 		return group;
 	}
 
@@ -1038,18 +1052,21 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void deviceGroupUpdateLogic(IDeviceGroupCreateRequest source, DeviceGroup target)
+	public static void deviceGroupUpdateLogic(IDeviceGroupCreateRequest request, DeviceGroup target)
 			throws SiteWhereException {
-		target.setName(source.getName());
-		target.setDescription(source.getDescription());
+		target.setName(request.getName());
+		target.setDescription(request.getDescription());
 
-		if (source.getRoles() != null) {
+		if (request.getRoles() != null) {
 			target.getRoles().clear();
-			target.getRoles().addAll(source.getRoles());
+			target.getRoles().addAll(request.getRoles());
 		}
 
+		if (request.getMetadata() != null) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request.getMetadata(), target);
+		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
-		MetadataProvider.copy(source, target);
 	}
 
 	/**
@@ -1088,7 +1105,7 @@ public class SiteWherePersistence {
 		batch.getParameters().putAll(source.getParameters());
 
 		SiteWherePersistence.initializeEntityMetadata(batch);
-		MetadataProvider.copy(source, batch);
+		MetadataProvider.copy(source.getMetadata(), batch);
 		return batch;
 	}
 
@@ -1099,20 +1116,23 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void batchOperationUpdateLogic(IBatchOperationUpdateRequest source, BatchOperation target)
+	public static void batchOperationUpdateLogic(IBatchOperationUpdateRequest request, BatchOperation target)
 			throws SiteWhereException {
-		if (source.getProcessingStatus() != null) {
-			target.setProcessingStatus(source.getProcessingStatus());
+		if (request.getProcessingStatus() != null) {
+			target.setProcessingStatus(request.getProcessingStatus());
 		}
-		if (source.getProcessingStartedDate() != null) {
-			target.setProcessingStartedDate(source.getProcessingStartedDate());
+		if (request.getProcessingStartedDate() != null) {
+			target.setProcessingStartedDate(request.getProcessingStartedDate());
 		}
-		if (source.getProcessingEndedDate() != null) {
-			target.setProcessingEndedDate(source.getProcessingEndedDate());
+		if (request.getProcessingEndedDate() != null) {
+			target.setProcessingEndedDate(request.getProcessingEndedDate());
 		}
 
+		if (request.getMetadata() != null) {
+			target.getMetadata().clear();
+			MetadataProvider.copy(request.getMetadata(), target);
+		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
-		MetadataProvider.copy(source, target);
 	}
 
 	/**
@@ -1150,8 +1170,9 @@ public class SiteWherePersistence {
 		if (request.getProcessedDate() != null) {
 			element.setProcessedDate(request.getProcessedDate());
 		}
-		if (request.getMetadata().size() > 0) {
-			element.getMetadata().putAll(request.getMetadata());
+		if (request.getMetadata() != null) {
+			element.getMetadata().clear();
+			MetadataProvider.copy(request.getMetadata(), element);
 		}
 	}
 
@@ -1172,9 +1193,11 @@ public class SiteWherePersistence {
 		batch.setHardwareIds(request.getHardwareIds());
 		batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN,
 				request.getCommandToken());
+		Map<String, String> params = new HashMap<String, String>();
 		for (String key : request.getParameterValues().keySet()) {
-			batch.addOrReplaceMetadata(key, request.getParameterValues().get(key));
+			params.put(key, request.getParameterValues().get(key));
 		}
+		batch.setMetadata(params);
 		return batch;
 	}
 
@@ -1226,7 +1249,7 @@ public class SiteWherePersistence {
 		if (source.getAuthorities() != null) {
 			target.setAuthorities(source.getAuthorities());
 		}
-		if ((source.getMetadata() != null) && (source.getMetadata().size() > 0)) {
+		if (source.getMetadata() != null) {
 			target.getMetadata().clear();
 			MetadataProvider.copy(source, target);
 		}

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
 /**
@@ -34,7 +35,8 @@ public class DeviceMeasurementsSearchResults extends SearchResults<DeviceMeasure
 	 * @param source
 	 * @return
 	 */
-	public static DeviceMeasurementsSearchResults copy(SearchResults<IDeviceMeasurements> source) {
+	public static DeviceMeasurementsSearchResults copy(SearchResults<IDeviceMeasurements> source)
+			throws SiteWhereException {
 		DeviceMeasurementsSearchResults result = new DeviceMeasurementsSearchResults();
 		List<DeviceMeasurements> converted = new ArrayList<DeviceMeasurements>();
 		for (IDeviceMeasurements measurement : source.getResults()) {

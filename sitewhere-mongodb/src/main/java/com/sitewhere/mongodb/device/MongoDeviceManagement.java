@@ -23,8 +23,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.mongodb.IDeviceManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.SiteWhereMongoClient;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.Device;
@@ -114,7 +114,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	private static Logger LOGGER = Logger.getLogger(MongoDeviceManagement.class);
 
 	/** Injected with global SiteWhere Mongo client */
-	private SiteWhereMongoClient mongoClient;
+	private IDeviceManagementMongoClient mongoClient;
 
 	/** Provides caching for device management entities */
 	private IDeviceManagementCacheProvider cacheProvider;
@@ -1472,7 +1472,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISite createSite(ISiteCreateRequest request) throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
-		Site site = SiteWherePersistence.siteCreateLogic(request, UUID.randomUUID().toString());
+		Site site = SiteWherePersistence.siteCreateLogic(request);
 
 		DBCollection sites = getMongoClient().getSitesCollection();
 		DBObject created = MongoSite.toDBObject(site);
@@ -1689,6 +1689,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
 		DBObject created = MongoDeviceGroup.toDBObject(group);
+		created.put(MongoDeviceGroup.PROP_LAST_INDEX, new Long(0));
+
 		MongoPersistence.insert(groups, created);
 		return MongoDeviceGroup.fromDBObject(created);
 	}
@@ -2224,11 +2226,11 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		return match;
 	}
 
-	public SiteWhereMongoClient getMongoClient() {
+	public IDeviceManagementMongoClient getMongoClient() {
 		return mongoClient;
 	}
 
-	public void setMongoClient(SiteWhereMongoClient mongoClient) {
+	public void setMongoClient(IDeviceManagementMongoClient mongoClient) {
 		this.mongoClient = mongoClient;
 	}
 }

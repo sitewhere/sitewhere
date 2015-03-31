@@ -8,9 +8,9 @@
 		<div>
 			<form id="dvs-general-form" class="form-horizontal" style="padding-top: 20px;">
 				<div class="control-group">
-					<label class="control-label" for="dvs-hardware-id">Hardware Id</label>
+					<label class="control-label" for="dvs-hardware-id">#= i18next("public.HardwareId") #</label>
 					<div class="controls">
-						<input type="text" id="dvs-hardware-id" title="Hardware id" class="input-xlarge">
+						<input type="text" id="dvs-hardware-id" title="#= i18next("public.HardwareId") #" class="input-xlarge">
 					</div>
 				</div>
 				<div id="dvs-device-matches" style="max-height: 200px; overflow: scroll;"></div>
@@ -20,8 +20,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal">Cancel</a> 
-		<a id="dvs-dialog-submit" href="javascript:void(0)" class="btn btn-primary">Select</a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
+		<a id="dvs-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="includes.deviceSearchDialog.Select"></a>
 	</div>
 </div>
 
@@ -68,7 +68,7 @@
 		dvsMatches = $("#dvs-device-matches").kendoListView({
 			dataSource : dvsMatchesDS,
 			selectable : "single",
-			template : kendo.template($("#tpl-device-entry-small").html()),
+			template : kendo.template($("#tpl-device-entry").html()),
 			change: dvsDeviceChosen
 		}).data("kendoListView");
 		

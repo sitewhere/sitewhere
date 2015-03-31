@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -24,7 +25,10 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
 public class DeviceMeasurementsCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceMeasurementsCreateRequest {
+		IDeviceMeasurementsCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 9193083760712267587L;
 
 	/** Measurements metadata */
 	private MeasurementsProvider measurements = new MeasurementsProvider();

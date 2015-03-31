@@ -11,12 +11,10 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
-	<h1 class="ellipsis">
-		<c:out value="${sitewhere_title}" />
-	</h1>
+	<h1 class="ellipsis" data-i18n="batch.command.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-refresh-operation" class="btn" href="javascript:void(0)">
-			<i class="icon-refresh sw-button-icon"></i> Refresh
+		<a id="btn-refresh-operation" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+			<i class="icon-refresh sw-button-icon"></i> 
 		</a>
 	</div>
 </div>
@@ -27,17 +25,16 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Elements</li>
+		<li class="k-state-active" data-i18n="public.Elements"></li>
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title">Batch Command Invocation
-				Elements</div>
+			<div class="sw-button-bar-title" data-i18n="batch.command.BCIE"></div>
 			<div>
-				<a id="btn-filter-elements" class="btn" href="javascript:void(0)">
-					<i class="icon-search sw-button-icon"></i> Filter Results
-				</a> <a id="btn-refresh-elements" class="btn" href="javascript:void(0)">
-					<i class="icon-refresh sw-button-icon"></i> Refresh
+				<a id="btn-filter-elements" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
+					<i class="icon-search sw-button-icon"></i>
+				</a> <a id="btn-refresh-elements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+					<i class="icon-refresh sw-button-icon"></i> 
 				</a>
 			</div>
 		</div>
@@ -50,10 +47,10 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th>Hardware Id</th>
-					<th>Processing Status</th>
-					<th>Processed Date</th>
-					<th>Invocation Event Id</th>
+					<th data-i18n="public.HardwareId"></th>
+					<th data-i18n="batch.ProcessingStatus"></th>
+					<th data-i18n="batch.command.ProcessedDate"></th>
+					<th data-i18n="batch.command.InvocationEventId"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -74,6 +71,9 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
+    /** Set sitewhere_title */
+    sitewhere_i18next.sitewhere_title = "batch.command.title";
+
 	/** Unique batch operation token */
 	var batchToken = '<c:out value="${operation.token}"/>';
 	

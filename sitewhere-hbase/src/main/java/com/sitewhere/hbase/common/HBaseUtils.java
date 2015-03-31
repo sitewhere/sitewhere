@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -22,20 +21,19 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
-import com.sitewhere.Tracer;
-import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
+import com.sitewhere.hbase.encoder.IPayloadMarshaler;
+import com.sitewhere.hbase.encoder.PayloadEncoding;
+import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IFilter;
 import com.sitewhere.spi.search.ISearchCriteria;
-import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
  * Handle common HBase functionality.
@@ -45,12 +43,14 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 public class HBaseUtils {
 
 	/** Static logger instance */
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(HBaseUtils.class);
 
 	/**
-	 * Create a primary record.
+	 * Create or update primary record.
 	 * 
-	 * @param hbase
+	 * @param client
+	 * @param marshaler
 	 * @param tableName
 	 * @param entity
 	 * @param token
@@ -59,16 +59,17 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T createOrUpdate(ISiteWhereHBaseClient hbase, byte[] tableName, T entity, String token,
-			IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers) throws SiteWhereException {
+	public static <T> T createOrUpdate(ISiteWhereHBaseClient client, IPayloadMarshaler marshaler,
+			byte[] tableName, T entity, String token, IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers)
+			throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(token);
-		byte[] json = MarshalUtils.marshalJson(entity);
+		byte[] payload = marshaler.encode(entity);
 
 		HTableInterface table = null;
 		try {
-			table = hbase.getTableInterface(tableName);
+			table = client.getTableInterface(tableName);
 			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(marshaler.getEncoding(), put, payload);
 			for (byte[] key : qualifiers.keySet()) {
 				put.add(ISiteWhereHBase.FAMILY_ID, key, qualifiers.get(key));
 			}
@@ -83,9 +84,10 @@ public class HBaseUtils {
 	}
 
 	/**
-	 * Put JSON content for a primary record.
+	 * Save payload.
 	 * 
-	 * @param hbase
+	 * @param client
+	 * @param marshaler
 	 * @param tableName
 	 * @param entity
 	 * @param token
@@ -93,16 +95,16 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T putJson(ISiteWhereHBaseClient hbase, byte[] tableName, T entity, String token,
-			IRowKeyBuilder builder) throws SiteWhereException {
+	public static <T> T put(ISiteWhereHBaseClient client, IPayloadMarshaler marshaler, byte[] tableName,
+			T entity, String token, IRowKeyBuilder builder) throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(token);
-		byte[] json = MarshalUtils.marshalJson(entity);
+		byte[] payload = marshaler.encode(entity);
 
 		HTableInterface table = null;
 		try {
-			table = hbase.getTableInterface(tableName);
+			table = client.getTableInterface(tableName);
 			Put put = new Put(primary);
-			put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, json);
+			HBaseUtils.addPayloadFields(marshaler.getEncoding(), put, payload);
 			table.put(put);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to put JSON data for " + entity.getClass().getName(), e);
@@ -116,7 +118,7 @@ public class HBaseUtils {
 	/**
 	 * Get a primary record by token.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param tableName
 	 * @param token
 	 * @param builder
@@ -124,20 +126,25 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T get(ISiteWhereHBaseClient hbase, byte[] tableName, String token,
+	public static <T> T get(ISiteWhereHBaseClient client, byte[] tableName, String token,
 			IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(token);
 
 		HTableInterface table = null;
 		try {
-			table = hbase.getTableInterface(tableName);
+			table = client.getTableInterface(tableName);
 			Get get = new Get(primary);
-			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT);
+			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
 			Result result = table.get(get);
-			if (result.size() != 1) {
-				throw new SiteWhereException("Expected one JSON entry and found: " + result.size());
+
+			byte[] ptype = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+			byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+			if ((ptype == null) || (payload == null)) {
+				return null;
 			}
-			return MarshalUtils.unmarshalJson(result.value(), type);
+
+			return PayloadMarshalerResolver.getInstance().getMarshaler(ptype).decode(payload, type);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to load data for token: " + token, e);
 		} finally {
@@ -149,7 +156,7 @@ public class HBaseUtils {
 	 * Get all matching records, sort them, and get matching pages. TODO: This is not
 	 * efficient since it always processes all records.
 	 * 
-	 * @param hbase
+	 * @param client
 	 * @param tableName
 	 * @param builder
 	 * @param includeDeleted
@@ -162,10 +169,10 @@ public class HBaseUtils {
 	 * @throws SiteWhereException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <I, C> SearchResults<I> getFilteredList(ISiteWhereHBaseClient hbase, byte[] tableName,
+	public static <I, C> SearchResults<I> getFilteredList(ISiteWhereHBaseClient client, byte[] tableName,
 			IRowKeyBuilder builder, boolean includeDeleted, Class<I> intf, Class<C> clazz, IFilter<C> filter,
 			ISearchCriteria criteria, Comparator<C> comparator) throws SiteWhereException {
-		List<C> results = getRecordList(hbase, tableName, builder, includeDeleted, clazz, filter);
+		List<C> results = getRecordList(client, tableName, builder, includeDeleted, clazz, filter);
 		Collections.sort(results, comparator);
 		Pager<I> pager = new Pager<I>(criteria);
 		for (C result : results) {
@@ -177,7 +184,7 @@ public class HBaseUtils {
 	/**
 	 * Get list of records that match the given criteria.
 	 * 
-	 * @param hbase
+	 * @param client
 	 * @param tableName
 	 * @param builder
 	 * @param includeDeleted
@@ -186,13 +193,13 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> List<T> getRecordList(ISiteWhereHBaseClient hbase, byte[] tableName,
+	public static <T> List<T> getRecordList(ISiteWhereHBaseClient client, byte[] tableName,
 			IRowKeyBuilder builder, boolean includeDeleted, Class<T> clazz, IFilter<T> filter)
 			throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = hbase.getTableInterface(tableName);
+			table = client.getTableInterface(tableName);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { builder.getTypeIdentifier() });
 			scan.setStopRow(new byte[] { (byte) (builder.getTypeIdentifier() + 1) });
@@ -209,18 +216,18 @@ public class HBaseUtils {
 				}
 
 				boolean shouldAdd = true;
-				byte[] json = null;
-				for (KeyValue column : result.raw()) {
-					byte[] qualifier = column.getQualifier();
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!includeDeleted)) {
-						shouldAdd = false;
-					}
-					if (Bytes.equals(ISiteWhereHBase.JSON_CONTENT, qualifier)) {
-						json = column.getValue();
-					}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] deleted = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED);
+
+				if ((deleted != null) && (!includeDeleted)) {
+					shouldAdd = false;
 				}
-				if ((shouldAdd) && (json != null)) {
-					T instance = MarshalUtils.unmarshalJson(json, clazz);
+				
+				if ((shouldAdd) && (payload != null)) {
+					T instance =
+							PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(payload,
+									clazz);
 					if (!filter.isExcluded(instance)) {
 						results.add(instance);
 					}
@@ -228,7 +235,7 @@ public class HBaseUtils {
 			}
 			return results;
 		} catch (IOException e) {
-			throw new SiteWhereException("Error scanning device network rows.", e);
+			throw new SiteWhereException("Error in list operation.", e);
 		} finally {
 			if (scanner != null) {
 				scanner.close();
@@ -240,7 +247,7 @@ public class HBaseUtils {
 	/**
 	 * Delete a primary record by token.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param tableName
 	 * @param token
 	 * @param force
@@ -249,9 +256,10 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T extends MetadataProviderEntity> T delete(ISiteWhereHBaseClient hbase, byte[] tableName,
-			String token, boolean force, IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
-		T existing = get(hbase, tableName, token, builder, type);
+	public static <T extends MetadataProviderEntity> T delete(ISiteWhereHBaseClient client,
+			IPayloadMarshaler marshaler, byte[] tableName, String token, boolean force,
+			IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
+		T existing = get(client, tableName, token, builder, type);
 		existing.setDeleted(true);
 
 		byte[] primary = builder.buildPrimaryKey(token);
@@ -260,7 +268,7 @@ public class HBaseUtils {
 			HTableInterface table = null;
 			try {
 				Delete delete = new Delete(primary);
-				table = hbase.getTableInterface(tableName);
+				table = client.getTableInterface(tableName);
 				table.delete(delete);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to delete data for token: " + token, e);
@@ -270,13 +278,15 @@ public class HBaseUtils {
 		} else {
 			byte[] marker = { (byte) 0x01 };
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
-			byte[] updated = MarshalUtils.marshalJson(existing);
+			byte[] updated = marshaler.encode(existing);
 
 			HTableInterface devices = null;
 			try {
-				devices = hbase.getTableInterface(tableName);
+				devices = client.getTableInterface(tableName);
 				Put put = new Put(primary);
-				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.JSON_CONTENT, updated);
+				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
+						marshaler.getEncoding().getIndicator());
+				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
 				devices.put(put);
 			} catch (IOException e) {
@@ -289,6 +299,31 @@ public class HBaseUtils {
 	}
 
 	/**
+	 * Adds payload fields to an HBase put.
+	 * 
+	 * @param context
+	 * @param put
+	 * @param encoded
+	 * @throws SiteWhereException
+	 */
+	public static void addPayloadFields(PayloadEncoding encoding, Put put, byte[] encoded)
+			throws SiteWhereException {
+		put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE, encoding.getIndicator());
+		put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, encoded);
+	}
+
+	/**
+	 * Adds payload fields to an HBase get.
+	 * 
+	 * @param get
+	 * @throws SiteWhereException
+	 */
+	public static void addPayloadFields(Get get) throws SiteWhereException {
+		get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+		get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+	}
+
+	/**
 	 * Prevent having to add custom {@link IOException} handling.
 	 * 
 	 * @param table
@@ -296,14 +331,11 @@ public class HBaseUtils {
 	 */
 	public static void closeCleanly(HTableInterface table) throws SiteWhereException {
 		try {
-			Tracer.push(TracerCategory.DataStore, "close " + new String(table.getTableName()), LOGGER);
 			if (table != null) {
 				table.close();
 			}
 		} catch (IOException e) {
 			throw new SiteWhereException("Exception closing table.", e);
-		} finally {
-			Tracer.pop(LOGGER);
 		}
 	}
 }

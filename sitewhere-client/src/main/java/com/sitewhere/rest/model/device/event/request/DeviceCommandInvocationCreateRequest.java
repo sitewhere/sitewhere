@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.device.event.request;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,10 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
  * @author Derek
  */
 public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceCommandInvocationCreateRequest {
+		IDeviceCommandInvocationCreateRequest, Serializable {
+
+	/** Serialization version identifier */
+	private static final long serialVersionUID = 8638261326864469204L;
 
 	/** Type of actor that initiated the command */
 	private CommandInitiator initiator;

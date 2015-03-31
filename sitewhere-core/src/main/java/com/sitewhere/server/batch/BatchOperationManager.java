@@ -8,7 +8,9 @@
 package com.sitewhere.server.batch;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -28,7 +30,6 @@ import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.batch.BatchOperationStatus;
@@ -272,7 +273,7 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 		 * @throws SiteWhereException
 		 */
 		protected void processBatchCommandInvocationElement(IBatchOperation operation, IBatchElement element,
-				IMetadataProvider updated) throws SiteWhereException {
+				BatchElementUpdateRequest updated) throws SiteWhereException {
 			LOGGER.info("Processing command invocation: " + element.getHardwareId());
 
 			// Find information about the command to be executed.
@@ -309,15 +310,17 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 			request.setTarget(CommandTarget.Assignment);
 			request.setTargetId(assignment.getToken());
 			request.setParameterValues(operation.getMetadata());
-			request.addOrReplaceMetadata(IBatchOperationCreateRequest.META_BATCH_OPERATION_ID,
-					operation.getToken());
+			Map<String, String> metadata = new HashMap<String, String>();
+			metadata.put(IBatchOperationCreateRequest.META_BATCH_OPERATION_ID, operation.getToken());
+			request.setMetadata(metadata);
 
 			// Invoke the command.
 			IDeviceCommandInvocation invocation =
 					SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(
 							assignment.getToken(), command, request);
-			updated.addOrReplaceMetadata(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID,
-					invocation.getId());
+			metadata = new HashMap<String, String>();
+			metadata.put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID, invocation.getId());
+			updated.setMetadata(metadata);
 		}
 	}
 

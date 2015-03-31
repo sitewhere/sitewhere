@@ -21,19 +21,34 @@ If you want to customize SiteWhere or otherwise have a need to build it from sou
 #### Clone and Build #####
 Clone this repository locally using:
 
-    git clone https://github.com/reveal-technologies/sitewhere.git
+    git clone https://github.com/sitewhere/sitewhere.git
     
 Navigate to the newly created directory and execute:
 
     mvn clean install
 
-After the build completes, a file named **sitewhere.war** should have been created in the **deploy** folder. This archive can be copied to the sitewhere server **webapps** directory to execute the updated code. Note that the web archive has external dependencies and will not run on an unmodified
-Tomcat instance, so using a compatible SiteWhere server release is the preferred approach. For more details, see the 
+After the build completes, a file named **sitewhere.war** will have been created in the **deploy** 
+folder. 
+
+#### Building a Full Server #####
+Once the **sitewhere.war** file has been generated, you can create the full server distribution by using:
+
+	mvn -P builderServer clean install
+	
+This will download a copy of Tomcat, copy the WAR to the webapps folder, and copy the default 
+configuration files to the correct location. A zipped archive is generated and may be used 
+as the packaged version downloaded from the SiteWhere.org website.
+
+#### Copying into an Existing Tomcat Instance #####
+Alternatively, the **sitewhere.war** archive can be copied to the **webapps** directory of an existing
+Tomcat instance. The default SiteWhere loader expects configuration files to be available in the **TOMCAT/conf/sitewhere/** 
+folder. Copy the files from [here] (https://github.com/sitewhere/sitewhere/tree/sitewhere-1.0.2/sitewhere-core/config/sitewhere) 
+as a starting point. For more details, see the 
 [installation guide] (http://docs.sitewhere.org/current/userguide/installation.html#using-an-existing-tomcat-instance).
 
 
-Sitewhere Install for Ubuntu Server 14.04 64bit
------------------------------------------------
+SiteWhere Complete Install for Ubuntu
+-------------------------------------
 
     sudo su
     apt-get update -y
@@ -100,4 +115,4 @@ Sitewhere Install for Ubuntu Server 14.04 64bit
 
 * * * *
 
-Copyright (c) 2009-2014, [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.
+Copyright (c) 2009-2015, [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.
