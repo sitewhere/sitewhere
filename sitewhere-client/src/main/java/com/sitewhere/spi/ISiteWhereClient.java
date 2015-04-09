@@ -36,6 +36,7 @@ import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
+import com.sitewhere.rest.model.search.HardwareAssetSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
@@ -64,6 +65,15 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public Site createSite(SiteCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Get Site by unique token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public Site getSiteByToken(String token) throws SiteWhereException;
 
 	/**
 	 * Create a new device specification.
@@ -211,6 +221,15 @@ public interface ISiteWhereClient {
 	public DeviceAssignment getDeviceAssignmentByToken(String assignmentToken) throws SiteWhereException;
 
 	/**
+	 * List all assignments for a site.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceAssignmentSearchResults listAssignmentsForSite(String token) throws SiteWhereException;
+
+	/**
 	 * Delete a device assignment based on its unique token.
 	 * 
 	 * @param assignmentToken
@@ -333,4 +352,14 @@ public interface ISiteWhereClient {
 	 */
 	public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
 			Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException;
+
+	/**
+	 * List all assets in a given asset module that meet the given criteria.
+	 * 
+	 * @param moduleId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public HardwareAssetSearchResults getAssetsByModuleId(String moduleId, String criteria)
+			throws SiteWhereException;
 }

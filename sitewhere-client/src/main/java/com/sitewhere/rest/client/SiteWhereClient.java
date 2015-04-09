@@ -51,6 +51,7 @@ import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
+import com.sitewhere.rest.model.search.HardwareAssetSearchResults;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
@@ -168,6 +169,16 @@ public class SiteWhereClient implements ISiteWhereClient {
 	public Site createSite(SiteCreateRequest request) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		return sendRest(getBaseUrl() + "sites", HttpMethod.POST, request, Site.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#getSiteByToken(java.lang.String)
+	 */
+	public Site getSiteByToken(String token) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "sites/" + token, HttpMethod.GET, null, Site.class, vars);
 	}
 
 	/*
@@ -342,6 +353,17 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("assignmentToken", assignmentToken);
 		return sendRest(getBaseUrl() + "assignments/{assignmentToken}", HttpMethod.GET, null,
 				DeviceAssignment.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listAssignmentsForSite(java.lang.String)
+	 */
+	public DeviceAssignmentSearchResults listAssignmentsForSite(String token) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "sites/" + token + "/assignments?includeDevice=true", HttpMethod.GET,
+				null, DeviceAssignmentSearchResults.class, vars);
 	}
 
 	/*
@@ -542,6 +564,22 @@ public class SiteWhereClient implements ISiteWhereClient {
 		request.setHardwareIds(hardwareIds);
 		Map<String, String> vars = new HashMap<String, String>();
 		return sendRest(getBaseUrl() + "batch/command", HttpMethod.POST, request, BatchOperation.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#getAssetsByModuleId(java.lang.String,
+	 * java.lang.String)
+	 */
+	public HardwareAssetSearchResults getAssetsByModuleId(String moduleId, String criteria)
+			throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		String url = "assets/" + moduleId;
+		if ((criteria != null) && (criteria.length() > 0)) {
+			url += "?criteria=" + criteria;
+		}
+		return sendRest(getBaseUrl() + url, HttpMethod.GET, null, HardwareAssetSearchResults.class, vars);
 	}
 
 	/**
