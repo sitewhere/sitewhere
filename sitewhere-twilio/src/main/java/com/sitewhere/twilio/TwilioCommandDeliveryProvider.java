@@ -14,13 +14,13 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
-import com.sitewhere.device.provisioning.sms.SmsParameters;
+import com.sitewhere.device.communication.sms.SmsParameters;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider;
+import com.sitewhere.spi.device.communication.ICommandDeliveryProvider;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.twilio.sdk.TwilioRestClient;
 import com.twilio.sdk.TwilioRestException;
@@ -100,7 +100,7 @@ public class TwilioCommandDeliveryProvider extends LifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliver(com.sitewhere
+	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(com.sitewhere
 	 * .spi.device.IDeviceNestingContext, com.sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object,
 	 * java.lang.Object)
@@ -117,7 +117,7 @@ public class TwilioCommandDeliveryProvider extends LifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.ICommandDeliveryProvider#deliverSystemCommand
+	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliverSystemCommand
 	 * (com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object, java.lang.Object)
 	 */

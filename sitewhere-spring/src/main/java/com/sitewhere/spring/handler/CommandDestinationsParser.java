@@ -21,16 +21,20 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.device.provisioning.mqtt.HardwareIdMqttParameterExtractor;
-import com.sitewhere.device.provisioning.mqtt.MqttCommandDeliveryProvider;
-import com.sitewhere.device.provisioning.mqtt.MqttCommandDestination;
-import com.sitewhere.device.provisioning.mqtt.MqttParameters;
-import com.sitewhere.device.provisioning.sms.SmsCommandDestination;
-import com.sitewhere.device.provisioning.sms.SmsParameters;
-import com.sitewhere.spi.device.provisioning.ICommandDestination;
+import com.sitewhere.device.communication.mqtt.HardwareIdMqttParameterExtractor;
+import com.sitewhere.device.communication.mqtt.MqttCommandDeliveryProvider;
+import com.sitewhere.device.communication.mqtt.MqttCommandDestination;
+import com.sitewhere.device.communication.mqtt.MqttParameters;
+import com.sitewhere.device.communication.protobuf.JavaHybridProtobufExecutionEncoder;
+import com.sitewhere.device.communication.protobuf.ProtobufExecutionEncoder;
+import com.sitewhere.device.communication.sms.SmsCommandDestination;
+import com.sitewhere.device.communication.sms.SmsParameters;
+import com.sitewhere.spi.device.communication.ICommandDestination;
+import com.sitewhere.twilio.TwilioCommandDeliveryProvider;
 
 /**
- * Parses the list of {@link ICommandDestination} elements used in provisioning.
+ * Parses the list of {@link ICommandDestination} elements used in the communication
+ * subsystem.
  * 
  * @author Derek
  */
@@ -184,7 +188,7 @@ public class CommandDestinationsParser {
 	 */
 	protected AbstractBeanDefinition createTwilioDeliveryProvider(Element element) {
 		BeanDefinitionBuilder twilio =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.twilio.TwilioCommandDeliveryProvider");
+				BeanDefinitionBuilder.rootBeanDefinition(TwilioCommandDeliveryProvider.class);
 
 		Attr accountSid = element.getAttributeNode("accountSid");
 		if (accountSid == null) {
@@ -280,7 +284,7 @@ public class CommandDestinationsParser {
 	protected void parseProtobufCommandEncoder(Element encoder, ParserContext context,
 			BeanDefinitionBuilder destination) {
 		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.device.provisioning.protobuf.ProtobufExecutionEncoder");
+				BeanDefinitionBuilder.rootBeanDefinition(ProtobufExecutionEncoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -297,7 +301,7 @@ public class CommandDestinationsParser {
 	protected void parseJavaHybridProtobufEncoder(Element encoder, ParserContext context,
 			BeanDefinitionBuilder destination) {
 		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.device.provisioning.protobuf.JavaHybridProtobufExecutionEncoder");
+				BeanDefinitionBuilder.rootBeanDefinition(JavaHybridProtobufExecutionEncoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);

@@ -19,9 +19,9 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.azure.device.provisioning.EventHubOutboundEventProcessor;
+import com.sitewhere.azure.device.communication.EventHubOutboundEventProcessor;
+import com.sitewhere.device.communication.DeviceCommandEventProcessor;
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
-import com.sitewhere.device.provisioning.ProvisioningEventProcessor;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
@@ -80,7 +80,11 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 				break;
 			}
 			case ProvisioningEventProcessor: {
-				processors.add(parseProvisioningEventProcessor(child, context));
+				processors.add(parseCommandDeliveryEventProcessor(child, context));
+				break;
+			}
+			case CommandDeliveryEventProcessor: {
+				processors.add(parseCommandDeliveryEventProcessor(child, context));
 				break;
 			}
 			}
@@ -246,16 +250,16 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
-	 * Parse configuration for event processor that routes traffic to provisioning
+	 * Parse configuration for event processor that routes commands to communication
 	 * subsystem.
 	 * 
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition parseProvisioningEventProcessor(Element element, ParserContext context) {
+	protected AbstractBeanDefinition parseCommandDeliveryEventProcessor(Element element, ParserContext context) {
 		BeanDefinitionBuilder processor =
-				BeanDefinitionBuilder.rootBeanDefinition(ProvisioningEventProcessor.class);
+				BeanDefinitionBuilder.rootBeanDefinition(DeviceCommandEventProcessor.class);
 
 		Attr numThreads = element.getAttributeNode("numThreads");
 		if (numThreads != null) {
@@ -287,8 +291,11 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		/** Sends outbound events to an Azure EventHub */
 		AzureEventHubEventProcessor("azure-eventhub-event-processor"),
 
-		/** Reference to custom inbound event processor */
-		ProvisioningEventProcessor("provisioning-event-processor");
+		/** DEPRECATED: Use 'command-delivery-event-processor' */
+		ProvisioningEventProcessor("provisioning-event-processor"),
+
+		/** Outbound event processor that delivers commands via communication subsystem */
+		CommandDeliveryEventProcessor("command-delivery-event-processor");
 
 		/** Event code */
 		private String localName;

@@ -47,8 +47,8 @@ public enum LifecycleComponentType {
 	/** Inbound event processor */
 	InboundEventProcessor,
 
-	/** Device provisioning subsystem */
-	DeviceProvisioning,
+	/** Device communication subsystem */
+	DeviceCommunication,
 
 	/** Command processing strategy */
 	CommandProcessingStrategy,

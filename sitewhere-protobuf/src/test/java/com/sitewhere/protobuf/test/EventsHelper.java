@@ -9,9 +9,9 @@ package com.sitewhere.protobuf.test;
 
 import java.util.Date;
 
-import com.sitewhere.device.provisioning.protobuf.ProtobufDeviceEventEncoder;
+import com.sitewhere.device.communication.protobuf.ProtobufDeviceEventEncoder;
+import com.sitewhere.rest.model.device.communication.DecodedDeviceEventRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
-import com.sitewhere.rest.model.device.provisioning.DecodedDeviceEventRequest;
 import com.sitewhere.spi.SiteWhereException;
 
 /**

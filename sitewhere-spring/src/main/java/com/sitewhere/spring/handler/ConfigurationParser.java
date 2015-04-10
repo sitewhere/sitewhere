@@ -68,7 +68,11 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 				break;
 			}
 			case Provisioning: {
-				new ProvisioningParser().parse(child, context);
+				new DeviceCommunicationParser().parse(child, context);
+				break;
+			}
+			case DeviceCommunication: {
+				new DeviceCommunicationParser().parse(child, context);
 				break;
 			}
 			case AssetManagement: {
@@ -103,8 +107,11 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 		/** Outbound processing chain */
 		OutboundProcessingChain("outbound-processing-chain"),
 
-		/** Provisioning */
+		/** Provisioning (DEPRECATED) */
 		Provisioning("provisioning"),
+
+		/** Device Communication Subsystem */
+		DeviceCommunication("device-communication"),
 
 		/** Asset management */
 		AssetManagement("asset-management"),

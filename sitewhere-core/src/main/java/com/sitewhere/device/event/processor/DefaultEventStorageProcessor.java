@@ -77,7 +77,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	@Override
 	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
 			throws SiteWhereException {
-		SiteWhere.getServer().getDeviceProvisioning().getRegistrationManager().handleDeviceRegistration(
+		SiteWhere.getServer().getDeviceCommunicationSubsystem().getRegistrationManager().handleDeviceRegistration(
 				request);
 	}
 

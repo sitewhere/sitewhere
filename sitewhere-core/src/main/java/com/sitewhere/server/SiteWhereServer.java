@@ -39,9 +39,9 @@ import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
-import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
@@ -97,8 +97,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/** Interface to outbound event processor chain */
 	private IOutboundEventProcessorChain outboundEventProcessorChain;
 
-	/** Interface to device provisioning implementation */
-	private IDeviceProvisioning deviceProvisioning;
+	/** Interface to device communication subsystem implementation */
+	private IDeviceCommunication deviceCommunication;
 
 	/** Interface for the asset module manager */
 	private IAssetModuleManager assetModuleManager;
@@ -216,10 +216,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceProvisioning()
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceCommunicationSubsystem()
 	 */
-	public IDeviceProvisioning getDeviceProvisioning() {
-		return deviceProvisioning;
+	public IDeviceCommunication getDeviceCommunicationSubsystem() {
+		return deviceCommunication;
 	}
 
 	/*
@@ -318,19 +318,22 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		verifyUserModel();
 		verifyDeviceModel();
 
-		// Enable provisioning.
+		// Enable outbound processor chain.
 		if (getOutboundEventProcessorChain() != null) {
 			startNestedComponent(getOutboundEventProcessorChain(),
 					"Outbound processor chain startup failed.", true);
 			getOutboundEventProcessorChain().setProcessingEnabled(true);
 		}
+
+		// Enable inbound processor chain.
 		if (getInboundEventProcessorChain() != null) {
 			startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.",
 					true);
 		}
 
-		// Start device provisioning.
-		startNestedComponent(getDeviceProvisioning(), "Device provisioning startup failed.", true);
+		// Start device communication subsystem.
+		startNestedComponent(getDeviceCommunicationSubsystem(),
+				"Device communication subsystem startup failed.", true);
 
 		// Force refresh on components-by-id map.
 		refreshLifecycleComponentMap(this, lifecycleComponentsById);
@@ -390,8 +393,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		// Disable provisioning.
-		getDeviceProvisioning().lifecycleStop();
+		// Disable device communications.
+		getDeviceCommunicationSubsystem().lifecycleStop();
 		getInboundEventProcessorChain().lifecycleStop();
 		getOutboundEventProcessorChain().setProcessingEnabled(false);
 		getOutboundEventProcessorChain().lifecycleStop();
@@ -427,8 +430,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Initialize tracer.
 		initializeTracer();
 
-		// Initialize device provisioning.
-		initializeDeviceProvisioning();
+		// Initialize device communication subsystem.
+		initializeDeviceCommunicationSubsystem();
 
 		// Initialize device management.
 		initializeDeviceManagement();
@@ -587,16 +590,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	}
 
 	/**
-	 * Verify and initialize device provisioning implementation.
+	 * Verify and initialize device communication subsystem implementation.
 	 * 
 	 * @throws SiteWhereException
 	 */
-	protected void initializeDeviceProvisioning() throws SiteWhereException {
+	protected void initializeDeviceCommunicationSubsystem() throws SiteWhereException {
 		try {
-			deviceProvisioning =
-					(IDeviceProvisioning) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_PROVISIONING);
+			deviceCommunication =
+					(IDeviceCommunication) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION);
 		} catch (NoSuchBeanDefinitionException e) {
-			throw new SiteWhereException("No device provisioning implementation configured.");
+			throw new SiteWhereException("No device communication subsystem implementation configured.");
 		}
 	}
 

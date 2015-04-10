@@ -18,10 +18,16 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.ehcache.DeviceManagementCacheProvider;
 import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
+import com.sitewhere.hbase.DefaultHBaseClient;
+import com.sitewhere.hbase.device.HBaseDeviceManagement;
+import com.sitewhere.hbase.user.HBaseUserManagement;
 import com.sitewhere.mongodb.DockerMongoClient;
 import com.sitewhere.mongodb.SiteWhereMongoClient;
+import com.sitewhere.mongodb.device.MongoDeviceManagement;
+import com.sitewhere.mongodb.user.MongoUserManagement;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.server.device.DefaultDeviceModelInitializer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
@@ -122,15 +128,13 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		context.getRegistry().registerBeanDefinition("mongo", client.getBeanDefinition());
 
 		// Register Mongo device management implementation.
-		BeanDefinitionBuilder dm =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.mongodb.device.MongoDeviceManagement");
+		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
 		dm.addPropertyReference("mongoClient", "mongo");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
 				dm.getBeanDefinition());
 
 		// Register Mongo user management implementation.
-		BeanDefinitionBuilder um =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.mongodb.user.MongoUserManagement");
+		BeanDefinitionBuilder um = BeanDefinitionBuilder.rootBeanDefinition(MongoUserManagement.class);
 		um.addPropertyReference("mongoClient", "mongo");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
 				um.getBeanDefinition());
@@ -144,41 +148,37 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	 */
 	protected void parseHBaseDatasource(Element element, ParserContext context) {
 		// Register client bean.
-		BeanDefinitionBuilder client =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.hbase.DefaultHBaseClient");
+		BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DefaultHBaseClient.class);
 		Attr quorum = element.getAttributeNode("quorum");
 		if (quorum != null) {
 			client.addPropertyValue("quorum", quorum.getValue());
 		}
-		
+
 		Attr zookeeperClientPort = element.getAttributeNode("zookeeperClientPort");
 		if (zookeeperClientPort != null) {
 			client.addPropertyValue("zookeeperClientPort", zookeeperClientPort.getValue());
 		}
-		
+
 		Attr zookeeperZnodeParent = element.getAttributeNode("zookeeperZnodeParent");
 		if (zookeeperZnodeParent != null) {
 			client.addPropertyValue("zookeeperZnodeParent", zookeeperZnodeParent.getValue());
 		}
-		
+
 		Attr zookeeperZnodeRootServer = element.getAttributeNode("zookeeperZnodeRootServer");
 		if (zookeeperZnodeRootServer != null) {
 			client.addPropertyValue("zookeeperZnodeRootServer", zookeeperZnodeRootServer.getValue());
 		}
-		
+
 		context.getRegistry().registerBeanDefinition("hbase", client.getBeanDefinition());
-		
 
 		// Register HBase device management implementation.
-		BeanDefinitionBuilder dm =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.hbase.device.HBaseDeviceManagement");
+		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(HBaseDeviceManagement.class);
 		dm.addPropertyReference("client", "hbase");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
 				dm.getBeanDefinition());
 
 		// Register HBase user management implementation.
-		BeanDefinitionBuilder um =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.hbase.user.HBaseUserManagement");
+		BeanDefinitionBuilder um = BeanDefinitionBuilder.rootBeanDefinition(HBaseUserManagement.class);
 		um.addPropertyReference("client", "hbase");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
 				um.getBeanDefinition());
@@ -192,7 +192,7 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	 */
 	protected void parseEHCacheDeviceManagementCache(Element element, ParserContext context) {
 		BeanDefinitionBuilder cache =
-				BeanDefinitionBuilder.rootBeanDefinition("com.sitewhere.ehcache.DeviceManagementCacheProvider");
+				BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementCacheProvider.class);
 		Attr siteCacheMaxEntries = element.getAttributeNode("siteCacheMaxEntries");
 		if (siteCacheMaxEntries != null) {
 			cache.addPropertyValue("siteCacheMaxEntries", siteCacheMaxEntries.getValue());

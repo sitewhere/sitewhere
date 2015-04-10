@@ -30,10 +30,10 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sitewhere.azure.device.provisioning.client.Constants;
-import com.sitewhere.azure.device.provisioning.client.EventData;
-import com.sitewhere.azure.device.provisioning.client.EventHubReceiverTask;
-import com.sitewhere.azure.device.provisioning.client.EventHubReceiverTaskConfig;
+import com.sitewhere.azure.device.communication.client.Constants;
+import com.sitewhere.azure.device.communication.client.EventData;
+import com.sitewhere.azure.device.communication.client.EventHubReceiverTask;
+import com.sitewhere.azure.device.communication.client.EventHubReceiverTaskConfig;
 
 public class EventHubReceiverTest {
 

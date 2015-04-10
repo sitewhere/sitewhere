@@ -16,9 +16,9 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
+import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
-import com.sitewhere.spi.device.provisioning.IDeviceProvisioning;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -103,11 +103,11 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IOutboundEventProcessorChain getOutboundEventProcessorChain();
 
 	/**
-	 * Get the device provisioning implementation.
+	 * Get the device communication subsystem implementation.
 	 * 
 	 * @return
 	 */
-	public IDeviceProvisioning getDeviceProvisioning();
+	public IDeviceCommunication getDeviceCommunicationSubsystem();
 
 	/**
 	 * Get the asset modules manager instance.

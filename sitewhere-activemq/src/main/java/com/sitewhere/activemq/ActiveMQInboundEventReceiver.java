@@ -34,8 +34,8 @@ import org.apache.log4j.Logger;
 import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.provisioning.IInboundEventReceiver;
-import com.sitewhere.spi.device.provisioning.IInboundEventSource;
+import com.sitewhere.spi.device.communication.IInboundEventReceiver;
+import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -132,7 +132,7 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {
@@ -189,7 +189,7 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#onEventPayloadReceived
+	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
 	 * (java.lang.Object)
 	 */
 	@Override
@@ -303,7 +303,7 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.provisioning.IInboundEventReceiver#getEventSource()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
 	 */
 	public IInboundEventSource<byte[]> getEventSource() {
 		return eventSource;
@@ -313,8 +313,8 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.provisioning.IInboundEventReceiver#setEventSource(com.
-	 * sitewhere.spi.device.provisioning.IInboundEventSource)
+	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com
+	 * .sitewhere.spi.device.communication.IInboundEventSource)
 	 */
 	public void setEventSource(IInboundEventSource<byte[]> eventSource) {
 		this.eventSource = eventSource;

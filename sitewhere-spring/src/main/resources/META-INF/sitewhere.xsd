@@ -33,7 +33,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element ref="abstract-provisioning-implementation"/>
+			<xsd:element ref="abstract-communication-subsystem-implementation"/>
 			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -342,7 +342,16 @@
 	</xsd:complexType>
 
 	<!-- Provisioning outbound event processor -->
-	<xsd:element name="provisioning-event-processor" type="provisioningEventProcessorType"
+	<xsd:element name="provisioning-event-processor" type="commandDeliveryEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				DEPRECATED: Use 'command-delivery-event-processor' instead.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- Command delivery outbound event processor -->
+	<xsd:element name="command-delivery-event-processor" type="commandDeliveryEventProcessorType"
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -352,7 +361,7 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="provisioningEventProcessorType">
+	<xsd:complexType name="commandDeliveryEventProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundProcessorType">
 				<xsd:attribute name="numThreads" type="xsd:int" use="optional">
@@ -498,18 +507,19 @@
 	</xsd:complexType>
 
 
-	<!-- Used as a placeholder for provisioning implementations to allow substitutionGroups -->
-	<xsd:element name="abstract-provisioning-implementation" abstract="true"
-		type="abstractProvisioningType">
+	<!-- Used as a placeholder for communication subsystem implementations to allow substitutionGroups -->
+	<xsd:element name="abstract-communication-subsystem-implementation" abstract="true"
+		type="abstractCommunicationSubsystemType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for device provisioning implementation elements.
+				A placeholder for device communication subsystem implementation
+				elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	
-	<!-- Common information for device provisioning implementations -->
-	<xsd:complexType name="abstractProvisioningType">
+	<!-- Common information for device communication subsystem implementations -->
+	<xsd:complexType name="abstractCommunicationSubsystemType">
 		<xsd:sequence>
 			<xsd:element name="event-sources" type="eventSourcesType">
 				<xsd:annotation>
@@ -563,17 +573,27 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<!-- Default device provisioning implementation -->
-	<xsd:element name="provisioning" type="defaultProvisioningType"
-		substitutionGroup="abstract-provisioning-implementation">
+	<!-- DEPRECATED: provisioning was renamed device-communication -->
+	<xsd:element name="provisioning" type="defaultCommunicationSubsystemType"
+		substitutionGroup="abstract-communication-subsystem-implementation">
 		<xsd:annotation>
-			<xsd:documentation>Specifies the default device provisioning implementation.
+			<xsd:documentation>DEPRECATED: Left for backward compatibility. Use
+				'device-communication' element instead.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="defaultProvisioningType">
+	
+	<!-- Default device provisioning implementation -->
+	<xsd:element name="device-communication" type="defaultCommunicationSubsystemType"
+		substitutionGroup="abstract-communication-subsystem-implementation">
+		<xsd:annotation>
+			<xsd:documentation>Specifies the default device communication subsystem implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultCommunicationSubsystemType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractProvisioningType">
+			<xsd:extension base="abstractCommunicationSubsystemType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -767,78 +787,79 @@
 	</xsd:attributeGroup>
 
     <!-- Event source that pulls binary information from an EventHub endpoint and decodes it -->
-    <xsd:element name="azure-eventhub-event-source" type="azureEventhubEventSourceType"
-                 substitutionGroup="abstract-event-source">
-        <xsd:annotation>
-            <xsd:documentation>Event source that pulls binary information from an Azure EventHub endpoint and
-                decodes it
-            </xsd:documentation>
-        </xsd:annotation>
-    </xsd:element>
-    <xsd:complexType name="azureEventhubEventSourceType">
-        <xsd:complexContent>
-            <xsd:extension base="abstractEventSourceType">
-                <xsd:sequence>
-                    <xsd:element ref="abstract-decoder"/>
-                </xsd:sequence>
-                <xsd:attributeGroup ref="event-source-attributes"/>
-                <xsd:attributeGroup ref="azure-eventhub-inbound-attributes"/>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
+	<xsd:element name="azure-eventhub-event-source" type="azureEventhubEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls binary information from an Azure EventHub
+				endpoint and
+				decodes it
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="azureEventhubEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attributeGroup ref="azure-eventhub-inbound-attributes"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
     <!-- Attributes used for inbound eventhub processing -->
-    <xsd:attributeGroup name="azure-eventhub-inbound-attributes">
-        <xsd:attribute name="targetFqn" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    EventHub targetFqn address.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="namespace" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    EventHub namespace.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="entityPath" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    EventHub entityPath.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="partitionCount" type="xsd:int">
-            <xsd:annotation>
-                <xsd:documentation>
-                    EventHub partition count.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="zkStateStore" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    zookeeper store url for EventHub state persistence.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="username" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    username for EventHub connection.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="password" type="xsd:string">
-            <xsd:annotation>
-                <xsd:documentation>
-                    password for EventHub connection.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-    </xsd:attributeGroup>
+	<xsd:attributeGroup name="azure-eventhub-inbound-attributes">
+		<xsd:attribute name="targetFqn" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					EventHub targetFqn address.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="namespace" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					EventHub namespace.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="entityPath" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					EventHub entityPath.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="partitionCount" type="xsd:int">
+			<xsd:annotation>
+				<xsd:documentation>
+					EventHub partition count.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="zkStateStore" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					zookeeper store url for EventHub state persistence.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="username" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					username for EventHub connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="password" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					password for EventHub connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
 
 	<!-- Event source that pulls binary information from an AcitveMQ queue and decodes it -->
 	<xsd:element name="activemq-event-source" type="activemqEventSourceType"
@@ -1568,30 +1589,30 @@
 	</xsd:complexType>
 
     <!-- Configuration data for Groovy services -->
-    <xsd:element name="groovy-configuration" type="groovyConfigurationType"
-                 substitutionGroup="abstract-global">
-        <xsd:annotation>
-            <xsd:documentation>Global configuration settings for Groovy scripting.
-            </xsd:documentation>
-        </xsd:annotation>
-    </xsd:element>
-    <xsd:complexType name="groovyConfigurationType">
-        <xsd:complexContent>
-            <xsd:extension base="abstractGlobalType">
-                <xsd:attribute name="debug" type="xsd:boolean" use="optional">
-                    <xsd:annotation>
-                        <xsd:documentation>Turns on Groovy script engine debugging if true.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-                <xsd:attribute name="verbose" type="xsd:boolean" use="optional">
-                    <xsd:annotation>
-                        <xsd:documentation>Turns on Groovy script engine verbose flag if true.
-                        </xsd:documentation>
-                    </xsd:annotation>
-                </xsd:attribute>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
+	<xsd:element name="groovy-configuration" type="groovyConfigurationType"
+		substitutionGroup="abstract-global">
+		<xsd:annotation>
+			<xsd:documentation>Global configuration settings for Groovy scripting.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyConfigurationType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractGlobalType">
+				<xsd:attribute name="debug" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Turns on Groovy script engine debugging if true.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="verbose" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Turns on Groovy script engine verbose flag if true.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 </xsd:schema>

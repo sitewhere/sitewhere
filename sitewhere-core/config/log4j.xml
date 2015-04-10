@@ -46,8 +46,8 @@
 		<priority value="INFO" />
 	</category>
 
-	<!-- Change to DEBUG for detailed provisioning logging -->
-	<category name="com.sitewhere.device.provisioning">
+	<!-- Change to DEBUG for detailed communication subsystem logging -->
+	<category name="com.sitewhere.device.communication">
 		<priority value="INFO" />
 	</category>
 

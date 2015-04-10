@@ -17,7 +17,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.device.provisioning.RegistrationManager;
+import com.sitewhere.device.communication.RegistrationManager;
 
 /**
  * Parse elements related to device registration.

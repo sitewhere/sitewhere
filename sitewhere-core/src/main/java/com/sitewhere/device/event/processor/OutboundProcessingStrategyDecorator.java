@@ -14,6 +14,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -27,7 +28,6 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
-import com.sitewhere.spi.device.provisioning.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 
@@ -43,7 +43,8 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	private IOutboundProcessingStrategy outbound;
 
 	public OutboundProcessingStrategyDecorator(IDeviceManagement delegate) {
-		this(delegate, SiteWhere.getServer().getDeviceProvisioning().getOutboundProcessingStrategy());
+		this(delegate,
+				SiteWhere.getServer().getDeviceCommunicationSubsystem().getOutboundProcessingStrategy());
 	}
 
 	public OutboundProcessingStrategyDecorator(IDeviceManagement delegate,
