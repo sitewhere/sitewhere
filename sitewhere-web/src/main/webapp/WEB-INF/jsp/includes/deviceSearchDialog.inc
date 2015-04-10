@@ -8,20 +8,21 @@
 		<div>
 			<form id="dvs-general-form" class="form-horizontal" style="padding-top: 20px;">
 				<div class="control-group">
-					<label class="control-label" for="dvs-hardware-id">#= i18next("public.HardwareId") #</label>
+					<label class="control-label" for="dvs-hardware-id" data-i18n="public.HardwareId"></label>
 					<div class="controls">
-						<input type="text" id="dvs-hardware-id" title="#= i18next("public.HardwareId") #" class="input-xlarge">
+						<input type="text" id="dvs-hardware-id" data-i18n="public.HardwareId" class="input-xlarge">
 					</div>
 				</div>
 				<div id="dvs-device-matches" style="max-height: 200px; overflow: scroll;"></div>
 				<div id="dvs-device-matches-pager" class="k-pager-wrap"></div>
-				<input id="dvs-selected-hardware-id" type="hidden"/>
+				<input id="dvs-selected-hardware-id" type="hidden" />
 			</form>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
-		<a id="dvs-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="includes.deviceSearchDialog.Select"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+			id="dvs-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+			data-i18n="includes.deviceSearchDialog.Select"></a>
 	</div>
 </div>
 
@@ -32,15 +33,15 @@
 
 	/** Function called when dialog is submitted */
 	var dvsSubmitCallback;
-	
+
 	/** Datasource for device matches */
 	var dvsMatchesDS;
-	
+
 	/** Device matches list view */
 	var dvsMatches;
 
 	$(document).ready(function() {
-		
+
 		/** Create AJAX datasource for devices list */
 		dvsMatchesDS = new kendo.data.DataSource({
 			transport : {
@@ -50,58 +51,60 @@
 				}
 			},
 			schema : {
-				data: "results",
-				total: "numResults",
-				parse:function (response) {
-				    $.each(response.results, function (index, item) {
-				    	parseDeviceData(item);
-				    });
-				    return response;
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseDeviceData(item);
+					});
+					return response;
 				}
 			},
-            serverPaging: true,
-            serverSorting: true,
-            pageSize: 10,
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 10,
 		});
-		
+
 		/** Create the list of devices */
 		dvsMatches = $("#dvs-device-matches").kendoListView({
 			dataSource : dvsMatchesDS,
 			selectable : "single",
-			template : kendo.template($("#tpl-device-entry").html()),
-			change: dvsDeviceChosen
+			template : kendo.template($("#tpl-device-entry-small").html()),
+			change : dvsDeviceChosen
 		}).data("kendoListView");
-		
+
 		/** Pager for device list */
-        $("#dvs-device-matches-pager").kendoPager({
-            dataSource: dvsMatchesDS
-        });
-		
-        /** Handle create dialog submit */
+		$("#dvs-device-matches-pager").kendoPager({
+			dataSource : dvsMatchesDS
+		});
+
+		/** Handle create dialog submit */
 		$('#dvs-dialog-submit').click(function(event) {
 			event.preventDefault();
 			if (!dvsValidate()) {
 				return;
 			}
-        	$('#dvs-dialog').modal('hide');
+			$('#dvs-dialog').modal('hide');
 			if (dvsSubmitCallback != null) {
 				dvsSubmitCallback(dvsPassthrough, $('#dvs-selected-hardware-id').val());
 			}
 		});
-    });
-	
+	});
+
 	/** Perform validation */
 	function dvsValidate() {
-		$.validity.setup({ outputMode:"label" });
+		$.validity.setup({
+			outputMode : "label"
+		});
 		$.validity.start();
 
-        /** Validate fields */
+		/** Validate fields */
 		$("#dvs-selected-hardware-id").require();
-     
+
 		var result = $.validity.end();
 		return result.valid;
 	}
-	
+
 	/** Called when device selection changes */
 	function dvsDeviceChosen() {
 		var listView = dvsMatchesDS.view();
@@ -115,21 +118,21 @@
 			$('#dvs-selected-hardware-id').val("");
 		}
 	}
-	
+
 	/** Open the dialog */
 	function dvsOpen(passthrough, callback) {
 		// Reset selection.
-    	$('#dvs-selected-hardware-id').val("");
-		
+		$('#dvs-selected-hardware-id').val("");
+
 		// Clear existing selection.
-    	dvsMatches.clearSelection();
-		
+		dvsMatches.clearSelection();
+
 		// Function called on submit.
 		dvsSubmitCallback = callback;
-		
+
 		// Data passed back to callback.
 		dvsPassthrough = passthrough;
-		
+
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
 		$('#dvs-dialog').modal('show');
