@@ -355,7 +355,7 @@
 		substitutionGroup="abstract-outbound-processor">
 		<xsd:annotation>
 			<xsd:documentation>
-				Hands off outbound device command events to the provisioning
+				Hands off outbound device command events to the device communication
 				subsystem. If this event processor is not configured, no commands will be sent to
 				devices.
 			</xsd:documentation>
