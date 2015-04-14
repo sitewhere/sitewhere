@@ -49,12 +49,15 @@ import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
@@ -69,6 +72,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -684,6 +688,40 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public SearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return HBaseDeviceEvent.listDeviceAlertsForSite(context, siteToken, criteria);
+	}
+
+	@Override
+	public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
+			throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
+			throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken, String streamId,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*

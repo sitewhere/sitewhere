@@ -43,6 +43,12 @@ public interface IDeviceManagementMongoClient {
 	/** Default collection name for SiteWhere events */
 	public static final String DEFAULT_EVENTS_COLLECTION_NAME = "events";
 
+	/** Default collection name for SiteWhere device streams */
+	public static final String DEFAULT_DEVICE_STREAMS_COLLECTION_NAME = "streams";
+
+	/** Default collection name for SiteWhere device streams data */
+	public static final String DEFAULT_DEVICE_STREAM_DATA_COLLECTION_NAME = "streamdata";
+
 	/** Default collection name for SiteWhere batch operations */
 	public static final String DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME = "batchoperations";
 
@@ -66,6 +72,10 @@ public interface IDeviceManagementMongoClient {
 	public DBCollection getGroupElementsCollection();
 
 	public DBCollection getEventsCollection();
+	
+	public DBCollection getStreamsCollection();
+	
+	public DBCollection getStreamDataCollection();
 
 	public DBCollection getBatchOperationsCollection();
 

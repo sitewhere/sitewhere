@@ -42,10 +42,12 @@ import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
+import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
@@ -81,6 +83,8 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchElementUpdateRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
@@ -725,6 +729,53 @@ public class SiteWherePersistence {
 	}
 
 	/**
+	 * Common logic for creating {@link DeviceStream} from
+	 * {@link IDeviceStreamCreateRequest}.
+	 * 
+	 * @param assignment
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceStream deviceStreamCreateLogic(IDeviceAssignment assignment,
+			IDeviceStreamCreateRequest request) throws SiteWhereException {
+		DeviceStream stream = new DeviceStream();
+		stream.setAssignmentToken(assignment.getToken());
+
+		// Stream id is required.
+		assureData(request.getStreamId());
+		stream.setStreamId(request.getStreamId());
+
+		// Content type is required.
+		assureData(request.getContentType());
+		stream.setContentType(request.getContentType());
+
+		MetadataProvider.copy(request.getMetadata(), stream);
+		SiteWherePersistence.initializeEntityMetadata(stream);
+		return stream;
+	}
+
+	/**
+	 * Common logic for creating {@link DeviceStreamData} from
+	 * {@link IDeviceStreamDataCreateRequest}.
+	 * 
+	 * @param assignment
+	 * @param streamId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static DeviceStreamData deviceStreamDataCreateLogic(IDeviceAssignment assignment, String streamId,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+		DeviceStreamData streamData = new DeviceStreamData();
+		deviceEventCreateLogic(request, assignment, streamData);
+		streamData.setStreamId(streamId);
+		streamData.setSequenceNumber(request.getSequenceNumber());
+		streamData.setData(request.getData());
+		return streamData;
+	}
+
+	/**
 	 * Common logic for creating {@link DeviceCommandInvocation} from an
 	 * {@link IDeviceCommandInvocationCreateRequest}.
 	 * 
@@ -1269,6 +1320,18 @@ public class SiteWherePersistence {
 		auth.setAuthority(source.getAuthority());
 		auth.setDescription(source.getDescription());
 		return auth;
+	}
+
+	/**
+	 * Throw an exception if data is missing.
+	 * 
+	 * @param data
+	 * @throws SiteWhereException
+	 */
+	protected static void assureData(Object data) throws SiteWhereException {
+		if (data == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
 	}
 
 	/**

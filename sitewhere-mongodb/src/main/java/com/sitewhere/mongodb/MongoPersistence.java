@@ -26,6 +26,7 @@ import com.sitewhere.mongodb.device.MongoDeviceLocation;
 import com.sitewhere.mongodb.device.MongoDeviceMeasurement;
 import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
 import com.sitewhere.mongodb.device.MongoDeviceStateChange;
+import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.DeviceEventType;
@@ -309,6 +310,9 @@ public class MongoPersistence {
 		}
 		case Alert: {
 			return MongoDeviceAlert.fromDBObject(found, false);
+		}
+		case StreamData: {
+			return MongoDeviceStreamData.fromDBObject(found, false);
 		}
 		case CommandInvocation: {
 			return MongoDeviceCommandInvocation.fromDBObject(found);

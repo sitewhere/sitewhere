@@ -42,8 +42,10 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
+import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -73,12 +75,15 @@ import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
@@ -93,6 +98,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -1260,6 +1266,110 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+	 */
+	@Override
+	public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
+			throws SiteWhereException {
+		// Use common logic so all backend implementations work the same.
+		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
+		DeviceStream stream = SiteWherePersistence.deviceStreamCreateLogic(assignment, request);
+
+		// Verify that another stream with the given id does not exist.
+		if (getDeviceStream(stream.getAssignmentToken(), stream.getStreamId()) != null) {
+			throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
+		}
+
+		DBCollection streams = getMongoClient().getStreamsCollection();
+		DBObject created = MongoDeviceStream.toDBObject(stream);
+		MongoPersistence.insert(streams, created);
+		return MongoDeviceStream.fromDBObject(created);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.lang.String,
+	 * java.lang.String)
+	 */
+	@Override
+	public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
+		DBObject dbStream = getDeviceStreamDBObject(assignmentToken, streamId);
+		if (dbStream == null) {
+			return null;
+		}
+		return MongoDeviceStream.fromDBObject(dbStream);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.lang.String,
+	 * com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
+			throws SiteWhereException {
+		DBCollection streams = getMongoClient().getStreamsCollection();
+		BasicDBObject query = new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken);
+		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
+		return MongoPersistence.search(IDeviceStream.class, streams, query, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStreamData(java.lang.String,
+	 * java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
+	 */
+	@Override
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken, String streamId,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+		// Use common logic so all backend implementations work the same.
+		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
+		DeviceStreamData streamData =
+				SiteWherePersistence.deviceStreamDataCreateLogic(assignment, streamId, request);
+
+		// Verify that a stream with the given id exists for the assignment.
+		if (getDeviceStream(assignmentToken, streamId) == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
+		}
+
+		DBCollection events = getMongoClient().getEventsCollection();
+		DBObject streamDataObject = MongoDeviceStreamData.toDBObject(streamData, false);
+		MongoPersistence.insert(events, streamDataObject);
+
+		return MongoDeviceStreamData.fromDBObject(streamDataObject, false);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreamData(java.lang.String,
+	 * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		DBCollection events = getMongoClient().getEventsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name());
+		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
+		BasicDBObject sort =
+				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
+						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
+		return MongoPersistence.search(IDeviceStreamData.class, events, query, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceCommandInvocation(java.lang
 	 * .String, com.sitewhere.spi.device.command.IDeviceCommand,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
@@ -2135,6 +2245,25 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
 		}
 		return match;
+	}
+
+	/**
+	 * Get the {@link DBObject} for an {@link IDeviceStream} based on assignment token and
+	 * stream id.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject getDeviceStreamDBObject(String assignmentToken, String streamId)
+			throws SiteWhereException {
+		DBCollection streams = getMongoClient().getStreamsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken).append(
+						MongoDeviceStream.PROP_STREAM_ID, streamId);
+		DBObject result = streams.findOne(query);
+		return result;
 	}
 
 	/**

@@ -24,6 +24,8 @@ import com.sitewhere.mongodb.device.MongoDeviceLocation;
 import com.sitewhere.mongodb.device.MongoDeviceMeasurements;
 import com.sitewhere.mongodb.device.MongoDeviceSpecification;
 import com.sitewhere.mongodb.device.MongoDeviceStateChange;
+import com.sitewhere.mongodb.device.MongoDeviceStream;
+import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
 import com.sitewhere.spi.device.IDevice;
@@ -40,8 +42,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
@@ -62,6 +66,8 @@ public class MongoConverters implements IMongoConverterLookup {
 		CONVERTERS.put(IDeviceMeasurements.class, new MongoDeviceMeasurements());
 		CONVERTERS.put(IDeviceAlert.class, new MongoDeviceAlert());
 		CONVERTERS.put(IDeviceLocation.class, new MongoDeviceLocation());
+		CONVERTERS.put(IDeviceStream.class, new MongoDeviceStream());
+		CONVERTERS.put(IDeviceStreamData.class, new MongoDeviceStreamData());
 		CONVERTERS.put(IDeviceCommandInvocation.class, new MongoDeviceCommandInvocation());
 		CONVERTERS.put(IDeviceCommandResponse.class, new MongoDeviceCommandResponse());
 		CONVERTERS.put(IDeviceStateChange.class, new MongoDeviceStateChange());

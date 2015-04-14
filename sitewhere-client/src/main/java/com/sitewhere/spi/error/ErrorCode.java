@@ -84,13 +84,19 @@ public enum ErrorCode {
 	InvalidDeviceGroupToken(525, "Device group not found."),
 
 	/** Invalid batch operation token */
-	InvalidBatchOperationToken(550, "Batch operation not found."),
+	InvalidBatchOperationToken(526, "Batch operation not found."),
 
 	/** Invalid batch element */
-	InvalidBatchElement(555, "Batch element not found."),
+	InvalidBatchElement(527, "Batch element not found."),
 
 	/** Invalid search provider id */
-	InvalidSearchProviderId(600, "Search provider not found."),
+	InvalidSearchProviderId(528, "Search provider not found."),
+
+	/** Attempting to create a device stream with a stream id already in use */
+	DuplicateStreamId(529, "Device assignment has an existing stream with the given id."),
+
+	/** Attempting to access a device stream that does not exist */
+	InvalidStreamId(530, "Device assignment does not have an existing stream with the given id."),
 
 	/******************
 	 * DEVICE COMMAND *
@@ -116,7 +122,7 @@ public enum ErrorCode {
 	DeviceCanNotBeDeletedIfAssigned(603, "Device can not be deleted if it is currently assigned."),
 
 	/** Attempting to change site for device that is currently assigned */
-	DeviceSiteCanNotBeChangedIfAssigned(603, "Device site can not be changed if it is currently assigned."),
+	DeviceSiteCanNotBeChangedIfAssigned(604, "Device site can not be changed if it is currently assigned."),
 
 	/** Attempting to create a device element mapping for a path that is already mapped */
 	DeviceElementMappingExists(610,

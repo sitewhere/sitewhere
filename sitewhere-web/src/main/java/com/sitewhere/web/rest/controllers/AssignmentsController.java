@@ -7,9 +7,15 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -43,7 +49,10 @@ import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreate
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStateChangeCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
@@ -61,6 +70,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
@@ -426,6 +436,132 @@ public class AssignmentsController extends SiteWhereController {
 		try {
 			IDeviceAlert result = SiteWhere.getServer().getDeviceManagement().addDeviceAlert(token, input);
 			return DeviceAlert.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Create a stream to be associated with a device assignment.
+	 * 
+	 * @param input
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/streams", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Create a new stream for a device assignment")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "createDeviceStream", LOGGER);
+		try {
+			IDeviceStream result =
+					SiteWhere.getServer().getDeviceManagement().createDeviceStream(token, request);
+			return DeviceStream.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/{token}/streams", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List streams for a device assignment")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISearchResults<IDeviceStream> listDeviceStreams(
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceStreams", LOGGER);
+		try {
+			DateRangeSearchCriteria criteria =
+					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
+			ISearchResults<IDeviceStream> matches =
+					SiteWhere.getServer().getDeviceManagement().listDeviceStreams(token, criteria);
+			List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
+			for (IDeviceStream stream : matches.getResults()) {
+				converted.add(DeviceStream.copy(stream));
+			}
+			return new SearchResults<IDeviceStream>(converted);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get an existing device stream associated with an assignment.
+	 * 
+	 * @param token
+	 * @param streamId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get an existing stream for a device assignment")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public DeviceStream getDeviceStream(
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getDeviceStream", LOGGER);
+		try {
+			IDeviceStream result =
+					SiteWhere.getServer().getDeviceManagement().getDeviceStream(token, streamId);
+			if (result == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
+						HttpServletResponse.SC_NOT_FOUND);
+			}
+			return DeviceStream.copy(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Adds data to an existing device stream.
+	 * 
+	 * @param token
+	 * @param streamId
+	 * @param sequenceNumber
+	 * @param svtRequest
+	 * @param svtResponse
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Add data to a stream for a device assignment")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public void addDeviceStreamData(
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
+			@ApiParam(value = "Sequence Number", required = false) @RequestParam(required = false) Long sequenceNumber,
+			HttpServletRequest svtRequest, HttpServletResponse svtResponse) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "addDeviceStreamData", LOGGER);
+		try {
+			ServletInputStream inData = svtRequest.getInputStream();
+			ByteArrayOutputStream byteData = new ByteArrayOutputStream();
+			int data;
+			while ((data = inData.read()) != -1) {
+				byteData.write(data);
+			}
+			byte[] payload = byteData.toByteArray();
+
+			DeviceStreamDataCreateRequest request = new DeviceStreamDataCreateRequest();
+			request.setSequenceNumber(sequenceNumber);
+			request.setEventDate(new Date());
+			request.setUpdateState(false);
+			request.setData(payload);
+			SiteWhere.getServer().getDeviceManagement().addDeviceStreamData(token, streamId, request);
+			svtResponse.setStatus(HttpServletResponse.SC_CREATED);
+			svtResponse.flushBuffer();
+		} catch (IOException e) {
+			LOGGER.error(e);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

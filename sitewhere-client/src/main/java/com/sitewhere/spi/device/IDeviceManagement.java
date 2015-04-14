@@ -25,12 +25,15 @@ import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
@@ -45,6 +48,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
@@ -495,6 +499,64 @@ public interface IDeviceManagement extends ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Create a new {@link IDeviceStream} associated with an assignment.
+	 * 
+	 * @param assignmentToken
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Get an exsiting {@link IDeviceStream} for an assignment based on unique stream id.
+	 * Returns null if not found.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException;
+
+	/**
+	 * List device streams for the assignment that meet the given criteria.
+	 * 
+	 * @param assignmentToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
+			throws SiteWhereException;
+
+	/**
+	 * Add a chunk of stream data for a given device assignment.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken, String streamId,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * List all chunks of data in a device assignment that belong to a given stream and
+	 * meet the criteria.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**

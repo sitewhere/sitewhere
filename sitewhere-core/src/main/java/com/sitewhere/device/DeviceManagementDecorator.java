@@ -35,12 +35,15 @@ import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
@@ -55,6 +58,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
@@ -478,6 +482,35 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return delegate.listDeviceAlertsForSite(siteToken, criteria);
+	}
+
+	@Override
+	public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
+			throws SiteWhereException {
+		return delegate.createDeviceStream(assignmentToken, request);
+	}
+
+	@Override
+	public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
+		return delegate.getDeviceStream(assignmentToken, streamId);
+	}
+
+	@Override
+	public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
+			throws SiteWhereException {
+		return delegate.listDeviceStreams(assignmentToken, criteria);
+	}
+
+	@Override
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken, String streamId,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+		return delegate.addDeviceStreamData(assignmentToken, streamId, request);
+	}
+
+	@Override
+	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.listDeviceStreamData(assignmentToken, streamId, criteria);
 	}
 
 	@Override

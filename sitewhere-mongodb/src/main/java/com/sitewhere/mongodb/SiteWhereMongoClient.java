@@ -87,6 +87,14 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	/** Injected name used for events collection */
 	private String eventsCollectionName = IDeviceManagementMongoClient.DEFAULT_EVENTS_COLLECTION_NAME;
 
+	/** Injected name used for device streams collection */
+	private String streamsCollectionName =
+			IDeviceManagementMongoClient.DEFAULT_DEVICE_STREAMS_COLLECTION_NAME;
+
+	/** Injected name used for device stream data collection */
+	private String streamDataCollectionName =
+			IDeviceManagementMongoClient.DEFAULT_DEVICE_STREAM_DATA_COLLECTION_NAME;
+
 	/** Injected name used for batch operations collection */
 	private String batchOperationsCollectionName =
 			IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME;
@@ -144,6 +152,7 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 			messages.add("Sites collection name: " + getSitesCollectionName());
 			messages.add("Zones collection name: " + getZonesCollectionName());
 			messages.add("Events collection name: " + getEventsCollectionName());
+			messages.add("Streams collection name: " + getStreamsCollectionName());
 			messages.add("Batch operations collection name: " + getBatchOperationsCollectionName());
 			messages.add("Batch operation elements collection name: "
 					+ getBatchOperationElementsCollectionName());
@@ -228,6 +237,14 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	public DBCollection getEventsCollection() {
 		return getSiteWhereDatabase().getCollection(getEventsCollectionName());
+	}
+
+	public DBCollection getStreamsCollection() {
+		return getSiteWhereDatabase().getCollection(getStreamsCollectionName());
+	}
+
+	public DBCollection getStreamDataCollection() {
+		return getSiteWhereDatabase().getCollection(getStreamDataCollectionName());
 	}
 
 	public DBCollection getBatchOperationsCollection() {
@@ -340,6 +357,22 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	public void setEventsCollectionName(String eventsCollectionName) {
 		this.eventsCollectionName = eventsCollectionName;
+	}
+
+	public String getStreamsCollectionName() {
+		return streamsCollectionName;
+	}
+
+	public void setStreamsCollectionName(String streamsCollectionName) {
+		this.streamsCollectionName = streamsCollectionName;
+	}
+
+	public String getStreamDataCollectionName() {
+		return streamDataCollectionName;
+	}
+
+	public void setStreamDataCollectionName(String streamDataCollectionName) {
+		this.streamDataCollectionName = streamDataCollectionName;
 	}
 
 	public String getBatchOperationsCollectionName() {
