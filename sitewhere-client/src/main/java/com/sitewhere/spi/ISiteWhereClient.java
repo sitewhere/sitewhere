@@ -7,7 +7,6 @@
  */
 package com.sitewhere.spi;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -30,13 +29,20 @@ import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateReq
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
+import com.sitewhere.rest.model.search.DeviceCommandSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
+import com.sitewhere.rest.model.search.DeviceSpecificationSearchResults;
+import com.sitewhere.rest.model.search.DeviceStreamSearchResults;
 import com.sitewhere.rest.model.search.HardwareAssetSearchResults;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
@@ -58,6 +64,81 @@ public interface ISiteWhereClient {
 	public Version getSiteWhereVersion() throws SiteWhereException;
 
 	/**
+	 * Create a new device specification.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Get a device specification by token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
+
+	/**
+	 * Update an existing device specification.
+	 * 
+	 * @param token
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSpecification updateDeviceSpecification(String token,
+			DeviceSpecificationCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * List device specifications that meet the given criteria.
+	 * 
+	 * @param includeDeleted
+	 * @param includeDetailedAssetInfo
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSpecificationSearchResults listDeviceSpecifications(boolean includeDeleted,
+			boolean includeDetailedAssetInfo, SearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Delete an existing device specification.
+	 * 
+	 * @param token
+	 * @param deletePermanently
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceSpecification deleteDeviceSpecification(String token, boolean deletePermanently)
+			throws SiteWhereException;
+
+	/**
+	 * Create a new device command for a specification.
+	 * 
+	 * @param specificationToken
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceCommand createDeviceCommand(String specificationToken, DeviceCommandCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * List all device commands for a device specification.
+	 * 
+	 * @param specificationToken
+	 * @param includeDeleted
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceCommandSearchResults listDeviceCommands(String specificationToken, boolean includeDeleted)
+			throws SiteWhereException;
+
+	/**
 	 * Create a new site.
 	 * 
 	 * @param request
@@ -74,36 +155,6 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public Site getSiteByToken(String token) throws SiteWhereException;
-
-	/**
-	 * Create a new device specification.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecification createDeviceSpecification(DeviceSpecificationCreateRequest request)
-			throws SiteWhereException;
-
-	/**
-	 * Create a new device command for a specification.
-	 * 
-	 * @param specToken
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceCommand createDeviceCommand(String specToken, DeviceCommandCreateRequest request)
-			throws SiteWhereException;
-
-	/**
-	 * Get a device specification by token.
-	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public DeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
 
 	/**
 	 * Create a new device.
@@ -143,16 +194,13 @@ public interface ISiteWhereClient {
 	 * @param excludeAssigned
 	 * @param populateSpecification
 	 * @param populateAssignment
-	 * @param pageNumber
-	 * @param pageSize
-	 * @param createDateStart
-	 * @param createDateEnd
+	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public DeviceSearchResults listDevices(Boolean includeDeleted, Boolean excludeAssigned,
-			Boolean populateSpecification, Boolean populateAssignment, Integer pageNumber, Integer pageSize,
-			Calendar createDateStart, Calendar createDateEnd) throws SiteWhereException;
+	public DeviceSearchResults listDevices(boolean includeDeleted, boolean excludeAssigned,
+			boolean populateSpecification, boolean populateAssignment, DateRangeSearchCriteria criteria)
+			throws SiteWhereException;
 
 	/**
 	 * Delete a device.
@@ -317,6 +365,50 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public DeviceAlertSearchResults listDeviceAlerts(String assignmentToken, int maxCount)
+			throws SiteWhereException;
+
+	/**
+	 * Create a stream that will be associated with a device assignment.
+	 * 
+	 * @param assignmentToken
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceStream createDeviceStream(String assignmentToken, DeviceStreamCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Get a stream from an assignment based on unique id.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException;
+
+	/**
+	 * List device streams for an assignment.
+	 * 
+	 * @param assignmentToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceStreamSearchResults listDeviceStreams(String assignmentToken,
+			DateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Add a chunk of data to a device stream.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @param sequenceNumber
+	 * @param data
+	 * @throws SiteWhereException
+	 */
+	public void addDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber, byte[] data)
 			throws SiteWhereException;
 
 	/**

@@ -26,6 +26,8 @@ import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.spi.ISiteWhereClient;
@@ -187,8 +189,18 @@ public class ApiTests {
 	@Test
 	public void testListDevices() throws SiteWhereException {
 		SiteWhereClient client = new SiteWhereClient();
-		SearchResults<Device> devices = client.listDevices(false, true, true, true, 1, 100, null, null);
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 100, null, null);
+		SearchResults<Device> devices = client.listDevices(false, false, true, true, criteria);
 		System.out.println("Found " + devices.getNumResults() + " devices.");
+	}
+
+	@Test
+	public void testAddStreamData() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		DeviceStream stream = client.getDeviceStream("870c60a8-3ae4-41f5-8004-dfa2fa900b97", "voice-channel");
+		Assert.assertNotNull(stream);
+		client.addDeviceStreamData("870c60a8-3ae4-41f5-8004-dfa2fa900b97", "voice-channel", 1,
+				"This is a chunk of data written to the device stream".getBytes());
 	}
 
 	@Test
@@ -217,7 +229,8 @@ public class ApiTests {
 	 */
 	protected List<Device> getDevicesForSpecification(String token) throws SiteWhereException {
 		SiteWhereClient client = new SiteWhereClient();
-		SearchResults<Device> devices = client.listDevices(false, true, true, true, 1, 100, null, null);
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 100, null, null);
+		SearchResults<Device> devices = client.listDevices(false, true, true, true, criteria);
 		List<Device> results = new ArrayList<Device>();
 		for (Device device : devices.getResults()) {
 			if (device.getSpecificationToken().equals(token)) {

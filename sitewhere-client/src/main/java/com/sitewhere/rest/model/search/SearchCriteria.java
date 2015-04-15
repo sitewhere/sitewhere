@@ -18,29 +18,29 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public class SearchCriteria implements ISearchCriteria {
 
 	/** Page number to view */
-	private int pageNumber;
+	private Integer pageNumber;
 
 	/** Number of records in a page of results */
-	private int pageSize;
+	private Integer pageSize;
 
 	public SearchCriteria(int pageNumber, int pageSize) {
 		this.pageNumber = pageNumber;
 		this.pageSize = pageSize;
 	}
 
-	public int getPageNumber() {
+	public Integer getPageNumber() {
 		return pageNumber;
 	}
 
-	public void setPageNumber(int pageNumber) {
+	public void setPageNumber(Integer pageNumber) {
 		this.pageNumber = pageNumber;
 	}
 
-	public int getPageSize() {
+	public Integer getPageSize() {
 		return pageSize;
 	}
 
-	public void setPageSize(int pageSize) {
+	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
 	}
 }

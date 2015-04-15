@@ -8,7 +8,6 @@
 package com.sitewhere.rest.client;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +43,21 @@ import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
+import com.sitewhere.rest.model.search.DeviceCommandSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
+import com.sitewhere.rest.model.search.DeviceSpecificationSearchResults;
+import com.sitewhere.rest.model.search.DeviceStreamSearchResults;
 import com.sitewhere.rest.model.search.HardwareAssetSearchResults;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
@@ -162,29 +168,6 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.ISiteWhereClient#createSite(com.sitewhere.rest.model.device.request
-	 * .SiteCreateRequest)
-	 */
-	@Override
-	public Site createSite(SiteCreateRequest request) throws SiteWhereException {
-		Map<String, String> vars = new HashMap<String, String>();
-		return sendRest(getBaseUrl() + "sites", HttpMethod.POST, request, Site.class, vars);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.ISiteWhereClient#getSiteByToken(java.lang.String)
-	 */
-	public Site getSiteByToken(String token) throws SiteWhereException {
-		Map<String, String> vars = new HashMap<String, String>();
-		return sendRest(getBaseUrl() + "sites/" + token, HttpMethod.GET, null, Site.class, vars);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
 	 * com.sitewhere.spi.ISiteWhereClient#createDeviceSpecification(com.sitewhere.rest
 	 * .model.device.request.DeviceSpecificationCreateRequest)
 	 */
@@ -213,6 +196,56 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#updateDeviceSpecification(java.lang.String,
+	 * com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest)
+	 */
+	@Override
+	public DeviceSpecification updateDeviceSpecification(String token,
+			DeviceSpecificationCreateRequest request) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", token);
+		return sendRest(getBaseUrl() + "specifications/{token}", HttpMethod.PUT, null,
+				DeviceSpecification.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceSpecifications(boolean, boolean,
+	 * com.sitewhere.rest.model.search.SearchCriteria)
+	 */
+	@Override
+	public DeviceSpecificationSearchResults listDeviceSpecifications(boolean includeDeleted,
+			boolean includeAsset, SearchCriteria criteria) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("includeDeleted", String.valueOf(includeDeleted));
+		vars.put("includeAsset", String.valueOf(includeAsset));
+		addSearchCriteria(vars, criteria);
+		return sendRest(getBaseUrl()
+				+ "specifications?includeDeleted={includeDeleted}&includeAsset={includeAsset}&"
+				+ getSearchCriteriaFields(criteria), HttpMethod.GET, null,
+				DeviceSpecificationSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#deleteDeviceSpecification(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public DeviceSpecification deleteDeviceSpecification(String token, boolean deletePermanently)
+			throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", token);
+		vars.put("force", String.valueOf(deletePermanently));
+		return sendRest(getBaseUrl() + "specifications/{token}&force={force}", HttpMethod.DELETE, null,
+				DeviceSpecification.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.ISiteWhereClient#createDeviceCommand(java.lang.String,
 	 * com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest)
 	 */
@@ -223,6 +256,45 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("token", specToken);
 		return sendRest(getBaseUrl() + "specifications/{token}/commands", HttpMethod.POST, request,
 				DeviceCommand.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceCommands(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public DeviceCommandSearchResults listDeviceCommands(String specificationToken, boolean includeDeleted)
+			throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", specificationToken);
+		vars.put("includeDeleted", String.valueOf(includeDeleted));
+		return sendRest(getBaseUrl() + "specifications/{token}/commands&includeDeleted={includeDeleted}",
+				HttpMethod.POST, null, DeviceCommandSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.ISiteWhereClient#createSite(com.sitewhere.rest.model.device.request
+	 * .SiteCreateRequest)
+	 */
+	@Override
+	public Site createSite(SiteCreateRequest request) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "sites", HttpMethod.POST, request, Site.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#getSiteByToken(java.lang.String)
+	 */
+	public Site getSiteByToken(String token) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "sites/" + token, HttpMethod.GET, null, Site.class, vars);
 	}
 
 	/*
@@ -266,34 +338,23 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereClient#listDevices(java.lang.Boolean,
-	 * java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.Integer,
-	 * java.lang.Integer, java.util.Calendar, java.util.Calendar)
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDevices(boolean, boolean, boolean,
+	 * boolean, com.sitewhere.rest.model.search.DateRangeSearchCriteria)
 	 */
 	@Override
-	public DeviceSearchResults listDevices(Boolean includeDeleted, Boolean excludeAssigned,
-			Boolean populateSpecification, Boolean populateAssignment, Integer pageNumber, Integer pageSize,
-			Calendar createDateStart, Calendar createDateEnd) throws SiteWhereException {
+	public DeviceSearchResults listDevices(boolean includeDeleted, boolean excludeAssigned,
+			boolean populateSpecification, boolean populateAssignment, DateRangeSearchCriteria criteria)
+			throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
-		if (includeDeleted != null) {
-			vars.put("includeDeleted", String.valueOf(includeDeleted));
-		}
-		if (excludeAssigned != null) {
-			vars.put("excludeAssigned", String.valueOf(excludeAssigned));
-		}
-		if (populateSpecification != null) {
-			vars.put("includeSpecification", String.valueOf(populateSpecification));
-		}
-		if (populateAssignment != null) {
-			vars.put("includeAssignment", String.valueOf(populateAssignment));
-		}
-		if (pageNumber != null) {
-			vars.put("page", String.valueOf(pageNumber));
-		}
-		if (pageSize != null) {
-			vars.put("pageSize", String.valueOf(pageSize));
-		}
-		return sendRest(getBaseUrl() + "devices", HttpMethod.GET, null, DeviceSearchResults.class, vars);
+		vars.put("includeDeleted", String.valueOf(includeDeleted));
+		vars.put("excludeAssigned", String.valueOf(excludeAssigned));
+		vars.put("includeSpecification", String.valueOf(populateSpecification));
+		vars.put("includeAssignment", String.valueOf(populateAssignment));
+		addSearchCriteria(vars, criteria);
+		return sendRest(getBaseUrl() + "devices?includeDeleted={includeDeleted}"
+				+ "&excludeAssigned={excludeAssigned}&includeSpecification={includeSpecification}"
+				+ "&includeAssignment={includeAssignment}&" + getSearchCriteriaFields(criteria),
+				HttpMethod.GET, null, DeviceSearchResults.class, vars);
 	}
 
 	/*
@@ -305,10 +366,8 @@ public class SiteWhereClient implements ISiteWhereClient {
 	public Device deleteDevice(String hardwareId, boolean force) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("hardwareId", hardwareId);
-		String url = getBaseUrl() + "devices/{hardwareId}";
-		if (force) {
-			url += "?force=true";
-		}
+		vars.put("force", String.valueOf(force));
+		String url = getBaseUrl() + "devices/{hardwareId}&force={force}";
 		return sendRest(url, HttpMethod.DELETE, null, Device.class, vars);
 	}
 
@@ -524,6 +583,69 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#createDeviceStream(java.lang.String,
+	 * com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest)
+	 */
+	@Override
+	public DeviceStream createDeviceStream(String assignmentToken, DeviceStreamCreateRequest request)
+			throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", assignmentToken);
+		return sendRest(getBaseUrl() + "assignments/{token}/streams", HttpMethod.POST, request,
+				DeviceStream.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#getDeviceStream(java.lang.String,
+	 * java.lang.String)
+	 */
+	@Override
+	public DeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", assignmentToken);
+		vars.put("streamId", streamId);
+		String url = getBaseUrl() + "assignments/{token}/streams/{streamId}";
+		return sendRest(url, HttpMethod.GET, null, DeviceStream.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceStreams(java.lang.String,
+	 * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
+	 */
+	@Override
+	public DeviceStreamSearchResults listDeviceStreams(String assignmentToken,
+			DateRangeSearchCriteria criteria) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", assignmentToken);
+		addSearchCriteria(vars, criteria);
+		String url = getBaseUrl() + "assignments/{token}/streams?" + getSearchCriteriaFields(criteria);
+		return sendRest(url, HttpMethod.GET, null, DeviceStreamSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#addDeviceStreamData(java.lang.String,
+	 * java.lang.String, long, byte[])
+	 */
+	@Override
+	public void addDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber, byte[] data)
+			throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", assignmentToken);
+		vars.put("streamId", streamId);
+		vars.put("sequenceNumber", String.valueOf(sequenceNumber));
+		sendRest(getBaseUrl() + "assignments/{token}/streams/{streamId}?sequenceNumber={sequenceNumber}",
+				HttpMethod.POST, data, null, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.ISiteWhereClient#createZone(java.lang.String,
 	 * com.sitewhere.rest.model.device.request.ZoneCreateRequest)
 	 */
@@ -580,6 +702,35 @@ public class SiteWhereClient implements ISiteWhereClient {
 			url += "?criteria=" + criteria;
 		}
 		return sendRest(getBaseUrl() + url, HttpMethod.GET, null, HardwareAssetSearchResults.class, vars);
+	}
+
+	/**
+	 * Get fields associated with search criteria.
+	 * 
+	 * @return
+	 */
+	protected String getSearchCriteriaFields(SearchCriteria criteria) {
+		return "page={page}&pageSize={pageSize}";
+	}
+
+	/**
+	 * Add fields from {@link SearchCriteria}.
+	 * 
+	 * @param vars
+	 * @param criteria
+	 */
+	protected void addSearchCriteria(Map<String, String> vars, SearchCriteria criteria) {
+		if ((criteria == null) || (criteria.getPageNumber() == null)) {
+			vars.put("page", "1");
+		} else {
+			vars.put("page", String.valueOf(criteria.getPageNumber()));
+		}
+
+		if ((criteria == null) || (criteria.getPageSize() == null)) {
+			vars.put("pageSize", "100");
+		} else {
+			vars.put("pageSize", String.valueOf(criteria.getPageSize()));
+		}
 	}
 
 	/**

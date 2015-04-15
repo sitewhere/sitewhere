@@ -19,12 +19,12 @@ public interface ISearchCriteria {
 	 * 
 	 * @return
 	 */
-	public int getPageNumber();
+	public Integer getPageNumber();
 
 	/**
 	 * Get number of records per page of data.
 	 * 
 	 * @return
 	 */
-	public int getPageSize();
+	public Integer getPageSize();
 }

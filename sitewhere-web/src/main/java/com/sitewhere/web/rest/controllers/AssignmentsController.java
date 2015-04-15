@@ -501,7 +501,7 @@ public class AssignmentsController extends SiteWhereController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	@ApiOperation(value = "Get an existing stream for a device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
@@ -559,9 +559,16 @@ public class AssignmentsController extends SiteWhereController {
 			request.setData(payload);
 			SiteWhere.getServer().getDeviceManagement().addDeviceStreamData(token, streamId, request);
 			svtResponse.setStatus(HttpServletResponse.SC_CREATED);
-			svtResponse.flushBuffer();
+		} catch (SiteWhereSystemException e) {
+			if (e.getCode() == ErrorCode.InvalidStreamId) {
+				svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				LOGGER.error("Unhandled SiteWhere exception.", e);
+				svtResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 		} catch (IOException e) {
 			LOGGER.error(e);
+			svtResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
