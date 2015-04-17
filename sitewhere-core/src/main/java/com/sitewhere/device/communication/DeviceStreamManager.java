@@ -53,6 +53,7 @@ public class DeviceStreamManager extends LifecycleComponent implements IDeviceSt
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
 
 		DeviceStreamAckCommand ack = new DeviceStreamAckCommand();
+		ack.setStreamId(request.getStreamId());
 		IDeviceStream existing =
 				SiteWhere.getServer().getDeviceManagement().getDeviceStream(assignment.getToken(),
 						request.getStreamId());

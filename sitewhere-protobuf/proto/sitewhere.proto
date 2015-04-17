@@ -125,6 +125,7 @@ message Device {
 	
 	// Acknowledges creation of device stream.
 	message DeviceStreamAck {
-		required DeviceStreamAckState state = 1;
+		required string streamId = 1;
+		required DeviceStreamAckState state = 2;
 	}
 }

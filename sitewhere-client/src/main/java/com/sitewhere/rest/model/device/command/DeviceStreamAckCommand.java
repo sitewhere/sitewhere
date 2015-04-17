@@ -18,11 +18,27 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class DeviceStreamAckCommand extends SystemCommand implements IDeviceStreamAckCommand {
 
+	/** Id of stream being created */
+	private String streamId;
+
 	/** Status of creating device stream */
 	private DeviceStreamStatus status;
 
 	public DeviceStreamAckCommand() {
 		super(SystemCommandType.DeviceStreamAck);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.command.IDeviceStreamAckCommand#getStreamId()
+	 */
+	public String getStreamId() {
+		return streamId;
+	}
+
+	public void setStreamId(String streamId) {
+		this.streamId = streamId;
 	}
 
 	/*

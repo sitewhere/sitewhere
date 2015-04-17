@@ -10334,13 +10334,28 @@ public final class Sitewhere {
     public interface DeviceStreamAckOrBuilder
         extends com.google.protobuf.MessageLiteOrBuilder {
 
-      // required .Device.DeviceStreamAckState state = 1;
+      // required string streamId = 1;
       /**
-       * <code>required .Device.DeviceStreamAckState state = 1;</code>
+       * <code>required string streamId = 1;</code>
+       */
+      boolean hasStreamId();
+      /**
+       * <code>required string streamId = 1;</code>
+       */
+      java.lang.String getStreamId();
+      /**
+       * <code>required string streamId = 1;</code>
+       */
+      com.google.protobuf.ByteString
+          getStreamIdBytes();
+
+      // required .Device.DeviceStreamAckState state = 2;
+      /**
+       * <code>required .Device.DeviceStreamAckState state = 2;</code>
        */
       boolean hasState();
       /**
-       * <code>required .Device.DeviceStreamAckState state = 1;</code>
+       * <code>required .Device.DeviceStreamAckState state = 2;</code>
        */
       com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState getState();
     }
@@ -10391,11 +10406,16 @@ public final class Sitewhere {
                 }
                 break;
               }
-              case 8: {
+              case 10: {
+                bitField0_ |= 0x00000001;
+                streamId_ = input.readBytes();
+                break;
+              }
+              case 16: {
                 int rawValue = input.readEnum();
                 com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState value = com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState.valueOf(rawValue);
                 if (value != null) {
-                  bitField0_ |= 0x00000001;
+                  bitField0_ |= 0x00000002;
                   state_ = value;
                 }
                 break;
@@ -10427,23 +10447,67 @@ public final class Sitewhere {
       }
 
       private int bitField0_;
-      // required .Device.DeviceStreamAckState state = 1;
-      public static final int STATE_FIELD_NUMBER = 1;
-      private com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState state_;
+      // required string streamId = 1;
+      public static final int STREAMID_FIELD_NUMBER = 1;
+      private java.lang.Object streamId_;
       /**
-       * <code>required .Device.DeviceStreamAckState state = 1;</code>
+       * <code>required string streamId = 1;</code>
        */
-      public boolean hasState() {
+      public boolean hasStreamId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required .Device.DeviceStreamAckState state = 1;</code>
+       * <code>required string streamId = 1;</code>
+       */
+      public java.lang.String getStreamId() {
+        java.lang.Object ref = streamId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            streamId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string streamId = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getStreamIdBytes() {
+        java.lang.Object ref = streamId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          streamId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      // required .Device.DeviceStreamAckState state = 2;
+      public static final int STATE_FIELD_NUMBER = 2;
+      private com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState state_;
+      /**
+       * <code>required .Device.DeviceStreamAckState state = 2;</code>
+       */
+      public boolean hasState() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required .Device.DeviceStreamAckState state = 2;</code>
        */
       public com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState getState() {
         return state_;
       }
 
       private void initFields() {
+        streamId_ = "";
         state_ = com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState.STREAM_CREATED;
       }
       private byte memoizedIsInitialized = -1;
@@ -10451,6 +10515,10 @@ public final class Sitewhere {
         byte isInitialized = memoizedIsInitialized;
         if (isInitialized != -1) return isInitialized == 1;
 
+        if (!hasStreamId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
         if (!hasState()) {
           memoizedIsInitialized = 0;
           return false;
@@ -10463,7 +10531,10 @@ public final class Sitewhere {
                           throws java.io.IOException {
         getSerializedSize();
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          output.writeEnum(1, state_.getNumber());
+          output.writeBytes(1, getStreamIdBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeEnum(2, state_.getNumber());
         }
       }
 
@@ -10475,7 +10546,11 @@ public final class Sitewhere {
         size = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(1, state_.getNumber());
+            .computeBytesSize(1, getStreamIdBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(2, state_.getNumber());
         }
         memoizedSerializedSize = size;
         return size;
@@ -10572,8 +10647,10 @@ public final class Sitewhere {
 
         public Builder clear() {
           super.clear();
-          state_ = com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState.STREAM_CREATED;
+          streamId_ = "";
           bitField0_ = (bitField0_ & ~0x00000001);
+          state_ = com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState.STREAM_CREATED;
+          bitField0_ = (bitField0_ & ~0x00000002);
           return this;
         }
 
@@ -10600,6 +10677,10 @@ public final class Sitewhere {
           if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
             to_bitField0_ |= 0x00000001;
           }
+          result.streamId_ = streamId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
           result.state_ = state_;
           result.bitField0_ = to_bitField0_;
           return result;
@@ -10607,6 +10688,11 @@ public final class Sitewhere {
 
         public Builder mergeFrom(com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAck other) {
           if (other == com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAck.getDefaultInstance()) return this;
+          if (other.hasStreamId()) {
+            bitField0_ |= 0x00000001;
+            streamId_ = other.streamId_;
+            
+          }
           if (other.hasState()) {
             setState(other.getState());
           }
@@ -10614,6 +10700,10 @@ public final class Sitewhere {
         }
 
         public final boolean isInitialized() {
+          if (!hasStreamId()) {
+            
+            return false;
+          }
           if (!hasState()) {
             
             return false;
@@ -10640,37 +10730,111 @@ public final class Sitewhere {
         }
         private int bitField0_;
 
-        // required .Device.DeviceStreamAckState state = 1;
-        private com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState state_ = com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState.STREAM_CREATED;
+        // required string streamId = 1;
+        private java.lang.Object streamId_ = "";
         /**
-         * <code>required .Device.DeviceStreamAckState state = 1;</code>
+         * <code>required string streamId = 1;</code>
          */
-        public boolean hasState() {
+        public boolean hasStreamId() {
           return ((bitField0_ & 0x00000001) == 0x00000001);
         }
         /**
-         * <code>required .Device.DeviceStreamAckState state = 1;</code>
+         * <code>required string streamId = 1;</code>
+         */
+        public java.lang.String getStreamId() {
+          java.lang.Object ref = streamId_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            streamId_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string streamId = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+            getStreamIdBytes() {
+          java.lang.Object ref = streamId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            streamId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string streamId = 1;</code>
+         */
+        public Builder setStreamId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          streamId_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>required string streamId = 1;</code>
+         */
+        public Builder clearStreamId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          streamId_ = getDefaultInstance().getStreamId();
+          
+          return this;
+        }
+        /**
+         * <code>required string streamId = 1;</code>
+         */
+        public Builder setStreamIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          streamId_ = value;
+          
+          return this;
+        }
+
+        // required .Device.DeviceStreamAckState state = 2;
+        private com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState state_ = com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState.STREAM_CREATED;
+        /**
+         * <code>required .Device.DeviceStreamAckState state = 2;</code>
+         */
+        public boolean hasState() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        /**
+         * <code>required .Device.DeviceStreamAckState state = 2;</code>
          */
         public com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState getState() {
           return state_;
         }
         /**
-         * <code>required .Device.DeviceStreamAckState state = 1;</code>
+         * <code>required .Device.DeviceStreamAckState state = 2;</code>
          */
         public Builder setState(com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState value) {
           if (value == null) {
             throw new NullPointerException();
           }
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
           state_ = value;
           
           return this;
         }
         /**
-         * <code>required .Device.DeviceStreamAckState state = 1;</code>
+         * <code>required .Device.DeviceStreamAckState state = 2;</code>
          */
         public Builder clearState() {
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           state_ = com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState.STREAM_CREATED;
           
           return this;

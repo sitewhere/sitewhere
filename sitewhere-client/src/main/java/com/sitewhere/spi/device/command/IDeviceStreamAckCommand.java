@@ -14,6 +14,17 @@ package com.sitewhere.spi.device.command;
  */
 public interface IDeviceStreamAckCommand extends ISystemCommand {
 
-	/** Get status of creating device stream */
+	/**
+	 * Get unique id of stream being created.
+	 * 
+	 * @return
+	 */
+	public String getStreamId();
+
+	/**
+	 * Get status of stream creation.
+	 * 
+	 * @return
+	 */
 	public DeviceStreamStatus getStatus();
 }

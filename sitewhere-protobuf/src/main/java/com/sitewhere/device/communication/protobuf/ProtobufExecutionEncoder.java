@@ -116,6 +116,7 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 		case DeviceStreamAck: {
 			IDeviceStreamAckCommand ack = (IDeviceStreamAckCommand) command;
 			DeviceStreamAck.Builder builder = DeviceStreamAck.newBuilder();
+			builder.setStreamId(ack.getStreamId());
 			switch (ack.getStatus()) {
 			case DeviceStreamCreated: {
 				builder.setState(DeviceStreamAckState.STREAM_CREATED);
