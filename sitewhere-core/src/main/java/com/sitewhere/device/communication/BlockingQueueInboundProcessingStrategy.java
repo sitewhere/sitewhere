@@ -18,19 +18,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.server.SiteWhereServer;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundProcessingStrategy} that uses an
@@ -39,7 +31,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class BlockingQueueInboundProcessingStrategy extends LifecycleComponent implements
+public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStrategy implements
 		IInboundProcessingStrategy {
 
 	/** Static logger instance */
@@ -84,10 +76,6 @@ public class BlockingQueueInboundProcessingStrategy extends LifecycleComponent i
 
 	/** Pool for monitoring thread */
 	private ExecutorService monitorPool = Executors.newSingleThreadExecutor();
-
-	public BlockingQueueInboundProcessingStrategy() {
-		super(LifecycleComponentType.InboundProcessingStrategy);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -205,6 +193,30 @@ public class BlockingQueueInboundProcessingStrategy extends LifecycleComponent i
 	 */
 	@Override
 	public void processDeviceAlert(IDecodedDeviceEventRequest request) throws SiteWhereException {
+		addRequestToQueue(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.communication.IInboundProcessingStrategy#processDeviceStream
+	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
+	 */
+	@Override
+	public void processDeviceStream(IDecodedDeviceEventRequest request) throws SiteWhereException {
+		addRequestToQueue(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processDeviceStreamData
+	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
+	 */
+	@Override
+	public void processDeviceStreamData(IDecodedDeviceEventRequest request) throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -415,31 +427,7 @@ public class BlockingQueueInboundProcessingStrategy extends LifecycleComponent i
 
 					long processingStart = System.currentTimeMillis();
 
-					IDecodedDeviceEventRequest decoded = wrapper.getRequest();
-					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
-						SiteWhere.getServer().getInboundEventProcessorChain().onRegistrationRequest(
-								decoded.getHardwareId(), decoded.getOriginator(),
-								((IDeviceRegistrationRequest) decoded.getRequest()));
-					} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
-						SiteWhere.getServer().getInboundEventProcessorChain().onDeviceCommandResponseRequest(
-								decoded.getHardwareId(), decoded.getOriginator(),
-								((IDeviceCommandResponseCreateRequest) decoded.getRequest()));
-					} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
-						SiteWhere.getServer().getInboundEventProcessorChain().onDeviceMeasurementsCreateRequest(
-								decoded.getHardwareId(), decoded.getOriginator(),
-								((IDeviceMeasurementsCreateRequest) decoded.getRequest()));
-					} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
-						SiteWhere.getServer().getInboundEventProcessorChain().onDeviceLocationCreateRequest(
-								decoded.getHardwareId(), decoded.getOriginator(),
-								((IDeviceLocationCreateRequest) decoded.getRequest()));
-					} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
-						SiteWhere.getServer().getInboundEventProcessorChain().onDeviceAlertCreateRequest(
-								decoded.getHardwareId(), decoded.getOriginator(),
-								((IDeviceAlertCreateRequest) decoded.getRequest()));
-					} else {
-						throw new RuntimeException("Unknown device event type: "
-								+ decoded.getRequest().getClass().getName());
-					}
+					sendToInboundProcessingChain(wrapper.getRequest());
 
 					long processingTime = System.currentTimeMillis() - processingStart;
 					totalProcessingTime.addAndGet(processingTime);

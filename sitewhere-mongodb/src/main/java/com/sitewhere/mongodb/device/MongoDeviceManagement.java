@@ -1322,19 +1322,18 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStreamData(java.lang.String,
-	 * java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
 	 */
 	@Override
-	public IDeviceStreamData addDeviceStreamData(String assignmentToken, String streamId,
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceStreamData streamData =
-				SiteWherePersistence.deviceStreamDataCreateLogic(assignment, streamId, request);
+				SiteWherePersistence.deviceStreamDataCreateLogic(assignment, request);
 
 		// Verify that a stream with the given id exists for the assignment.
-		if (getDeviceStream(assignmentToken, streamId) == null) {
+		if (getDeviceStream(assignmentToken, request.getStreamId()) == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
 		}
 

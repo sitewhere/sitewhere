@@ -502,9 +502,9 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
-	public IDeviceStreamData addDeviceStreamData(String assignmentToken, String streamId,
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-		return delegate.addDeviceStreamData(assignmentToken, streamId, request);
+		return delegate.addDeviceStreamData(assignmentToken, request);
 	}
 
 	@Override

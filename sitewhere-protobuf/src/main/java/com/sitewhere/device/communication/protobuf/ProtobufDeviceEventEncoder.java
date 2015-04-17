@@ -63,7 +63,7 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();
-			builder.setCommand(SiteWhere.Command.DEVICEMEASUREMENT);
+			builder.setCommand(SiteWhere.Command.DEVICE_MEASUREMENTS);
 			if (event.getOriginator() != null) {
 				builder.setOriginator(event.getOriginator());
 			}

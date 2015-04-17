@@ -21,6 +21,8 @@ import org.w3c.dom.Element;
 
 import com.sitewhere.device.event.processor.DefaultEventStorageProcessor;
 import com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain;
+import com.sitewhere.device.event.processor.DeviceStreamProcessor;
+import com.sitewhere.device.event.processor.RegistrationProcessor;
 import com.sitewhere.server.SiteWhereServerBeans;
 
 /**
@@ -54,8 +56,16 @@ public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
 				processors.add(parseInboundEventProcessor(child, context));
 				break;
 			}
-			case DefaultEventStorageProcessor: {
-				processors.add(parseDefaultEventStorageProcessor(element, context));
+			case EventStorageProcessor: {
+				processors.add(parseEventStorageProcessor(element, context));
+				break;
+			}
+			case RegistrationProcessor: {
+				processors.add(parseRegistrationProcessor(element, context));
+				break;
+			}
+			case DeviceStreamProcessor: {
+				processors.add(parseDeviceStreamProcessor(element, context));
 				break;
 			}
 			}
@@ -82,15 +92,41 @@ public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
-	 * Parse configuration for custom inbound event processor.
+	 * Parse configuration for event storage processor.
 	 * 
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition parseDefaultEventStorageProcessor(Element element, ParserContext context) {
+	protected AbstractBeanDefinition parseEventStorageProcessor(Element element, ParserContext context) {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(DefaultEventStorageProcessor.class);
+		return processor.getBeanDefinition();
+	}
+
+	/**
+	 * Parse configuration for registration processor.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseRegistrationProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(RegistrationProcessor.class);
+		return processor.getBeanDefinition();
+	}
+
+	/**
+	 * Parse configuration for device stream processor.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseDeviceStreamProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(DeviceStreamProcessor.class);
 		return processor.getBeanDefinition();
 	}
 
@@ -104,8 +140,14 @@ public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
 		/** Reference to custom inbound event processor */
 		InboundEventProcessor("inbound-event-processor"),
 
-		/** Reference to custom inbound event processor */
-		DefaultEventStorageProcessor("default-event-storage-processor");
+		/** Event storage processor */
+		EventStorageProcessor("event-storage-processor"),
+
+		/** Registration processor */
+		RegistrationProcessor("registration-processor"),
+
+		/** Device stream processor */
+		DeviceStreamProcessor("device-stream-processor");
 
 		/** Event code */
 		private String localName;

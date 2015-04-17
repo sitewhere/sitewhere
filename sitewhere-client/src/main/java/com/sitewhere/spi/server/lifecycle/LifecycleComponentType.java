@@ -79,6 +79,9 @@ public enum LifecycleComponentType {
 
 	/** Batch operation manager */
 	BatchOperationManager,
+	
+	/** Device stream manager */
+	DeviceStreamManager,
 
 	/** Inbound processing strategy */
 	InboundProcessingStrategy,

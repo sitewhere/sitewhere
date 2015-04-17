@@ -17,6 +17,7 @@ import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.spi.device.communication.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
+import com.sitewhere.spi.device.communication.IDeviceStreamManager;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
@@ -38,6 +39,9 @@ public abstract class DeviceCommunication extends LifecycleComponent implements 
 
 	/** Configured batch operation manager */
 	private IBatchOperationManager batchOperationManager;
+
+	/** Configured device stream manager */
+	private IDeviceStreamManager deviceStreamManager;
 
 	/** Configured inbound processing strategy */
 	private IInboundProcessingStrategy inboundProcessingStrategy;
@@ -110,6 +114,12 @@ public abstract class DeviceCommunication extends LifecycleComponent implements 
 		}
 		startNestedComponent(getBatchOperationManager(), true);
 
+		// Start device stream manager.
+		if (getDeviceStreamManager() == null) {
+			throw new SiteWhereException("No device stream manager configured for communication subsystem.");
+		}
+		startNestedComponent(getDeviceStreamManager(), true);
+
 		// Start inbound processing strategy.
 		if (getInboundProcessingStrategy() == null) {
 			throw new SiteWhereException(
@@ -142,6 +152,11 @@ public abstract class DeviceCommunication extends LifecycleComponent implements 
 		// Stop inbound processing strategy.
 		if (getInboundProcessingStrategy() != null) {
 			getInboundProcessingStrategy().lifecycleStop();
+		}
+
+		// Stop device stream manager.
+		if (getDeviceStreamManager() != null) {
+			getDeviceStreamManager().lifecycleStop();
 		}
 
 		// Stop batch operation manager.
@@ -224,6 +239,21 @@ public abstract class DeviceCommunication extends LifecycleComponent implements 
 
 	public void setBatchOperationManager(IBatchOperationManager batchOperationManager) {
 		this.batchOperationManager = batchOperationManager;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.communication.IDeviceCommunication#getDeviceStreamManager
+	 * ()
+	 */
+	public IDeviceStreamManager getDeviceStreamManager() {
+		return deviceStreamManager;
+	}
+
+	public void setDeviceStreamManager(IDeviceStreamManager deviceStreamManager) {
+		this.deviceStreamManager = deviceStreamManager;
 	}
 
 	/*

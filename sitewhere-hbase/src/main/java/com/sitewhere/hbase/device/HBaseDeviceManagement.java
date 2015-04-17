@@ -711,7 +711,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	}
 
 	@Override
-	public IDeviceStreamData addDeviceStreamData(String assignmentToken, String streamId,
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;

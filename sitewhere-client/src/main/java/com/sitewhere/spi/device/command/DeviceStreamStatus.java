@@ -8,18 +8,18 @@
 package com.sitewhere.spi.device.command;
 
 /**
- * Enumerates types of system commands that may be sent to devices.
+ * Enumerates possible status values for {@link IDeviceStreamAckCommand}.
  * 
  * @author Derek
  */
-public enum SystemCommandType {
+public enum DeviceStreamStatus {
 
-	/** Acknowledges successful registration */
-	RegistrationAck,
+	/** New stream was successfully created */
+	DeviceStreamCreated,
 
-	/** Indicates failed registration */
-	RegistrationFailure,
+	/** Existing stream found for stream id */
+	DeviceStreamExists,
 
-	/** Acknowledges device stream creation */
-	DeviceStreamAck;
+	/** Unable to create stream */
+	DeviceStreamFailed;
 }

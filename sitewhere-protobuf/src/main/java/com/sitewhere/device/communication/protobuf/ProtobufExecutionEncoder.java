@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.Command;
+import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAck;
+import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAckState;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.Header;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.RegistrationAck;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.RegistrationAckError;
@@ -23,6 +25,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.device.command.IDeviceStreamAckCommand;
 import com.sitewhere.spi.device.command.IRegistrationAckCommand;
 import com.sitewhere.spi.device.command.IRegistrationFailureCommand;
 import com.sitewhere.spi.device.command.ISystemCommand;
@@ -110,6 +113,25 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 			}
 			return encodeRegistrationAck(builder.build());
 		}
+		case DeviceStreamAck: {
+			IDeviceStreamAckCommand ack = (IDeviceStreamAckCommand) command;
+			DeviceStreamAck.Builder builder = DeviceStreamAck.newBuilder();
+			switch (ack.getStatus()) {
+			case DeviceStreamCreated: {
+				builder.setState(DeviceStreamAckState.STREAM_CREATED);
+				break;
+			}
+			case DeviceStreamExists: {
+				builder.setState(DeviceStreamAckState.STREAM_EXISTS);
+				break;
+			}
+			case DeviceStreamFailed: {
+				builder.setState(DeviceStreamAckState.STREAM_FAILED);
+				break;
+			}
+			}
+			break;
+		}
 		}
 		throw new SiteWhereException("Unable to encode command: " + command.getClass().getName());
 	}
@@ -128,6 +150,26 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 			header.writeDelimitedTo(out);
 
 			((RegistrationAck) ack).writeDelimitedTo(out);
+			out.close();
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to marshal regsiter ack to protobuf.", e);
+		}
+	}
+
+	/**
+	 * Encode {@link DeviceStreamAck} as a byte array.
+	 * 
+	 * @param ack
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected byte[] encodeDeviceStreamAck(DeviceStreamAck ack) throws SiteWhereException {
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			Header header = Header.newBuilder().setCommand(Command.DEVICE_STREAM_ACK).build();
+			header.writeDelimitedTo(out);
+			ack.writeDelimitedTo(out);
 			out.close();
 			return out.toByteArray();
 		} catch (IOException e) {

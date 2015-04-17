@@ -51,6 +51,13 @@ public interface IDeviceCommunication extends ILifecycleComponent {
 	public IBatchOperationManager getBatchOperationManager();
 
 	/**
+	 * Get the configured device stream manager.
+	 * 
+	 * @return
+	 */
+	public IDeviceStreamManager getDeviceStreamManager();
+
+	/**
 	 * Get the strategy for moving processed events into the outbound chain.
 	 * 
 	 * @return

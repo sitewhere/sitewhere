@@ -15,11 +15,18 @@ package com.sitewhere.spi.device.event.request;
 public interface IDeviceStreamDataCreateRequest extends IDeviceEventCreateRequest {
 
 	/**
+	 * Get id of stream data belongs to.
+	 * 
+	 * @return
+	 */
+	public String getStreamId();
+
+	/**
 	 * Get sequence number for ordering chunks.
 	 * 
 	 * @return
 	 */
-	public Long getSequenceNumber();
+	public long getSequenceNumber();
 
 	/**
 	 * Get chunk data.

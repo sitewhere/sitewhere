@@ -7,8 +7,6 @@
  */
 package com.sitewhere.spi.device.event.request;
 
-import java.util.Map;
-
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 
 /**
@@ -16,7 +14,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
  * 
  * @author Derek
  */
-public interface IDeviceStreamCreateRequest {
+public interface IDeviceStreamCreateRequest extends IDeviceEventCreateRequest {
 
 	/**
 	 * Get unique identifier for stream within assignment.
@@ -31,11 +29,4 @@ public interface IDeviceStreamCreateRequest {
 	 * @return
 	 */
 	public String getContentType();
-
-	/**
-	 * Get metadata values.
-	 * 
-	 * @return
-	 */
-	public Map<String, String> getMetadata();
 }

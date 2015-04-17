@@ -553,11 +553,12 @@ public class AssignmentsController extends SiteWhereController {
 			byte[] payload = byteData.toByteArray();
 
 			DeviceStreamDataCreateRequest request = new DeviceStreamDataCreateRequest();
+			request.setStreamId(streamId);
 			request.setSequenceNumber(sequenceNumber);
 			request.setEventDate(new Date());
 			request.setUpdateState(false);
 			request.setData(payload);
-			SiteWhere.getServer().getDeviceManagement().addDeviceStreamData(token, streamId, request);
+			SiteWhere.getServer().getDeviceManagement().addDeviceStreamData(token, request);
 			svtResponse.setStatus(HttpServletResponse.SC_CREATED);
 		} catch (SiteWhereSystemException e) {
 			if (e.getCode() == ErrorCode.InvalidStreamId) {

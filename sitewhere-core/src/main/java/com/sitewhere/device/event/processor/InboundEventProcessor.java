@@ -15,6 +15,8 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -27,6 +29,24 @@ public abstract class InboundEventProcessor extends LifecycleComponent implement
 
 	public InboundEventProcessor() {
 		super(LifecycleComponentType.InboundEventProcessor);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+	 */
+	@Override
+	public void start() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
 	}
 
 	/*
@@ -88,5 +108,29 @@ public abstract class InboundEventProcessor extends LifecycleComponent implement
 	@Override
 	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceStreamCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+	 */
+	@Override
+	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
+			IDeviceStreamCreateRequest request) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceStreamDataCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
+	 */
+	@Override
+	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 	}
 }

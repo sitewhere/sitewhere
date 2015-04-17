@@ -23,8 +23,11 @@ public class DeviceStreamDataCreateRequest extends DeviceEventCreateRequest impl
 	/** Serial version UID */
 	private static final long serialVersionUID = -8175812734171141445L;
 
+	/** Stream id */
+	private String streamId;
+
 	/** Sequence number for ordering chunks */
-	private Long sequenceNumber;
+	private long sequenceNumber;
 
 	/** Chunk data */
 	private byte[] data;
@@ -33,14 +36,28 @@ public class DeviceStreamDataCreateRequest extends DeviceEventCreateRequest impl
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#getStreamId()
+	 */
+	public String getStreamId() {
+		return streamId;
+	}
+
+	public void setStreamId(String streamId) {
+		this.streamId = streamId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest#getSequenceNumber
 	 * ()
 	 */
-	public Long getSequenceNumber() {
+	public long getSequenceNumber() {
 		return sequenceNumber;
 	}
 
-	public void setSequenceNumber(Long sequenceNumber) {
+	public void setSequenceNumber(long sequenceNumber) {
 		this.sequenceNumber = sequenceNumber;
 	}
 

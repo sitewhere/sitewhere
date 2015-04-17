@@ -26,6 +26,7 @@ public class DefaultDeviceCommunication extends DeviceCommunication {
 	public DefaultDeviceCommunication() {
 		setRegistrationManager(new RegistrationManager());
 		setBatchOperationManager(new BatchOperationManager());
+		setDeviceStreamManager(new DeviceStreamManager());
 		setInboundProcessingStrategy(new BlockingQueueInboundProcessingStrategy());
 		setCommandProcessingStrategy(new DefaultCommandProcessingStrategy());
 		setOutboundProcessingStrategy(new BlockingQueueOutboundProcessingStrategy());

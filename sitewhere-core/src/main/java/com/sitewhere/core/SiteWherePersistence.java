@@ -760,17 +760,21 @@ public class SiteWherePersistence {
 	 * {@link IDeviceStreamDataCreateRequest}.
 	 * 
 	 * @param assignment
-	 * @param streamId
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceStreamData deviceStreamDataCreateLogic(IDeviceAssignment assignment, String streamId,
+	public static DeviceStreamData deviceStreamDataCreateLogic(IDeviceAssignment assignment,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 		DeviceStreamData streamData = new DeviceStreamData();
 		deviceEventCreateLogic(request, assignment, streamData);
-		streamData.setStreamId(streamId);
+
+		assureData(request.getStreamId());
+		streamData.setStreamId(request.getStreamId());
+
+		assureData(request.getSequenceNumber());
 		streamData.setSequenceNumber(request.getSequenceNumber());
+
 		streamData.setData(request.getData());
 		return streamData;
 	}

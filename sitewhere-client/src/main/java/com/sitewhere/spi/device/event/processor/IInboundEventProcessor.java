@@ -11,11 +11,15 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -82,4 +86,28 @@ public interface IInboundEventProcessor extends ILifecycleComponent {
 	 */
 	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
 			IDeviceAlertCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Called to request the creation of a new {@link IDeviceStream} based on the given
+	 * information.
+	 * 
+	 * @param hardwareId
+	 * @param originator
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
+			IDeviceStreamCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Called to request the creation of a new {@link IDeviceStreamData} based on the
+	 * given information.
+	 * 
+	 * @param hardwareId
+	 * @param originator
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException;
 }

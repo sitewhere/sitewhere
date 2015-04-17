@@ -538,12 +538,11 @@ public interface IDeviceManagement extends ILifecycleComponent {
 	 * Add a chunk of stream data for a given device assignment.
 	 * 
 	 * @param assignmentToken
-	 * @param streamId
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceStreamData addDeviceStreamData(String assignmentToken, String streamId,
+	public IDeviceStreamData addDeviceStreamData(String assignmentToken,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException;
 
 	/**

@@ -21,6 +21,8 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -168,6 +170,44 @@ public class DefaultInboundEventProcessorChain extends LifecycleComponent implem
 				processor.onDeviceAlertCreateRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
 				LOGGER.error("Processor failed to process alert create request.", e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceStreamCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+	 */
+	@Override
+	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
+			IDeviceStreamCreateRequest request) throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onDeviceStreamCreateRequest(hardwareId, originator, request);
+			} catch (SiteWhereException e) {
+				LOGGER.error("Processor failed to process stream data create request.", e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceStreamDataCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
+	 */
+	@Override
+	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
+			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onDeviceStreamDataCreateRequest(hardwareId, originator, request);
+			} catch (SiteWhereException e) {
+				LOGGER.error("Processor failed to process stream data create request.", e);
 			}
 		}
 	}

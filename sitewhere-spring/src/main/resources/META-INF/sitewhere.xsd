@@ -280,6 +280,19 @@
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for inbound processor elements to allow substitutionGroups -->
+	<xsd:element name="abstract-inbound-processor" abstract="true"
+		type="abstractInboundProcessorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for inbound processor elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common inbound processor element information -->
+	<xsd:complexType name="abstractInboundProcessorType"/>
+
 	<xsd:complexType name="inboundProcessingChainType">
 		<xsd:sequence>
 			<xsd:choice minOccurs="0" maxOccurs="unbounded">
@@ -290,15 +303,7 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element name="default-event-storage-processor" type="defaultEventStorageProcessorType">
-					<xsd:annotation>
-						<xsd:documentation>
-							Provides standard behavior of storing SiteWhere events via
-							service provider interfaces. If this event processor is not enabled, data will not
-							be stored or otherwise processed by SiteWhere.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
+				<xsd:element ref="abstract-inbound-processor"/>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -307,7 +312,57 @@
 		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="defaultEventStorageProcessorType"/>
+	<!-- Event storage processor -->
+	<xsd:element name="event-storage-processor" type="eventStorageProcessorType"
+		substitutionGroup="abstract-inbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Stores device events via the device management implementation. If
+				not configured, all events from inbound processing will be ignored. This does not
+				affect ability to create events via REST calls.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="eventStorageProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractInboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Registration processor -->
+	<xsd:element name="registration-processor" type="registrationProcessorType"
+		substitutionGroup="abstract-inbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides device registration functionality. If this processor is not
+				enabled, device registration requests will be ignored.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="registrationProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractInboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Device stream processor -->
+	<xsd:element name="device-stream-processor" type="deviceStreamProcessorType"
+		substitutionGroup="abstract-inbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Provides support for creating and writing to device streams. If this
+				processor is not enabled, device stream requests will be ignored.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="deviceStreamProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractInboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<!-- Used as a placeholder for outbound processor elements to allow substitutionGroups -->
 	<xsd:element name="abstract-outbound-processor" abstract="true"
