@@ -79,6 +79,7 @@ message SiteWhere {
 		required string hardwareId = 1;
 		required string streamId = 2;
 		required string contentType = 3;
+		repeated Metadata metadata = 4;
 	}
 	
 	// A chunk of streaming data.

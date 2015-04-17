@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -140,6 +141,8 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 						getInboundProcessingStrategy().processDeviceLocation(decoded);
 					} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
 						getInboundProcessingStrategy().processDeviceAlert(decoded);
+					} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {
+						getInboundProcessingStrategy().processDeviceStream(decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStreamDataCreateRequest) {
 						getInboundProcessingStrategy().processDeviceStreamData(decoded);
 					} else {

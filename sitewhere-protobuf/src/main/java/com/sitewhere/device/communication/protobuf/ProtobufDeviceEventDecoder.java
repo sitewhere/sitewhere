@@ -22,6 +22,7 @@ import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.Ack
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceAlert;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceLocation;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceMeasurements;
+import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStream;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamData;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.Header;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.Measurement;
@@ -34,6 +35,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
@@ -169,6 +171,24 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 					request.setEventDate(new Date());
 				}
 				decoded.setHardwareId(alert.getHardwareId());
+				decoded.setRequest(request);
+				return results;
+			}
+			case DEVICE_STREAM: {
+				DeviceStream devStream = DeviceStream.parseDelimitedFrom(stream);
+				LOGGER.debug("Decoded stream for: " + devStream.getHardwareId());
+				DeviceStreamCreateRequest request = new DeviceStreamCreateRequest();
+				request.setStreamId(devStream.getStreamId());
+				request.setContentType(devStream.getContentType());
+
+				List<Metadata> pbmeta = devStream.getMetadataList();
+				Map<String, String> metadata = new HashMap<String, String>();
+				for (Metadata meta : pbmeta) {
+					metadata.put(meta.getName(), meta.getValue());
+				}
+				request.setMetadata(metadata);
+
+				decoded.setHardwareId(devStream.getHardwareId());
 				decoded.setRequest(request);
 				return results;
 			}

@@ -130,7 +130,7 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 				break;
 			}
 			}
-			break;
+			return encodeDeviceStreamAck(builder.build());
 		}
 		}
 		throw new SiteWhereException("Unable to encode command: " + command.getClass().getName());
