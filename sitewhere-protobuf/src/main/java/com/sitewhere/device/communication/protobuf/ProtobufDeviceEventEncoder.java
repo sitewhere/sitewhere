@@ -10,11 +10,11 @@ package com.sitewhere.device.communication.protobuf;
 import java.io.ByteArrayOutputStream;
 import java.util.Set;
 
+import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventEncoder;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
@@ -30,40 +30,41 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IDeviceEventEncoder#encode(com.sitewhere
-	 * .spi.device.communication.IDecodedDeviceEventRequest)
+	 * .spi.device.communication.IDecodedDeviceRequest)
 	 */
 	@Override
-	public byte[] encode(IDecodedDeviceEventRequest event) throws SiteWhereException {
-		IDeviceEventCreateRequest request = event.getRequest();
-		if (request instanceof IDeviceMeasurementsCreateRequest) {
-			return encodeDeviceMeasurements(event);
+	@SuppressWarnings("unchecked")
+	public byte[] encode(IDecodedDeviceRequest<?> event) throws SiteWhereException {
+		if (event.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
+			return encodeDeviceMeasurements((IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest>) event);
 		}
 		throw new SiteWhereException("Protobuf encoder encountered unknown event type: "
 				+ event.getClass().getName());
 	}
 
 	/**
-	 * Encode a {@link IDecodedDeviceEventRequest} in a protobuf message.
+	 * Encode a {@link IDecodedDeviceRequest} in a protobuf message.
 	 * 
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected byte[] encodeDeviceMeasurements(IDecodedDeviceEventRequest event) throws SiteWhereException {
+	protected byte[] encodeDeviceMeasurements(IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest> event)
+			throws SiteWhereException {
 		try {
 			IDeviceMeasurementsCreateRequest measurements =
 					(IDeviceMeasurementsCreateRequest) event.getRequest();
-			SiteWhere.DeviceMeasurements.Builder mb = SiteWhere.DeviceMeasurements.newBuilder();
+			Model.DeviceMeasurements.Builder mb = Model.DeviceMeasurements.newBuilder();
 			mb.setHardwareId(event.getHardwareId());
 			Set<String> keys = measurements.getMeasurements().keySet();
 			for (String key : keys) {
-				mb.addMeasurement(SiteWhere.Measurement.newBuilder().setMeasurementId(key).setMeasurementValue(
+				mb.addMeasurement(Model.Measurement.newBuilder().setMeasurementId(key).setMeasurementValue(
 						measurements.getMeasurement(key)).build());
 			}
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();
-			builder.setCommand(SiteWhere.Command.DEVICE_MEASUREMENTS);
+			builder.setCommand(SiteWhere.Command.SEND_DEVICE_MEASUREMENTS);
 			if (event.getOriginator() != null) {
 				builder.setOriginator(event.getOriginator());
 			}

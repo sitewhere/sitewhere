@@ -1329,8 +1329,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
-		DeviceStreamData streamData =
-				SiteWherePersistence.deviceStreamDataCreateLogic(assignment, request);
+		DeviceStreamData streamData = SiteWherePersistence.deviceStreamDataCreateLogic(assignment, request);
 
 		// Verify that a stream with the given id exists for the assignment.
 		if (getDeviceStream(assignmentToken, request.getStreamId()) == null) {
@@ -1359,9 +1358,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name());
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
-		BasicDBObject sort =
-				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
-						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
+		BasicDBObject sort = new BasicDBObject(MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, 1);
 		return MongoPersistence.search(IDeviceStreamData.class, events, query, sort, criteria);
 	}
 

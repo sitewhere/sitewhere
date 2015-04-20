@@ -20,9 +20,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
+import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 
 /**
  * Implementation of {@link IInboundProcessingStrategy} that uses an
@@ -141,10 +148,11 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundProcessingStrategy#processRegistration
-	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
+	 * (com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
 	 */
 	@Override
-	public void processRegistration(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	public void processRegistration(IDecodedDeviceRequest<IDeviceRegistrationRequest> request)
+			throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -153,10 +161,11 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * 
 	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
 	 * processDeviceCommandResponse
-	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
+	 * (com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
 	 */
 	@Override
-	public void processDeviceCommandResponse(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	public void processDeviceCommandResponse(
+			IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request) throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -168,7 +177,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void processDeviceMeasurements(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	public void processDeviceMeasurements(IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest> request)
+			throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -180,7 +190,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void processDeviceLocation(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	public void processDeviceLocation(IDecodedDeviceRequest<IDeviceLocationCreateRequest> request)
+			throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -192,7 +203,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void processDeviceAlert(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request)
+			throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -204,7 +216,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void processDeviceStream(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	public void processDeviceStream(IDecodedDeviceRequest<IDeviceStreamCreateRequest> request)
+			throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -216,18 +229,19 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void processDeviceStreamData(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	public void processDeviceStreamData(IDecodedDeviceRequest<IDeviceStreamDataCreateRequest> request)
+			throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
 	/**
-	 * Adds an {@link IDecodedDeviceEventRequest} to the queue, blocking if no space is
+	 * Adds an {@link IDecodedDeviceRequest} to the queue, blocking if no space is
 	 * available.
 	 * 
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	protected void addRequestToQueue(IDecodedDeviceEventRequest request) throws SiteWhereException {
+	protected void addRequestToQueue(IDecodedDeviceRequest<?> request) throws SiteWhereException {
 		try {
 			eventCount.incrementAndGet();
 
@@ -335,7 +349,7 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 		private long startTime;
 
 		/** Event request */
-		private IDecodedDeviceEventRequest request;
+		private IDecodedDeviceRequest<?> request;
 
 		public long getStartTime() {
 			return startTime;
@@ -345,11 +359,11 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 			this.startTime = startTime;
 		}
 
-		public IDecodedDeviceEventRequest getRequest() {
+		public IDecodedDeviceRequest<?> getRequest() {
 			return request;
 		}
 
-		public void setRequest(IDecodedDeviceEventRequest request) {
+		public void setRequest(IDecodedDeviceRequest<?> request) {
 			this.request = request;
 		}
 	}
@@ -389,7 +403,7 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	}
 
 	/**
-	 * Blocking thread that processes {@link IDecodedDeviceEventRequest} from a queue.
+	 * Blocking thread that processes {@link IDecodedDeviceRequest} from a queue.
 	 * 
 	 * @author Derek
 	 * 

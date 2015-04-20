@@ -13,7 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
 /**
@@ -34,8 +34,8 @@ public class EchoStringDecoder implements IDeviceEventDecoder<String> {
 	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object)
 	 */
 	@Override
-	public List<IDecodedDeviceEventRequest> decode(String payload) throws SiteWhereException {
+	public List<IDecodedDeviceRequest<?>> decode(String payload) throws SiteWhereException {
 		LOGGER.info("Payload: " + payload);
-		return new ArrayList<IDecodedDeviceEventRequest>();
+		return new ArrayList<IDecodedDeviceRequest<?>>();
 	}
 }

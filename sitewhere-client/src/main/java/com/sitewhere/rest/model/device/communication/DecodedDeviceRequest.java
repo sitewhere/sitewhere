@@ -7,15 +7,14 @@
  */
 package com.sitewhere.rest.model.device.communication;
 
-import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 
 /**
- * Default implementation of {@link IDecodedDeviceEventRequest}.
+ * Default implementation of {@link IDecodedDeviceRequest}.
  * 
  * @author Derek
  */
-public class DecodedDeviceEventRequest implements IDecodedDeviceEventRequest {
+public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T> {
 
 	/** Hardware id the request applies to */
 	private String hardwareId;
@@ -24,13 +23,12 @@ public class DecodedDeviceEventRequest implements IDecodedDeviceEventRequest {
 	private String originator;
 
 	/** Event create request */
-	private IDeviceEventCreateRequest request;
+	private T request;
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest#getHardwareId()
+	 * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#getHardwareId()
 	 */
 	public String getHardwareId() {
 		return hardwareId;
@@ -43,8 +41,7 @@ public class DecodedDeviceEventRequest implements IDecodedDeviceEventRequest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest#getOriginator()
+	 * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#getOriginator()
 	 */
 	public String getOriginator() {
 		return originator;
@@ -57,13 +54,13 @@ public class DecodedDeviceEventRequest implements IDecodedDeviceEventRequest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest#getRequest()
+	 * @see com.sitewhere.spi.device.communication.IDecodedDeviceRequest#getRequest()
 	 */
-	public IDeviceEventCreateRequest getRequest() {
+	public T getRequest() {
 		return request;
 	}
 
-	public void setRequest(IDeviceEventCreateRequest request) {
+	public void setRequest(T request) {
 		this.request = request;
 	}
 }

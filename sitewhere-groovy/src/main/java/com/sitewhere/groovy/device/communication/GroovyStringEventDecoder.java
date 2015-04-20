@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
 /**
@@ -55,16 +55,16 @@ public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<IDecodedDeviceEventRequest> decode(String payload) throws SiteWhereException {
+	public List<IDecodedDeviceRequest<?>> decode(String payload) throws SiteWhereException {
 		try {
 			Binding binding = new Binding();
-			List<IDecodedDeviceEventRequest> events = new ArrayList<IDecodedDeviceEventRequest>();
+			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 			binding.setVariable(VAR_DECODED_EVENTS, events);
 			binding.setVariable(VAR_PAYLOAD, payload);
 			binding.setVariable(VAR_LOGGER, LOGGER);
 			LOGGER.info("About to execute '" + getScriptPath() + "' with payload: " + payload);
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
-			return (List<IDecodedDeviceEventRequest>) binding.getVariable(VAR_DECODED_EVENTS);
+			return (List<IDecodedDeviceRequest<?>>) binding.getVariable(VAR_DECODED_EVENTS);
 		} catch (ResourceException e) {
 			throw new SiteWhereException("Unable to access Groovy decoder script.", e);
 		} catch (ScriptException e) {

@@ -10,7 +10,7 @@ package com.sitewhere.device.communication;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -41,7 +41,7 @@ public abstract class InboundProcessingStrategy extends LifecycleComponent imple
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void sendToInboundProcessingChain(IDecodedDeviceEventRequest decoded) throws SiteWhereException {
+	public void sendToInboundProcessingChain(IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
 		if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
 			SiteWhere.getServer().getInboundEventProcessorChain().onRegistrationRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),

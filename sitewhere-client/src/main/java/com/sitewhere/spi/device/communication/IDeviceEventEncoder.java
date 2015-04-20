@@ -19,11 +19,11 @@ import com.sitewhere.spi.SiteWhereException;
 public interface IDeviceEventEncoder<T> {
 
 	/**
-	 * Encode an {@link IDecodedDeviceEventRequest} into another representation.
+	 * Encode an {@link IDecodedDeviceRequest} into another representation.
 	 * 
 	 * @param event
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public T encode(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public T encode(IDecodedDeviceRequest<?> request) throws SiteWhereException;
 }

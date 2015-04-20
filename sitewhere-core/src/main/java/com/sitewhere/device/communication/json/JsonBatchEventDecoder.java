@@ -14,10 +14,10 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sitewhere.rest.model.device.communication.DecodedDeviceEventRequest;
+import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
@@ -41,24 +41,27 @@ public class JsonBatchEventDecoder implements IDeviceEventDecoder<byte[]> {
 	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object)
 	 */
 	@Override
-	public List<IDecodedDeviceEventRequest> decode(byte[] payload) throws SiteWhereException {
+	public List<IDecodedDeviceRequest<?>> decode(byte[] payload) throws SiteWhereException {
 		try {
-			List<IDecodedDeviceEventRequest> events = new ArrayList<IDecodedDeviceEventRequest>();
+			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 			DeviceEventBatch batch = mapper.readValue(payload, DeviceEventBatch.class);
 			for (IDeviceLocationCreateRequest lc : batch.getLocations()) {
-				DecodedDeviceEventRequest decoded = new DecodedDeviceEventRequest();
+				DecodedDeviceRequest<IDeviceLocationCreateRequest> decoded =
+						new DecodedDeviceRequest<IDeviceLocationCreateRequest>();
 				decoded.setHardwareId(batch.getHardwareId());
 				decoded.setRequest(lc);
 				events.add(decoded);
 			}
 			for (IDeviceMeasurementsCreateRequest mc : batch.getMeasurements()) {
-				DecodedDeviceEventRequest decoded = new DecodedDeviceEventRequest();
+				DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> decoded =
+						new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
 				decoded.setHardwareId(batch.getHardwareId());
 				decoded.setRequest(mc);
 				events.add(decoded);
 			}
 			for (IDeviceAlertCreateRequest ac : batch.getAlerts()) {
-				DecodedDeviceEventRequest decoded = new DecodedDeviceEventRequest();
+				DecodedDeviceRequest<IDeviceAlertCreateRequest> decoded =
+						new DecodedDeviceRequest<IDeviceAlertCreateRequest>();
 				decoded.setHardwareId(batch.getHardwareId());
 				decoded.setRequest(ac);
 				events.add(decoded);

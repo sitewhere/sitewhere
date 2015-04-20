@@ -70,6 +70,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -572,6 +573,34 @@ public class AssignmentsController extends SiteWhereController {
 			svtResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		} finally {
 			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/{token}/streams/{streamId:.+}/content", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get all content from stream")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public void getAllDeviceStreamData(
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
+			HttpServletResponse svtResponse) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getAllDeviceStreamData", LOGGER);
+		IDeviceStream stream = SiteWhere.getServer().getDeviceManagement().getDeviceStream(token, streamId);
+		if (stream == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
+					HttpServletResponse.SC_NOT_FOUND);
+		}
+		svtResponse.setContentType(stream.getContentType());
+
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
+		ISearchResults<IDeviceStreamData> data =
+				SiteWhere.getServer().getDeviceManagement().listDeviceStreamData(token, streamId, criteria);
+		for (IDeviceStreamData chunk : data.getResults()) {
+			try {
+				svtResponse.getOutputStream().write(chunk.getData());
+			} catch (IOException e) {
+				LOGGER.error("Error writing chunk to servlet output stream.", e);
+			}
 		}
 	}
 

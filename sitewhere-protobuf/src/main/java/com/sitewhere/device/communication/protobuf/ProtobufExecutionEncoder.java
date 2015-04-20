@@ -147,7 +147,7 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 	protected byte[] encodeRegistrationAck(RegistrationAck ack) throws SiteWhereException {
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			Header header = Header.newBuilder().setCommand(Command.REGISTER_ACK).build();
+			Header header = Header.newBuilder().setCommand(Command.ACK_REGISTRATION).build();
 			header.writeDelimitedTo(out);
 
 			((RegistrationAck) ack).writeDelimitedTo(out);
@@ -168,7 +168,7 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 	protected byte[] encodeDeviceStreamAck(DeviceStreamAck ack) throws SiteWhereException {
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			Header header = Header.newBuilder().setCommand(Command.DEVICE_STREAM_ACK).build();
+			Header header = Header.newBuilder().setCommand(Command.ACK_DEVICE_STREAM).build();
 			header.writeDelimitedTo(out);
 			ack.writeDelimitedTo(out);
 			out.close();

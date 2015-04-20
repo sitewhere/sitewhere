@@ -10,9 +10,10 @@ package com.sitewhere.protobuf.test;
 import java.util.Date;
 
 import com.sitewhere.device.communication.protobuf.ProtobufDeviceEventEncoder;
-import com.sitewhere.rest.model.device.communication.DecodedDeviceEventRequest;
+import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 
 /**
  * Helper class for generating encoded messages using the SiteWhere GPB format.
@@ -29,7 +30,8 @@ public class EventsHelper {
 	 * @throws SiteWhereException
 	 */
 	public static byte[] generateEncodedMeasurementsMessage(String hardwareId) throws SiteWhereException {
-		DecodedDeviceEventRequest request = new DecodedDeviceEventRequest();
+		DecodedDeviceRequest<IDeviceMeasurementsCreateRequest> request =
+				new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
 		request.setHardwareId(hardwareId);
 
 		DeviceMeasurementsCreateRequest mx = new DeviceMeasurementsCreateRequest();

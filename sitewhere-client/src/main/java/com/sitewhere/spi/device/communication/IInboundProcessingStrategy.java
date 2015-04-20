@@ -32,7 +32,8 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processRegistration(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public void processRegistration(IDecodedDeviceRequest<IDeviceRegistrationRequest> request)
+			throws SiteWhereException;
 
 	/**
 	 * Process an {@link IDeviceCommandResponseCreateRequest}.
@@ -40,7 +41,8 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processDeviceCommandResponse(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public void processDeviceCommandResponse(
+			IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request) throws SiteWhereException;
 
 	/**
 	 * Process an {@link IDeviceMeasurementsCreateRequest}.
@@ -48,7 +50,8 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processDeviceMeasurements(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public void processDeviceMeasurements(IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest> request)
+			throws SiteWhereException;
 
 	/**
 	 * Process an {@link IDeviceLocationCreateRequest}.
@@ -56,7 +59,8 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processDeviceLocation(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public void processDeviceLocation(IDecodedDeviceRequest<IDeviceLocationCreateRequest> request)
+			throws SiteWhereException;
 
 	/**
 	 * Process an {@link IDeviceAlertCreateRequest}.
@@ -64,7 +68,8 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processDeviceAlert(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request)
+			throws SiteWhereException;
 
 	/**
 	 * Process an {@link IDeviceStreamCreateRequest}.
@@ -72,7 +77,8 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processDeviceStream(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public void processDeviceStream(IDecodedDeviceRequest<IDeviceStreamCreateRequest> request)
+			throws SiteWhereException;
 
 	/**
 	 * Process an {@link IDeviceStreamDataCreateRequest}.
@@ -80,7 +86,8 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processDeviceStreamData(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public void processDeviceStreamData(IDecodedDeviceRequest<IDeviceStreamDataCreateRequest> request)
+			throws SiteWhereException;
 
 	/**
 	 * Sends a decoded request to the inbound processing chain.
@@ -88,5 +95,5 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void sendToInboundProcessingChain(IDecodedDeviceEventRequest request) throws SiteWhereException;
+	public void sendToInboundProcessingChain(IDecodedDeviceRequest<?> request) throws SiteWhereException;
 }

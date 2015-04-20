@@ -15,13 +15,14 @@ import org.apache.log4j.Logger;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest;
+import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
@@ -124,27 +125,37 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 	 * (com.sitewhere.spi.device.communication.IInboundEventReceiver, java.lang.Object)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload) {
 		try {
 			LOGGER.debug("Device event receiver thread picked up event.");
-			List<IDecodedDeviceEventRequest> requests = decodePayload(encodedPayload);
+			List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload);
 			if (requests != null) {
-				for (IDecodedDeviceEventRequest decoded : requests) {
-					decoded.getRequest().setUpdateState(isUpdateAssignmentState());
+				for (IDecodedDeviceRequest<?> decoded : requests) {
+					if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
+						((IDeviceEventCreateRequest) decoded.getRequest()).setUpdateState(isUpdateAssignmentState());
+					}
 					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
-						getInboundProcessingStrategy().processRegistration(decoded);
+						getInboundProcessingStrategy().processRegistration(
+								(IDecodedDeviceRequest<IDeviceRegistrationRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
-						getInboundProcessingStrategy().processDeviceCommandResponse(decoded);
+						getInboundProcessingStrategy().processDeviceCommandResponse(
+								(IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
-						getInboundProcessingStrategy().processDeviceMeasurements(decoded);
+						getInboundProcessingStrategy().processDeviceMeasurements(
+								(IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
-						getInboundProcessingStrategy().processDeviceLocation(decoded);
+						getInboundProcessingStrategy().processDeviceLocation(
+								(IDecodedDeviceRequest<IDeviceLocationCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
-						getInboundProcessingStrategy().processDeviceAlert(decoded);
+						getInboundProcessingStrategy().processDeviceAlert(
+								(IDecodedDeviceRequest<IDeviceAlertCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {
-						getInboundProcessingStrategy().processDeviceStream(decoded);
+						getInboundProcessingStrategy().processDeviceStream(
+								(IDecodedDeviceRequest<IDeviceStreamCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStreamDataCreateRequest) {
-						getInboundProcessingStrategy().processDeviceStreamData(decoded);
+						getInboundProcessingStrategy().processDeviceStreamData(
+								(IDecodedDeviceRequest<IDeviceStreamDataCreateRequest>) decoded);
 					} else {
 						LOGGER.error("Decoded device event request could not be routed: "
 								+ decoded.getRequest().getClass().getName());
@@ -165,7 +176,7 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected List<IDecodedDeviceEventRequest> decodePayload(T encodedPayload) throws SiteWhereException {
+	protected List<IDecodedDeviceRequest<?>> decodePayload(T encodedPayload) throws SiteWhereException {
 		return getDeviceEventDecoder().decode(encodedPayload);
 	}
 

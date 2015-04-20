@@ -7,15 +7,13 @@
  */
 package com.sitewhere.spi.device.communication;
 
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
-
 /**
- * Contains information decoded by an {@link IDeviceEventDecoder} includng the decoded
- * event and information about its context.
+ * Contains information decoded by an {@link IDeviceEventDecoder} includng hardware id and
+ * originator of the event.
  * 
  * @author Derek
  */
-public interface IDecodedDeviceEventRequest {
+public interface IDecodedDeviceRequest<T> {
 
 	/**
 	 * Get hardware id the request pertains to.
@@ -36,5 +34,5 @@ public interface IDecodedDeviceEventRequest {
 	 * 
 	 * @return
 	 */
-	public IDeviceEventCreateRequest getRequest();
+	public T getRequest();
 }
