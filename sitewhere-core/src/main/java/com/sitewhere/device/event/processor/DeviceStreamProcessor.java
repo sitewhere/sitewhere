@@ -13,6 +13,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 
 /**
  * Handles requests related to device streams.
@@ -50,6 +51,20 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
 	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 		SiteWhere.getServer().getDeviceCommunicationSubsystem().getDeviceStreamManager().handleDeviceStreamDataRequest(
+				hardwareId, request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
+	 * onSendDeviceStreamDataRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest)
+	 */
+	@Override
+	public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
+			ISendDeviceStreamDataRequest request) throws SiteWhereException {
+		SiteWhere.getServer().getDeviceCommunicationSubsystem().getDeviceStreamManager().handleSendDeviceStreamDataRequest(
 				hardwareId, request);
 	}
 

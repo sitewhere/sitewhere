@@ -508,6 +508,12 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
+	public IDeviceStreamData getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
+			throws SiteWhereException {
+		return delegate.getDeviceStreamData(assignmentToken, streamId, sequenceNumber);
+	}
+
+	@Override
 	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		return delegate.listDeviceStreamData(assignmentToken, streamId, criteria);

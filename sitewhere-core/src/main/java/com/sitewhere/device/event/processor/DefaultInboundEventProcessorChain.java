@@ -23,6 +23,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -206,6 +207,25 @@ public class DefaultInboundEventProcessorChain extends LifecycleComponent implem
 		for (IInboundEventProcessor processor : getProcessors()) {
 			try {
 				processor.onDeviceStreamDataCreateRequest(hardwareId, originator, request);
+			} catch (SiteWhereException e) {
+				LOGGER.error("Processor failed to process stream data create request.", e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onSendDeviceStreamDataRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest)
+	 */
+	@Override
+	public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
+			ISendDeviceStreamDataRequest request) throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onSendDeviceStreamDataRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
 				LOGGER.error("Processor failed to process stream data create request.", e);
 			}

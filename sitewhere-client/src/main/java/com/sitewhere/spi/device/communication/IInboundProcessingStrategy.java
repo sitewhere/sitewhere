@@ -16,6 +16,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -87,6 +88,15 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public void processDeviceStreamData(IDecodedDeviceRequest<IDeviceStreamDataCreateRequest> request)
+			throws SiteWhereException;
+
+	/**
+	 * Process an {@link ISendDeviceStreamDataRequest}.
+	 * 
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void processSendDeviceStreamData(IDecodedDeviceRequest<ISendDeviceStreamDataRequest> request)
 			throws SiteWhereException;
 
 	/**

@@ -19,6 +19,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
@@ -110,4 +111,15 @@ public interface IInboundEventProcessor extends ILifecycleComponent {
 	 */
 	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Called to request that a chunk of {@link IDeviceStreamData} be sent to a device.
+	 * 
+	 * @param hardwareId
+	 * @param originator
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
+			ISendDeviceStreamDataRequest request) throws SiteWhereException;
 }

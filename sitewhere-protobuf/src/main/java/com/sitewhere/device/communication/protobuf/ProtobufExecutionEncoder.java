@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import com.google.protobuf.ByteString;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.Command;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAck;
@@ -20,6 +21,8 @@ import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.Header
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.RegistrationAck;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.RegistrationAckError;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.RegistrationAckState;
+import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model;
+import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.DeviceStreamData;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -28,6 +31,7 @@ import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.IDeviceStreamAckCommand;
 import com.sitewhere.spi.device.command.IRegistrationAckCommand;
 import com.sitewhere.spi.device.command.IRegistrationFailureCommand;
+import com.sitewhere.spi.device.command.ISendDeviceStreamDataCommand;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.communication.ICommandExecutionEncoder;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -133,6 +137,15 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 			}
 			return encodeDeviceStreamAck(builder.build());
 		}
+		case SendDeviceStreamData: {
+			ISendDeviceStreamDataCommand send = (ISendDeviceStreamDataCommand) command;
+			Model.DeviceStreamData.Builder builder = Model.DeviceStreamData.newBuilder();
+			builder.setHardwareId(send.getHardwareId());
+			builder.setStreamId(send.getStreamId());
+			builder.setSequenceNumber(send.getSequenceNumber());
+			builder.setData(ByteString.copyFrom(send.getData()));
+			return encodeSendDeviceStreamData(builder.build());
+		}
 		}
 		throw new SiteWhereException("Unable to encode command: " + command.getClass().getName());
 	}
@@ -154,7 +167,7 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 			out.close();
 			return out.toByteArray();
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to marshal regsiter ack to protobuf.", e);
+			throw new SiteWhereException("Unable to marshal registration ack to protobuf.", e);
 		}
 	}
 
@@ -174,7 +187,27 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 			out.close();
 			return out.toByteArray();
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to marshal regsiter ack to protobuf.", e);
+			throw new SiteWhereException("Unable to marshal device stream ack to protobuf.", e);
+		}
+	}
+
+	/**
+	 * Encode {@link DeviceStreamData} as byte array.
+	 * 
+	 * @param data
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected byte[] encodeSendDeviceStreamData(Model.DeviceStreamData data) throws SiteWhereException {
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			Header header = Header.newBuilder().setCommand(Command.RECEIVE_DEVICE_STREAM_DATA).build();
+			header.writeDelimitedTo(out);
+			data.writeDelimitedTo(out);
+			out.close();
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to marshal device stream data chunk to protobuf.", e);
 		}
 	}
 

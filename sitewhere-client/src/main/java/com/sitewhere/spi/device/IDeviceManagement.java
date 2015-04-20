@@ -546,6 +546,18 @@ public interface IDeviceManagement extends ILifecycleComponent {
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException;
 
 	/**
+	 * Get a single chunk of data from a device stream.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @param sequenceNumber
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceStreamData getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
+			throws SiteWhereException;
+
+	/**
 	 * List all chunks of data in a device assignment that belong to a given stream and
 	 * meet the criteria.
 	 * 

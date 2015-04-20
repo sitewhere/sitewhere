@@ -1347,6 +1347,23 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceStreamData(java.lang.String,
+	 * java.lang.String, long)
+	 */
+	@Override
+	public IDeviceStreamData getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
+			throws SiteWhereException {
+		DBObject dbData = getDeviceStreamDataDBObject(assignmentToken, streamId, sequenceNumber);
+		if (dbData == null) {
+			return null;
+		}
+		return MongoDeviceStreamData.fromDBObject(dbData, false);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreamData(java.lang.String,
 	 * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
@@ -2259,6 +2276,27 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 				new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceStream.PROP_STREAM_ID, streamId);
 		DBObject result = streams.findOne(query);
+		return result;
+	}
+
+	/**
+	 * Get the {@link DBObject} for an {@link IDeviceStreamData} chunk based on assignment
+	 * token, stream id, and sequence number.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @param sequenceNumber
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject getDeviceStreamDataDBObject(String assignmentToken, String streamId,
+			long sequenceNumber) throws SiteWhereException {
+		DBCollection data = getMongoClient().getStreamDataCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
+						MongoDeviceStreamData.PROP_STREAM_ID, sequenceNumber).append(
+						MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
+		DBObject result = data.findOne(query);
 		return result;
 	}
 

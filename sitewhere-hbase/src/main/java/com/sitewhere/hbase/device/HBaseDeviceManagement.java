@@ -718,6 +718,13 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	}
 
 	@Override
+	public IDeviceStreamData getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
+			throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		// TODO Auto-generated method stub

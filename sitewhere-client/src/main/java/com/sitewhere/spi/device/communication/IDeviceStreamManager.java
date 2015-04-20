@@ -11,6 +11,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
@@ -39,5 +40,15 @@ public interface IDeviceStreamManager extends ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public void handleDeviceStreamDataRequest(String hardwareId, IDeviceStreamDataCreateRequest request)
+			throws SiteWhereException;
+
+	/**
+	 * Handle request for sending data from an {@link IDeviceStream} to a remote device.
+	 * 
+	 * @param hardwareId
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void handleSendDeviceStreamDataRequest(String hardwareId, ISendDeviceStreamDataRequest request)
 			throws SiteWhereException;
 }

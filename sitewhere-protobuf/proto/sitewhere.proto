@@ -96,6 +96,13 @@ message SiteWhere {
 		required string hardwareId = 1;
 		optional string message = 2;
 	}
+	
+	// Request for a chunk of data from a device stream.
+	message DeviceStreamDataRequest {
+		required string hardwareId = 1;
+		required string streamId = 2;
+		required fixed64 sequenceNumber = 3;
+	}
 }
 
 // Commands sent from SiteWhere to a device.
@@ -133,12 +140,5 @@ message Device {
 	message DeviceStreamAck {
 		required string streamId = 1;
 		required DeviceStreamAckState state = 2;
-	}
-	
-	// Request for a chunk of data from a device stream.
-	message DeviceStreamDataRequest {
-		required string hardwareId = 1;
-		required string streamId = 2;
-		required fixed64 sequenceNumber = 3;
 	}
 }

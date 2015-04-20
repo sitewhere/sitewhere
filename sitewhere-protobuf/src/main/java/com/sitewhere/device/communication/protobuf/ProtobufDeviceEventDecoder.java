@@ -26,6 +26,7 @@ import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.Measure
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.Metadata;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.Acknowledge;
+import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.Header;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.RegisterDevice;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
@@ -35,6 +36,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateRequest;
+import com.sitewhere.rest.model.device.event.request.SendDeviceStreamDataRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
@@ -47,6 +49,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 
 /**
  * Decodes a message payload that was previously encoded using the Google Protocol Buffers
@@ -263,6 +266,23 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				results.add(decoded);
 				decoded.setHardwareId(streamData.getHardwareId());
 				decoded.setRequest(request);
+				return results;
+			}
+			case REQUEST_DEVICE_STREAM_DATA: {
+				DeviceStreamDataRequest request = DeviceStreamDataRequest.parseDelimitedFrom(stream);
+				LOGGER.debug("Decoded stream data request for: " + request.getHardwareId());
+				SendDeviceStreamDataRequest send = new SendDeviceStreamDataRequest();
+				send.setStreamId(request.getStreamId());
+				send.setSequenceNumber(send.getSequenceNumber());
+
+				DecodedDeviceRequest<ISendDeviceStreamDataRequest> decoded =
+						new DecodedDeviceRequest<ISendDeviceStreamDataRequest>();
+				if (header.hasOriginator()) {
+					decoded.setOriginator(header.getOriginator());
+				}
+				results.add(decoded);
+				decoded.setHardwareId(request.getHardwareId());
+				decoded.setRequest(send);
 				return results;
 			}
 			default: {

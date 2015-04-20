@@ -8657,6 +8657,683 @@ public final class Sitewhere {
       // @@protoc_insertion_point(class_scope:SiteWhere.Acknowledge)
     }
 
+    public interface DeviceStreamDataRequestOrBuilder
+        extends com.google.protobuf.MessageLiteOrBuilder {
+
+      // required string hardwareId = 1;
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      boolean hasHardwareId();
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      java.lang.String getHardwareId();
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      com.google.protobuf.ByteString
+          getHardwareIdBytes();
+
+      // required string streamId = 2;
+      /**
+       * <code>required string streamId = 2;</code>
+       */
+      boolean hasStreamId();
+      /**
+       * <code>required string streamId = 2;</code>
+       */
+      java.lang.String getStreamId();
+      /**
+       * <code>required string streamId = 2;</code>
+       */
+      com.google.protobuf.ByteString
+          getStreamIdBytes();
+
+      // required fixed64 sequenceNumber = 3;
+      /**
+       * <code>required fixed64 sequenceNumber = 3;</code>
+       */
+      boolean hasSequenceNumber();
+      /**
+       * <code>required fixed64 sequenceNumber = 3;</code>
+       */
+      long getSequenceNumber();
+    }
+    /**
+     * Protobuf type {@code SiteWhere.DeviceStreamDataRequest}
+     *
+     * <pre>
+     * Request for a chunk of data from a device stream.
+     * </pre>
+     */
+    public static final class DeviceStreamDataRequest extends
+        com.google.protobuf.GeneratedMessageLite
+        implements DeviceStreamDataRequestOrBuilder {
+      // Use DeviceStreamDataRequest.newBuilder() to construct.
+      private DeviceStreamDataRequest(com.google.protobuf.GeneratedMessageLite.Builder builder) {
+        super(builder);
+
+      }
+      private DeviceStreamDataRequest(boolean noInit) {}
+
+      private static final DeviceStreamDataRequest defaultInstance;
+      public static DeviceStreamDataRequest getDefaultInstance() {
+        return defaultInstance;
+      }
+
+      public DeviceStreamDataRequest getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+
+      private DeviceStreamDataRequest(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        initFields();
+        int mutable_bitField0_ = 0;
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!parseUnknownField(input,
+                                       extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+              case 10: {
+                bitField0_ |= 0x00000001;
+                hardwareId_ = input.readBytes();
+                break;
+              }
+              case 18: {
+                bitField0_ |= 0x00000002;
+                streamId_ = input.readBytes();
+                break;
+              }
+              case 25: {
+                bitField0_ |= 0x00000004;
+                sequenceNumber_ = input.readFixed64();
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e.getMessage()).setUnfinishedMessage(this);
+        } finally {
+          makeExtensionsImmutable();
+        }
+      }
+      public static com.google.protobuf.Parser<DeviceStreamDataRequest> PARSER =
+          new com.google.protobuf.AbstractParser<DeviceStreamDataRequest>() {
+        public DeviceStreamDataRequest parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new DeviceStreamDataRequest(input, extensionRegistry);
+        }
+      };
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<DeviceStreamDataRequest> getParserForType() {
+        return PARSER;
+      }
+
+      private int bitField0_;
+      // required string hardwareId = 1;
+      public static final int HARDWAREID_FIELD_NUMBER = 1;
+      private java.lang.Object hardwareId_;
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public boolean hasHardwareId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public java.lang.String getHardwareId() {
+        java.lang.Object ref = hardwareId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            hardwareId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string hardwareId = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getHardwareIdBytes() {
+        java.lang.Object ref = hardwareId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          hardwareId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      // required string streamId = 2;
+      public static final int STREAMID_FIELD_NUMBER = 2;
+      private java.lang.Object streamId_;
+      /**
+       * <code>required string streamId = 2;</code>
+       */
+      public boolean hasStreamId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string streamId = 2;</code>
+       */
+      public java.lang.String getStreamId() {
+        java.lang.Object ref = streamId_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            streamId_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string streamId = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getStreamIdBytes() {
+        java.lang.Object ref = streamId_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          streamId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      // required fixed64 sequenceNumber = 3;
+      public static final int SEQUENCENUMBER_FIELD_NUMBER = 3;
+      private long sequenceNumber_;
+      /**
+       * <code>required fixed64 sequenceNumber = 3;</code>
+       */
+      public boolean hasSequenceNumber() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required fixed64 sequenceNumber = 3;</code>
+       */
+      public long getSequenceNumber() {
+        return sequenceNumber_;
+      }
+
+      private void initFields() {
+        hardwareId_ = "";
+        streamId_ = "";
+        sequenceNumber_ = 0L;
+      }
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized != -1) return isInitialized == 1;
+
+        if (!hasHardwareId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasStreamId()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasSequenceNumber()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        getSerializedSize();
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          output.writeBytes(1, getHardwareIdBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeBytes(2, getStreamIdBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          output.writeFixed64(3, sequenceNumber_);
+        }
+      }
+
+      private int memoizedSerializedSize = -1;
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(1, getHardwareIdBytes());
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(2, getStreamIdBytes());
+        }
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeFixed64Size(3, sequenceNumber_);
+        }
+        memoizedSerializedSize = size;
+        return size;
+      }
+
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      protected java.lang.Object writeReplace()
+          throws java.io.ObjectStreamException {
+        return super.writeReplace();
+      }
+
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return PARSER.parseFrom(input);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return PARSER.parseFrom(input, extensionRegistry);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return PARSER.parseDelimitedFrom(input);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return PARSER.parseFrom(input);
+      }
+      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return PARSER.parseFrom(input, extensionRegistry);
+      }
+
+      public static Builder newBuilder() { return Builder.create(); }
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder(com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest prototype) {
+        return newBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+
+      /**
+       * Protobuf type {@code SiteWhere.DeviceStreamDataRequest}
+       *
+       * <pre>
+       * Request for a chunk of data from a device stream.
+       * </pre>
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageLite.Builder<
+            com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest, Builder>
+          implements com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequestOrBuilder {
+        // Construct using com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private void maybeForceBuilderInitialization() {
+        }
+        private static Builder create() {
+          return new Builder();
+        }
+
+        public Builder clear() {
+          super.clear();
+          hardwareId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          streamId_ = "";
+          bitField0_ = (bitField0_ & ~0x00000002);
+          sequenceNumber_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000004);
+          return this;
+        }
+
+        public Builder clone() {
+          return create().mergeFrom(buildPartial());
+        }
+
+        public com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest getDefaultInstanceForType() {
+          return com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest.getDefaultInstance();
+        }
+
+        public com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest build() {
+          com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        public com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest buildPartial() {
+          com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest result = new com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.hardwareId_ = hardwareId_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          result.streamId_ = streamId_;
+          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.sequenceNumber_ = sequenceNumber_;
+          result.bitField0_ = to_bitField0_;
+          return result;
+        }
+
+        public Builder mergeFrom(com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest other) {
+          if (other == com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest.getDefaultInstance()) return this;
+          if (other.hasHardwareId()) {
+            bitField0_ |= 0x00000001;
+            hardwareId_ = other.hardwareId_;
+            
+          }
+          if (other.hasStreamId()) {
+            bitField0_ |= 0x00000002;
+            streamId_ = other.streamId_;
+            
+          }
+          if (other.hasSequenceNumber()) {
+            setSequenceNumber(other.getSequenceNumber());
+          }
+          return this;
+        }
+
+        public final boolean isInitialized() {
+          if (!hasHardwareId()) {
+            
+            return false;
+          }
+          if (!hasStreamId()) {
+            
+            return false;
+          }
+          if (!hasSequenceNumber()) {
+            
+            return false;
+          }
+          return true;
+        }
+
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (com.sitewhere.device.communication.protobuf.proto.Sitewhere.SiteWhere.DeviceStreamDataRequest) e.getUnfinishedMessage();
+            throw e;
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        // required string hardwareId = 1;
+        private java.lang.Object hardwareId_ = "";
+        /**
+         * <code>required string hardwareId = 1;</code>
+         */
+        public boolean hasHardwareId() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        /**
+         * <code>required string hardwareId = 1;</code>
+         */
+        public java.lang.String getHardwareId() {
+          java.lang.Object ref = hardwareId_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            hardwareId_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string hardwareId = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+            getHardwareIdBytes() {
+          java.lang.Object ref = hardwareId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            hardwareId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string hardwareId = 1;</code>
+         */
+        public Builder setHardwareId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          hardwareId_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>required string hardwareId = 1;</code>
+         */
+        public Builder clearHardwareId() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          hardwareId_ = getDefaultInstance().getHardwareId();
+          
+          return this;
+        }
+        /**
+         * <code>required string hardwareId = 1;</code>
+         */
+        public Builder setHardwareIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          hardwareId_ = value;
+          
+          return this;
+        }
+
+        // required string streamId = 2;
+        private java.lang.Object streamId_ = "";
+        /**
+         * <code>required string streamId = 2;</code>
+         */
+        public boolean hasStreamId() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        /**
+         * <code>required string streamId = 2;</code>
+         */
+        public java.lang.String getStreamId() {
+          java.lang.Object ref = streamId_;
+          if (!(ref instanceof java.lang.String)) {
+            java.lang.String s = ((com.google.protobuf.ByteString) ref)
+                .toStringUtf8();
+            streamId_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string streamId = 2;</code>
+         */
+        public com.google.protobuf.ByteString
+            getStreamIdBytes() {
+          java.lang.Object ref = streamId_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            streamId_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string streamId = 2;</code>
+         */
+        public Builder setStreamId(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          streamId_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>required string streamId = 2;</code>
+         */
+        public Builder clearStreamId() {
+          bitField0_ = (bitField0_ & ~0x00000002);
+          streamId_ = getDefaultInstance().getStreamId();
+          
+          return this;
+        }
+        /**
+         * <code>required string streamId = 2;</code>
+         */
+        public Builder setStreamIdBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+          streamId_ = value;
+          
+          return this;
+        }
+
+        // required fixed64 sequenceNumber = 3;
+        private long sequenceNumber_ ;
+        /**
+         * <code>required fixed64 sequenceNumber = 3;</code>
+         */
+        public boolean hasSequenceNumber() {
+          return ((bitField0_ & 0x00000004) == 0x00000004);
+        }
+        /**
+         * <code>required fixed64 sequenceNumber = 3;</code>
+         */
+        public long getSequenceNumber() {
+          return sequenceNumber_;
+        }
+        /**
+         * <code>required fixed64 sequenceNumber = 3;</code>
+         */
+        public Builder setSequenceNumber(long value) {
+          bitField0_ |= 0x00000004;
+          sequenceNumber_ = value;
+          
+          return this;
+        }
+        /**
+         * <code>required fixed64 sequenceNumber = 3;</code>
+         */
+        public Builder clearSequenceNumber() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          sequenceNumber_ = 0L;
+          
+          return this;
+        }
+
+        // @@protoc_insertion_point(builder_scope:SiteWhere.DeviceStreamDataRequest)
+      }
+
+      static {
+        defaultInstance = new DeviceStreamDataRequest(true);
+        defaultInstance.initFields();
+      }
+
+      // @@protoc_insertion_point(class_scope:SiteWhere.DeviceStreamDataRequest)
+    }
+
     private void initFields() {
     }
     private byte memoizedIsInitialized = -1;
@@ -11121,683 +11798,6 @@ public final class Sitewhere {
       }
 
       // @@protoc_insertion_point(class_scope:Device.DeviceStreamAck)
-    }
-
-    public interface DeviceStreamDataRequestOrBuilder
-        extends com.google.protobuf.MessageLiteOrBuilder {
-
-      // required string hardwareId = 1;
-      /**
-       * <code>required string hardwareId = 1;</code>
-       */
-      boolean hasHardwareId();
-      /**
-       * <code>required string hardwareId = 1;</code>
-       */
-      java.lang.String getHardwareId();
-      /**
-       * <code>required string hardwareId = 1;</code>
-       */
-      com.google.protobuf.ByteString
-          getHardwareIdBytes();
-
-      // required string streamId = 2;
-      /**
-       * <code>required string streamId = 2;</code>
-       */
-      boolean hasStreamId();
-      /**
-       * <code>required string streamId = 2;</code>
-       */
-      java.lang.String getStreamId();
-      /**
-       * <code>required string streamId = 2;</code>
-       */
-      com.google.protobuf.ByteString
-          getStreamIdBytes();
-
-      // required fixed64 sequenceNumber = 3;
-      /**
-       * <code>required fixed64 sequenceNumber = 3;</code>
-       */
-      boolean hasSequenceNumber();
-      /**
-       * <code>required fixed64 sequenceNumber = 3;</code>
-       */
-      long getSequenceNumber();
-    }
-    /**
-     * Protobuf type {@code Device.DeviceStreamDataRequest}
-     *
-     * <pre>
-     * Request for a chunk of data from a device stream.
-     * </pre>
-     */
-    public static final class DeviceStreamDataRequest extends
-        com.google.protobuf.GeneratedMessageLite
-        implements DeviceStreamDataRequestOrBuilder {
-      // Use DeviceStreamDataRequest.newBuilder() to construct.
-      private DeviceStreamDataRequest(com.google.protobuf.GeneratedMessageLite.Builder builder) {
-        super(builder);
-
-      }
-      private DeviceStreamDataRequest(boolean noInit) {}
-
-      private static final DeviceStreamDataRequest defaultInstance;
-      public static DeviceStreamDataRequest getDefaultInstance() {
-        return defaultInstance;
-      }
-
-      public DeviceStreamDataRequest getDefaultInstanceForType() {
-        return defaultInstance;
-      }
-
-      private DeviceStreamDataRequest(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        initFields();
-        int mutable_bitField0_ = 0;
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              default: {
-                if (!parseUnknownField(input,
-                                       extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
-              case 10: {
-                bitField0_ |= 0x00000001;
-                hardwareId_ = input.readBytes();
-                break;
-              }
-              case 18: {
-                bitField0_ |= 0x00000002;
-                streamId_ = input.readBytes();
-                break;
-              }
-              case 25: {
-                bitField0_ |= 0x00000004;
-                sequenceNumber_ = input.readFixed64();
-                break;
-              }
-            }
-          }
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(this);
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(
-              e.getMessage()).setUnfinishedMessage(this);
-        } finally {
-          makeExtensionsImmutable();
-        }
-      }
-      public static com.google.protobuf.Parser<DeviceStreamDataRequest> PARSER =
-          new com.google.protobuf.AbstractParser<DeviceStreamDataRequest>() {
-        public DeviceStreamDataRequest parsePartialFrom(
-            com.google.protobuf.CodedInputStream input,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return new DeviceStreamDataRequest(input, extensionRegistry);
-        }
-      };
-
-      @java.lang.Override
-      public com.google.protobuf.Parser<DeviceStreamDataRequest> getParserForType() {
-        return PARSER;
-      }
-
-      private int bitField0_;
-      // required string hardwareId = 1;
-      public static final int HARDWAREID_FIELD_NUMBER = 1;
-      private java.lang.Object hardwareId_;
-      /**
-       * <code>required string hardwareId = 1;</code>
-       */
-      public boolean hasHardwareId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required string hardwareId = 1;</code>
-       */
-      public java.lang.String getHardwareId() {
-        java.lang.Object ref = hardwareId_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            hardwareId_ = s;
-          }
-          return s;
-        }
-      }
-      /**
-       * <code>required string hardwareId = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getHardwareIdBytes() {
-        java.lang.Object ref = hardwareId_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          hardwareId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      // required string streamId = 2;
-      public static final int STREAMID_FIELD_NUMBER = 2;
-      private java.lang.Object streamId_;
-      /**
-       * <code>required string streamId = 2;</code>
-       */
-      public boolean hasStreamId() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required string streamId = 2;</code>
-       */
-      public java.lang.String getStreamId() {
-        java.lang.Object ref = streamId_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            streamId_ = s;
-          }
-          return s;
-        }
-      }
-      /**
-       * <code>required string streamId = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getStreamIdBytes() {
-        java.lang.Object ref = streamId_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          streamId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      // required fixed64 sequenceNumber = 3;
-      public static final int SEQUENCENUMBER_FIELD_NUMBER = 3;
-      private long sequenceNumber_;
-      /**
-       * <code>required fixed64 sequenceNumber = 3;</code>
-       */
-      public boolean hasSequenceNumber() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>required fixed64 sequenceNumber = 3;</code>
-       */
-      public long getSequenceNumber() {
-        return sequenceNumber_;
-      }
-
-      private void initFields() {
-        hardwareId_ = "";
-        streamId_ = "";
-        sequenceNumber_ = 0L;
-      }
-      private byte memoizedIsInitialized = -1;
-      public final boolean isInitialized() {
-        byte isInitialized = memoizedIsInitialized;
-        if (isInitialized != -1) return isInitialized == 1;
-
-        if (!hasHardwareId()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-        if (!hasStreamId()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-        if (!hasSequenceNumber()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-        memoizedIsInitialized = 1;
-        return true;
-      }
-
-      public void writeTo(com.google.protobuf.CodedOutputStream output)
-                          throws java.io.IOException {
-        getSerializedSize();
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          output.writeBytes(1, getHardwareIdBytes());
-        }
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          output.writeBytes(2, getStreamIdBytes());
-        }
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          output.writeFixed64(3, sequenceNumber_);
-        }
-      }
-
-      private int memoizedSerializedSize = -1;
-      public int getSerializedSize() {
-        int size = memoizedSerializedSize;
-        if (size != -1) return size;
-
-        size = 0;
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(1, getHardwareIdBytes());
-        }
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(2, getStreamIdBytes());
-        }
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeFixed64Size(3, sequenceNumber_);
-        }
-        memoizedSerializedSize = size;
-        return size;
-      }
-
-      private static final long serialVersionUID = 0L;
-      @java.lang.Override
-      protected java.lang.Object writeReplace()
-          throws java.io.ObjectStreamException {
-        return super.writeReplace();
-      }
-
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseFrom(
-          com.google.protobuf.ByteString data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseFrom(
-          com.google.protobuf.ByteString data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseFrom(byte[] data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseFrom(
-          byte[] data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseFrom(java.io.InputStream input)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseFrom(
-          java.io.InputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input, extensionRegistry);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseDelimitedFrom(java.io.InputStream input)
-          throws java.io.IOException {
-        return PARSER.parseDelimitedFrom(input);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseDelimitedFrom(
-          java.io.InputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseDelimitedFrom(input, extensionRegistry);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseFrom(
-          com.google.protobuf.CodedInputStream input)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input);
-      }
-      public static com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parseFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input, extensionRegistry);
-      }
-
-      public static Builder newBuilder() { return Builder.create(); }
-      public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest prototype) {
-        return newBuilder().mergeFrom(prototype);
-      }
-      public Builder toBuilder() { return newBuilder(this); }
-
-      /**
-       * Protobuf type {@code Device.DeviceStreamDataRequest}
-       *
-       * <pre>
-       * Request for a chunk of data from a device stream.
-       * </pre>
-       */
-      public static final class Builder extends
-          com.google.protobuf.GeneratedMessageLite.Builder<
-            com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest, Builder>
-          implements com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequestOrBuilder {
-        // Construct using com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest.newBuilder()
-        private Builder() {
-          maybeForceBuilderInitialization();
-        }
-
-        private void maybeForceBuilderInitialization() {
-        }
-        private static Builder create() {
-          return new Builder();
-        }
-
-        public Builder clear() {
-          super.clear();
-          hardwareId_ = "";
-          bitField0_ = (bitField0_ & ~0x00000001);
-          streamId_ = "";
-          bitField0_ = (bitField0_ & ~0x00000002);
-          sequenceNumber_ = 0L;
-          bitField0_ = (bitField0_ & ~0x00000004);
-          return this;
-        }
-
-        public Builder clone() {
-          return create().mergeFrom(buildPartial());
-        }
-
-        public com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest getDefaultInstanceForType() {
-          return com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest.getDefaultInstance();
-        }
-
-        public com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest build() {
-          com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest result = buildPartial();
-          if (!result.isInitialized()) {
-            throw newUninitializedMessageException(result);
-          }
-          return result;
-        }
-
-        public com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest buildPartial() {
-          com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest result = new com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest(this);
-          int from_bitField0_ = bitField0_;
-          int to_bitField0_ = 0;
-          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-            to_bitField0_ |= 0x00000001;
-          }
-          result.hardwareId_ = hardwareId_;
-          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-            to_bitField0_ |= 0x00000002;
-          }
-          result.streamId_ = streamId_;
-          if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-            to_bitField0_ |= 0x00000004;
-          }
-          result.sequenceNumber_ = sequenceNumber_;
-          result.bitField0_ = to_bitField0_;
-          return result;
-        }
-
-        public Builder mergeFrom(com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest other) {
-          if (other == com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest.getDefaultInstance()) return this;
-          if (other.hasHardwareId()) {
-            bitField0_ |= 0x00000001;
-            hardwareId_ = other.hardwareId_;
-            
-          }
-          if (other.hasStreamId()) {
-            bitField0_ |= 0x00000002;
-            streamId_ = other.streamId_;
-            
-          }
-          if (other.hasSequenceNumber()) {
-            setSequenceNumber(other.getSequenceNumber());
-          }
-          return this;
-        }
-
-        public final boolean isInitialized() {
-          if (!hasHardwareId()) {
-            
-            return false;
-          }
-          if (!hasStreamId()) {
-            
-            return false;
-          }
-          if (!hasSequenceNumber()) {
-            
-            return false;
-          }
-          return true;
-        }
-
-        public Builder mergeFrom(
-            com.google.protobuf.CodedInputStream input,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws java.io.IOException {
-          com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest parsedMessage = null;
-          try {
-            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamDataRequest) e.getUnfinishedMessage();
-            throw e;
-          } finally {
-            if (parsedMessage != null) {
-              mergeFrom(parsedMessage);
-            }
-          }
-          return this;
-        }
-        private int bitField0_;
-
-        // required string hardwareId = 1;
-        private java.lang.Object hardwareId_ = "";
-        /**
-         * <code>required string hardwareId = 1;</code>
-         */
-        public boolean hasHardwareId() {
-          return ((bitField0_ & 0x00000001) == 0x00000001);
-        }
-        /**
-         * <code>required string hardwareId = 1;</code>
-         */
-        public java.lang.String getHardwareId() {
-          java.lang.Object ref = hardwareId_;
-          if (!(ref instanceof java.lang.String)) {
-            java.lang.String s = ((com.google.protobuf.ByteString) ref)
-                .toStringUtf8();
-            hardwareId_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
-        }
-        /**
-         * <code>required string hardwareId = 1;</code>
-         */
-        public com.google.protobuf.ByteString
-            getHardwareIdBytes() {
-          java.lang.Object ref = hardwareId_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            hardwareId_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>required string hardwareId = 1;</code>
-         */
-        public Builder setHardwareId(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-          hardwareId_ = value;
-          
-          return this;
-        }
-        /**
-         * <code>required string hardwareId = 1;</code>
-         */
-        public Builder clearHardwareId() {
-          bitField0_ = (bitField0_ & ~0x00000001);
-          hardwareId_ = getDefaultInstance().getHardwareId();
-          
-          return this;
-        }
-        /**
-         * <code>required string hardwareId = 1;</code>
-         */
-        public Builder setHardwareIdBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-          hardwareId_ = value;
-          
-          return this;
-        }
-
-        // required string streamId = 2;
-        private java.lang.Object streamId_ = "";
-        /**
-         * <code>required string streamId = 2;</code>
-         */
-        public boolean hasStreamId() {
-          return ((bitField0_ & 0x00000002) == 0x00000002);
-        }
-        /**
-         * <code>required string streamId = 2;</code>
-         */
-        public java.lang.String getStreamId() {
-          java.lang.Object ref = streamId_;
-          if (!(ref instanceof java.lang.String)) {
-            java.lang.String s = ((com.google.protobuf.ByteString) ref)
-                .toStringUtf8();
-            streamId_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
-        }
-        /**
-         * <code>required string streamId = 2;</code>
-         */
-        public com.google.protobuf.ByteString
-            getStreamIdBytes() {
-          java.lang.Object ref = streamId_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            streamId_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>required string streamId = 2;</code>
-         */
-        public Builder setStreamId(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-          streamId_ = value;
-          
-          return this;
-        }
-        /**
-         * <code>required string streamId = 2;</code>
-         */
-        public Builder clearStreamId() {
-          bitField0_ = (bitField0_ & ~0x00000002);
-          streamId_ = getDefaultInstance().getStreamId();
-          
-          return this;
-        }
-        /**
-         * <code>required string streamId = 2;</code>
-         */
-        public Builder setStreamIdBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-          streamId_ = value;
-          
-          return this;
-        }
-
-        // required fixed64 sequenceNumber = 3;
-        private long sequenceNumber_ ;
-        /**
-         * <code>required fixed64 sequenceNumber = 3;</code>
-         */
-        public boolean hasSequenceNumber() {
-          return ((bitField0_ & 0x00000004) == 0x00000004);
-        }
-        /**
-         * <code>required fixed64 sequenceNumber = 3;</code>
-         */
-        public long getSequenceNumber() {
-          return sequenceNumber_;
-        }
-        /**
-         * <code>required fixed64 sequenceNumber = 3;</code>
-         */
-        public Builder setSequenceNumber(long value) {
-          bitField0_ |= 0x00000004;
-          sequenceNumber_ = value;
-          
-          return this;
-        }
-        /**
-         * <code>required fixed64 sequenceNumber = 3;</code>
-         */
-        public Builder clearSequenceNumber() {
-          bitField0_ = (bitField0_ & ~0x00000004);
-          sequenceNumber_ = 0L;
-          
-          return this;
-        }
-
-        // @@protoc_insertion_point(builder_scope:Device.DeviceStreamDataRequest)
-      }
-
-      static {
-        defaultInstance = new DeviceStreamDataRequest(true);
-        defaultInstance.initFields();
-      }
-
-      // @@protoc_insertion_point(class_scope:Device.DeviceStreamDataRequest)
     }
 
     private void initFields() {

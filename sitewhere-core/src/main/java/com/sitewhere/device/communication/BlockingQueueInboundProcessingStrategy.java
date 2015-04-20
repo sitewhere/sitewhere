@@ -30,6 +30,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 
 /**
  * Implementation of {@link IInboundProcessingStrategy} that uses an
@@ -230,6 +231,19 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 */
 	@Override
 	public void processDeviceStreamData(IDecodedDeviceRequest<IDeviceStreamDataCreateRequest> request)
+			throws SiteWhereException {
+		addRequestToQueue(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processSendDeviceStreamData
+	 * (com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
+	 */
+	@Override
+	public void processSendDeviceStreamData(IDecodedDeviceRequest<ISendDeviceStreamDataRequest> request)
 			throws SiteWhereException {
 		addRequestToQueue(request);
 	}

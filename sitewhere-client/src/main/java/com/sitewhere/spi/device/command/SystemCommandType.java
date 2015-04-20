@@ -21,5 +21,8 @@ public enum SystemCommandType {
 	RegistrationFailure,
 
 	/** Acknowledges device stream creation */
-	DeviceStreamAck;
+	DeviceStreamAck,
+
+	/** Sends a chunk of device stream data */
+	SendDeviceStreamData;
 }

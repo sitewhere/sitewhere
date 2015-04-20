@@ -17,6 +17,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -132,5 +133,17 @@ public abstract class InboundEventProcessor extends LifecycleComponent implement
 	@Override
 	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onSendDeviceStreamDataRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest)
+	 */
+	@Override
+	public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
+			ISendDeviceStreamDataRequest request) throws SiteWhereException {
 	}
 }
