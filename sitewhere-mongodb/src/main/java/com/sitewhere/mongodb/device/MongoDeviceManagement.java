@@ -2291,12 +2291,12 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	protected DBObject getDeviceStreamDataDBObject(String assignmentToken, String streamId,
 			long sequenceNumber) throws SiteWhereException {
-		DBCollection data = getMongoClient().getStreamDataCollection();
+		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
-						MongoDeviceStreamData.PROP_STREAM_ID, sequenceNumber).append(
+						MongoDeviceStreamData.PROP_STREAM_ID, streamId).append(
 						MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
-		DBObject result = data.findOne(query);
+		DBObject result = events.findOne(query);
 		return result;
 	}
 

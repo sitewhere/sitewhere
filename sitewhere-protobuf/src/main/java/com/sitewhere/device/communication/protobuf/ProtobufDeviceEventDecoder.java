@@ -273,7 +273,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				LOGGER.debug("Decoded stream data request for: " + request.getHardwareId());
 				SendDeviceStreamDataRequest send = new SendDeviceStreamDataRequest();
 				send.setStreamId(request.getStreamId());
-				send.setSequenceNumber(send.getSequenceNumber());
+				send.setSequenceNumber(request.getSequenceNumber());
 
 				DecodedDeviceRequest<ISendDeviceStreamDataRequest> decoded =
 						new DecodedDeviceRequest<ISendDeviceStreamDataRequest>();

@@ -19,6 +19,7 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
+import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -70,6 +71,10 @@ public abstract class InboundProcessingStrategy extends LifecycleComponent imple
 			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceStreamDataCreateRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceStreamDataCreateRequest) decoded.getRequest()));
+		} else if (decoded.getRequest() instanceof ISendDeviceStreamDataRequest) {
+			SiteWhere.getServer().getInboundEventProcessorChain().onSendDeviceStreamDataRequest(
+					decoded.getHardwareId(), decoded.getOriginator(),
+					((ISendDeviceStreamDataRequest) decoded.getRequest()));
 		} else {
 			throw new RuntimeException("Unknown device event type: "
 					+ decoded.getRequest().getClass().getName());
