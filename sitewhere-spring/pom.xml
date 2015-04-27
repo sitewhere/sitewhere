@@ -69,6 +69,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-siddhi</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-solr</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>

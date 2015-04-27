@@ -36,6 +36,7 @@
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-mule</module>
 				<module>sitewhere-protobuf</module>
+				<module>sitewhere-siddhi</module>
 				<module>sitewhere-solr</module>
 				<module>sitewhere-spring</module>
 				<module>sitewhere-twilio</module>
@@ -57,6 +58,7 @@
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-mule</module>
 				<module>sitewhere-protobuf</module>
+				<module>sitewhere-siddhi</module>
 				<module>sitewhere-solr</module>
 				<module>sitewhere-spring</module>
 				<module>sitewhere-twilio</module>

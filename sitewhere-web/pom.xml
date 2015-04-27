@@ -89,6 +89,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-siddhi</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-solr</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
@@ -181,6 +187,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>3.4</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.1.1</version>
@@ -198,6 +210,24 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/systemlib</outputDirectory>
+							<includeScope>system</includeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
@@ -209,6 +239,15 @@
 						%regex[WEB-INF/lib/jsp.*],
 						%regex[WEB-INF/lib/servlet.*]
 					</packagingExcludes>
+					<webResources>
+						<resource>
+							<directory>${project.build.directory}/systemlib</directory>
+							<includes>
+								<include>**/siddhi*.jar</include>
+							</includes>
+							<targetPath>WEB-INF/lib</targetPath>
+						</resource>
+					</webResources>
 				</configuration>
 				<executions>
 					<execution>

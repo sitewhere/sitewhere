@@ -61,6 +61,11 @@
 		<priority value="INFO" />
 	</category>
 
+	<!-- Change to DEBUG for detailed HBase logging -->
+	<category name="org.wso2.siddhi">
+		<priority value="INFO" />
+	</category>
+
 	<category name="org.hbase">
 		<priority value="WARN" />
 	</category>

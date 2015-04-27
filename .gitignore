@@ -13,6 +13,7 @@
 /sitewhere-mongodb/target
 /sitewhere-mule/target
 /sitewhere-protobuf/target
+/sitewhere-siddhi/target
 /sitewhere-solr/target
 /sitewhere-spring/target
 /sitewhere-twilio/target

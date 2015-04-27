@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spring.handler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -27,6 +28,9 @@ import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.siddhi.StreamDebugger;
+import com.sitewhere.siddhi.SiddhiEventProcessor;
+import com.sitewhere.siddhi.SiddhiQuery;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.solr.SolrDeviceEventProcessor;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -85,6 +89,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 			case CommandDeliveryEventProcessor: {
 				processors.add(parseCommandDeliveryEventProcessor(child, context));
+				break;
+			}
+			case SiddhiEventProcessor: {
+				processors.add(parseSiddhiEventProcessor(child, context));
 				break;
 			}
 			}
@@ -270,6 +278,49 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parse configuration for event processor that uses Siddhi to perform complex event
+	 * processing.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseSiddhiEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(SiddhiEventProcessor.class);
+
+		List<SiddhiQuery> queries = new ArrayList<SiddhiQuery>();
+		List<Element> queryElements = DomUtils.getChildElementsByTagName(element, "siddhi-query");
+		for (Element queryElement : queryElements) {
+			SiddhiQuery query = new SiddhiQuery();
+
+			Attr selector = queryElement.getAttributeNode("selector");
+			if (selector == null) {
+				throw new RuntimeException("Selector attribute is required for siddhi-query.");
+			}
+			query.setSelector(selector.getValue());
+
+			List<Element> debugElements = DomUtils.getChildElementsByTagName(queryElement, "stream-debugger");
+			for (Element debugElement : debugElements) {
+				StreamDebugger debug = new StreamDebugger();
+
+				Attr stream = debugElement.getAttributeNode("stream");
+				if (selector == null) {
+					throw new RuntimeException("Stream attribute is required for debug-callback.");
+				}
+				debug.setStreamId(stream.getValue());
+
+				query.getCallbacks().put(debug.getStreamId(), debug);
+			}
+
+			queries.add(query);
+		}
+		processor.addPropertyValue("queries", queries);
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -295,7 +346,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		ProvisioningEventProcessor("provisioning-event-processor"),
 
 		/** Outbound event processor that delivers commands via communication subsystem */
-		CommandDeliveryEventProcessor("command-delivery-event-processor");
+		CommandDeliveryEventProcessor("command-delivery-event-processor"),
+
+		/** Outbound event processor that uses Siddhi for complex event processing */
+		SiddhiEventProcessor("siddhi-event-processor");
 
 		/** Event code */
 		private String localName;

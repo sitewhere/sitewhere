@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.sitewhere</groupId>
+		<artifactId>sitewhere</artifactId>
+		<version>1.0.3</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>sitewhere-siddhi</artifactId>
+	<packaging>jar</packaging>
+	<name>SiteWhere Siddhi CEP Integration</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-client</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-core</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.siddhi</groupId>
+			<artifactId>siddhi-api</artifactId>
+			<version>2.1.0wso2v1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/siddhi-api_2.1.0.wso2v1.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.siddhi</groupId>
+			<artifactId>siddhi-core</artifactId>
+			<version>2.1.0wso2v1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/siddhi-core_2.1.0.wso2v1.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.siddhi</groupId>
+			<artifactId>siddhi-query</artifactId>
+			<version>2.1.0wso2v1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/siddhi-query_2.1.0.wso2v1.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>3.4</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

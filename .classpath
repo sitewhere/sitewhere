@@ -16,6 +16,7 @@
 	<classpathentry kind="src" path="sitewhere-mule/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-protobuf/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-protobuf/src/test/java"/>
+	<classpathentry kind="src" path="sitewhere-siddhi/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-solr/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-spring/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-twilio/src/main/java"/>
@@ -79,5 +80,8 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/curator/curator-client/2.5.0/curator-client-2.5.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/zookeeper/zookeeper/3.4.6/zookeeper-3.4.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy/2.4.3/groovy-2.4.3.jar"/>
+	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-api_2.1.0.wso2v1.jar"/>
+	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-core_2.1.0.wso2v1.jar"/>
+	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-query_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

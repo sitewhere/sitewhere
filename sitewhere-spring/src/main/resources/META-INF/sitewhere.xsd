@@ -536,6 +536,83 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
+	<!-- Siddhi CEP outbound event processor -->
+	<xsd:element name="siddhi-event-processor" type="siddhiEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Processes events through an embedded Siddhi instance to allow
+				complex event processing (CEP) funcitonality.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="siddhiEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="unbounded" name="siddhi-query"
+						type="siddhiQueryType">
+						<xsd:annotation>
+							<xsd:documentation>
+								A Siddhi query that executes selector logic.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for Siddhi callbacks to allow substitutionGroups -->
+	<xsd:element name="abstract-siddhi-callback" abstract="true"
+		type="abstractSiddhiCallbackType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for Siddhi callback elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common Siddhi callback element information -->
+	<xsd:complexType name="abstractSiddhiCallbackType">
+		<xsd:attribute name="stream" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Name of stream for which a callback will be registered.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- Siddhi debug callback -->
+	<xsd:element name="stream-debugger" type="siddhiStreamDebuggerType"
+		substitutionGroup="abstract-siddhi-callback">
+		<xsd:annotation>
+			<xsd:documentation>
+				Debugs Siddhi streams by printing events to the log.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="siddhiStreamDebuggerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractSiddhiCallbackType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="siddhiQueryType">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" ref="abstract-siddhi-callback"/>
+		</xsd:sequence>
+		<xsd:attribute name="selector" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Selector expression that contains processing logic.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
 
 	<xsd:simpleType name="zoneContainmentType">
 		<xsd:restriction base="xsd:string">
