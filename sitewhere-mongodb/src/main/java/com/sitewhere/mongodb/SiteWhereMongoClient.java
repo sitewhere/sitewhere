@@ -124,12 +124,9 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	@Override
 	public void start() throws SiteWhereException {
 		try {
-			MongoClientOptions.Builder builder =  new MongoClientOptions.Builder();
-                        builder.maxConnectionIdleTime(60 * 60 * 1000); //1hour
-                        this.client = new MongoClient(
-                                new ServerAddress(getHostname(), getPort()),
-                                builder.build()
-                        );
+			MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+			builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
+			this.client = new MongoClient(new ServerAddress(getHostname(), getPort()), builder.build());
 			List<String> messages = new ArrayList<String>();
 			messages.add("------------------");
 			messages.add("-- MONGO CLIENT --");
