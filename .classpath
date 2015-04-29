@@ -36,7 +36,6 @@
 	<classpathentry exported="true" kind="var" path="M2_REPO/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/log4j/log4j/1.2.15/log4j-1.2.15.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/apache/solr/solr-solrj/4.6.0/solr-solrj-4.6.0.jar"/>
-	<classpathentry exported="true" kind="var" path="M2_REPO/org/mongodb/mongo-java-driver/2.10.1/mongo-java-driver-2.10.1.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/mule/mule-core/3.4.0/mule-core-3.4.0.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/springframework/security/spring-security-core/3.1.1.RELEASE/spring-security-core-3.1.1.RELEASE.jar" sourcepath="/SITEWHERE_ROOT/Source/spring-security-core-3.1.1.RELEASE-sources.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/springframework/spring-beans/3.2.1.RELEASE/spring-beans-3.2.1.RELEASE.jar"/>
@@ -80,6 +79,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/curator/curator-client/2.5.0/curator-client-2.5.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/zookeeper/zookeeper/3.4.6/zookeeper-3.4.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy/2.4.3/groovy-2.4.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/mongodb/mongo-java-driver/2.13.0/mongo-java-driver-2.13.0.jar"/>
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-api_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-core_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-query_2.1.0.wso2v1.jar"/>
