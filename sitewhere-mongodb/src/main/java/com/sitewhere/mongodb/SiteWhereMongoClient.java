@@ -18,6 +18,8 @@ import org.springframework.beans.factory.InitializingBean;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.ServerAddress;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.ISiteWhereLifecycle;
 import com.sitewhere.spi.SiteWhereException;
@@ -107,12 +109,16 @@ public class SiteWhereMongoClient implements InitializingBean, ISiteWhereLifecyc
 	@Override
 	public void start() throws SiteWhereException {
 		try {
-			this.client = new MongoClient(getHostname(), getPort());
+			MongoClientOptions.Builder builder =  new MongoClientOptions.Builder();
+                        builder.maxConnectionIdleTime(60 * 60 * 1000); //1hour
+                        this.client = new MongoClient(
+                                new ServerAddress(getHostname(), getPort()),
+                                builder.build()
+                        );
 			List<String> messages = new ArrayList<String>();
 			messages.add("------------------");
 			messages.add("-- MONGO CLIENT --");
 			messages.add("------------------");
-			messages.add("Mongo client initialized. Version: " + client.getVersion());
 			messages.add("Hostname: " + hostname);
 			messages.add("Port: " + port);
 			messages.add("Database Name: " + databaseName);
