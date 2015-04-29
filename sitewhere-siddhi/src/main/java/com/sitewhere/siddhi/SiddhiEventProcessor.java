@@ -17,6 +17,8 @@ import org.wso2.siddhi.core.stream.input.InputHandler;
 import com.sitewhere.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceLocation;
+import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 
 /**
@@ -30,6 +32,16 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiddhiEventProcessor.class);
 
+	/** Defines the measurement event stream */
+	private static String DEFINE_MEASUREMENT_STREAM = "define stream MeasurementStream ("
+			+ "id string, site string, assignment string, assetmodule string, asset string, eventdate long,"
+			+ "mxname string, mxvalue float);";
+
+	/** Defines the location event stream */
+	private static String DEFINE_LOCATION_STREAM = "define stream LocationStream ("
+			+ "id string, site string, assignment string, assetmodule string, asset string, eventdate long,"
+			+ "latitude float, longitude float, elevation float);";
+
 	/** Defines the alert event stream */
 	private static String DEFINE_ALERT_STREAM = "define stream AlertStream ("
 			+ "id string, site string, assignment string, assetmodule string, asset string, eventdate long,"
@@ -37,6 +49,12 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 
 	/** Siddhi manager */
 	private SiddhiManager manager;
+
+	/** Sends events to measurement stream */
+	private InputHandler mxInputHandler;
+
+	/** Sends events to location stream */
+	private InputHandler locationInputHandler;
 
 	/** Sends events to alert stream */
 	private InputHandler alertInputHandler;
@@ -63,6 +81,8 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 	 */
 	protected void createStreams() throws SiteWhereException {
 		this.alertInputHandler = getManager().defineStream(DEFINE_ALERT_STREAM);
+		this.locationInputHandler = getManager().defineStream(DEFINE_LOCATION_STREAM);
+		this.mxInputHandler = getManager().defineStream(DEFINE_MEASUREMENT_STREAM);
 	}
 
 	/**
@@ -76,6 +96,61 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 			for (String streamName : query.getCallbacks().keySet()) {
 				getManager().addCallback(streamName, query.getCallbacks().get(streamName));
 			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onMeasurements(com.
+	 * sitewhere.spi.device.event.IDeviceMeasurements)
+	 */
+	@Override
+	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+		for (String mxname : measurements.getMeasurements().keySet()) {
+			Double mxvalue = measurements.getMeasurement(mxname);
+			try {
+				// Send a separate stream event per individual measurement.
+				getMxInputHandler().send(
+						new Object[] {
+								measurements.getId(),
+								measurements.getSiteToken(),
+								measurements.getDeviceAssignmentToken(),
+								measurements.getAssetModuleId(),
+								measurements.getAssetId(),
+								measurements.getEventDate().getTime(),
+								mxname,
+								mxvalue.floatValue() });
+			} catch (InterruptedException e) {
+				throw new SiteWhereException("Unable to process measurement in Siddhi.", e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onLocation(com.sitewhere
+	 * .spi.device.event.IDeviceLocation)
+	 */
+	@Override
+	public void onLocation(IDeviceLocation location) throws SiteWhereException {
+		try {
+			getLocationInputHandler().send(
+					new Object[] {
+							location.getId(),
+							location.getSiteToken(),
+							location.getDeviceAssignmentToken(),
+							location.getAssetModuleId(),
+							location.getAssetId(),
+							location.getEventDate().getTime(),
+							location.getLatitude().floatValue(),
+							location.getLongitude().floatValue(),
+							location.getElevation().floatValue() });
+		} catch (InterruptedException e) {
+			throw new SiteWhereException("Unable to process alert in Siddhi.", e);
 		}
 	}
 
@@ -135,6 +210,22 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 
 	public void setManager(SiddhiManager manager) {
 		this.manager = manager;
+	}
+
+	public InputHandler getMxInputHandler() {
+		return mxInputHandler;
+	}
+
+	public void setMxInputHandler(InputHandler mxInputHandler) {
+		this.mxInputHandler = mxInputHandler;
+	}
+
+	public InputHandler getLocationInputHandler() {
+		return locationInputHandler;
+	}
+
+	public void setLocationInputHandler(InputHandler locationInputHandler) {
+		this.locationInputHandler = locationInputHandler;
 	}
 
 	public InputHandler getAlertInputHandler() {

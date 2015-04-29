@@ -210,10 +210,25 @@
 			 -->
 
 			<sw:siddhi-event-processor>
+			
+				<!-- Trigger on an increase of at least five degrees between two successive engine temp measurements -->
 				<sw:siddhi-query
-					selector="from every e1 = AlertStream[type == 'low.bp'] -> e2 = AlertStream[type == 'g.shock' and e1.assignment == assignment] select e1.assignment insert into Fainted">
+					selector="from e1 = MeasurementStream[mxname == 'engine.temp'], e2 = MeasurementStream[mxname == 'engine.temp' and e1.assignment == assignment and ((e2.mxvalue - e1.mxvalue) > 5)] select e1.assignment insert into EngineTempRose">
+					<sw:stream-debugger stream="EngineTempRose"/>
+				</sw:siddhi-query>
+				
+				<!-- Trigger if two successive location reports differ -->
+				<sw:siddhi-query
+					selector="from e1 = LocationStream, e2 = LocationStream[(latitude != e1.latitude or longitude != e1.longitude) and e1.assignment == assignment] select e2.assignment, e2.latitude, e2.longitude insert into LocationChanged">
+					<sw:stream-debugger stream="LocationChanged"/>
+				</sw:siddhi-query>
+				
+				<!-- Trigger if a low blood pressure alert is followed by a G-shock alert within 5 seconds -->
+				<sw:siddhi-query
+					selector="from every e1 = AlertStream[type == 'low.bp'] -> e2 = AlertStream[type == 'g.shock' and e1.assignment == assignment] within 5 sec select e1.assignment insert into Fainted">
 					<sw:stream-debugger stream="Fainted"/>
 				</sw:siddhi-query>
+
 			</sw:siddhi-event-processor>
 
 		</sw:outbound-processing-chain>
