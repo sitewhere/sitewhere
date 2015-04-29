@@ -170,34 +170,34 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected void ensureIndexes() throws SiteWhereException {
-		getMongoClient().getSitesCollection().ensureIndex(new BasicDBObject(MongoSite.PROP_TOKEN, 1),
+		getMongoClient().getSitesCollection().createIndex(new BasicDBObject(MongoSite.PROP_TOKEN, 1),
 				new BasicDBObject("unique", true));
-		getMongoClient().getDeviceSpecificationsCollection().ensureIndex(
+		getMongoClient().getDeviceSpecificationsCollection().createIndex(
 				new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getDevicesCollection().ensureIndex(
+		getMongoClient().getDevicesCollection().createIndex(
 				new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, 1), new BasicDBObject("unique", true));
-		getMongoClient().getDeviceAssignmentsCollection().ensureIndex(
+		getMongoClient().getDeviceAssignmentsCollection().createIndex(
 				new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getEventsCollection().ensureIndex(
+		getMongoClient().getEventsCollection().createIndex(
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
 						MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
-		getMongoClient().getEventsCollection().ensureIndex(
+		getMongoClient().getEventsCollection().createIndex(
 				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, 1).append(
 						MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
-		getMongoClient().getDeviceGroupsCollection().ensureIndex(
+		getMongoClient().getDeviceGroupsCollection().createIndex(
 				new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getDeviceGroupsCollection().ensureIndex(
+		getMongoClient().getDeviceGroupsCollection().createIndex(
 				new BasicDBObject(MongoDeviceGroup.PROP_ROLES, 1));
-		getMongoClient().getGroupElementsCollection().ensureIndex(
+		getMongoClient().getGroupElementsCollection().createIndex(
 				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
 						MongoDeviceGroupElement.PROP_TYPE, 1).append(MongoDeviceGroupElement.PROP_ELEMENT_ID,
 						1));
-		getMongoClient().getGroupElementsCollection().ensureIndex(
+		getMongoClient().getGroupElementsCollection().createIndex(
 				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
 						MongoDeviceGroupElement.PROP_ROLES, 1));
-		getMongoClient().getBatchOperationsCollection().ensureIndex(
+		getMongoClient().getBatchOperationsCollection().createIndex(
 				new BasicDBObject(MongoBatchOperation.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getBatchOperationElementsCollection().ensureIndex(
+		getMongoClient().getBatchOperationElementsCollection().createIndex(
 				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, 1));
 	}
 

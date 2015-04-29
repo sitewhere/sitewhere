@@ -83,9 +83,9 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * @throws SiteWhereException
 	 */
 	protected void ensureIndexes() throws SiteWhereException {
-		getMongoClient().getUsersCollection().ensureIndex(new BasicDBObject("username", 1),
+		getMongoClient().getUsersCollection().createIndex(new BasicDBObject("username", 1),
 				new BasicDBObject("unique", true));
-		getMongoClient().getAuthoritiesCollection().ensureIndex(new BasicDBObject("authority", 1),
+		getMongoClient().getAuthoritiesCollection().createIndex(new BasicDBObject("authority", 1),
 				new BasicDBObject("unique", true));
 	}
 

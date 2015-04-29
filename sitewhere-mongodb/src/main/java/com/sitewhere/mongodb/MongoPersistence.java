@@ -17,6 +17,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoCommandException;
 import com.mongodb.WriteResult;
 import com.sitewhere.mongodb.device.MongoDeviceAlert;
 import com.sitewhere.mongodb.device.MongoDeviceCommandInvocation;
@@ -57,9 +58,10 @@ public class MongoPersistence {
 	 * @throws SiteWhereException
 	 */
 	public static void insert(DBCollection collection, DBObject object) throws SiteWhereException {
-		WriteResult result = collection.insert(object);
-		if (!result.getLastError().ok()) {
-			throw new SiteWhereException("Error during insert: " + result.getLastError().toString());
+		try {
+			collection.insert(object);
+		} catch (MongoCommandException e) {
+			throw new SiteWhereException("Error during MongoDB insert.", e);
 		}
 	}
 
@@ -73,9 +75,10 @@ public class MongoPersistence {
 	 */
 	public static void update(DBCollection collection, DBObject query, DBObject object)
 			throws SiteWhereException {
-		WriteResult result = collection.update(query, object);
-		if (!result.getLastError().ok()) {
-			throw new SiteWhereException("Error during update: " + result.getLastError().toString());
+		try {
+			collection.update(query, object);
+		} catch (MongoCommandException e) {
+			throw new SiteWhereException("Error during MongoDB update.", e);
 		}
 	}
 
@@ -89,11 +92,11 @@ public class MongoPersistence {
 	 * @throws SiteWhereException
 	 */
 	public static WriteResult delete(DBCollection collection, DBObject object) throws SiteWhereException {
-		WriteResult result = collection.remove(object);
-		if (!result.getLastError().ok()) {
-			throw new SiteWhereException("Error during delete: " + result.getLastError().toString());
+		try {
+			return collection.remove(object);
+		} catch (MongoCommandException e) {
+			throw new SiteWhereException("Error during MongoDB delete.", e);
 		}
-		return result;
 	}
 
 	/**
