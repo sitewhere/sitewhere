@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.3/sitewhere.xsd?a=a91">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.3/sitewhere.xsd?a=a92">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${catalina.home}/conf/sitewhere/sitewhere.properties"
@@ -225,8 +225,9 @@
 				
 				<!-- Trigger if a low blood pressure alert is followed by a G-shock alert within 5 seconds -->
 				<sw:siddhi-query
-					selector="from every e1 = AlertStream[type == 'low.bp'] -> e2 = AlertStream[type == 'g.shock' and e1.assignment == assignment] within 5 sec select e1.assignment insert into Fainted">
-					<sw:stream-debugger stream="Fainted"/>
+					selector="from every e1 = AlertStream[type == 'low.bp'] -> e2 = AlertStream[type == 'g.shock' and e1.assignment == assignment] within 7 sec select e1.assignment insert into Fainted">
+					<sw:groovy-stream-processor scriptPath="siddhiEventProcessor.groovy"
+						stream="Fainted"/>
 				</sw:siddhi-query>
 
 			</sw:siddhi-event-processor>

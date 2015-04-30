@@ -10,6 +10,7 @@
 	<classpathentry kind="src" path="sitewhere-documentation/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-ehcache/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-gnuhealth/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-groovy/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-hbase/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-magento/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/java"/>
@@ -21,7 +22,6 @@
 	<classpathentry kind="src" path="sitewhere-spring/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-twilio/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-web/src/main/java"/>
-	<classpathentry kind="src" path="sitewhere-groovy/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4.jar"/>

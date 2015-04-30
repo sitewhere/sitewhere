@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.stream.input.InputHandler;
+import org.wso2.siddhi.core.stream.output.StreamCallback;
 
 import com.sitewhere.device.event.processor.OutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
@@ -93,8 +94,8 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 	protected void registerQueries() throws SiteWhereException {
 		for (SiddhiQuery query : queries) {
 			getManager().addQuery(query.getSelector());
-			for (String streamName : query.getCallbacks().keySet()) {
-				getManager().addCallback(streamName, query.getCallbacks().get(streamName));
+			for (StreamCallback callback : query.getCallbacks()) {
+				getManager().addCallback(callback.getStreamId(), callback);
 			}
 		}
 	}

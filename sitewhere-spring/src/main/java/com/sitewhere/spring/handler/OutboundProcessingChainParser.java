@@ -7,7 +7,6 @@
  */
 package com.sitewhere.spring.handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -25,12 +24,14 @@ import com.sitewhere.device.communication.DeviceCommandEventProcessor;
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
+import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.server.SiteWhereServerBeans;
-import com.sitewhere.siddhi.StreamDebugger;
+import com.sitewhere.siddhi.GroovyStreamProcessor;
 import com.sitewhere.siddhi.SiddhiEventProcessor;
 import com.sitewhere.siddhi.SiddhiQuery;
+import com.sitewhere.siddhi.StreamDebugger;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.solr.SolrDeviceEventProcessor;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -289,35 +290,94 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(SiddhiEventProcessor.class);
 
-		List<SiddhiQuery> queries = new ArrayList<SiddhiQuery>();
+		List<Object> queries = new ManagedList<Object>();
 		List<Element> queryElements = DomUtils.getChildElementsByTagName(element, "siddhi-query");
 		for (Element queryElement : queryElements) {
-			SiddhiQuery query = new SiddhiQuery();
-
-			Attr selector = queryElement.getAttributeNode("selector");
-			if (selector == null) {
-				throw new RuntimeException("Selector attribute is required for siddhi-query.");
-			}
-			query.setSelector(selector.getValue());
-
-			List<Element> debugElements = DomUtils.getChildElementsByTagName(queryElement, "stream-debugger");
-			for (Element debugElement : debugElements) {
-				StreamDebugger debug = new StreamDebugger();
-
-				Attr stream = debugElement.getAttributeNode("stream");
-				if (selector == null) {
-					throw new RuntimeException("Stream attribute is required for debug-callback.");
-				}
-				debug.setStreamId(stream.getValue());
-
-				query.getCallbacks().put(debug.getStreamId(), debug);
-			}
-
-			queries.add(query);
+			queries.add(parseSiddhiQuery(queryElement, context));
 		}
 		processor.addPropertyValue("queries", queries);
 
 		return processor.getBeanDefinition();
+	}
+
+	/**
+	 * Parse a single {@link SiddhiQuery}.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseSiddhiQuery(Element element, ParserContext context) {
+		BeanDefinitionBuilder query = BeanDefinitionBuilder.rootBeanDefinition(SiddhiQuery.class);
+
+		Attr selector = element.getAttributeNode("selector");
+		if (selector == null) {
+			throw new RuntimeException("Selector attribute is required for siddhi-query.");
+		}
+		query.addPropertyValue("selector", selector.getValue());
+
+		List<Object> callbacks = new ManagedList<Object>();
+
+		// Process stream debugger callbacks.
+		List<Element> debuggerElements = DomUtils.getChildElementsByTagName(element, "stream-debugger");
+		for (Element debuggerElement : debuggerElements) {
+			callbacks.add(parseSiddhiStreamDebugger(debuggerElement, context));
+		}
+
+		// Process Groovy stream processor callbacks.
+		List<Element> groovyElements = DomUtils.getChildElementsByTagName(element, "groovy-stream-processor");
+		for (Element groovyElement : groovyElements) {
+			callbacks.add(parseSiddhiGroovyStreamProcessor(groovyElement, context));
+		}
+
+		query.addPropertyValue("callbacks", callbacks);
+
+		return query.getBeanDefinition();
+	}
+
+	/**
+	 * Parse a Siddhi {@link StreamDebugger} element.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseSiddhiStreamDebugger(Element element, ParserContext context) {
+		BeanDefinitionBuilder debugger = BeanDefinitionBuilder.rootBeanDefinition(StreamDebugger.class);
+
+		Attr stream = element.getAttributeNode("stream");
+		if (stream == null) {
+			throw new RuntimeException("Stream attribute is required for debug-callback.");
+		}
+		debugger.addPropertyValue("streamId", stream.getValue());
+
+		return debugger.getBeanDefinition();
+	}
+
+	/**
+	 * Parse a Siddhi {@link GroovyStreamProcessor} element.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseSiddhiGroovyStreamProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder groovy = BeanDefinitionBuilder.rootBeanDefinition(GroovyStreamProcessor.class);
+		groovy.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr stream = element.getAttributeNode("stream");
+		if (stream == null) {
+			throw new RuntimeException("Stream attribute is required for groovy-stream-processor.");
+		}
+		groovy.addPropertyValue("streamId", stream.getValue());
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath == null) {
+			throw new RuntimeException("The scriptPath attribute is required for groovy-stream-processor.");
+		}
+		groovy.addPropertyValue("scriptPath", scriptPath.getValue());
+
+		return groovy.getBeanDefinition();
 	}
 
 	/**

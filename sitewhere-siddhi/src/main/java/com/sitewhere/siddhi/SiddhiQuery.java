@@ -7,8 +7,8 @@
  */
 package com.sitewhere.siddhi;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 
@@ -24,7 +24,7 @@ public class SiddhiQuery {
 	private String selector;
 
 	/** Map of callbacks by stream name */
-	private Map<String, StreamCallback> callbacks = new HashMap<String, StreamCallback>();
+	private List<StreamCallback> callbacks = new ArrayList<StreamCallback>();
 
 	public String getSelector() {
 		return selector;
@@ -34,11 +34,11 @@ public class SiddhiQuery {
 		this.selector = selector;
 	}
 
-	public Map<String, StreamCallback> getCallbacks() {
+	public List<StreamCallback> getCallbacks() {
 		return callbacks;
 	}
 
-	public void setCallbacks(Map<String, StreamCallback> callbacks) {
+	public void setCallbacks(List<StreamCallback> callbacks) {
 		this.callbacks = callbacks;
 	}
 }

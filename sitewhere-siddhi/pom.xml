@@ -26,6 +26,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-groovy</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.wso2.siddhi</groupId>
 			<artifactId>siddhi-api</artifactId>
 			<version>2.1.0wso2v1</version>

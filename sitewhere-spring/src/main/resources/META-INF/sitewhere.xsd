@@ -600,6 +600,29 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
+	<!-- Siddhi Groovy stream processor -->
+	<xsd:element name="groovy-stream-processor" type="siddhiGroovyStreamProcessorType"
+		substitutionGroup="abstract-siddhi-callback">
+		<xsd:annotation>
+			<xsd:documentation>
+				Processes events from a Siddhi stream using a Groovy script.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="siddhiGroovyStreamProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractSiddhiCallbackType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to script used for processing each event.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<xsd:complexType name="siddhiQueryType">
 		<xsd:sequence>
