@@ -8,23 +8,17 @@
 package com.sitewhere.hbase.device;
 
 /**
- * Indicates site record type.
+ * Record types related to device assignments.
  * 
  * @author Derek
  */
-public enum SiteRecordType {
+public enum DeviceAssignmentRecordType {
 
-	/** Primary site record */
-	Site((byte) 0x00),
+	/** Device assignment record */
+	DeviceAssignment((byte) 0x00),
 
-	/** Zone record */
-	Zone((byte) 0x01),
-
-	/** Assignment record */
-	Assignment((byte) 0x02),
-
-	/** End marker for scan ranges */
-	End((byte) 0x03);
+	/** Device stream record */
+	DeviceStream((byte) 0x01);
 
 	/** Type indicator */
 	private byte type;
@@ -34,7 +28,7 @@ public enum SiteRecordType {
 	 * 
 	 * @param value
 	 */
-	private SiteRecordType(byte type) {
+	private DeviceAssignmentRecordType(byte type) {
 		this.type = type;
 	}
 

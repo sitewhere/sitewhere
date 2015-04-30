@@ -96,10 +96,12 @@ public class HBaseDeviceAssignment {
 			ByteBuffer buffer = ByteBuffer.allocate(baserow.length + assnIdBytes.length);
 			buffer.put(baserow);
 			buffer.put(assnIdBytes);
-			byte[] rowkey = buffer.array();
+			byte[] assnKey = buffer.array();
 
 			// Associate new UUID with assignment row key.
-			String uuid = IdManager.getInstance().getAssignmentKeys().createUniqueId(rowkey);
+			String uuid = IdManager.getInstance().getAssignmentKeys().createUniqueId(assnKey);
+
+			byte[] primary = getPrimaryRowkey(assnKey);
 
 			// Create device assignment for JSON.
 			DeviceAssignment newAssignment =
@@ -109,7 +111,7 @@ public class HBaseDeviceAssignment {
 			HTableInterface sites = null;
 			try {
 				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
-				Put put = new Put(rowkey);
+				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
 						DeviceAssignmentStatus.Active.name().getBytes());
@@ -149,15 +151,16 @@ public class HBaseDeviceAssignment {
 					return ASSIGNMENT_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
 				}
 			}
-			byte[] rowkey = IdManager.getInstance().getAssignmentKeys().getValue(token);
-			if (rowkey == null) {
+			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			if (assnKey == null) {
 				return null;
 			}
+			byte[] primary = getPrimaryRowkey(assnKey);
 
 			HTableInterface sites = null;
 			try {
 				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
-				Get get = new Get(rowkey);
+				Get get = new Get(primary);
 				HBaseUtils.addPayloadFields(get);
 				get.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE);
 				Result result = sites.get(get);
@@ -211,13 +214,14 @@ public class HBaseDeviceAssignment {
 			MetadataProvider.copy(metadata, updated);
 			SiteWherePersistence.setUpdatedEntityMetadata(updated);
 
-			byte[] rowkey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
+			byte[] primary = getPrimaryRowkey(assnKey);
 
 			HTableInterface sites = null;
 			try {
 				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
-				Put put = new Put(rowkey);
+				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				sites.put(put);
 
@@ -254,13 +258,14 @@ public class HBaseDeviceAssignment {
 			DeviceAssignment updated = getDeviceAssignment(context, token);
 			updated.setState(DeviceAssignmentState.copy(state));
 
-			byte[] rowkey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
 			byte[] updatedState = context.getPayloadMarshaler().encodeDeviceAssignmentState(state);
+			byte[] primary = getPrimaryRowkey(assnKey);
 
 			HTableInterface sites = null;
 			try {
 				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
-				Put put = new Put(rowkey);
+				Put put = new Put(primary);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE, updatedState);
 				sites.put(put);
 
@@ -297,13 +302,14 @@ public class HBaseDeviceAssignment {
 			updated.setStatus(status);
 			SiteWherePersistence.setUpdatedEntityMetadata(updated);
 
-			byte[] rowkey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
+			byte[] primary = getPrimaryRowkey(assnKey);
 
 			HTableInterface sites = null;
 			try {
 				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
-				Put put = new Put(rowkey);
+				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS, status.name().getBytes());
 				sites.put(put);
@@ -345,13 +351,14 @@ public class HBaseDeviceAssignment {
 			HBaseDevice.removeDeviceAssignment(context, updated.getDeviceHardwareId());
 
 			// Update json and status qualifier.
-			byte[] rowkey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
+			byte[] primary = getPrimaryRowkey(assnKey);
 
 			HTableInterface sites = null;
 			try {
 				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
-				Put put = new Put(rowkey);
+				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
 						DeviceAssignmentStatus.Released.name().getBytes());
@@ -388,10 +395,12 @@ public class HBaseDeviceAssignment {
 			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDeviceAssignment (HBase) " + token, LOGGER);
 		try {
-			byte[] assnId = IdManager.getInstance().getAssignmentKeys().getValue(token);
-			if (assnId == null) {
+			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			if (assnKey == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 			}
+			byte[] primary = getPrimaryRowkey(assnKey);
+
 			DeviceAssignment existing = getDeviceAssignment(context, token);
 			existing.setDeleted(true);
 			try {
@@ -405,7 +414,7 @@ public class HBaseDeviceAssignment {
 				IdManager.getInstance().getAssignmentKeys().delete(token);
 				HTableInterface sites = null;
 				try {
-					Delete delete = new Delete(assnId);
+					Delete delete = new Delete(primary);
 					sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
 					sites.delete(delete);
 				} catch (IOException e) {
@@ -420,7 +429,7 @@ public class HBaseDeviceAssignment {
 				HTableInterface sites = null;
 				try {
 					sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
-					Put put = new Put(assnId);
+					Put put = new Put(primary);
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
 							context.getPayloadMarshaler().getEncoding().getIndicator());
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
@@ -436,6 +445,32 @@ public class HBaseDeviceAssignment {
 		} finally {
 			Tracer.pop(LOGGER);
 		}
+	}
+
+	/**
+	 * Get primary row key for a given device assignment.
+	 * 
+	 * @param siteId
+	 * @return
+	 */
+	public static byte[] getPrimaryRowkey(byte[] assnKey) {
+		ByteBuffer rowkey = ByteBuffer.allocate(assnKey.length + 1);
+		rowkey.put(assnKey);
+		rowkey.put(DeviceAssignmentRecordType.DeviceAssignment.getType());
+		return rowkey.array();
+	}
+
+	/**
+	 * Get base row key for device streams.
+	 * 
+	 * @param siteId
+	 * @return
+	 */
+	public static byte[] getStreamRowkey(byte[] assnKey) {
+		ByteBuffer rowkey = ByteBuffer.allocate(assnKey.length + 1);
+		rowkey.put(assnKey);
+		rowkey.put(DeviceAssignmentRecordType.DeviceStream.getType());
+		return rowkey.array();
 	}
 
 	/**

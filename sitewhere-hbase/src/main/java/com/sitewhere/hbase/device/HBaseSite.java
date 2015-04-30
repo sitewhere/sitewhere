@@ -69,7 +69,10 @@ public class HBaseSite {
 	public static final byte[] ASSIGNMENT_COUNTER = Bytes.toBytes("assnctr");
 
 	/** Regex for getting site rows */
-	public static final String REGEX_SITE = "^.{2}$";
+	public static final String REGEX_SITE = "^.{2}\\x00$";
+
+	/** Regex for getting site rows */
+	public static final String REGEX_ASSIGNMENT = "^.{7}\\x00$";
 
 	/**
 	 * Create a new site.
@@ -245,6 +248,8 @@ public class HBaseSite {
 			String siteToken, ISearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForSite (HBase) "
 				+ siteToken, LOGGER);
+		HTableInterface sites = null;
+		ResultScanner scanner = null;
 		try {
 			Long siteId = IdManager.getInstance().getSiteKeys().getValue(siteToken);
 			if (siteId == null) {
@@ -252,12 +257,37 @@ public class HBaseSite {
 			}
 			byte[] assnPrefix = getAssignmentRowKey(siteId);
 			byte[] after = getAfterAssignmentRowKey(siteId);
-			BinaryPrefixComparator comparator = new BinaryPrefixComparator(assnPrefix);
-			Pager<IDeviceAssignment> pager =
-					getFilteredSiteRows(context, false, criteria, comparator, assnPrefix, after,
-							DeviceAssignment.class, IDeviceAssignment.class);
-			return new SearchResults<IDeviceAssignment>(pager.getResults());
+
+			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+
+			Scan scan = new Scan();
+			scan.setStartRow(assnPrefix);
+			scan.setStopRow(after);
+			scanner = sites.getScanner(scan);
+
+			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
+			for (Result result : scanner) {
+				// TODO: This is inefficient. There should be a filter on the scanner
+				// instead.
+				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
+					continue;
+				}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+
+				if ((payloadType != null) && (payload != null)) {
+					pager.process((IDeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
+							payloadType).decode(payload, DeviceAssignment.class));
+				}
+			}
+			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
+		} catch (IOException e) {
+			throw new SiteWhereException("Error scanning site rows.", e);
 		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+			HBaseUtils.closeCleanly(sites);
 			Tracer.pop(LOGGER);
 		}
 	}
@@ -305,7 +335,7 @@ public class HBaseSite {
 	 * @throws SiteWhereException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T, I> Pager<I> getFilteredSiteRows(IHBaseContext context, boolean includeDeleted,
+	protected static <T, I> Pager<I> getFilteredSiteRows(IHBaseContext context, boolean includeDeleted,
 			ISearchCriteria criteria, ByteArrayComparable comparator, byte[] startRow, byte[] stopRow,
 			Class<T> type, Class<I> iface) throws SiteWhereException {
 		HTableInterface sites = null;
@@ -493,8 +523,9 @@ public class HBaseSite {
 	 */
 	public static byte[] getPrimaryRowkey(Long siteId) {
 		byte[] sid = getSiteIdentifier(siteId);
-		ByteBuffer rowkey = ByteBuffer.allocate(sid.length);
+		ByteBuffer rowkey = ByteBuffer.allocate(sid.length + 1);
 		rowkey.put(sid);
+		rowkey.put(SiteRecordType.Site.getType());
 		return rowkey.array();
 	}
 
