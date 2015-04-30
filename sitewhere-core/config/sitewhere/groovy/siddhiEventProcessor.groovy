@@ -8,6 +8,7 @@ logger.info("The person for this assignment may be unconscious! " + assignment)
 
 // Build request for creating a new alert.
 def alert = new DeviceAlertCreateRequest()
+alert.setSource(AlertSource.valueOf("System"))
 alert.setLevel(AlertLevel.valueOf("Warning"))
 alert.setType('possibly.unconscious')
 alert.setMessage('Owner may have fallen or be unconscious!')

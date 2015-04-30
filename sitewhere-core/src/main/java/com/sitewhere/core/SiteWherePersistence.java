@@ -717,12 +717,19 @@ public class SiteWherePersistence {
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
 		DeviceAlert alert = new DeviceAlert();
 		deviceEventCreateLogic(request, assignment, alert);
-		alert.setSource(AlertSource.Device);
+
+		if (request.getSource() != null) {
+			alert.setSource(request.getSource());
+		} else {
+			alert.setSource(AlertSource.Device);
+		}
+
 		if (request.getLevel() != null) {
 			alert.setLevel(request.getLevel());
 		} else {
 			alert.setLevel(AlertLevel.Info);
 		}
+
 		alert.setType(request.getType());
 		alert.setMessage(request.getMessage());
 		return alert;

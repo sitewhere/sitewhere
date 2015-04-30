@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 
 /**
@@ -24,6 +25,9 @@ public class DeviceAlertCreateRequest extends DeviceEventCreateRequest implement
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 7660473778731839384L;
 
+	/** Alert source */
+	private AlertSource source = AlertSource.Device;
+
 	/** Alert level */
 	private AlertLevel level;
 
@@ -32,6 +36,19 @@ public class DeviceAlertCreateRequest extends DeviceEventCreateRequest implement
 
 	/** Alert message */
 	private String message;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest#getSource()
+	 */
+	public AlertSource getSource() {
+		return source;
+	}
+
+	public void setSource(AlertSource source) {
+		this.source = source;
+	}
 
 	/*
 	 * (non-Javadoc)

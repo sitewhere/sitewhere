@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.event.request;
 
 import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.AlertSource;
 
 /**
  * Interface for arguments needed to create a device alert.
@@ -15,6 +16,13 @@ import com.sitewhere.spi.device.event.AlertLevel;
  * @author Derek
  */
 public interface IDeviceAlertCreateRequest extends IDeviceEventCreateRequest {
+
+	/**
+	 * Get source of device alert.
+	 * 
+	 * @return
+	 */
+	public AlertSource getSource();
 
 	/**
 	 * Get alert severity.
