@@ -14,7 +14,7 @@
 			<div>
 				<form id="ac-general-form" class="form-horizontal" style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="ac-hardware-id">#= i18next("public.HardwareId") #</label>
+						<label class="control-label" for="ac-hardware-id" data-i18n="public.HardwareId"></label>
 						<div class="controls">
 							<input type="text" id="ac-hardware-id" title="#= i18next("public.HardwareId") #" class="input-xlarge">
 						</div>
