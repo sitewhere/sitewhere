@@ -32,6 +32,9 @@ public interface ISiteWhereHBase {
 	/** Devices table name */
 	public static final byte[] DEVICES_TABLE_NAME = Bytes.toBytes("devices");
 
+	/** Device streams table name */
+	public static final byte[] STREAMS_TABLE_NAME = Bytes.toBytes("streams");
+
 	/** Users table name */
 	public static final byte[] USERS_TABLE_NAME = Bytes.toBytes("users");
 

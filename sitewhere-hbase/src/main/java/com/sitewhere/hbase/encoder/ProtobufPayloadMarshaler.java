@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.google.protobuf.ByteString;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
@@ -39,8 +40,10 @@ import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.common.IMetadataProviderEntity;
@@ -78,9 +81,11 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 
 /**
  * Implementation of {@link IPayloadMarshaler} that uses Google Protocol Buffers to store
@@ -119,6 +124,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 			return encodeDevice((IDevice) obj);
 		} else if (obj instanceof IDeviceAssignment) {
 			return encodeDeviceAssignment((IDeviceAssignment) obj);
+		} else if (obj instanceof IDeviceStream) {
+			return encodeDeviceStream((IDeviceStream) obj);
 		} else if (obj instanceof IDeviceAssignmentState) {
 			return encodeDeviceAssignmentState((IDeviceAssignmentState) obj);
 		} else if (obj instanceof IDeviceLocation) {
@@ -127,6 +134,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 			return encodeDeviceMeasurements((IDeviceMeasurements) obj);
 		} else if (obj instanceof IDeviceAlert) {
 			return encodeDeviceAlert((IDeviceAlert) obj);
+		} else if (obj instanceof IDeviceStreamData) {
+			return encodeDeviceStreamData((IDeviceStreamData) obj);
 		} else if (obj instanceof IDeviceCommandInvocation) {
 			return encodeDeviceCommandInvocation((IDeviceCommandInvocation) obj);
 		} else if (obj instanceof IDeviceCommandResponse) {
@@ -170,6 +179,9 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		if (IDeviceAssignment.class.isAssignableFrom(type)) {
 			return (T) decodeDeviceAssignment(payload);
 		}
+		if (IDeviceStream.class.isAssignableFrom(type)) {
+			return (T) decodeDeviceStream(payload);
+		}
 		if (IDeviceAssignmentState.class.isAssignableFrom(type)) {
 			return (T) decodeDeviceAssignmentState(payload);
 		}
@@ -181,6 +193,9 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		}
 		if (IDeviceAlert.class.isAssignableFrom(type)) {
 			return (T) decodeDeviceAlert(payload);
+		}
+		if (IDeviceStreamData.class.isAssignableFrom(type)) {
+			return (T) decodeDeviceStreamData(payload);
 		}
 		if (IDeviceCommandInvocation.class.isAssignableFrom(type)) {
 			return (T) decodeDeviceCommandInvocation(payload);
@@ -713,6 +728,53 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceStreamData(com.sitewhere
+	 * .spi.device.event.IDeviceStreamData)
+	 */
+	public byte[] encodeDeviceStreamData(IDeviceStreamData streamData) throws SiteWhereException {
+		try {
+			ProtobufMarshaler.DeviceStreamData.Builder builder =
+					ProtobufMarshaler.DeviceStreamData.newBuilder();
+			builder.setStreamId(streamData.getStreamId());
+			builder.setSequenceNumber(streamData.getSequenceNumber());
+			builder.setData(ByteString.copyFrom(streamData.getData()));
+			builder.setEventData(createDeviceEventData(streamData));
+			ProtobufMarshaler.DeviceStreamData pb = builder.build();
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			pb.writeTo(out);
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to marshal device alert.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#decodeDeviceStreamData(byte[])
+	 */
+	public DeviceStreamData decodeDeviceStreamData(byte[] payload) throws SiteWhereException {
+		ByteArrayInputStream stream = new ByteArrayInputStream(payload);
+		try {
+			ProtobufMarshaler.DeviceStreamData pb = ProtobufMarshaler.DeviceStreamData.parseFrom(stream);
+
+			DeviceStreamData streamData = new DeviceStreamData();
+			streamData.setStreamId(pb.getStreamId());
+			streamData.setSequenceNumber(pb.getSequenceNumber());
+			streamData.setData(pb.getData().toByteArray());
+			loadDeviceEventData(streamData, pb.getEventData());
+			return streamData;
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to unmarshal device alert.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceCommandInvocation(
 	 * com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
@@ -898,6 +960,48 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 			}
 			loadEntityData(pb.getEntityData(), assignment);
 			return assignment;
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to unmarshal device assignment.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceStream(com.sitewhere
+	 * .spi.device.streaming.IDeviceStream)
+	 */
+	public byte[] encodeDeviceStream(IDeviceStream stream) throws SiteWhereException {
+		ProtobufMarshaler.DeviceStream.Builder builder = ProtobufMarshaler.DeviceStream.newBuilder();
+		builder.setAssignmentToken(stream.getAssignmentToken());
+		builder.setStreamId(stream.getStreamId());
+		builder.setContentType(stream.getContentType());
+		builder.setEntityData(createEntityData(stream));
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			builder.build().writeTo(out);
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to marshal device stream.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#decodeDeviceStream(byte[])
+	 */
+	public DeviceStream decodeDeviceStream(byte[] payload) throws SiteWhereException {
+		ByteArrayInputStream stream = new ByteArrayInputStream(payload);
+		try {
+			ProtobufMarshaler.DeviceStream pb = ProtobufMarshaler.DeviceStream.parseFrom(stream);
+			DeviceStream dstream = new DeviceStream();
+			dstream.setAssignmentToken(pb.getAssignmentToken());
+			dstream.setStreamId(pb.getStreamId());
+			dstream.setContentType(pb.getContentType());
+			loadEntityData(pb.getEntityData(), dstream);
+			return dstream;
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to unmarshal device assignment.", e);
 		}
@@ -1319,6 +1423,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		case StateChange: {
 			return ProtobufMarshaler.DeviceEventType.DEStateChange;
 		}
+		case StreamData:
+			return ProtobufMarshaler.DeviceEventType.DEStreamData;
 		}
 		throw new RuntimeException("Unknown DeviceEventType: " + type);
 	}
@@ -1351,6 +1457,9 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		}
 		case DEStateChange: {
 			return DeviceEventType.StateChange;
+		}
+		case DEStreamData: {
+			return DeviceEventType.StreamData;
 		}
 		}
 		throw new RuntimeException("Unknown ProtobufMarshaler.DeviceEventType: " + type);

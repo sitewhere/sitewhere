@@ -18,7 +18,10 @@ public enum DeviceAssignmentRecordType {
 	DeviceAssignment((byte) 0x00),
 
 	/** Device stream record */
-	DeviceStream((byte) 0x01);
+	DeviceStream((byte) 0x01),
+
+	/** Device stream record */
+	EndMarker((byte) 0x02);
 
 	/** Type indicator */
 	private byte type;

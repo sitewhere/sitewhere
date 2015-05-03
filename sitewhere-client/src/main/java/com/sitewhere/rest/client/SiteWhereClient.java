@@ -16,8 +16,10 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.ResourceAccessException;
@@ -142,6 +144,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 */
 	protected void addMessageConverters(List<HttpMessageConverter<?>> converters) {
 		converters.add(new MappingJackson2HttpMessageConverter());
+		converters.add(new ByteArrayHttpMessageConverter());
 	}
 
 	/**
@@ -639,8 +642,45 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("token", assignmentToken);
 		vars.put("streamId", streamId);
 		vars.put("sequenceNumber", String.valueOf(sequenceNumber));
-		sendRest(getBaseUrl() + "assignments/{token}/streams/{streamId}?sequenceNumber={sequenceNumber}",
+		sendBinary(getBaseUrl() + "assignments/{token}/streams/{streamId}?sequenceNumber={sequenceNumber}",
 				HttpMethod.POST, data, null, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#getDeviceStreamData(java.lang.String,
+	 * java.lang.String, long)
+	 */
+	@Override
+	public byte[] getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
+			throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", assignmentToken);
+		vars.put("streamId", streamId);
+		vars.put("sequenceNumber", String.valueOf(sequenceNumber));
+		try {
+			return sendRestWithBinaryResponse(getBaseUrl()
+					+ "assignments/{token}/streams/{streamId}/data/{sequenceNumber}", HttpMethod.GET, vars);
+		} catch (SiteWhereSystemException e) {
+			return null;
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceStreamData(java.lang.String,
+	 * java.lang.String, com.sitewhere.rest.model.search.DateRangeSearchCriteria)
+	 */
+	@Override
+	public byte[] listDeviceStreamData(String assignmentToken, String streamId,
+			DateRangeSearchCriteria criteria) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", assignmentToken);
+		vars.put("streamId", streamId);
+		return sendRestWithBinaryResponse(getBaseUrl() + "assignments/{token}/streams/{streamId}/data",
+				HttpMethod.GET, vars);
 	}
 
 	/*
@@ -751,6 +791,50 @@ public class SiteWhereClient implements ISiteWhereClient {
 			headers.add("Authorization", getAuthHeader());
 			HttpEntity<T> entity = new HttpEntity<T>(input, headers);
 			ResponseEntity<S> response = getClient().exchange(url, method, entity, clazz, vars);
+			return response.getBody();
+		} catch (ResourceAccessException e) {
+			if (e.getCause() instanceof SiteWhereSystemException) {
+				throw (SiteWhereSystemException) e.getCause();
+			}
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected <S, T> S sendBinary(String url, HttpMethod method, T input, Class<S> clazz,
+			Map<String, String> vars) throws SiteWhereSystemException {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Authorization", getAuthHeader());
+			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+			HttpEntity<T> entity = new HttpEntity<T>(input, headers);
+			ResponseEntity<S> response = getClient().exchange(url, method, entity, clazz, vars);
+			return response.getBody();
+		} catch (ResourceAccessException e) {
+			if (e.getCause() instanceof SiteWhereSystemException) {
+				throw (SiteWhereSystemException) e.getCause();
+			}
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Send a REST request and return response as byte array.
+	 * 
+	 * @param url
+	 * @param method
+	 * @param vars
+	 * @return
+	 * @throws SiteWhereSystemException
+	 */
+	protected <T> byte[] sendRestWithBinaryResponse(String url, HttpMethod method, Map<String, String> vars)
+			throws SiteWhereSystemException {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Authorization", getAuthHeader());
+
+			ResponseEntity<byte[]> response =
+					getClient().exchange(url, method, new HttpEntity<byte[]>(headers), byte[].class, vars);
+
 			return response.getBody();
 		} catch (ResourceAccessException e) {
 			if (e.getCause() instanceof SiteWhereSystemException) {

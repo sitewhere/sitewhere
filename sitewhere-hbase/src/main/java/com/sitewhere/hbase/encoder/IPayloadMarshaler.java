@@ -22,8 +22,10 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
+import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
@@ -42,8 +44,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
@@ -172,6 +176,24 @@ public interface IPayloadMarshaler {
 	public DeviceAssignment decodeDeviceAssignment(byte[] payload) throws SiteWhereException;
 
 	/**
+	 * Encode an {@link IDeviceStream}.
+	 * 
+	 * @param stream
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] encodeDeviceStream(IDeviceStream stream) throws SiteWhereException;
+
+	/**
+	 * Decode a {@link DeviceStream} from the binary payload.
+	 * 
+	 * @param payload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceStream decodeDeviceStream(byte[] payload) throws SiteWhereException;
+
+	/**
 	 * Encode an {@link IDeviceAssignmentState}.
 	 * 
 	 * @param state
@@ -242,6 +264,24 @@ public interface IPayloadMarshaler {
 	 * @throws SiteWhereException
 	 */
 	public DeviceAlert decodeDeviceAlert(byte[] payload) throws SiteWhereException;
+
+	/**
+	 * Encode an {@link IDeviceStreamData}.
+	 * 
+	 * @param streamData
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] encodeDeviceStreamData(IDeviceStreamData streamData) throws SiteWhereException;
+
+	/**
+	 * Decode a {@link DeviceStreamData} from the binary payload.
+	 * 
+	 * @param payload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceStreamData decodeDeviceStreamData(byte[] payload) throws SiteWhereException;
 
 	/**
 	 * Encode an {@link IDeviceCommandInvocation}.

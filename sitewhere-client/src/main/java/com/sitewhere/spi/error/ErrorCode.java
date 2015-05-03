@@ -98,6 +98,9 @@ public enum ErrorCode {
 	/** Attempting to access a device stream that does not exist */
 	InvalidStreamId(530, "Device assignment does not have an existing stream with the given id."),
 
+	/** Attempting to create a stream id that contains invalid characters */
+	InvalidCharsInStreamId(531, "Stream id contains invalid characters."),
+
 	/******************
 	 * DEVICE COMMAND *
 	 ******************/

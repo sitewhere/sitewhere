@@ -474,6 +474,19 @@ public class HBaseDeviceAssignment {
 	}
 
 	/**
+	 * Get base row key for end marker.
+	 * 
+	 * @param siteId
+	 * @return
+	 */
+	public static byte[] getEndMarkerKey(byte[] assnKey) {
+		ByteBuffer rowkey = ByteBuffer.allocate(assnKey.length + 1);
+		rowkey.put(assnKey);
+		rowkey.put(DeviceAssignmentRecordType.EndMarker.getType());
+		return rowkey.array();
+	}
+
+	/**
 	 * Truncate assignment id value to expected length. This will be a subset of the full
 	 * 8-bit long value.
 	 * 

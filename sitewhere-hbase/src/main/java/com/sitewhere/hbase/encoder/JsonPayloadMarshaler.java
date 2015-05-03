@@ -23,8 +23,10 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
+import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
@@ -43,8 +45,10 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
@@ -200,6 +204,28 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceStream(com.sitewhere.
+	 * spi.device.streaming.IDeviceStream)
+	 */
+	@Override
+	public byte[] encodeDeviceStream(IDeviceStream stream) throws SiteWhereException {
+		return MarshalUtils.marshalJson(stream);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceStream(byte[])
+	 */
+	@Override
+	public DeviceStream decodeDeviceStream(byte[] payload) throws SiteWhereException {
+		return MarshalUtils.unmarshalJson(payload, DeviceStream.class);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceAssignmentState(com.sitewhere
 	 * .spi.device.IDeviceAssignmentState)
 	 */
@@ -283,6 +309,28 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
 	@Override
 	public DeviceAlert decodeDeviceAlert(byte[] payload) throws SiteWhereException {
 		return MarshalUtils.unmarshalJson(payload, DeviceAlert.class);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceStreamData(com.sitewhere
+	 * .spi.device.event.IDeviceStreamData)
+	 */
+	@Override
+	public byte[] encodeDeviceStreamData(IDeviceStreamData streamData) throws SiteWhereException {
+		return MarshalUtils.marshalJson(streamData);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceStreamData(byte[])
+	 */
+	@Override
+	public DeviceStreamData decodeDeviceStreamData(byte[] payload) throws SiteWhereException {
+		return MarshalUtils.unmarshalJson(payload, DeviceStreamData.class);
 	}
 
 	/*
@@ -398,15 +446,21 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
 		return MarshalUtils.unmarshalJson(payload, BatchElement.class);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceGroup(com.sitewhere.spi.device.group.IDeviceGroup)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeDeviceGroup(com.sitewhere.spi
+	 * .device.group.IDeviceGroup)
 	 */
 	@Override
 	public byte[] encodeDeviceGroup(IDeviceGroup group) throws SiteWhereException {
 		return MarshalUtils.marshalJson(group);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeDeviceGroup(byte[])
 	 */
 	@Override

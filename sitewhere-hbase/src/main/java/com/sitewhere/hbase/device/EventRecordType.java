@@ -36,7 +36,10 @@ public enum EventRecordType {
 	CommandResponseCounter((byte) 0x0d),
 
 	/** Device state change record */
-	StateChange((byte) 0x10);
+	StateChange((byte) 0x10),
+
+	/** Device stream data record */
+	StreamData((byte) 0x11);
 
 	/** Type indicator */
 	private byte type;

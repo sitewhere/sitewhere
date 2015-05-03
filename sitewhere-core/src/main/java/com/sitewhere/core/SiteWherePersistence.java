@@ -749,8 +749,11 @@ public class SiteWherePersistence {
 		DeviceStream stream = new DeviceStream();
 		stream.setAssignmentToken(assignment.getToken());
 
-		// Stream id is required.
+		// Verify the stream id is specified and contains only valid characters.
 		assureData(request.getStreamId());
+		if (!request.getStreamId().matches("^[a-zA-Z0-9_\\-]+$")) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidCharsInStreamId, ErrorLevel.ERROR);
+		}
 		stream.setStreamId(request.getStreamId());
 
 		// Content type is required.

@@ -45,6 +45,8 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
+import com.sitewhere.rest.model.device.event.DeviceStreamData;
+import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -57,6 +59,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -64,6 +67,7 @@ import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
@@ -302,6 +306,81 @@ public class HBaseDeviceEvent {
 			String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		Pager<EventMatch> matches = getEventRowsForSite(context, siteToken, EventRecordType.Alert, criteria);
 		return convertMatches(context, matches);
+	}
+
+	/**
+	 * Create a new device stream data event for an assignment.
+	 * 
+	 * @param context
+	 * @param assignment
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDeviceStreamData createDeviceStreamData(IHBaseContext context,
+			IDeviceAssignment assignment, IDeviceStreamDataCreateRequest request) throws SiteWhereException {
+
+		DeviceStreamData sdata = SiteWherePersistence.deviceStreamDataCreateLogic(assignment, request);
+
+		// Save data in streams table.
+		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
+		byte[] streamKey = HBaseDeviceStream.getDeviceStreamKey(assnKey, request.getStreamId());
+
+		// Save event with reference to stream key.
+		long time = getEventTime(request);
+		byte[] eventKey = getEventRowKey(assignment, time);
+		byte[] qualifier =
+				getQualifier(EventRecordType.StreamData, time, context.getPayloadMarshaler().getEncoding());
+
+		// Set the unique id.
+		String id = getEncodedEventId(eventKey, qualifier);
+		sdata.setId(id);
+
+		// Save key rather than blob.
+		sdata.setData(streamKey);
+		byte[] payload = context.getPayloadMarshaler().encodeDeviceStreamData(sdata);
+
+		Put put = new Put(eventKey);
+		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
+		context.getDeviceEventBuffer().add(put);
+
+		return sdata;
+	}
+
+	/**
+	 * List device stream data that meets the given criteria. Note that the actual blob
+	 * data is not stored with the event, so it has to be merged into the results list on
+	 * the fly.
+	 * 
+	 * @param context
+	 * @param assnToken
+	 * @param streamId
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceStreamData> listDeviceStreamData(IHBaseContext context,
+			IDeviceAssignment assignment, String streamId, IDateRangeSearchCriteria criteria)
+			throws SiteWhereException {
+		// First, get data for all streams since streamId is not in the event key.
+		DateRangeSearchCriteria allCriteria =
+				new DateRangeSearchCriteria(1, 0, criteria.getStartDate(), criteria.getEndDate());
+		Pager<EventMatch> allMatches =
+				getEventRowsForAssignment(context, assignment.getToken(), EventRecordType.StreamData,
+						allCriteria);
+		SearchResults<IDeviceStreamData> allResults = convertMatches(context, allMatches);
+
+		// Manually match for stream id.
+		// TODO: This process is inefficient and needs to be reviewed.
+		Pager<IDeviceStreamData> pager = new Pager<IDeviceStreamData>(criteria);
+		for (IDeviceStreamData current : allResults.getResults()) {
+			if (!current.getStreamId().equals(streamId)) {
+				continue;
+			}
+			pager.process(HBaseDeviceStreamData.getDeviceStreamData(context, assignment, streamId,
+					current.getSequenceNumber()));
+		}
+		return new SearchResults<IDeviceStreamData>(pager.getResults(), pager.getTotal());
 	}
 
 	/**
@@ -1059,6 +1138,9 @@ public class HBaseDeviceEvent {
 		}
 		case StateChange: {
 			return DeviceStateChange.class;
+		}
+		case StreamData: {
+			return DeviceStreamData.class;
 		}
 		default: {
 			throw new SiteWhereException("Id references unknown event type.");

@@ -1373,7 +1373,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DBCollection events = getMongoClient().getEventsCollection();
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
-						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name());
+						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name()).append(
+						MongoDeviceStreamData.PROP_STREAM_ID, streamId);
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort = new BasicDBObject(MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, 1);
 		return MongoPersistence.search(IDeviceStreamData.class, events, query, sort, criteria);

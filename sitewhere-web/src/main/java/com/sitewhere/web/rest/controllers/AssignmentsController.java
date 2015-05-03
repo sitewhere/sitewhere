@@ -10,6 +10,8 @@ package com.sitewhere.web.rest.controllers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -552,7 +554,6 @@ public class AssignmentsController extends SiteWhereController {
 				byteData.write(data);
 			}
 			byte[] payload = byteData.toByteArray();
-
 			DeviceStreamDataCreateRequest request = new DeviceStreamDataCreateRequest();
 			request.setStreamId(streamId);
 			request.setSequenceNumber(sequenceNumber);
@@ -576,15 +577,48 @@ public class AssignmentsController extends SiteWhereController {
 		}
 	}
 
-	@RequestMapping(value = "/{token}/streams/{streamId:.+}/content", method = RequestMethod.GET)
+	/**
+	 * Get a single chunk of data from a device stream.
+	 * 
+	 * @param token
+	 * @param streamId
+	 * @param sequenceNumber
+	 * @param svtResponse
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/streams/{streamId:.+}/data/{sequenceNumber}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get one chunk of data from stream")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public void getDeviceStreamData(
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
+			@ApiParam(value = "Sequence Number", required = true) @PathVariable long sequenceNumber,
+			HttpServletResponse svtResponse) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceStreamData", LOGGER);
+		IDeviceStreamData chunk =
+				SiteWhere.getServer().getDeviceManagement().getDeviceStreamData(token, streamId,
+						sequenceNumber);
+		if (chunk == null) {
+			svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		try {
+			svtResponse.getOutputStream().write(chunk.getData());
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to write device stream data chunk.", e);
+		}
+	}
+
+	@RequestMapping(value = "/{token}/streams/{streamId:.+}/data", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get all content from stream")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public void getAllDeviceStreamData(
+	public void listDeviceStreamData(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 			HttpServletResponse svtResponse) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getAllDeviceStreamData", LOGGER);
+		Tracer.start(TracerCategory.RestApiCall, "listDeviceStreamData", LOGGER);
 		IDeviceStream stream = SiteWhere.getServer().getDeviceManagement().getDeviceStream(token, streamId);
 		if (stream == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
@@ -595,6 +629,15 @@ public class AssignmentsController extends SiteWhereController {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
 		ISearchResults<IDeviceStreamData> data =
 				SiteWhere.getServer().getDeviceManagement().listDeviceStreamData(token, streamId, criteria);
+
+		// Sort results by sequence number.
+		Collections.sort(data.getResults(), new Comparator<IDeviceStreamData>() {
+
+			@Override
+			public int compare(IDeviceStreamData o1, IDeviceStreamData o2) {
+				return o1.getSequenceNumber().compareTo(o2.getSequenceNumber());
+			}
+		});
 		for (IDeviceStreamData chunk : data.getResults()) {
 			try {
 				svtResponse.getOutputStream().write(chunk.getData());

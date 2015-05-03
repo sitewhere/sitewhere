@@ -110,6 +110,7 @@ enum DeviceEventType {
 	DECommandInvocation = 5; 
 	DECommandResponse = 6; 
 	DEStateChange = 7; 
+	DEStreamData = 8;
 } 
 
 enum DeviceAssignmentType {
@@ -156,6 +157,13 @@ message DeviceAlert {
 	required DeviceEventData eventData = 5;
 }
 
+message DeviceStreamData {
+	required string streamId = 1;
+	required int64 sequenceNumber = 2;
+	required bytes data = 3;
+	required DeviceEventData eventData = 4;
+}
+
 message DeviceCommandInvocation {
 	required string initiator = 1;
 	optional string initiatorId = 2;
@@ -192,6 +200,13 @@ message DeviceAssignment {
 	optional int64 activeDate = 8;
 	optional int64 releasedDate = 9;
 	required EntityData entityData = 10;
+}
+
+message DeviceStream {
+	required string assignmentToken = 1;
+	required string streamId = 2;
+	required string contentType = 3;
+	required EntityData entityData = 4;
 }
 
 message DeviceGroup {

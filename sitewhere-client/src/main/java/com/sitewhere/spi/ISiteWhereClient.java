@@ -412,6 +412,30 @@ public interface ISiteWhereClient {
 			throws SiteWhereException;
 
 	/**
+	 * Get a chunk of data from a device stream.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @param sequenceNumber
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
+			throws SiteWhereException;
+
+	/**
+	 * List device stream data that meets the given criteria.
+	 * 
+	 * @param assignmentToken
+	 * @param streamId
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] listDeviceStreamData(String assignmentToken, String streamId,
+			DateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
 	 * Create a new zone associated with a site.
 	 * 
 	 * @param siteToken

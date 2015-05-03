@@ -154,6 +154,7 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 		SiteWhereTables.assureTable(client, ISiteWhereHBase.SITES_TABLE_NAME, BloomType.ROW);
 		SiteWhereTables.assureTable(client, ISiteWhereHBase.EVENTS_TABLE_NAME, BloomType.ROW);
 		SiteWhereTables.assureTable(client, ISiteWhereHBase.DEVICES_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTable(client, ISiteWhereHBase.STREAMS_TABLE_NAME, BloomType.ROW);
 	}
 
 	/*
@@ -690,45 +691,82 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 		return HBaseDeviceEvent.listDeviceAlertsForSite(context, siteToken, criteria);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceStream(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
+	 */
 	@Override
 	public IDeviceStream createDeviceStream(String assignmentToken, IDeviceStreamCreateRequest request)
 			throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseDeviceStream.createDeviceStream(context, assignmentToken, request);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#getDeviceStream(java.lang.String,
+	 * java.lang.String)
+	 */
 	@Override
 	public IDeviceStream getDeviceStream(String assignmentToken, String streamId) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseDeviceStream.getDeviceStream(context, assignmentToken, streamId);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceStreams(java.lang.String,
+	 * com.sitewhere.spi.search.ISearchCriteria)
+	 */
 	@Override
 	public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
 			throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseDeviceStream.listDeviceStreams(context, assignmentToken, criteria);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#addDeviceStreamData(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest)
+	 */
 	@Override
 	public IDeviceStreamData addDeviceStreamData(String assignmentToken,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+		return HBaseDeviceStreamData.createDeviceStreamData(context, assignment, request);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceStreamData(java.lang.String,
+	 * java.lang.String, long)
+	 */
 	@Override
 	public IDeviceStreamData getDeviceStreamData(String assignmentToken, String streamId, long sequenceNumber)
 			throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+		return HBaseDeviceStreamData.getDeviceStreamData(context, assignment, streamId, sequenceNumber);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceStreamData(java.lang.String,
+	 * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
 	@Override
 	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
+		return HBaseDeviceEvent.listDeviceStreamData(context, assignment, streamId, criteria);
 	}
 
 	/*
