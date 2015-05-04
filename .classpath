@@ -74,7 +74,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/hadoop/hadoop-common/2.6.0/hadoop-common-2.6.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-common/0.98.4-hadoop2/hbase-common-0.98.4-hadoop2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/hbase/hbase-protocol/0.98.4-hadoop2/hbase-protocol-0.98.4-hadoop2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/glassfish/tyrus/bundles/tyrus-standalone-client/1.10/tyrus-standalone-client-1.10.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/glassfish/tyrus/bundles/tyrus-standalone-client/1.10/tyrus-standalone-client-1.10.jar" sourcepath="/SITEWHERE_ROOT/Source/tyrus-server-1.10-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/curator/curator-framework/2.5.0/curator-framework-2.5.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/curator/curator-client/2.5.0/curator-client-2.5.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/zookeeper/zookeeper/3.4.6/zookeeper-3.4.6.jar"/>
@@ -83,5 +83,7 @@
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-api_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-core_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-query_2.1.0.wso2v1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/glassfish/tyrus/tyrus-server/1.10/tyrus-server-1.10.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/glassfish/tyrus/tyrus-container-grizzly-server/1.10/tyrus-container-grizzly-server-1.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

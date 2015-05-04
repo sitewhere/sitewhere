@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.azure.device.communication.EventHubInboundEventReceiver;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -27,6 +25,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.activemq.ActiveMQInboundEventReceiver;
+import com.sitewhere.azure.device.communication.EventHubInboundEventReceiver;
 import com.sitewhere.device.communication.BinaryInboundEventSource;
 import com.sitewhere.device.communication.EchoStringDecoder;
 import com.sitewhere.device.communication.StringInboundEventSource;
@@ -35,6 +34,7 @@ import com.sitewhere.device.communication.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.device.communication.protobuf.ProtobufDeviceEventDecoder;
 import com.sitewhere.device.communication.socket.BinarySocketInboundEventReceiver;
 import com.sitewhere.device.communication.socket.ReadAllInteractionHandler;
+import com.sitewhere.device.communication.websocket.BinaryWebSocketEventReceiver;
 import com.sitewhere.device.communication.websocket.StringWebSocketEventReceiver;
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
@@ -104,8 +104,8 @@ public class EventSourcesParser {
 				result.add(parseMqttEventSource(child, context));
 				break;
 			}
-			case StringWebSocketEventSource: {
-				result.add(parseStringWebSocketEventSource(child, context));
+			case WebSocketEventSource: {
+				result.add(parseWebSocketEventSource(child, context));
 				break;
 			}
 			}
@@ -560,22 +560,34 @@ public class EventSourcesParser {
 	}
 
 	/**
-	 * Configure components needed to realize a web socket event source with String
-	 * payloads.
+	 * Configure components needed to realize a web socket event source.
 	 * 
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition parseStringWebSocketEventSource(Element element, ParserContext context) {
-		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(StringInboundEventSource.class);
+	protected AbstractBeanDefinition parseWebSocketEventSource(Element element, ParserContext context) {
+		Attr payloadType = element.getAttributeNode("payloadType");
+		if (payloadType == null) {
+			throw new RuntimeException("Web socket event source expects 'payloadType' attribute.");
+		}
+		String type = payloadType.getValue();
+
+		BeanDefinitionBuilder source;
+		if ("string".equals(type)) {
+			source = BeanDefinitionBuilder.rootBeanDefinition(StringInboundEventSource.class);
+		} else if ("binary".equals(type)) {
+			source = BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+		} else {
+			throw new RuntimeException(
+					"Invalid 'payloadType' attribute specified for web socket event source.");
+		}
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
 
 		// Create event receiver bean and register it.
-		AbstractBeanDefinition receiver = createStringWebSocketEventReceiver(element, context);
+		AbstractBeanDefinition receiver = createWebSocketEventReceiver(type, element, context);
 		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(receiverName, receiver);
 
@@ -586,7 +598,13 @@ public class EventSourcesParser {
 		source.addPropertyValue("inboundEventReceivers", list);
 
 		// Add decoder reference.
-		boolean hadDecoder = parseStringDecoder(element, context, source);
+		boolean hadDecoder = false;
+		if ("string".equals(type)) {
+			hadDecoder = parseStringDecoder(element, context, source);
+		} else if ("binary".equals(type)) {
+			hadDecoder = parseBinaryDecoder(element, context, source);
+		}
+
 		if (!hadDecoder) {
 			throw new RuntimeException("No valid event decoder specified for web socket event source: "
 					+ element.toString());
@@ -598,13 +616,22 @@ public class EventSourcesParser {
 	/**
 	 * Create web socket event receiver for String payloads.
 	 * 
+	 * @param type
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition createStringWebSocketEventReceiver(Element element, ParserContext context) {
-		BeanDefinitionBuilder receiver =
-				BeanDefinitionBuilder.rootBeanDefinition(StringWebSocketEventReceiver.class);
+	protected AbstractBeanDefinition createWebSocketEventReceiver(String type, Element element,
+			ParserContext context) {
+		BeanDefinitionBuilder receiver;
+		if ("string".equals(type)) {
+			receiver = BeanDefinitionBuilder.rootBeanDefinition(StringWebSocketEventReceiver.class);
+		} else if ("binary".equals(type)) {
+			receiver = BeanDefinitionBuilder.rootBeanDefinition(BinaryWebSocketEventReceiver.class);
+		} else {
+			throw new RuntimeException(
+					"Invalid 'payloadType' attribute specified for web socket event source.");
+		}
 
 		Attr webSocketUrl = element.getAttributeNode("webSocketUrl");
 		if (webSocketUrl != null) {
@@ -863,8 +890,8 @@ public class EventSourcesParser {
 		/** MQTT event source */
 		MqttEventSource("mqtt-event-source"),
 
-		/** Web socket event source with String payloads */
-		StringWebSocketEventSource("string-web-socket-event-source");
+		/** Web socket event source */
+		WebSocketEventSource("web-socket-event-source");
 
 		/** Event code */
 		private String localName;

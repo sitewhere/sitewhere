@@ -45,7 +45,7 @@ to broadcast all processed events via Hazelcast.
               http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.1/sitewhere.xsd">
+              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.3/sitewhere.xsd">
       
       <sw:configuration>
                
@@ -169,17 +169,24 @@ commented as shown below:
 		-->
 	
 		<!-- Default HBase Datastore -->
-		<sw:hbase-datastore quorum="localhost"/>
+		<sw:hbase-datastore quorum="sandbox.hortonworks.com" zookeeperZnodeParent="/hbase-unsecure"/>
 
-Note that you will need to update the quorum address so that SiteWhere can locate your HBase cluster.
+The above configuration may be used to connect to a Hartonworks HDP instance.
 
 The following attributes may be specified for the *<sw:hbase-datastore>* element.
       
-+----------------------+----------+--------------------------------------------------+
-| Attribute            | Required | Description                                      |
-+======================+==========+==================================================+
-| quorum               | required | Server hostname for HBase ZooKeeper quorum.      |
-+----------------------+----------+--------------------------------------------------+
++--------------------------+----------+--------------------------------------------------+
+| Attribute                | Required | Description                                      |
++==========================+==========+==================================================+
+| quorum                   | required | Server hostname for HBase ZooKeeper quorum.      |
++--------------------------+----------+--------------------------------------------------+
+| zookeeperClientPort      | optional | ZooKeeper client port. Defaults to 2181.         |
++--------------------------+----------+--------------------------------------------------+
+| zookeeperZnodeParent     | optional | ZooKeeper znode parent. Defaults to '/hbase'.    |
++--------------------------+----------+--------------------------------------------------+
+| zookeeperZnodeRootServer | optional | ZooKeeper znode root server. Defaults to         |
+|                          |          | 'root-region-server'.                            |
++--------------------------+----------+--------------------------------------------------+
 
 Populating Sample Data
 ----------------------
@@ -234,16 +241,15 @@ which can be configured as shown below:
 Note that removing the cache will result in noticeably slower performance since the underlying
 service provider implementations will load all data from the datastore.
 
--------------------
-Device Provisioning
--------------------
-In SiteWhere, the term **provisioning** refers to the subsystem that communicates with devices.
+--------------------
+Device Communication
+--------------------
+The communication subsystem configures how SiteWhere communicates with devices.
 On the inbound side, device data is brought in to the system via **event sources**. The inbound 
 data is converted into SiteWhere events and passed in to the **inbound processing chain** by 
-the **inbound processing strategy**. On the outbound side (as part of the outbound processing 
-chain) commands are sent to external devices via **command destinations**. An **outbound 
-command router** makes the choice of which command destination will be used to deliver the 
-command payload.
+the **inbound processing strategy**. On the outbound side (as part of the **outbound processing chain**)
+commands are sent to external devices via **command destinations**. An **outbound command router** 
+makes the choice of which command destination will be used to deliver the command payload.
 
 Event Sources
 -------------
@@ -267,7 +273,7 @@ using the standard SiteWhere Google Protocol Buffers message format.
 .. code-block:: xml
    :emphasize-lines: 7-10
 
-   <sw:provisioning>
+   <sw:device-communication>
 	
       <!-- Inbound event sources -->
       <sw:event-sources>
@@ -304,7 +310,7 @@ payload to the configured decoder.
 .. code-block:: xml
    :emphasize-lines: 7-10
 
-   <sw:provisioning>
+   <sw:device-communication>
    
       <!-- Inbound event sources -->
       <sw:event-sources>
@@ -350,7 +356,7 @@ returns a payload which is passed to the configured decoder to build SiteWhere e
 .. code-block:: xml
    :emphasize-lines: 7-10
 
-   <sw:provisioning>
+   <sw:device-communication>
    
       <!-- Inbound event sources -->
       <sw:event-sources>
@@ -385,6 +391,45 @@ The following attributes may be specified for the *<sw:socket-event-source>* ele
 |                      |          | requests. Defaults to *5*.                       |
 +----------------------+----------+--------------------------------------------------+
 
+WebSocket Event Source
+**********************
+A common connectivity option for IoT applications is interaction with a remote 
+`WebSocket <http://en.wikipedia.org/wiki/WebSocket>`_. 
+The *<sw:web-socket-event-source/>* can be used to connect to a WebSocket and
+stream data into the system. The data payload can be either binary or text
+and the event decoder should be configured based on the expected type of data.
+
+.. code-block:: xml
+   :emphasize-lines: 7-10
+
+   <sw:device-communication>
+   
+      <!-- Inbound event sources -->
+      <sw:event-sources>
+
+         <!-- Event source for WebSocket connectivity -->
+         <sw:web-socket-event-source sourceId="websocket"
+            webSocketUrl="ws://localhost:6543/sitewhere/stringsender" payloadType="string">
+            <sw:groovy-string-event-decoder scriptPath="customDecoder.groovy"/>
+         </sw:web-socket-event-source>
+         
+Note that the payload type is 'string' and that the *<sw:groovy-string-event-decoder/>* decoder
+expects a String input. If a binary decoder is configured for a String payload type or vice versa,
+the system will generate an error on startup.
+
+The following attributes may be specified for the *<sw:web-socket-event-source/>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| sourceId             | required | Unique event source id.                          |
++----------------------+----------+--------------------------------------------------+
+| webSocketUrl         | required | URL of the WebSocket to connect to.              |
++----------------------+----------+--------------------------------------------------+
+| payloadType          | required | Either 'string' or 'binary' depending on which   |
+|                      |          | type of message is sent from the server socket.  |
++----------------------+----------+--------------------------------------------------+
+
 Custom Event Source
 *******************
 In cases where a custom protocol is needed to support inbound events for devices, SiteWhere makes
@@ -403,7 +448,7 @@ processed.
 .. code-block:: xml
    :emphasize-lines: 7
 
-   <sw:provisioning>
+   <sw:device-communication>
    
       <!-- Inbound event sources -->
       <sw:event-sources>
@@ -441,7 +486,7 @@ strategy implementation with persistent queues and transactional semantics.
 .. code-block:: xml
    :emphasize-lines: 5-6
 
-   <sw:provisioning>
+   <sw:device-communication>
    
          <!-- Inbound Processing Strategy -->
          <sw:inbound-processing-strategy>
@@ -476,7 +521,7 @@ execution. The default batch operation manager can be configured by using the
 .. code-block:: xml
    :emphasize-lines: 5
 
-   <sw:provisioning>
+   <sw:device-communication>
                
       <!-- Batch operation management -->
       <sw:batch-operations>
@@ -526,7 +571,7 @@ is not appropriate, a custom parameter extractor can be injected instead.
 .. code-block:: xml
    :emphasize-lines: 7-12
 
-   <sw:provisioning>
+   <sw:device-communication>
 					
       <!-- Outbound command destinations -->
       <sw:command-destinations>
@@ -561,7 +606,7 @@ messages will be sent from).
 .. code-block:: xml
    :emphasize-lines: 7-12
 
-   <sw:provisioning>
+   <sw:device-communication>
 					
       <!-- Outbound command destinations -->
       <sw:command-destinations>
@@ -606,25 +651,60 @@ the existing functionality. For instance, a metrics processor could keep count o
 **Since REST calls (or other calls that directly invoke the device management APIs) do not enter the system via event sources, 
 they are not processed by the inbound processing chain.**
 
-
-Default Event Storage Processor
--------------------------------
-By default, an instance of *<sw:default-event-storage-processor/>* is configured in the chain. This processor
+Event Storage Processor
+-----------------------
+By default, an instance of *<sw:event-storage-processor/>* is configured in the inbound chain. This processor
 takes care of persisting device events via the device management service provider interfaces. If this 
-processor is removed, events will not be stored and devices will not be registered. The default configuration
-is shown below:
+processor is removed, events will not be stored. The default configuration is shown below:
 
 .. code-block:: xml
    :emphasize-lines: 6
 
-		<sw:provisioning>
+		<sw:device-communication>
 					
 			<sw:inbound-processing-chain>
 				
-				<!-- Store events and delegate to registration manager -->
-				<sw:default-event-storage-processor/>
+            <!-- Allow devices to dynamically register -->
+            <sw:registration-processor/>
 	
 			</sw:inbound-processing-chain>
+
+Registration Processor
+----------------------
+By default, an instance of *<sw:registration-processor/>* is configured in the inbound chain. This processor
+handles the dynamic registration of devices which includes creating a new device and assignment for
+devices requesting registration. If this processor is removed, registration requests will be ignored. 
+The default configuration is shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 6
+
+      <sw:device-communication>
+               
+         <sw:inbound-processing-chain>
+            
+            <!-- Store events -->
+            <sw:event-storage-processor/>
+   
+         </sw:inbound-processing-chain>
+
+Device Stream Processor
+-----------------------
+By default, an instance of *<sw:device-stream-processor/>* is configured in the inbound chain. This processor
+handles streaming data from devices. If this processor is removed, stream creation requests as well as requests
+for adding data to a stream will be ignored. The default configuration is shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 6
+
+      <sw:device-communication>
+               
+         <sw:inbound-processing-chain>
+            
+            <!-- Allow devices to create streams and send stream data -->
+            <sw:device-stream-processor/>
+   
+         </sw:inbound-processing-chain>
 
 -------------------------
 Outbound Processing Chain
@@ -641,22 +721,22 @@ Hazelcast subscribers, allowing external clients to act on the events.
 **REST calls (or other calls that directly invoke the device management APIs) are processed by the
 outbound processing chain in the same manner as events from event sources.**
 
-Provisioning Event Processor
-----------------------------
-By default, an instance of *<sw:provisioning-event-processor/>* is configured in the outbound chain. This
-processor hands off device command invocations to the provisioning subsystem for processing. If this 
+Command Delivery Event Processor
+--------------------------------
+By default, an instance of *<sw:command-delivery-event-processor/>* is configured in the outbound chain. This
+processor hands off device command invocations to the communication subsystem for processing. If this 
 processor is removed, device command invocations will be persisted, but will never be processed. The
 default configuration is shown below:
 
 .. code-block:: xml
    :emphasize-lines: 6
 
-   <sw:provisioning>
+   <sw:device-communication>
 					
       <sw:outbound-processing-chain>
-			
-         <!-- Routes commands for provisioning -->
-         <sw:provisioning-event-processor/>
+      
+         <!-- Routes commands for outbound processing -->
+         <sw:command-delivery-event-processor/>
 				
          <!-- Send outbound device events over Hazelcast -->
          <sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
@@ -681,12 +761,12 @@ zone condition.
 .. code-block:: xml
    :emphasize-lines: 9-12
  
-   <sw:provisioning>
+   <sw:device-communication>
    
       <sw:outbound-processing-chain>
       
-         <!-- Routes commands for provisioning -->
-         <sw:provisioning-event-processor/>
+         <!-- Routes commands for outbound processing -->
+         <sw:command-delivery-event-processor/>
          
          <!-- Performs zone checking for locations -->
          <sw:zone-test-event-processor>
@@ -781,8 +861,8 @@ enable broadcasting of events.
    
    <sw:outbound-processing-chain>
       
-      <!-- Routes commands for provisioning -->
-      <sw:provisioning-event-processor/>
+      <!-- Routes commands for outbound processing -->
+      <sw:command-delivery-event-processor/>
 
       <!-- Send outbound device events over Hazelcast -->
       <sw:hazelcast-event-processor/>
@@ -820,8 +900,8 @@ add the outbound event processor to the chain, reference it as shown below:
    
    <sw:outbound-processing-chain>
 		
-      <!-- Routes commands for provisioning -->
-      <sw:provisioning-event-processor/>
+      <!-- Routes commands for outbound processing -->
+      <sw:command-delivery-event-processor/>
 			
       <!-- Index events in Solr -->
       <sw:solr-event-processor/>
@@ -857,17 +937,17 @@ scroll down to the following block:
 Change the **INFO** value to **DEBUG** and restart the server. All debug information will be now be available. This is
 discouraged in production environments because logging takes system resources and will degrade performance.
 
-Debugging Device Provisioning
------------------------------
+Debugging Device Communication
+------------------------------
 Debugging can also be enabled just for certain areas of the system. A common area where users require detailed
-debugging information is in the provisioning of device data. It is often helpful to see exactly what SiteWhere is
-doing to handle inbound and outbound data. To turn on provisioning debugging, scroll down to the following block in
+debugging information is in the device communication subsystem. It is often helpful to see exactly what SiteWhere is
+doing to handle inbound and outbound data. To turn on communication debugging, scroll down to the following block in
 the **log4j.xml** file:
 
 .. code-block:: xml
    
-   <category name="com.sitewhere.device.provisioning">
+   <category name="com.sitewhere.device.communication">
       <priority value="INFO" />
    </category>
 
-Update the **INFO** value to **DEBUG** and restart the server to see more detailed provisioning information.
+Update the **INFO** value to **DEBUG** and restart the server to see more detailed communication information.

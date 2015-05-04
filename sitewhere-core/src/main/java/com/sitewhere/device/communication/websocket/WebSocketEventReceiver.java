@@ -84,9 +84,9 @@ public abstract class WebSocketEventReceiver<T> extends LifecycleComponent imple
 					container.connectToServer(getWebSocketClientClass(), config,
 							URI.create(getWebSocketUrl()));
 		} catch (DeploymentException e) {
-			LOGGER.error("Failed to connect to web socket: ", e);
+			throw new SiteWhereException("Unable to connect to web socket.", e);
 		} catch (IOException e) {
-			LOGGER.error("IOException connecting to web socket: ", e);
+			throw new SiteWhereException("Unable to connect to web socket.", e);
 		}
 	}
 

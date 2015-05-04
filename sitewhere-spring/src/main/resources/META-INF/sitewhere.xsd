@@ -1153,15 +1153,23 @@
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<!-- Event source that pulls String information from a web socket and decodes it -->
-	<xsd:element name="string-web-socket-event-source" type="stringWebSocketEventSourceType"
+	<!-- Types of payloads that may be processed by a web socket event source -->
+	<xsd:simpleType name="webSocketPayloadType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="binary"/>
+			<xsd:enumeration value="string"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- Event source that pulls data from a web socket and decodes it -->
+	<xsd:element name="web-socket-event-source" type="webSocketEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls String payloads from a web socket.
+			<xsd:documentation>Event source that pulls data from a web socket.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="stringWebSocketEventSourceType">
+	<xsd:complexType name="webSocketEventSourceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractEventSourceType">
 				<xsd:sequence>
@@ -1181,6 +1189,7 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="payloadType" type="webSocketPayloadType" use="required"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
