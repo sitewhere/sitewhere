@@ -7,6 +7,7 @@
  */
 package com.sitewhere.server.search;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class SearchProviderManager extends LifecycleComponent implements ISearch
 	private static Logger LOGGER = Logger.getLogger(SearchProviderManager.class);
 
 	/** List of available search providers */
-	private List<ISearchProvider> searchProviders;
+	private List<ISearchProvider> searchProviders = new ArrayList<ISearchProvider>();
 
 	/** Map of search providers by id */
 	private Map<String, ISearchProvider> providersById = new HashMap<String, ISearchProvider>();

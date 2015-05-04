@@ -245,18 +245,6 @@
 			<sw:filesystem-location-asset-module/>
 
 		</sw:asset-management>
-		
-		<!-- ############################# -->
-		<!-- # EXTERNAL SEARCH PROVIDERS # -->
-		<!-- ############################# -->
-		<sw:search-providers>
-		
-			<!-- Apache Solr search provider -->
-			<!-- 
-			<sw:solr-search-provider name="Apache Solr" id="solr"/>
-			 -->
-
-		</sw:search-providers>
 
 	</sw:configuration>
            

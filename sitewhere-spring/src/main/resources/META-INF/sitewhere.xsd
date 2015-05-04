@@ -34,7 +34,8 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element ref="abstract-communication-subsystem-implementation"/>
-			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType">
+			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						A chain of processors through which all inbound device information
@@ -43,7 +44,8 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType">
+			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						A chain of processors through which all outbound device events are
@@ -61,7 +63,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="search-providers" type="searchProvidersType">
+			<xsd:element name="search-providers" type="searchProvidersType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Specifies a list of external search providers that have indexed

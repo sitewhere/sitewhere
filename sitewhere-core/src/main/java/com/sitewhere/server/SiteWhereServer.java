@@ -24,7 +24,13 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.configuration.ExternalConfigurationResolver;
 import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.device.communication.DeviceCommandEventProcessor;
+import com.sitewhere.device.event.processor.DefaultEventStorageProcessor;
+import com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain;
+import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
+import com.sitewhere.device.event.processor.DeviceStreamProcessor;
 import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
+import com.sitewhere.device.event.processor.RegistrationProcessor;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
@@ -32,6 +38,7 @@ import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
@@ -560,15 +567,19 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			}
 		}
 
-		// If device event processor chain is defined, use it.
 		try {
+			// If outbound device event processor chain is defined, use it.
 			outboundEventProcessorChain =
 					(IOutboundEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
 			management = new OutboundProcessingStrategyDecorator(management);
 			LOGGER.info("Event processor chain found with "
 					+ outboundEventProcessorChain.getProcessors().size() + " processors.");
 		} catch (NoSuchBeanDefinitionException e) {
-			LOGGER.info("No outbound event processor chain found in configuration file.");
+			// If no processor chain is defined, use a default chain that supports core
+			// system functionality.
+			LOGGER.info("No outbound event processor chain found. Using defaults.");
+			outboundEventProcessorChain = new DefaultOutboundEventProcessorChain();
+			outboundEventProcessorChain.getProcessors().add(new DeviceCommandEventProcessor());
 		}
 
 		return management;
@@ -582,10 +593,17 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void initializeInboundEventProcessorChain() throws SiteWhereException {
 		try {
+			// If inbound device event processor chain is defined, use it.
 			inboundEventProcessorChain =
 					(IInboundEventProcessorChain) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_INBOUND_PROCESSOR_CHAIN);
 		} catch (NoSuchBeanDefinitionException e) {
-			LOGGER.info("No inbound event processor chain found in configuration file.");
+			// If no processor chain is defined, use a default chain that supports core
+			// system functionality.
+			LOGGER.info("No inbound event processor chain found. Using defaults.");
+			inboundEventProcessorChain = new DefaultInboundEventProcessorChain();
+			inboundEventProcessorChain.getProcessors().add(new DefaultEventStorageProcessor());
+			inboundEventProcessorChain.getProcessors().add(new RegistrationProcessor());
+			inboundEventProcessorChain.getProcessors().add(new DeviceStreamProcessor());
 		}
 	}
 
@@ -641,7 +659,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			searchProviderManager =
 					(ISearchProviderManager) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_SEARCH_PROVIDER_MANAGER);
 		} catch (NoSuchBeanDefinitionException e) {
-			throw new SiteWhereException("No search provider manager implementation configured.");
+			searchProviderManager = new SearchProviderManager();
 		}
 	}
 
