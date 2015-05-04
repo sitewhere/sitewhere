@@ -224,7 +224,31 @@ Many elements of the device data model do not change often and can benefit from 
 SiteWhere offers a service provider interface 
 `IDeviceManagementCacheProvider <../apidocs/com/sitewhere/spi/device/IDeviceManagementCacheProvider.html>`_
 which may be implemented to provide caching capabilities that use an external cache provider.
-SiteWhere offers a default device management cache implementation based on `Ehcache <http://ehcache.org/>`_
+Note that removing the cache will result in noticeably slower performance since the underlying
+service provider implementations will load all data from the datastore.
+
+Hazelcast Cache Provider
+************************
+SiteWhere offers a default device management cache implementation based on `Hazelcast <http://hazelcast.com//>`_
+which can be configured as shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 7
+
+   <sw:datastore>
+   
+      <!-- Default MongoDB Datastore -->
+      <sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
+      
+      <!-- Improves performance by using Hazelcast to store device management entities -->
+      <sw:hazelcast-cache/>
+
+The Hazelcast cache works well in standalone mode as well as in clustered environments since the cache
+contents are synchronized across the Hazelcast cluster.
+
+Ehcache Cache Provider
+**********************
+SiteWhere offers a device management cache implementation based on `Ehcache <http://ehcache.org/>`_
 which can be configured as shown below:
 
 .. code-block:: xml
@@ -238,8 +262,30 @@ which can be configured as shown below:
 		<!-- Improves performance by using EHCache to store device management entities -->
 		<sw:ehcache-device-management-cache/>
 
-Note that removing the cache will result in noticeably slower performance since the underlying
-service provider implementations will load all data from the datastore.
+The following attributes may be specified for the *<sw:ehcache-device-management-cache>* element.
+      
++------------------------------------+----------+--------------------------------------------------+
+| Attribute                          | Required | Description                                      |
++====================================+==========+==================================================+
+| siteCacheMaxEntries                | optional | Max number of site entries in cache.             |
++------------------------------------+----------+--------------------------------------------------+
+| deviceSpecificationCacheMaxEntries | optional | Max number of specification entries in cache.    |
++------------------------------------+----------+--------------------------------------------------+
+| deviceCacheMaxEntries              | optional | Max number of device entries in cache.           |
++------------------------------------+----------+--------------------------------------------------+
+| deviceAssignmentCacheMaxEntries    | optional | Max number of assignment entries in cache.       |
++------------------------------------+----------+--------------------------------------------------+
+| siteCacheTtl                       | optional | Time to live for site entries.                   |
++------------------------------------+----------+--------------------------------------------------+
+| deviceSpecificationCacheTtl        | optional | Time to live for specification entries.          |
++------------------------------------+----------+--------------------------------------------------+
+| deviceCacheTtl                     | optional | Time to live for device entries.                 |
++------------------------------------+----------+--------------------------------------------------+
+| deviceAssignmentCacheTtl           | optional | Time to live for assignment entries.             |
++------------------------------------+----------+--------------------------------------------------+
+
+Note that the Ehcache implementation should **not** be used in clustered environments. There will
+be an instance of the cache on each SiteWhere instance and the caches will not be synchronized.
 
 --------------------
 Device Communication
