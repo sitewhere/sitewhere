@@ -8,11 +8,22 @@ or running as a virtual machine.
 --------------------
 Running in the Cloud
 --------------------
+
+Amazon EC2 and Microsoft Azure
+------------------------------
 Probably the easiest method of getting started with SiteWhere is to spin up a pre-configured cloud 
-instance on Amazon EC2. The instance includes SiteWhere server with a MongoDB database which comes
-populated with sample data. It also includes HiveMQ MQTT broker and an installation of Apache Solr
+instance on your favorite cloud provider. SiteWhere images are currently available for 
+`Amazon EC2 <http://aws.amazon.com/ec2/>`_ and `Microsoft Azure <http://azure.microsoft.com/en-us/>`_.
+The images include SiteWhere server with a MongoDB database which is populated with sample data. 
+They also includes the free edition of HiveMQ MQTT broker and an installation of Apache Solr
 configured to handle SiteWhere analytics. Detailed instructions are available
 `here <../cloud.html>`_
+
+Docker Image
+------------
+SiteWhere is also available as a Docker image which may be downloaded from
+`Docker Hub <https://registry.hub.docker.com/u/sitewhere/sitewhere/>`_. The SiteWhere image
+may be executed on any cloud platform that implements a Docker engine.
 
 ------------------
 Installing Locally
@@ -26,9 +37,11 @@ Installing the Server
 ---------------------
 SiteWhere server is available as a standalone download in the `downloads <http://www.sitewhere.org/downloads>`_
 section of the community website. The server includes an Apache Tomcat instance with SiteWhere
-configured as a web archive (WAR). Since not all libraries that SiteWhere depends on are packaged into
-the WAR, the Tomcat installation includes extra folders for the library dependencies and extra classpath
-entries to include the libraries on the classpath.
+configured as a web archive (WAR). The WAR includes all of the required libraries so it may be
+installed on an existing Tomcat instance by copying it to the **webapps** folder. Note
+that the WAR does not include the SiteWhere configuration files, so they must be copied into the
+Tomcat configuration directory. The default configuration files are available on
+`GitHub <https://github.com/sitewhere/sitewhere/tree/master/sitewhere-core/config>`_.
 
 Installing the Database
 -----------------------
@@ -38,7 +51,7 @@ the right choice for a local install that does not require true "big data" scala
 SiteWhere configuration is set up for a local MongoDB instance using the default settings. 
 
 Production installations with larger data requirements will need to use an Apache HBase cluster to support scalability.
-Rather than setting up an HBase cluster from scratch, it is ofter easier to use one from a provider such
+Rather than setting up an HBase cluster from scratch, it is often easier to use one from a provider such
 as `Cloudera <http://www.cloudera.com>`_ or `Hortonworks <http://hortonworks.com/>`_ that simplifies the process.
 
 ---------------------------------
@@ -58,33 +71,8 @@ To build and install SiteWhere:
    (*https://github.com/sitewhere/sitewhere/tree/master/sitewhere-core/config*) 
    into the *conf* folder of your Tomcat installation.
 5) Install the database as outlined above.
+6) Install an MQTT broker if you are using MQTT event sources.
 
 After completing the above steps, start your Tomcat instance. There will be detailed output in the log file indicating
 that SiteWhere has been loaded and properly configured. At this point SiteWhere should behave as if installed as a 
 standalone server.
-
-----------------------------
-Installing a Virtual Machine
-----------------------------
-Beginning with the 0.9.7 release, SiteWhere is available as a VMware virtual machine. Download the VM from
-the `downloads <http://www.sitewhere.org/downloads>`_ page on the community site and unzip the archive. From the VMware
-workstation interface, choose **Open a Virtual Machine** and navigate to the location where the archive was unzipped.
-
-.. image:: /_static/images/userguide/vmware-open.png
-   :width: 100%
-   :alt: Open a VMware Virtual Machine
-   :align: left
-
-The virtual machine will be added to your library and is ready to use. Power on the virtual machine and, after 
-the initial boot sequence, a login screen should appear as shown below. Choose the **SiteWhere** user and enter 
-**admin** for the password.
-
-.. image:: /_static/images/userguide/vm-login.png
-   :width: 60%
-   :alt: Log in to the Virtual Machine
-   :align: center
-
-Using the Virtual Machine
--------------------------
-The VM is pre-configured with SiteWhere Community Edition, a MongoDB database instance, a HiveMQ MQTT broker,
-and Apache Solr for handling analytics.

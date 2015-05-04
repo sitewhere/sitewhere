@@ -85,7 +85,7 @@ the **sitewhere.properties** file in the same directory as the main configuratio
 .. code-block:: xml
    :emphasize-lines: 1, 14
    
-   <context:property-placeholder location="file:${CATALINA_BASE}/conf/sitewhere/sitewhere.properties" ignore-resource-not-found="true"/>
+   <context:property-placeholder location="file:${catalina.home}/conf/sitewhere/sitewhere.properties" ignore-resource-not-found="true"/>
 
    <!-- ########################### -->
    <!-- # SITEWHERE CONFIGURATION # -->
@@ -171,7 +171,7 @@ commented as shown below:
 		<!-- Default HBase Datastore -->
 		<sw:hbase-datastore quorum="sandbox.hortonworks.com" zookeeperZnodeParent="/hbase-unsecure"/>
 
-The above configuration may be used to connect to a Hartonworks HDP instance.
+The above configuration may be used to connect to a Hortonworks HDP instance.
 
 The following attributes may be specified for the *<sw:hbase-datastore>* element.
       
@@ -254,11 +254,11 @@ makes the choice of which command destination will be used to deliver the comman
 Event Sources
 -------------
 Event sources are responsible for bringing data into SiteWhere. All event sources implement the
-`IInboundEventSource <../apidocs/com/sitewhere/spi/device/provisioning/IInboundEventSource.html>`_
+`IInboundEventSource <../apidocs/com/sitewhere/spi/device/communication/IInboundEventSource.html>`_
 interface and are composed of one or more **event receivers** (implementing 
-`IInboundEventReceiver <../apidocs/com/sitewhere/spi/device/provisioning/IInboundEventReceiver.html>`_) 
+`IInboundEventReceiver <../apidocs/com/sitewhere/spi/device/communication/IInboundEventReceiver.html>`_) 
 and a single **event decoder** (implementing 
-`IDeviceEventDecoder <../apidocs/com/sitewhere/spi/device/provisioning/IDeviceEventDecoder.html>`_).
+`IDeviceEventDecoder <../apidocs/com/sitewhere/spi/device/communication/IDeviceEventDecoder.html>`_).
 Event receivers take care of dealing with protocols for gathering data. The data is then processed
 by the event decoder in order to create SiteWhere events which provide a common representation of
 the device data so it can be processed by the inbound processing chain.
@@ -349,7 +349,7 @@ The *<sw:socket-event-source/>* can be used to create a server socket which list
 on a given port, receiving client connections and processing them using a multithreaded
 approach. Socket interactions are often complex and stateful, so the processing is
 delegated to an implementation of 
-`ISocketInteractionHandler <../apidocs/com/sitewhere/spi/device/provisioning/socket/ISocketInteractionHandler.html>`_
+`ISocketInteractionHandler <../apidocs/com/sitewhere/spi/device/communication/socket/ISocketInteractionHandler.html>`_
 which handles the conversation between device and server. The socket interaction handler
 returns a payload which is passed to the configured decoder to build SiteWhere events.
 
@@ -374,7 +374,7 @@ is sufficient. However, in most cases, the user will need to create an interacti
 understands the conversational logic between the device and server. A custom implementation
 can be referenced by using the *<sw:interaction-handler-factory/>* element
 which references a Spring bean that contains the socket interaction handler factory. The factory implements the
-`ISocketInteractionHandlerFactory <../apidocs/com/sitewhere/spi/device/provisioning/socket/ISocketInteractionHandlerFactory.html>`_
+`ISocketInteractionHandlerFactory <../apidocs/com/sitewhere/spi/device/communication/socket/ISocketInteractionHandlerFactory.html>`_
 interface and creates instances of the socket interaction handler that manages device 
 conversation.
 
@@ -434,13 +434,13 @@ Custom Event Source
 *******************
 In cases where a custom protocol is needed to support inbound events for devices, SiteWhere makes
 it easy to plug in a custom event source. The custom event source class must implement the
-`IInboundEventSource <../apidocs/com/sitewhere/spi/device/provisioning/IInboundEventSource.html>`_
+`IInboundEventSource <../apidocs/com/sitewhere/spi/device/communication/IInboundEventSource.html>`_
 interface. SiteWhere provides base classes that provide much of the common event source 
-functionality. For instance the com.sitewhere.device.provisioning.BinaryInboundEventSource found
+functionality. For instance the com.sitewhere.device.communication.BinaryInboundEventSource found
 in sitewhere-core provides an event source that deals with binary data. By creating an instance
 of BinaryInboundEventSource and plugging in a custom 
-`IInboundEventReceiver <../apidocs/com/sitewhere/spi/device/provisioning/IInboundEventReceiver.html>`_
-and `IDeviceEventDecoder <../apidocs/com/sitewhere/spi/device/provisioning/IDeviceEventDecoder.html>`_
+`IInboundEventReceiver <../apidocs/com/sitewhere/spi/device/communication/IInboundEventReceiver.html>`_
+and `IDeviceEventDecoder <../apidocs/com/sitewhere/spi/device/communication/IDeviceEventDecoder.html>`_
 implementation, the behavior can be completely customized. The event receiver takes care of receiving
 binary data from the device and the decoder converts the data into SiteWhere events that can be 
 processed.
@@ -469,7 +469,7 @@ Inbound Processing Strategy
 The inbound processing strategy is responsible for moving events from event sources into the
 inbound processing chain. It is responsible for handling threading and reliably delivering
 events for processing. An inbound processing strategy must implement the 
-`IInboundProcessingStrategy <../apidocs/com/sitewhere/spi/device/provisioning/IInboundProcessingStrategy.html>`_
+`IInboundProcessingStrategy <../apidocs/com/sitewhere/spi/device/communication/IInboundProcessingStrategy.html>`_
 interface.
 
 Default Inbound Processing Strategy
@@ -547,13 +547,13 @@ The following attributes may be specified for the *<sw:default-batch-operation-m
 Command Destinations
 --------------------
 Command destinations are responsible for delivering commands to devices. All command destinations implement the
-`ICommandDestination <../apidocs/com/sitewhere/spi/device/provisioning/ICommandDestination.html>`_
+`ICommandDestination <../apidocs/com/sitewhere/spi/device/communication/ICommandDestination.html>`_
 interface and are composed of a **command encoder** (implementing 
-`ICommandExecutionEncoder <../apidocs/com/sitewhere/spi/device/provisioning/ICommandExecutionEncoder.html>`_),
+`ICommandExecutionEncoder <../apidocs/com/sitewhere/spi/device/communication/ICommandExecutionEncoder.html>`_),
 a **parameter extractor** (implementing
-`ICommandDeliveryParameterExtractor <../apidocs/com/sitewhere/spi/device/provisioning/ICommandDeliveryParameterExtractor.html>`_),
+`ICommandDeliveryParameterExtractor <../apidocs/com/sitewhere/spi/device/communication/ICommandDeliveryParameterExtractor.html>`_),
 and a **delivery provider** (implementing 
-`ICommandDeliveryProvider <../apidocs/com/sitewhere/spi/device/provisioning/ICommandDeliveryProvider.html>`_).
+`ICommandDeliveryProvider <../apidocs/com/sitewhere/spi/device/communication/ICommandDeliveryProvider.html>`_).
 The command encoder is used to convert the command payload into a format understood by the device. The parameter
 extractor pulls information needed for delivering the message to the delivery provider (e.g. for an SMS provider,
 the extractor may pull the SMS phone number for the device from device metadata). The delivery provider takes 
@@ -660,14 +660,14 @@ processor is removed, events will not be stored. The default configuration is sh
 .. code-block:: xml
    :emphasize-lines: 6
 
-		<sw:device-communication>
+      <sw:device-communication>
 					
-			<sw:inbound-processing-chain>
-				
-            <!-- Allow devices to dynamically register -->
-            <sw:registration-processor/>
-	
-			</sw:inbound-processing-chain>
+         <sw:inbound-processing-chain>
+
+            <!-- Store events -->
+            <sw:event-storage-processor/>
+
+         </sw:inbound-processing-chain>
 
 Registration Processor
 ----------------------
@@ -683,8 +683,8 @@ The default configuration is shown below:
                
          <sw:inbound-processing-chain>
             
-            <!-- Store events -->
-            <sw:event-storage-processor/>
+            <!-- Allow devices to dynamically register -->
+            <sw:registration-processor/>
    
          </sw:inbound-processing-chain>
 
@@ -848,7 +848,7 @@ information to the *<sw:globals>* section as shown below:
    <sw:configuration>
 
       <sw:globals>
-         <sw:hazelcast-configuration configFileLocation="${CATALINA_BASE}/conf/sitewhere/hazelcast.xml"/>
+         <sw:hazelcast-configuration configFileLocation="${catalina.home}/conf/sitewhere/hazelcast.xml"/>
       </sw:globals>
 
 Note that the *configFileLocation* attribute specifies the full path to a Hazelcast configuration file.
@@ -888,7 +888,7 @@ information to the *<sw:globals>* section as shown below:
    <sw:configuration>
 
       <sw:globals>
-         <sw:hazelcast-configuration configFileLocation="${CATALINA_BASE}/conf/sitewhere/hazelcast.xml"/>
+         <sw:hazelcast-configuration configFileLocation="${catalina.home}/conf/sitewhere/hazelcast.xml"/>
          <sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
       </sw:globals>
 
