@@ -911,6 +911,55 @@ add the outbound event processor to the chain, reference it as shown below:
 Note that on system startup, the event processor attempts to ping the Solr server to verify the 
 settings are correct. If the ping fails, server startup will fail.
 
+Using Siddhi for Complex Event Processing (CEP)
+-----------------------------------------------
+SiteWhere supports integration with `Siddhi <https://github.com/wso2/siddhi>`_ for complex
+event processing. Adding a *<sw:siddhi-event-processor/>* to the outbound processing chain
+routes all SiteWhere events into Siddhi event streams for processing. The Spring XML configuration
+allows multiple queries to be registered with Siddhi while allowing callbacks to be registered
+so that the resulting streams can be processed. An example configuration is shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 7-24
+   
+   <sw:outbound-processing-chain>
+      
+      <!-- Routes commands for outbound processing -->
+      <sw:command-delivery-event-processor/>
+         
+      <!-- Processes event streams using Siddhi for complex event processing -->
+      <sw:siddhi-event-processor>
+         
+         <sw:siddhi-query
+            selector="from e1 = MeasurementStream[mxname == 'engine.temp'], e2 = MeasurementStream[mxname == 'engine.temp' and e1.assignment == assignment and ((e2.mxvalue - e1.mxvalue) > 5)] select e1.assignment insert into EngineTempRose">
+            <sw:stream-debugger stream="EngineTempRose"/>
+         </sw:siddhi-query>
+            
+         <sw:siddhi-query
+            selector="from e1 = LocationStream, e2 = LocationStream[(latitude != e1.latitude or longitude != e1.longitude) and e1.assignment == assignment] select e2.assignment, e2.latitude, e2.longitude insert into LocationChanged">
+            <sw:stream-debugger stream="LocationChanged"/>
+         </sw:siddhi-query>
+            
+         <sw:siddhi-query
+            selector="from every e1 = AlertStream[type == 'low.bp'] -> e2 = AlertStream[type == 'g.shock' and e1.assignment == assignment] within 7 sec select e1.assignment insert into Fainted">
+            <sw:groovy-stream-processor scriptPath="siddhiEventProcessor.groovy" stream="Fainted"/>
+         </sw:siddhi-query>
+
+      </sw:siddhi-event-processor>
+
+   </sw:outbound-processing-chain>
+
+SiteWhere currently registers three event streams with Siddhi, **MeasurementStream** for individual measurements,
+**AlertStream** for alerts, and **LocationStream** for locations. The events injected into the streams contain
+all of the same information provided by the core SiteWhere event APIs.
+
+Any number of queries may be registered with Siddhi by adding *<sw:siddhi-query/>* elements within the processor.
+Each query specifies a selector which indicates the logic to be performed on the event streams (for more information
+on the query language see `the documentation <https://docs.wso2.com/display/CEP310/Queries>`_). To process the
+stream results, any number of callbacks may be registered. The *<sw:stream-debugger/>* callback will print
+all events for a given stream to the log. The *<sw:groovy-stream-processor/>* may be used to process stream events
+with a Groovy script. 
+
 -------------------
 Configuring Logging
 -------------------
