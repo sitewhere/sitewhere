@@ -169,15 +169,14 @@ SiteWhere uses for searches on its core datastores. This approach allows SiteWhe
 data if necessary, and presents a single view of the data whether stored in SiteWhere or indexed in an
 engine optimized for adhoc queries.
 
--------------------
-Provisioning Engine
--------------------
-A central concept in SiteWhere is the idea of device provisioning. Device provisioning can be a loaded term since,
-depending on who you ask, it can mean anything from setting up network access, to loading firmware, to activating 
-or otherwise enabling a device. Provisioning in SiteWhere involves a few key elements.
+--------------------
+Communication Engine
+--------------------
+The SiteWhere communication engine handles all functionality related to interacting with devices. 
+Its responsibilities include:
 
 :Registration of new or existing devices:
-	SiteWhere has services and API calls for creating new devices, but it is often preferable to have devices
+	SiteWhere devices can be created manually with API calls, but it is often preferable to have devices
 	self-register. In that case, the device provides a unique hardware id and a specification token to the
 	system which in turns creates a new device record that can start accepting events. SiteWhere assumes that
 	each device will have a unique id in the system so it can be independently addressed. The specification 
@@ -187,11 +186,11 @@ or otherwise enabling a device. Provisioning in SiteWhere involves a few key ele
 	to the device indicating the registration status.
 	
 :Receipt of events from connected devices:
-	Once registered with the system, devices can report any number or type of events to SiteWhere, which in turn stores
-	the events. Event types include location updates, sensor measurements and other acquired data, or alerts in response
-	to exceptional events. Devices also have the ability to acknowledge receipt of commands issued by SiteWhere.
-	Events are delivered to SiteWhere via an inbound event pipeline, which can be configured to watch on
-	various transports and use various methods of decoding events.
+   Once registered with the system, devices can report any number or type of events to SiteWhere, which in turn stores
+   the events. Event types include location updates, sensor measurements and other acquired data, or alerts in response
+   to exceptional events. Devices also have the ability to acknowledge receipt of commands issued by SiteWhere.
+   Events are delivered to SiteWhere via an inbound event pipeline which provides a modular way
+   of introducing new functionality for processing incoming data.
 	
 :Delivery of commands to connected devices:
 	Each device registered with SiteWhere has an associated device specification which is tied to the type
@@ -201,11 +200,11 @@ or otherwise enabling a device. Provisioning in SiteWhere involves a few key ele
 	user interface or via REST calls. When commands are executed, they travel through a pipeline that encodes them
 	in an expected format and delivers them across an expected protocol.
 	
-The flow of data in the SiteWhere provisioning engine is shown below:
+The flow of data in the SiteWhere communication engine is shown below:
 
-.. image:: /_static/images/provisioning/provisioning.png
+.. image:: /_static/images/communication-engine.png
    :width: 100%
-   :alt: SiteWhere Provisioning Data Flow
+   :alt: SiteWhere Communication Engine
    :align: left
 
 	
