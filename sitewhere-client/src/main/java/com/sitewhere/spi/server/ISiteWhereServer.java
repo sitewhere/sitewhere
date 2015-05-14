@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
@@ -51,7 +52,14 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * 
 	 * @return
 	 */
-	public Throwable getServerStartupError();
+	public ServerStartupException getServerStartupError();
+
+	/**
+	 * Set server startup error reason.
+	 * 
+	 * @param e
+	 */
+	public void setServerStartupError(ServerStartupException e);
 
 	/**
 	 * Get tracer for debug operations.

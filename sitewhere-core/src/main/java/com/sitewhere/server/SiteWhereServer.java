@@ -39,6 +39,7 @@ import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.search.SearchProviderManager;
+import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
@@ -81,7 +82,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	private IVersion version;
 
 	/** Server startup error */
-	private Throwable serverStartupError;
+	private ServerStartupException serverStartupError;
 
 	/** Provides hierarchical tracing for debugging */
 	private ITracer tracer = new NullTracer();
@@ -153,8 +154,19 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerStartupError()
 	 */
-	public Throwable getServerStartupError() {
+	public ServerStartupException getServerStartupError() {
 		return serverStartupError;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#setServerStartupError(com.sitewhere.spi
+	 * .ServerStartupException)
+	 */
+	public void setServerStartupError(ServerStartupException e) {
+		this.serverStartupError = e;
 	}
 
 	/*

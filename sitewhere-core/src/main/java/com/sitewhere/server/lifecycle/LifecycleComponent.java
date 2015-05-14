@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mule.util.UUID;
 
+import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -243,7 +244,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 		component.lifecycleStart();
 		if (require) {
 			if (component.getLifecycleStatus() == LifecycleStatus.Error) {
-				throw new SiteWhereException("Server startup aborted. " + errorMessage);
+				throw new ServerStartupException(component, errorMessage);
 			}
 		}
 		getLifecycleComponents().add(component);

@@ -21,6 +21,7 @@ import com.sitewhere.Tracer;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.security.LoginManager;
+import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -60,6 +61,9 @@ public class SiteWhereController {
 			if (SiteWhere.getServer().getLifecycleStatus() == LifecycleStatus.Started) {
 				return new ModelAndView("login", data);
 			} else {
+				ServerStartupException failure = SiteWhere.getServer().getServerStartupError();
+				data.put("subsystem", failure.getDescription());
+				data.put("component", failure.getComponent().getLifecycleError().getMessage());
 				return new ModelAndView("noserver", data);
 			}
 		} finally {

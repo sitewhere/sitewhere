@@ -19,6 +19,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
@@ -135,6 +136,8 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 			MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 			builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
 			this.client = new MongoClient(new ServerAddress(getHostname(), getPort()), builder.build());
+			getSiteWhereDatabase().getStats();
+
 			List<String> messages = new ArrayList<String>();
 			messages.add("------------------");
 			messages.add("-- MONGO CLIENT --");
@@ -168,7 +171,13 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		} catch (UnknownHostException e) {
-			throw new SiteWhereException(e);
+			throw new SiteWhereException("Unable to contact host for MongoDB instance. "
+					+ "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.",
+					e);
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Could not connect to MongoDB instance. "
+					+ "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.",
+					e);
 		}
 	}
 

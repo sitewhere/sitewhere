@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.mule.util.StringMessageUtils;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -44,6 +45,15 @@ public class SiteWhereServerLoader extends HttpServlet {
 			SiteWhere.start();
 			LOGGER.info("Server started successfully.");
 			SiteWhere.getServer().logState();
+		} catch (ServerStartupException e) {
+			SiteWhere.getServer().setServerStartupError(e);
+			List<String> messages = new ArrayList<String>();
+			messages.add("!!!! SiteWhere Server Failed to Start !!!!");
+			messages.add("");
+			messages.add("Component: " + e.getDescription());
+			messages.add("Error: " + e.getComponent().getLifecycleError().getMessage());
+			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+			LOGGER.info("\n" + message + "\n");
 		} catch (SiteWhereException e) {
 			List<String> messages = new ArrayList<String>();
 			messages.add("!!!! SiteWhere Server Failed to Start !!!!");
