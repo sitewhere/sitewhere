@@ -18,6 +18,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoCommandException;
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.WriteResult;
 import com.sitewhere.mongodb.device.MongoDeviceAlert;
 import com.sitewhere.mongodb.device.MongoDeviceCommandInvocation;
@@ -62,6 +63,8 @@ public class MongoPersistence {
 			collection.insert(object);
 		} catch (MongoCommandException e) {
 			throw new SiteWhereException("Error during MongoDB insert.", e);
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}
 	}
 
@@ -100,14 +103,15 @@ public class MongoPersistence {
 	}
 
 	/**
-	 * Perform a get using the default lookup.s
+	 * Perform a get using the default lookup.
 	 * 
 	 * @param id
 	 * @param api
 	 * @param collection
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public static <T> T get(String id, Class<T> api, DBCollection collection) {
+	public static <T> T get(String id, Class<T> api, DBCollection collection) throws SiteWhereException {
 		return get(id, api, collection, LOOKUP);
 	}
 
@@ -119,15 +123,21 @@ public class MongoPersistence {
 	 * @param collection
 	 * @param lookup
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public static <T> T get(String id, Class<T> api, DBCollection collection, IMongoConverterLookup lookup) {
-		DBObject searchById = new BasicDBObject("_id", new ObjectId(id));
-		DBObject found = collection.findOne(searchById);
-		if (found != null) {
-			MongoConverter<T> converter = lookup.getConverterFor(api);
-			return converter.convert(found);
+	public static <T> T get(String id, Class<T> api, DBCollection collection, IMongoConverterLookup lookup)
+			throws SiteWhereException {
+		try {
+			DBObject searchById = new BasicDBObject("_id", new ObjectId(id));
+			DBObject found = collection.findOne(searchById);
+			if (found != null) {
+				MongoConverter<T> converter = lookup.getConverterFor(api);
+				return converter.convert(found);
+			}
+			return null;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}
-		return null;
 	}
 
 	/**
@@ -139,9 +149,10 @@ public class MongoPersistence {
 	 * @param sort
 	 * @param criteria
 	 * @return
+	 * @throws SiteWhereException
 	 */
 	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort, ISearchCriteria criteria) {
+			DBObject sort, ISearchCriteria criteria) throws SiteWhereException {
 		return search(api, collection, query, sort, criteria, LOOKUP);
 	}
 
@@ -156,29 +167,34 @@ public class MongoPersistence {
 	 * @param criteria
 	 * @param lookup
 	 * @return
+	 * @throws SiteWhereException
 	 */
 	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort, ISearchCriteria criteria, IMongoConverterLookup lookup) {
-		DBCursor cursor;
-		if (criteria.getPageSize() == 0) {
-			cursor = collection.find(query).sort(sort);
-		} else {
-			int offset = Math.max(0, criteria.getPageNumber() - 1) * criteria.getPageSize();
-			cursor = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
-		}
-		List<T> matches = new ArrayList<T>();
-		SearchResults<T> results = new SearchResults<T>(matches);
-		MongoConverter<T> converter = lookup.getConverterFor(api);
+			DBObject sort, ISearchCriteria criteria, IMongoConverterLookup lookup) throws SiteWhereException {
 		try {
-			results.setNumResults(cursor.count());
-			while (cursor.hasNext()) {
-				DBObject match = cursor.next();
-				matches.add(converter.convert(match));
+			DBCursor cursor;
+			if (criteria.getPageSize() == 0) {
+				cursor = collection.find(query).sort(sort);
+			} else {
+				int offset = Math.max(0, criteria.getPageNumber() - 1) * criteria.getPageSize();
+				cursor = collection.find(query).skip(offset).limit(criteria.getPageSize()).sort(sort);
 			}
-		} finally {
-			cursor.close();
+			List<T> matches = new ArrayList<T>();
+			SearchResults<T> results = new SearchResults<T>(matches);
+			MongoConverter<T> converter = lookup.getConverterFor(api);
+			try {
+				results.setNumResults(cursor.count());
+				while (cursor.hasNext()) {
+					DBObject match = cursor.next();
+					matches.add(converter.convert(match));
+				}
+			} finally {
+				cursor.close();
+			}
+			return results;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}
-		return results;
 	}
 
 	/**
@@ -189,9 +205,10 @@ public class MongoPersistence {
 	 * @param query
 	 * @param sort
 	 * @return
+	 * @throws SiteWhereException
 	 */
 	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort) {
+			DBObject sort) throws SiteWhereException {
 		return search(api, collection, query, sort, LOOKUP);
 	}
 
@@ -202,25 +219,30 @@ public class MongoPersistence {
 	 * @param collection
 	 * @param query
 	 * @param sort
-	 * @param looku
+	 * @param lookup
 	 * @return
+	 * @throws SiteWhereException
 	 */
 	public static <T> SearchResults<T> search(Class<T> api, DBCollection collection, DBObject query,
-			DBObject sort, IMongoConverterLookup lookup) {
-		DBCursor cursor = collection.find(query).sort(sort);
-		List<T> matches = new ArrayList<T>();
-		SearchResults<T> results = new SearchResults<T>(matches);
-		MongoConverter<T> converter = lookup.getConverterFor(api);
+			DBObject sort, IMongoConverterLookup lookup) throws SiteWhereException {
 		try {
-			results.setNumResults(cursor.count());
-			while (cursor.hasNext()) {
-				DBObject match = cursor.next();
-				matches.add(converter.convert(match));
+			DBCursor cursor = collection.find(query).sort(sort);
+			List<T> matches = new ArrayList<T>();
+			SearchResults<T> results = new SearchResults<T>(matches);
+			MongoConverter<T> converter = lookup.getConverterFor(api);
+			try {
+				results.setNumResults(cursor.count());
+				while (cursor.hasNext()) {
+					DBObject match = cursor.next();
+					matches.add(converter.convert(match));
+				}
+			} finally {
+				cursor.close();
 			}
-		} finally {
-			cursor.close();
+			return results;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}
-		return results;
 	}
 
 	/**
@@ -231,8 +253,10 @@ public class MongoPersistence {
 	 * @param query
 	 * @param sort
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public static <T> List<T> list(Class<T> api, DBCollection collection, DBObject query, DBObject sort) {
+	public static <T> List<T> list(Class<T> api, DBCollection collection, DBObject query, DBObject sort)
+			throws SiteWhereException {
 		return list(api, collection, query, sort, LOOKUP);
 	}
 
@@ -245,21 +269,26 @@ public class MongoPersistence {
 	 * @param sort
 	 * @param lookup
 	 * @return
+	 * @throws SiteWhereException
 	 */
 	public static <T> List<T> list(Class<T> api, DBCollection collection, DBObject query, DBObject sort,
-			IMongoConverterLookup lookup) {
-		DBCursor cursor = collection.find(query);
-		List<T> matches = new ArrayList<T>();
-		MongoConverter<T> converter = lookup.getConverterFor(api);
+			IMongoConverterLookup lookup) throws SiteWhereException {
 		try {
-			while (cursor.hasNext()) {
-				DBObject match = cursor.next();
-				matches.add(converter.convert(match));
+			DBCursor cursor = collection.find(query);
+			List<T> matches = new ArrayList<T>();
+			MongoConverter<T> converter = lookup.getConverterFor(api);
+			try {
+				while (cursor.hasNext()) {
+					DBObject match = cursor.next();
+					matches.add(converter.convert(match));
+				}
+			} finally {
+				cursor.close();
 			}
-		} finally {
-			cursor.close();
+			return matches;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}
-		return matches;
 	}
 
 	/**
