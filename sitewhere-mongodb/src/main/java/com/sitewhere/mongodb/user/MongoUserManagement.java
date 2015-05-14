@@ -19,6 +19,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoTimeoutException;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IUserManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
@@ -231,22 +232,26 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * .IUserSearchCriteria)
 	 */
 	public List<IUser> listUsers(IUserSearchCriteria criteria) throws SiteWhereException {
-		DBCollection users = getMongoClient().getUsersCollection();
-		DBObject dbCriteria = new BasicDBObject();
-		if (!criteria.isIncludeDeleted()) {
-			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
-		}
-		DBCursor cursor = users.find(dbCriteria).sort(new BasicDBObject(MongoUser.PROP_USERNAME, 1));
-		List<IUser> matches = new ArrayList<IUser>();
 		try {
-			while (cursor.hasNext()) {
-				DBObject match = cursor.next();
-				matches.add(MongoUser.fromDBObject(match));
+			DBCollection users = getMongoClient().getUsersCollection();
+			DBObject dbCriteria = new BasicDBObject();
+			if (!criteria.isIncludeDeleted()) {
+				MongoSiteWhereEntity.setDeleted(dbCriteria, false);
 			}
-		} finally {
-			cursor.close();
+			DBCursor cursor = users.find(dbCriteria).sort(new BasicDBObject(MongoUser.PROP_USERNAME, 1));
+			List<IUser> matches = new ArrayList<IUser>();
+			try {
+				while (cursor.hasNext()) {
+					DBObject match = cursor.next();
+					matches.add(MongoUser.fromDBObject(match));
+				}
+			} finally {
+				cursor.close();
+			}
+			return matches;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}
-		return matches;
 	}
 
 	/*
@@ -328,18 +333,22 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	public List<IGrantedAuthority> listGrantedAuthorities(IGrantedAuthoritySearchCriteria criteria)
 			throws SiteWhereException {
-		DBCollection auths = getMongoClient().getAuthoritiesCollection();
-		DBCursor cursor = auths.find().sort(new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, 1));
-		List<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
 		try {
-			while (cursor.hasNext()) {
-				DBObject match = cursor.next();
-				matches.add(MongoGrantedAuthority.fromDBObject(match));
+			DBCollection auths = getMongoClient().getAuthoritiesCollection();
+			DBCursor cursor = auths.find().sort(new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, 1));
+			List<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
+			try {
+				while (cursor.hasNext()) {
+					DBObject match = cursor.next();
+					matches.add(MongoGrantedAuthority.fromDBObject(match));
+				}
+			} finally {
+				cursor.close();
 			}
-		} finally {
-			cursor.close();
+			return matches;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}
-		return matches;
 	}
 
 	/*
@@ -377,9 +386,13 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getUserObjectByUsername(String username) throws SiteWhereException {
-		DBCollection users = getMongoClient().getUsersCollection();
-		BasicDBObject query = new BasicDBObject(MongoUser.PROP_USERNAME, username);
-		return users.findOne(query);
+		try {
+			DBCollection users = getMongoClient().getUsersCollection();
+			BasicDBObject query = new BasicDBObject(MongoUser.PROP_USERNAME, username);
+			return users.findOne(query);
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
 	}
 
 	/**
@@ -407,9 +420,13 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getGrantedAuthorityObjectByName(String name) throws SiteWhereException {
-		DBCollection auths = getMongoClient().getAuthoritiesCollection();
-		BasicDBObject query = new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, name);
-		return auths.findOne(query);
+		try {
+			DBCollection auths = getMongoClient().getAuthoritiesCollection();
+			BasicDBObject query = new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, name);
+			return auths.findOne(query);
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
 	}
 
 	public IUserManagementMongoClient getMongoClient() {

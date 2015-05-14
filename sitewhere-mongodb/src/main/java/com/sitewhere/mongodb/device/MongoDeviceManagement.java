@@ -21,6 +21,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.WriteResult;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IDeviceManagementMongoClient;
@@ -2239,10 +2240,14 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getZoneDBObjectByToken(String token) throws SiteWhereException {
-		DBCollection zones = getMongoClient().getZonesCollection();
-		BasicDBObject query = new BasicDBObject(MongoZone.PROP_TOKEN, token);
-		DBObject result = zones.findOne(query);
-		return result;
+		try {
+			DBCollection zones = getMongoClient().getZonesCollection();
+			BasicDBObject query = new BasicDBObject(MongoZone.PROP_TOKEN, token);
+			DBObject result = zones.findOne(query);
+			return result;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
 	}
 
 	/**
@@ -2272,12 +2277,16 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	protected DBObject getDeviceStreamDBObject(String assignmentToken, String streamId)
 			throws SiteWhereException {
-		DBCollection streams = getMongoClient().getStreamsCollection();
-		BasicDBObject query =
-				new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken).append(
-						MongoDeviceStream.PROP_STREAM_ID, streamId);
-		DBObject result = streams.findOne(query);
-		return result;
+		try {
+			DBCollection streams = getMongoClient().getStreamsCollection();
+			BasicDBObject query =
+					new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken).append(
+							MongoDeviceStream.PROP_STREAM_ID, streamId);
+			DBObject result = streams.findOne(query);
+			return result;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
 	}
 
 	/**
@@ -2292,13 +2301,17 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	protected DBObject getDeviceStreamDataDBObject(String assignmentToken, String streamId,
 			long sequenceNumber) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
-		BasicDBObject query =
-				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
-						MongoDeviceStreamData.PROP_STREAM_ID, streamId).append(
-						MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
-		DBObject result = events.findOne(query);
-		return result;
+		try {
+			DBCollection events = getMongoClient().getEventsCollection();
+			BasicDBObject query =
+					new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
+							MongoDeviceStreamData.PROP_STREAM_ID, streamId).append(
+							MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
+			DBObject result = events.findOne(query);
+			return result;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
 	}
 
 	/**
@@ -2310,10 +2323,14 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getDeviceGroupDBObjectByToken(String token) throws SiteWhereException {
-		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
-		BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
-		DBObject result = groups.findOne(query);
-		return result;
+		try {
+			DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+			BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
+			DBObject result = groups.findOne(query);
+			return result;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
 	}
 
 	/**
@@ -2341,10 +2358,14 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getBatchOperationDBObjectByToken(String token) throws SiteWhereException {
-		DBCollection ops = getMongoClient().getBatchOperationsCollection();
-		BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
-		DBObject result = ops.findOne(query);
-		return result;
+		try {
+			DBCollection ops = getMongoClient().getBatchOperationsCollection();
+			BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
+			DBObject result = ops.findOne(query);
+			return result;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
 	}
 
 	/**
@@ -2374,12 +2395,16 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	protected DBObject getBatchElementDBObjectByIndex(String operationToken, long index)
 			throws SiteWhereException {
-		DBCollection ops = getMongoClient().getBatchOperationElementsCollection();
-		BasicDBObject query =
-				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken).append(
-						MongoBatchElement.PROP_INDEX, index);
-		DBObject result = ops.findOne(query);
-		return result;
+		try {
+			DBCollection ops = getMongoClient().getBatchOperationElementsCollection();
+			BasicDBObject query =
+					new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken).append(
+							MongoBatchElement.PROP_INDEX, index);
+			DBObject result = ops.findOne(query);
+			return result;
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
 	}
 
 	protected DBObject assertBatchElement(String operationToken, long index) throws SiteWhereException {
