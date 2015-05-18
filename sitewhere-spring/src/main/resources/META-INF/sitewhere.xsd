@@ -141,6 +141,16 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="username" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>Username used to authenticate.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="password" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>Password used to authenticate.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

@@ -9,6 +9,7 @@ package com.sitewhere.mongodb;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -19,6 +20,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
 import com.sitewhere.SiteWhere;
@@ -54,6 +56,12 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	/** Port used to access the Mongo datastore */
 	private int port = DEFAULT_PORT;
+
+	/** Username used for authentication */
+	private String username;
+
+	/** Password used for authentication */
+	private String password;
 
 	/** Database that holds sitewhere collections */
 	private String databaseName = DEFAULT_DATABASE_NAME;
@@ -135,7 +143,23 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 		try {
 			MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
 			builder.maxConnectionIdleTime(60 * 60 * 1000); // 1hour
-			this.client = new MongoClient(new ServerAddress(getHostname(), getPort()), builder.build());
+
+			// Handle authenticated access.
+			if ((getUsername() != null) && (getPassword() != null)) {
+				MongoCredential credential =
+						MongoCredential.createCredential(getUsername(), getDatabaseName(),
+								getPassword().toCharArray());
+				this.client =
+						new MongoClient(new ServerAddress(getHostname(), getPort()),
+								Arrays.asList(credential), builder.build());
+			}
+
+			// Handle unauthenticated access.
+			else {
+				this.client = new MongoClient(new ServerAddress(getHostname(), getPort()), builder.build());
+			}
+
+			// Force interaction to test connectivity.
 			getSiteWhereDatabase().getStats();
 
 			List<String> messages = new ArrayList<String>();
@@ -289,6 +313,22 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getDatabaseName() {

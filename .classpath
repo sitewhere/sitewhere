@@ -14,6 +14,7 @@
 	<classpathentry kind="src" path="sitewhere-hbase/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-magento/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-mongodb/src/main/test"/>
 	<classpathentry kind="src" path="sitewhere-mule/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-protobuf/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-protobuf/src/test/java"/>

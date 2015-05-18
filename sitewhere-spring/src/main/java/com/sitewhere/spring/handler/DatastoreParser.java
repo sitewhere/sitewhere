@@ -127,6 +127,22 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		}
 		context.getRegistry().registerBeanDefinition("mongo", client.getBeanDefinition());
 
+		// Determine if username and password are supplied.
+		Attr username = element.getAttributeNode("username");
+		Attr password = element.getAttributeNode("password");
+		if ((username != null) && ((password == null))) {
+			throw new RuntimeException(
+					"If username is specified for MongoDB, password must be specified as well.");
+		}
+		if ((username == null) && ((password != null))) {
+			throw new RuntimeException(
+					"If password is specified for MongoDB, username must be specified as well.");
+		}
+		if ((username != null) && (password != null)) {
+			client.addPropertyValue("username", username.getValue());
+			client.addPropertyValue("password", password.getValue());
+		}
+
 		// Register Mongo device management implementation.
 		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
 		dm.addPropertyReference("mongoClient", "mongo");
