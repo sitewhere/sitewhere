@@ -153,6 +153,16 @@
 			<groupId>org.mule</groupId>
 			<artifactId>mule-core</artifactId>
 			<version>${mule.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
+				</exclusion>
+			</exclusions>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
