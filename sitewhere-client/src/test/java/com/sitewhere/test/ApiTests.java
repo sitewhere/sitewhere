@@ -8,6 +8,7 @@
 package com.sitewhere.test;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
+import com.sitewhere.rest.model.device.event.DeviceEventBatch;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
@@ -167,6 +170,22 @@ public class ApiTests {
 		// Delete device.
 		device = client.deleteDevice(TEST_HARDWARE_ID, true);
 		Assert.assertNotNull(device);
+	}
+
+	@Test
+	public void testDeviceEventBatch() throws SiteWhereException {
+		SiteWhereClient client =
+				new SiteWhereClient("http://localhost:9090/sitewhere/api/", "admin", "password");
+		DeviceEventBatch batch = new DeviceEventBatch();
+		batch.setHardwareId("5a95f3f2-96f0-47f9-b98d-f5c081d01948");
+		DeviceMeasurementsCreateRequest mx = new DeviceMeasurementsCreateRequest();
+		mx.setEventDate(new Date());
+		mx.addOrReplaceMeasurement("test", 123.4);
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put("test", "value");
+		mx.setMetadata(metadata);
+		batch.getMeasurements().add(mx);
+		client.addDeviceEventBatch("5a95f3f2-96f0-47f9-b98d-f5c081d01948", batch);
 	}
 
 	@Test
