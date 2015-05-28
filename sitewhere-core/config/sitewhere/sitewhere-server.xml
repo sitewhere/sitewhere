@@ -127,9 +127,11 @@
 			<sw:command-routing>
 				<sw:specification-mapping-router defaultDestination="default">
 					<sw:mapping specification="d2604433-e4eb-419b-97c7-88efe9b2cd41"
-						destination="android"/>
+						destination="hybrid"/>
 					<sw:mapping specification="7dfd6d63-5e8d-4380-be04-fc5c73801dfb"
-						destination="raspberry-pi"/>
+						destination="hybrid"/>
+					<sw:mapping specification="5a95f3f2-96f0-47f9-b98d-f5c081d01948"
+						destination="hybrid"/>
 				</sw:specification-mapping-router>
 			</sw:command-routing>
 			
@@ -144,16 +146,8 @@
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>
 
-				<!-- Delivers commands via MQTT -->
-				<sw:mqtt-command-destination destinationId="android"
-					hostname="localhost" port="1883">
-					<sw:java-protobuf-hybrid-encoder/>
-					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
-						systemTopicExpr="SiteWhere/system/%s"/>
-				</sw:mqtt-command-destination>
-
-				<!-- Raspberry Pi Java agent uses hybrid encoder -->
-				<sw:mqtt-command-destination destinationId="raspberry-pi"
+				<!-- Used for devices that expect hybrid protobuf/Java invocations -->
+				<sw:mqtt-command-destination destinationId="hybrid"
 					hostname="localhost" port="1883">
 					<sw:java-protobuf-hybrid-encoder/>
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"

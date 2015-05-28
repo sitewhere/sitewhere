@@ -451,13 +451,21 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			testEvents.setDescription("Send a request that results in sample events being returned.");
 			commands.add(getDeviceManagement().createDeviceCommand(spec, testEvents));
 		} else {
-			DeviceCommandCreateRequest sendCommand = new DeviceCommandCreateRequest();
-			sendCommand.setNamespace(SITEWHERE_COMMON_NAMESPACE);
-			sendCommand.setName("sendCommand");
-			sendCommand.setDescription("Send command to an openHAB item.");
-			sendCommand.getParameters().add(new CommandParameter("itemName", ParameterType.String, true));
-			sendCommand.getParameters().add(new CommandParameter("command", ParameterType.String, true));
-			commands.add(getDeviceManagement().createDeviceCommand(spec, sendCommand));
+			DeviceCommandCreateRequest onOff = new DeviceCommandCreateRequest();
+			onOff.setNamespace(SITEWHERE_COMMON_NAMESPACE);
+			onOff.setName("sendOnOffCommand");
+			onOff.setDescription("Send on/off command to an openHAB item.");
+			onOff.getParameters().add(new CommandParameter("itemName", ParameterType.String, true));
+			onOff.getParameters().add(new CommandParameter("command", ParameterType.String, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, onOff));
+
+			DeviceCommandCreateRequest openClose = new DeviceCommandCreateRequest();
+			openClose.setNamespace(SITEWHERE_COMMON_NAMESPACE);
+			openClose.setName("sendOpenCloseCommand");
+			openClose.setDescription("Send open/close command to an openHAB item.");
+			openClose.getParameters().add(new CommandParameter("itemName", ParameterType.String, true));
+			openClose.getParameters().add(new CommandParameter("command", ParameterType.String, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, openClose));
 		}
 
 		if (spec.getToken().equals("d2604433-e4eb-419b-97c7-88efe9b2cd41")) {
