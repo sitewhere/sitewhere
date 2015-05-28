@@ -48,6 +48,13 @@
 		<property name="operating.voltage" value="5V"/>
 	</hardware-asset>
 	
+	<!-- openHAB -->
+	<hardware-asset id="190" name="openHAB Virual Device" sku="OHAB" device="true">
+		<description>openHAB is a software for integrating different home automation systems and technologies into one single solution that allows over-arching automation rules and that offers uniform user interfaces.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/gateway/openhab.png</image-url>
+		<property name="manufacturer" value="openHAB"/>
+	</hardware-asset>
+	
 	<!-- Ekahau tags and sensors -->
 	<hardware-asset id="200" name="Ekahau A4 Tag" sku="EA4" device="true">
 		<description>A4 Wi-Fi tags act as small computers that transmit data to the Ekahau Vision server which determines asset location and status, displayed in the Vision software interface.</description>

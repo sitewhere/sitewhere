@@ -155,6 +155,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Namespace for Arduino commands */
 	public static final String ARDUINO_NAMESPACE = "http://arduino/example";
 
+	/** Specification token openHAB virual device */
+	public static final String OPENHAB_SPEC_TOKEN = "5a95f3f2-96f0-47f9-b98d-f5c081d01948";
+
 	/** Specification token for Laipac S-911 BL */
 	public static final String LAIPAC_S911_SPEC_TOKEN = "fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910";
 
@@ -195,6 +198,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					new SpecificationDetails("175", "MeiTrack GPS", MEITRACK_SPEC_TOKEN, HEAVY_EQUIPMENT),
 					new SpecificationDetails("176", "Gateway Default",
 							"75126a52-0607-4cca-b995-df40e73a707b", TOOLS),
+					new SpecificationDetails("190", "openHAB", OPENHAB_SPEC_TOKEN, TOOLS),
 					new SpecificationDetails("300", "Laipac Health Bracelet", LAIPAC_S911_SPEC_TOKEN,
 							PERSONNEL) };
 
@@ -345,6 +349,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 				request.setContainerPolicy(DeviceContainerPolicy.Composite);
 				DeviceElementSchema schema = createDeviceElementSchema();
 				request.setDeviceElementSchema(schema);
+			} else if (details.getUuid().equals(OPENHAB_SPEC_TOKEN)) {
+				request.setContainerPolicy(DeviceContainerPolicy.Composite);
+				DeviceElementSchema schema = new DeviceElementSchema();
+				request.setDeviceElementSchema(schema);
 			} else {
 				request.setContainerPolicy(DeviceContainerPolicy.Standalone);
 			}
@@ -429,17 +437,28 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public void createDeviceCommands(IDeviceSpecification spec) throws SiteWhereException {
 		List<IDeviceCommand> commands = new ArrayList<IDeviceCommand>();
 
-		DeviceCommandCreateRequest cmdPing = new DeviceCommandCreateRequest();
-		cmdPing.setNamespace(SITEWHERE_COMMON_NAMESPACE);
-		cmdPing.setName("ping");
-		cmdPing.setDescription("Send a 'ping' request to the device to verify it can be reached.");
-		commands.add(getDeviceManagement().createDeviceCommand(spec, cmdPing));
+		// Commands should not be available for openHAB.
+		if (!spec.getToken().equals(OPENHAB_SPEC_TOKEN)) {
+			DeviceCommandCreateRequest cmdPing = new DeviceCommandCreateRequest();
+			cmdPing.setNamespace(SITEWHERE_COMMON_NAMESPACE);
+			cmdPing.setName("ping");
+			cmdPing.setDescription("Send a 'ping' request to the device to verify it can be reached.");
+			commands.add(getDeviceManagement().createDeviceCommand(spec, cmdPing));
 
-		DeviceCommandCreateRequest testEvents = new DeviceCommandCreateRequest();
-		testEvents.setNamespace(SITEWHERE_COMMON_NAMESPACE);
-		testEvents.setName("testEvents");
-		testEvents.setDescription("Send a request that results in sample events being returned.");
-		commands.add(getDeviceManagement().createDeviceCommand(spec, testEvents));
+			DeviceCommandCreateRequest testEvents = new DeviceCommandCreateRequest();
+			testEvents.setNamespace(SITEWHERE_COMMON_NAMESPACE);
+			testEvents.setName("testEvents");
+			testEvents.setDescription("Send a request that results in sample events being returned.");
+			commands.add(getDeviceManagement().createDeviceCommand(spec, testEvents));
+		} else {
+			DeviceCommandCreateRequest sendCommand = new DeviceCommandCreateRequest();
+			sendCommand.setNamespace(SITEWHERE_COMMON_NAMESPACE);
+			sendCommand.setName("sendCommand");
+			sendCommand.setDescription("Send command to an openHAB item.");
+			sendCommand.getParameters().add(new CommandParameter("itemName", ParameterType.String, true));
+			sendCommand.getParameters().add(new CommandParameter("command", ParameterType.String, true));
+			commands.add(getDeviceManagement().createDeviceCommand(spec, sendCommand));
+		}
 
 		if (spec.getToken().equals("d2604433-e4eb-419b-97c7-88efe9b2cd41")) {
 			DeviceCommandCreateRequest changebg = new DeviceCommandCreateRequest();
