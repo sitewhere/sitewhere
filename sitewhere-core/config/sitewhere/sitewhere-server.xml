@@ -229,7 +229,7 @@
 				
 				<sw:siddhi-query
 					selector="from every e1 = AlertStream[type == 'low.bp'] -> e2 = AlertStream[type == 'g.shock' and e1.assignment == assignment] within 7 sec select e1.assignment insert into Fainted">
-					<sw:groovy-stream-processor scriptPath="siddhiEventProcessor.groovy"
+					<sw:groovy-stream-processor scriptPath="siddhiCreateAlert.groovy"
 						stream="Fainted"/>
 				</sw:siddhi-query>
 

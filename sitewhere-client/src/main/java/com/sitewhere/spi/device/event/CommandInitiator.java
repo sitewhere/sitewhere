@@ -19,4 +19,7 @@ public enum CommandInitiator {
 
 	/** Command initiated by batch operation */
 	BatchOperation,
+
+	/** Command initiated by script */
+	Script,
 }
