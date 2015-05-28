@@ -128,6 +128,8 @@
 				<sw:specification-mapping-router defaultDestination="default">
 					<sw:mapping specification="d2604433-e4eb-419b-97c7-88efe9b2cd41"
 						destination="android"/>
+					<sw:mapping specification="7dfd6d63-5e8d-4380-be04-fc5c73801dfb"
+						destination="raspberry-pi"/>
 				</sw:specification-mapping-router>
 			</sw:command-routing>
 			
@@ -144,6 +146,14 @@
 
 				<!-- Delivers commands via MQTT -->
 				<sw:mqtt-command-destination destinationId="android"
+					hostname="localhost" port="1883">
+					<sw:java-protobuf-hybrid-encoder/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
+
+				<!-- Raspberry Pi Java agent uses hybrid encoder -->
+				<sw:mqtt-command-destination destinationId="raspberry-pi"
 					hostname="localhost" port="1883">
 					<sw:java-protobuf-hybrid-encoder/>
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
