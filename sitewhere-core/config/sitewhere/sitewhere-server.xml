@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.4/sitewhere.xsd?a=1">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.4/sitewhere.xsd?a=1a">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${catalina.home}/conf/sitewhere/sitewhere.properties"
@@ -77,10 +77,10 @@
 					<sw:json-event-decoder/>
 				</sw:mqtt-event-source>
 				
-				<!-- Event source for protobuf messages from socket connections -->
+				<!-- Event source for processing custom messages from a socket -->
 				<sw:socket-event-source port="8585" numThreads="10" sourceId="socket">
 					<sw:read-all-interaction-handler-factory/>
-					<sw:protobuf-event-decoder/>
+					<sw:groovy-event-decoder scriptPath="binaryDecoder.groovy"/>
 				</sw:socket-event-source>
 				
 				<!-- Event source for protobuf messages over ActiveMQ queue -->

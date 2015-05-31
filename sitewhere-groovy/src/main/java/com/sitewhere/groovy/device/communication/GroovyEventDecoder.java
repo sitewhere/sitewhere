@@ -22,15 +22,15 @@ import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
 /**
- * Implementation of {@link IDeviceEventDecoder} that delegates parsing to a Groovy
- * script.
+ * Implementation of {@link IDeviceEventDecoder} that uses a Groovy script to decode a
+ * binary payload.
  * 
  * @author Derek
  */
-public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
+public class GroovyEventDecoder implements IDeviceEventDecoder<byte[]> {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(GroovyStringEventDecoder.class);
+	private static Logger LOGGER = Logger.getLogger(GroovyEventDecoder.class);
 
 	/** Injected global Groovy configuration */
 	private GroovyConfiguration configuration;
@@ -46,7 +46,7 @@ public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<IDecodedDeviceRequest<?>> decode(String payload) throws SiteWhereException {
+	public List<IDecodedDeviceRequest<?>> decode(byte[] payload) throws SiteWhereException {
 		try {
 			Binding binding = new Binding();
 			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();

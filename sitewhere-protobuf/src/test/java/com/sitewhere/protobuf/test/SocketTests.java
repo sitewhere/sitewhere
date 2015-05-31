@@ -14,7 +14,7 @@ import org.junit.Test;
 public class SocketTests {
 
 	/** Hardware id for test message */
-	private static final String HARDWARE_ID = "46497751-fdbd-46c0-a6db-3f0007b0fd00";
+	private static final String HARDWARE_ID = "74c79297-6197-47b2-85b1-ba140968f7c8";
 
 	/** Port that server socket listens on */
 	public static final int SERVER_SOCKET_PORT = 8585;
@@ -23,6 +23,17 @@ public class SocketTests {
 	public void doSocketTest() throws Exception {
 		Socket socket = new Socket("localhost", SERVER_SOCKET_PORT);
 		byte[] encoded = EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID);
+		socket.getOutputStream().write(encoded);
+		socket.getOutputStream().flush();
+		socket.getOutputStream().close();
+		socket.close();
+	}
+
+	@Test
+	public void doSocketTest2() throws Exception {
+		Socket socket = new Socket("localhost", SERVER_SOCKET_PORT);
+		String message = "LOC," + HARDWARE_ID + ",33.7550,-84.3900";
+		byte[] encoded = message.getBytes();
 		socket.getOutputStream().write(encoded);
 		socket.getOutputStream().flush();
 		socket.getOutputStream().close();

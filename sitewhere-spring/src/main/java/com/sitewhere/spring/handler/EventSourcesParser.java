@@ -37,6 +37,7 @@ import com.sitewhere.device.communication.socket.ReadAllInteractionHandler;
 import com.sitewhere.device.communication.websocket.BinaryWebSocketEventReceiver;
 import com.sitewhere.device.communication.websocket.StringWebSocketEventReceiver;
 import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
@@ -696,6 +697,10 @@ public class EventSourcesParser {
 				parseJsonDecoder(parent, child, context, source);
 				return true;
 			}
+			case GroovyEventDecoder: {
+				parseGroovyDecoder(parent, child, context, source);
+				return true;
+			}
 			case EventDecoder: {
 				parseDecoderRef(parent, child, context, source);
 				return true;
@@ -784,6 +789,32 @@ public class EventSourcesParser {
 			BeanDefinitionBuilder source) {
 		LOGGER.debug("Configuring SiteWhere JSON batch event decoder for " + parent.getLocalName());
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonBatchEventDecoder.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("deviceEventDecoder", name);
+	}
+
+	/**
+	 * Parse decoder that uses a Groovy script to decode events.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseGroovyDecoder(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring Groovy decoder for " + parent.getLocalName());
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyEventDecoder.class);
+		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = decoder.getAttributeNode("scriptPath");
+		if (scriptPath == null) {
+			throw new RuntimeException("Script path not set for Groovy event decoder.");
+		}
+		builder.addPropertyValue("scriptPath", scriptPath.getValue());
+
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -930,6 +961,9 @@ public class EventSourcesParser {
 
 		/** SiteWhere JSON batch decoder */
 		JsonDecoder("json-event-decoder"),
+
+		/** Uses Groovy script to parse events */
+		GroovyEventDecoder("groovy-event-decoder"),
 
 		/** Reference to externally defined event decoder */
 		EventDecoder("event-decoder");
