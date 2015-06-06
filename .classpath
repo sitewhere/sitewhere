@@ -85,5 +85,10 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-core/3.0.2/cxf-core-3.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-tx/3.2.10.RELEASE/spring-tx-3.2.10.RELEASE.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-rt-frontend-simple/3.0.2/cxf-rt-frontend-simple-3.0.2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/zalando/maven/plugins/swagger-codegen-maven-plugin/0.4.1/swagger-codegen-maven-plugin-0.4.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-codegen/2.1.2-M1/swagger-codegen-2.1.2-M1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-models/1.5.2-M1/swagger-models-1.5.2-M1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/zalando/stups/swagger-codegen-common/0.4.1/swagger-codegen-common-0.4.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/io/swagger/swagger-parser/1.0.1/swagger-parser-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
