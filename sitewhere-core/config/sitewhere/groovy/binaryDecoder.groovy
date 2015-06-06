@@ -14,8 +14,6 @@ if (parts.length < 2) {
 def type = parts[0]
 def hwid = parts[1]
 
-// Create object to hold decoded event data.
-
 // Handle location event in the form LOC,HWID,LAT,LONG
 if ("LOC".equals(type)) {
   if (parts.length < 4) {
