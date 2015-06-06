@@ -104,10 +104,42 @@
 			<artifactId>swagger2raml</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.zalando.stups</groupId>
+			<artifactId>swagger-codegen-common</artifactId>
+			<version>0.4.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+			<!-- Generates REST documentation -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>build</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<java classname="com.sitewhere.documentation.RestDocumentationGenerator"
+									failonerror="true">
+									<arg value="${project.basedir}/src/main/resources/sitewhere.json"/>
+									<arg value="${project.build.directory}"/>
+									<classpath refid="maven.compile.classpath"/>
+								</java>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Generates Sphinx documentation -->
+			<!--  
 			<plugin>
 				<groupId>org.tomdz.maven</groupId>
 				<artifactId>sphinx-maven-plugin</artifactId>
@@ -126,6 +158,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 </project>
