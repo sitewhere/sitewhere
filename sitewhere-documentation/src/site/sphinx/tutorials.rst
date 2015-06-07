@@ -7,4 +7,4 @@ The following tutorials are provided to help you learn SiteWhere by real world e
    :maxdepth: 3
 
    tutorials/commands
-   tutorials/socket_event_source
+ 
