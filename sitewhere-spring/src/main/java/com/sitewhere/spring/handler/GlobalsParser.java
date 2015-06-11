@@ -132,6 +132,11 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 			config.addPropertyValue("verbose", verbose.getValue());
 		}
 
+		Attr externalScriptRoot = element.getAttributeNode("externalScriptRoot");
+		if (externalScriptRoot != null) {
+			config.addPropertyValue("externalScriptRoot", externalScriptRoot.getValue());
+		}
+
 		context.getRegistry().registerBeanDefinition(GroovyConfiguration.GROOVY_CONFIGURATION_BEAN,
 				config.getBeanDefinition());
 	}

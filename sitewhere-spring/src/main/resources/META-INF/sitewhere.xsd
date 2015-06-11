@@ -1810,6 +1810,13 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="externalScriptRoot" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Sets script root to an external URL rathen than using the default
+							filesystem path.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

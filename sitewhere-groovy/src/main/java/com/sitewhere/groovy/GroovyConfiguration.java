@@ -39,6 +39,9 @@ public class GroovyConfiguration extends LifecycleComponent implements Initializ
 	/** Groovy script engine */
 	private GroovyScriptEngine groovyScriptEngine;
 
+	/** Configures script root to an external URL */
+	private String externalScriptRoot;
+
 	/** Field for setting GSE verbose flag */
 	private boolean verbose = false;
 
@@ -65,13 +68,20 @@ public class GroovyConfiguration extends LifecycleComponent implements Initializ
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		File root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
-		File scriptPath = new File(root, GROOVY_REL_SCRIPT_PATH);
-		if (!scriptPath.exists()) {
-			throw new SiteWhereException("Groovy configured, but scripts path does not exist.");
-		}
 		try {
-			groovyScriptEngine = new GroovyScriptEngine(scriptPath.getAbsolutePath());
+			if (getExternalScriptRoot() != null) {
+				File root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
+				File scriptPath = new File(root, GROOVY_REL_SCRIPT_PATH);
+				if (!scriptPath.exists()) {
+					throw new SiteWhereException("Groovy configured, but scripts path does not exist.");
+				}
+				groovyScriptEngine = new GroovyScriptEngine(scriptPath.getAbsolutePath());
+				LOGGER.info("Groovy will load scripts relative to: " + scriptPath.getAbsolutePath());
+			} else {
+				groovyScriptEngine = new GroovyScriptEngine(getExternalScriptRoot());
+				LOGGER.info("Groovy will load scripts relative to external URL: " + getExternalScriptRoot());
+			}
+
 			groovyScriptEngine.getConfig().setVerbose(isVerbose());
 			groovyScriptEngine.getConfig().setDebug(isDebug());
 			LOGGER.info("Groovy script engine configured with (verbose:" + isVerbose() + ") (debug:"
@@ -106,6 +116,14 @@ public class GroovyConfiguration extends LifecycleComponent implements Initializ
 
 	public void setGroovyScriptEngine(GroovyScriptEngine groovyScriptEngine) {
 		this.groovyScriptEngine = groovyScriptEngine;
+	}
+
+	public String getExternalScriptRoot() {
+		return externalScriptRoot;
+	}
+
+	public void setExternalScriptRoot(String externalScriptRoot) {
+		this.externalScriptRoot = externalScriptRoot;
 	}
 
 	public boolean isVerbose() {
