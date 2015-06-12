@@ -70,6 +70,9 @@ public class GroovyConfiguration extends LifecycleComponent implements Initializ
 	public void start() throws SiteWhereException {
 		try {
 			if (getExternalScriptRoot() != null) {
+				groovyScriptEngine = new GroovyScriptEngine(getExternalScriptRoot());
+				LOGGER.info("Groovy will load scripts relative to external URL: " + getExternalScriptRoot());
+			} else {
 				File root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
 				File scriptPath = new File(root, GROOVY_REL_SCRIPT_PATH);
 				if (!scriptPath.exists()) {
@@ -77,9 +80,6 @@ public class GroovyConfiguration extends LifecycleComponent implements Initializ
 				}
 				groovyScriptEngine = new GroovyScriptEngine(scriptPath.getAbsolutePath());
 				LOGGER.info("Groovy will load scripts relative to: " + scriptPath.getAbsolutePath());
-			} else {
-				groovyScriptEngine = new GroovyScriptEngine(getExternalScriptRoot());
-				LOGGER.info("Groovy will load scripts relative to external URL: " + getExternalScriptRoot());
 			}
 
 			groovyScriptEngine.getConfig().setVerbose(isVerbose());
@@ -123,6 +123,9 @@ public class GroovyConfiguration extends LifecycleComponent implements Initializ
 	}
 
 	public void setExternalScriptRoot(String externalScriptRoot) {
+		if ((externalScriptRoot != null) && (!externalScriptRoot.endsWith("/"))) {
+			externalScriptRoot += "/";
+		}
 		this.externalScriptRoot = externalScriptRoot;
 	}
 

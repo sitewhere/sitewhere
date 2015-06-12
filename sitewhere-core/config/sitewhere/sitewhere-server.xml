@@ -22,8 +22,11 @@
 		<sw:globals>
 			<sw:hazelcast-configuration configFileLocation="${catalina.home}/conf/sitewhere/hazelcast.xml"/>
 			<sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
+			<sw:groovy-configuration debug="true" verbose="true"/>
+			<!-- Optionally, use an external URL root for loading scripts.
 			<sw:groovy-configuration debug="true" verbose="true"
 				externalScriptRoot="https://s3.amazonaws.com/sitewhere-scripts"/>
+			-->
 		</sw:globals>
 		
 		<!-- ########################### -->
