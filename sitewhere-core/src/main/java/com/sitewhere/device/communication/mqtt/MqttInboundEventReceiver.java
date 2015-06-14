@@ -11,10 +11,12 @@ import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
-import org.fusesource.mqtt.client.BlockingConnection;
+import org.fusesource.mqtt.client.Future;
+import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.Message;
 import org.fusesource.mqtt.client.QoS;
@@ -43,6 +45,9 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	/** Default port if not set from Spring */
 	public static final int DEFAULT_PORT = 1883;
 
+	/** Default connection timeout in seconds */
+	public static final long DEFAULT_CONNECT_TIMEOUT_SECS = 5;
+
 	/** Default subscribed topic name */
 	public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
 
@@ -62,7 +67,7 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	private MQTT mqtt;
 
 	/** Shared MQTT connection */
-	private BlockingConnection connection;
+	private FutureConnection connection;
 
 	/** Used to execute MQTT subscribe in separate thread */
 	private ExecutorService executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
@@ -85,18 +90,21 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 			throw new SiteWhereException("Invalid hostname for MQTT server.", e);
 		}
 		LOGGER.info("Receiver connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
-		connection = mqtt.blockingConnection();
+		connection = mqtt.futureConnection();
 		try {
-			connection.connect();
+			Future<Void> future = connection.connect();
+			future.await(DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
 		} catch (Exception e) {
-			throw new SiteWhereException("Unable to establish MQTT connection.", e);
+			throw new SiteWhereException("Unable to connect to MQTT broker.", e);
 		}
 		LOGGER.info("Receiver connected to MQTT broker.");
 
 		// Subscribe to chosen topic.
 		Topic[] topics = { new Topic(getTopic(), QoS.AT_LEAST_ONCE) };
 		try {
-			connection.subscribe(topics);
+			Future<byte[]> future = connection.subscribe(topics);
+			future.await();
+
 			LOGGER.info("Subscribed to events on MQTT topic: " + getTopic());
 		} catch (Exception e) {
 			throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: "
@@ -163,7 +171,8 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 			LOGGER.info("Started MQTT subscription processing thread.");
 			while (true) {
 				try {
-					Message message = connection.receive();
+					Future<Message> future = connection.receive();
+					Message message = future.await();
 					message.ack();
 					onEventPayloadReceived(message.getPayload());
 				} catch (InterruptedException e) {

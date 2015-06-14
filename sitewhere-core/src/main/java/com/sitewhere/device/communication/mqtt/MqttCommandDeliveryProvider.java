@@ -8,9 +8,11 @@
 package com.sitewhere.device.communication.mqtt;
 
 import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.fusesource.mqtt.client.BlockingConnection;
+import org.fusesource.mqtt.client.Future;
+import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
@@ -40,6 +42,9 @@ public class MqttCommandDeliveryProvider extends LifecycleComponent implements
 	/** Default port if not set from Spring */
 	public static final int DEFAULT_PORT = 1883;
 
+	/** Default connection timeout in seconds */
+	public static final long DEFAULT_CONNECT_TIMEOUT_SECS = 5;
+
 	/** Host name */
 	private String hostname = DEFAULT_HOSTNAME;
 
@@ -50,7 +55,7 @@ public class MqttCommandDeliveryProvider extends LifecycleComponent implements
 	private MQTT mqtt;
 
 	/** Shared MQTT connection */
-	private BlockingConnection connection;
+	private FutureConnection connection;
 
 	public MqttCommandDeliveryProvider() {
 		super(LifecycleComponentType.CommandDeliveryProvider);
@@ -70,11 +75,12 @@ public class MqttCommandDeliveryProvider extends LifecycleComponent implements
 			throw new SiteWhereException("Invalid hostname for MQTT server.", e);
 		}
 		LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
-		connection = mqtt.blockingConnection();
+		connection = mqtt.futureConnection();
 		try {
-			connection.connect();
+			Future<Void> future = connection.connect();
+			future.await(DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
 		} catch (Exception e) {
-			throw new SiteWhereException("Unable to establish MQTT connection.", e);
+			throw new SiteWhereException("Unable to connect to MQTT broker.", e);
 		}
 		LOGGER.info("Connected to MQTT broker.");
 	}
