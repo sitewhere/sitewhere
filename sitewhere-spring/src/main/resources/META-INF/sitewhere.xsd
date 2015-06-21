@@ -124,7 +124,7 @@
 						<xsd:documentation>Server hostname for MongoDB instance.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="port" type="xsd:int">
+				<xsd:attribute name="port" type="substitutableInt">
 					<xsd:annotation>
 						<xsd:documentation>Server port for MongoDB instance.</xsd:documentation>
 					</xsd:annotation>
@@ -1820,5 +1820,31 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-
+	
+	<!-- Defines property placeholder regular expression -->
+	<xsd:simpleType name="propertyPlaceholderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defines string value restricted to a Spring property placeholder.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="\$\{[^\}]+\}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="substitutableInt">
+		<xsd:annotation>
+			<xsd:documentation>
+				Value that can be an integer or a property placeholder value.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="propertyPlaceholderType"/>
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:int"/>
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
 </xsd:schema>
