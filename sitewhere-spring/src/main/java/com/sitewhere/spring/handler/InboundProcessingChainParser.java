@@ -23,6 +23,8 @@ import com.sitewhere.device.event.processor.DefaultEventStorageProcessor;
 import com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain;
 import com.sitewhere.device.event.processor.DeviceStreamProcessor;
 import com.sitewhere.device.event.processor.RegistrationProcessor;
+import com.sitewhere.hazelcast.HazelcastQueueSender;
+import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.server.SiteWhereServerBeans;
 
 /**
@@ -66,6 +68,10 @@ public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
 			}
 			case DeviceStreamProcessor: {
 				processors.add(parseDeviceStreamProcessor(element, context));
+				break;
+			}
+			case HazelcastQueueProcessor: {
+				processors.add(parseHazelcastQueueProcessor(element, context));
 				break;
 			}
 			}
@@ -131,6 +137,21 @@ public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse configuration for Hazelcast queue processor.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseHazelcastQueueProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(HazelcastQueueSender.class);
+		processor.addPropertyReference("configuration",
+				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
+		return processor.getBeanDefinition();
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -147,7 +168,10 @@ public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
 		RegistrationProcessor("registration-processor"),
 
 		/** Device stream processor */
-		DeviceStreamProcessor("device-stream-processor");
+		DeviceStreamProcessor("device-stream-processor"),
+
+		/** Hazelcast queue processor */
+		HazelcastQueueProcessor("hazelcast-queue-processor");
 
 		/** Event code */
 		private String localName;

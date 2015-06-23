@@ -376,6 +376,25 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Hazelcast queue processor -->
+	<xsd:element name="hazelcast-queue-processor" type="hazelcastQueueProcessorType"
+		substitutionGroup="abstract-inbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends all events to a Hazelcast queue. Generally, if this processor
+				is configured, the other processors such as storage and registration are not used
+				since the subordinate SiteWhere instances listening on the queue will be taking care
+				of storage and registration.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hazelcastQueueProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractInboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Used as a placeholder for outbound processor elements to allow substitutionGroups -->
 	<xsd:element name="abstract-outbound-processor" abstract="true"
 		type="abstractOutboundProcessorType">
@@ -1097,6 +1116,24 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Event source that pulls decoded events from a Hazelcast queue -->
+	<xsd:element name="hazelcast-queue-event-source" type="hazelcastQueueEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls decoded events from a Hazelcast queue.
+				Primarily used to allow one instance of SiteWhere to decode events and feed them to
+				multiple subordinate instances for processing.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="hazelcastQueueEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:attributeGroup ref="event-source-attributes"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

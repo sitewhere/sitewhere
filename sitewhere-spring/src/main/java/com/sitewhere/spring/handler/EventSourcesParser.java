@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 import com.sitewhere.activemq.ActiveMQInboundEventReceiver;
 import com.sitewhere.azure.device.communication.EventHubInboundEventReceiver;
 import com.sitewhere.device.communication.BinaryInboundEventSource;
+import com.sitewhere.device.communication.DecodedInboundEventSource;
 import com.sitewhere.device.communication.EchoStringDecoder;
 import com.sitewhere.device.communication.StringInboundEventSource;
 import com.sitewhere.device.communication.json.JsonBatchEventDecoder;
@@ -39,6 +40,8 @@ import com.sitewhere.device.communication.websocket.StringWebSocketEventReceiver
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
+import com.sitewhere.hazelcast.HazelcastQueueReceiver;
+import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
@@ -107,6 +110,10 @@ public class EventSourcesParser {
 			}
 			case WebSocketEventSource: {
 				result.add(parseWebSocketEventSource(child, context));
+				break;
+			}
+			case HazelcastQueueEventSource: {
+				result.add(parseHazelcastQueueEventSource(child, context));
 				break;
 			}
 			}
@@ -660,6 +667,49 @@ public class EventSourcesParser {
 	}
 
 	/**
+	 * Configure components needed to realize a Hazelcast queue event source.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseHazelcastQueueEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source =
+				BeanDefinitionBuilder.rootBeanDefinition(DecodedInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create event receiver bean and register it.
+		AbstractBeanDefinition receiver = createHazelcastQueueEventReceiver(element, context);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Create Hazelcast queue event receiver.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition createHazelcastQueueEventReceiver(Element element, ParserContext context) {
+		BeanDefinitionBuilder receiver =
+				BeanDefinitionBuilder.rootBeanDefinition(HazelcastQueueReceiver.class);
+		receiver.addPropertyReference("configuration",
+				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
+		return receiver.getBeanDefinition();
+	}
+
+	/**
 	 * Parse a binary decoder from the list of possibilities.
 	 * 
 	 * @param decoder
@@ -922,7 +972,10 @@ public class EventSourcesParser {
 		MqttEventSource("mqtt-event-source"),
 
 		/** Web socket event source */
-		WebSocketEventSource("web-socket-event-source");
+		WebSocketEventSource("web-socket-event-source"),
+
+		/** Hazelcast queue event source */
+		HazelcastQueueEventSource("hazelcast-queue-event-source");
 
 		/** Event code */
 		private String localName;

@@ -28,4 +28,7 @@ public interface ISiteWhereHazelcast {
 
 	/** Topic name for newly added command responses */
 	public static final String TOPIC_COMMAND_RESPONSE_ADDED = "sitewhere.topic.command.response.added";
+
+	/** Queue name for all SiteWhere events */
+	public static final String QUEUE_ALL_EVENTS = "sitewhere.queue.all.events";
 }
