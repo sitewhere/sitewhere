@@ -724,7 +724,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="registration" type="registrationType">
+			<xsd:element name="registration" type="registrationType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Registration elements define how inbound registration events are
@@ -732,7 +732,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="batch-operations" type="batchOperationsType">
+			<xsd:element name="batch-operations" type="batchOperationsType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Batch operations are operations executed on a large number of
@@ -740,7 +740,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="command-routing" type="commandRoutingType">
+			<xsd:element name="command-routing" type="commandRoutingType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Command routing determines which destination is used for
@@ -748,7 +748,8 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="command-destinations" type="commandDestinationsType">
+			<xsd:element name="command-destinations" type="commandDestinationsType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Command destinations process command invocation events, encoding

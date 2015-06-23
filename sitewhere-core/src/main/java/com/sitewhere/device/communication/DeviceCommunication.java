@@ -10,6 +10,7 @@ package com.sitewhere.device.communication;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.server.batch.BatchOperationManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperationManager;
@@ -35,28 +36,30 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public abstract class DeviceCommunication extends LifecycleComponent implements IDeviceCommunication {
 
 	/** Configured registration manager */
-	private IRegistrationManager registrationManager;
+	private IRegistrationManager registrationManager = new RegistrationManager();
 
 	/** Configured batch operation manager */
-	private IBatchOperationManager batchOperationManager;
+	private IBatchOperationManager batchOperationManager = new BatchOperationManager();
 
 	/** Configured device stream manager */
-	private IDeviceStreamManager deviceStreamManager;
+	private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();
 
 	/** Configured inbound processing strategy */
-	private IInboundProcessingStrategy inboundProcessingStrategy;
+	private IInboundProcessingStrategy inboundProcessingStrategy =
+			new BlockingQueueInboundProcessingStrategy();
 
 	/** Configured list of inbound event sources */
 	private List<IInboundEventSource<?>> inboundEventSources = new ArrayList<IInboundEventSource<?>>();
 
 	/** Configured command processing strategy */
-	private ICommandProcessingStrategy commandProcessingStrategy;
+	private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
 
 	/** Configured outbound processing strategy */
-	private IOutboundProcessingStrategy outboundProcessingStrategy;
+	private IOutboundProcessingStrategy outboundProcessingStrategy =
+			new BlockingQueueOutboundProcessingStrategy();
 
 	/** Configured outbound command router */
-	private IOutboundCommandRouter outboundCommandRouter;
+	private IOutboundCommandRouter outboundCommandRouter = new NoOpCommandRouter();
 
 	/** Configured list of command destinations */
 	private List<ICommandDestination<?, ?>> commandDestinations = new ArrayList<ICommandDestination<?, ?>>();
