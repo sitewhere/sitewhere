@@ -476,6 +476,35 @@ The following attributes may be specified for the *<sw:web-socket-event-source/>
 |                      |          | type of message is sent from the server socket.  |
 +----------------------+----------+--------------------------------------------------+
 
+Hazelcast Queue Event Source
+****************************
+This event source is used to pull decoded device events from a Hazelcast queue. 
+The usual usage scenario is that one SiteWhere instance uses the
+*<sw:hazelcast-queue-processor>* on the inbound processing chain to send all decoded events
+to the queue and the subordinate instances use the *<sw:hazelcast-queue-event-source>*
+element to process the events. Multiple subordinate instances can attach to the
+same queue, allowing parallel processing of the events. Note that all subordinate
+instances must be in the same Hazelcast group in order to process the queue.
+
+.. code-block:: xml
+   :emphasize-lines: 7-10
+
+   <sw:device-communication>
+   
+      <!-- Inbound event sources -->
+      <sw:event-sources>
+
+         <!-- Event source for pulling events from Hazelcast queue -->
+         <sw:hazelcast-queue-event-source sourceId="hzQueue"/>
+
+The following attributes may be specified for the *<sw:hazelcast-queue-event-source>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| sourceId             | required | Unique event source id.                          |
++----------------------+----------+--------------------------------------------------+
+
 Custom Event Source
 *******************
 In cases where a custom protocol is needed to support inbound events for devices, SiteWhere makes
@@ -749,6 +778,30 @@ for adding data to a stream will be ignored. The default configuration is shown 
             
             <!-- Allow devices to create streams and send stream data -->
             <sw:device-stream-processor/>
+   
+         </sw:inbound-processing-chain>
+
+Hazelcast Queue Processor
+-------------------------
+An instance of *<sw:hazelcast-queue-processor/>* may be configured in the inbound processing chain
+to forward all decoded events into a Hazelcast queue. This allows multiple subordinate SiteWhere 
+instances to use the *<sw:hazelcast-queue-event-source/>* to pull the events in and 
+process them. The events are handed to the subordinate instances in round-robin fashion 
+so the processing load can be distributed. If this processor is configured, normally the
+other default processors for storage, registration, and stream processing are removed, since
+the processing occurs in the subordinate instances.
+
+.. code-block:: xml
+   :emphasize-lines: 6
+
+      <sw:device-communication>
+               
+         <sw:inbound-processing-chain>
+         
+            <!-- Note that other processors have been removed -->
+            
+            <!-- Send all events to a Hazelcast queue -->
+            <sw:hazelcast-queue-processor/>
    
          </sw:inbound-processing-chain>
 
