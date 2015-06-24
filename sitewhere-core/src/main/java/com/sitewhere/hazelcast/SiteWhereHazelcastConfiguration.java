@@ -79,6 +79,7 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 			GroupConfig group = config.getGroupConfig();
 			if (group == null) {
 				group = new GroupConfig();
+				config.setGroupConfig(group);
 			}
 			LOGGER.info("Overriding Hazelcast group name to '" + getGroupName() + "'.");
 			group.setName(getGroupName());
