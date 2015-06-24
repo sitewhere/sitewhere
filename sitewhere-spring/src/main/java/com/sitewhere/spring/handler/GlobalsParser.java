@@ -84,11 +84,24 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 		BeanDefinitionBuilder config =
 				BeanDefinitionBuilder.rootBeanDefinition(SiteWhereHazelcastConfiguration.class);
 
+		// Handle configuration file location.
 		Attr configFileLocation = element.getAttributeNode("configFileLocation");
 		if (configFileLocation == null) {
 			throw new RuntimeException("Hazelcast configuration missing 'configFileLocation' attribute.");
 		}
 		config.addPropertyValue("configFileLocation", configFileLocation.getValue());
+
+		// Handle group name override.
+		Attr groupName = element.getAttributeNode("groupName");
+		if (groupName != null) {
+			config.addPropertyValue("groupName", groupName.getValue());
+		}
+
+		// Handle group password override.
+		Attr groupPassword = element.getAttributeNode("groupPassword");
+		if (groupPassword != null) {
+			config.addPropertyValue("groupPassword", groupPassword.getValue());
+		}
 
 		context.getRegistry().registerBeanDefinition(
 				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN, config.getBeanDefinition());

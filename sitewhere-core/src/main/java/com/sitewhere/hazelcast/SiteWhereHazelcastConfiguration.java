@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.GroupConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -31,11 +32,17 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereHazelcastConfiguration.class);
 
-	/** Bean name where global Hazelcast configuration is expected */	
+	/** Bean name where global Hazelcast configuration is expected */
 	public static final String HAZELCAST_CONFIGURATION_BEAN = "swHazelcastConfiguration";
 
 	/** Configuration file location */
 	private String configFileLocation = null;
+
+	/** Overrides group name from configuration file */
+	private String groupName;
+
+	/** Overrides group password from configuration file */
+	private String groupPassword;
 
 	/** Singleton hazelcast instance */
 	private HazelcastInstance instance;
@@ -54,9 +61,30 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 					+ configFile.getAbsolutePath());
 		}
 		Config config = new XmlConfigBuilder(new FileInputStream(configFile)).build();
+		performGroupOverrides(config);
+
 		instance = Hazelcast.newHazelcastInstance(config);
 		instance.getLifecycleService().addLifecycleListener(this);
 		LOGGER.info("Hazelcast instance started.");
+	}
+
+	/**
+	 * If group name or password is specified, override settings from the configuration
+	 * file.
+	 * 
+	 * @param config
+	 */
+	protected void performGroupOverrides(Config config) {
+		if ((getGroupName() != null) || (getGroupPassword() != null)) {
+			GroupConfig group = config.getGroupConfig();
+			if (group == null) {
+				group = new GroupConfig();
+			}
+			LOGGER.info("Overriding Hazelcast group name to '" + getGroupName() + "'.");
+			group.setName(getGroupName());
+			LOGGER.info("Overriding Hazelcast group password to '" + getGroupPassword() + "'.");
+			group.setPassword(getGroupPassword());
+		}
 	}
 
 	/*
@@ -81,5 +109,21 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 
 	public void setConfigFileLocation(String configFileLocation) {
 		this.configFileLocation = configFileLocation;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public String getGroupPassword() {
+		return groupPassword;
+	}
+
+	public void setGroupPassword(String groupPassword) {
+		this.groupPassword = groupPassword;
 	}
 }

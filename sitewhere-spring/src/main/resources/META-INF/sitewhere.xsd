@@ -1801,6 +1801,18 @@
 						<xsd:documentation>Path to Hazelcast configuration file.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="groupName" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Overrides group name from configuration file if present.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="groupPassword" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>Overrides group password from configuration file if present.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
