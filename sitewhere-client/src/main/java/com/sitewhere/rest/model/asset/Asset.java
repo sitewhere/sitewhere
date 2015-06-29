@@ -29,6 +29,9 @@ public class Asset implements IAsset {
 	/** Asset type indicator */
 	private AssetType type;
 
+	/** Asset category id */
+	private String assetCategoryId;
+
 	/** Asset image url */
 	private String imageUrl;
 
@@ -71,6 +74,19 @@ public class Asset implements IAsset {
 
 	public void setType(AssetType type) {
 		this.type = type;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.asset.IAsset#getAssetCategoryId()
+	 */
+	public String getAssetCategoryId() {
+		return assetCategoryId;
+	}
+
+	public void setAssetCategoryId(String assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
 	}
 
 	/*

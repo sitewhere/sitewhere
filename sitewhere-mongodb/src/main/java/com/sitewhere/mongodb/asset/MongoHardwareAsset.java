@@ -54,6 +54,7 @@ public class MongoHardwareAsset implements MongoConverter<IHardwareAsset> {
 	 */
 	public static void toDBObject(IHardwareAsset source, BasicDBObject target) {
 		MongoAsset.toDBObject(source, target);
+		
 		target.append(PROP_SKU, source.getSku());
 		target.append(PROP_DESCRIPTION, source.getDescription());
 	}
@@ -66,6 +67,7 @@ public class MongoHardwareAsset implements MongoConverter<IHardwareAsset> {
 	 */
 	public static void fromDBObject(DBObject source, HardwareAsset target) {
 		MongoAsset.fromDBObject(source, target);
+		
 		String sku = (String) source.get(PROP_SKU);
 		String description = (String) source.get(PROP_DESCRIPTION);
 

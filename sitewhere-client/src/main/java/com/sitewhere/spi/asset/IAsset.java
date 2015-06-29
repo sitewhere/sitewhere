@@ -38,6 +38,13 @@ public interface IAsset extends Comparable<IAsset> {
 	public AssetType getType();
 
 	/**
+	 * Get id of parent asset category.
+	 * 
+	 * @return
+	 */
+	public String getAssetCategoryId();
+
+	/**
 	 * Get URL for asset image.
 	 * 
 	 * @return

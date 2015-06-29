@@ -32,6 +32,9 @@ public class MongoAsset {
 	/** Property for asset type */
 	public static final String PROP_ASSET_TYPE = "type";
 
+	/** Property for category id */
+	public static final String PROP_CATEGORY_ID = "category";
+
 	/** Property for asset image URL */
 	public static final String PROP_IMAGE_URL = "image";
 
@@ -48,6 +51,7 @@ public class MongoAsset {
 		target.append(PROP_ID, source.getId());
 		target.append(PROP_NAME, source.getName());
 		target.append(PROP_ASSET_TYPE, source.getType().name());
+		target.append(PROP_CATEGORY_ID, source.getAssetCategoryId());
 		target.append(PROP_IMAGE_URL, source.getImageUrl());
 
 		// Save nested list of properties.
@@ -72,11 +76,13 @@ public class MongoAsset {
 		String id = (String) source.get(PROP_ID);
 		String name = (String) source.get(PROP_NAME);
 		String assetTypeStr = (String) source.get(PROP_ASSET_TYPE);
+		String categoryId = (String) source.get(PROP_CATEGORY_ID);
 		String imageUrl = (String) source.get(PROP_IMAGE_URL);
 
 		target.setId(id);
 		target.setName(name);
 		target.setType(AssetType.valueOf(assetTypeStr));
+		target.setAssetCategoryId(categoryId);
 		target.setImageUrl(imageUrl);
 
 		List<DBObject> props = (List<DBObject>) source.get(PROP_PROPERTIES);

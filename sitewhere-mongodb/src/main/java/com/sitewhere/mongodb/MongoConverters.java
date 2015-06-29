@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sitewhere.mongodb.asset.MongoAssetCategory;
+import com.sitewhere.mongodb.asset.MongoHardwareAsset;
+import com.sitewhere.mongodb.asset.MongoLocationAsset;
+import com.sitewhere.mongodb.asset.MongoPersonAsset;
 import com.sitewhere.mongodb.device.MongoBatchElement;
 import com.sitewhere.mongodb.device.MongoBatchOperation;
 import com.sitewhere.mongodb.device.MongoDevice;
@@ -30,6 +33,9 @@ import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
 import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IHardwareAsset;
+import com.sitewhere.spi.asset.ILocationAsset;
+import com.sitewhere.spi.asset.IPersonAsset;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -83,6 +89,9 @@ public class MongoConverters implements IMongoConverterLookup {
 
 		// Converters for asset management.
 		CONVERTERS.put(IAssetCategory.class, new MongoAssetCategory());
+		CONVERTERS.put(IHardwareAsset.class, new MongoHardwareAsset());
+		CONVERTERS.put(IPersonAsset.class, new MongoPersonAsset());
+		CONVERTERS.put(ILocationAsset.class, new MongoLocationAsset());
 	}
 
 	/*
