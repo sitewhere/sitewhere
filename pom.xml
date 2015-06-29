@@ -165,6 +165,9 @@
 										<copy todir="${project.build.directory}/apache-tomcat-7.0.62/lib">
 											<fileset dir="${project.basedir}/sitewhere-core/config" includes="log4j.xml"/>
 										</copy>
+										<copy todir="${project.build.directory}/apache-tomcat-7.0.62/bin">
+											<fileset dir="${project.basedir}/sitewhere-core/config" includes="setenv.*"/>
+										</copy>
 										<move todir="${project.build.directory}/sitewhere-server-${project.version}">
 											<fileset dir="${project.build.directory}/apache-tomcat-7.0.62"/>
 										</move>
