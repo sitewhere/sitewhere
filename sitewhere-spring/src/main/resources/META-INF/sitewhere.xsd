@@ -980,7 +980,7 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="port" type="xsd:int">
+		<xsd:attribute name="port" type="substitutableInt">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker port.
@@ -1590,7 +1590,7 @@
 		</xsd:sequence>
 		<xsd:attributeGroup ref="command-destination-attributes"/>
 		<xsd:attribute name="hostname" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="port" type="xsd:int"></xsd:attribute>
+		<xsd:attribute name="port" type="substitutableInt"></xsd:attribute>
 	</xsd:complexType>
 
 	<!-- MQTT parameter extractor that substitutes device hardware id into expressions -->
