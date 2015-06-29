@@ -90,5 +90,7 @@
 	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-models/1.5.2-M1/swagger-models-1.5.2-M1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/zalando/stups/swagger-codegen-common/0.4.1/swagger-codegen-common-0.4.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/io/swagger/swagger-parser/1.0.1/swagger-parser-1.0.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtdispatch/hawtdispatch/1.19/hawtdispatch-1.19.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtdispatch/hawtdispatch-transport/1.19/hawtdispatch-transport-1.19.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
