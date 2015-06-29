@@ -152,7 +152,7 @@ public class GnuHealthData extends LifecycleComponent {
 				String name = fieldNames.next();
 				JsonNode value = node.get(name);
 				if ((!value.isObject()) && (!value.isNull())) {
-					asset.setProperty(name, value.asText());
+					asset.getProperties().put(name, value.asText());
 				}
 			}
 			buildingCache.put(asset.getId(), asset);
@@ -224,7 +224,7 @@ public class GnuHealthData extends LifecycleComponent {
 				String name = fieldNames.next();
 				JsonNode value = node.get(name);
 				if ((!value.isObject()) && (!value.isNull())) {
-					asset.setProperty(name, value.asText());
+					asset.getProperties().put(name, value.asText());
 				}
 			}
 			wardCache.put(asset.getId(), asset);

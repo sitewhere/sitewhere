@@ -9,9 +9,7 @@ package com.sitewhere.rest.model.asset;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 
@@ -91,48 +89,14 @@ public class Asset implements IAsset {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.IAsset#getPropertyNames()
-	 */
-	@JsonIgnore
-	public Set<String> getPropertyNames() {
-		return properties.keySet();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAsset#setProperty(java.lang.String, java.lang.String)
-	 */
-	public void setProperty(String name, String value) {
-		properties.put(name, value);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAsset#getProperty(java.lang.String)
-	 */
-	public String getProperty(String name) {
-		return properties.get(name);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.asset.IAsset#getIdProperty()
-	 */
-	@JsonIgnore
-	public String getIdProperty() {
-		return null;
-	}
-
-	/**
-	 * Included for JSON marshaling of properties map.
-	 * 
-	 * @return
+	 * @see com.sitewhere.spi.asset.IAsset#getProperties()
 	 */
 	public Map<String, String> getProperties() {
 		return properties;
+	}
+
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
 	}
 
 	/*

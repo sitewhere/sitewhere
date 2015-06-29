@@ -413,13 +413,13 @@ public class MagentoAssetModule extends LifecycleComponent implements IAssetModu
 			AssociativeArray addAttr = entity.getAdditionalAttributes();
 			if (addAttr != null) {
 				for (AssociativeEntity assoc : addAttr.getComplexObjectArray()) {
-					asset.setProperty(assoc.getKey(), assoc.getValue());
+					asset.getProperties().put(assoc.getKey(), assoc.getValue());
 				}
 			}
 			asset.setId(entity.getProductId());
 			asset.setSku(entity.getSku());
-			asset.setName(asset.getProperty(IMagentoFields.PROP_NAME));
-			asset.setDescription(asset.getProperty(IMagentoFields.PROP_DESCRIPTION));
+			asset.setName(asset.getProperties().get(IMagentoFields.PROP_NAME));
+			asset.setDescription(asset.getProperties().get(IMagentoFields.PROP_DESCRIPTION));
 
 			// Load product image data.
 			CatalogProductAttributeMediaListRequestParam mediaReq =

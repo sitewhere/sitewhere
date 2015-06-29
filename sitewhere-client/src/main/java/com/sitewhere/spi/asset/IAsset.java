@@ -7,7 +7,7 @@
  */
 package com.sitewhere.spi.asset;
 
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Unique item to which a device may be associated.
@@ -45,25 +45,9 @@ public interface IAsset extends Comparable<IAsset> {
 	public String getImageUrl();
 
 	/**
-	 * Get list of property names.
+	 * Get properties associated with asset.
 	 * 
 	 * @return
 	 */
-	public Set<String> getPropertyNames();
-
-	/**
-	 * Add a property. If there is an existing property with the same name, it is
-	 * replaced.
-	 * 
-	 * @param property
-	 */
-	public void setProperty(String name, String value);
-
-	/**
-	 * Get an existing value by name.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public String getProperty(String name);
+	public Map<String, String> getProperties();
 }

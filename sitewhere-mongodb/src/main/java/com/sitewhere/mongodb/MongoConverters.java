@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.mongodb.asset.MongoAssetCategory;
 import com.sitewhere.mongodb.device.MongoBatchElement;
 import com.sitewhere.mongodb.device.MongoBatchOperation;
 import com.sitewhere.mongodb.device.MongoDevice;
@@ -28,6 +29,7 @@ import com.sitewhere.mongodb.device.MongoDeviceStream;
 import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
+import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
@@ -59,6 +61,7 @@ public class MongoConverters implements IMongoConverterLookup {
 
 	/** Create a list of converters for various types */
 	static {
+		// Converters for device management.
 		CONVERTERS.put(IDeviceSpecification.class, new MongoDeviceSpecification());
 		CONVERTERS.put(IDeviceCommand.class, new MongoDeviceCommand());
 		CONVERTERS.put(IDevice.class, new MongoDevice());
@@ -77,6 +80,9 @@ public class MongoConverters implements IMongoConverterLookup {
 		CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
 		CONVERTERS.put(IBatchOperation.class, new MongoBatchOperation());
 		CONVERTERS.put(IBatchElement.class, new MongoBatchElement());
+
+		// Converters for asset management.
+		CONVERTERS.put(IAssetCategory.class, new MongoAssetCategory());
 	}
 
 	/*

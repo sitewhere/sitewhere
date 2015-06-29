@@ -51,7 +51,7 @@ public class MarshalUtils {
 				asset.setSku(xmlAsset.getSku());
 				asset.setImageUrl(xmlAsset.getImageUrl());
 				for (FileSystemAssetProperty xmlProperty : xmlAsset.getProperties()) {
-					asset.setProperty(xmlProperty.getName(), xmlProperty.getValue());
+					asset.getProperties().put(xmlProperty.getName(), xmlProperty.getValue());
 				}
 				if ((type == AssetType.Hardware) && (!xmlAsset.isDevice())) {
 					assets.add(asset);
@@ -87,7 +87,7 @@ public class MarshalUtils {
 				asset.setEmailAddress(xmlAsset.getEmailAddress());
 				asset.setImageUrl(xmlAsset.getPhotoUrl());
 				for (FileSystemAssetProperty xmlProperty : xmlAsset.getProperties()) {
-					asset.setProperty(xmlProperty.getName(), xmlProperty.getValue());
+					asset.getProperties().put(xmlProperty.getName(), xmlProperty.getValue());
 				}
 				if (xmlAsset.getRoles() != null) {
 					List<String> roles = xmlAsset.getRoles().getRoles();
@@ -125,7 +125,7 @@ public class MarshalUtils {
 				asset.setLongitude(xmlAsset.getLon());
 				asset.setImageUrl(xmlAsset.getImageUrl());
 				for (FileSystemAssetProperty xmlProperty : xmlAsset.getProperties()) {
-					asset.setProperty(xmlProperty.getName(), xmlProperty.getValue());
+					asset.getProperties().put(xmlProperty.getName(), xmlProperty.getValue());
 				}
 				assets.add(asset);
 			}

@@ -245,16 +245,16 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 		if (id == null) {
 			throw new SiteWhereException("SCIM resource does not have an id.");
 		}
-		asset.setProperty(IWso2ScimFields.PROP_ASSET_ID, id.textValue());
+		asset.getProperties().put(IWso2ScimFields.PROP_ASSET_ID, id.textValue());
 
 		JsonNode username = resource.get(IScimFields.USERNAME);
 		if (username != null) {
-			asset.setProperty(IWso2ScimFields.PROP_USERNAME, username.textValue());
+			asset.getProperties().put(IWso2ScimFields.PROP_USERNAME, username.textValue());
 		}
 
 		JsonNode profileUrl = resource.get(IScimFields.PROFILE_URL);
 		if (profileUrl != null) {
-			asset.setProperty(IWso2ScimFields.PROP_PROFILE_URL, profileUrl.textValue());
+			asset.getProperties().put(IWso2ScimFields.PROP_PROFILE_URL, profileUrl.textValue());
 		}
 
 		parseName(resource, asset);
@@ -283,15 +283,15 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 			if (given != null) {
 				String givenValue = given.textValue();
 				full += givenValue + " ";
-				asset.setProperty(IScimFields.GIVEN_NAME, givenValue);
+				asset.getProperties().put(IScimFields.GIVEN_NAME, givenValue);
 			}
 			JsonNode family = name.get(IScimFields.FAMILY_NAME);
 			if (family != null) {
 				String familyValue = family.textValue();
 				full += familyValue;
-				asset.setProperty(IScimFields.FAMILY_NAME, familyValue);
+				asset.getProperties().put(IScimFields.FAMILY_NAME, familyValue);
 			}
-			asset.setProperty(IWso2ScimFields.PROP_NAME, full.trim());
+			asset.getProperties().put(IWso2ScimFields.PROP_NAME, full.trim());
 		}
 	}
 
@@ -308,7 +308,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 			Iterator<JsonNode> it = emails.elements();
 			while (it.hasNext()) {
 				String email = it.next().textValue();
-				asset.setProperty("emailAddress" + index, email);
+				asset.getProperties().put("emailAddress" + index, email);
 			}
 		}
 	}
