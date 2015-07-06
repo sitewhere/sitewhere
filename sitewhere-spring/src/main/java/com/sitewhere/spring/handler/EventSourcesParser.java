@@ -220,7 +220,6 @@ public class EventSourcesParser {
 		return mqtt.getBeanDefinition();
 	}
 
-	// parseEventHubEventSource
 	/**
 	 * Parse an EventHub event source.
 	 *
