@@ -70,7 +70,7 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	private FutureConnection connection;
 
 	/** Used to execute MQTT subscribe in separate thread */
-	private ExecutorService executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
+	private ExecutorService executor;
 
 	public MqttInboundEventReceiver() {
 		super(LifecycleComponentType.InboundEventReceiver);
@@ -83,6 +83,7 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		this.executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
 		this.mqtt = new MQTT();
 		try {
 			mqtt.setHost(getHostname(), getPort());
@@ -191,12 +192,16 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		executor.shutdownNow();
-		try {
-			connection.disconnect();
-			connection.kill();
-		} catch (Exception e) {
-			LOGGER.error("Error shutting down MQTT device event receiver.", e);
+		if (executor != null) {
+			executor.shutdownNow();
+		}
+		if (connection != null) {
+			try {
+				connection.disconnect();
+				connection.kill();
+			} catch (Exception e) {
+				LOGGER.error("Error shutting down MQTT device event receiver.", e);
+			}
 		}
 	}
 
