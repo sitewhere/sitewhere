@@ -2,8 +2,8 @@
 
 ![SiteWhere] (http://www.sitewhere.org/sites/default/files/sitewhere.png)
 
-SiteWhere : The Open Platform for the Internet of Things™
----------------------------------------------------------
+The Open Platform for the Internet of Things™
+-----------------------------------------------
 
 #### SiteWhere is an open source platform for storing, processing, and analyzing M2M device data. ####
 
