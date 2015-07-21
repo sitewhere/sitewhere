@@ -7,12 +7,15 @@
  */
 package com.sitewhere.rest.client;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,9 +44,12 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
@@ -53,6 +59,8 @@ import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceCommandSearchResults;
+import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
+import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
@@ -127,7 +135,17 @@ public class SiteWhereClient implements ISiteWhereClient {
 		this.client = new RestTemplate();
 		this.username = username;
 		this.password = password;
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+
+		// Special handling for delete requests with request body passed.
+		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory() {
+			@Override
+			protected HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri) {
+				if (HttpMethod.DELETE == httpMethod) {
+					return new HttpEntityEnclosingDeleteRequest(uri);
+				}
+				return super.createHttpUriRequest(httpMethod, uri);
+			}
+		};
 		factory.setConnectTimeout(connectTimeoutMs);
 		client.setRequestFactory(factory);
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
@@ -298,6 +316,32 @@ public class SiteWhereClient implements ISiteWhereClient {
 	public Site getSiteByToken(String token) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		return sendRest(getBaseUrl() + "sites/" + token, HttpMethod.GET, null, Site.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#createZone(java.lang.String,
+	 * com.sitewhere.rest.model.device.request.ZoneCreateRequest)
+	 */
+	@Override
+	public Zone createZone(String siteToken, ZoneCreateRequest request) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("siteToken", siteToken);
+		return sendRest(getBaseUrl() + "sites/{siteToken}/zones", HttpMethod.POST, request, Zone.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listZonesForSite(java.lang.String)
+	 */
+	@Override
+	public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("siteToken", siteToken);
+		String url = getBaseUrl() + "sites/{siteToken}/zones";
+		return sendRest(url, HttpMethod.GET, null, ZoneSearchResults.class, vars);
 	}
 
 	/*
@@ -686,32 +730,6 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereClient#createZone(java.lang.String,
-	 * com.sitewhere.rest.model.device.request.ZoneCreateRequest)
-	 */
-	@Override
-	public Zone createZone(String siteToken, ZoneCreateRequest request) throws SiteWhereException {
-		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("siteToken", siteToken);
-		return sendRest(getBaseUrl() + "sites/{siteToken}/zones", HttpMethod.POST, request, Zone.class, vars);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.ISiteWhereClient#listZonesForSite(java.lang.String)
-	 */
-	@Override
-	public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException {
-		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("siteToken", siteToken);
-		String url = getBaseUrl() + "sites/{siteToken}/zones";
-		return sendRest(url, HttpMethod.GET, null, ZoneSearchResults.class, vars);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.sitewhere.spi.ISiteWhereClient#createBatchCommandInvocation(java.lang.String,
 	 * java.lang.String, java.util.Map, java.util.List)
@@ -726,6 +744,110 @@ public class SiteWhereClient implements ISiteWhereClient {
 		request.setHardwareIds(hardwareIds);
 		Map<String, String> vars = new HashMap<String, String>();
 		return sendRest(getBaseUrl() + "batch/command", HttpMethod.POST, request, BatchOperation.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.ISiteWhereClient#createDeviceGroup(com.sitewhere.rest.model.device
+	 * .request.DeviceGroupCreateRequest)
+	 */
+	@Override
+	public DeviceGroup createDeviceGroup(DeviceGroupCreateRequest request) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		return sendRest(getBaseUrl() + "devicegroups", HttpMethod.POST, request, DeviceGroup.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#getDeviceGroupByToken(java.lang.String)
+	 */
+	@Override
+	public DeviceGroup getDeviceGroupByToken(String token) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", token);
+		return sendRest(getBaseUrl() + "devicegroups/{token}", HttpMethod.GET, null, DeviceGroup.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#deleteDeviceGroup(java.lang.String)
+	 */
+	@Override
+	public DeviceGroup deleteDeviceGroup(String token) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", token);
+		return sendRest(getBaseUrl() + "devicegroups/{token}", HttpMethod.DELETE, null, DeviceGroup.class,
+				vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceGroups(java.lang.String,
+	 * com.sitewhere.rest.model.search.SearchCriteria, boolean)
+	 */
+	@Override
+	public DeviceGroupSearchResults listDeviceGroups(String role, SearchCriteria criteria,
+			boolean includeDeleted) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		addSearchCriteria(vars, criteria);
+		String url =
+				getBaseUrl() + "devicegroups?includeDeleted=" + includeDeleted + "&"
+						+ getSearchCriteriaFields(criteria);
+		if (role != null) {
+			url += "&role=" + role;
+		}
+		return sendRest(url, HttpMethod.GET, null, DeviceGroupSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#addDeviceGroupElements(java.lang.String,
+	 * java.util.List)
+	 */
+	@Override
+	public DeviceGroupElementSearchResults addDeviceGroupElements(String groupToken,
+			List<DeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", groupToken);
+		return sendRest(getBaseUrl() + "devicegroups/{token}/elements", HttpMethod.PUT, elements,
+				DeviceGroupElementSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceGroupElements(java.lang.String,
+	 * boolean, com.sitewhere.rest.model.search.SearchCriteria)
+	 */
+	@Override
+	public DeviceGroupElementSearchResults listDeviceGroupElements(String groupToken, boolean includeDetails,
+			SearchCriteria criteria) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", groupToken);
+		addSearchCriteria(vars, criteria);
+		String url = getBaseUrl() + "devicegroups/{token}/elements?" + getSearchCriteriaFields(criteria);
+		return sendRest(url, HttpMethod.GET, null, DeviceGroupElementSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#deleteDeviceGroupElements(java.lang.String,
+	 * java.util.List)
+	 */
+	@Override
+	public DeviceGroupElementSearchResults deleteDeviceGroupElements(String groupToken,
+			List<DeviceGroupElementCreateRequest> elements) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", groupToken);
+		return sendRest(getBaseUrl() + "devicegroups/{token}/elements", HttpMethod.DELETE, elements,
+				DeviceGroupElementSearchResults.class, vars);
 	}
 
 	/*
@@ -841,6 +963,25 @@ public class SiteWhereClient implements ISiteWhereClient {
 				throw (SiteWhereSystemException) e.getCause();
 			}
 			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Used to get around limitation of Spring RestTemplate not being able to send a body
+	 * request for a delete.
+	 * 
+	 * @author Derek
+	 */
+	public static class HttpEntityEnclosingDeleteRequest extends HttpEntityEnclosingRequestBase {
+
+		public HttpEntityEnclosingDeleteRequest(final URI uri) {
+			super();
+			setURI(uri);
+		}
+
+		@Override
+		public String getMethod() {
+			return "DELETE";
 		}
 	}
 

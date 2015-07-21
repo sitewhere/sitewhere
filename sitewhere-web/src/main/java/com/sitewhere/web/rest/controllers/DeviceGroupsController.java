@@ -244,7 +244,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Add elements to a device group")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public List<IDeviceGroupElement> addDeviceGroupElements(
+	public ISearchResults<IDeviceGroupElement> addDeviceGroupElements(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "addDeviceGroupElements", LOGGER);
@@ -255,11 +255,11 @@ public class DeviceGroupsController extends SiteWhereController {
 					(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
 			List<IDeviceGroupElement> results =
 					SiteWhere.getServer().getDeviceManagement().addDeviceGroupElements(groupToken, elements);
-			List<IDeviceGroupElement> retval = new ArrayList<IDeviceGroupElement>();
+			List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 			for (IDeviceGroupElement elm : results) {
-				retval.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
+				converted.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
 			}
-			return retval;
+			return new SearchResults<IDeviceGroupElement>(converted);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -278,7 +278,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Delete elements from a device group")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public List<IDeviceGroupElement> deleteDeviceGroupElements(
+	public ISearchResults<IDeviceGroupElement> deleteDeviceGroupElements(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@RequestBody List<DeviceGroupElementCreateRequest> request) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceGroupElements", LOGGER);
@@ -290,11 +290,11 @@ public class DeviceGroupsController extends SiteWhereController {
 			List<IDeviceGroupElement> results =
 					SiteWhere.getServer().getDeviceManagement().removeDeviceGroupElements(groupToken,
 							elements);
-			List<IDeviceGroupElement> retval = new ArrayList<IDeviceGroupElement>();
+			List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 			for (IDeviceGroupElement elm : results) {
-				retval.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
+				converted.add(helper.convert(elm, SiteWhere.getServer().getAssetModuleManager()));
 			}
-			return retval;
+			return new SearchResults<IDeviceGroupElement>(converted);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

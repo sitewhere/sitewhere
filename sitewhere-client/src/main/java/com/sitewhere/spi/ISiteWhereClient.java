@@ -26,8 +26,11 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
@@ -37,6 +40,8 @@ import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceCommandSearchResults;
+import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
+import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
 import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
 import com.sitewhere.rest.model.search.DeviceSpecificationSearchResults;
@@ -155,6 +160,27 @@ public interface ISiteWhereClient {
 	 * @throws SiteWhereException
 	 */
 	public Site getSiteByToken(String token) throws SiteWhereException;
+
+	/**
+	 * Create a new zone associated with a site.
+	 * 
+	 * @param siteToken
+	 *            unique token for site
+	 * @param request
+	 *            information for new zone
+	 * @return zone that was created.
+	 * @throws SiteWhereException
+	 */
+	public Zone createZone(String siteToken, ZoneCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * List zones associated with a given site.
+	 * 
+	 * @param siteToken
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException;
 
 	/**
 	 * Create a new device.
@@ -436,27 +462,6 @@ public interface ISiteWhereClient {
 			DateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**
-	 * Create a new zone associated with a site.
-	 * 
-	 * @param siteToken
-	 *            unique token for site
-	 * @param request
-	 *            information for new zone
-	 * @return zone that was created.
-	 * @throws SiteWhereException
-	 */
-	public Zone createZone(String siteToken, ZoneCreateRequest request) throws SiteWhereException;
-
-	/**
-	 * List zones associated with a given site.
-	 * 
-	 * @param siteToken
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public ZoneSearchResults listZonesForSite(String siteToken) throws SiteWhereException;
-
-	/**
 	 * Invokes a command on a list of devices as a batch operation.
 	 * 
 	 * @param batchToken
@@ -468,6 +473,79 @@ public interface ISiteWhereClient {
 	 */
 	public BatchOperation createBatchCommandInvocation(String batchToken, String commandToken,
 			Map<String, String> parameters, List<String> hardwareIds) throws SiteWhereException;
+
+	/**
+	 * Create a new device group.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceGroup createDeviceGroup(DeviceGroupCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Get a device group by unique token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceGroup getDeviceGroupByToken(String token) throws SiteWhereException;
+
+	/**
+	 * Delete a device group by unique token.
+	 * 
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceGroup deleteDeviceGroup(String token) throws SiteWhereException;
+
+	/**
+	 * List device groups that meet the given criteria.
+	 * 
+	 * @param role
+	 * @param criteria
+	 * @param includeDeleted
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceGroupSearchResults listDeviceGroups(String role, SearchCriteria criteria,
+			boolean includeDeleted) throws SiteWhereException;
+
+	/**
+	 * Add elements to an existing device group.
+	 * 
+	 * @param groupToken
+	 * @param elements
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceGroupElementSearchResults addDeviceGroupElements(String groupToken,
+			List<DeviceGroupElementCreateRequest> elements) throws SiteWhereException;
+
+	/**
+	 * List device group elements that meet the given criteria.
+	 * 
+	 * @param groupToken
+	 * @param includeDetails
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceGroupElementSearchResults listDeviceGroupElements(String groupToken, boolean includeDetails,
+			SearchCriteria criteria) throws SiteWhereException;
+
+	/**
+	 * Delete elements from an existing device group.
+	 * 
+	 * @param groupToken
+	 * @param elements
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceGroupElementSearchResults deleteDeviceGroupElements(String groupToken,
+			List<DeviceGroupElementCreateRequest> elements) throws SiteWhereException;
 
 	/**
 	 * List all assets in a given asset module that meet the given criteria.

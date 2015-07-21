@@ -12,9 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,17 +26,24 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
+import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
+import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.error.ErrorCode;
 
 /**
@@ -44,7 +51,6 @@ import com.sitewhere.spi.error.ErrorCode;
  * 
  * @author dadams
  */
-@SuppressWarnings("deprecation")
 public class ApiTests {
 
 	/** Device specification id used in tests */
@@ -236,6 +242,36 @@ public class ApiTests {
 				client.createBatchCommandInvocation(null, "17340bb1-8673-4fc9-8ed0-4f818acedaa5", parameters,
 						hwids);
 		System.out.println("Created operation: " + op.getToken());
+	}
+
+	@Test
+	public void testDeviceGroups() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		DeviceGroupCreateRequest create = new DeviceGroupCreateRequest();
+		create.setToken(UUID.randomUUID().toString());
+		create.setName("Test Group");
+		List<String> roles = new ArrayList<String>();
+		create.setRoles(roles);
+		DeviceGroup group = client.createDeviceGroup(create);
+		DeviceGroup match = client.getDeviceGroupByToken(group.getToken());
+		Assert.assertNotNull(match);
+		Assert.assertEquals(group.getName(), match.getName());
+		DeviceGroupElementCreateRequest elm1 = new DeviceGroupElementCreateRequest();
+		elm1.setType(GroupElementType.Device);
+		elm1.setElementId("07ecf9f0-2786-48c8-ba1e-ec48a87fa104");
+		List<DeviceGroupElementCreateRequest> elms = new ArrayList<DeviceGroupElementCreateRequest>();
+		elms.add(elm1);
+		client.addDeviceGroupElements(group.getToken(), elms);
+		DeviceGroupElementSearchResults found =
+				client.listDeviceGroupElements(group.getToken(), true, new SearchCriteria(1, 0));
+		Assert.assertEquals(found.getNumResults(), 1);
+		DeviceGroupElementSearchResults removed = client.deleteDeviceGroupElements(group.getToken(), elms);
+		Assert.assertEquals(removed.getNumResults(), 1);
+		DeviceGroupSearchResults before = client.listDeviceGroups(null, new SearchCriteria(1, 0), false);
+		DeviceGroup deleted = client.deleteDeviceGroup(group.getToken());
+		Assert.assertNotNull(deleted);
+		DeviceGroupSearchResults after = client.listDeviceGroups(null, new SearchCriteria(1, 0), false);
+		Assert.assertEquals(before.getNumResults(), after.getNumResults() + 1);
 	}
 
 	/**
