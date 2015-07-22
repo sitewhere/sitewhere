@@ -151,6 +151,18 @@
 						<xsd:documentation>Password used to authenticate.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="useBulkEventInserts" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Use MongoDB bulk APIs to insert events in batches.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="bulkInsertMaxChunkSize" type="substitutableInt">
+					<xsd:annotation>
+						<xsd:documentation>When 'useBulkEventInserts' is true, specifies the maximum number
+							of events to send in a single call.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

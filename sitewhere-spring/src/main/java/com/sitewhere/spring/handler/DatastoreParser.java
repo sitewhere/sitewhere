@@ -146,6 +146,17 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		// Register Mongo device management implementation.
 		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
 		dm.addPropertyReference("mongoClient", "mongo");
+
+		Attr useBulkEventInserts = element.getAttributeNode("useBulkEventInserts");
+		if (useBulkEventInserts != null) {
+			dm.addPropertyValue("useBulkEventInserts", useBulkEventInserts.getValue());
+		}
+
+		Attr bulkInsertMaxChunkSize = element.getAttributeNode("bulkInsertMaxChunkSize");
+		if (bulkInsertMaxChunkSize != null) {
+			dm.addPropertyValue("bulkInsertMaxChunkSize", bulkInsertMaxChunkSize.getValue());
+		}
+
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
 				dm.getBeanDefinition());
 

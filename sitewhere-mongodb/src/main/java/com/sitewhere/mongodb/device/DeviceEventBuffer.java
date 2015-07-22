@@ -35,9 +35,6 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	/** Max number of puts that can be stored in the queue */
 	private static final int MAX_QUEUE_SIZE = 10000;
 
-	/** Max number of puts to cache before sending */
-	private static final int MAX_PUTS_BEFORE_WRITE = 1000;
-
 	/** Max number of milliseconds cache before sending */
 	private static final int MAX_TIME_BEFORE_WRITE = 250;
 
@@ -50,8 +47,12 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	/** Events collection */
 	private DBCollection events;
 
-	public DeviceEventBuffer(DBCollection events) {
+	/** Max inserts per chunk */
+	private int maxChunkSize;
+
+	public DeviceEventBuffer(DBCollection events, int maxChunkSize) {
 		this.events = events;
+		this.maxChunkSize = maxChunkSize;
 	}
 
 	/*
@@ -112,11 +113,11 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 						return;
 					}
 
-					if ((count >= MAX_PUTS_BEFORE_WRITE)
+					if ((count >= maxChunkSize)
 							|| ((System.currentTimeMillis() - lastPut) > MAX_TIME_BEFORE_WRITE)) {
 						if (count > 0) {
 							try {
-								LOGGER.info("Executing bulk insert of " + count + " event records.");
+								LOGGER.debug("Executing bulk insert of " + count + " event records.");
 								op.execute();
 							} catch (MongoCommandException e) {
 								LOGGER.error("Error during MongoDB insert.", e);

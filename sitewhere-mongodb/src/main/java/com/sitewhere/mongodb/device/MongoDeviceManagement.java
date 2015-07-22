@@ -130,7 +130,10 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	private IDeviceEventBuffer eventBuffer;
 
 	/** Indicates whether bulk inserts should be used for adding events */
-	private boolean useBulkEventInserts = true;
+	private boolean useBulkEventInserts = false;
+
+	/** Maximum number of records to write in a chunk */
+	private int bulkInsertMaxChunkSize = 1000;
 
 	public MongoDeviceManagement() {
 		super(LifecycleComponentType.DataStore);
@@ -147,8 +150,12 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		// Support bulk inserts for events.
 		if (isUseBulkEventInserts()) {
-			this.eventBuffer = new DeviceEventBuffer(getMongoClient().getEventsCollection());
+			this.eventBuffer =
+					new DeviceEventBuffer(getMongoClient().getEventsCollection(), getBulkInsertMaxChunkSize());
 			getEventBuffer().start();
+			LOGGER.info("MongoDB device management is using bulk inserts for events.");
+		} else {
+			LOGGER.info("MongoDB device management is not using bulk inserts for events.");
 		}
 	}
 
@@ -2457,5 +2464,13 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 	public void setUseBulkEventInserts(boolean useBulkEventInserts) {
 		this.useBulkEventInserts = useBulkEventInserts;
+	}
+
+	public int getBulkInsertMaxChunkSize() {
+		return bulkInsertMaxChunkSize;
+	}
+
+	public void setBulkInsertMaxChunkSize(int bulkInsertMaxChunkSize) {
+		this.bulkInsertMaxChunkSize = bulkInsertMaxChunkSize;
 	}
 }
