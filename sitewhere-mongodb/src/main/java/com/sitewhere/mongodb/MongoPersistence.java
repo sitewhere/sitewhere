@@ -20,6 +20,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.WriteResult;
+import com.sitewhere.mongodb.device.IDeviceEventBuffer;
 import com.sitewhere.mongodb.device.MongoDeviceAlert;
 import com.sitewhere.mongodb.device.MongoDeviceCommandInvocation;
 import com.sitewhere.mongodb.device.MongoDeviceCommandResponse;
@@ -61,6 +62,31 @@ public class MongoPersistence {
 	public static void insert(DBCollection collection, DBObject object) throws SiteWhereException {
 		try {
 			collection.insert(object);
+		} catch (MongoCommandException e) {
+			throw new SiteWhereException("Error during MongoDB insert.", e);
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
+	}
+
+	/**
+	 * Insert an event, taking into account whether the device management implementation
+	 * in configured for bulk operations.
+	 * 
+	 * @param collection
+	 * @param object
+	 * @param bulk
+	 * @param buffer
+	 * @throws SiteWhereException
+	 */
+	public static void insertEvent(DBCollection collection, DBObject object, boolean bulk,
+			IDeviceEventBuffer buffer) throws SiteWhereException {
+		try {
+			if (bulk) {
+				buffer.add(object);
+			} else {
+				collection.insert(object);
+			}
 		} catch (MongoCommandException e) {
 			throw new SiteWhereException("Error during MongoDB insert.", e);
 		} catch (MongoTimeoutException e) {

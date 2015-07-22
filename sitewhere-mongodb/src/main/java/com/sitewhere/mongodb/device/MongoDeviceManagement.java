@@ -126,6 +126,12 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	/** Provides caching for device management entities */
 	private IDeviceManagementCacheProvider cacheProvider;
 
+	/** Device event buffer implementation */
+	private IDeviceEventBuffer eventBuffer;
+
+	/** Indicates whether bulk inserts should be used for adding events */
+	private boolean useBulkEventInserts = true;
+
 	public MongoDeviceManagement() {
 		super(LifecycleComponentType.DataStore);
 	}
@@ -136,8 +142,14 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
-		/** Ensure that collection indexes exist */
+		// Ensure that collection indexes exist.
 		ensureIndexes();
+
+		// Support bulk inserts for events.
+		if (isUseBulkEventInserts()) {
+			this.eventBuffer = new DeviceEventBuffer(getMongoClient().getEventsCollection());
+			getEventBuffer().start();
+		}
 	}
 
 	/*
@@ -209,6 +221,11 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	public void stop() throws SiteWhereException {
 		LOGGER.info("Mongo device management stopped.");
+
+		// Stop the event buffer if used.
+		if (getEventBuffer() != null) {
+			getEventBuffer().stop();
+		}
 	}
 
 	/*
@@ -1051,7 +1068,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject mObject = MongoDeviceMeasurements.toDBObject(measurements, false);
-		MongoPersistence.insert(events, mObject);
+		MongoPersistence.insertEvent(events, mObject, isUseBulkEventInserts(), getEventBuffer());
 
 		// Update assignment state if requested.
 		measurements = MongoDeviceMeasurements.fromDBObject(mObject, false);
@@ -1120,7 +1137,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject locObject = MongoDeviceLocation.toDBObject(location, false);
-		MongoPersistence.insert(events, locObject);
+		MongoPersistence.insertEvent(events, locObject, isUseBulkEventInserts(), getEventBuffer());
 
 		// Update assignment state if requested.
 		location = MongoDeviceLocation.fromDBObject(locObject, false);
@@ -1209,7 +1226,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject alertObject = MongoDeviceAlert.toDBObject(alert, false);
-		MongoPersistence.insert(events, alertObject);
+		MongoPersistence.insertEvent(events, alertObject, isUseBulkEventInserts(), getEventBuffer());
 
 		// Update assignment state if requested.
 		alert = MongoDeviceAlert.fromDBObject(alertObject, false);
@@ -1339,7 +1356,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject streamDataObject = MongoDeviceStreamData.toDBObject(streamData, false);
-		MongoPersistence.insert(events, streamDataObject);
+		MongoPersistence.insertEvent(events, streamDataObject, isUseBulkEventInserts(), getEventBuffer());
 
 		return MongoDeviceStreamData.fromDBObject(streamDataObject, false);
 	}
@@ -1398,7 +1415,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject ciObject = MongoDeviceCommandInvocation.toDBObject(ci);
-		MongoPersistence.insert(events, ciObject);
+		MongoPersistence.insertEvent(events, ciObject, isUseBulkEventInserts(), getEventBuffer());
+
 		return MongoDeviceCommandInvocation.fromDBObject(ciObject);
 	}
 
@@ -1480,7 +1498,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject dbresponse = MongoDeviceCommandResponse.toDBObject(response);
-		MongoPersistence.insert(events, dbresponse);
+		MongoPersistence.insertEvent(events, dbresponse, isUseBulkEventInserts(), getEventBuffer());
+
 		return MongoDeviceCommandResponse.fromDBObject(dbresponse);
 	}
 
@@ -1541,7 +1560,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBCollection events = getMongoClient().getEventsCollection();
 		DBObject dbstate = MongoDeviceStateChange.toDBObject(state);
-		MongoPersistence.insert(events, dbstate);
+		MongoPersistence.insertEvent(events, dbstate, isUseBulkEventInserts(), getEventBuffer());
+
 		return MongoDeviceStateChange.fromDBObject(dbstate);
 	}
 
@@ -2421,5 +2441,21 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 	public void setMongoClient(IDeviceManagementMongoClient mongoClient) {
 		this.mongoClient = mongoClient;
+	}
+
+	public IDeviceEventBuffer getEventBuffer() {
+		return eventBuffer;
+	}
+
+	public void setEventBuffer(IDeviceEventBuffer eventBuffer) {
+		this.eventBuffer = eventBuffer;
+	}
+
+	public boolean isUseBulkEventInserts() {
+		return useBulkEventInserts;
+	}
+
+	public void setUseBulkEventInserts(boolean useBulkEventInserts) {
+		this.useBulkEventInserts = useBulkEventInserts;
 	}
 }
