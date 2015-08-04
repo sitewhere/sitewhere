@@ -74,6 +74,7 @@ import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -503,6 +504,31 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("hardwareId", hardwareId);
 		return sendRest(getBaseUrl() + "devices/{hardwareId}/assignments", HttpMethod.GET, null,
 				DeviceAssignmentSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.ISiteWhereClient#getAssignmentsForAsset(java.lang.String,
+	 * java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.DeviceAssignmentStatus,
+	 * com.sitewhere.rest.model.search.SearchCriteria)
+	 */
+	@Override
+	public DeviceAssignmentSearchResults getAssignmentsForAsset(String siteToken, String assetModuleId,
+			String assetId, DeviceAssignmentStatus status, SearchCriteria criteria) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("assetModuleId", assetModuleId);
+		vars.put("assetId", assetId);
+		vars.put("siteToken", siteToken);
+		String url = getBaseUrl() + "assets/{assetModuleId}/{assetId}/assignments?siteToken={siteToken}";
+		if (status != null) {
+			url += "&status=" + status.name();
+		}
+		if (criteria != null) {
+			url += "&page=" + criteria.getPageNumber() + "&pageSize=" + criteria.getPageSize();
+		}
+		return sendRest(url, HttpMethod.GET, null, DeviceAssignmentSearchResults.class, vars);
 	}
 
 	/*

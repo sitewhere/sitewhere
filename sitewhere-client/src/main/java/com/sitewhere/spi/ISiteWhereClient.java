@@ -51,6 +51,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
 import com.sitewhere.rest.model.system.Version;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
 /**
@@ -259,6 +260,20 @@ public interface ISiteWhereClient {
 	 */
 	public DeviceAssignmentSearchResults listDeviceAssignmentHistory(String hardwareId)
 			throws SiteWhereException;
+
+	/**
+	 * Get all assignments at a site that are associated with a given asset.
+	 * 
+	 * @param siteToken
+	 * @param assetModuleId
+	 * @param assetId
+	 * @param status
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceAssignmentSearchResults getAssignmentsForAsset(String siteToken, String assetModuleId,
+			String assetId, DeviceAssignmentStatus status, SearchCriteria criteria) throws SiteWhereException;
 
 	/**
 	 * Add a batch of events to the current assignment for the given hardware id.

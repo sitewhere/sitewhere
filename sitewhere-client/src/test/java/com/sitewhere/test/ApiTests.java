@@ -34,6 +34,7 @@ import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
+import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -42,6 +43,7 @@ import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.error.ErrorCode;
@@ -192,6 +194,15 @@ public class ApiTests {
 		mx.setMetadata(metadata);
 		batch.getMeasurements().add(mx);
 		client.addDeviceEventBatch("5a95f3f2-96f0-47f9-b98d-f5c081d01948", batch);
+	}
+
+	@Test
+	public void testGetAssignmentsForAsset() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		DeviceAssignmentSearchResults results =
+				client.getAssignmentsForAsset("bb105f8d-3150-41f5-b9d1-db04965668d3", "fs-persons", "1",
+						DeviceAssignmentStatus.Active, new SearchCriteria(1, 0));
+		System.out.println("Found " + results.getNumResults() + " assignments for asset.");
 	}
 
 	@Test
