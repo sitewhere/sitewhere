@@ -40,6 +40,7 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
@@ -278,6 +279,73 @@ public class HBaseSite {
 				if ((payloadType != null) && (payload != null)) {
 					pager.process((IDeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
 							payloadType).decode(payload, DeviceAssignment.class));
+				}
+			}
+			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
+		} catch (IOException e) {
+			throw new SiteWhereException("Error scanning site rows.", e);
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+			HBaseUtils.closeCleanly(sites);
+			Tracer.pop(LOGGER);
+		}
+	}
+
+	/**
+	 * List device assignments that are associated with a given asset.
+	 * 
+	 * @param context
+	 * @param siteToken
+	 * @param assetModuleId
+	 * @param assetId
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForAsset(IHBaseContext context,
+			String siteToken, String assetModuleId, String assetId, DeviceAssignmentStatus status,
+			ISearchCriteria criteria) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForAsset (HBase) "
+				+ siteToken, LOGGER);
+		HTableInterface sites = null;
+		ResultScanner scanner = null;
+		try {
+			Long siteId = IdManager.getInstance().getSiteKeys().getValue(siteToken);
+			if (siteId == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+			}
+			byte[] assnPrefix = getAssignmentRowKey(siteId);
+			byte[] after = getAfterAssignmentRowKey(siteId);
+
+			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+
+			Scan scan = new Scan();
+			scan.setStartRow(assnPrefix);
+			scan.setStopRow(after);
+			scanner = sites.getScanner(scan);
+
+			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
+			for (Result result : scanner) {
+				// TODO: This is inefficient. There should be a filter on the scanner
+				// instead.
+				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
+					continue;
+				}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+
+				if ((payloadType != null) && (payload != null)) {
+					IDeviceAssignment assignment =
+							(IDeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
+									payloadType).decode(payload, DeviceAssignment.class);
+					boolean sameAssetModule = assetModuleId.equals(assignment.getAssetModuleId());
+					boolean sameAssetId = assetId.equals(assignment.getAssetId());
+					boolean matchingStatus = (status == null) || (status == assignment.getStatus());
+					if (sameAssetModule && sameAssetId && matchingStatus) {
+						pager.process(assignment);
+					}
 				}
 			}
 			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());

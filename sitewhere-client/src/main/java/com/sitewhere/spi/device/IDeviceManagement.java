@@ -370,6 +370,21 @@ public interface IDeviceManagement extends ILifecycleComponent {
 			ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
+	 * Get a list of device assignments associated with a given asset.
+	 * 
+	 * @param siteToken
+	 * @param assetModuleId
+	 * @param assetId
+	 * @param status
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
+			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
+			throws SiteWhereException;
+
+	/**
 	 * Get a device event by unique id.
 	 * 
 	 * @param id

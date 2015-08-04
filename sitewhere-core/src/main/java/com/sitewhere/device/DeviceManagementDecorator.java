@@ -414,6 +414,13 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	}
 
 	@Override
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
+			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
+			throws SiteWhereException {
+		return delegate.getDeviceAssignmentsForAsset(siteToken, assetModuleId, assetId, status, criteria);
+	}
+
+	@Override
 	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
 		return delegate.getDeviceEventById(id);
 	}

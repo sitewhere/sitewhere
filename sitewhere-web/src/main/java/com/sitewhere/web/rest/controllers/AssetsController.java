@@ -24,12 +24,16 @@ import com.sitewhere.Tracer;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.command.CommandResponse;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -91,7 +95,45 @@ public class AssetsController extends SiteWhereController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
 		try {
+
 			return SiteWhere.getServer().getAssetModuleManager().getAssetById(assetModuleId, assetId);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get all assignments for a given asset.
+	 * 
+	 * @param assetModuleId
+	 * @param assetId
+	 * @param siteToken
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{assetModuleId}/{assetId}/assignments", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List all assignments for a given asset")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
+			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
+			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
+			@ApiParam(value = "Unique token that identifies site", required = true) @RequestParam String siteToken,
+			@ApiParam(value = "Assignment status", required = false) @RequestParam(required = false) String status,
+			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
+		try {
+			DeviceAssignmentStatus decodedStatus =
+					(status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			return SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentsForAsset(siteToken,
+					assetModuleId, assetId, decodedStatus, criteria);
+		} catch (IllegalArgumentException e) {
+			throw new SiteWhereException("Invalid device assignment status: " + status);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

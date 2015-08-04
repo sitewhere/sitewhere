@@ -543,6 +543,23 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.lang
+	 * .String, java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.DeviceAssignmentStatus,
+	 * com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
+			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
+			throws SiteWhereException {
+		return HBaseSite.listDeviceAssignmentsForAsset(context, siteToken, assetModuleId, assetId, status,
+				criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceEventById(java.lang.String)
 	 */
 	@Override

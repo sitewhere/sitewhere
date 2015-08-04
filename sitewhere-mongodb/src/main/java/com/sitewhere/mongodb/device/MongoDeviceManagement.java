@@ -198,6 +198,10 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 				new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, 1), new BasicDBObject("unique", true));
 		getMongoClient().getDeviceAssignmentsCollection().createIndex(
 				new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		getMongoClient().getDeviceAssignmentsCollection().createIndex(
+				new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, 1).append(
+						MongoDeviceAssignment.PROP_ASSET_MODULE_ID, 1).append(
+						MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
 		getMongoClient().getEventsCollection().createIndex(
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
 						MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
@@ -992,6 +996,31 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			ISearchCriteria criteria) throws SiteWhereException {
 		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
+		BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+		return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.lang
+	 * .String, java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.DeviceAssignmentStatus,
+	 * com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
+			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
+			throws SiteWhereException {
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		BasicDBObject query =
+				new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken).append(
+						MongoDeviceAssignment.PROP_ASSET_MODULE_ID, assetModuleId).append(
+						MongoDeviceAssignment.PROP_ASSET_ID, assetId);
+		if (status != null) {
+			query.append(MongoDeviceAssignment.PROP_STATUS, status.name());
+		}
 		BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 		return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
 	}
