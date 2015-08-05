@@ -25,6 +25,7 @@ import com.sitewhere.server.asset.filesystem.FileSystemDeviceAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemLocationAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemPersonAssetModule;
+import com.sitewhere.wso2.identity.scim.Wso2ScimAssetModule;
 
 /**
  * Parses configuration data for the SiteWhere asset management section.
@@ -53,6 +54,10 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 			switch (type) {
 			case AssetModuleReference: {
 				modules.add(parseAssetModuleReference(child, context));
+				break;
+			}
+			case Wso2IdentityAssetModule: {
+				modules.add(parseWso2IdentityAssetModule(child, context));
 				break;
 			}
 			case FilesystemDeviceAssetModule: {
@@ -92,6 +97,44 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 			return new RuntimeBeanReference(ref.getValue());
 		}
 		throw new RuntimeException("Asset module reference does not have ref defined.");
+	}
+
+	/**
+	 * Parse a fileystem device asset module configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseWso2IdentityAssetModule(Element element, ParserContext context) {
+		BeanDefinitionBuilder module = BeanDefinitionBuilder.rootBeanDefinition(Wso2ScimAssetModule.class);
+
+		Attr moduleId = element.getAttributeNode("moduleId");
+		if (moduleId != null) {
+			module.addPropertyValue("moduleId", moduleId.getValue());
+		}
+
+		Attr scimUsersUrl = element.getAttributeNode("scimUsersUrl");
+		if (scimUsersUrl != null) {
+			module.addPropertyValue("scimUsersUrl", scimUsersUrl.getValue());
+		}
+
+		Attr username = element.getAttributeNode("username");
+		if (username != null) {
+			module.addPropertyValue("username", username.getValue());
+		}
+
+		Attr password = element.getAttributeNode("password");
+		if (password != null) {
+			module.addPropertyValue("password", password.getValue());
+		}
+
+		Attr ignoreBadCertificate = element.getAttributeNode("ignoreBadCertificate");
+		if (ignoreBadCertificate != null) {
+			module.addPropertyValue("ignoreBadCertificate", ignoreBadCertificate.getValue());
+		}
+
+		return module.getBeanDefinition();
 	}
 
 	/**
@@ -180,6 +223,9 @@ public class AssetManagementParser extends AbstractBeanDefinitionParser {
 
 		/** References an asset module defined as a Spring bean */
 		AssetModuleReference("asset-module"),
+
+		/** Asset module that pulls data from WSO2 Identity Server */
+		Wso2IdentityAssetModule("wso2-identity-asset-module"),
 
 		/** Configures a filesystem device asset module */
 		FilesystemDeviceAssetModule("filesystem-device-asset-module"),

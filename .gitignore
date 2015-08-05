@@ -18,5 +18,6 @@
 /sitewhere-spring/target
 /sitewhere-twilio/target
 /sitewhere-web/target
+/sitewhere-wso2/target
 /deploy
 /target

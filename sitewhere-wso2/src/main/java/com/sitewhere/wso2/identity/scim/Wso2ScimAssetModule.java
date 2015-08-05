@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.asset.scim;
+package com.sitewhere.wso2.identity.scim;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,10 +15,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -46,7 +50,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	private static Logger LOGGER = Logger.getLogger(Wso2ScimAssetModule.class);
 
 	/** Module id */
-	private static final String MODULE_ID = "wso2scim";
+	private static final String DEFAULT_MODULE_ID = "wso2scim";
 
 	/** Module name */
 	private static final String MODULE_NAME = "WSO2 Identity Management";
@@ -60,8 +64,20 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	/** Default password for basic auth */
 	private static final String DEFAULT_AUTH_PASSWORD = "admin";
 
+	/** Module id */
+	private String moduleId = DEFAULT_MODULE_ID;
+
 	/** URL used to access user info */
-	private String userUrl = DEFAULT_URL;
+	private String scimUsersUrl = DEFAULT_URL;
+
+	/** Basic auth username */
+	private String username = DEFAULT_AUTH_USERNAME;
+
+	/** Basic auth password */
+	private String password = DEFAULT_AUTH_PASSWORD;
+
+	/** Indicates whether to ignore a bad SSL certificate on the server */
+	private boolean ignoreBadCertificate = false;
 
 	/** Use CXF web client to send requests */
 	private WebClient client;
@@ -85,8 +101,8 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
-		LOGGER.info("Connecting to WSO2 Identity Server instance at: " + getUserUrl());
-		this.client = WebClient.create(getUserUrl(), DEFAULT_AUTH_USERNAME, DEFAULT_AUTH_PASSWORD, null);
+		LOGGER.info("Connecting to WSO2 Identity Server instance at: " + getScimUsersUrl());
+		this.client = WebClient.create(getScimUsersUrl(), getUsername(), getPassword(), null);
 		cacheAssetData();
 	}
 
@@ -115,7 +131,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	 * @see com.sitewhere.spi.asset.IAssetModule#getId()
 	 */
 	public String getId() {
-		return MODULE_ID;
+		return getModuleId();
 	}
 
 	/*
@@ -204,6 +220,9 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 		int totalAssets = 0;
 		long startTime = System.currentTimeMillis();
 		WebClient caller = WebClient.fromClient(client);
+		if (isIgnoreBadCertificate()) {
+			doIgnoreBadCertificate(caller);
+		}
 		caller.accept(MediaType.APPLICATION_JSON_TYPE);
 		Response response = caller.get();
 		Object entity = response.getEntity();
@@ -242,29 +261,25 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	protected PersonAsset parse(JsonNode resource) throws SiteWhereException {
 		PersonAsset asset = new PersonAsset();
 		JsonNode id = resource.get(IScimFields.ID);
-		if (id == null) {
-			throw new SiteWhereException("SCIM resource does not have an id.");
+		if (id != null) {
+			asset.getProperties().put(IWso2ScimFields.PROP_ASSET_ID, id.textValue());
 		}
-		asset.getProperties().put(IWso2ScimFields.PROP_ASSET_ID, id.textValue());
 
 		JsonNode username = resource.get(IScimFields.USERNAME);
 		if (username != null) {
 			asset.getProperties().put(IWso2ScimFields.PROP_USERNAME, username.textValue());
+			asset.setUserName(username.textValue());
+			asset.setId(username.textValue());
 		}
 
 		JsonNode profileUrl = resource.get(IScimFields.PROFILE_URL);
 		if (profileUrl != null) {
 			asset.getProperties().put(IWso2ScimFields.PROP_PROFILE_URL, profileUrl.textValue());
+			asset.setImageUrl(profileUrl.textValue());
 		}
 
 		parseName(resource, asset);
 		parseEmail(resource, asset);
-
-		asset.setId(IWso2ScimFields.PROP_ASSET_ID);
-		asset.setName(IWso2ScimFields.PROP_NAME);
-		asset.setEmailAddress(IWso2ScimFields.PROP_EMAIL_ADDRESS);
-		asset.setUserName(IWso2ScimFields.PROP_USERNAME);
-		asset.setImageUrl(IWso2ScimFields.PROP_PROFILE_URL);
 
 		return asset;
 	}
@@ -292,6 +307,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 				asset.getProperties().put(IScimFields.FAMILY_NAME, familyValue);
 			}
 			asset.getProperties().put(IWso2ScimFields.PROP_NAME, full.trim());
+			asset.setName(full.trim());
 		}
 	}
 
@@ -309,15 +325,73 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 			while (it.hasNext()) {
 				String email = it.next().textValue();
 				asset.getProperties().put("emailAddress" + index, email);
+				asset.setEmailAddress(email);
 			}
 		}
 	}
 
-	public String getUserUrl() {
-		return userUrl;
+	/**
+	 * Update certificate management to ignore invalid SSL certificates.
+	 * 
+	 * @param caller
+	 * @throws SiteWhereException
+	 */
+	protected void doIgnoreBadCertificate(WebClient caller) throws SiteWhereException {
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
+
+			public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+			}
+
+			public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+			}
+		} };
+		HTTPConduit httpConduit = (HTTPConduit) WebClient.getConfig(caller).getConduit();
+		TLSClientParameters tlsCP = new TLSClientParameters();
+		tlsCP.setTrustManagers(trustAllCerts);
+		tlsCP.setDisableCNCheck(true);
+		httpConduit.setTlsClientParameters(tlsCP);
 	}
 
-	public void setUserUrl(String userUrl) {
-		this.userUrl = userUrl;
+	public String getModuleId() {
+		return moduleId;
+	}
+
+	public void setModuleId(String moduleId) {
+		this.moduleId = moduleId;
+	}
+
+	public String getScimUsersUrl() {
+		return scimUsersUrl;
+	}
+
+	public void setScimUsersUrl(String scimUsersUrl) {
+		this.scimUsersUrl = scimUsersUrl;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public boolean isIgnoreBadCertificate() {
+		return ignoreBadCertificate;
+	}
+
+	public void setIgnoreBadCertificate(boolean ignoreBadCertificate) {
+		this.ignoreBadCertificate = ignoreBadCertificate;
 	}
 }

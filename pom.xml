@@ -41,6 +41,7 @@
 				<module>sitewhere-spring</module>
 				<module>sitewhere-twilio</module>
 				<module>sitewhere-web</module>
+				<module>sitewhere-wso2</module>
 			</modules>
 		</profile>
 		<profile>
@@ -64,6 +65,7 @@
 				<module>sitewhere-twilio</module>
 				<module>sitewhere-documentation</module>
 				<module>sitewhere-web</module>
+				<module>sitewhere-wso2</module>
 			</modules>
 		</profile>
 

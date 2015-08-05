@@ -23,6 +23,8 @@
 	<classpathentry kind="src" path="sitewhere-spring/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-twilio/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-web/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-wso2/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-wso2/src/main/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/commons-io/commons-io/1.4/commons-io-1.4.jar"/>
@@ -92,5 +94,6 @@
 	<classpathentry kind="var" path="M2_REPO/io/swagger/swagger-parser/1.0.1/swagger-parser-1.0.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtdispatch/hawtdispatch/1.19/hawtdispatch-1.19.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtdispatch/hawtdispatch-transport/1.19/hawtdispatch-transport-1.19.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-rt-transports-http/3.0.2/cxf-rt-transports-http-3.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

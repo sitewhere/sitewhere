@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.server.asset.scim;
+package com.sitewhere.wso2.identity.scim;
 
 /**
  * Interface for fields available via SCIM on WSO2.
