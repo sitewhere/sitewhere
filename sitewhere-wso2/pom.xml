@@ -25,7 +25,28 @@
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.ksoap2-android</groupId>
+			<artifactId>ksoap2-android</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.ksoap2-android</groupId>
+			<artifactId>ksoap2-j2se</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.ksoap2-android</groupId>
+			<artifactId>ksoap2-extras</artifactId>
+			<version>3.4.0</version>
+		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/ksoap2-android-releases/</url>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<plugin>

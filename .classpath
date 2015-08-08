@@ -95,5 +95,11 @@
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtdispatch/hawtdispatch/1.19/hawtdispatch-1.19.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtdispatch/hawtdispatch-transport/1.19/hawtdispatch-transport-1.19.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-rt-transports-http/3.0.2/cxf-rt-transports-http-3.0.2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/code/ksoap2-android/ksoap2-android/3.4.0/ksoap2-android-3.4.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/code/ksoap2-android/ksoap2-base/3.4.0/ksoap2-base-3.4.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/code/ksoap2-android/ksoap2-j2se/3.4.0/ksoap2-j2se-3.4.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/code/ksoap2-android/ksoap2-extras/3.4.0/ksoap2-extras-3.4.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/xmlpull/xmlpull/1.1.3.3/xmlpull-1.1.3.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/net/sourceforge/kxml/kxml/2.2.4/kxml-2.2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

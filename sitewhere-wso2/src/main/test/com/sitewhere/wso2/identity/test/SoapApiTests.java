@@ -26,13 +26,25 @@ import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.ISiteWhereClient;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
+import com.sitewhere.wso2.identity.ksoap2.Wso2SoapClient;
 import com.sitewhere.wso2.identity.ws.RemoteUserStoreManagerService;
 import com.sitewhere.wso2.identity.ws.RemoteUserStoreManagerServicePortType;
 
 public class SoapApiTests {
 
+	/** Default username for authentication */
+	public static final String USERNAME = "dadams";
+
+	/** Default password for authentication */
+	public static final String PASSWORD = "sitewhere";
+
 	@Before
 	public void setup() {
+		System.setProperty("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", "true");
+		System.setProperty("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump", "true");
+		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
+		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
+
 		// Send basic authentication header with web service calls.
 		Authenticator.setDefault(new java.net.Authenticator() {
 
@@ -74,14 +86,12 @@ public class SoapApiTests {
 
 	@Test
 	public void testAuthentication() throws Exception {
-		String username = "dadams";
-		String password = "sitewhere";
 		URL wsdl = new URL("https://wso2is:9443//services/RemoteUserStoreManagerService?wsdl");
 		RemoteUserStoreManagerService service = new RemoteUserStoreManagerService(wsdl);
 		RemoteUserStoreManagerServicePortType wso2 =
 				service.getRemoteUserStoreManagerServiceHttpsSoap11Endpoint();
-		boolean authenticated = wso2.authenticate(username, password);
-		System.out.println("Authenticated " + username + ": " + authenticated);
+		boolean authenticated = wso2.authenticate(USERNAME, PASSWORD);
+		System.out.println("Authenticated " + USERNAME + ": " + authenticated);
 
 		ISiteWhereClient sitewhere = new SiteWhereClient();
 		DeviceAssignmentSearchResults results =
@@ -92,5 +102,12 @@ public class SoapApiTests {
 			DeviceAssignment assignment = sitewhere.getDeviceAssignmentByToken(current.getToken());
 			System.out.println("Device: " + assignment.getDevice().getAssetName());
 		}
+	}
+
+	@Test
+	public void testKSoapAuthentication() throws Exception {
+		Wso2SoapClient client = new Wso2SoapClient();
+		boolean authenticated = client.authenticate(USERNAME, PASSWORD);
+		System.out.println("Authenticated " + USERNAME + ": " + authenticated);
 	}
 }
