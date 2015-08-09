@@ -64,6 +64,9 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	/** Default password for basic auth */
 	private static final String DEFAULT_AUTH_PASSWORD = "admin";
 
+	/** URL of photo returned when none is assigned */
+	private static final String NO_PHOTO_URL = "https://s3.amazonaws.com/sitewhere-demo/people/no-photo.jpg";
+
 	/** Module id */
 	private String moduleId = DEFAULT_MODULE_ID;
 
@@ -276,6 +279,9 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 		if (profileUrl != null) {
 			asset.getProperties().put(IWso2ScimFields.PROP_PROFILE_URL, profileUrl.textValue());
 			asset.setImageUrl(profileUrl.textValue());
+		} else {
+			asset.getProperties().put(IWso2ScimFields.PROP_PROFILE_URL, NO_PHOTO_URL);
+			asset.setImageUrl(NO_PHOTO_URL);
 		}
 
 		parseName(resource, asset);
