@@ -286,6 +286,7 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 
 		parseName(resource, asset);
 		parseEmail(resource, asset);
+		parseRoles(resource, asset);
 
 		return asset;
 	}
@@ -332,6 +333,26 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 				String email = it.next().textValue();
 				asset.getProperties().put("emailAddress" + index, email);
 				asset.setEmailAddress(email);
+			}
+		}
+	}
+
+	/**
+	 * Parse role information.
+	 * 
+	 * @param resource
+	 * @param asset
+	 */
+	protected void parseRoles(JsonNode resource, PersonAsset asset) {
+		JsonNode groups = resource.get(IScimFields.GROUPS);
+		if (groups != null) {
+			Iterator<JsonNode> it = groups.elements();
+			while (it.hasNext()) {
+				JsonNode fields = it.next();
+				JsonNode role = fields.get(IScimFields.DISPLAY);
+				if (role != null) {
+					asset.getRoles().add(role.textValue());
+				}
 			}
 		}
 	}

@@ -38,6 +38,9 @@ public interface IScimFields {
 	/** Emails section */
 	public static final String EMAILS = "emails";
 
-	/** Roles section */
-	public static final String ROLES = "roles";
+	/** Groups section */
+	public static final String GROUPS = "groups";
+
+	/** Indicator for role name */
+	public static final String DISPLAY = "display";
 }
