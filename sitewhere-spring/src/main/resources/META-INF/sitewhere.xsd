@@ -93,6 +93,13 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" name="default-asset-model-initializer" type="defaultAssetModelInitializerType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Initializes asset model with data if database is empty.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
 
@@ -302,6 +309,11 @@
 
 	<!-- Creates default user model data -->
 	<xsd:complexType name="defaultUserModelInitializerType">
+		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- Creates default asset model data -->
+	<xsd:complexType name="defaultAssetModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
 	</xsd:complexType>
 

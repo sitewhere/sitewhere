@@ -101,6 +101,12 @@ public enum ErrorCode {
 	/** Attempting to create a stream id that contains invalid characters */
 	InvalidCharsInStreamId(531, "Stream id contains invalid characters."),
 
+	/** Invalid asset category id */
+	InvalidAssetCategoryId(535, "Asset category not found."),
+
+	/** Invalid asset id */
+	InvalidAssetId(538, "Asset not found."),
+
 	/******************
 	 * DEVICE COMMAND *
 	 ******************/
@@ -153,6 +159,16 @@ public enum ErrorCode {
 
 	/** Zone delete failure message */
 	ZoneDeleteFailed(700, "Unable to delete zoned."),
+
+	/**********
+	 * ASSETS *
+	 **********/
+
+	/** Attempting to create a new asset category with an id already in use */
+	AssetCategoryIdInUse(800, "Asset category id is already in use."),
+
+	/** Attempting to create a new asset that conflicts with an existing one */
+	AssetIdInUse(801, "Asset id is already in use for this category."),
 
 	/***********
 	 * GENERIC *

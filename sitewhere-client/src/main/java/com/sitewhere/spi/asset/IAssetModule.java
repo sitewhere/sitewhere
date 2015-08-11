@@ -18,28 +18,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author dadams
  */
-public interface IAssetModule<T extends IAsset> extends ILifecycleComponent {
-
-	/**
-	 * Get the unique module identifier.
-	 * 
-	 * @return
-	 */
-	public String getId();
-
-	/**
-	 * Get the module name.
-	 * 
-	 * @return
-	 */
-	public String getName();
-
-	/**
-	 * Indicates the type of assets provided.
-	 * 
-	 * @return
-	 */
-	public AssetType getAssetType();
+public interface IAssetModule<T extends IAsset> extends ILifecycleComponent, IAssetCategory {
 
 	/**
 	 * Get an asset by unique id.

@@ -14,13 +14,14 @@ import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
  * Asset management interface implemented by datastores that can store assets.
  * 
  * @author Derek
  */
-public interface IAssetManagement {
+public interface IAssetManagement extends ILifecycleComponent {
 
 	/**
 	 * Create a new asset category.
@@ -113,13 +114,13 @@ public interface IAssetManagement {
 	public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException;
 
 	/**
-	 * List assets in a categoty that meet the given criteria.
+	 * List assets in a category that meet the given criteria.
 	 * 
 	 * @param categoryId
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IAsset> listAssets(String categoryId, IAssetSearchCriteria criteria)
+	public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria)
 			throws SiteWhereException;
 }

@@ -12,7 +12,9 @@ import java.util.List;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.rest.model.asset.Asset;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 
@@ -21,7 +23,7 @@ import com.sitewhere.spi.asset.IAsset;
  * 
  * @author Derek
  */
-public class MongoAsset {
+public class MongoAsset implements MongoConverter<IAsset> {
 
 	/** Property for asset id */
 	public static final String PROP_ID = "id";
@@ -40,6 +42,34 @@ public class MongoAsset {
 
 	/** Property for asset properties */
 	public static final String PROP_PROPERTIES = "properties";
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.mongodb.MongoConverter#convert(java.lang.Object)
+	 */
+	@Override
+	public BasicDBObject convert(IAsset source) {
+		try {
+			return (BasicDBObject) MongoAssetManagement.marshalAsset(source);
+		} catch (SiteWhereException e) {
+			throw new RuntimeException("Error marshaling asset.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.mongodb.MongoConverter#convert(com.mongodb.DBObject)
+	 */
+	@Override
+	public IAsset convert(DBObject source) {
+		try {
+			return MongoAssetManagement.unmarshalAsset(source);
+		} catch (SiteWhereException e) {
+			throw new RuntimeException("Error unmarshaling asset.", e);
+		}
+	}
 
 	/**
 	 * Copy information from SPI into Mongo DBObject.

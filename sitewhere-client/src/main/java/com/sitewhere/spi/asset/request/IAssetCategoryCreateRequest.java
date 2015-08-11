@@ -17,7 +17,7 @@ import com.sitewhere.spi.asset.AssetType;
 public interface IAssetCategoryCreateRequest {
 
 	/**
-	 * Get unique category id.
+	 * Get category id.
 	 * 
 	 * @return
 	 */

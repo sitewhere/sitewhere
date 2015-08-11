@@ -34,6 +34,9 @@ public interface SiteWhereServerBeans {
 	/** Bean id for device communication subsystem in server configuration */
 	public static final String BEAN_DEVICE_COMMUNICATION = "deviceCommunication";
 
+	/** Bean id for asset management in server configuration */
+	public static final String BEAN_ASSET_MANAGEMENT = "assetManagement";
+
 	/** Bean id for asset module manager in server configuration */
 	public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";
 
@@ -70,4 +73,7 @@ public interface SiteWhereServerBeans {
 
 	/** Bean id for device management data initializer in server configuration */
 	public static final String BEAN_DEVICE_MODEL_INITIALIZER = "deviceModelInitializer";
+
+	/** Bean id for asset management data initializer in server configuration */
+	public static final String BEAN_ASSET_MODEL_INITIALIZER = "assetModelInitializer";
 }

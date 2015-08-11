@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.1.0/sitewhere.xsd?a=4">
+           http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.1.0/sitewhere.xsd?a=5">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder location="file:${catalina.home}/conf/sitewhere/sitewhere.properties"
@@ -46,11 +46,10 @@
 			<!-- Improves performance by using Hazelcast for distributed caching -->
 			<sw:hazelcast-cache/>
 			
-			<!-- Initializes device model with sample data if datastore is empty -->
+			<!-- Initializes data model with sample data if datastore is empty -->
 			<sw:default-device-model-initializer/>
-			
-			<!-- Initializes user model with sample data if datastore is empty -->
 			<sw:default-user-model-initializer/>
+			<sw:default-asset-model-initializer/>
 
 		</sw:datastore>
 		

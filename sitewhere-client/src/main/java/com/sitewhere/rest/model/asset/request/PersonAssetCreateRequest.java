@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.asset.request;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
@@ -25,7 +26,7 @@ public class PersonAssetCreateRequest extends AssetCreateRequest implements IPer
 	private String emailAddress;
 
 	/** Roles */
-	private List<String> roles;
+	private List<String> roles = new ArrayList<String>();
 
 	/*
 	 * (non-Javadoc)

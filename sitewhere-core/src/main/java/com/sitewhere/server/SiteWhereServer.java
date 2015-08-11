@@ -41,6 +41,8 @@ import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetCategory;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
@@ -54,6 +56,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerEnvironment;
+import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -98,6 +101,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** Interface to device management implementation */
 	private IDeviceManagement deviceManagement;
+
+	/** Interface to asset management implementation */
+	private IAssetManagement assetManagement;
 
 	/** Interface to inbound event processor chain */
 	private IInboundEventProcessorChain inboundEventProcessorChain;
@@ -203,6 +209,15 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public IDeviceManagement getDeviceManagement() {
 		return deviceManagement;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetManagement()
+	 */
+	public IAssetManagement getAssetManagement() {
+		return assetManagement;
 	}
 
 	/*
@@ -327,6 +342,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Start user management.
 		startNestedComponent(getUserManagement(), "User management startup failed.", true);
 
+		// Start asset management.
+		startNestedComponent(getAssetManagement(), "Asset management startup failed.", true);
+
 		// Start asset module manager.
 		startNestedComponent(getAssetModuleManager(), "Asset module manager startup failed.", true);
 
@@ -336,6 +354,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Populate data if requested.
 		verifyUserModel();
 		verifyDeviceModel();
+		verifyAssetModel();
 
 		// Enable outbound processor chain.
 		if (getOutboundEventProcessorChain() != null) {
@@ -425,6 +444,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		getDeviceManagement().lifecycleStop();
 		getUserManagement().lifecycleStop();
 		getAssetModuleManager().lifecycleStop();
+		getAssetManagement().lifecycleStop();
 		getSearchProviderManager().lifecycleStop();
 
 		// Start all lifecycle components.
@@ -654,6 +674,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void initializeAssetManagement() throws SiteWhereException {
 		try {
+			assetManagement =
+					(IAssetManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
 			assetModuleManager =
 					(IAssetModuleManager) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
 		} catch (NoSuchBeanDefinitionException e) {
@@ -755,6 +777,41 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			return;
 		} catch (SiteWhereException e) {
 			LOGGER.warn("Unable to read from device model.", e);
+		}
+	}
+
+	/**
+	 * Check whether asset model is populated and offer to bootstrap system if not.
+	 */
+	protected void verifyAssetModel() {
+		try {
+			IAssetModelInitializer init =
+					(IAssetModelInitializer) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER);
+			ISearchResults<IAssetCategory> categories =
+					getAssetManagement().listAssetCategories(new SearchCriteria(1, 1));
+			if (categories.getNumResults() == 0) {
+				List<String> messages = new ArrayList<String>();
+				messages.add("There are currently no asset categories defined in the system. You have the option of "
+						+ "loading a default dataset for previewing system functionality. Would you like to load the "
+						+ "default asset dataset?");
+				String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+				LOGGER.info("\n" + message + "\n");
+				System.out.println("Load default assets? Yes/No (Default is Yes)");
+				String response = readLine();
+				if ((response == null) && (init.isInitializeIfNoConsole())) {
+					response = "Y";
+				} else if ((response == null) && (!init.isInitializeIfNoConsole())) {
+					response = "N";
+				}
+				if ((response.length() == 0) || (response.toLowerCase().startsWith("y"))) {
+					init.initialize(getAssetManagement());
+				}
+			}
+		} catch (NoSuchBeanDefinitionException e) {
+			LOGGER.info("No asset model initializer found in Spring bean configuration. Skipping.");
+			return;
+		} catch (SiteWhereException e) {
+			LOGGER.warn("Unable to read from asset model.", e);
 		}
 	}
 }

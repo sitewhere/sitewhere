@@ -13,6 +13,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -88,6 +89,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * @return
 	 */
 	public IDeviceManagement getDeviceManagement();
+
+	/**
+	 * Get the asset management implementation.
+	 * 
+	 * @return
+	 */
+	public IAssetManagement getAssetManagement();
 
 	/**
 	 * Get the configured device management cache provider implementation.

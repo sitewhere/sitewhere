@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.asset.request;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
@@ -28,7 +29,7 @@ public class AssetCreateRequest implements IAssetCreateRequest {
 	private String imageUrl;
 
 	/** Asset properties */
-	private Map<String, String> properties;
+	private Map<String, String> properties = new HashMap<String, String>();
 
 	/*
 	 * (non-Javadoc)

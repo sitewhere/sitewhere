@@ -26,9 +26,11 @@ import com.sitewhere.hbase.device.HBaseDeviceManagement;
 import com.sitewhere.hbase.user.HBaseUserManagement;
 import com.sitewhere.mongodb.DockerMongoClient;
 import com.sitewhere.mongodb.SiteWhereMongoClient;
+import com.sitewhere.mongodb.asset.MongoAssetManagement;
 import com.sitewhere.mongodb.device.MongoDeviceManagement;
 import com.sitewhere.mongodb.user.MongoUserManagement;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.server.asset.DefaultAssetModuleInitializer;
 import com.sitewhere.server.device.DefaultDeviceModelInitializer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
 
@@ -89,6 +91,10 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 			}
 			case DefaultUserModelInitializer: {
 				parseDefaultUserModelInitializer(child, context);
+				break;
+			}
+			case DefaultAssetModelInitializer: {
+				parseDefaultAssetModelInitializer(child, context);
 				break;
 			}
 			}
@@ -165,6 +171,12 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		um.addPropertyReference("mongoClient", "mongo");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
 				um.getBeanDefinition());
+
+		// Register Mongo asset management implementation.
+		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
+		am.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
+				am.getBeanDefinition());
 	}
 
 	/**
@@ -309,6 +321,23 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse configuration for default asset model initializer.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseDefaultAssetModelInitializer(Element element, ParserContext context) {
+		BeanDefinitionBuilder init =
+				BeanDefinitionBuilder.rootBeanDefinition(DefaultAssetModuleInitializer.class);
+		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
+		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
+			init.addPropertyValue("initializeIfNoConsole", "true");
+		}
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER,
+				init.getBeanDefinition());
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -331,7 +360,10 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		DefaultDeviceModelInitializer("default-device-model-initializer"),
 
 		/** Creates sample data if no device data is present */
-		DefaultUserModelInitializer("default-user-model-initializer");
+		DefaultUserModelInitializer("default-user-model-initializer"),
+
+		/** Creates sample data if no device data is present */
+		DefaultAssetModelInitializer("default-asset-model-initializer");
 
 		/** Event code */
 		private String localName;

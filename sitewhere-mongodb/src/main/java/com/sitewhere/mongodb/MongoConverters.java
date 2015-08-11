@@ -10,6 +10,7 @@ package com.sitewhere.mongodb;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.mongodb.asset.MongoAsset;
 import com.sitewhere.mongodb.asset.MongoAssetCategory;
 import com.sitewhere.mongodb.asset.MongoHardwareAsset;
 import com.sitewhere.mongodb.asset.MongoLocationAsset;
@@ -32,6 +33,7 @@ import com.sitewhere.mongodb.device.MongoDeviceStream;
 import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
+import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
@@ -92,6 +94,7 @@ public class MongoConverters implements IMongoConverterLookup {
 		CONVERTERS.put(IHardwareAsset.class, new MongoHardwareAsset());
 		CONVERTERS.put(IPersonAsset.class, new MongoPersonAsset());
 		CONVERTERS.put(ILocationAsset.class, new MongoLocationAsset());
+		CONVERTERS.put(IAsset.class, new MongoAsset());
 	}
 
 	/*

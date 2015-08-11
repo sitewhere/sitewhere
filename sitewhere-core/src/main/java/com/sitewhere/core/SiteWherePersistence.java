@@ -19,6 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
+import com.sitewhere.rest.model.asset.Asset;
+import com.sitewhere.rest.model.asset.AssetCategory;
+import com.sitewhere.rest.model.asset.HardwareAsset;
+import com.sitewhere.rest.model.asset.LocationAsset;
+import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
@@ -53,6 +58,11 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
+import com.sitewhere.spi.asset.request.IAssetCreateRequest;
+import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
+import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
+import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -1334,6 +1344,115 @@ public class SiteWherePersistence {
 		auth.setAuthority(source.getAuthority());
 		auth.setDescription(source.getDescription());
 		return auth;
+	}
+
+	/**
+	 * Common logic for creating an asset category.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static AssetCategory assetCategoryCreateLogic(IAssetCategoryCreateRequest request)
+			throws SiteWhereException {
+		AssetCategory category = new AssetCategory();
+
+		assureData(request.getId());
+		category.setId(request.getId());
+
+		// Name is required.
+		assureData(request.getName());
+		category.setName(request.getName());
+
+		// Type is required.
+		assureData(request.getType());
+		category.setAssetType(request.getType());
+
+		return category;
+	}
+
+	/**
+	 * Handle base logic common to all asset types.
+	 * 
+	 * @param categoryId
+	 * @param request
+	 * @param asset
+	 * @throws SiteWhereException
+	 */
+	public static void assetCreateLogic(String categoryId, IAssetCreateRequest request, Asset asset)
+			throws SiteWhereException {
+		assureData(categoryId);
+		asset.setAssetCategoryId(categoryId);
+
+		assureData(request.getId());
+		asset.setId(request.getId());
+
+		assureData(request.getName());
+		asset.setName(request.getName());
+
+		assureData(request.getImageUrl());
+		asset.setImageUrl(request.getImageUrl());
+
+		asset.getProperties().putAll(request.getProperties());
+	}
+
+	/**
+	 * Handle common logic for creating a person asset.
+	 * 
+	 * @param categoryId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static PersonAsset personAssetCreateLogic(String categoryId, IPersonAssetCreateRequest request)
+			throws SiteWhereException {
+		PersonAsset person = new PersonAsset();
+		assetCreateLogic(categoryId, request, person);
+
+		person.setUserName(request.getUserName());
+		person.setEmailAddress(request.getEmailAddress());
+		person.getRoles().addAll(request.getRoles());
+
+		return person;
+	}
+
+	/**
+	 * Handle common logic for creating a hardware asset.
+	 * 
+	 * @param categoryId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static HardwareAsset hardwareAssetCreateLogic(String categoryId,
+			IHardwareAssetCreateRequest request) throws SiteWhereException {
+		HardwareAsset hardware = new HardwareAsset();
+		assetCreateLogic(categoryId, request, hardware);
+
+		hardware.setSku(request.getSku());
+		hardware.setDescription(request.getDescription());
+
+		return hardware;
+	}
+
+	/**
+	 * Handle common logic for creating a location asset.
+	 * 
+	 * @param categoryId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static LocationAsset locationAssetCreateLogic(String categoryId,
+			ILocationAssetCreateRequest request) throws SiteWhereException {
+		LocationAsset loc = new LocationAsset();
+		assetCreateLogic(categoryId, request, loc);
+
+		loc.setLatitude(request.getLatitude());
+		loc.setLongitude(request.getLongitude());
+		loc.setElevation(request.getElevation());
+
+		return loc;
 	}
 
 	/**
