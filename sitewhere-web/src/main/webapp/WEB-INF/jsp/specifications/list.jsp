@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="sitewhere_title" value="Manage Device Specifications" />
-<c:set var="sitewhere_section" value="specifications" />
+<c:set var="sitewhere_section" value="devices" />
 <%@ include file="../includes/top.inc"%>
 
 <style>

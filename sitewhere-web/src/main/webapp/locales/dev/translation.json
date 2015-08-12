@@ -84,6 +84,7 @@
     "Specification":"Specification",
     "Specifications":"$t(public.Specification)s",
     "Batch":"Batch",
+    "Assets":"Assets",
     "Failed":"Failed",
     "Asset":"Asset",
     "this":"this",

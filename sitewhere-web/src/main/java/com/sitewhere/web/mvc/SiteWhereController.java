@@ -356,6 +356,27 @@ public class SiteWhereController {
 	}
 
 	/**
+	 * Display the "list assets" page.
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/assets/list")
+	public ModelAndView listAssets() {
+		Tracer.start(TracerCategory.AdminUserInterface, "listAssets", LOGGER);
+		try {
+			try {
+				Map<String, Object> data = createBaseData();
+				return new ModelAndView("assets/list", data);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Display the "list batch operations" page.
 	 * 
 	 * @return

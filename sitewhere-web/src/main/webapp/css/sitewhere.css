@@ -31,7 +31,7 @@
 .sw-main-nav {
 	position: absolute;
 	top: 25px;
-	right: 160px;
+	right: 260px;
 }
 
 .sw-main-nav .nav-pills>.active>a:hover, .nav-pills>.active>a {
@@ -635,6 +635,22 @@ td[role="gridcell"]>input[type="text"] {
 
 .nav-pills>li {
 	padding-left: 5px;
+}
+
+.nav-pills .dropdown-toggle span.caret {
+	border-top-color: #dc0000;
+}
+
+.nav-pills .dropdown-toggle:hover span.caret {
+	border-top-color: #dc0000;
+}
+
+.nav-pills .active .dropdown-toggle:hover span.caret {
+	border-top-color: #fff;
+}
+
+.nav-pills .open .dropdown-toggle span.caret {
+	border-top-color: #fff;
 }
 
 label.error {

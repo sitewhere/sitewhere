@@ -53,27 +53,39 @@
 	</c:otherwise>
 </c:choose>
 <c:choose>
-	<c:when test="${sitewhere_section == 'specifications'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/specifications/list.html" data-i18n="public.Specifications"></a></li>
-	</c:when>
-	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html" data-i18n="public.Specifications"></a></li>
-	</c:otherwise>
-</c:choose>
-<c:choose>
 	<c:when test="${sitewhere_section == 'devices'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/devices/list.html" data-i18n="public.Devices"></a></li>
+		<li class="active dropdown">
+      		<a class="dropdown-toggle" style="background-color: #dc0000" href="javascript:void(0);" 
+      			data-i18n="[prepend]public.Devices" data-toggle="dropdown">
+      			<span class="caret"></span>
+      		</a>
+      		<ul class="dropdown-menu">
+        		<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html" data-i18n="public.Specifications"></a></li>
+        		<li><a href="${pageContext.request.contextPath}/admin/devices/list.html" data-i18n="public.Devices"></a></li>
+        		<li><a href="${pageContext.request.contextPath}/admin/groups/list.html" data-i18n="public.DeviceGroups"></a></li>
+      		</ul>
+     	</li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/devices/list.html" data-i18n="public.Devices"></a></li>
-	</c:otherwise>
+		<li class="dropdown">
+      		<a class="dropdown-toggle" href="javascript:void(0);" 
+      			data-i18n="[prepend]public.Devices" data-toggle="dropdown">
+      			<span class="caret"></span>
+      		</a>
+      		<ul class="dropdown-menu">
+        		<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html" data-i18n="public.Specifications"></a></li>
+        		<li><a href="${pageContext.request.contextPath}/admin/devices/list.html" data-i18n="public.Devices"></a></li>
+        		<li><a href="${pageContext.request.contextPath}/admin/groups/list.html" data-i18n="public.DeviceGroups"></a></li>
+      		</ul>
+     	</li>
+    </c:otherwise>
 </c:choose>
 <c:choose>
-	<c:when test="${sitewhere_section == 'devicegroups'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/groups/list.html" data-i18n="public.DeviceGroups"></a></li>
+	<c:when test="${sitewhere_section == 'assets'}">
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/assets/list.html" data-i18n="public.Assets">Assets</a></li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/groups/list.html" data-i18n="public.DeviceGroups"></a></li>
+		<li><a href="${pageContext.request.contextPath}/admin/assets/list.html" data-i18n="public.Assets">Assets</a></li>
 	</c:otherwise>
 </c:choose>
 <c:choose>
