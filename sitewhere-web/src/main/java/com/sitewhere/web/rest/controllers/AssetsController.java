@@ -152,7 +152,7 @@ public class AssetsController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "listAssetModules", LOGGER);
 		try {
 			List<AssetModule> amConverted = new ArrayList<AssetModule>();
-			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().getModules();
+			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().listModules();
 			for (IAssetModule<?> module : modules) {
 				amConverted.add(AssetModule.copy(module));
 			}
@@ -175,7 +175,7 @@ public class AssetsController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceAssetModules", LOGGER);
 		try {
 			List<AssetModule> amConverted = new ArrayList<AssetModule>();
-			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().getModules();
+			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().listModules();
 			for (IAssetModule<?> module : modules) {
 				if (module.getAssetType() == AssetType.Device) {
 					amConverted.add(AssetModule.copy(module));

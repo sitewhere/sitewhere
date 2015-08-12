@@ -158,6 +158,15 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#getComponentName()
+	 */
+	public String getComponentName() {
+		return getClass().getSimpleName() + " [" + getId() + "] " + getName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
 	 */
 	public PersonAsset getAssetById(String id) throws SiteWhereException {

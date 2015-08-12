@@ -152,6 +152,15 @@ public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleCo
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#getComponentName()
+	 */
+	public String getComponentName() {
+		return getClass().getSimpleName() + " [" + getId() + "] " + getName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.asset.IAssetModule#getAssetById(java.lang.String)
 	 */
 	public T getAssetById(String id) throws SiteWhereException {

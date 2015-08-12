@@ -25,7 +25,7 @@ public interface IAssetModuleManager extends ILifecycleComponent {
 	 * 
 	 * @return
 	 */
-	public List<IAssetModule<?>> getModules();
+	public List<IAssetModule<?>> listModules();
 
 	/**
 	 * Calls the refresh method on each asset module and returns a list of responses.
