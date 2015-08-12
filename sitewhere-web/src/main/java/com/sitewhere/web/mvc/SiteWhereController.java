@@ -90,6 +90,27 @@ public class SiteWhereController {
 	}
 
 	/**
+	 * Show SiteWhere server information.
+	 * 
+	 * @return
+	 */
+	@RequestMapping("/server")
+	public ModelAndView serverInfo() {
+		Tracer.start(TracerCategory.AdminUserInterface, "serverInfo", LOGGER);
+		try {
+			try {
+				Map<String, Object> data = createBaseData();
+				return new ModelAndView("server/server", data);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Display the "list sites" page.
 	 * 
 	 * @return
