@@ -214,7 +214,7 @@
 		acAssetDS = new kendo.data.DataSource({ 
 			transport : {
 				read : {
-					url : "${pageContext.request.contextPath}/api/assets/" + assetModuleId + "?criteria=" + criteria,
+					url : "${pageContext.request.contextPath}/api/assets/module/" + assetModuleId + "?criteria=" + criteria,
 					dataType : "json",
 				}
 			},
@@ -263,7 +263,7 @@
 		var assetModuleId = acGetSelectedAssetModuleId();
 		var criteria = $('#ac-asset-search').val();
 		if (criteria != acLastSearch) {
-			var url = "${pageContext.request.contextPath}/api/assets/" + assetModuleId + "?criteria=" + criteria;
+			var url = "${pageContext.request.contextPath}/api/assets/module/" + assetModuleId + "?criteria=" + criteria;
 			acAssetDS.transport.options.read.url = url;
 			acAssetDS.read();
 		}

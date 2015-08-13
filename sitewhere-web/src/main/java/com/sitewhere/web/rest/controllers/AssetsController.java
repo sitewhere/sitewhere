@@ -60,7 +60,7 @@ public class AssetsController extends SiteWhereController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{assetModuleId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/module/{assetModuleId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Search hardware assets")
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -85,7 +85,7 @@ public class AssetsController extends SiteWhereController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{assetModuleId}/{assetId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/module/{assetModuleId}/{assetId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Find hardware asset by unique id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
@@ -113,7 +113,7 @@ public class AssetsController extends SiteWhereController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{assetModuleId}/{assetId}/assignments", method = RequestMethod.GET)
+	@RequestMapping(value = "/module/{assetModuleId}/{assetId}/assignments", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List all assignments for a given asset")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
