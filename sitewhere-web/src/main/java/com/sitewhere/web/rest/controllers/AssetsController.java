@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,12 +24,13 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.asset.AssetModule;
-import com.sitewhere.rest.model.command.CommandResponse;
+import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
+import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -95,7 +97,6 @@ public class AssetsController extends SiteWhereController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
 		try {
-
 			return SiteWhere.getServer().getAssetModuleManager().getAssetById(assetModuleId, assetId);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -151,12 +152,12 @@ public class AssetsController extends SiteWhereController {
 	public List<AssetModule> listAssetModules() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listAssetModules", LOGGER);
 		try {
-			List<AssetModule> amConverted = new ArrayList<AssetModule>();
+			List<AssetModule> converted = new ArrayList<AssetModule>();
 			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().listModules();
 			for (IAssetModule<?> module : modules) {
-				amConverted.add(AssetModule.copy(module));
+				converted.add(AssetModule.copy(module));
 			}
-			return amConverted;
+			return converted;
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -176,14 +177,14 @@ public class AssetsController extends SiteWhereController {
 	public List<AssetModule> listDeviceAssetModules() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceAssetModules", LOGGER);
 		try {
-			List<AssetModule> amConverted = new ArrayList<AssetModule>();
+			List<AssetModule> matches = new ArrayList<AssetModule>();
 			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().listModules();
 			for (IAssetModule<?> module : modules) {
 				if (module.getAssetType() == AssetType.Device) {
-					amConverted.add(AssetModule.copy(module));
+					matches.add(AssetModule.copy(module));
 				}
 			}
-			return amConverted;
+			return matches;
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -197,16 +198,102 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/modules/refresh", method = RequestMethod.POST)
 	@ResponseBody
+	@ApiOperation(value = "Refresh the list of asset modules")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public List<CommandResponse> refreshModules() throws SiteWhereException {
+	public List<ICommandResponse> refreshModules() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
 		try {
-			List<ICommandResponse> responses = SiteWhere.getServer().getAssetModuleManager().refreshModules();
-			List<CommandResponse> converted = new ArrayList<CommandResponse>();
-			for (ICommandResponse response : responses) {
-				converted.add(CommandResponse.copy(response));
-			}
-			return converted;
+			return SiteWhere.getServer().getAssetModuleManager().refreshModules();
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Create a new asset category.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Create a new asset category")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public IAssetCategory createAssetCategory(@RequestBody AssetCategoryCreateRequest request)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "createAssetCategory", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetManagement().createAssetCategory(request);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get an asset category by unique id.
+	 * 
+	 * @param categoryId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Find category by unique id")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public IAssetCategory getAssetCategoryById(
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getAssetCategoryById", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetManagement().getAssetCategory(categoryId);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Delete an existing asset category.
+	 * 
+	 * @param categoryId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.DELETE)
+	@ResponseBody
+	@ApiOperation(value = "Delete an existing asset category")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public IAssetCategory deleteAssetCategory(
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "deleteAssetCategory", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetManagement().deleteAssetCategory(categoryId);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * List asset categories that match the given search criteria.
+	 * 
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List asset categories that match the criteria")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISearchResults<IAssetCategory> listAssetCategories(
+			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listAssetCategories", LOGGER);
+		try {
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			return SiteWhere.getServer().getAssetManagement().listAssetCategories(criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

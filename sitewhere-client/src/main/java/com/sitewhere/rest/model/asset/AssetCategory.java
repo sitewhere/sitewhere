@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.asset;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetCategory;
 
@@ -63,5 +64,19 @@ public class AssetCategory implements IAssetCategory {
 
 	public void setAssetType(AssetType assetType) {
 		this.assetType = assetType;
+	}
+
+	/**
+	 * Create a copy of an SPI object. Used by web services for marshaling.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static AssetCategory copy(IAssetCategory input) throws SiteWhereException {
+		AssetCategory category = new AssetCategory();
+		category.setId(input.getId());
+		category.setName(input.getName());
+		category.setAssetType(input.getAssetType());
+		return category;
 	}
 }

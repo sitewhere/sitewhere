@@ -14,7 +14,7 @@ import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
- * Interface for a module that provides access to one or more asset types.
+ * Interface for a module that provides access to assets of a given type.
  * 
  * @author dadams
  */
