@@ -393,7 +393,7 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/categories/{categoryId}/assets/{assetId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List asset categories that match the criteria")
+	@ApiOperation(value = "Get a category asset by unique id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IAsset getCategoryAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -402,6 +402,24 @@ public class AssetsController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "getCategoryAsset", LOGGER);
 		try {
 			return SiteWhere.getServer().getAssetManagement().getAsset(categoryId, assetId);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/categories/{categoryId}/assets", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List matching assets for a category")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISearchResults<IAsset> listCategoryAssets(
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listCategoryAssets", LOGGER);
+		try {
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			return SiteWhere.getServer().getAssetManagement().listAssets(categoryId, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
