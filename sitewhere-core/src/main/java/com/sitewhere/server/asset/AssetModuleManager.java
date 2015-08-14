@@ -146,6 +146,16 @@ public class AssetModuleManager extends LifecycleComponent implements IAssetModu
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.asset.IAssetModuleManager#getModule(java.lang.String)
+	 */
+	@Override
+	public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException {
+		return assertAssetModule(assetModuleId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.asset.IAssetModuleManager#listModules()
 	 */
 	@Override

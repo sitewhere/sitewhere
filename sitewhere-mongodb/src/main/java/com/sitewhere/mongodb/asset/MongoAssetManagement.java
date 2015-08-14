@@ -181,7 +181,8 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 			throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
 		checkAssetExists(categoryId, request.getId());
-		PersonAsset person = SiteWherePersistence.personAssetCreateLogic(categoryId, request);
+		IAssetCategory category = getAssetCategory(categoryId);
+		PersonAsset person = SiteWherePersistence.personAssetCreateLogic(category, request);
 
 		DBCollection assets = getMongoClient().getAssetsCollection();
 		DBObject created = MongoPersonAsset.toDBObject(person);
@@ -201,7 +202,8 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 			throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
 		checkAssetExists(categoryId, request.getId());
-		HardwareAsset hw = SiteWherePersistence.hardwareAssetCreateLogic(categoryId, request);
+		IAssetCategory category = getAssetCategory(categoryId);
+		HardwareAsset hw = SiteWherePersistence.hardwareAssetCreateLogic(category, request);
 
 		DBCollection assets = getMongoClient().getAssetsCollection();
 		DBObject created = MongoHardwareAsset.toDBObject(hw);
@@ -221,7 +223,8 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 			throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
 		checkAssetExists(categoryId, request.getId());
-		LocationAsset loc = SiteWherePersistence.locationAssetCreateLogic(categoryId, request);
+		IAssetCategory category = getAssetCategory(categoryId);
+		LocationAsset loc = SiteWherePersistence.locationAssetCreateLogic(category, request);
 
 		DBCollection assets = getMongoClient().getAssetsCollection();
 		DBObject created = MongoLocationAsset.toDBObject(loc);

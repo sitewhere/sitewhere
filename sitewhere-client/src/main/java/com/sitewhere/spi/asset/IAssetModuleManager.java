@@ -21,11 +21,21 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 public interface IAssetModuleManager extends ILifecycleComponent {
 
 	/**
+	 * Get asset module by unique id.
+	 * 
+	 * @param assetModuleId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IAssetModule<?> getModule(String assetModuleId) throws SiteWhereException;
+
+	/**
 	 * Get the list of asset modules.
 	 * 
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public List<IAssetModule<?>> listModules();
+	public List<IAssetModule<?>> listModules() throws SiteWhereException;
 
 	/**
 	 * Calls the refresh method on each asset module and returns a list of responses.

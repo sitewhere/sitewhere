@@ -221,7 +221,7 @@
 					transport : {
 						read : {
 							url : "${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
-									+ "?criteria=" + criteria,
+									+ "/assets?criteria=" + criteria,
 							dataType : "json",
 						}
 					},
@@ -271,8 +271,8 @@
 		var criteria = $('#ac-asset-search').val();
 		if (criteria != acLastSearch) {
 			var url =
-					"${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId + "?criteria="
-							+ criteria;
+					"${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
+							+ "/assets?criteria=" + criteria;
 			acAssetDS.transport.options.read.url = url;
 			acAssetDS.read();
 		}

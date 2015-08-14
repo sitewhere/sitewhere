@@ -170,6 +170,12 @@ public enum ErrorCode {
 	/** Attempting to create a new asset that conflicts with an existing one */
 	AssetIdInUse(801, "Asset id is already in use for this category."),
 
+	/** Attempting to create a new asset in a category that does not allow the type */
+	AssetTypeNotAllowed(805, "Asset category does not allow assets of this type."),
+
+	/** Reference to an unknown asset type */
+	UnknownAssetType(806, "Unknown asset type."),
+
 	/***********
 	 * GENERIC *
 	 ***********/

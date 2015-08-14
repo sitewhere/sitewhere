@@ -58,6 +58,8 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.asset.AssetType;
+import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
@@ -1399,15 +1401,19 @@ public class SiteWherePersistence {
 	/**
 	 * Handle common logic for creating a person asset.
 	 * 
-	 * @param categoryId
+	 * @param category
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static PersonAsset personAssetCreateLogic(String categoryId, IPersonAssetCreateRequest request)
-			throws SiteWhereException {
+	public static PersonAsset personAssetCreateLogic(IAssetCategory category,
+			IPersonAssetCreateRequest request) throws SiteWhereException {
+		if (category.getAssetType() != AssetType.Person) {
+			throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
+		}
+
 		PersonAsset person = new PersonAsset();
-		assetCreateLogic(categoryId, request, person);
+		assetCreateLogic(category.getId(), request, person);
 
 		person.setUserName(request.getUserName());
 		person.setEmailAddress(request.getEmailAddress());
@@ -1419,15 +1425,19 @@ public class SiteWherePersistence {
 	/**
 	 * Handle common logic for creating a hardware asset.
 	 * 
-	 * @param categoryId
+	 * @param category
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static HardwareAsset hardwareAssetCreateLogic(String categoryId,
+	public static HardwareAsset hardwareAssetCreateLogic(IAssetCategory category,
 			IHardwareAssetCreateRequest request) throws SiteWhereException {
+		if ((category.getAssetType() != AssetType.Hardware) && (category.getAssetType() != AssetType.Device)) {
+			throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
+		}
+
 		HardwareAsset hardware = new HardwareAsset();
-		assetCreateLogic(categoryId, request, hardware);
+		assetCreateLogic(category.getId(), request, hardware);
 
 		hardware.setSku(request.getSku());
 		hardware.setDescription(request.getDescription());
@@ -1438,15 +1448,19 @@ public class SiteWherePersistence {
 	/**
 	 * Handle common logic for creating a location asset.
 	 * 
-	 * @param categoryId
+	 * @param category
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static LocationAsset locationAssetCreateLogic(String categoryId,
+	public static LocationAsset locationAssetCreateLogic(IAssetCategory category,
 			ILocationAssetCreateRequest request) throws SiteWhereException {
+		if (category.getAssetType() != AssetType.Hardware) {
+			throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
+		}
+
 		LocationAsset loc = new LocationAsset();
-		assetCreateLogic(categoryId, request, loc);
+		assetCreateLogic(category.getId(), request, loc);
 
 		loc.setLatitude(request.getLatitude());
 		loc.setLongitude(request.getLongitude());

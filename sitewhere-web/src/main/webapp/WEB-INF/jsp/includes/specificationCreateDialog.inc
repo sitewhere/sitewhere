@@ -110,7 +110,7 @@
 			spcAssetModulesDS = new kendo.data.DataSource({
 				transport : {
 					read : {
-						url : "${pageContext.request.contextPath}/api/assets/modules/devices",
+						url : "${pageContext.request.contextPath}/api/assets/modules?assetType=Device",
 						dataType : "json",
 					}
 				},
@@ -225,7 +225,7 @@
 					transport : {
 						read : {
 							url : "${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
-									+ "?criteria=" + criteria,
+									+ "/assets?criteria=" + criteria,
 							dataType : "json",
 						}
 					},
@@ -250,7 +250,7 @@
 			if (criteria != spcLastSearch) {
 				var url =
 						"${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
-								+ "?criteria=" + criteria;
+								+ "/assets?criteria=" + criteria;
 				spcHardwareDS.transport.options.read.url = url;
 				spcHardwareDS.read();
 			}
