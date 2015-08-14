@@ -36,6 +36,7 @@ import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.AssetSearchResults;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
@@ -46,7 +47,6 @@ import com.sitewhere.rest.model.search.DeviceLocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
 import com.sitewhere.rest.model.search.DeviceSpecificationSearchResults;
 import com.sitewhere.rest.model.search.DeviceStreamSearchResults;
-import com.sitewhere.rest.model.search.HardwareAssetSearchResults;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
@@ -569,6 +569,5 @@ public interface ISiteWhereClient {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public HardwareAssetSearchResults getAssetsByModuleId(String moduleId, String criteria)
-			throws SiteWhereException;
+	public AssetSearchResults getAssetsByModuleId(String moduleId, String criteria) throws SiteWhereException;
 }

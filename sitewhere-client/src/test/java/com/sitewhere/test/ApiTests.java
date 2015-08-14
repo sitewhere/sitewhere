@@ -33,6 +33,7 @@ import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.AssetSearchResults;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
@@ -203,6 +204,13 @@ public class ApiTests {
 				client.getAssignmentsForAsset("bb105f8d-3150-41f5-b9d1-db04965668d3", "fs-persons", "1",
 						DeviceAssignmentStatus.Active, new SearchCriteria(1, 0));
 		System.out.println("Found " + results.getNumResults() + " assignments for asset.");
+	}
+
+	@Test
+	public void testListAssets() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		AssetSearchResults results = client.getAssetsByModuleId("fs-persons", "d");
+		System.out.println("Found " + results.getNumResults() + " assets matching the criteria.");
 	}
 
 	@Test

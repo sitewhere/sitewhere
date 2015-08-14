@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.asset;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.asset.AssetType;
@@ -21,6 +22,7 @@ import com.sitewhere.spi.asset.IAsset;
  * @author dadams
  */
 @JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Asset implements IAsset {
 
 	/** Unique id */

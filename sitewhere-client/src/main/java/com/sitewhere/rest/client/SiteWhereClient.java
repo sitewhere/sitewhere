@@ -55,6 +55,7 @@ import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.AssetSearchResults;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
@@ -66,7 +67,6 @@ import com.sitewhere.rest.model.search.DeviceMeasurementsSearchResults;
 import com.sitewhere.rest.model.search.DeviceSearchResults;
 import com.sitewhere.rest.model.search.DeviceSpecificationSearchResults;
 import com.sitewhere.rest.model.search.DeviceStreamSearchResults;
-import com.sitewhere.rest.model.search.HardwareAssetSearchResults;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.ZoneSearchResults;
@@ -521,7 +521,9 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("assetModuleId", assetModuleId);
 		vars.put("assetId", assetId);
 		vars.put("siteToken", siteToken);
-		String url = getBaseUrl() + "assets/{assetModuleId}/{assetId}/assignments?siteToken={siteToken}";
+		String url =
+				getBaseUrl()
+						+ "assets/modules/{assetModuleId}/assets/{assetId}/assignments?siteToken={siteToken}";
 		if (status != null) {
 			url += "&status=" + status.name();
 		}
@@ -882,14 +884,13 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 * @see com.sitewhere.spi.ISiteWhereClient#getAssetsByModuleId(java.lang.String,
 	 * java.lang.String)
 	 */
-	public HardwareAssetSearchResults getAssetsByModuleId(String moduleId, String criteria)
-			throws SiteWhereException {
+	public AssetSearchResults getAssetsByModuleId(String moduleId, String criteria) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
-		String url = "assets/" + moduleId;
+		String url = "assets/modules/" + moduleId + "/assets";
 		if ((criteria != null) && (criteria.length() > 0)) {
 			url += "?criteria=" + criteria;
 		}
-		return sendRest(getBaseUrl() + url, HttpMethod.GET, null, HardwareAssetSearchResults.class, vars);
+		return sendRest(getBaseUrl() + url, HttpMethod.GET, null, AssetSearchResults.class, vars);
 	}
 
 	/**
