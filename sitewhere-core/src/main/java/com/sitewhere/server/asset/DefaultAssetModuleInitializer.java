@@ -95,7 +95,7 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 		AssetCategoryCreateRequest request = new AssetCategoryCreateRequest();
 		request.setId(id);
 		request.setName(name);
-		request.setType(type);
+		request.setAssetType(type);
 
 		info.setRequest(request);
 		return info;
@@ -110,7 +110,7 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	protected void createCategories(File assetsFolder) throws SiteWhereException {
 		for (AssetCategoryCreationInfo info : ASSET_CATEGORY_DATA) {
 			getAssetManagement().createAssetCategory(info.getRequest());
-			AssetType type = info.getRequest().getType();
+			AssetType type = info.getRequest().getAssetType();
 
 			switch (type) {
 			case Device:

@@ -1365,8 +1365,8 @@ public class SiteWherePersistence {
 		category.setName(request.getName());
 
 		// Type is required.
-		assureData(request.getType());
-		category.setAssetType(request.getType());
+		assureData(request.getAssetType());
+		category.setAssetType(request.getAssetType());
 
 		return category;
 	}

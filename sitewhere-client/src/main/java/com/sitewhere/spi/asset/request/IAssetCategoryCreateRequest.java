@@ -35,5 +35,5 @@ public interface IAssetCategoryCreateRequest {
 	 * 
 	 * @return
 	 */
-	public AssetType getType();
+	public AssetType getAssetType();
 }

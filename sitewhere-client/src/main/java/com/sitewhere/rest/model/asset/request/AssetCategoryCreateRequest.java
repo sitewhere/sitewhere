@@ -24,7 +24,7 @@ public class AssetCategoryCreateRequest implements IAssetCategoryCreateRequest {
 	private String name;
 
 	/** Category asset type */
-	private AssetType type;
+	private AssetType assetType;
 
 	/*
 	 * (non-Javadoc)
@@ -55,13 +55,13 @@ public class AssetCategoryCreateRequest implements IAssetCategoryCreateRequest {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getType()
+	 * @see com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest#getAssetType()
 	 */
-	public AssetType getType() {
-		return type;
+	public AssetType getAssetType() {
+		return assetType;
 	}
 
-	public void setType(AssetType type) {
-		this.type = type;
+	public void setAssetType(AssetType assetType) {
+		this.assetType = assetType;
 	}
 }
