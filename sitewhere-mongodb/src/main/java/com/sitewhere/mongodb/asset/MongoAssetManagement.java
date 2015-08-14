@@ -273,7 +273,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 		DBObject existing = assertAsset(categoryId, assetId);
 		DBCollection assets = getMongoClient().getAssetsCollection();
 		MongoPersistence.delete(assets, existing);
-		return MongoAsset.fromDBObject(existing);
+		return unmarshalAsset(existing);
 	}
 
 	/*

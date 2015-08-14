@@ -407,6 +407,39 @@ public class AssetsController extends SiteWhereController {
 		}
 	}
 
+	/**
+	 * Delete an asset from a category based on unique id.
+	 * 
+	 * @param categoryId
+	 * @param assetId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories/{categoryId}/assets/{assetId}", method = RequestMethod.DELETE)
+	@ResponseBody
+	@ApiOperation(value = "Delete an asset from a category")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public IAsset deleteCategoryAsset(
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "deleteCategoryAsset", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetManagement().deleteAsset(categoryId, assetId);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * List all assets for a given category.
+	 * 
+	 * @param categoryId
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 * @throws SiteWhereException
+	 */
 	@RequestMapping(value = "/categories/{categoryId}/assets", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List matching assets for a category")
