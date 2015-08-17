@@ -26,6 +26,7 @@
 </form>
 
 <%@ include file="templateCategoryEntry.inc"%>
+<%@ include file="categoryCreateDialog.inc"%>
 
 <script>
 	/** Asset categories datasource */
@@ -74,8 +75,8 @@
 		$('#view-category-detail').submit();
 	}
 
-	/** Called after a new site has been created */
-	function onSiteCreated() {
+	/** Called after a new asset category has been created */
+	function onCategoryCreated() {
 		categoriesDS.read();
 	}
 
@@ -109,7 +110,7 @@
 
 		/** Handle add category functionality */
 		$('#btn-add-category').click(function(event) {
-			scOpen(event, onCategoryCreated);
+			ccOpen(event, onCategoryCreated);
 		});
 	});
 </script>

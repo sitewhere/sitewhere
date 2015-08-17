@@ -37,6 +37,11 @@
 	border-left: solid 1px #e0e0e0;
 	position: relative;
 }
+
+.sw-category-list-label {
+	font-size: 16pt; 
+	padding-top: 7px;
+}
 </style>
 
 <!-- Template for site row -->
@@ -67,7 +72,7 @@
 			</div>
 		</div>
 		<div>
-			<p class="ellipsis" style="font-size: 20pt;">#:name# (#:id#)</p>
+			<p class="ellipsis sw-category-list-label">#:name# (#:id#)</p>
 		</div>
 	</div>
 </script>
