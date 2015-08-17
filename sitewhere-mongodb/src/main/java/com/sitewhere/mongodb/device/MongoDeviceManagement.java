@@ -356,11 +356,17 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
 		if (force) {
 			MongoPersistence.delete(specs, existing);
+			if (getCacheProvider() != null) {
+				getCacheProvider().getDeviceSpecificationCache().remove(token);
+			}
 			return MongoDeviceSpecification.fromDBObject(existing);
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, token);
 			MongoPersistence.update(specs, query, existing);
+			if (getCacheProvider() != null) {
+				getCacheProvider().getDeviceSpecificationCache().remove(token);
+			}
 			return MongoDeviceSpecification.fromDBObject(existing);
 		}
 	}
@@ -704,12 +710,18 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		if (force) {
 			DBCollection devices = getMongoClient().getDevicesCollection();
 			MongoPersistence.delete(devices, existing);
+			if (getCacheProvider() != null) {
+				getCacheProvider().getDeviceCache().remove(hardwareId);
+			}
 			return MongoDevice.fromDBObject(existing);
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 			DBCollection devices = getMongoClient().getDevicesCollection();
 			MongoPersistence.update(devices, query, existing);
+			if (getCacheProvider() != null) {
+				getCacheProvider().getDeviceCache().remove(hardwareId);
+			}
 			return MongoDevice.fromDBObject(existing);
 		}
 	}
