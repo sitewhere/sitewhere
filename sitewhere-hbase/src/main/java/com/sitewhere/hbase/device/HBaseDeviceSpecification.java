@@ -239,6 +239,9 @@ public class HBaseDeviceSpecification {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDeviceSpecification (HBase) " + token,
 				LOGGER);
 		try {
+			if (context.getCacheProvider() != null) {
+				context.getCacheProvider().getDeviceSpecificationCache().remove(token);
+			}
 			return HBaseUtils.delete(context.getClient(), context.getPayloadMarshaler(),
 					ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER, DeviceSpecification.class);
 		} finally {
