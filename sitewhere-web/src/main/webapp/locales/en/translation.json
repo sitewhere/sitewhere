@@ -72,6 +72,9 @@
     "Value":"Value",
     "Site":"Site",
     "site":"site",
+    "assetCategory":"asset category",
+    "AssetCategory":"Asset Category",
+    "AssetCategories":"Asset Categories",
     "Deployed": "Deployed",
     "DeployedSite": "$t(public.Deployed) $t(public.Site)",
     "Manage":"Manage",
@@ -80,6 +83,9 @@
     "ViewSite":"$t(public.View) $t(public.Site)",
     "EditSite":"$t(public.Edit) $t(public.Site)",
     "DeleteSite":"$t(public.Delete) $t(public.Site)",
+    "ViewAssetCategory":"$t(public.View) $t(public.AssetCategory)",
+    "EditAssetCategory":"$t(public.Edit) $t(public.AssetCategory)",
+    "DeleteAssetCategory":"$t(public.Delete) $t(public.AssetCategory)",
     "required":"required",
     "Sites":"$t(public.Site)s",
     "EditAssignment":"$t(public.Edit) $t(public.Assignment)",
@@ -399,6 +405,14 @@
           "AYSDTS":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) $t(public.site)",
           "AddNewSite":"$t(public.Add) $t(public.New) $t(public.Site)",
           "UTDS":"$t(public.Unable) to $t(public.msg.delete) $t(public.site)."
+      }
+  },
+  "assetCategories":{
+      "list":{
+          "title":"$t(public.Manage) $t(public.AssetCategories)",
+          "AYSD":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) $t(public.assetCategory)",
+          "AddNew":"$t(public.Add) $t(public.New) $t(public.AssetCategory)",
+          "UTD":"$t(public.Unable) to $t(public.msg.delete) $t(public.assetCategory)."
       }
   },
   "users":{

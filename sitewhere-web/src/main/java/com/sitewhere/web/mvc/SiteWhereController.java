@@ -381,13 +381,13 @@ public class SiteWhereController {
 	 * 
 	 * @return
 	 */
-	@RequestMapping("/assets/list")
+	@RequestMapping("/assets/categories")
 	public ModelAndView listAssets() {
 		Tracer.start(TracerCategory.AdminUserInterface, "listAssets", LOGGER);
 		try {
 			try {
 				Map<String, Object> data = createBaseData();
-				return new ModelAndView("assets/list", data);
+				return new ModelAndView("assets/categories", data);
 			} catch (SiteWhereException e) {
 				LOGGER.error(e);
 				return showError(e.getMessage());

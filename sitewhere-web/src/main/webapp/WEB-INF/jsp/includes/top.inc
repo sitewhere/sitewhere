@@ -90,10 +90,10 @@
 </c:choose>
 <c:choose>
 	<c:when test="${sitewhere_section == 'assets'}">
-		<li class="active"><a href="${pageContext.request.contextPath}/admin/assets/list.html" data-i18n="public.Assets">Assets</a></li>
+		<li class="active"><a href="${pageContext.request.contextPath}/admin/assets/categories.html" data-i18n="public.Assets">Assets</a></li>
 	</c:when>
 	<c:otherwise>
-		<li><a href="${pageContext.request.contextPath}/admin/assets/list.html" data-i18n="public.Assets">Assets</a></li>
+		<li><a href="${pageContext.request.contextPath}/admin/assets/categories.html" data-i18n="public.Assets">Assets</a></li>
 	</c:otherwise>
 </c:choose>
 <c:choose>
