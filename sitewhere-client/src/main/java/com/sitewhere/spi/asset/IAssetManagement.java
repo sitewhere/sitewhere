@@ -42,6 +42,17 @@ public interface IAssetManagement extends ILifecycleComponent {
 	public IAssetCategory getAssetCategory(String categoryId) throws SiteWhereException;
 
 	/**
+	 * Update an existing asset category.
+	 * 
+	 * @param categoryId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
+			throws SiteWhereException;
+
+	/**
 	 * List asset categories.
 	 * 
 	 * @param criteria
@@ -72,6 +83,18 @@ public interface IAssetManagement extends ILifecycleComponent {
 			throws SiteWhereException;
 
 	/**
+	 * Update an existing person asset.
+	 * 
+	 * @param categoryId
+	 * @param assetId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
+			throws SiteWhereException;
+
+	/**
 	 * Create a new {@link IHardwareAsset}.
 	 * 
 	 * @param categoryId
@@ -83,6 +106,18 @@ public interface IAssetManagement extends ILifecycleComponent {
 			throws SiteWhereException;
 
 	/**
+	 * Update an existing hardware asset.
+	 * 
+	 * @param categoryId
+	 * @param assetId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IHardwareAsset updateHardwareAsset(String categoryId, String assetId,
+			IHardwareAssetCreateRequest request) throws SiteWhereException;
+
+	/**
 	 * Create a new {@link ILocationAsset}.
 	 * 
 	 * @param categoryId
@@ -92,6 +127,18 @@ public interface IAssetManagement extends ILifecycleComponent {
 	 */
 	public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
 			throws SiteWhereException;
+
+	/**
+	 * Update an existing location asset.
+	 * 
+	 * @param categoryId
+	 * @param assetId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ILocationAsset updateLocationAsset(String categoryId, String assetId,
+			ILocationAssetCreateRequest request) throws SiteWhereException;
 
 	/**
 	 * Get the asset for the given id in the given category.

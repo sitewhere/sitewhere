@@ -1374,6 +1374,31 @@ public class SiteWherePersistence {
 	}
 
 	/**
+	 * Common logic for updating an existing asset category.
+	 * 
+	 * @param request
+	 * @param existing
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static AssetCategory assetCategoryUpdateLogic(IAssetCategoryCreateRequest request,
+			AssetCategory existing) throws SiteWhereException {
+		if (!request.getId().equals(existing.getId())) {
+			throw new SiteWhereException("Can not change the id of an existing asset category.");
+		}
+
+		if (request.getAssetType() != existing.getAssetType()) {
+			throw new SiteWhereException("Can not change the asset type of an existing asset category.");
+		}
+
+		if (request.getName() != null) {
+			existing.setName(request.getName());
+		}
+
+		return existing;
+	}
+
+	/**
 	 * Handle base logic common to all asset types.
 	 * 
 	 * @param categoryId
@@ -1396,6 +1421,30 @@ public class SiteWherePersistence {
 		asset.setImageUrl(request.getImageUrl());
 
 		asset.getProperties().putAll(request.getProperties());
+	}
+
+	/**
+	 * Common logic for updating assets.
+	 * 
+	 * @param asset
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public static void assetUpdateLogic(Asset asset, IAssetCreateRequest request) throws SiteWhereException {
+		if (!asset.getId().equals(request.getId())) {
+			throw new SiteWhereException("Asset id can not be changed.");
+		}
+
+		if (request.getName() != null) {
+			asset.setName(request.getName());
+		}
+		if (request.getImageUrl() != null) {
+			asset.setImageUrl(request.getImageUrl());
+		}
+		if (request.getProperties() != null) {
+			asset.getProperties().clear();
+			asset.getProperties().putAll(request.getProperties());
+		}
 	}
 
 	/**
@@ -1423,6 +1472,29 @@ public class SiteWherePersistence {
 	}
 
 	/**
+	 * Handle common logic for updating a person asset.
+	 * 
+	 * @param person
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public static void personAssetUpdateLogic(PersonAsset person, IPersonAssetCreateRequest request)
+			throws SiteWhereException {
+		assetUpdateLogic(person, request);
+
+		if (request.getUserName() != null) {
+			person.setUserName(request.getUserName());
+		}
+		if (request.getEmailAddress() != null) {
+			person.setEmailAddress(request.getEmailAddress());
+		}
+		if (request.getRoles() != null) {
+			person.getRoles().clear();
+			person.getRoles().addAll(request.getRoles());
+		}
+	}
+
+	/**
 	 * Handle common logic for creating a hardware asset.
 	 * 
 	 * @param category
@@ -1443,6 +1515,25 @@ public class SiteWherePersistence {
 		hardware.setDescription(request.getDescription());
 
 		return hardware;
+	}
+
+	/**
+	 * Handle common logic for updating a hardware asset.
+	 * 
+	 * @param hardware
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public static void hardwareAssetUpdateLogic(HardwareAsset hardware, IHardwareAssetCreateRequest request)
+			throws SiteWhereException {
+		assetUpdateLogic(hardware, request);
+
+		if (request.getSku() != null) {
+			hardware.setSku(request.getSku());
+		}
+		if (request.getDescription() != null) {
+			hardware.setDescription(request.getDescription());
+		}
 	}
 
 	/**
@@ -1467,6 +1558,28 @@ public class SiteWherePersistence {
 		loc.setElevation(request.getElevation());
 
 		return loc;
+	}
+
+	/**
+	 * Handle common logic for updating a location asset.
+	 * 
+	 * @param location
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public static void locationAssetUpdateLogic(LocationAsset location, ILocationAssetCreateRequest request)
+			throws SiteWhereException {
+		assetUpdateLogic(location, request);
+
+		if (request.getLatitude() != null) {
+			location.setLatitude(request.getLatitude());
+		}
+		if (request.getLongitude() != null) {
+			location.setLongitude(request.getLongitude());
+		}
+		if (request.getElevation() != null) {
+			location.setElevation(request.getElevation());
+		}
 	}
 
 	/**

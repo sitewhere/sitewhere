@@ -21,11 +21,11 @@
 <div id="categories" class="w-category-list"></div>
 <div id="pager" class="k-pager-wrap"></div>
 
-<form id="view-category-detail" method="get" action="detail.html">
+<form id="view-category-assets" method="get">
 	<input id="category-id" name="categoryId" type="hidden" />
 </form>
 
-<%@ include file="templateCategoryEntry.inc"%>
+<%@ include file="assetCategoryEntry.inc"%>
 <%@ include file="categoryCreateDialog.inc"%>
 
 <script>
@@ -68,11 +68,18 @@
 	}
 
 	/** Called when open button is clicked */
-	function onCategoryOpenClicked(e, categoryId) {
+	function onCategoryOpenClicked(e, categoryId, assetType) {
 		var event = e || window.event;
 		event.stopPropagation();
+		if (assetType == 'Person') {
+			$("#view-category-assets").attr("action", "categories/person.html");
+		} else if (assetType == 'Location') {
+			$("#view-category-assets").attr("action", "categories/location.html");
+		} else {
+			$("#view-category-assets").attr("action", "categories/hardware.html");
+		}
 		$('#category-id').val(categoryId);
-		$('#view-category-detail').submit();
+		$('#view-category-assets').submit();
 	}
 
 	/** Called after a new asset category has been created */

@@ -142,6 +142,29 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.asset.IAssetManagement#updateAssetCategory(java.lang.String,
+	 * com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest)
+	 */
+	@Override
+	public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
+			throws SiteWhereException {
+		DBObject match = assertAssetCategory(categoryId);
+		AssetCategory category = MongoAssetCategory.fromDBObject(match);
+
+		// Use common update logic so that backend implemetations act the same way.
+		SiteWherePersistence.assetCategoryUpdateLogic(request, category);
+		DBObject updated = MongoAssetCategory.toDBObject(category);
+
+		BasicDBObject query = new BasicDBObject(MongoAssetCategory.PROP_ID, categoryId);
+		DBCollection categories = getMongoClient().getAssetCategoriesCollection();
+		MongoPersistence.update(categories, query, updated);
+
+		return MongoAssetCategory.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * com.sitewhere.spi.asset.IAssetManagement#listAssetCategories(com.sitewhere.spi.
 	 * search.ISearchCriteria)
@@ -180,7 +203,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	public IPersonAsset createPersonAsset(String categoryId, IPersonAssetCreateRequest request)
 			throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
-		checkAssetExists(categoryId, request.getId());
+		checkForExistingAsset(categoryId, request.getId());
 		IAssetCategory category = getAssetCategory(categoryId);
 		PersonAsset person = SiteWherePersistence.personAssetCreateLogic(category, request);
 
@@ -194,6 +217,30 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.asset.IAssetManagement#updatePersonAsset(java.lang.String,
+	 * java.lang.String, com.sitewhere.spi.asset.request.IPersonAssetCreateRequest)
+	 */
+	@Override
+	public IPersonAsset updatePersonAsset(String categoryId, String assetId, IPersonAssetCreateRequest request)
+			throws SiteWhereException {
+		DBObject dbAsset = assertAsset(categoryId, assetId);
+		PersonAsset person = (PersonAsset) unmarshalAsset(dbAsset);
+
+		// Use common logic so all backend implementations work the same.
+		SiteWherePersistence.personAssetUpdateLogic(person, request);
+		DBObject updated = MongoPersonAsset.toDBObject(person);
+
+		BasicDBObject query =
+				new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
+		DBCollection assets = getMongoClient().getAssetsCollection();
+		MongoPersistence.update(assets, query, updated);
+
+		return MongoPersonAsset.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.asset.IAssetManagement#createHardwareAsset(java.lang.String,
 	 * com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
 	 */
@@ -201,7 +248,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	public IHardwareAsset createHardwareAsset(String categoryId, IHardwareAssetCreateRequest request)
 			throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
-		checkAssetExists(categoryId, request.getId());
+		checkForExistingAsset(categoryId, request.getId());
 		IAssetCategory category = getAssetCategory(categoryId);
 		HardwareAsset hw = SiteWherePersistence.hardwareAssetCreateLogic(category, request);
 
@@ -215,6 +262,30 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.asset.IAssetManagement#updateHardwareAsset(java.lang.String,
+	 * java.lang.String, com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest)
+	 */
+	@Override
+	public IHardwareAsset updateHardwareAsset(String categoryId, String assetId,
+			IHardwareAssetCreateRequest request) throws SiteWhereException {
+		DBObject dbAsset = assertAsset(categoryId, assetId);
+		HardwareAsset hardware = (HardwareAsset) unmarshalAsset(dbAsset);
+
+		// Use common logic so all backend implementations work the same.
+		SiteWherePersistence.hardwareAssetUpdateLogic(hardware, request);
+		DBObject updated = MongoHardwareAsset.toDBObject(hardware);
+
+		BasicDBObject query =
+				new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
+		DBCollection assets = getMongoClient().getAssetsCollection();
+		MongoPersistence.update(assets, query, updated);
+
+		return MongoHardwareAsset.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.asset.IAssetManagement#createLocationAsset(java.lang.String,
 	 * com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
 	 */
@@ -222,7 +293,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	public ILocationAsset createLocationAsset(String categoryId, ILocationAssetCreateRequest request)
 			throws SiteWhereException {
 		// Use common logic so all backend implementations work the same.
-		checkAssetExists(categoryId, request.getId());
+		checkForExistingAsset(categoryId, request.getId());
 		IAssetCategory category = getAssetCategory(categoryId);
 		LocationAsset loc = SiteWherePersistence.locationAssetCreateLogic(category, request);
 
@@ -233,6 +304,30 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 		return MongoLocationAsset.fromDBObject(created);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.asset.IAssetManagement#updateLocationAsset(java.lang.String,
+	 * java.lang.String, com.sitewhere.spi.asset.request.ILocationAssetCreateRequest)
+	 */
+	@Override
+	public ILocationAsset updateLocationAsset(String categoryId, String assetId,
+			ILocationAssetCreateRequest request) throws SiteWhereException {
+		DBObject dbAsset = assertAsset(categoryId, assetId);
+		LocationAsset location = (LocationAsset) unmarshalAsset(dbAsset);
+
+		// Use common logic so all backend implementations work the same.
+		SiteWherePersistence.locationAssetUpdateLogic(location, request);
+		DBObject updated = MongoLocationAsset.toDBObject(location);
+
+		BasicDBObject query =
+				new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
+		DBCollection assets = getMongoClient().getAssetsCollection();
+		MongoPersistence.update(assets, query, updated);
+
+		return MongoLocationAsset.fromDBObject(updated);
+	}
+
 	/**
 	 * If an asset already exists for the given category and id, throw an exception.
 	 * 
@@ -240,7 +335,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	 * @param assetId
 	 * @throws SiteWhereException
 	 */
-	protected void checkAssetExists(String categoryId, String assetId) throws SiteWhereException {
+	protected void checkForExistingAsset(String categoryId, String assetId) throws SiteWhereException {
 		IAsset asset = getAsset(categoryId, assetId);
 		if (asset != null) {
 			throw new SiteWhereSystemException(ErrorCode.AssetIdInUse, ErrorLevel.ERROR);

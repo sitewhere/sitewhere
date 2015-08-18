@@ -44,7 +44,7 @@
 }
 </style>
 
-<!-- Template for site row -->
+<!-- Template for asset category row -->
 <script type="text/x-kendo-tmpl" id="tpl-category-entry">
 	<div class="sw-category-list-entry sw-list-entry gradient-bg">
 		<div class="sw-category-list-entry-logowrapper"> 
@@ -61,13 +61,13 @@
 		<div class="sw-category-list-entry-actions">
 			<div class="btn-group" style="position: absolute; right: 0px; top: 7px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Asset Category" style="color: \\#009;" 
-					href="javascript:void(0)" onclick="onCategoryEditClicked(event, '#:id#');">
+					href="javascript:void(0)" onclick="onCategoryEditClicked(event, '#:id#', '#:assetType#');">
 					<i class="icon-edit icon-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Asset Category" style="color: \\#900;" 
-					href="javascript:void(0)" onclick="onCategoryDeleteClicked(event, '#:id#')">
+					href="javascript:void(0)" onclick="onCategoryDeleteClicked(event, '#:id#', '#:assetType#')">
 					<i class="icon-remove icon-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Asset Category" style="color: \\#060;" 
-					href="javascript:void(0)" onclick="onCategoryOpenClicked(event, '#:id#')">
+					href="javascript:void(0)" onclick="onCategoryOpenClicked(event, '#:id#', '#:assetType#')">
 					<i class="icon-chevron-right icon-white"></i></a>
 			</div>
 		</div>

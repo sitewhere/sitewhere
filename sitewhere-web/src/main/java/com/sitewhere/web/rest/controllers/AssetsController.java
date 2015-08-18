@@ -243,6 +243,29 @@ public class AssetsController extends SiteWhereController {
 	}
 
 	/**
+	 * Update an existing asset category.
+	 * 
+	 * @param categoryId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "Update an existing asset category")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public IAssetCategory updateAssetCategory(
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+			@RequestBody AssetCategoryCreateRequest request) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "updateAssetCategory", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetManagement().updateAssetCategory(categoryId, request);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Get an asset category by unique id.
 	 * 
 	 * @param categoryId
@@ -336,6 +359,31 @@ public class AssetsController extends SiteWhereController {
 	}
 
 	/**
+	 * Update an existing person asset.
+	 * 
+	 * @param categoryId
+	 * @param assetId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories/{categoryId}/persons/{assetId}", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "Update an existing person asset in category")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public IPersonAsset updatePersonAsset(
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
+			@RequestBody PersonAssetCreateRequest request) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "updatePersonAsset", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetManagement().updatePersonAsset(categoryId, assetId, request);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Creates a new hardware asset in the category. If the category does not support
 	 * hardware assets, an exception will be thrown.
 	 * 
@@ -360,6 +408,32 @@ public class AssetsController extends SiteWhereController {
 	}
 
 	/**
+	 * Update an existing hardware asset.
+	 * 
+	 * @param categoryId
+	 * @param assetId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories/{categoryId}/hardware/{assetId}", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "Update an existing hardware asset in category")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public IHardwareAsset updateHardwareAsset(
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
+			@RequestBody HardwareAssetCreateRequest request) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "updateHardwareAsset", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetManagement().updateHardwareAsset(categoryId, assetId,
+					request);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Creates a new location asset in the category. If the category does not support
 	 * location assets, an exception will be thrown.
 	 * 
@@ -378,6 +452,32 @@ public class AssetsController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "createLocationAsset", LOGGER);
 		try {
 			return SiteWhere.getServer().getAssetManagement().createLocationAsset(categoryId, request);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Update an existing location asset.
+	 * 
+	 * @param categoryId
+	 * @param assetId
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/categories/{categoryId}/locations/{assetId}", method = RequestMethod.PUT)
+	@ResponseBody
+	@ApiOperation(value = "Update an existing location asset in category")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ILocationAsset updateLocationAsset(
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
+			@RequestBody LocationAssetCreateRequest request) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "updateLocationAsset", LOGGER);
+		try {
+			return SiteWhere.getServer().getAssetManagement().updateLocationAsset(categoryId, assetId,
+					request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

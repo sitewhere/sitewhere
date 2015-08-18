@@ -28,6 +28,7 @@
     "Updated":"$t(public.Update)d",
     "Composition":"Composition",
     "Refresh":"Refresh",
+    "Properties":"XProperties",
     "Command":"Command",
     "Location":"Location",
     "Locations":"$t(public.Location)s",
@@ -413,6 +414,9 @@
           "AYSD":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) $t(public.assetCategory)",
           "AddNew":"$t(public.Add) $t(public.New) $t(public.AssetCategory)",
           "UTD":"$t(public.Unable) to $t(public.msg.delete) $t(public.assetCategory)."
+      },
+      "dialog":{
+          "PersonCreateTitle":"XCreate Person Asset",
       }
   },
   "users":{

@@ -23,6 +23,7 @@ import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -377,17 +378,42 @@ public class SiteWhereController {
 	}
 
 	/**
-	 * Display the "list assets" page.
+	 * Display the "asset categories" page.
 	 * 
 	 * @return
 	 */
 	@RequestMapping("/assets/categories")
-	public ModelAndView listAssets() {
-		Tracer.start(TracerCategory.AdminUserInterface, "listAssets", LOGGER);
+	public ModelAndView listAssetCategories() {
+		Tracer.start(TracerCategory.AdminUserInterface, "listAssetCategories", LOGGER);
 		try {
 			try {
 				Map<String, Object> data = createBaseData();
 				return new ModelAndView("assets/categories", data);
+			} catch (SiteWhereException e) {
+				LOGGER.error(e);
+				return showError(e.getMessage());
+			}
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Display the "category person assets" page.
+	 * 
+	 * @param categoryId
+	 * @return
+	 */
+	@RequestMapping("/assets/categories/person")
+	public ModelAndView listPersonCategoryAssets(@RequestParam("categoryId") String categoryId) {
+		Tracer.start(TracerCategory.AdminUserInterface, "listPersonCategoryAssets", LOGGER);
+		try {
+			try {
+				Map<String, Object> data = createBaseData();
+				IAssetCategory category =
+						SiteWhere.getServer().getAssetManagement().getAssetCategory(categoryId);
+				data.put("category", category);
+				return new ModelAndView("assets/personCategory", data);
 			} catch (SiteWhereException e) {
 				LOGGER.error(e);
 				return showError(e.getMessage());

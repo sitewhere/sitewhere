@@ -7,7 +7,7 @@
 	<div class="modal-body">
 		<div id="cc-tabs">
 			<ul>
-				<li class="k-state-active" data-i18n="includes.AssetCategoryDetails"></li>
+				<li class="k-state-active" data-i18n="includes.AssetCategoryDetails">Category Details</li>
 			</ul>
 			<div>
 				<form id="cc-general-form" class="form-horizontal" style="padding-top: 20px;">
@@ -119,10 +119,7 @@
 		});
 		$.validity.start();
 
-		/** Verify hardware id was entered */
 		$("#cc-category-id").require();
-
-		/** Verify site token was chosen */
 		$("#cc-category-name").require();
 
 		var result = $.validity.end();
