@@ -2,7 +2,8 @@
 <div id="ac-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="ac-dialog-header" data-i18n="assetCategories.dialog.PersonCreateTitle">Create Person Asset</h3>
+		<h3 id="ac-dialog-header" data-i18n="assetCategories.dialog.PersonCreateTitle">Create Person
+			Asset</h3>
 	</div>
 	<div class="modal-body">
 		<div id="ac-tabs">
@@ -12,7 +13,7 @@
 			</ul>
 			<div>
 				<form id="ac-general-form" class="form-horizontal" style="padding-top: 20px;">
-					<div class="control-group">
+					<div class="control-group" id="ac-asset-id-row">
 						<label class="control-label" for="ac-asset-id" data-i18n="public.AssetId">Id</label>
 						<div class="controls">
 							<input type="text" id="ac-asset-id" title="Asset Id" class="input-xlarge">
@@ -43,6 +44,7 @@
 							<input type="text" id="ac-asset-image" title="Image URL" class="input-xlarge">
 						</div>
 					</div>
+					<input id="ac-init-asset-id" type="hidden" value="" />
 				</form>
 			</div>
 			<div>
@@ -176,6 +178,8 @@
 					if (!acValidate()) {
 						return;
 					}
+					var initAssetId = $('#ac-init-asset-id').val();
+					var isCreate = (initAssetId.length == 0);
 					var assetData = {
 						"id" : $('#ac-asset-id').val(),
 						"name" : $('#ac-asset-name').val(),
@@ -184,8 +188,13 @@
 						"imageUrl" : $('#ac-asset-image').val(),
 						"properties" : swMetadataAsLookup(acPropertiesDS.data()),
 					}
-					$.postJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-							+ "/persons", assetData, onCreateSuccess, onCreateFail);
+					if (isCreate) {
+						$.postJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
+								+ "/persons", assetData, onCreateSuccess, onCreateFail);
+					} else {
+						$.putJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
+								+ "/persons/" + initAssetId, assetData, onCreateSuccess, onUpdateFail);
+					}
 				});
 
 			/** Called on successful create */
@@ -196,9 +205,14 @@
 				}
 			}
 
-			/** Handle failed call to create device */
+			/** Handle failed call to create asset */
 			function onCreateFail(jqXHR, textStatus, errorThrown) {
 				handleError(jqXHR, "Unable to create asset.");
+			}
+
+			/** Handle failed call to update asset */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to update asset.");
 			}
 		});
 
@@ -222,6 +236,9 @@
 	function acOpen(e, callback) {
 		var event = e || window.event;
 		event.stopPropagation();
+		
+		$('#ac-init-asset-id').val("");
+		$('#ac-asset-id-row').show();
 
 		$('#ac-dialog-header').html(i18next("public.Create") + " Person Asset");
 		$('#ac-dialog-submit').html(i18next("public.Create"));
@@ -254,6 +271,10 @@
 
 	/** Called on successful device load request */
 	function auUpdateGetSuccess(data, status, jqXHR) {
+		// Indicates an update operation.
+		$('#ac-init-asset-id').val(data.id);
+		$('#ac-asset-id-row').hide();
+
 		$('#ac-general-form')[0].reset();
 
 		$('#ac-dialog-header').html(i18next("public.Update") + " Person Asset");
