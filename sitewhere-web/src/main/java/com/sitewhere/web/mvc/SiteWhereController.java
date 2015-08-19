@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -404,16 +405,16 @@ public class SiteWhereController {
 	 * @param categoryId
 	 * @return
 	 */
-	@RequestMapping("/assets/categories/person")
-	public ModelAndView listPersonCategoryAssets(@RequestParam("categoryId") String categoryId) {
-		Tracer.start(TracerCategory.AdminUserInterface, "listPersonCategoryAssets", LOGGER);
+	@RequestMapping("/assets/categories/{categoryId}")
+	public ModelAndView listCategoryAssets(@PathVariable("categoryId") String categoryId) {
+		Tracer.start(TracerCategory.AdminUserInterface, "listCategoryAssets", LOGGER);
 		try {
 			try {
 				Map<String, Object> data = createBaseData();
 				IAssetCategory category =
 						SiteWhere.getServer().getAssetManagement().getAssetCategory(categoryId);
 				data.put("category", category);
-				return new ModelAndView("assets/personCategory", data);
+				return new ModelAndView("assets/categoryAssets", data);
 			} catch (SiteWhereException e) {
 				LOGGER.error(e);
 				return showError(e.getMessage());

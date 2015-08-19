@@ -2,7 +2,7 @@
 <div id="cc-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 data-i18n="includes.CreateAssetCategory">Create Asset Category</h3>
+		<h3 id="cc-dialog-header" data-i18n="includes.CreateAssetCategory">Create Asset Category</h3>
 	</div>
 	<div class="modal-body">
 		<div id="cc-tabs">
@@ -11,7 +11,7 @@
 			</ul>
 			<div>
 				<form id="cc-general-form" class="form-horizontal" style="padding-top: 20px;">
-					<div class="control-group">
+					<div class="control-group" id="cc-category-id-row">
 						<label class="control-label" for="cc-category-id" data-i18n="public.CategoryId">Category
 							Id</label>
 						<div class="controls">
@@ -32,6 +32,7 @@
 							<select id="cc-asset-type"></select>
 						</div>
 					</div>
+					<input id="cc-init-category-id" type="hidden" value="" />
 				</form>
 			</div>
 		</div>
@@ -89,13 +90,20 @@
 					if (!ccValidate()) {
 						return;
 					}
+					var initCategoryId = $('#cc-init-category-id').val();
+					var isCreate = (initCategoryId.length == 0);
 					var categoryData = {
 						"id" : $('#cc-category-id').val(),
 						"name" : $('#cc-category-name').val(),
 						"assetType" : $('#cc-asset-type').val(),
 					}
-					$.postJSON("${pageContext.request.contextPath}/api/assets/categories", categoryData,
-						onCreateSuccess, onCreateFail);
+					if (isCreate) {
+						$.postJSON("${pageContext.request.contextPath}/api/assets/categories", categoryData,
+							onCreateSuccess, onCreateFail);
+					} else {
+						$.putJSON("${pageContext.request.contextPath}/api/assets/categories/" + initCategoryId,
+							categoryData, onCreateSuccess, onUpdateFail);
+					}
 				});
 
 			/** Called on successful create */
@@ -106,9 +114,14 @@
 				}
 			}
 
-			/** Handle failed call to create device */
+			/** Handle failed call to create category */
 			function onCreateFail(jqXHR, textStatus, errorThrown) {
 				handleError(jqXHR, "Unable to create asset category.");
+			}
+
+			/** Handle failed call to update category */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to update asset category.");
 			}
 		});
 
@@ -131,6 +144,13 @@
 		var event = e || window.event;
 		event.stopPropagation();
 
+		// Indicates an update operation.
+		$('#cc-init-category-id').val("");
+		$('#cc-category-id-row').show();
+
+		$('#cc-dialog-header').html(i18next("public.Create") + " Asset Category");
+		$('#cc-dialog-submit').html(i18next("public.Create"));
+
 		$('#cc-category-id').val("");
 		$('#cc-category-name').val("");
 		$('#cc-asset-type').select(0);
@@ -141,5 +161,40 @@
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
 		$('#cc-dialog').modal('show');
+	}
+
+	/** Called to edit existing category */
+	function cuOpen(categoryId, callback) {
+		// Function called on submit.
+		ccSubmitCallback = callback;
+
+		// Get latest device data for hardware id.
+		$.getJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId,
+			cuUpdateGetSuccess, cuUpdateGetFailed);
+	}
+
+	/** Called on successful category load request */
+	function cuUpdateGetSuccess(data, status, jqXHR) {
+		// Indicates an update operation.
+		$('#cc-init-category-id').val(data.id);
+		$('#cc-category-id-row').hide();
+
+		$('#cc-dialog-header').html(i18next("public.Update") + " Asset Category");
+		$('#cc-dialog-submit').html(i18next("public.Update"));
+
+		ccTabs.select(0);
+
+		$('#cc-category-id').val(data.id);
+		$('#cc-category-name').val(data.name);
+		ccAssetTypesDropdown.value(data.assetType);
+
+		// Clear old validation errors and show dialog.
+		$.validity.clear();
+		$('#cc-dialog').modal('show');
+	}
+
+	/** Handle error on getting device information */
+	function cuUpdateGetFailed(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to get asset category for update.");
 	}
 </script>

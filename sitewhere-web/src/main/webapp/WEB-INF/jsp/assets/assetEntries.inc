@@ -1,11 +1,20 @@
 <!-- Hardware asset template -->
 <script type="text/x-kendo-tmpl" id="tpl-hardware-asset-entry">
-	<div class="asset-entry gradient-bg" id="asset-#:id#">
+	<div class="asset-entry gradient-bg sw-list-entry" id="asset-#:id#">
 		<div class="asset-entry-logowrapper">
 			<img class="asset-entry-logo" src="#:imageUrl#"/>
 		</div>
-		<div class="ellipsis"><b>#:name#</b></div>
-		<div class="ellipsis">#:description#</div>
+		<div class="ellipsis asset-entry-label"><strong>#:name#</strong> (#:sku#)</div>
+		<div class="asset-entry-actions">
+			<div class="btn-group" style="position: absolute; right: 7px; top: 17px;">
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Asset" style="color: \\#009;" 
+					href="javascript:void(0)" onclick="onAssetEditClicked(event, '#:id#');">
+					<i class="icon-edit icon-white"></i></a>
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Asset" style="color: \\#900;" 
+					href="javascript:void(0)" onclick="onAssetDeleteClicked(event, '#:id#')">
+					<i class="icon-remove icon-white"></i></a>
+			</div>
+		</div>
 	</div>
 </script>
 
@@ -31,12 +40,21 @@
 
 <!-- Location asset template -->
 <script type="text/x-kendo-tmpl" id="tpl-location-asset-entry">
-	<div class="asset-entry gradient-bg" id="asset-#:id#">
+	<div class="asset-entry gradient-bg sw-list-entry" id="asset-#:id#">
 		<div class="asset-entry-logowrapper">
 			<img class="asset-entry-logo" src="#:imageUrl#"/>
 		</div>
-		<div class="ellipsis"><b>#:name#</b></div>
-		<div class="ellipsis">Location: (#:latitude#, #:longitude#)</div>
+		<div class="ellipsis asset-entry-label"><strong>#:name#</strong> (Lat:#:latitude#, Lon:#:longitude#)</div>
+		<div class="asset-entry-actions">
+			<div class="btn-group" style="position: absolute; right: 7px; top: 17px;">
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Asset" style="color: \\#009;" 
+					href="javascript:void(0)" onclick="onAssetEditClicked(event, '#:id#');">
+					<i class="icon-edit icon-white"></i></a>
+				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Asset" style="color: \\#900;" 
+					href="javascript:void(0)" onclick="onAssetDeleteClicked(event, '#:id#')">
+					<i class="icon-remove icon-white"></i></a>
+			</div>
+		</div>
 	</div>
 </script>
 

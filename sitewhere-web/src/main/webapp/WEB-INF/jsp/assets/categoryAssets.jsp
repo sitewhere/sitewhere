@@ -28,11 +28,24 @@
 <div id="pager" class="k-pager-wrap"></div>
 
 <%@ include file="assetEntries.inc"%>
-<%@ include file="personAssetCreateDialog.inc"%>
 
+<c:choose>
+	<c:when test="${category.assetType == 'Person'}">
+		<%@ include file="personAssetCreateDialog.inc"%>
+	</c:when>
+	<c:when test="${category.assetType == 'Location'}">
+		<%@ include file="locationAssetCreateDialog.inc"%>
+	</c:when>
+	<c:otherwise>
+		<%@ include file="hardwareAssetCreateDialog.inc"%>
+	</c:otherwise>
+</c:choose>
 <script>
 	/** Asset category id */
 	var categoryId = '<c:out value="${category.id}"/>';
+
+	/** Asset type */
+	var assetType = '<c:out value="${category.assetType}"/>';
 
 	/** Assets datasource */
 	var assetsDS;
@@ -53,7 +66,7 @@
 	function onAssetDeleteClicked(e, assetId) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swConfirm(i18next("public.DeleteAsset"), i18next("assets.list.AYSD") + "?", function(result) {
+		swConfirm("Delete Asset", "Are you sure you want to delete this asset?", function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
 						+ "/assets/" + assetId, onDeleteSuccess, onDeleteFail);
@@ -68,7 +81,7 @@
 
 	/** Handle failed delete call */
 	function onDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, i18next("assets.list.UTD"));
+		handleError(jqXHR, "Unable to delete asset.");
 	}
 
 	/** Called after a new asset category has been created */
@@ -97,10 +110,17 @@
 						pageSize : 10
 					});
 
+			var template = "#tpl-hardware-asset-entry";
+			if (assetType == 'Person') {
+				template = "#tpl-person-asset-entry";
+			} else if (assetType == 'Location') {
+				template = "#tpl-location-asset-entry";
+			}
+
 			/** Create the site list */
 			$("#assets").kendoListView({
 				dataSource : assetsDS,
-				template : kendo.template($("#tpl-person-asset-entry").html())
+				template : kendo.template($(template).html())
 			});
 
 			$("#pager").kendoPager({

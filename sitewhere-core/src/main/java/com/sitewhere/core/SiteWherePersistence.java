@@ -1406,10 +1406,12 @@ public class SiteWherePersistence {
 	 * @param asset
 	 * @throws SiteWhereException
 	 */
-	public static void assetCreateLogic(String categoryId, IAssetCreateRequest request, Asset asset)
+	public static void assetCreateLogic(IAssetCategory category, IAssetCreateRequest request, Asset asset)
 			throws SiteWhereException {
-		assureData(categoryId);
-		asset.setAssetCategoryId(categoryId);
+		asset.setType(category.getAssetType());
+
+		assureData(category.getId());
+		asset.setAssetCategoryId(category.getId());
 
 		assureData(request.getId());
 		asset.setId(request.getId());
@@ -1462,7 +1464,7 @@ public class SiteWherePersistence {
 		}
 
 		PersonAsset person = new PersonAsset();
-		assetCreateLogic(category.getId(), request, person);
+		assetCreateLogic(category, request, person);
 
 		person.setUserName(request.getUserName());
 		person.setEmailAddress(request.getEmailAddress());
@@ -1509,7 +1511,7 @@ public class SiteWherePersistence {
 		}
 
 		HardwareAsset hardware = new HardwareAsset();
-		assetCreateLogic(category.getId(), request, hardware);
+		assetCreateLogic(category, request, hardware);
 
 		hardware.setSku(request.getSku());
 		hardware.setDescription(request.getDescription());
@@ -1551,7 +1553,7 @@ public class SiteWherePersistence {
 		}
 
 		LocationAsset loc = new LocationAsset();
-		assetCreateLogic(category.getId(), request, loc);
+		assetCreateLogic(category, request, loc);
 
 		loc.setLatitude(request.getLatitude());
 		loc.setLongitude(request.getLongitude());
