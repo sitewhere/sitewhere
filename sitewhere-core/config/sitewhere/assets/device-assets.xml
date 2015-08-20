@@ -49,7 +49,7 @@
 	</hardware-asset>
 	
 	<!-- openHAB -->
-	<hardware-asset id="190" name="openHAB Virual Device" sku="OHAB" device="true">
+	<hardware-asset id="190" name="openHAB Virtual Device" sku="OHAB" device="true">
 		<description>openHAB is a software for integrating different home automation systems and technologies into one single solution that allows over-arching automation rules and that offers uniform user interfaces.</description>
 		<image-url>https://s3.amazonaws.com/sitewhere-demo/gateway/openhab.png</image-url>
 		<property name="manufacturer" value="openHAB"/>
