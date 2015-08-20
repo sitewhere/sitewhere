@@ -251,7 +251,7 @@ public class HBaseAsset {
 					pager.process(asset);
 				}
 			}
-			return new SearchResults<IAsset>(pager.getResults());
+			return new SearchResults<IAsset>(pager.getResults(), pager.getTotal());
 		} catch (IOException e) {
 			throw new SiteWhereException("Error in list operation.", e);
 		} finally {
