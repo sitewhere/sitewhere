@@ -22,6 +22,7 @@ import com.sitewhere.ehcache.DeviceManagementCacheProvider;
 import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.hbase.DefaultHBaseClient;
+import com.sitewhere.hbase.asset.HBaseAssetManagement;
 import com.sitewhere.hbase.device.HBaseDeviceManagement;
 import com.sitewhere.hbase.user.HBaseUserManagement;
 import com.sitewhere.mongodb.DockerMongoClient;
@@ -221,6 +222,12 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		um.addPropertyReference("client", "hbase");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
 				um.getBeanDefinition());
+
+		// Register Mongo asset management implementation.
+		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(HBaseAssetManagement.class);
+		am.addPropertyReference("client", "hbase");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
+				am.getBeanDefinition());
 	}
 
 	/**

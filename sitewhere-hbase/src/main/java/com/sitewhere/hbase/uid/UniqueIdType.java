@@ -39,7 +39,10 @@ public enum UniqueIdType {
 	DeviceGroupKey((byte) 0x0d), DeviceGroupValue((byte) 0x0e),
 
 	/** Key and value for batch operation UUIDs */
-	BatchOperationKey((byte) 0x10), BatchOperationValue((byte) 0x11);
+	BatchOperationKey((byte) 0x10), BatchOperationValue((byte) 0x11),
+
+	/** Key and value for asset UUIDs */
+	AssetKey((byte) 0x01), AssetValue((byte) 0x02);
 
 	/** Type indicator */
 	private byte indicator;

@@ -38,6 +38,9 @@ public interface ISiteWhereHBase {
 	/** Users table name */
 	public static final byte[] USERS_TABLE_NAME = Bytes.toBytes("users");
 
+	/** Assets table name */
+	public static final byte[] ASSETS_TABLE_NAME = Bytes.toBytes("assets");
+
 	/*******************
 	 * COLUMN FAMILIES *
 	 *******************/

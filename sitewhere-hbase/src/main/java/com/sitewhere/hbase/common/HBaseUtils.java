@@ -223,7 +223,7 @@ public class HBaseUtils {
 				if ((deleted != null) && (!includeDeleted)) {
 					shouldAdd = false;
 				}
-				
+
 				if ((shouldAdd) && (payload != null)) {
 					T instance =
 							PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(payload,
@@ -294,6 +294,37 @@ public class HBaseUtils {
 			} finally {
 				HBaseUtils.closeCleanly(devices);
 			}
+		}
+		return existing;
+	}
+
+	/**
+	 * Delete an element without the option of undeleting it.
+	 * 
+	 * @param client
+	 * @param marshaler
+	 * @param tableName
+	 * @param token
+	 * @param builder
+	 * @param type
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static <T> T forcedDelete(ISiteWhereHBaseClient client, IPayloadMarshaler marshaler,
+			byte[] tableName, String token, IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
+		T existing = get(client, tableName, token, builder, type);
+
+		byte[] primary = builder.buildPrimaryKey(token);
+		builder.deleteReference(token);
+		HTableInterface table = null;
+		try {
+			Delete delete = new Delete(primary);
+			table = client.getTableInterface(tableName);
+			table.delete(delete);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to delete data for token: " + token, e);
+		} finally {
+			HBaseUtils.closeCleanly(table);
 		}
 		return existing;
 	}

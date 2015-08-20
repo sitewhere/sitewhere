@@ -330,6 +330,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			startNestedComponent(component, component.getComponentName() + " startup failed.", true);
 		}
 
+		// Start asset management.
+		startNestedComponent(getAssetManagement(), "Asset management startup failed.", true);
+
 		// Start device management.
 		startNestedComponent(getDeviceManagement(), "Device management startup failed.", true);
 
@@ -342,19 +345,18 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Start user management.
 		startNestedComponent(getUserManagement(), "User management startup failed.", true);
 
-		// Start asset management.
-		startNestedComponent(getAssetManagement(), "Asset management startup failed.", true);
+		// Populate user data if requested.
+		verifyUserModel();
+		
+		// Populate asset data if requested.
+		verifyAssetModel();
 
 		// Start asset module manager.
 		startNestedComponent(getAssetModuleManager(), "Asset module manager startup failed.", true);
 
 		// Start search provider manager.
 		startNestedComponent(getSearchProviderManager(), "Search provider manager startup failed.", true);
-
-		// Populate data if requested.
-		verifyUserModel();
 		verifyDeviceModel();
-		verifyAssetModel();
 
 		// Enable outbound processor chain.
 		if (getOutboundEventProcessorChain() != null) {

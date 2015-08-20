@@ -1548,7 +1548,7 @@ public class SiteWherePersistence {
 	 */
 	public static LocationAsset locationAssetCreateLogic(IAssetCategory category,
 			ILocationAssetCreateRequest request) throws SiteWhereException {
-		if (category.getAssetType() != AssetType.Hardware) {
+		if (category.getAssetType() != AssetType.Location) {
 			throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
 		}
 
