@@ -77,6 +77,11 @@ public class HBaseAssetCategory {
 	 */
 	public static AssetCategory createAssetCategory(IHBaseContext context, IAssetCategoryCreateRequest request)
 			throws SiteWhereException {
+		if (getAssetCategoryById(context, request.getId()) != null) {
+			throw new SiteWhereSystemException(ErrorCode.AssetCategoryIdInUse, ErrorLevel.ERROR);
+		}
+
+		// Add new key to table.
 		String id = KEY_BUILDER.getMap().useExistingId(request.getId());
 
 		// Use common logic so all backend implementations work the same.
@@ -97,6 +102,9 @@ public class HBaseAssetCategory {
 	 */
 	public static AssetCategory getAssetCategoryById(IHBaseContext context, String id)
 			throws SiteWhereException {
+		if (KEY_BUILDER.getMap().getValue(id) == null) {
+			return null;
+		}
 		return HBaseUtils.get(context.getClient(), ISiteWhereHBase.ASSETS_TABLE_NAME, id, KEY_BUILDER,
 				AssetCategory.class);
 	}
@@ -115,7 +123,7 @@ public class HBaseAssetCategory {
 		AssetCategory updated = assertAssetCategory(context, id);
 		SiteWherePersistence.assetCategoryUpdateLogic(request, updated);
 		return HBaseUtils.put(context.getClient(), context.getPayloadMarshaler(),
-				ISiteWhereHBase.DEVICES_TABLE_NAME, updated, id, KEY_BUILDER);
+				ISiteWhereHBase.ASSETS_TABLE_NAME, updated, id, KEY_BUILDER);
 	}
 
 	/**

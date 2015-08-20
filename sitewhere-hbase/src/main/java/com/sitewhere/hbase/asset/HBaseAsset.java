@@ -31,6 +31,7 @@ import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -38,6 +39,8 @@ import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 
@@ -274,6 +277,13 @@ public class HBaseAsset {
 	 */
 	public static void saveAsset(IHBaseContext context, String categoryId, String originalId,
 			IAssetCreateRequest request, byte[] payload, AssetType type) throws SiteWhereException {
+		if ((originalId == null) || (!originalId.equals(request.getId()))) {
+			Asset existing = getAsset(context, categoryId, request.getId());
+			if (existing != null) {
+				throw new SiteWhereSystemException(ErrorCode.AssetIdInUse, ErrorLevel.ERROR);
+			}
+		}
+
 		String id = (originalId == null) ? request.getId() : originalId;
 		byte[] assetKey = getAssetKey(context, categoryId, id);
 
