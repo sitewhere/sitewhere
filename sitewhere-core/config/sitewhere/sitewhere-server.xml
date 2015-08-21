@@ -254,16 +254,16 @@
 				ignoreBadCertificate="true"/>
 			-->
 
+			<!-- These are now loaded into the datastore -->
+			<!--  
 			<sw:filesystem-device-asset-module/>
 			<sw:filesystem-hardware-asset-module/>
 			<sw:filesystem-person-asset-module/>
 			<sw:filesystem-location-asset-module/>
+			-->
 
 		</sw:asset-management>
 
 	</sw:configuration>
-           
-	<!-- Import beans specific to the given edition -->
-	<import resource="sitewhere-edition-${sitewhere.edition}.xml"/>
 
 </beans>

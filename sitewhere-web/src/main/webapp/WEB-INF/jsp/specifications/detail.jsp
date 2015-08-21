@@ -5,7 +5,7 @@
 <%@ include file="../includes/top.inc"%>
 
 <!-- Title Bar -->
-<div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
+<div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="specifications.detail.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-edit-specification" class="btn" href="javascript:void(0)" data-i18n="public.EditSpecification">

@@ -36,6 +36,8 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
+import com.sitewhere.server.SiteWhereServerState.GeneralInformation;
+import com.sitewhere.server.SiteWhereServerState.JavaInformation;
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.search.SearchProviderManager;
@@ -56,6 +58,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerEnvironment;
+import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
@@ -83,6 +86,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** Contains version information */
 	private IVersion version;
+
+	/** Contains runtime information about the server */
+	private ISiteWhereServerState serverState;
 
 	/** Server startup error */
 	private ServerStartupException serverStartupError;
@@ -133,6 +139,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/** Health check registry */
 	private HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
 
+	/** Timestamp when server was started */
+	private Long uptime;
+
 	public SiteWhereServer() {
 		super(LifecycleComponentType.System);
 	}
@@ -153,6 +162,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public IVersion getVersion() {
 		return version;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState()
+	 */
+	public ISiteWhereServerState getServerState() throws SiteWhereException {
+		this.serverState = computeServerState();
+		return serverState;
 	}
 
 	/*
@@ -347,7 +366,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		// Populate user data if requested.
 		verifyUserModel();
-		
+
 		// Populate asset data if requested.
 		verifyAssetModel();
 
@@ -377,6 +396,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		// Force refresh on components-by-id map.
 		refreshLifecycleComponentMap(this, lifecycleComponentsById);
+
+		// Set uptime timestamp.
+		this.uptime = System.currentTimeMillis();
 	}
 
 	/*
@@ -453,6 +475,43 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {
 			component.lifecycleStop();
 		}
+	}
+
+	/**
+	 * Compute current server state.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ISiteWhereServerState computeServerState() throws SiteWhereException {
+		SiteWhereServerState state = new SiteWhereServerState();
+
+		String osName = System.getProperty("os.name");
+		String osVersion = System.getProperty("os.version");
+		String javaVendor = System.getProperty("java.vendor");
+		String javaVersion = System.getProperty("java.version");
+
+		GeneralInformation general = new GeneralInformation();
+		general.setEdition(getVersion().getEdition());
+		general.setEditionIdentifier(getVersion().getEditionIdentifier());
+		general.setVersionIdentifier(getVersion().getVersionIdentifier());
+		general.setBuildTimestamp(getVersion().getBuildTimestamp());
+		general.setUptime(System.currentTimeMillis() - uptime);
+		general.setOperatingSystemName(osName);
+		general.setOperatingSystemVersion(osVersion);
+		state.setGeneral(general);
+
+		JavaInformation java = new JavaInformation();
+		java.setJvmVendor(javaVendor);
+		java.setJvmVersion(javaVersion);
+		state.setJava(java);
+
+		Runtime runtime = Runtime.getRuntime();
+		java.setJvmFreeMemory(runtime.freeMemory());
+		java.setJvmTotalMemory(runtime.totalMemory());
+		java.setJvmMaxMemory(runtime.maxMemory());
+
+		return state;
 	}
 
 	/*

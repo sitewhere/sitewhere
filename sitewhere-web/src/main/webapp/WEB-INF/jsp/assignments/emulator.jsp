@@ -19,7 +19,7 @@
 </style>
 
 <!-- Title Bar -->
-<div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
+<div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="assignments.emulator.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-assignment-detail" class="btn" href="detail.html?token=<c:out value="${assignment.token}"/>" data-i18n="assignments.emulator.AssignmentDetails">

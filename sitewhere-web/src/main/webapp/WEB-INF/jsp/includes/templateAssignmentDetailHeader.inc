@@ -4,6 +4,7 @@
 	border: 1px solid #dcdcdc;
 	padding: 10px;
 	margin-bottom: 15px;
+	margin-top: 15px;
 	font-size: 12pt;
 	text-align: left;
 	display: block;

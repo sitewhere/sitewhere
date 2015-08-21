@@ -18,6 +18,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.wordnik.swagger.annotations.Api;
@@ -36,6 +37,12 @@ public class SystemController extends SiteWhereController {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SystemController.class);
 
+	/**
+	 * Get version information about the server.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
 	@RequestMapping(value = "/version", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get version information")
@@ -44,6 +51,25 @@ public class SystemController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "getVersion", LOGGER);
 		try {
 			return SiteWhere.getServer().getVersion();
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get runtime information about the server.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/state", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get server runtime information")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	public ISiteWhereServerState getServerState() throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getServerState", LOGGER);
+		try {
+			return SiteWhere.getServer().getServerState();
 		} finally {
 			Tracer.stop(LOGGER);
 		}
