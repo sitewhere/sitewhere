@@ -43,19 +43,19 @@
 		</div>
 		<div>
 			<div>
-				<span class="sw-device-header-label" title="Unique device hardware id">#= i18next("public.HardwareId") #:</span>
+				<span class="sw-device-header-label" title="Unique device hardware id">Hardware Id:</span>
 				<span title="#:hardwareId#">#:hardwareId#</span>
 			</div>
 			<div>
-				<span class="sw-device-header-label" title="Device specification used">#= i18next("public.DeviceSpecification") #:</span>
+				<span class="sw-device-header-label" title="Device specification used">Device Specification:</span>
 				<span title="#:specification.name#"><a href='/sitewhere/admin/specifications/detail.html?token=#:specification.token#'>#:specification.name#</a></span>
 			</div>
 			<div>
-				<span class="sw-device-header-label" title="Site where device is deployed">#= i18next("public.DeployedSite") #:</span>
+				<span class="sw-device-header-label" title="Site where device is deployed">Deployed Site:</span>
 				<span title="#:site.name#"><a href='/sitewhere/admin/sites/detail.html?siteToken=#:site.token#'>#:site.name#</a></span>
 			</div>
 			<div>
-				<span class="sw-device-header-label" title="Currently assigned asset">#= i18next("public.CurrentAssignment") #:</span>
+				<span class="sw-device-header-label" title="Currently assigned asset">Current Assignment:</span>
 # if (data.assignment) { #
 # if (assignment.assignmentType != 'Unassociated') { #
 				<span title="#:assignment.assetName#"><a href='/sitewhere/admin/assignments/detail.html?token=#:assignment.token#'>#:assignment.assetName#</a></span>

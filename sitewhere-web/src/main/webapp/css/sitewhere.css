@@ -47,11 +47,10 @@
 	position: relative;
 	border: 1px solid rgb(204, 204, 204);
 	margin-bottom: 15px;
-	background-color: rgb(240, 240, 240);
-	padding: 3px 10px 7px;
-	-webkit-box-shadow: 3px 4px 7px -1px rgba(102,102,102,1);
-	-moz-box-shadow: 3px 4px 7px -1px rgba(102,102,102,1);
-	box-shadow: 3px 4px 7px -1px rgba(102,102,102,1);
+	padding: 7px 10px 7px;
+	-webkit-box-shadow: 4px 4px 4px 0px rgba(192,192,192,0.3);
+	-moz-box-shadow: 4px 4px 4px 0px rgba(192,192,192,0.3);
+	box-shadow: 4px 4px 4px 0px rgba(192,192,192,0.3);
 }
 
 .sw-title-bar h1 {
