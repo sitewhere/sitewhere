@@ -127,7 +127,8 @@ commented as shown below:
 	<sw:datastore>
 	
 		<!-- Default MongoDB Datastore -->
-		<sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
+      <sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"
+         useBulkEventInserts="true" bulkInsertMaxChunkSize="1000"/>
 	
 		<!-- Default HBase Datastore -->
 		<!--  
@@ -139,18 +140,26 @@ named **sitewhere**.
 
 The following attributes may be specified for the *<sw:mongo-datastore>* element.
       
-+----------------------+----------+--------------------------------------------------+
-| Attribute            | Required | Description                                      |
-+======================+==========+==================================================+
-| hostname             | optional | Server hostname for MongoDB instance.            |
-|                      |          | Defaults to *localhost*.                         |
-+----------------------+----------+--------------------------------------------------+
-| port                 | optional | Server port for MongoDB instance.                |
-|                      |          | Defaults to *27017*.                             |
-+----------------------+----------+--------------------------------------------------+
-| databaseName         | optional | MongoDB database name for SiteWhere storage.     |
-|                      |          | Defaults to *sitewhere*.                         |
-+----------------------+----------+--------------------------------------------------+
++------------------------+----------+--------------------------------------------------+
+| Attribute              | Required | Description                                      |
++========================+==========+==================================================+
+| hostname               | optional | Server hostname for MongoDB instance.            |
+|                        |          | Defaults to *localhost*.                         |
++------------------------+----------+--------------------------------------------------+
+| port                   | optional | Server port for MongoDB instance.                |
+|                        |          | Defaults to *27017*.                             |
++------------------------+----------+--------------------------------------------------+
+| databaseName           | optional | MongoDB database name for SiteWhere storage.     |
+|                        |          | Defaults to *sitewhere*.                         |
++------------------------+----------+--------------------------------------------------+
+| useBulkEventInserts    | optional | Indicates whether the bulk loading APIs should   |
+|                        |          | be used to increase event write performance.     |
+|                        |          | Defaults to *false*.                             |
++------------------------+----------+--------------------------------------------------+
+| bulkInsertMaxChunkSize | optional | Indicates the max number of events to queue      |
+|                        |          | before sending a batch via the bulk APIs.        |
+|                        |          | Defaults to *1000*.                              |
++------------------------+----------+--------------------------------------------------+
 
 Configuring an HBase Datastore
 ------------------------------
@@ -196,9 +205,10 @@ in the database and, if data initializers are configured, will prompt to populat
 the database with sample data (for non-console startup, there are properties on the 
 model initializers in the configuration file that allow you to specify whether 
 to populate the sample data automatically). SiteWhere provides initializers that will
-create sample data for both the user and device models. They can be configured by adding
-the *<sw:default-device-model-initializer/>* and/or *<sw:default-user-model-initializer/>*
-elements to the *<sw:datastore>* section as shown below:
+create sample data for user, device, and asset models. They can be configured by adding
+the *<sw:default-device-model-initializer/>*, *<sw:default-user-model-initializer/>*,
+and *<sw:default-asset-model-initializer/>* elements to the *<sw:datastore>* section 
+as shown below:
 
 .. code-block:: xml
    :emphasize-lines: 7, 10
@@ -208,15 +218,15 @@ elements to the *<sw:datastore>* section as shown below:
 			<!-- Default MongoDB Datastore -->
 			<sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
 			
-			<!-- Initializes device model with sample data if datastore is empty -->
-			<sw:default-device-model-initializer/>
-			
-			<!-- Initializes user model with sample data if datastore is empty -->
-			<sw:default-user-model-initializer/>
+         <!-- Initializes data model with sample data if datastore is empty -->
+         <sw:default-device-model-initializer/>
+         <sw:default-user-model-initializer/>
+         <sw:default-asset-model-initializer/>
  
 It is usually a good choice to allow the user model to be populated since a valid user and permissions 
 are required to log in to the management application. Populating the sample device data gives a nice 
-starting point for understanding SiteWhere in the context of a real application.
+starting point for understanding SiteWhere in the context of a real application. The default device 
+data references the default asset model data, so both should be used together.
 
 Device Management Cache Providers
 ---------------------------------
@@ -1058,6 +1068,85 @@ on the query language see `the documentation <https://docs.wso2.com/display/CEP3
 stream results, any number of callbacks may be registered. The *<sw:stream-debugger/>* callback will print
 all events for a given stream to the log. The *<sw:groovy-stream-processor/>* may be used to process stream events
 with a Groovy script. 
+
+----------------
+Asset Management
+----------------
+SiteWhere includes an asset management subsystem that provides a standardized way to reference assets from
+many different sources. SiteWhere assets reference items in the real world including people (person assets),
+places (location assets) and things (hardware assets). There is also a class of assets called device assets
+that are hardware assets which can be used in device specifications. 
+
+Assets are used to specify information about device specifications such as the name, photo, and properties 
+that make the asset unique. They are also used in device assignments to indicate a physical object that is
+associated with a device such as a person associated with a badge or the car associated with a tracking device.
+
+Starting with SiteWhere 1.1.0, all assets are stored in the datastore by default. Previous versions required
+them to be stored in XML files or external asset management systems. In the administrative console, new 
+asset categories and assets can be added. When the system starts, each of the asset categories is loaded
+as an asset module. Other assets can still be added via the filesystem or external sources as detailed below.
+
+Filesystem Asset Modules
+------------------------
+Assets can be loaded from the filesystem using files containing XML data. For an example of the data
+format take a look at the files in the **conf/sitewhere/assets/** directory. The available modules 
+include *<sw:filesystem-device-asset-module/>*, *<sw:filesystem-hardware-asset-module/>*,
+*<sw:filesystem-person-asset-module/>*, and *<sw:filesystem-location-asset-module/>*. Each module
+must have a unique id. Filesystem asset modules load all assets at server startup, but can be reloaded
+by calling the **refresh** method in the asset REST services.
+
+.. code-block:: xml
+   
+   <sw:asset-management>
+
+      <sw:filesystem-device-asset-module filename="my-devices.xml"
+         moduleId="my-devices" moduleName="My Devices"/>
+
+   </sw:asset-management>
+   
+The following attributes may be specified for the filesystem asset module elements.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| filename             | optional | Name of XML file relative to the assets          |
+|                      |          | configuration directory.                         |
++----------------------+----------+--------------------------------------------------+
+| moduleId             | optional | Unique module id.                                |
++----------------------+----------+--------------------------------------------------+
+| moduleName           | optional | Name shown in use interface for module.          |
++----------------------+----------+--------------------------------------------------+
+
+WSO2 Identity Server Asset Module
+---------------------------------
+SiteWhere can load and reference assets from `WSO2 Identity Server <http://wso2.com/products/identity-server/>`_
+allowing asset data to be stored externally. WSO2 Identity Server allows information about people to be
+stored in many formats including LDAP and many databases. It also allows data to be retrieved in many
+common formats. SiteWhere uses SCIM to load the list of users from the server. The current implementation
+loads all users at startup, so when adding users, the **refresh** method should be called in the asset REST
+services to pick up the changes. An example WSO2 asset module configuration is shown below:
+
+.. code-block:: xml
+   
+   <sw:wso2-identity-asset-module moduleId="wso2"
+      scimUsersUrl="https://wso2is:9443/wso2/scim/Users" username="admin" password="admin"
+      ignoreBadCertificate="true"/>
+
+The following attributes may be specified for the *<sw:wso2-identity-asset-module>* element.
+      
++----------------------+----------+--------------------------------------------------+
+| Attribute            | Required | Description                                      |
++======================+==========+==================================================+
+| scimUsersUrl         | required | URL for accessing SCIM users list.               |
++----------------------+----------+--------------------------------------------------+
+| username             | required | Admin username for server authentication.        |
++----------------------+----------+--------------------------------------------------+
+| password             | required | Admin password for server authentication.        |
++----------------------+----------+--------------------------------------------------+
+| ignoreBadCertificate | required | Allows connection via SSL to the server even if  |
+|                      |          | the certificate is not valid. Only use this in   |
+|                      |          | development envionments.                         |
++----------------------+----------+--------------------------------------------------+
 
 -------------------
 Configuring Logging
