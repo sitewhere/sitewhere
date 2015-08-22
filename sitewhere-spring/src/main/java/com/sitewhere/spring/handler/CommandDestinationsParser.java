@@ -21,6 +21,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.device.communication.json.JsonCommandExecutionEncoder;
 import com.sitewhere.device.communication.mqtt.HardwareIdMqttParameterExtractor;
 import com.sitewhere.device.communication.mqtt.MqttCommandDeliveryProvider;
 import com.sitewhere.device.communication.mqtt.MqttCommandDestination;
@@ -265,6 +266,10 @@ public class CommandDestinationsParser {
 				parseJavaHybridProtobufEncoder(child, context, destination);
 				return true;
 			}
+			case JsonCommandEncoder: {
+				parseJsonCommandEncoder(child, context, destination);
+				return true;
+			}
 			case CommandEncoder: {
 				parseEncoderRef(child, context, destination);
 				return true;
@@ -302,6 +307,23 @@ public class CommandDestinationsParser {
 			BeanDefinitionBuilder destination) {
 		BeanDefinitionBuilder builder =
 				BeanDefinitionBuilder.rootBeanDefinition(JavaHybridProtobufExecutionEncoder.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		destination.addPropertyReference("commandExecutionEncoder", name);
+	}
+
+	/**
+	 * Parse definition of JSON command encoder.
+	 * 
+	 * @param encoder
+	 * @param context
+	 * @param destination
+	 */
+	protected void parseJsonCommandEncoder(Element encoder, ParserContext context,
+			BeanDefinitionBuilder destination) {
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition(JsonCommandExecutionEncoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -432,6 +454,9 @@ public class CommandDestinationsParser {
 
 		/** Encodes commands with hybrid protobuf / Java serialization approach */
 		JavaHybridProtobufEncoder("java-protobuf-hybrid-encoder"),
+
+		/** Encodes commands with hybrid protobuf / JSON serialization approach */
+		JsonCommandEncoder("json-command-encoder"),
 
 		/** Reference to externally defined event decoder */
 		CommandEncoder("command-encoder");

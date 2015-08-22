@@ -119,7 +119,8 @@ public class ActiveMQTests {
 
 			for (int i = 0; i < messageCount; i++) {
 				BytesMessage message = session.createBytesMessage();
-				message.writeBytes(EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID));
+				// message.writeBytes(EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID));
+				message.writeBytes(EventsHelper.generateEncodedRegistrationMessage());
 				producer.send(message);
 			}
 

@@ -16,7 +16,7 @@
 .panel-item-label {
 	font-weight: bold;
 	display: inline-block;
-	min-width: 250px;
+	min-width: 300px;
 }
 </style>
 

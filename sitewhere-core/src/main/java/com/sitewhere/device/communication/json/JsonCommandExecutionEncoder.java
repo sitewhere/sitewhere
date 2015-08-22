@@ -9,6 +9,7 @@ package com.sitewhere.device.communication.json;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -73,8 +74,9 @@ public class JsonCommandExecutionEncoder extends LifecycleComponent implements
 	@Override
 	public byte[] encode(IDeviceCommandExecution command, IDeviceNestingContext nested,
 			IDeviceAssignment assignment) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignment);
+		LOGGER.debug("Custom command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
+		return MarshalUtils.marshalJson(encoded);
 	}
 
 	/*
@@ -89,7 +91,8 @@ public class JsonCommandExecutionEncoder extends LifecycleComponent implements
 	@Override
 	public byte[] encodeSystemCommand(ISystemCommand command, IDeviceNestingContext nested,
 			IDeviceAssignment assignment) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		EncodedCommandExecution encoded = new EncodedCommandExecution(command, nested, assignment);
+		LOGGER.debug("System command being encoded:\n\n" + MarshalUtils.marshalJsonAsPrettyString(encoded));
+		return MarshalUtils.marshalJson(encoded);
 	}
 }

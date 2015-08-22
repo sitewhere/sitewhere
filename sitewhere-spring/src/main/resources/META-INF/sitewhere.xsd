@@ -1588,6 +1588,22 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
+	<!-- Encodes commands using JSON serialization -->
+	<xsd:element name="json-command-encoder" type="swJsonCommandEncoderType"
+		substitutionGroup="abstract-command-encoder">
+		<xsd:annotation>
+			<xsd:documentation>Command encoder that encodes both system and custom commands as JSON
+				for simplified client use.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swJsonCommandEncoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractCommandEncoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<!-- Command destination that delivers commands via MQTT -->
 	<xsd:complexType name="mqttCommandDestinationType">

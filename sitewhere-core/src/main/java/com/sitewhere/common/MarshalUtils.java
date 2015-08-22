@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sitewhere.spi.SiteWhereException;
 
 public class MarshalUtils {
@@ -21,6 +22,14 @@ public class MarshalUtils {
 
 	/** Singleton object mapper for JSON marshaling */
 	private static ObjectMapper MAPPER = new ObjectMapper();
+
+	/** Singleton mapper with pretty print turned on */
+	private static ObjectMapper PRETTY_MAPPER = new ObjectMapper();
+
+	// Enable pretty printing on the mapper.
+	static {
+		PRETTY_MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
+	}
 
 	/**
 	 * Marshal an object to a byte array.
@@ -47,6 +56,21 @@ public class MarshalUtils {
 	public static String marshalJsonAsString(Object object) throws SiteWhereException {
 		try {
 			return MAPPER.writeValueAsString(object);
+		} catch (JsonProcessingException e) {
+			throw new SiteWhereException("Could not marshal device as JSON.", e);
+		}
+	}
+
+	/**
+	 * Marshal an object to a formatted JSON string.
+	 * 
+	 * @param object
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static String marshalJsonAsPrettyString(Object object) throws SiteWhereException {
+		try {
+			return PRETTY_MAPPER.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
 			throw new SiteWhereException("Could not marshal device as JSON.", e);
 		}

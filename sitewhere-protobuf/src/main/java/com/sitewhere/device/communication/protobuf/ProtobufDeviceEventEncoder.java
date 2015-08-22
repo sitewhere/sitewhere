@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.communication.IDeviceEventEncoder;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 
 /**
  * Implementation of {@link IDeviceEventEncoder} that encodes device events into binary
@@ -43,6 +44,8 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 			return encodeDeviceAlert((IDecodedDeviceRequest<IDeviceAlertCreateRequest>) event);
 		} else if (event.getRequest() instanceof IDeviceLocationCreateRequest) {
 			return encodeDeviceLocation((IDecodedDeviceRequest<IDeviceLocationCreateRequest>) event);
+		} else if (event.getRequest() instanceof IDeviceRegistrationRequest) {
+			return encodeDeviceRegistration((IDecodedDeviceRequest<IDeviceRegistrationRequest>) event);
 		}
 		throw new SiteWhereException("Protobuf encoder encountered unknown event type: "
 				+ event.getClass().getName());
@@ -170,6 +173,38 @@ public class ProtobufDeviceEventEncoder implements IDeviceEventEncoder<byte[]> {
 
 			builder.build().writeDelimitedTo(out);
 			mb.build().writeDelimitedTo(out);
+			return out.toByteArray();
+		} catch (Exception e) {
+			throw new SiteWhereException(e);
+		}
+	}
+
+	/**
+	 * Encode a {@link IDecodedDeviceRequest} containing a device registration in a
+	 * protobuf message.
+	 * 
+	 * @param decoded
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected byte[] encodeDeviceRegistration(IDecodedDeviceRequest<IDeviceRegistrationRequest> decoded)
+			throws SiteWhereException {
+		try {
+			IDeviceRegistrationRequest request = (IDeviceRegistrationRequest) decoded.getRequest();
+			SiteWhere.RegisterDevice.Builder register = SiteWhere.RegisterDevice.newBuilder();
+			register.setHardwareId(request.getHardwareId());
+			register.setSiteToken(request.getSiteToken());
+			register.setSpecificationToken(request.getSpecificationToken());
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			SiteWhere.Header.Builder builder = SiteWhere.Header.newBuilder();
+			builder.setCommand(SiteWhere.Command.SEND_REGISTRATION);
+			if (decoded.getOriginator() != null) {
+				builder.setOriginator(decoded.getOriginator());
+			}
+
+			builder.build().writeDelimitedTo(out);
+			register.build().writeDelimitedTo(out);
 			return out.toByteArray();
 		} catch (Exception e) {
 			throw new SiteWhereException(e);
