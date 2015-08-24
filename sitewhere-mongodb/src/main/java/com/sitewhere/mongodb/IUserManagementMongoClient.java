@@ -22,6 +22,9 @@ public interface IUserManagementMongoClient {
 	/** Default collection name for SiteWhere granted authorities */
 	public static final String DEFAULT_AUTHORITIES_COLLECTION_NAME = "authorities";
 
+	/** Default collection name for SiteWhere tenants */
+	public static final String DEFAULT_TENANTS_COLLECTION_NAME = "tenants";
+
 	/**
 	 * Get the collection for users.
 	 * 
@@ -35,4 +38,11 @@ public interface IUserManagementMongoClient {
 	 * @return
 	 */
 	public DBCollection getAuthoritiesCollection();
+
+	/**
+	 * Get the collection for tenants.
+	 * 
+	 * @return
+	 */
+	public DBCollection getTenantsCollection();
 }

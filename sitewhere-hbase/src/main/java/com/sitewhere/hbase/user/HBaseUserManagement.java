@@ -21,13 +21,17 @@ import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
+import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
+import com.sitewhere.spi.user.request.ITenantCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**
@@ -260,6 +264,42 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	@Override
 	public void deleteGrantedAuthority(String authority) throws SiteWhereException {
 		throw new SiteWhereException("Not implemented.");
+	}
+
+	@Override
+	public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ITenant getTenantById(String id) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public ISiteWhereHBaseClient getClient() {

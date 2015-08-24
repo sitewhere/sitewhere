@@ -44,7 +44,10 @@ public enum ErrorCode {
 	DuplicateAuthority(121, "Authority name already in use."),
 
 	/** No user logged in for action that requires authorization */
-	NotLoggedIn(103, "You must provide credentials to perform this action."),
+	NotLoggedIn(130, "You must provide credentials to perform this action."),
+
+	/** Invalid tenant reference */
+	InvalidTenantId(140, "Tenant does not exist."),
 
 	/***************************
 	 * INVALID OR DUPLICATE ID *
@@ -106,6 +109,9 @@ public enum ErrorCode {
 
 	/** Invalid asset id */
 	InvalidAssetId(538, "Asset not found."),
+
+	/** Attempting to create a tenant with an id already in use */
+	DuplicateTenantId(540, "Tenant id already in use."),
 
 	/******************
 	 * DEVICE COMMAND *

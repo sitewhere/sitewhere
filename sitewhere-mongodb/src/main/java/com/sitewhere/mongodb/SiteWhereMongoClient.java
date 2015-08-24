@@ -120,6 +120,9 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	/** Injected name used for authorities collection */
 	private String authoritiesCollectionName = IUserManagementMongoClient.DEFAULT_AUTHORITIES_COLLECTION_NAME;
 
+	/** Injected name used for tenants collection */
+	private String tenantsCollectionName = IUserManagementMongoClient.DEFAULT_TENANTS_COLLECTION_NAME;
+
 	/** Injected name used for asset categories collection */
 	private String assetCategoriesCollectionName =
 			IAssetManagementMongoClient.DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME;
@@ -398,6 +401,16 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.mongodb.IUserManagementMongoClient#getTenantsCollection()
+	 */
+	@Override
+	public DBCollection getTenantsCollection() {
+		return getSiteWhereDatabase().getCollection(getTenantsCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetCategoriesCollection()
 	 */
@@ -572,6 +585,14 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	public void setAuthoritiesCollectionName(String authoritiesCollectionName) {
 		this.authoritiesCollectionName = authoritiesCollectionName;
+	}
+
+	public String getTenantsCollectionName() {
+		return tenantsCollectionName;
+	}
+
+	public void setTenantsCollectionName(String tenantsCollectionName) {
+		this.tenantsCollectionName = tenantsCollectionName;
 	}
 
 	public String getAssetCategoriesCollectionName() {

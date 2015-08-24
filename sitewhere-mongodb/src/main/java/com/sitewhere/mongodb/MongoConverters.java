@@ -33,6 +33,7 @@ import com.sitewhere.mongodb.device.MongoDeviceStream;
 import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
+import com.sitewhere.mongodb.user.MongoTenant;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IHardwareAsset;
@@ -56,6 +57,7 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
@@ -88,6 +90,9 @@ public class MongoConverters implements IMongoConverterLookup {
 		CONVERTERS.put(IDeviceGroupElement.class, new MongoDeviceGroupElement());
 		CONVERTERS.put(IBatchOperation.class, new MongoBatchOperation());
 		CONVERTERS.put(IBatchElement.class, new MongoBatchElement());
+
+		// Converters for user management.
+		CONVERTERS.put(ITenant.class, new MongoTenant());
 
 		// Converters for asset management.
 		CONVERTERS.put(IAssetCategory.class, new MongoAssetCategory());

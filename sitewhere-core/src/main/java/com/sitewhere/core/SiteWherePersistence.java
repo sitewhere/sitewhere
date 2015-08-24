@@ -54,6 +54,7 @@ import com.sitewhere.rest.model.device.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.user.GrantedAuthority;
+import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -113,6 +114,7 @@ import com.sitewhere.spi.device.util.DeviceSpecificationUtils;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
+import com.sitewhere.spi.user.request.ITenantCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**
@@ -1346,6 +1348,85 @@ public class SiteWherePersistence {
 		auth.setAuthority(source.getAuthority());
 		auth.setDescription(source.getDescription());
 		return auth;
+	}
+
+	/**
+	 * Common logic for creating a tenant.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static Tenant tenantCreateLogic(ITenantCreateRequest request) throws SiteWhereException {
+		Tenant tenant = new Tenant();
+
+		// Id is required.
+		assureData(request.getId());
+		tenant.setId(request.getId());
+
+		// Name is required.
+		assureData(request.getName());
+		tenant.setName(request.getName());
+
+		// Logo is required.
+		assureData(request.getLogoUrl());
+		tenant.setLogoUrl(request.getLogoUrl());
+
+		// Auth token is required.
+		assureData(request.getAuthenticationToken());
+		tenant.setAuthenticationToken(request.getAuthenticationToken());
+
+		tenant.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
+		tenant.setEngineConfiguration(request.getEngineConfiguration());
+
+		MetadataProvider.copy(request.getMetadata(), tenant);
+		SiteWherePersistence.initializeEntityMetadata(tenant);
+
+		return tenant;
+	}
+
+	/**
+	 * Common logic for updating an existing tenant.
+	 * 
+	 * @param request
+	 * @param existing
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing)
+			throws SiteWhereException {
+		if ((request.getId() != null) && (!request.getId().equals(existing.getId()))) {
+			throw new SiteWhereException("Can not change the id of an existing tenant.");
+		}
+
+		if (request.getName() != null) {
+			existing.setName(request.getName());
+		}
+
+		if (request.getLogoUrl() != null) {
+			existing.setLogoUrl(request.getLogoUrl());
+		}
+
+		if (request.getAuthenticationToken() != null) {
+			existing.setAuthenticationToken(request.getAuthenticationToken());
+		}
+
+		if (request.getAuthorizedUserIds() != null) {
+			existing.getAuthorizedUserIds().clear();
+			existing.getAuthorizedUserIds().addAll(request.getAuthorizedUserIds());
+		}
+
+		if (request.getEngineConfiguration() != null) {
+			existing.setEngineConfiguration(request.getEngineConfiguration());
+		}
+
+		if (request.getMetadata() != null) {
+			existing.getMetadata().clear();
+			MetadataProvider.copy(request.getMetadata(), existing);
+		}
+		SiteWherePersistence.setUpdatedEntityMetadata(existing);
+
+		return existing;
 	}
 
 	/**
