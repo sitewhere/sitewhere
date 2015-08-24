@@ -1,6 +1,6 @@
 [![Build Status](https://drone.io/github.com/sitewhere/sitewhere/status.png)](https://drone.io/github.com/sitewhere/sitewhere/latest)
 
-![SiteWhere] (http://www.sitewhere.org/sites/default/files/sitewhere.png)
+![SiteWhere] (http://www.sitewhere.org/wp-content/uploads/2015/07/sitewhere-small.png)
 
 The Open Platform for the Internet of Things™
 -----------------------------------------------
