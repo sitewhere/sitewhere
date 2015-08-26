@@ -37,10 +37,11 @@ public interface IConfigurationResolver {
 	 * 
 	 * @param tenant
 	 * @param version
+	 * @param parent
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version)
+	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version, ApplicationContext parent)
 			throws SiteWhereException;
 
 	/**

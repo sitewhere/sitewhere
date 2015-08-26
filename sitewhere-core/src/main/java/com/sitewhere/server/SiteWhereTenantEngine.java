@@ -62,7 +62,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	private static Logger LOGGER = Logger.getLogger(SiteWhereServer.class);
 
 	/** Spring context for tenant */
-	public static ApplicationContext TENANT_SPRING_CONTEXT;
+	private ApplicationContext tenantContext;
+
+	/** SiteWhere global application context */
+	private ApplicationContext globalContext;
 
 	/** Allows Spring configuration to be resolved */
 	private IConfigurationResolver configurationResolver = new TomcatConfigurationResolver();
@@ -91,9 +94,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** Interface for the search provider manager */
 	private ISearchProviderManager searchProviderManager;
 
-	public SiteWhereTenantEngine(ITenant tenant) {
+	public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent) {
 		super(LifecycleComponentType.TenantEngine);
 		setTenant(tenant);
+		this.globalContext = parent;
 	}
 
 	/*
@@ -196,9 +200,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		TENANT_SPRING_CONTEXT =
+		this.tenantContext =
 				getConfigurationResolver().resolveTenantContext(getTenant(),
-						SiteWhere.getServer().getVersion());
+						SiteWhere.getServer().getVersion(), globalContext);
 	}
 
 	/**
@@ -210,7 +214,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		// Load device management cache provider if configured.
 		try {
 			this.deviceManagementCacheProvider =
-					(IDeviceManagementCacheProvider) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER);
+					(IDeviceManagementCacheProvider) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER);
 			LOGGER.info("Device management cache provider using: "
 					+ deviceManagementCacheProvider.getClass().getName());
 		} catch (NoSuchBeanDefinitionException e) {
@@ -220,7 +224,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		// Verify that a device management implementation exists.
 		try {
 			IDeviceManagement deviceManagementImpl =
-					(IDeviceManagement) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
+					(IDeviceManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
 			this.deviceManagement = configureDeviceManagement(deviceManagementImpl);
 			LOGGER.info("Device management implementation using: "
 					+ deviceManagementImpl.getClass().getName());
@@ -254,7 +258,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		try {
 			// If outbound device event processor chain is defined, use it.
 			outboundEventProcessorChain =
-					(IOutboundEventProcessorChain) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
+					(IOutboundEventProcessorChain) tenantContext.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
 			management = new OutboundProcessingStrategyDecorator(management);
 			LOGGER.info("Event processor chain found with "
 					+ outboundEventProcessorChain.getProcessors().size() + " processors.");
@@ -279,7 +283,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		try {
 			// If inbound device event processor chain is defined, use it.
 			inboundEventProcessorChain =
-					(IInboundEventProcessorChain) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_INBOUND_PROCESSOR_CHAIN);
+					(IInboundEventProcessorChain) tenantContext.getBean(SiteWhereServerBeans.BEAN_INBOUND_PROCESSOR_CHAIN);
 		} catch (NoSuchBeanDefinitionException e) {
 			// If no processor chain is defined, use a default chain that supports core
 			// system functionality.
@@ -299,7 +303,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	protected void initializeDeviceCommunicationSubsystem() throws SiteWhereException {
 		try {
 			deviceCommunication =
-					(IDeviceCommunication) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION);
+					(IDeviceCommunication) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No device communication subsystem implementation configured.");
 		}
@@ -313,9 +317,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	protected void initializeAssetManagement() throws SiteWhereException {
 		try {
 			assetManagement =
-					(IAssetManagement) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
+					(IAssetManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
 			assetModuleManager =
-					(IAssetModuleManager) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
+					(IAssetModuleManager) tenantContext.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No asset module manager implementation configured.");
 		}
@@ -329,7 +333,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	protected void initializeSearchProviderManagement() throws SiteWhereException {
 		try {
 			searchProviderManager =
-					(ISearchProviderManager) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_SEARCH_PROVIDER_MANAGER);
+					(ISearchProviderManager) tenantContext.getBean(SiteWhereServerBeans.BEAN_SEARCH_PROVIDER_MANAGER);
 		} catch (NoSuchBeanDefinitionException e) {
 			searchProviderManager = new SearchProviderManager();
 		}
@@ -356,7 +360,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	protected void verifyDeviceModel() {
 		try {
 			IDeviceModelInitializer init =
-					(IDeviceModelInitializer) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER);
+					(IDeviceModelInitializer) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER);
 			ISearchResults<ISite> sites = getDeviceManagement().listSites(new SearchCriteria(1, 1));
 			if (sites.getNumResults() == 0) {
 				List<String> messages = new ArrayList<String>();
@@ -390,7 +394,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	protected void verifyAssetModel() {
 		try {
 			IAssetModelInitializer init =
-					(IAssetModelInitializer) TENANT_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER);
+					(IAssetModelInitializer) tenantContext.getBean(SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER);
 			ISearchResults<IAssetCategory> categories =
 					getAssetManagement().listAssetCategories(new SearchCriteria(1, 1));
 			if (categories.getNumResults() == 0) {

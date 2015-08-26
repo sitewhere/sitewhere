@@ -75,10 +75,11 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.configuration.IConfigurationResolver#resolveTenantContext(com
-	 * .sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
+	 * .sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion,
+	 * org.springframework.context.ApplicationContext)
 	 */
 	@Override
-	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version)
+	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version, ApplicationContext global)
 			throws SiteWhereException {
 		LOGGER.info("Loading Spring configuration ...");
 		File sitewhereConf = getSiteWhereConfigFolder();
@@ -87,7 +88,7 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 			throw new SiteWhereException("Tenant " + tenant.getName() + "(" + tenant.getId()
 					+ ") configuration not found: " + tenantConfigFile.getAbsolutePath());
 		}
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = new GenericApplicationContext(global);
 
 		// Plug in custom property source.
 		Map<String, Object> properties = new HashMap<String, Object>();

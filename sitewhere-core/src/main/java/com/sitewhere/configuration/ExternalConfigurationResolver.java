@@ -68,10 +68,11 @@ public class ExternalConfigurationResolver implements IConfigurationResolver {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.configuration.IConfigurationResolver#resolveTenantContext(com
-	 * .sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
+	 * .sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion,
+	 * org.springframework.context.ApplicationContext)
 	 */
 	@Override
-	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version)
+	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version, ApplicationContext parent)
 			throws SiteWhereException {
 		// TODO: This does not make sense unless the configured URL is used as a base and
 		// the tenant configuration is relative to it.
