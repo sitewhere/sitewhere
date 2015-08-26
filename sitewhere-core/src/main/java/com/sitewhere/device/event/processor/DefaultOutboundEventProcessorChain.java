@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public class DefaultOutboundEventProcessorChain extends LifecycleComponent implements
+public class DefaultOutboundEventProcessorChain extends TenantLifecycleComponent implements
 		IOutboundEventProcessorChain {
 
 	/** Static logger instance */

@@ -22,7 +22,7 @@ import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.AssetType;
@@ -47,7 +47,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MongoAssetManagement extends LifecycleComponent implements IAssetManagement {
+public class MongoAssetManagement extends TenantLifecycleComponent implements IAssetManagement {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MongoDeviceManagement.class);
@@ -94,9 +94,9 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	 * @throws SiteWhereException
 	 */
 	protected void ensureIndexes() throws SiteWhereException {
-		getMongoClient().getAssetCategoriesCollection().createIndex(
+		getMongoClient().getAssetCategoriesCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoAssetCategory.PROP_ID, 1), new BasicDBObject("unique", true));
-		getMongoClient().getAssetsCollection().createIndex(
+		getMongoClient().getAssetsCollection(getTenant()).createIndex(
 				(new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, 1)).append(MongoAsset.PROP_ID, 1),
 				new BasicDBObject("unique", true));
 	}
@@ -118,7 +118,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 		// Use common logic so all backend implementations work the same.
 		AssetCategory category = SiteWherePersistence.assetCategoryCreateLogic(request);
 
-		DBCollection categories = getMongoClient().getAssetCategoriesCollection();
+		DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 		DBObject created = MongoAssetCategory.toDBObject(category);
 		MongoPersistence.insert(categories, created);
 
@@ -156,7 +156,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 		DBObject updated = MongoAssetCategory.toDBObject(category);
 
 		BasicDBObject query = new BasicDBObject(MongoAssetCategory.PROP_ID, categoryId);
-		DBCollection categories = getMongoClient().getAssetCategoriesCollection();
+		DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 		MongoPersistence.update(categories, query, updated);
 
 		return MongoAssetCategory.fromDBObject(updated);
@@ -172,7 +172,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	@Override
 	public ISearchResults<IAssetCategory> listAssetCategories(ISearchCriteria criteria)
 			throws SiteWhereException {
-		DBCollection categories = getMongoClient().getAssetCategoriesCollection();
+		DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 		BasicDBObject query = new BasicDBObject();
 		BasicDBObject sort =
 				new BasicDBObject(MongoAssetCategory.PROP_NAME, 1).append(MongoAssetCategory.PROP_ASSET_TYPE,
@@ -188,7 +188,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	@Override
 	public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
 		DBObject existing = assertAssetCategory(categoryId);
-		DBCollection categories = getMongoClient().getAssetCategoriesCollection();
+		DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 		MongoPersistence.delete(categories, existing);
 		return MongoAssetCategory.fromDBObject(existing);
 	}
@@ -207,7 +207,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 		IAssetCategory category = getAssetCategory(categoryId);
 		PersonAsset person = SiteWherePersistence.personAssetCreateLogic(category, request);
 
-		DBCollection assets = getMongoClient().getAssetsCollection();
+		DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 		DBObject created = MongoPersonAsset.toDBObject(person);
 		MongoPersistence.insert(assets, created);
 
@@ -232,7 +232,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 
 		BasicDBObject query =
 				new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
-		DBCollection assets = getMongoClient().getAssetsCollection();
+		DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 		MongoPersistence.update(assets, query, updated);
 
 		return MongoPersonAsset.fromDBObject(updated);
@@ -252,7 +252,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 		IAssetCategory category = getAssetCategory(categoryId);
 		HardwareAsset hw = SiteWherePersistence.hardwareAssetCreateLogic(category, request);
 
-		DBCollection assets = getMongoClient().getAssetsCollection();
+		DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 		DBObject created = MongoHardwareAsset.toDBObject(hw);
 		MongoPersistence.insert(assets, created);
 
@@ -277,7 +277,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 
 		BasicDBObject query =
 				new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
-		DBCollection assets = getMongoClient().getAssetsCollection();
+		DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 		MongoPersistence.update(assets, query, updated);
 
 		return MongoHardwareAsset.fromDBObject(updated);
@@ -297,7 +297,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 		IAssetCategory category = getAssetCategory(categoryId);
 		LocationAsset loc = SiteWherePersistence.locationAssetCreateLogic(category, request);
 
-		DBCollection assets = getMongoClient().getAssetsCollection();
+		DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 		DBObject created = MongoLocationAsset.toDBObject(loc);
 		MongoPersistence.insert(assets, created);
 
@@ -322,7 +322,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 
 		BasicDBObject query =
 				new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID, assetId);
-		DBCollection assets = getMongoClient().getAssetsCollection();
+		DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 		MongoPersistence.update(assets, query, updated);
 
 		return MongoLocationAsset.fromDBObject(updated);
@@ -366,7 +366,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	@Override
 	public IAsset deleteAsset(String categoryId, String assetId) throws SiteWhereException {
 		DBObject existing = assertAsset(categoryId, assetId);
-		DBCollection assets = getMongoClient().getAssetsCollection();
+		DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 		MongoPersistence.delete(assets, existing);
 		return unmarshalAsset(existing);
 	}
@@ -380,7 +380,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	@Override
 	public ISearchResults<IAsset> listAssets(String categoryId, ISearchCriteria criteria)
 			throws SiteWhereException {
-		DBCollection assets = getMongoClient().getAssetsCollection();
+		DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId);
 		BasicDBObject sort = new BasicDBObject(MongoAsset.PROP_NAME, 1);
 		return MongoPersistence.search(IAsset.class, assets, query, sort, criteria);
@@ -395,7 +395,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	 */
 	protected DBObject getAssetCategoryDBObject(String id) throws SiteWhereException {
 		try {
-			DBCollection categories = getMongoClient().getAssetCategoriesCollection();
+			DBCollection categories = getMongoClient().getAssetCategoriesCollection(getTenant());
 			BasicDBObject query = new BasicDBObject(MongoAssetCategory.PROP_ID, id);
 			DBObject result = categories.findOne(query);
 			return result;
@@ -430,7 +430,7 @@ public class MongoAssetManagement extends LifecycleComponent implements IAssetMa
 	 */
 	protected DBObject getAssetDBObject(String categoryId, String assetId) throws SiteWhereException {
 		try {
-			DBCollection assets = getMongoClient().getAssetsCollection();
+			DBCollection assets = getMongoClient().getAssetsCollection(getTenant());
 			BasicDBObject query =
 					new BasicDBObject(MongoAsset.PROP_CATEGORY_ID, categoryId).append(MongoAsset.PROP_ID,
 							assetId);

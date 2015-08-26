@@ -9,14 +9,14 @@ package com.sitewhere.spi.device;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.ICache;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Interface for entity that provides caching for device management objects.
  * 
  * @author Derek
  */
-public interface IDeviceManagementCacheProvider extends ILifecycleComponent {
+public interface IDeviceManagementCacheProvider extends ITenantLifecycleComponent {
 
 	/**
 	 * Gets cache mapping site tokens to {@link ISite} objects.

@@ -239,7 +239,7 @@ public class CommandDestinationsParser {
 			BeanDefinitionBuilder destination) {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
-			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 				NamespaceHandler nested =
 						context.getReaderContext().getNamespaceHandlerResolver().resolve(
 								child.getNamespaceURI());

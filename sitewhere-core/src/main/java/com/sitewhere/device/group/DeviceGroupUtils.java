@@ -23,6 +23,7 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Utility methods for maniupulating device groups.
@@ -39,9 +40,9 @@ public class DeviceGroupUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<IDevice> getDevicesInGroup(String groupToken, IDeviceSearchCriteria criteria)
-			throws SiteWhereException {
-		Collection<IDevice> devices = getDevicesInGroup(groupToken);
+	public static List<IDevice> getDevicesInGroup(String groupToken, IDeviceSearchCriteria criteria,
+			ITenant tenant) throws SiteWhereException {
+		Collection<IDevice> devices = getDevicesInGroup(groupToken, tenant);
 		List<IDevice> matches = new ArrayList<IDevice>();
 		for (IDevice device : devices) {
 			switch (criteria.getSearchType()) {
@@ -78,22 +79,24 @@ public class DeviceGroupUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Collection<IDevice> getDevicesInGroup(String groupToken) throws SiteWhereException {
+	public static Collection<IDevice> getDevicesInGroup(String groupToken, ITenant tenant)
+			throws SiteWhereException {
 		Map<String, IDevice> devices = new HashMap<String, IDevice>();
 		ISearchCriteria criteria = new SearchCriteria(1, 0);
 		SearchResults<IDeviceGroupElement> elements =
-				SiteWhere.getServer().getDeviceManagement().listDeviceGroupElements(groupToken, criteria);
+				SiteWhere.getServer().getDeviceManagement(tenant).listDeviceGroupElements(groupToken,
+						criteria);
 		for (IDeviceGroupElement element : elements.getResults()) {
 			switch (element.getType()) {
 			case Device: {
 				devices.put(
 						element.getElementId(),
-						SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(
+						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(
 								element.getElementId()));
 				break;
 			}
 			case Group: {
-				Collection<IDevice> subDevices = getDevicesInGroup(element.getElementId());
+				Collection<IDevice> subDevices = getDevicesInGroup(element.getElementId(), tenant);
 				for (IDevice subDevice : subDevices) {
 					devices.put(subDevice.getHardwareId(), subDevice);
 				}
@@ -113,14 +116,14 @@ public class DeviceGroupUtils {
 	 * @throws SiteWhereException
 	 */
 	public static Collection<IDevice> getDevicesInGroupsWithRole(String groupRole,
-			IDeviceSearchCriteria criteria) throws SiteWhereException {
+			IDeviceSearchCriteria criteria, ITenant tenant) throws SiteWhereException {
 		Map<String, IDevice> devices = new HashMap<String, IDevice>();
 		ISearchCriteria groupCriteria = new SearchCriteria(1, 0);
 		ISearchResults<IDeviceGroup> groups =
-				SiteWhere.getServer().getDeviceManagement().listDeviceGroupsWithRole(groupRole, false,
+				SiteWhere.getServer().getDeviceManagement(tenant).listDeviceGroupsWithRole(groupRole, false,
 						groupCriteria);
 		for (IDeviceGroup group : groups.getResults()) {
-			List<IDevice> groupDevices = getDevicesInGroup(group.getToken(), criteria);
+			List<IDevice> groupDevices = getDevicesInGroup(group.getToken(), criteria, tenant);
 			for (IDevice groupDevice : groupDevices) {
 				devices.put(groupDevice.getHardwareId(), groupDevice);
 			}

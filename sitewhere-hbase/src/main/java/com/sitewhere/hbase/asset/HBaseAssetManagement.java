@@ -16,7 +16,7 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.ProtobufPayloadMarshaler;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -37,7 +37,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseAssetManagement extends LifecycleComponent implements IAssetManagement {
+public class HBaseAssetManagement extends TenantLifecycleComponent implements IAssetManagement {
 
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(HBaseAssetManagement.class);
@@ -64,12 +64,13 @@ public class HBaseAssetManagement extends LifecycleComponent implements IAssetMa
 	public void start() throws SiteWhereException {
 		ensureTablesExist();
 
-		AssetIdManager.getInstance().load(client);
-
 		// Create context from configured options.
 		this.context = new HBaseContext();
+		context.setTenant(getTenant());
 		context.setClient(getClient());
 		context.setPayloadMarshaler(getPayloadMarshaler());
+
+		AssetIdManager.getInstance().load(context);
 	}
 
 	/*

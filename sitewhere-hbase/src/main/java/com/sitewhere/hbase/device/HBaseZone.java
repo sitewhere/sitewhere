@@ -70,7 +70,7 @@ public class HBaseZone {
 
 		HTableInterface sites = null;
 		try {
-			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = getSitesTableInterface(context);
 			Put put = new Put(rowkey);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			sites.put(put);
@@ -104,7 +104,7 @@ public class HBaseZone {
 
 		HTableInterface sites = null;
 		try {
-			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = getSitesTableInterface(context);
 			Put put = new Put(zoneId);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			sites.put(put);
@@ -132,7 +132,7 @@ public class HBaseZone {
 
 		HTableInterface sites = null;
 		try {
-			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = getSitesTableInterface(context);
 			Get get = new Get(rowkey);
 			HBaseUtils.addPayloadFields(get);
 			Result result = sites.get(get);
@@ -173,7 +173,7 @@ public class HBaseZone {
 			HTableInterface sites = null;
 			try {
 				Delete delete = new Delete(zoneId);
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				sites.delete(delete);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to delete zone.", e);
@@ -186,7 +186,7 @@ public class HBaseZone {
 			byte[] payload = context.getPayloadMarshaler().encodeZone(existing);
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(zoneId);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
@@ -227,5 +227,16 @@ public class HBaseZone {
 		byte[] result = new byte[ZONE_IDENTIFIER_LENGTH];
 		System.arraycopy(bytes, bytes.length - ZONE_IDENTIFIER_LENGTH, result, 0, ZONE_IDENTIFIER_LENGTH);
 		return result;
+	}
+
+	/**
+	 * Get sites table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
 	}
 }

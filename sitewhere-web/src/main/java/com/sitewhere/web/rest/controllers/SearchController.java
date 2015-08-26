@@ -54,11 +54,12 @@ public class SearchController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get list of available search providers")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public List<SearchProvider> listSearchProviders() throws SiteWhereException {
+	public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listSearchProviders", LOGGER);
 		try {
 			List<ISearchProvider> providers =
-					SiteWhere.getServer().getSearchProviderManager().getSearchProviders();
+					SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest)).getSearchProviders();
 			List<SearchProvider> retval = new ArrayList<SearchProvider>();
 			for (ISearchProvider provider : providers) {
 				retval.add(SearchProvider.copy(provider));
@@ -75,11 +76,12 @@ public class SearchController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public List<IDeviceEvent> searchDeviceEvents(
 			@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
-			HttpServletRequest request) throws SiteWhereException {
+			HttpServletRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "searchDeviceEvents", LOGGER);
 		try {
 			ISearchProvider provider =
-					SiteWhere.getServer().getSearchProviderManager().getSearchProvider(providerId);
+					SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest)).getSearchProvider(
+							providerId);
 			if (provider == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);

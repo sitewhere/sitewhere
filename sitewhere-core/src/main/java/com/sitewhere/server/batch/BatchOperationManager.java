@@ -28,7 +28,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.server.SiteWhereServer;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -53,7 +53,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public class BatchOperationManager extends LifecycleComponent implements IBatchOperationManager {
+public class BatchOperationManager extends TenantLifecycleComponent implements IBatchOperationManager {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BatchOperationManager.class);
@@ -168,14 +168,14 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 				BatchOperationUpdateRequest request = new BatchOperationUpdateRequest();
 				request.setProcessingStatus(BatchOperationStatus.Processing);
 				request.setProcessingStartedDate(new Date());
-				SiteWhere.getServer().getDeviceManagement().updateBatchOperation(operation.getToken(),
-						request);
+				SiteWhere.getServer().getDeviceManagement(getTenant()).updateBatchOperation(
+						operation.getToken(), request);
 
 				// Process all batch elements.
 				IBatchElementSearchCriteria criteria = new BatchElementSearchCriteria(1, 0);
 				SearchResults<IBatchElement> matches =
-						SiteWhere.getServer().getDeviceManagement().listBatchElements(operation.getToken(),
-								criteria);
+						SiteWhere.getServer().getDeviceManagement(getTenant()).listBatchElements(
+								operation.getToken(), criteria);
 				BatchProcessingResults result = processBatchElements(operation, matches.getResults());
 
 				// Update operation to reflect processing results.
@@ -185,8 +185,8 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 				if (result.getErrorCount() > 0) {
 					request.setProcessingStatus(BatchOperationStatus.FinishedWithErrors);
 				}
-				SiteWhere.getServer().getDeviceManagement().updateBatchOperation(operation.getToken(),
-						request);
+				SiteWhere.getServer().getDeviceManagement(getTenant()).updateBatchOperation(
+						operation.getToken(), request);
 			} catch (SiteWhereException e) {
 				LOGGER.error("Error processing batch operation.", e);
 			}
@@ -234,7 +234,7 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 				// Indicate element is being processed.
 				BatchElementUpdateRequest request = new BatchElementUpdateRequest();
 				request.setProcessingStatus(ElementProcessingStatus.Processing);
-				SiteWhere.getServer().getDeviceManagement().updateBatchElement(
+				SiteWhere.getServer().getDeviceManagement(getTenant()).updateBatchElement(
 						element.getBatchOperationToken(), element.getIndex(), request);
 
 				request = new BatchElementUpdateRequest();
@@ -256,7 +256,7 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 					request.setProcessingStatus(ElementProcessingStatus.Failed);
 				} finally {
 					IBatchElement updated =
-							SiteWhere.getServer().getDeviceManagement().updateBatchElement(
+							SiteWhere.getServer().getDeviceManagement(getTenant()).updateBatchElement(
 									element.getBatchOperationToken(), element.getIndex(), request);
 					results.process(updated);
 				}
@@ -283,21 +283,23 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 				throw new SiteWhereException("Command token not found in batch command invocation request.");
 			}
 			IDeviceCommand command =
-					SiteWhere.getServer().getDeviceManagement().getDeviceCommandByToken(commandToken);
+					SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceCommandByToken(
+							commandToken);
 			if (command == null) {
 				throw new SiteWhereException("Invalid command token referenced by batch command invocation.");
 			}
 
 			// Find information about the device to execute the command against.
 			IDevice device =
-					SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(element.getHardwareId());
+					SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceByHardwareId(
+							element.getHardwareId());
 			if (device == null) {
 				throw new SiteWhereException("Invalid device hardware id in command invocation.");
 			}
 
 			// Find the current assignment information for the device.
 			IDeviceAssignment assignment =
-					SiteWhere.getServer().getDeviceManagement().getCurrentDeviceAssignment(device);
+					SiteWhere.getServer().getDeviceManagement(getTenant()).getCurrentDeviceAssignment(device);
 			if (assignment == null) {
 				throw new SiteWhereException("Device is not currently assigned. Command can not be invoked.");
 			}
@@ -316,7 +318,7 @@ public class BatchOperationManager extends LifecycleComponent implements IBatchO
 
 			// Invoke the command.
 			IDeviceCommandInvocation invocation =
-					SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(
+					SiteWhere.getServer().getDeviceManagement(getTenant()).addDeviceCommandInvocation(
 							assignment.getToken(), command, request);
 			metadata = new HashMap<String, String>();
 			metadata.put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID, invocation.getId());

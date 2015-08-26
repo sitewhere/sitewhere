@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Produces an encoded message based on Google Protocol Buffer derived from an
@@ -35,20 +36,20 @@ public class ProtobufMessageBuilder {
 
 	/**
 	 * Create a protobuf message for an {@link IDeviceCommandExecution} targeted at the
-	 * given {@link IDeviceAssignment}.
 	 * 
 	 * @param execution
 	 * @param nested
 	 * @param assignment
+	 * @param tenant
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static byte[] createMessage(IDeviceCommandExecution execution, IDeviceNestingContext nested,
-			IDeviceAssignment assignment) throws SiteWhereException {
+			IDeviceAssignment assignment, ITenant tenant) throws SiteWhereException {
 		IDeviceSpecification specification =
-				SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(
+				SiteWhere.getServer().getDeviceManagement(tenant).getDeviceSpecificationByToken(
 						execution.getCommand().getSpecificationToken());
-		DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(specification);
+		DescriptorProtos.FileDescriptorProto fdproto = getFileDescriptor(specification, tenant);
 		LOGGER.debug("Using the following specification proto:\n" + fdproto.toString());
 		Descriptors.FileDescriptor[] fdescs = new Descriptors.FileDescriptor[0];
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -121,11 +122,12 @@ public class ProtobufMessageBuilder {
 	 * Gets a file descriptor for protobuf representation of {@link IDeviceSpecification}.
 	 * 
 	 * @param specification
+	 * @param tenant
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(IDeviceSpecification specification)
-			throws SiteWhereException {
-		return ProtobufSpecificationBuilder.createFileDescriptor(specification);
+	protected static DescriptorProtos.FileDescriptorProto getFileDescriptor(
+			IDeviceSpecification specification, ITenant tenant) throws SiteWhereException {
+		return ProtobufSpecificationBuilder.createFileDescriptor(specification, tenant);
 	}
 }

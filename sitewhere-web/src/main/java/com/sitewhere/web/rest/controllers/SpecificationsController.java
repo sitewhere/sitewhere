@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -48,6 +49,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.ITenant;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -76,21 +78,25 @@ public class SpecificationsController extends SiteWhereController {
 	@ApiOperation(value = "Create a new device specification")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceSpecification createDeviceSpecification(
-			@RequestBody DeviceSpecificationCreateRequest request) throws SiteWhereException {
+			@RequestBody DeviceSpecificationCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDeviceSpecification", LOGGER);
 		try {
 			IAsset asset =
-					SiteWhere.getServer().getAssetModuleManager().getAssetById(request.getAssetModuleId(),
-							request.getAssetId());
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getAssetById(
+							request.getAssetModuleId(), request.getAssetId());
 			if (asset == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);
 			}
 			IDeviceSpecification result =
-					SiteWhere.getServer().getDeviceManagement().createDeviceSpecification(request);
-			DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDeviceSpecification(
+							request);
+			DeviceSpecificationMarshalHelper helper =
+					new DeviceSpecificationMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
-			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(result,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -108,14 +114,16 @@ public class SpecificationsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceSpecification getDeviceSpecificationByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset)
-			throws SiteWhereException {
+			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceSpecificationByToken", LOGGER);
 		try {
-			IDeviceSpecification result = assertDeviceSpecificationByToken(token);
-			DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
+			IDeviceSpecification result = assertDeviceSpecificationByToken(token, servletRequest);
+			DeviceSpecificationMarshalHelper helper =
+					new DeviceSpecificationMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(includeAsset);
-			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(result,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -133,11 +141,13 @@ public class SpecificationsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public String getDeviceSpecificationProtoByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			HttpServletResponse response) throws SiteWhereException {
+			HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceSpecificationProtoByToken", LOGGER);
 		try {
-			IDeviceSpecification specification = assertDeviceSpecificationByToken(token);
-			String proto = SpecificationProtoBuilder.getProtoForSpecification(specification);
+			IDeviceSpecification specification = assertDeviceSpecificationByToken(token, servletRequest);
+			String proto =
+					SpecificationProtoBuilder.getProtoForSpecification(specification,
+							getTenant(servletRequest));
 			response.setContentType("text/plain");
 			return proto;
 		} finally {
@@ -157,11 +167,13 @@ public class SpecificationsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ResponseEntity<byte[]> getDeviceSpecificationProtoFileByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			HttpServletResponse response) throws SiteWhereException {
+			HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceSpecificationProtoFileByToken", LOGGER);
 		try {
-			IDeviceSpecification specification = assertDeviceSpecificationByToken(token);
-			String proto = SpecificationProtoBuilder.getProtoForSpecification(specification);
+			IDeviceSpecification specification = assertDeviceSpecificationByToken(token, servletRequest);
+			String proto =
+					SpecificationProtoBuilder.getProtoForSpecification(specification,
+							getTenant(servletRequest));
 
 			final HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -187,14 +199,18 @@ public class SpecificationsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceSpecification updateDeviceSpecification(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@RequestBody DeviceSpecificationCreateRequest request) throws SiteWhereException {
+			@RequestBody DeviceSpecificationCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateDeviceSpecification", LOGGER);
 		try {
 			IDeviceSpecification result =
-					SiteWhere.getServer().getDeviceManagement().updateDeviceSpecification(token, request);
-			DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceSpecification(
+							token, request);
+			DeviceSpecificationMarshalHelper helper =
+					new DeviceSpecificationMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
-			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(result,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -218,19 +234,21 @@ public class SpecificationsController extends SiteWhereController {
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceSpecifications", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
 			ISearchResults<IDeviceSpecification> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceSpecifications(includeDeleted,
-							criteria);
-			DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceSpecifications(
+							includeDeleted, criteria);
+			DeviceSpecificationMarshalHelper helper =
+					new DeviceSpecificationMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(includeAsset);
 			List<IDeviceSpecification> specsConv = new ArrayList<IDeviceSpecification>();
 			for (IDeviceSpecification device : results.getResults()) {
-				specsConv.add(helper.convert(device, SiteWhere.getServer().getAssetModuleManager()));
+				specsConv.add(helper.convert(device,
+						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
 			}
 			Collections.sort(specsConv, new Comparator<IDeviceSpecification>() {
 				public int compare(IDeviceSpecification o1, IDeviceSpecification o2) {
@@ -257,15 +275,16 @@ public class SpecificationsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceSpecification deleteDeviceSpecification(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-			throws SiteWhereException {
+			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceSpecification", LOGGER);
 		try {
+			ITenant tenant = getTenant(servletRequest);
 			IDeviceSpecification result =
-					SiteWhere.getServer().getDeviceManagement().deleteDeviceSpecification(token, force);
-			DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(tenant).deleteDeviceSpecification(token, force);
+			DeviceSpecificationMarshalHelper helper = new DeviceSpecificationMarshalHelper(tenant);
 			helper.setIncludeAsset(true);
-			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager(tenant));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -283,12 +302,14 @@ public class SpecificationsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommand createDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
+			@RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDeviceCommand", LOGGER);
 		try {
-			IDeviceSpecification spec = assertDeviceSpecificationByToken(token);
+			IDeviceSpecification spec = assertDeviceSpecificationByToken(token, servletRequest);
 			IDeviceCommand result =
-					SiteWhere.getServer().getDeviceManagement().createDeviceCommand(spec, request);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDeviceCommand(
+							spec, request);
 			return result;
 		} finally {
 			Tracer.stop(LOGGER);
@@ -301,12 +322,13 @@ public class SpecificationsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceCommand> listDeviceCommands(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted)
-			throws SiteWhereException {
+			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceCommands", LOGGER);
 		try {
 			List<IDeviceCommand> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceCommands(token, includeDeleted);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommands(
+							token, includeDeleted);
 			Collections.sort(results, new Comparator<IDeviceCommand>() {
 				public int compare(IDeviceCommand o1, IDeviceCommand o2) {
 					if (o1.getName().equals(o2.getName())) {
@@ -335,12 +357,13 @@ public class SpecificationsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceCommandNamespace> listDeviceCommandsByNamespace(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted)
-			throws SiteWhereException {
+			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandsByNamespace", LOGGER);
 		try {
 			List<IDeviceCommand> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceCommands(token, includeDeleted);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommands(
+							token, includeDeleted);
 			Collections.sort(results, new Comparator<IDeviceCommand>() {
 				public int compare(IDeviceCommand o1, IDeviceCommand o2) {
 					if ((o1.getNamespace() == null) && (o2.getNamespace() != null)) {
@@ -381,12 +404,15 @@ public class SpecificationsController extends SiteWhereController {
 	 * Gets a device specification by token and throws an exception if not found.
 	 * 
 	 * @param token
+	 * @param servletRequest
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected IDeviceSpecification assertDeviceSpecificationByToken(String token) throws SiteWhereException {
+	protected IDeviceSpecification assertDeviceSpecificationByToken(String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		IDeviceSpecification result =
-				SiteWhere.getServer().getDeviceManagement().getDeviceSpecificationByToken(token);
+				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceSpecificationByToken(
+						token);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

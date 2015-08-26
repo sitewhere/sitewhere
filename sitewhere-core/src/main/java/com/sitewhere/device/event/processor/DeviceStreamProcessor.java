@@ -35,7 +35,7 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
 	@Override
 	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
 			IDeviceStreamCreateRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunicationSubsystem().getDeviceStreamManager().handleDeviceStreamRequest(
+		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleDeviceStreamRequest(
 				hardwareId, request);
 	}
 
@@ -50,7 +50,7 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
 	@Override
 	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunicationSubsystem().getDeviceStreamManager().handleDeviceStreamDataRequest(
+		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleDeviceStreamDataRequest(
 				hardwareId, request);
 	}
 
@@ -64,7 +64,7 @@ public class DeviceStreamProcessor extends InboundEventProcessor {
 	@Override
 	public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
 			ISendDeviceStreamDataRequest request) throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunicationSubsystem().getDeviceStreamManager().handleSendDeviceStreamDataRequest(
+		SiteWhere.getServer().getDeviceCommunication(getTenant()).getDeviceStreamManager().handleSendDeviceStreamDataRequest(
 				hardwareId, request);
 	}
 

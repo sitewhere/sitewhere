@@ -12,6 +12,7 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTableInterface;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Interface expected for HBase client implementations.
@@ -37,19 +38,22 @@ public interface ISiteWhereHBaseClient {
 	/**
 	 * Get the named table interface. Auto flush is disabled.
 	 * 
+	 * @param tenant
 	 * @param tableName
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException;
+	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException;
 
 	/**
 	 * Get the named table interface.
 	 * 
+	 * @param tenant
 	 * @param tableName
 	 * @param autoFlush
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public HTableInterface getTableInterface(byte[] tableName, boolean autoFlush) throws SiteWhereException;
+	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush)
+			throws SiteWhereException;
 }

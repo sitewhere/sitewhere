@@ -105,8 +105,8 @@ public class AssignmentsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Create a new device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request)
-			throws SiteWhereException {
+	public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDeviceAssignment", LOGGER);
 		try {
 			if (StringUtils.isEmpty(request.getDeviceHardwareId())) {
@@ -123,13 +123,16 @@ public class AssignmentsController extends SiteWhereController {
 					throw new SiteWhereException("Asset id required.");
 				}
 			}
-			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
+			IDeviceManagement management =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
 			IDeviceAssignment created = management.createDeviceAssignment(request);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			DeviceAssignmentMarshalHelper helper =
+					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeDevice(true);
 			helper.setIncludeSite(true);
-			return helper.convert(created, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(created,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -147,16 +150,18 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Get a device assignment by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceAssignment getDeviceAssignment(
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceAssignment", LOGGER);
 		try {
-			IDeviceAssignment assignment = assureAssignment(token);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			IDeviceAssignment assignment = assureAssignment(token, servletRequest);
+			DeviceAssignmentMarshalHelper helper =
+					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeDevice(true);
 			helper.setIncludeSite(true);
-			return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(assignment,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -175,17 +180,20 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceAssignment deleteDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-			throws SiteWhereException {
+			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceAssignment", LOGGER);
 		try {
 			IDeviceAssignment assignment =
-					SiteWhere.getServer().getDeviceManagement().deleteDeviceAssignment(token, force);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceAssignment(
+							token, force);
+			DeviceAssignmentMarshalHelper helper =
+					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeDevice(true);
 			helper.setIncludeSite(true);
-			return helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(assignment,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -203,17 +211,20 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceAssignment updateDeviceAssignmentMetadata(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@RequestBody MetadataProvider metadata) throws SiteWhereException {
+			@RequestBody MetadataProvider metadata, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateDeviceAssignmentMetadata", LOGGER);
 		try {
 			IDeviceAssignment result =
-					SiteWhere.getServer().getDeviceManagement().updateDeviceAssignmentMetadata(token,
-							metadata);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceAssignmentMetadata(
+							token, metadata);
+			DeviceAssignmentMarshalHelper helper =
+					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeDevice(true);
 			helper.setIncludeSite(true);
-			return helper.convert(result, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(result,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -239,13 +250,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listEvents", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement().listDeviceEvents(token, criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceEvents(
+					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -267,13 +279,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listMeasurements", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement().listDeviceMeasurements(token, criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceMeasurements(
+					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -296,14 +309,15 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
-			@ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds)
-			throws SiteWhereException {
+			@ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listMeasurementsAsChartSeries", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceMeasurements> measurements =
-					SiteWhere.getServer().getDeviceManagement().listDeviceMeasurements(token, criteria);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceMeasurements(
+							token, criteria);
 			ChartBuilder builder = new ChartBuilder();
 			return builder.process(measurements.getResults(), measurementIds);
 		} finally {
@@ -325,12 +339,13 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Create measurements event for a device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createMeasurements", LOGGER);
 		try {
 			IDeviceMeasurements result =
-					SiteWhere.getServer().getDeviceManagement().addDeviceMeasurements(token, input);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceMeasurements(
+							token, input);
 			return DeviceMeasurements.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -353,13 +368,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listLocations", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement().listDeviceLocations(token, criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceLocations(
+					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -379,12 +395,13 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Create a location event for a device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceLocation createLocation(@RequestBody DeviceLocationCreateRequest input,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createLocation", LOGGER);
 		try {
 			IDeviceLocation result =
-					SiteWhere.getServer().getDeviceManagement().addDeviceLocation(token, input);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceLocation(
+							token, input);
 			return DeviceLocation.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -407,13 +424,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listAlerts", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement().listDeviceAlerts(token, criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceAlerts(
+					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -433,11 +451,13 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Create an alert event for a device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceAlert createAlert(@RequestBody DeviceAlertCreateRequest input,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createAlert", LOGGER);
 		try {
-			IDeviceAlert result = SiteWhere.getServer().getDeviceManagement().addDeviceAlert(token, input);
+			IDeviceAlert result =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceAlert(
+							token, input);
 			return DeviceAlert.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -457,12 +477,13 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Create a new stream for a device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceStream createDeviceStream(@RequestBody DeviceStreamCreateRequest request,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDeviceStream", LOGGER);
 		try {
 			IDeviceStream result =
-					SiteWhere.getServer().getDeviceManagement().createDeviceStream(token, request);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createDeviceStream(
+							token, request);
 			return DeviceStream.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -478,14 +499,15 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceStreams", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceStream> matches =
-					SiteWhere.getServer().getDeviceManagement().listDeviceStreams(token, criteria);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceStreams(
+							token, criteria);
 			List<IDeviceStream> converted = new ArrayList<IDeviceStream>();
 			for (IDeviceStream stream : matches.getResults()) {
 				converted.add(DeviceStream.copy(stream));
@@ -510,12 +532,13 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceStream getDeviceStream(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId)
-			throws SiteWhereException {
+			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceStream", LOGGER);
 		try {
 			IDeviceStream result =
-					SiteWhere.getServer().getDeviceManagement().getDeviceStream(token, streamId);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceStream(
+							token, streamId);
 			if (result == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);
@@ -544,10 +567,10 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 			@ApiParam(value = "Sequence Number", required = false) @RequestParam(required = false) Long sequenceNumber,
-			HttpServletRequest svtRequest, HttpServletResponse svtResponse) throws SiteWhereException {
+			HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "addDeviceStreamData", LOGGER);
 		try {
-			ServletInputStream inData = svtRequest.getInputStream();
+			ServletInputStream inData = servletRequest.getInputStream();
 			ByteArrayOutputStream byteData = new ByteArrayOutputStream();
 			int data;
 			while ((data = inData.read()) != -1) {
@@ -560,7 +583,8 @@ public class AssignmentsController extends SiteWhereController {
 			request.setEventDate(new Date());
 			request.setUpdateState(false);
 			request.setData(payload);
-			SiteWhere.getServer().getDeviceManagement().addDeviceStreamData(token, request);
+			SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceStreamData(token,
+					request);
 			svtResponse.setStatus(HttpServletResponse.SC_CREATED);
 		} catch (SiteWhereSystemException e) {
 			if (e.getCode() == ErrorCode.InvalidStreamId) {
@@ -594,11 +618,11 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
 			@ApiParam(value = "Sequence Number", required = true) @PathVariable long sequenceNumber,
-			HttpServletResponse svtResponse) throws SiteWhereException {
+			HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceStreamData", LOGGER);
 		IDeviceStreamData chunk =
-				SiteWhere.getServer().getDeviceManagement().getDeviceStreamData(token, streamId,
-						sequenceNumber);
+				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceStreamData(
+						token, streamId, sequenceNumber);
 		if (chunk == null) {
 			svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
@@ -617,9 +641,11 @@ public class AssignmentsController extends SiteWhereController {
 	public void listDeviceStreamData(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
-			HttpServletResponse svtResponse) throws SiteWhereException {
+			HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceStreamData", LOGGER);
-		IDeviceStream stream = SiteWhere.getServer().getDeviceManagement().getDeviceStream(token, streamId);
+		IDeviceStream stream =
+				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceStream(token,
+						streamId);
 		if (stream == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);
@@ -628,7 +654,8 @@ public class AssignmentsController extends SiteWhereController {
 
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
 		ISearchResults<IDeviceStreamData> data =
-				SiteWhere.getServer().getDeviceManagement().listDeviceStreamData(token, streamId, criteria);
+				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceStreamData(
+						token, streamId, criteria);
 
 		// Sort results by sequence number.
 		Collections.sort(data.getResults(), new Comparator<IDeviceStreamData>() {
@@ -661,8 +688,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceCommandInvocation createCommandInvocation(
 			@RequestBody DeviceCommandInvocationCreateRequest request,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createCommandInvocation", LOGGER);
 		try {
 			if (request.getInitiator() == null) {
@@ -671,11 +698,12 @@ public class AssignmentsController extends SiteWhereController {
 			if (request.getTarget() == null) {
 				throw new SiteWhereException("Command target is required.");
 			}
-			IDeviceCommand command = assureDeviceCommand(request.getCommandToken());
+			IDeviceCommand command = assureDeviceCommand(request.getCommandToken(), servletRequest);
 			IDeviceCommandInvocation result =
-					SiteWhere.getServer().getDeviceManagement().addDeviceCommandInvocation(token, command,
-							request);
-			DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceCommandInvocation(
+							token, command, request);
+			DeviceCommandInvocationMarshalHelper helper =
+					new DeviceCommandInvocationMarshalHelper(getTenant(servletRequest));
 			return helper.convert(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -699,15 +727,17 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listCommandInvocations", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceCommandInvocation> matches =
-					SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocations(token, criteria);
-			DeviceCommandInvocationMarshalHelper helper = new DeviceCommandInvocationMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandInvocations(
+							token, criteria);
+			DeviceCommandInvocationMarshalHelper helper =
+					new DeviceCommandInvocationMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeCommand(includeCommand);
 			List<IDeviceCommandInvocation> converted = new ArrayList<IDeviceCommandInvocation>();
 			for (IDeviceCommandInvocation invocation : matches.getResults()) {
@@ -732,12 +762,13 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Create an state change event for a device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createStateChange", LOGGER);
 		try {
 			IDeviceStateChange result =
-					SiteWhere.getServer().getDeviceManagement().addDeviceStateChange(token, input);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceStateChange(
+							token, input);
 			return DeviceStateChange.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -760,13 +791,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listStateChanges", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement().listDeviceStateChanges(token, criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceStateChanges(
+					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -785,12 +817,13 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Create an command response event for a device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceCommandResponse createCommandResponse(@RequestBody DeviceCommandResponseCreateRequest input,
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createCommandResponse", LOGGER);
 		try {
 			IDeviceCommandResponse result =
-					SiteWhere.getServer().getDeviceManagement().addDeviceCommandResponse(token, input);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceCommandResponse(
+							token, input);
 			return DeviceCommandResponse.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -813,13 +846,14 @@ public class AssignmentsController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listCommandResponses", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement().listDeviceCommandResponses(token, criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandResponses(
+					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -837,17 +871,20 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "End an active device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceAssignment endDeviceAssignment(
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "endDeviceAssignment", LOGGER);
 		try {
-			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
+			IDeviceManagement management =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
 			IDeviceAssignment updated = management.endDeviceAssignment(token);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			DeviceAssignmentMarshalHelper helper =
+					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeDevice(true);
 			helper.setIncludeSite(true);
-			return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(updated,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -865,18 +902,21 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Mark a device assignment as missing")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public DeviceAssignment missingDeviceAssignment(
-			@ApiParam(value = "Assignment token", required = true) @PathVariable String token)
-			throws SiteWhereException {
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "missingDeviceAssignment", LOGGER);
 		try {
-			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement();
+			IDeviceManagement management =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
 			IDeviceAssignment updated =
 					management.updateDeviceAssignmentStatus(token, DeviceAssignmentStatus.Missing);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+			DeviceAssignmentMarshalHelper helper =
+					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(true);
 			helper.setIncludeDevice(true);
 			helper.setIncludeSite(true);
-			return helper.convert(updated, SiteWhere.getServer().getAssetModuleManager());
+			return helper.convert(updated,
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -886,12 +926,15 @@ public class AssignmentsController extends SiteWhereController {
 	 * Get an assignment by unique token. Throw an exception if not found.
 	 * 
 	 * @param token
+	 * @param servletRequest
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected IDeviceAssignment assureAssignment(String token) throws SiteWhereException {
+	protected IDeviceAssignment assureAssignment(String token, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		IDeviceAssignment assignment =
-				SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentByToken(token);
+				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceAssignmentByToken(
+						token);
 		if (assignment == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
@@ -902,11 +945,15 @@ public class AssignmentsController extends SiteWhereController {
 	 * Get a device command by unique token. Throw an exception if not found.
 	 * 
 	 * @param token
+	 * @param servletRequest
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected IDeviceCommand assureDeviceCommand(String token) throws SiteWhereException {
-		IDeviceCommand command = SiteWhere.getServer().getDeviceManagement().getDeviceCommandByToken(token);
+	protected IDeviceCommand assureDeviceCommand(String token, HttpServletRequest servletRequest)
+			throws SiteWhereException {
+		IDeviceCommand command =
+				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceCommandByToken(
+						token);
 		if (command == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
 		}

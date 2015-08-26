@@ -64,16 +64,14 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Verifying tables...");
 		ensureTablesExist();
-
-		LOGGER.info("Loading id management...");
-		IdManager.getInstance().load(client);
 
 		// Create context from configured options.
 		this.context = new HBaseContext();
 		context.setClient(getClient());
 		context.setPayloadMarshaler(getPayloadMarshaler());
+
+		IdManager.getInstance().load(context);
 	}
 
 	/*

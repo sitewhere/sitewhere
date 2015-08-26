@@ -53,7 +53,7 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 		List<Element> dsChildren = DomUtils.getChildElements(element);
 		for (Element child : dsChildren) {
-			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 				NamespaceHandler nested =
 						context.getReaderContext().getNamespaceHandlerResolver().resolve(
 								child.getNamespaceURI());

@@ -20,6 +20,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Used to build a {@link DeviceCommandInvocationSummary}.
@@ -34,11 +35,12 @@ public class DeviceInvocationSummaryBuilder {
 	 * 
 	 * @param invocation
 	 * @param responses
+	 * @param tenant
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static DeviceCommandInvocationSummary build(DeviceCommandInvocation invocation,
-			List<IDeviceCommandResponse> responses) throws SiteWhereException {
+			List<IDeviceCommandResponse> responses, ITenant tenant) throws SiteWhereException {
 		DeviceCommandInvocationSummary summary = new DeviceCommandInvocationSummary();
 		summary.setName(invocation.getCommand().getName());
 		summary.setNamespace(invocation.getCommand().getNamespace());
@@ -56,7 +58,7 @@ public class DeviceInvocationSummaryBuilder {
 			rsp.setDate(response.getEventDate());
 			if (response.getResponseEventId() != null) {
 				IDeviceEvent event =
-						SiteWhere.getServer().getDeviceManagement().getDeviceEventById(
+						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceEventById(
 								response.getResponseEventId());
 				rsp.setDescription(getDeviceEventDescription(event));
 			} else if (response.getResponse() != null) {

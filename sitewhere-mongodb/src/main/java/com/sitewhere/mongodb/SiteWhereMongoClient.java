@@ -27,6 +27,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Spring wrapper for initializing a Mongo client used by SiteWhere components.
@@ -170,7 +171,7 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 			}
 
 			// Force interaction to test connectivity.
-			getSiteWhereDatabase().getStats();
+			getGlobalDatabase().getStats();
 
 			List<String> messages = new ArrayList<String>();
 			messages.add("------------------");
@@ -251,7 +252,11 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 		return client;
 	}
 
-	public DB getSiteWhereDatabase() {
+	public DB getTenantDatabase(ITenant tenant) {
+		return client.getDB("tenant-" + getDatabaseName());
+	}
+
+	public DB getGlobalDatabase() {
 		return client.getDB(getDatabaseName());
 	}
 
@@ -260,113 +265,131 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	 * 
 	 * @see
 	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceSpecificationsCollection
-	 * ()
+	 * (com.sitewhere.spi.user.ITenant)
 	 */
-	public DBCollection getDeviceSpecificationsCollection() {
-		return getSiteWhereDatabase().getCollection(getDeviceSpecificationsCollectionName());
+	public DBCollection getDeviceSpecificationsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getDeviceSpecificationsCollectionName());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceCommandsCollection()
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceCommandsCollection(
+	 * com.sitewhere.spi.user.ITenant)
 	 */
-	public DBCollection getDeviceCommandsCollection() {
-		return getSiteWhereDatabase().getCollection(getDeviceCommandsCollectionName());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection()
-	 */
-	public DBCollection getDevicesCollection() {
-		return getSiteWhereDatabase().getCollection(getDevicesCollectionName());
+	public DBCollection getDeviceCommandsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getDeviceCommandsCollectionName());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceAssignmentsCollection()
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection(com.sitewhere
+	 * .spi.user.ITenant)
 	 */
-	public DBCollection getDeviceAssignmentsCollection() {
-		return getSiteWhereDatabase().getCollection(getDeviceAssignmentsCollectionName());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getSitesCollection()
-	 */
-	public DBCollection getSitesCollection() {
-		return getSiteWhereDatabase().getCollection(getSitesCollectionName());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getZonesCollection()
-	 */
-	public DBCollection getZonesCollection() {
-		return getSiteWhereDatabase().getCollection(getZonesCollectionName());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceGroupsCollection()
-	 */
-	public DBCollection getDeviceGroupsCollection() {
-		return getSiteWhereDatabase().getCollection(getDeviceGroupsCollectionName());
+	public DBCollection getDevicesCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getDevicesCollectionName());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getGroupElementsCollection()
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceAssignmentsCollection
+	 * (com.sitewhere.spi.user.ITenant)
 	 */
-	public DBCollection getGroupElementsCollection() {
-		return getSiteWhereDatabase().getCollection(getGroupElementsCollectionName());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getEventsCollection()
-	 */
-	public DBCollection getEventsCollection() {
-		return getSiteWhereDatabase().getCollection(getEventsCollectionName());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamsCollection()
-	 */
-	public DBCollection getStreamsCollection() {
-		return getSiteWhereDatabase().getCollection(getStreamsCollectionName());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamDataCollection()
-	 */
-	public DBCollection getStreamDataCollection() {
-		return getSiteWhereDatabase().getCollection(getStreamDataCollectionName());
+	public DBCollection getDeviceAssignmentsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getDeviceAssignmentsCollectionName());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getBatchOperationsCollection()
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getSitesCollection(com.sitewhere
+	 * .spi.user.ITenant)
 	 */
-	public DBCollection getBatchOperationsCollection() {
-		return getSiteWhereDatabase().getCollection(getBatchOperationsCollectionName());
+	public DBCollection getSitesCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getSitesCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getZonesCollection(com.sitewhere
+	 * .spi.user.ITenant)
+	 */
+	public DBCollection getZonesCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getZonesCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceGroupsCollection(com
+	 * .sitewhere.spi.user.ITenant)
+	 */
+	public DBCollection getDeviceGroupsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getDeviceGroupsCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getGroupElementsCollection(com
+	 * .sitewhere.spi.user.ITenant)
+	 */
+	public DBCollection getGroupElementsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getGroupElementsCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getEventsCollection(com.sitewhere
+	 * .spi.user.ITenant)
+	 */
+	public DBCollection getEventsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getEventsCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamsCollection(com.sitewhere
+	 * .spi.user.ITenant)
+	 */
+	public DBCollection getStreamsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getStreamsCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamDataCollection(com.
+	 * sitewhere.spi.user.ITenant)
+	 */
+	public DBCollection getStreamDataCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getStreamDataCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getBatchOperationsCollection
+	 * (com.sitewhere.spi.user.ITenant)
+	 */
+	public DBCollection getBatchOperationsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getBatchOperationsCollectionName());
 	}
 
 	/*
@@ -374,10 +397,10 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	 * 
 	 * @see
 	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getBatchOperationElementsCollection
-	 * ()
+	 * (com.sitewhere.spi.user.ITenant)
 	 */
-	public DBCollection getBatchOperationElementsCollection() {
-		return getSiteWhereDatabase().getCollection(getBatchOperationElementsCollectionName());
+	public DBCollection getBatchOperationElementsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getBatchOperationElementsCollectionName());
 	}
 
 	/*
@@ -386,7 +409,7 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	 * @see com.sitewhere.mongodb.IUserManagementMongoClient#getUsersCollection()
 	 */
 	public DBCollection getUsersCollection() {
-		return getSiteWhereDatabase().getCollection(getUsersCollectionName());
+		return getGlobalDatabase().getCollection(getUsersCollectionName());
 	}
 
 	/*
@@ -395,7 +418,7 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	 * @see com.sitewhere.mongodb.IUserManagementMongoClient#getAuthoritiesCollection()
 	 */
 	public DBCollection getAuthoritiesCollection() {
-		return getSiteWhereDatabase().getCollection(getAuthoritiesCollectionName());
+		return getGlobalDatabase().getCollection(getAuthoritiesCollectionName());
 	}
 
 	/*
@@ -405,26 +428,29 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	 */
 	@Override
 	public DBCollection getTenantsCollection() {
-		return getSiteWhereDatabase().getCollection(getTenantsCollectionName());
+		return getGlobalDatabase().getCollection(getTenantsCollectionName());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetCategoriesCollection()
+	 * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetCategoriesCollection(
+	 * com.sitewhere.spi.user.ITenant)
 	 */
-	public DBCollection getAssetCategoriesCollection() {
-		return getSiteWhereDatabase().getCollection(getAssetCategoriesCollectionName());
+	public DBCollection getAssetCategoriesCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getAssetCategoriesCollectionName());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetsCollection()
+	 * @see
+	 * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetsCollection(com.sitewhere
+	 * .spi.user.ITenant)
 	 */
-	public DBCollection getAssetsCollection() {
-		return getSiteWhereDatabase().getCollection(getAssetsCollectionName());
+	public DBCollection getAssetsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getAssetsCollectionName());
 	}
 
 	public String getHostname() {

@@ -7,7 +7,7 @@
  */
 package com.sitewhere.hbase.asset;
 
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdType;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,12 +38,12 @@ public class AssetIdManager {
 	/**
 	 * Load existing keys from table.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @throws SiteWhereException
 	 */
-	public void load(ISiteWhereHBaseClient hbase) throws SiteWhereException {
+	public void load(IHBaseContext context) throws SiteWhereException {
 		categoryKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.AssetKey.getIndicator(),
+				new UniqueIdCounterMap(context, UniqueIdType.AssetKey.getIndicator(),
 						UniqueIdType.AssetValue.getIndicator());
 		categoryKeys.refresh();
 	}

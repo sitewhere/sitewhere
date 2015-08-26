@@ -39,18 +39,11 @@ import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
  */
 public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorator {
 
-	/** Processor chain */
-	private IOutboundProcessingStrategy outbound;
+	/** Cached strategy */
+	private IOutboundProcessingStrategy strategy;
 
 	public OutboundProcessingStrategyDecorator(IDeviceManagement delegate) {
-		this(delegate,
-				SiteWhere.getServer().getDeviceCommunicationSubsystem().getOutboundProcessingStrategy());
-	}
-
-	public OutboundProcessingStrategyDecorator(IDeviceManagement delegate,
-			IOutboundProcessingStrategy outbound) {
 		super(delegate);
-		this.outbound = outbound;
 	}
 
 	/*
@@ -78,7 +71,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
 			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
 		IDeviceMeasurements result = super.addDeviceMeasurements(assignmentToken, request);
-		outbound.onMeasurements(result);
+		getOutboundProcessingStrategy().onMeasurements(result);
 		return result;
 	}
 
@@ -93,7 +86,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 			throws SiteWhereException {
 		IDeviceLocation result = super.addDeviceLocation(assignmentToken, request);
-		outbound.onLocation(result);
+		getOutboundProcessingStrategy().onLocation(result);
 		return result;
 	}
 
@@ -108,7 +101,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
 			throws SiteWhereException {
 		IDeviceAlert result = super.addDeviceAlert(assignmentToken, request);
-		outbound.onAlert(result);
+		getOutboundProcessingStrategy().onAlert(result);
 		return result;
 	}
 
@@ -124,7 +117,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		IDeviceCommandInvocation result = super.addDeviceCommandInvocation(assignmentToken, command, request);
-		outbound.onCommandInvocation(result);
+		getOutboundProcessingStrategy().onCommandInvocation(result);
 		return result;
 	}
 
@@ -140,7 +133,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 		IDeviceCommandResponse result = super.addDeviceCommandResponse(assignmentToken, request);
-		outbound.onCommandResponse(result);
+		getOutboundProcessingStrategy().onCommandResponse(result);
 		return result;
 	}
 
@@ -155,7 +148,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
 			throws SiteWhereException {
 		IBatchOperation result = super.createBatchOperation(request);
-		outbound.onBatchOperation(result);
+		getOutboundProcessingStrategy().onBatchOperation(result);
 		return result;
 	}
 
@@ -170,7 +163,21 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 			throws SiteWhereException {
 		IBatchOperation result = super.createBatchCommandInvocation(request);
-		outbound.onBatchOperation(result);
+		getOutboundProcessingStrategy().onBatchOperation(result);
 		return result;
+	}
+
+	/**
+	 * Get the configured outbound processing strategy.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IOutboundProcessingStrategy getOutboundProcessingStrategy() throws SiteWhereException {
+		if (strategy == null) {
+			strategy =
+					SiteWhere.getServer().getDeviceCommunication(getTenant()).getOutboundProcessingStrategy();
+		}
+		return strategy;
 	}
 }

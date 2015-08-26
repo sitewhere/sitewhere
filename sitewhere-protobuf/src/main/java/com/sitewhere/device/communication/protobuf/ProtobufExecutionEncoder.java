@@ -23,7 +23,7 @@ import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.Regist
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.RegistrationAckState;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Model.DeviceStreamData;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -42,7 +42,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class ProtobufExecutionEncoder extends LifecycleComponent implements ICommandExecutionEncoder<byte[]> {
+public class ProtobufExecutionEncoder extends TenantLifecycleComponent implements
+		ICommandExecutionEncoder<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ProtobufExecutionEncoder.class);
@@ -63,7 +64,7 @@ public class ProtobufExecutionEncoder extends LifecycleComponent implements ICom
 	@Override
 	public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
 			IDeviceAssignment assignment) throws SiteWhereException {
-		byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment);
+		byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment, getTenant());
 		LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 		return encoded;
 	}

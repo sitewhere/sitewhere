@@ -7,6 +7,7 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -60,10 +61,12 @@ public class CommandsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommand updateDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@RequestBody DeviceCommandCreateRequest request) throws SiteWhereException {
+			@RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateDeviceCommand", LOGGER);
 		try {
-			return SiteWhere.getServer().getDeviceManagement().updateDeviceCommand(token, request);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateDeviceCommand(
+					token, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -80,10 +83,11 @@ public class CommandsController extends SiteWhereController {
 	@ApiOperation(value = "Get a device command by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommand getDeviceCommandByToken(
-			@ApiParam(value = "Token", required = true) @PathVariable String token) throws SiteWhereException {
+			@ApiParam(value = "Token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandByToken", LOGGER);
 		try {
-			return assertDeviceCommandByToken(token);
+			return assertDeviceCommandByToken(token, servletRequest);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -103,11 +107,12 @@ public class CommandsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceCommand deleteDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-			throws SiteWhereException {
+			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceCommand", LOGGER);
 		try {
-			return SiteWhere.getServer().getDeviceManagement().deleteDeviceCommand(token, force);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteDeviceCommand(
+					token, force);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -117,11 +122,15 @@ public class CommandsController extends SiteWhereController {
 	 * Gets a device command by token and throws an exception if not found.
 	 * 
 	 * @param token
+	 * @param servletRequest
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected IDeviceCommand assertDeviceCommandByToken(String token) throws SiteWhereException {
-		IDeviceCommand result = SiteWhere.getServer().getDeviceManagement().getDeviceCommandByToken(token);
+	protected IDeviceCommand assertDeviceCommandByToken(String token, HttpServletRequest servletRequest)
+			throws SiteWhereException {
+		IDeviceCommand result =
+				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceCommandByToken(
+						token);
 		if (result == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR,
 					HttpServletResponse.SC_NOT_FOUND);

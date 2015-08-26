@@ -19,7 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.SiteWhereServer;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent implements
+public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComponent implements
 		IOutboundProcessingStrategy {
 
 	/** Static logger instance */
@@ -218,21 +218,22 @@ public class BlockingQueueOutboundProcessingStrategy extends LifecycleComponent 
 				try {
 					Object event = queue.take();
 					if (event instanceof IDeviceMeasurements) {
-						SiteWhere.getServer().getOutboundEventProcessorChain().onMeasurements(
+						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onMeasurements(
 								(IDeviceMeasurements) event);
 					} else if (event instanceof IDeviceLocation) {
-						SiteWhere.getServer().getOutboundEventProcessorChain().onLocation(
+						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onLocation(
 								(IDeviceLocation) event);
 					} else if (event instanceof IDeviceAlert) {
-						SiteWhere.getServer().getOutboundEventProcessorChain().onAlert((IDeviceAlert) event);
+						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onAlert(
+								(IDeviceAlert) event);
 					} else if (event instanceof IDeviceCommandInvocation) {
-						SiteWhere.getServer().getOutboundEventProcessorChain().onCommandInvocation(
+						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onCommandInvocation(
 								(IDeviceCommandInvocation) event);
 					} else if (event instanceof IDeviceCommandResponse) {
-						SiteWhere.getServer().getOutboundEventProcessorChain().onCommandResponse(
+						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onCommandResponse(
 								(IDeviceCommandResponse) event);
 					} else if (event instanceof IBatchOperation) {
-						SiteWhere.getServer().getOutboundEventProcessorChain().onBatchOperation(
+						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onBatchOperation(
 								(IBatchOperation) event);
 					} else {
 						throw new RuntimeException("Unknown device event type in outbound processing: "

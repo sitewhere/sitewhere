@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
@@ -84,10 +86,12 @@ public class SitesController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Create a new site")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
-	public Site createSite(@RequestBody SiteCreateRequest input) throws SiteWhereException {
+	public Site createSite(@RequestBody SiteCreateRequest input, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createSite", LOGGER);
 		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement().createSite(input);
+			ISite site =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createSite(input);
 			return Site.copy(site);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -106,11 +110,13 @@ public class SitesController extends SiteWhereController {
 	@ApiOperation(value = "Get a site by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public Site getSiteByToken(
-			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken)
-			throws SiteWhereException {
+			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getSiteByToken", LOGGER);
 		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement().getSiteByToken(siteToken);
+			ISite site =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getSiteByToken(
+							siteToken);
 			if (site == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
@@ -133,10 +139,13 @@ public class SitesController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
 	public Site updateSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@RequestBody SiteCreateRequest request) throws SiteWhereException {
+			@RequestBody SiteCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateSite", LOGGER);
 		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement().updateSite(siteToken, request);
+			ISite site =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateSite(
+							siteToken, request);
 			return Site.copy(site);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -157,11 +166,13 @@ public class SitesController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
 	public Site deleteSiteByToken(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-			throws SiteWhereException {
+			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteSiteByToken", LOGGER);
 		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement().deleteSite(siteToken, force);
+			ISite site =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteSite(
+							siteToken, force);
 			return Site.copy(site);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -180,12 +191,12 @@ public class SitesController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<ISite> listSites(
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listSites", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getDeviceManagement().listSites(criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listSites(criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -208,19 +219,20 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceMeasurementsForSite", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceMeasurements> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceMeasurementsForSite(siteToken,
-							criteria);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceMeasurementsForSite(
+							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
 			List<IDeviceMeasurements> wrapped = new ArrayList<IDeviceMeasurements>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			IAssetModuleManager assets =
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
 			for (IDeviceMeasurements result : results.getResults()) {
 				wrapped.add(new DeviceMeasurementsWithAsset(result, assets));
 			}
@@ -247,19 +259,20 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceLocationsForSite", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceLocation> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceLocationsForSite(siteToken,
-							criteria);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceLocationsForSite(
+							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
 			List<IDeviceLocation> wrapped = new ArrayList<IDeviceLocation>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			IAssetModuleManager assets =
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
 			for (IDeviceLocation result : results.getResults()) {
 				wrapped.add(new DeviceLocationWithAsset(result, assets));
 			}
@@ -286,18 +299,20 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceAlertsForSite", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceAlert> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceAlertsForSite(siteToken, criteria);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceAlertsForSite(
+							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
 			List<IDeviceAlert> wrapped = new ArrayList<IDeviceAlert>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			IAssetModuleManager assets =
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
 			for (IDeviceAlert result : results.getResults()) {
 				wrapped.add(new DeviceAlertWithAsset(result, assets));
 			}
@@ -324,19 +339,20 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandInvocationsForSite", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceCommandInvocation> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceCommandInvocationsForSite(
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandInvocationsForSite(
 							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
 			List<IDeviceCommandInvocation> wrapped = new ArrayList<IDeviceCommandInvocation>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			IAssetModuleManager assets =
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
 			for (IDeviceCommandInvocation result : results.getResults()) {
 				wrapped.add(new DeviceCommandInvocationWithAsset(result, assets));
 			}
@@ -363,19 +379,20 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceCommandResponsesForSite", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceCommandResponse> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceCommandResponsesForSite(siteToken,
-							criteria);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandResponsesForSite(
+							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
 			List<IDeviceCommandResponse> wrapped = new ArrayList<IDeviceCommandResponse>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			IAssetModuleManager assets =
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
 			for (IDeviceCommandResponse result : results.getResults()) {
 				wrapped.add(new DeviceCommandResponseWithAsset(result, assets));
 			}
@@ -402,19 +419,20 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate)
-			throws SiteWhereException {
+			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceStateChangesForSite", LOGGER);
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceStateChange> results =
-					SiteWhere.getServer().getDeviceManagement().listDeviceStateChangesForSite(siteToken,
-							criteria);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceStateChangesForSite(
+							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
 			List<IDeviceStateChange> wrapped = new ArrayList<IDeviceStateChange>();
-			IAssetModuleManager assets = SiteWhere.getServer().getAssetModuleManager();
+			IAssetModuleManager assets =
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest));
 			for (IDeviceStateChange result : results.getResults()) {
 				wrapped.add(new DeviceStateChangeWithAsset(result, assets));
 			}
@@ -441,21 +459,23 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
 			@ApiParam(value = "Include detailed site information", required = false) @RequestParam(defaultValue = "false") boolean includeSite,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "findAssignmentsForSite", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
 			ISearchResults<IDeviceAssignment> matches =
-					SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentsForSite(siteToken,
-							criteria);
-			DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceAssignmentsForSite(
+							siteToken, criteria);
+			DeviceAssignmentMarshalHelper helper =
+					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
 			helper.setIncludeAsset(includeAsset);
 			helper.setIncludeDevice(includeDevice);
 			helper.setIncludeSite(includeSite);
 			List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
 			for (IDeviceAssignment assignment : matches.getResults()) {
-				converted.add(helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager()));
+				converted.add(helper.convert(assignment,
+						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
 			}
 			return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
 		} finally {
@@ -476,14 +496,19 @@ public class SitesController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
 	public Zone createZone(
 			@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
-			@RequestBody ZoneCreateRequest request) throws SiteWhereException {
+			@RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createZone", LOGGER);
 		try {
-			ISite site = SiteWhere.getServer().getDeviceManagement().getSiteByToken(siteToken);
+			ISite site =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getSiteByToken(
+							siteToken);
 			if (site == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
-			IZone zone = SiteWhere.getServer().getDeviceManagement().createZone(site, request);
+			IZone zone =
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createZone(site,
+							request);
 			return Zone.copy(zone);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -503,12 +528,13 @@ public class SitesController extends SiteWhereController {
 	public ISearchResults<IZone> listZonesForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listZonesForSite", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getDeviceManagement().listZones(siteToken, criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listZones(siteToken,
+					criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

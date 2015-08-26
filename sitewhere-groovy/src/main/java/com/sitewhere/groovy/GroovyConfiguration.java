@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -25,7 +25,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class GroovyConfiguration extends LifecycleComponent implements InitializingBean {
+public class GroovyConfiguration extends TenantLifecycleComponent implements InitializingBean {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GroovyConfiguration.class);

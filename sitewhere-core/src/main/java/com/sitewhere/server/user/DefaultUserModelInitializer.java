@@ -8,6 +8,7 @@
 package com.sitewhere.server.user;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -15,12 +16,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.core.user.ISiteWhereAuthorities;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
+import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
@@ -40,11 +43,27 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 	/** Default administrator password */
 	public static final String DEFAULT_PASSWORD = "password";
 
+	/** Default tenant id */
+	public static final String DEFAULT_TENANT_ID = "default";
+
+	/** Default tenant name */
+	public static final String DEFAULT_TENANT_NAME = "Default Tenant";
+
+	/** Default tenant logo URL */
+	public static final String DEFAULT_TENANT_LOGO =
+			"https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png";
+
+	/** Default tenant auth token */
+	public static final String DEFAULT_TENANT_TOKEN = "sitewhere1234567890";
+
 	/** Prefix for create authority */
 	public static final String PREFIX_CREATE_AUTH = "[Create Authority]";
 
 	/** Prefix for create user */
 	public static final String PREFIX_CREATE_USER = "[Create User]";
+
+	/** Prefix for create tenant */
+	public static final String PREFIX_CREATE_TENANT = "[Create Tenant]";
 
 	/** User management instance */
 	private IUserManagement userManagement;
@@ -110,6 +129,19 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 		ureq.setStatus(AccountStatus.Active);
 
 		getUserManagement().createUser(ureq);
+
+		ITenant tenant = getUserManagement().getTenantById(DEFAULT_TENANT_ID);
+		if (tenant == null) {
+			TenantCreateRequest treq = new TenantCreateRequest();
+			treq.setId(DEFAULT_TENANT_ID);
+			treq.setName(DEFAULT_TENANT_NAME);
+			treq.setLogoUrl(DEFAULT_TENANT_LOGO);
+			treq.setAuthorizedUserIds(Arrays.asList(new String[] { DEFAULT_USERNAME }));
+			treq.setAuthenticationToken(DEFAULT_TENANT_TOKEN);
+			tenant = getUserManagement().createTenant(treq);
+			LOGGER.info(PREFIX_CREATE_TENANT + " " + tenant.getId());
+		}
+
 		SecurityContextHolder.getContext().setAuthentication(null);
 		LOGGER.info(PREFIX_CREATE_USER + " " + ureq.getUsername());
 	}

@@ -10,7 +10,7 @@ package com.sitewhere.device.communication.json;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -24,7 +24,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class JsonCommandExecutionEncoder extends LifecycleComponent implements
+public class JsonCommandExecutionEncoder extends TenantLifecycleComponent implements
 		ICommandExecutionEncoder<byte[]> {
 
 	/** Static logger instance */

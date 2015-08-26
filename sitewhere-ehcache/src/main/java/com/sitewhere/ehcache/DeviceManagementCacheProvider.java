@@ -14,7 +14,7 @@ import net.sf.ehcache.config.Configuration;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.CacheType;
 import com.sitewhere.spi.cache.ICache;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DeviceManagementCacheProvider extends LifecycleComponent implements
+public class DeviceManagementCacheProvider extends TenantLifecycleComponent implements
 		IDeviceManagementCacheProvider {
 
 	/** Static logger instance */

@@ -13,7 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
@@ -38,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @param <T>
  */
-public class InboundEventSource<T> extends LifecycleComponent implements IInboundEventSource<T> {
+public class InboundEventSource<T> extends TenantLifecycleComponent implements IInboundEventSource<T> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(InboundEventSource.class);
@@ -73,7 +73,7 @@ public class InboundEventSource<T> extends LifecycleComponent implements IInboun
 
 		LOGGER.debug("Starting event source '" + getSourceId() + "'.");
 		if (getInboundProcessingStrategy() == null) {
-			setInboundProcessingStrategy(SiteWhere.getServer().getDeviceCommunicationSubsystem().getInboundProcessingStrategy());
+			setInboundProcessingStrategy(SiteWhere.getServer().getDeviceCommunication(getTenant()).getInboundProcessingStrategy());
 		}
 		if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
 			throw new SiteWhereException("No inbound event receivers registered for event source.");

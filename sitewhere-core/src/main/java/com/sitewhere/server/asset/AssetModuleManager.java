@@ -22,7 +22,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.asset.datastore.HardwareAssetModule;
 import com.sitewhere.server.asset.datastore.LocationAssetModule;
 import com.sitewhere.server.asset.datastore.PersonAssetModule;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -38,7 +38,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author dadams
  */
-public class AssetModuleManager extends LifecycleComponent implements IAssetModuleManager {
+public class AssetModuleManager extends TenantLifecycleComponent implements IAssetModuleManager {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(AssetModuleManager.class);
@@ -79,7 +79,8 @@ public class AssetModuleManager extends LifecycleComponent implements IAssetModu
 		List<ICommandResponse> responses = new ArrayList<ICommandResponse>();
 		dsModulesById.clear();
 		ISearchResults<IAssetCategory> categories =
-				SiteWhere.getServer().getAssetManagement().listAssetCategories(new SearchCriteria(1, 0));
+				SiteWhere.getServer().getAssetManagement(getTenant()).listAssetCategories(
+						new SearchCriteria(1, 0));
 		for (IAssetCategory category : categories.getResults()) {
 			switch (category.getAssetType()) {
 			case Device:

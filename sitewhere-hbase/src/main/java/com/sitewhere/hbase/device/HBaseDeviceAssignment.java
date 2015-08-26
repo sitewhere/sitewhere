@@ -62,11 +62,6 @@ public class HBaseDeviceAssignment {
 	/** Qualifier for assignment state */
 	public static final byte[] ASSIGNMENT_STATE = Bytes.toBytes("state");
 
-	/** Used for cloning device assignment results */
-	private static DeviceAssignmentMarshalHelper ASSIGNMENT_HELPER =
-			new DeviceAssignmentMarshalHelper().setIncludeAsset(false).setIncludeDevice(false).setIncludeSite(
-					false);
-
 	/**
 	 * Create a new device assignment.
 	 * 
@@ -110,7 +105,7 @@ public class HBaseDeviceAssignment {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
@@ -148,7 +143,11 @@ public class HBaseDeviceAssignment {
 				IDeviceAssignment result = context.getCacheProvider().getDeviceAssignmentCache().get(token);
 				if (result != null) {
 					Tracer.info("Returning cached device assignment.", LOGGER);
-					return ASSIGNMENT_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
+					DeviceAssignmentMarshalHelper helper =
+							new DeviceAssignmentMarshalHelper(context.getTenant()).setIncludeAsset(false).setIncludeDevice(
+									false).setIncludeSite(false);
+					return helper.convert(result,
+							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
 			}
 			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
@@ -159,7 +158,7 @@ public class HBaseDeviceAssignment {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Get get = new Get(primary);
 				HBaseUtils.addPayloadFields(get);
 				get.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE);
@@ -220,7 +219,7 @@ public class HBaseDeviceAssignment {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				sites.put(put);
@@ -264,7 +263,7 @@ public class HBaseDeviceAssignment {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATE, updatedState);
 				sites.put(put);
@@ -308,7 +307,7 @@ public class HBaseDeviceAssignment {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS, status.name().getBytes());
@@ -357,7 +356,7 @@ public class HBaseDeviceAssignment {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_STATUS,
@@ -415,7 +414,7 @@ public class HBaseDeviceAssignment {
 				HTableInterface sites = null;
 				try {
 					Delete delete = new Delete(primary);
-					sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+					sites = getSitesTableInterface(context);
 					sites.delete(delete);
 				} catch (IOException e) {
 					throw new SiteWhereException("Unable to delete device.", e);
@@ -428,7 +427,7 @@ public class HBaseDeviceAssignment {
 				byte[] updated = context.getPayloadMarshaler().encodeDeviceAssignment(existing);
 				HTableInterface sites = null;
 				try {
-					sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+					sites = getSitesTableInterface(context);
 					Put put = new Put(primary);
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
 							context.getPayloadMarshaler().getEncoding().getIndicator());
@@ -499,5 +498,16 @@ public class HBaseDeviceAssignment {
 		System.arraycopy(bytes, bytes.length - ASSIGNMENT_IDENTIFIER_LENGTH, result, 0,
 				ASSIGNMENT_IDENTIFIER_LENGTH);
 		return result;
+	}
+
+	/**
+	 * Get assets table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
 	}
 }

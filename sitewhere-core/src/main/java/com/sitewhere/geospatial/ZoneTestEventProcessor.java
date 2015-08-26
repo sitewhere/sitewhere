@@ -92,7 +92,7 @@ public class ZoneTestEventProcessor extends OutboundEventProcessor {
 				alert.setMessage(test.getAlertMessage());
 				alert.setUpdateState(false);
 				alert.setEventDate(new Date());
-				SiteWhere.getServer().getDeviceManagement().addDeviceAlert(
+				SiteWhere.getServer().getDeviceManagement(getTenant()).addDeviceAlert(
 						location.getDeviceAssignmentToken(), alert);
 			}
 		}
@@ -110,7 +110,7 @@ public class ZoneTestEventProcessor extends OutboundEventProcessor {
 		if (poly != null) {
 			return poly;
 		}
-		IZone zone = SiteWhere.getServer().getDeviceManagement().getZone(token);
+		IZone zone = SiteWhere.getServer().getDeviceManagement(getTenant()).getZone(token);
 		if (zone != null) {
 			poly = GeoUtils.createPolygonForZone(zone);
 			zoneMap.put(token, poly);

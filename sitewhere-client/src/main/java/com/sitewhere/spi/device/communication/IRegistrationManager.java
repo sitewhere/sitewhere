@@ -9,14 +9,14 @@ package com.sitewhere.spi.device.communication;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Manages how devices are dynamically registered into the system.
  * 
  * @author Derek
  */
-public interface IRegistrationManager extends ILifecycleComponent {
+public interface IRegistrationManager extends ITenantLifecycleComponent {
 
 	/**
 	 * Indicates whether the registration manager allows new devices to be created as a

@@ -11,14 +11,14 @@ import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Interface for interacting with the asset module manager.
  * 
  * @author dadams
  */
-public interface IAssetModuleManager extends ILifecycleComponent {
+public interface IAssetModuleManager extends ITenantLifecycleComponent {
 
 	/**
 	 * Get asset module by unique id.

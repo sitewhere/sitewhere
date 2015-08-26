@@ -1,1 +1,2 @@
 http\://www.sitewhere.com/schema/sitewhere/ce=com.sitewhere.spring.handler.SiteWhereNamespaceHandler
+http\://www.sitewhere.com/schema/sitewhere/ce/tenant=com.sitewhere.spring.handler.SiteWhereTenantNamespaceHandler

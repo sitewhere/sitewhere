@@ -8,6 +8,7 @@
 package com.sitewhere.mongodb;
 
 import com.mongodb.DBCollection;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Mongo client that provides device management collections.
@@ -55,29 +56,29 @@ public interface IDeviceManagementMongoClient {
 	/** Default collection name for SiteWhere batch operation elements */
 	public static final String DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME = "batchopelements";
 
-	public DBCollection getDeviceSpecificationsCollection();
+	public DBCollection getDeviceSpecificationsCollection(ITenant tenant);
 
-	public DBCollection getDeviceCommandsCollection();
+	public DBCollection getDeviceCommandsCollection(ITenant tenant);
 
-	public DBCollection getDevicesCollection();
+	public DBCollection getDevicesCollection(ITenant tenant);
 
-	public DBCollection getDeviceAssignmentsCollection();
+	public DBCollection getDeviceAssignmentsCollection(ITenant tenant);
 
-	public DBCollection getSitesCollection();
+	public DBCollection getSitesCollection(ITenant tenant);
 
-	public DBCollection getZonesCollection();
+	public DBCollection getZonesCollection(ITenant tenant);
 
-	public DBCollection getDeviceGroupsCollection();
+	public DBCollection getDeviceGroupsCollection(ITenant tenant);
 
-	public DBCollection getGroupElementsCollection();
+	public DBCollection getGroupElementsCollection(ITenant tenant);
 
-	public DBCollection getEventsCollection();
-	
-	public DBCollection getStreamsCollection();
-	
-	public DBCollection getStreamDataCollection();
+	public DBCollection getEventsCollection(ITenant tenant);
 
-	public DBCollection getBatchOperationsCollection();
+	public DBCollection getStreamsCollection(ITenant tenant);
 
-	public DBCollection getBatchOperationElementsCollection();
+	public DBCollection getStreamDataCollection(ITenant tenant);
+
+	public DBCollection getBatchOperationsCollection(ITenant tenant);
+
+	public DBCollection getBatchOperationElementsCollection(ITenant tenant);
 }

@@ -10,6 +10,7 @@ package com.sitewhere.hbase;
 import com.sitewhere.hbase.device.IDeviceEventBuffer;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Supplies configuration information to HBase implementation classes.
@@ -17,6 +18,13 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
  * @author Derek
  */
 public interface IHBaseContext {
+
+	/**
+	 * Get tenant information.
+	 * 
+	 * @return
+	 */
+	public ITenant getTenant();
 
 	/**
 	 * Get HBase client accessor.

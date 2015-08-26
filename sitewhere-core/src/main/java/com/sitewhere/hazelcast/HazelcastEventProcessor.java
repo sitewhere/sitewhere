@@ -54,8 +54,7 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 	private ITopic<DeviceCommandResponse> commandResponsesTopic;
 
 	/** Used for marshaling command invocations */
-	private DeviceCommandInvocationMarshalHelper invocationHelper = new DeviceCommandInvocationMarshalHelper(
-			true);
+	private DeviceCommandInvocationMarshalHelper invocationHelper;
 
 	/*
 	 * (non-Javadoc)
@@ -67,6 +66,7 @@ public class HazelcastEventProcessor extends OutboundEventProcessor {
 		if (getConfiguration() == null) {
 			throw new SiteWhereException("No Hazelcast configuration provided.");
 		}
+		this.invocationHelper = new DeviceCommandInvocationMarshalHelper(getTenant(), true);
 		this.measurementsTopic =
 				getConfiguration().getHazelcastInstance().getTopic(
 						ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);

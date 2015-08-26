@@ -19,6 +19,7 @@ import org.springframework.core.io.InputStreamResource;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Allows SiteWhere configuration to be loaded from an external URL.
@@ -60,6 +61,21 @@ public class ExternalConfigurationResolver implements IConfigurationResolver {
 		} catch (Exception e) {
 			throw new SiteWhereException(e);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.configuration.IConfigurationResolver#resolveTenantContext(com
+	 * .sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
+	 */
+	@Override
+	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version)
+			throws SiteWhereException {
+		// TODO: This does not make sense unless the configured URL is used as a base and
+		// the tenant configuration is relative to it.
+		return null;
 	}
 
 	/*

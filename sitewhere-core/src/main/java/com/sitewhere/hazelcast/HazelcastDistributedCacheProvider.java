@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.log4j.Logger;
 
 import com.hazelcast.core.IMap;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.cache.CacheType;
 import com.sitewhere.spi.cache.ICache;
@@ -29,7 +29,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HazelcastDistributedCacheProvider extends LifecycleComponent implements
+public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent implements
 		IDeviceManagementCacheProvider {
 
 	public HazelcastDistributedCacheProvider() {

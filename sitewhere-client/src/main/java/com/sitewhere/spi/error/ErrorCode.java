@@ -49,6 +49,12 @@ public enum ErrorCode {
 	/** Invalid tenant reference */
 	InvalidTenantId(140, "Tenant does not exist."),
 
+	/** Invalid tenant authentication token */
+	InvalidTenantAuthToken(141, "Tenant not found for authentication token."),
+
+	/** Tenant authentication token not passed */
+	MissingTenantAuthToken(142, "Tenant authentication token required for request."),
+
 	/***************************
 	 * INVALID OR DUPLICATE ID *
 	 ***************************/

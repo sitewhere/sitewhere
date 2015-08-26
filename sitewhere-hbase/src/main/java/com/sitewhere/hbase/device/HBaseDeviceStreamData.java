@@ -61,7 +61,7 @@ public class HBaseDeviceStreamData {
 
 		HTableInterface streams = null;
 		try {
-			streams = context.getClient().getTableInterface(ISiteWhereHBase.STREAMS_TABLE_NAME);
+			streams = getStreamsTableInterface(context);
 			Put put = new Put(streamKey);
 			put.add(ISiteWhereHBase.FAMILY_ID, seqnum, payload);
 			streams.put(put);
@@ -92,7 +92,7 @@ public class HBaseDeviceStreamData {
 
 		HTableInterface streams = null;
 		try {
-			streams = context.getClient().getTableInterface(ISiteWhereHBase.STREAMS_TABLE_NAME);
+			streams = getStreamsTableInterface(context);
 			Get get = new Get(streamKey);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, seqnum);
 			Result result = streams.get(get);
@@ -107,5 +107,17 @@ public class HBaseDeviceStreamData {
 		} finally {
 			HBaseUtils.closeCleanly(streams);
 		}
+	}
+
+	/**
+	 * Get streams table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getStreamsTableInterface(IHBaseContext context)
+			throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.STREAMS_TABLE_NAME);
 	}
 }

@@ -14,8 +14,8 @@ import java.util.UUID;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -26,8 +26,8 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 
-	public UniqueIdCounterMap(ISiteWhereHBaseClient hbase, byte keyIndicator, byte valueIndicator) {
-		super(hbase, keyIndicator, valueIndicator);
+	public UniqueIdCounterMap(IHBaseContext context, byte keyIndicator, byte valueIndicator) {
+		super(context, keyIndicator, valueIndicator);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 		byte[] counterKey = counterRow.array();
 		HTableInterface uids = null;
 		try {
-			uids = hbase.getTableInterface(ISiteWhereHBase.UID_TABLE_NAME);
+			uids = context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.UID_TABLE_NAME);
 			return uids.incrementColumnValue(counterKey, ISiteWhereHBase.FAMILY_ID, UniqueIdMap.VALUE_QUAL,
 					1L);
 		} catch (IOException e) {

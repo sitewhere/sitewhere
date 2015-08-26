@@ -8,14 +8,14 @@
 package com.sitewhere.spi.device.batch;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Interface for interacting with a batch operation manager.
  * 
  * @author Derek
  */
-public interface IBatchOperationManager extends ILifecycleComponent {
+public interface IBatchOperationManager extends ITenantLifecycleComponent {
 
 	/**
 	 * Processes an {@link IBatchOperation}. The batch operation is processed in the

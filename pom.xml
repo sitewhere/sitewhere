@@ -136,7 +136,7 @@
 									<url>http://apache.osuosl.org/tomcat/tomcat-7/v7.0.63/bin/apache-tomcat-7.0.63.zip</url>
 									<unpack>true</unpack>
 									<outputDirectory>${project.build.directory}</outputDirectory>
-									<md5>38cb959107ca54276d53391f83761793</md5>
+									<md5>6a0ef0058a5d83d8e4842f80d83f8246</md5>
 								</configuration>
 							</execution>
 						</executions>

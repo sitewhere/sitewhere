@@ -25,6 +25,9 @@ public class RegistrationProcessor extends InboundEventProcessor {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(RegistrationProcessor.class);
 
+	/** Cached registration manager */
+	private IRegistrationManager registration;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -36,8 +39,7 @@ public class RegistrationProcessor extends InboundEventProcessor {
 	@Override
 	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
 			throws SiteWhereException {
-		SiteWhere.getServer().getDeviceCommunicationSubsystem().getRegistrationManager().handleDeviceRegistration(
-				request);
+		getRegistrationManager().handleDeviceRegistration(request);
 	}
 
 	/*
@@ -48,5 +50,18 @@ public class RegistrationProcessor extends InboundEventProcessor {
 	@Override
 	public Logger getLogger() {
 		return LOGGER;
+	}
+
+	/**
+	 * Cache the registration manager implementation rather than looking it up each time.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IRegistrationManager getRegistrationManager() throws SiteWhereException {
+		if (registration == null) {
+			registration = SiteWhere.getServer().getDeviceCommunication(getTenant()).getRegistrationManager();
+		}
+		return registration;
 	}
 }

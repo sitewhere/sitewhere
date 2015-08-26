@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.command.ParameterType;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Builds Google Protocol Buffer data structures that allow commands for a specification
@@ -31,14 +32,15 @@ public class ProtobufSpecificationBuilder {
 	 * Creates a {@link FileDescriptorProto} based on an {@link IDeviceSpecification}.
 	 * 
 	 * @param specification
+	 * @param tenant
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DescriptorProtos.FileDescriptorProto createFileDescriptor(IDeviceSpecification specification)
-			throws SiteWhereException {
+	public static DescriptorProtos.FileDescriptorProto createFileDescriptor(
+			IDeviceSpecification specification, ITenant tenant) throws SiteWhereException {
 		DescriptorProtos.FileDescriptorProto.Builder builder =
 				DescriptorProtos.FileDescriptorProto.newBuilder();
-		builder.addMessageType(createSpecificationMessage(specification));
+		builder.addMessageType(createSpecificationMessage(specification, tenant));
 		return builder.build();
 	}
 
@@ -46,14 +48,15 @@ public class ProtobufSpecificationBuilder {
 	 * Create the message for a specification.
 	 * 
 	 * @param specification
+	 * @param tenant
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static DescriptorProtos.DescriptorProto createSpecificationMessage(
-			IDeviceSpecification specification) throws SiteWhereException {
+			IDeviceSpecification specification, ITenant tenant) throws SiteWhereException {
 		List<IDeviceCommand> commands =
-				SiteWhere.getServer().getDeviceManagement().listDeviceCommands(specification.getToken(),
-						false);
+				SiteWhere.getServer().getDeviceManagement(tenant).listDeviceCommands(
+						specification.getToken(), false);
 		DescriptorProtos.DescriptorProto.Builder builder = DescriptorProtos.DescriptorProto.newBuilder();
 		builder.setName(ProtobufNaming.getSpecificationIdentifier(specification));
 		builder.addEnumType(createCommandsEnum(commands));

@@ -24,6 +24,7 @@ import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Configurable helper class that allows DeviceAssignment model objects to be created from
@@ -36,6 +37,9 @@ public class DeviceAssignmentMarshalHelper {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DeviceAssignmentMarshalHelper.class);
 
+	/** Tenant */
+	private ITenant tenant;
+
 	/** Indicates whether device asset information is to be included */
 	private boolean includeAsset = true;
 
@@ -47,6 +51,10 @@ public class DeviceAssignmentMarshalHelper {
 
 	/** Used to control marshaling of devices */
 	private DeviceMarshalHelper deviceHelper;
+
+	public DeviceAssignmentMarshalHelper(ITenant tenant) {
+		this.tenant = tenant;
+	}
 
 	/**
 	 * Convert the SPI object into a model object for marshaling.
@@ -87,12 +95,12 @@ public class DeviceAssignmentMarshalHelper {
 		}
 		result.setSiteToken(source.getSiteToken());
 		if (isIncludeSite()) {
-			ISite site = SiteWhere.getServer().getDeviceManagement().getSiteForAssignment(source);
+			ISite site = SiteWhere.getServer().getDeviceManagement(tenant).getSiteForAssignment(source);
 			result.setSite(Site.copy(site));
 		}
 		result.setDeviceHardwareId(source.getDeviceHardwareId());
 		if (isIncludeDevice()) {
-			IDevice device = SiteWhere.getServer().getDeviceManagement().getDeviceForAssignment(source);
+			IDevice device = SiteWhere.getServer().getDeviceManagement(tenant).getDeviceForAssignment(source);
 			if (device != null) {
 				result.setDevice(getDeviceHelper().convert(device, manager));
 			} else {
@@ -109,7 +117,7 @@ public class DeviceAssignmentMarshalHelper {
 	 */
 	protected DeviceMarshalHelper getDeviceHelper() {
 		if (deviceHelper == null) {
-			deviceHelper = new DeviceMarshalHelper();
+			deviceHelper = new DeviceMarshalHelper(tenant);
 			deviceHelper.setIncludeAsset(false);
 			deviceHelper.setIncludeAssignment(false);
 			deviceHelper.setIncludeSpecification(false);

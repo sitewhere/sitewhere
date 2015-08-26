@@ -55,6 +55,7 @@ public class SiteWhereServerLoader extends HttpServlet {
 			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		} catch (SiteWhereException e) {
+			LOGGER.error("Exception on server startup.", e);
 			List<String> messages = new ArrayList<String>();
 			messages.add("!!!! SiteWhere Server Failed to Start !!!!");
 			messages.add("");
@@ -62,6 +63,7 @@ public class SiteWhereServerLoader extends HttpServlet {
 			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		} catch (Throwable e) {
+			LOGGER.error("Unhandled exception in server startup.", e);
 			List<String> messages = new ArrayList<String>();
 			messages.add("!!!! Unhandled Exception !!!!");
 			messages.add("");

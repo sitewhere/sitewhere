@@ -134,7 +134,7 @@ public class HBaseAsset {
 		byte[] assetKey = getAssetKey(context, categoryId, assetId);
 		HTableInterface assets = null;
 		try {
-			assets = context.getClient().getTableInterface(ISiteWhereHBase.ASSETS_TABLE_NAME);
+			assets = getAssetsTableInterface(context);
 			Get get = new Get(assetKey);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
@@ -203,7 +203,7 @@ public class HBaseAsset {
 		byte[] assetKey = getAssetKey(context, categoryId, assetId);
 		HTableInterface assets = null;
 		try {
-			assets = context.getClient().getTableInterface(ISiteWhereHBase.ASSETS_TABLE_NAME);
+			assets = getAssetsTableInterface(context);
 			Delete delete = new Delete(assetKey);
 			assets.delete(delete);
 			return asset;
@@ -233,7 +233,7 @@ public class HBaseAsset {
 				HBaseAssetCategory.KEY_BUILDER.buildSubkey(categoryId,
 						(byte) (AssetCategorySubtype.Asset.getType() + 1));
 		try {
-			assets = context.getClient().getTableInterface(ISiteWhereHBase.ASSETS_TABLE_NAME);
+			assets = getAssetsTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(start);
 			scan.setStopRow(end);
@@ -289,7 +289,7 @@ public class HBaseAsset {
 
 		HTableInterface assets = null;
 		try {
-			assets = context.getClient().getTableInterface(ISiteWhereHBase.ASSETS_TABLE_NAME);
+			assets = getAssetsTableInterface(context);
 			Put put = new Put(assetKey);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			put.add(ISiteWhereHBase.FAMILY_ID, ASSET_TYPE_INDICATOR, type.name().getBytes());
@@ -319,5 +319,16 @@ public class HBaseAsset {
 		buffer.put(baseKey);
 		buffer.put(idBytes);
 		return buffer.array();
+	}
+
+	/**
+	 * Get assets table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getAssetsTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.ASSETS_TABLE_NAME);
 	}
 }

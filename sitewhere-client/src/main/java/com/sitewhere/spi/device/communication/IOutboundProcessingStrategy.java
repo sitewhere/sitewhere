@@ -9,7 +9,7 @@ package com.sitewhere.spi.device.communication;
 
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Provides a strategy for reporting system events to interested
@@ -18,5 +18,5 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface IOutboundProcessingStrategy extends ILifecycleComponent, IOutboundEventProcessor {
+public interface IOutboundProcessingStrategy extends ITenantLifecycleComponent, IOutboundEventProcessor {
 }

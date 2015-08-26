@@ -10,7 +10,7 @@ package com.sitewhere.device.communication;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
@@ -28,11 +28,14 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DirectOutboundProcessingStrategy extends LifecycleComponent implements
+public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent implements
 		IOutboundProcessingStrategy {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DirectOutboundProcessingStrategy.class);
+
+	/** Cached reference to outbound processor chain */
+	private IOutboundEventProcessorChain outbound;
 
 	public DirectOutboundProcessingStrategy() {
 		super(LifecycleComponentType.OutboundProcessingStrategy);
@@ -75,7 +78,7 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 	 */
 	@Override
 	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
-		SiteWhere.getServer().getOutboundEventProcessorChain().onMeasurements(measurements);
+		getOutboundEventProcessorChain().onMeasurements(measurements);
 	}
 
 	/*
@@ -87,7 +90,7 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 	 */
 	@Override
 	public void onLocation(IDeviceLocation location) throws SiteWhereException {
-		SiteWhere.getServer().getOutboundEventProcessorChain().onLocation(location);
+		getOutboundEventProcessorChain().onLocation(location);
 	}
 
 	/*
@@ -99,7 +102,7 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 	 */
 	@Override
 	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
-		SiteWhere.getServer().getOutboundEventProcessorChain().onAlert(alert);
+		getOutboundEventProcessorChain().onAlert(alert);
 	}
 
 	/*
@@ -111,7 +114,7 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 	 */
 	@Override
 	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
-		SiteWhere.getServer().getOutboundEventProcessorChain().onCommandInvocation(invocation);
+		getOutboundEventProcessorChain().onCommandInvocation(invocation);
 	}
 
 	/*
@@ -123,7 +126,7 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 	 */
 	@Override
 	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
-		SiteWhere.getServer().getOutboundEventProcessorChain().onCommandResponse(response);
+		getOutboundEventProcessorChain().onCommandResponse(response);
 	}
 
 	/*
@@ -135,6 +138,19 @@ public class DirectOutboundProcessingStrategy extends LifecycleComponent impleme
 	 */
 	@Override
 	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
-		SiteWhere.getServer().getOutboundEventProcessorChain().onBatchOperation(operation);
+		getOutboundEventProcessorChain().onBatchOperation(operation);
+	}
+
+	/**
+	 * Cache the registration manager implementation rather than looking it up each time.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IOutboundEventProcessorChain getOutboundEventProcessorChain() throws SiteWhereException {
+		if (outbound == null) {
+			outbound = SiteWhere.getServer().getOutboundEventProcessorChain(getTenant());
+		}
+		return outbound;
 	}
 }

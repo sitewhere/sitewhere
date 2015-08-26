@@ -66,7 +66,8 @@ public class DeviceEventBuffer implements IDeviceEventBuffer {
 	 * @see com.sitewhere.hbase.device.IDeviceEventBuffer#start()
 	 */
 	public void start() throws SiteWhereException {
-		events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+		events =
+				context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.EVENTS_TABLE_NAME);
 		executor = Executors.newSingleThreadExecutor();
 		executor.execute(new EventSender());
 	}

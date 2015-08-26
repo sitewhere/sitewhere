@@ -48,7 +48,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -114,7 +114,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author dadams
  */
-public class MongoDeviceManagement extends LifecycleComponent implements IDeviceManagement,
+public class MongoDeviceManagement extends TenantLifecycleComponent implements IDeviceManagement,
 		ICachingDeviceManagement {
 
 	/** Static logger instance */
@@ -151,7 +151,8 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		// Support bulk inserts for events.
 		if (isUseBulkEventInserts()) {
 			this.eventBuffer =
-					new DeviceEventBuffer(getMongoClient().getEventsCollection(), getBulkInsertMaxChunkSize());
+					new DeviceEventBuffer(getMongoClient().getEventsCollection(getTenant()),
+							getBulkInsertMaxChunkSize());
 			getEventBuffer().start();
 			LOGGER.info("MongoDB device management is using bulk inserts for events.");
 		} else {
@@ -190,38 +191,38 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected void ensureIndexes() throws SiteWhereException {
-		getMongoClient().getSitesCollection().createIndex(new BasicDBObject(MongoSite.PROP_TOKEN, 1),
-				new BasicDBObject("unique", true));
-		getMongoClient().getDeviceSpecificationsCollection().createIndex(
+		getMongoClient().getSitesCollection(getTenant()).createIndex(
+				new BasicDBObject(MongoSite.PROP_TOKEN, 1), new BasicDBObject("unique", true));
+		getMongoClient().getDeviceSpecificationsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getDevicesCollection().createIndex(
+		getMongoClient().getDevicesCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, 1), new BasicDBObject("unique", true));
-		getMongoClient().getDeviceAssignmentsCollection().createIndex(
+		getMongoClient().getDeviceAssignmentsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getDeviceAssignmentsCollection().createIndex(
+		getMongoClient().getDeviceAssignmentsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, 1).append(
 						MongoDeviceAssignment.PROP_ASSET_MODULE_ID, 1).append(
 						MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
-		getMongoClient().getEventsCollection().createIndex(
+		getMongoClient().getEventsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, 1).append(
 						MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
-		getMongoClient().getEventsCollection().createIndex(
+		getMongoClient().getEventsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, 1).append(
 						MongoDeviceEvent.PROP_EVENT_DATE, -1).append(MongoDeviceEvent.PROP_EVENT_TYPE, 1));
-		getMongoClient().getDeviceGroupsCollection().createIndex(
+		getMongoClient().getDeviceGroupsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getDeviceGroupsCollection().createIndex(
+		getMongoClient().getDeviceGroupsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceGroup.PROP_ROLES, 1));
-		getMongoClient().getGroupElementsCollection().createIndex(
+		getMongoClient().getGroupElementsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
 						MongoDeviceGroupElement.PROP_TYPE, 1).append(MongoDeviceGroupElement.PROP_ELEMENT_ID,
 						1));
-		getMongoClient().getGroupElementsCollection().createIndex(
+		getMongoClient().getGroupElementsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
 						MongoDeviceGroupElement.PROP_ROLES, 1));
-		getMongoClient().getBatchOperationsCollection().createIndex(
+		getMongoClient().getBatchOperationsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoBatchOperation.PROP_TOKEN, 1), new BasicDBObject("unique", true));
-		getMongoClient().getBatchOperationElementsCollection().createIndex(
+		getMongoClient().getBatchOperationElementsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, 1));
 	}
 
@@ -259,7 +260,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		// Use common logic so all backend implementations work the same.
 		DeviceSpecification spec = SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
 
-		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
+		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 		DBObject created = MongoDeviceSpecification.toDBObject(spec);
 		MongoPersistence.insert(specs, created);
 
@@ -314,7 +315,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DBObject updated = MongoDeviceSpecification.toDBObject(spec);
 
 		BasicDBObject query = new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, token);
-		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
+		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 		MongoPersistence.update(specs, query, updated);
 
 		// Update cache with new data.
@@ -333,7 +334,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
+		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 		DBObject dbCriteria = new BasicDBObject();
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -353,7 +354,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
 			throws SiteWhereException {
 		DBObject existing = assertDeviceSpecification(token);
-		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
+		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 		if (force) {
 			MongoPersistence.delete(specs, existing);
 			if (getCacheProvider() != null) {
@@ -379,7 +380,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getDeviceSpecificationDBObjectByToken(String token) throws SiteWhereException {
-		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection();
+		DBCollection specs = getMongoClient().getDeviceSpecificationsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceSpecification.PROP_TOKEN, token);
 		DBObject result = specs.findOne(query);
 		return result;
@@ -419,7 +420,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 		DeviceCommand command = SiteWherePersistence.deviceCommandCreateLogic(spec, request, uuid, existing);
 
-		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
+		DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 		DBObject created = MongoDeviceCommand.toDBObject(command);
 		MongoPersistence.insert(commands, created);
 		return MongoDeviceCommand.fromDBObject(created);
@@ -462,7 +463,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DBObject updated = MongoDeviceCommand.toDBObject(command);
 
 		BasicDBObject query = new BasicDBObject(MongoDeviceCommand.PROP_TOKEN, token);
-		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
+		DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 		MongoPersistence.update(commands, query, updated);
 		return MongoDeviceCommand.fromDBObject(updated);
 	}
@@ -477,7 +478,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted)
 			throws SiteWhereException {
-		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
+		DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 		DBObject dbCriteria = new BasicDBObject();
 		dbCriteria.put(MongoDeviceCommand.PROP_SPEC_TOKEN, token);
 		if (!includeDeleted) {
@@ -497,7 +498,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceCommand deleteDeviceCommand(String token, boolean force) throws SiteWhereException {
 		DBObject existing = assertDeviceCommand(token);
-		DBCollection commands = getMongoClient().getDeviceCommandsCollection();
+		DBCollection commands = getMongoClient().getDeviceCommandsCollection(getTenant());
 		if (force) {
 			MongoPersistence.delete(commands, existing);
 			return MongoDeviceCommand.fromDBObject(existing);
@@ -517,7 +518,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getDeviceCommandDBObjectByToken(String token) throws SiteWhereException {
-		DBCollection specs = getMongoClient().getDeviceCommandsCollection();
+		DBCollection specs = getMongoClient().getDeviceCommandsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceCommand.PROP_TOKEN, token);
 		DBObject result = specs.findOne(query);
 		return result;
@@ -556,7 +557,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		Device newDevice = SiteWherePersistence.deviceCreateLogic(request);
 
 		// Convert and save device data.
-		DBCollection devices = getMongoClient().getDevicesCollection();
+		DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 		DBObject created = MongoDevice.toDBObject(newDevice);
 		MongoPersistence.insert(devices, created);
 
@@ -581,7 +582,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		SiteWherePersistence.deviceUpdateLogic(request, updatedDevice);
 		DBObject updated = MongoDevice.toDBObject(updatedDevice);
 
-		DBCollection devices = getMongoClient().getDevicesCollection();
+		DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 		MongoPersistence.update(devices, query, updated);
 
@@ -640,7 +641,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDevice> listDevices(boolean includeDeleted, IDeviceSearchCriteria criteria)
 			throws SiteWhereException {
-		DBCollection devices = getMongoClient().getDevicesCollection();
+		DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 		BasicDBObject dbCriteria = new BasicDBObject();
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -708,7 +709,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			throw new SiteWhereSystemException(ErrorCode.DeviceCanNotBeDeletedIfAssigned, ErrorLevel.ERROR);
 		}
 		if (force) {
-			DBCollection devices = getMongoClient().getDevicesCollection();
+			DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 			MongoPersistence.delete(devices, existing);
 			if (getCacheProvider() != null) {
 				getCacheProvider().getDeviceCache().remove(hardwareId);
@@ -717,7 +718,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
-			DBCollection devices = getMongoClient().getDevicesCollection();
+			DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 			MongoPersistence.update(devices, query, existing);
 			if (getCacheProvider() != null) {
 				getCacheProvider().getDeviceCache().remove(hardwareId);
@@ -734,7 +735,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getDeviceDBObjectByHardwareId(String hardwareId) throws SiteWhereException {
-		DBCollection devices = getMongoClient().getDevicesCollection();
+		DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, hardwareId);
 		DBObject result = devices.findOne(query);
 		return result;
@@ -761,7 +762,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 				SiteWherePersistence.deviceAssignmentCreateLogic(request, device,
 						UUID.randomUUID().toString());
 
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		DBObject created = MongoDeviceAssignment.toDBObject(newAssignment);
 		MongoPersistence.insert(assignments, created);
 
@@ -771,7 +772,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		}
 
 		// Update device to point to created assignment.
-		DBCollection devices = getMongoClient().getDevicesCollection();
+		DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDevice.PROP_HARDWARE_ID, request.getDeviceHardwareId());
 		deviceDb.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, newAssignment.getToken());
 		MongoPersistence.update(devices, query, deviceDb);
@@ -820,13 +821,13 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceAssignment deleteDeviceAssignment(String token, boolean force) throws SiteWhereException {
 		DBObject existing = assertDeviceAssignment(token);
 		if (force) {
-			DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+			DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 			MongoPersistence.delete(assignments, existing);
 			return MongoDeviceAssignment.fromDBObject(existing);
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
-			DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+			DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 			MongoPersistence.update(assignments, query, existing);
 			return MongoDeviceAssignment.fromDBObject(existing);
 		}
@@ -868,7 +869,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DeviceAssignment assignment = MongoDeviceAssignment.fromDBObject(match);
 		SiteWherePersistence.setUpdatedEntityMetadata(assignment);
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		MongoPersistence.update(assignments, query, MongoDeviceAssignment.toDBObject(assignment));
 
 		// Update cache with new assignment data.
@@ -890,7 +891,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			throws SiteWhereException {
 		DBObject match = assertDeviceAssignment(token);
 		match.put(MongoDeviceAssignment.PROP_STATUS, status.name());
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
 		MongoPersistence.update(assignments, query, match);
 		DeviceAssignment updated = MongoDeviceAssignment.fromDBObject(match);
@@ -915,7 +916,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			throws SiteWhereException {
 		DBObject match = assertDeviceAssignment(token);
 		MongoDeviceAssignment.setState(state, match);
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
 		MongoPersistence.update(assignments, query, match);
 		DeviceAssignment updated = MongoDeviceAssignment.fromDBObject(match);
@@ -952,7 +953,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DBObject match = assertDeviceAssignment(token);
 		match.put(MongoDeviceAssignment.PROP_RELEASED_DATE, Calendar.getInstance().getTime());
 		match.put(MongoDeviceAssignment.PROP_STATUS, DeviceAssignmentStatus.Released.name());
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
 		MongoPersistence.update(assignments, query, match);
 
@@ -963,7 +964,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		}
 
 		// Remove device assignment reference.
-		DBCollection devices = getMongoClient().getDevicesCollection();
+		DBCollection devices = getMongoClient().getDevicesCollection(getTenant());
 		String hardwareId = (String) match.get(MongoDeviceAssignment.PROP_DEVICE_HARDWARE_ID);
 		DBObject deviceMatch = getDeviceDBObjectByHardwareId(hardwareId);
 		deviceMatch.removeField(MongoDevice.PROP_ASSIGNMENT_TOKEN);
@@ -990,7 +991,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId,
 			ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_DEVICE_HARDWARE_ID, hardwareId);
 		BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 		return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
@@ -1006,7 +1007,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
 			ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
 		BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
 		return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
@@ -1025,7 +1026,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
 			throws SiteWhereException {
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken).append(
 						MongoDeviceAssignment.PROP_ASSET_MODULE_ID, assetModuleId).append(
@@ -1045,7 +1046,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 * @throws SiteWhereException
 	 */
 	protected DBObject getDeviceAssignmentDBObjectByToken(String token) throws SiteWhereException {
-		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection();
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_TOKEN, token);
 		DBObject result = assignments.findOne(query);
 		return result;
@@ -1060,7 +1061,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
 		DBObject searchById = new BasicDBObject("_id", new ObjectId(id));
-		DBObject found = getMongoClient().getEventsCollection().findOne(searchById);
+		DBObject found = getMongoClient().getEventsCollection(getTenant()).findOne(searchById);
 		if (found == null) {
 			return null;
 		}
@@ -1076,7 +1077,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceEvent> listDeviceEvents(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken);
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
@@ -1114,7 +1115,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DeviceMeasurements measurements =
 				SiteWherePersistence.deviceMeasurementsCreateLogic(request, assignment);
 
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		DBObject mObject = MongoDeviceMeasurements.toDBObject(measurements, false);
 		MongoPersistence.insertEvent(events, mObject, isUseBulkEventInserts(), getEventBuffer());
 
@@ -1139,7 +1140,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceMeasurements> listDeviceMeasurements(String token,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, token).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
@@ -1160,7 +1161,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Measurements.name());
@@ -1183,7 +1184,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
 
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		DBObject locObject = MongoDeviceLocation.toDBObject(location, false);
 		MongoPersistence.insertEvent(events, locObject, isUseBulkEventInserts(), getEventBuffer());
 
@@ -1208,7 +1209,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
@@ -1229,7 +1230,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
@@ -1249,7 +1250,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceLocation> listDeviceLocations(List<String> assignmentTokens,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject();
 		query.put(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, new BasicDBObject("$in", assignmentTokens));
 		query.append(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Location.name());
@@ -1272,7 +1273,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceAlert alert = SiteWherePersistence.deviceAlertCreateLogic(assignment, request);
 
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		DBObject alertObject = MongoDeviceAlert.toDBObject(alert, false);
 		MongoPersistence.insertEvent(events, alertObject, isUseBulkEventInserts(), getEventBuffer());
 
@@ -1296,7 +1297,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
@@ -1317,7 +1318,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.Alert.name());
@@ -1347,7 +1348,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			throw new SiteWhereSystemException(ErrorCode.DuplicateStreamId, ErrorLevel.ERROR);
 		}
 
-		DBCollection streams = getMongoClient().getStreamsCollection();
+		DBCollection streams = getMongoClient().getStreamsCollection(getTenant());
 		DBObject created = MongoDeviceStream.toDBObject(stream);
 		MongoPersistence.insert(streams, created);
 		return MongoDeviceStream.fromDBObject(created);
@@ -1377,7 +1378,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceStream> listDeviceStreams(String assignmentToken, ISearchCriteria criteria)
 			throws SiteWhereException {
-		DBCollection streams = getMongoClient().getStreamsCollection();
+		DBCollection streams = getMongoClient().getStreamsCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken);
 		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 		return MongoPersistence.search(IDeviceStream.class, streams, query, sort, criteria);
@@ -1402,7 +1403,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			throw new SiteWhereSystemException(ErrorCode.InvalidStreamId, ErrorLevel.ERROR);
 		}
 
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		DBObject streamDataObject = MongoDeviceStreamData.toDBObject(streamData, false);
 		MongoPersistence.insertEvent(events, streamDataObject, isUseBulkEventInserts(), getEventBuffer());
 
@@ -1436,7 +1437,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceStreamData> listDeviceStreamData(String assignmentToken, String streamId,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name()).append(
@@ -1461,7 +1462,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DeviceCommandInvocation ci =
 				SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command, request);
 
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		DBObject ciObject = MongoDeviceCommandInvocation.toDBObject(ci);
 		MongoPersistence.insertEvent(events, ciObject, isUseBulkEventInserts(), getEventBuffer());
 
@@ -1478,7 +1479,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
@@ -1499,7 +1500,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandInvocation.name());
@@ -1520,7 +1521,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandInvocationResponses(String invocationId)
 			throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name()).append(
 						MongoDeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, invocationId);
@@ -1544,7 +1545,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		DeviceCommandResponse response =
 				SiteWherePersistence.deviceCommandResponseCreateLogic(assignment, request);
 
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		DBObject dbresponse = MongoDeviceCommandResponse.toDBObject(response);
 		MongoPersistence.insertEvent(events, dbresponse, isUseBulkEventInserts(), getEventBuffer());
 
@@ -1561,7 +1562,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponses(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
@@ -1582,7 +1583,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name());
@@ -1606,7 +1607,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceStateChange state = SiteWherePersistence.deviceStateChangeCreateLogic(assignment, request);
 
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		DBObject dbstate = MongoDeviceStateChange.toDBObject(state);
 		MongoPersistence.insertEvent(events, dbstate, isUseBulkEventInserts(), getEventBuffer());
 
@@ -1623,7 +1624,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceStateChange> listDeviceStateChanges(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
@@ -1644,7 +1645,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceStateChange> listDeviceStateChangesForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		DBCollection events = getMongoClient().getEventsCollection();
+		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_SITE_TOKEN, siteToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StateChange.name());
@@ -1667,7 +1668,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		// Use common logic so all backend implementations work the same.
 		Site site = SiteWherePersistence.siteCreateLogic(request);
 
-		DBCollection sites = getMongoClient().getSitesCollection();
+		DBCollection sites = getMongoClient().getSitesCollection(getTenant());
 		DBObject created = MongoSite.toDBObject(site);
 		MongoPersistence.insert(sites, created);
 		return MongoSite.fromDBObject(created);
@@ -1692,7 +1693,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 
 		DBObject updated = MongoSite.toDBObject(site);
 
-		DBCollection sites = getMongoClient().getSitesCollection();
+		DBCollection sites = getMongoClient().getSitesCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, token);
 		MongoPersistence.update(sites, query, updated);
 		if (getCacheProvider() != null) {
@@ -1725,7 +1726,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	public ISite deleteSite(String siteToken, boolean force) throws SiteWhereException {
 		DBObject existing = assertSite(siteToken);
 		if (force) {
-			DBCollection sites = getMongoClient().getSitesCollection();
+			DBCollection sites = getMongoClient().getSitesCollection(getTenant());
 			MongoPersistence.delete(sites, existing);
 			if (getCacheProvider() != null) {
 				getCacheProvider().getSiteCache().remove(siteToken);
@@ -1734,7 +1735,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, siteToken);
-			DBCollection sites = getMongoClient().getSitesCollection();
+			DBCollection sites = getMongoClient().getSitesCollection(getTenant());
 			MongoPersistence.update(sites, query, existing);
 			if (getCacheProvider() != null) {
 				getCacheProvider().getSiteCache().remove(siteToken);
@@ -1757,7 +1758,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 				return MongoSite.toDBObject(cached);
 			}
 		}
-		DBCollection sites = getMongoClient().getSitesCollection();
+		DBCollection sites = getMongoClient().getSitesCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoSite.PROP_TOKEN, token);
 		DBObject result = sites.findOne(query);
 		if ((getCacheProvider() != null) && (result != null)) {
@@ -1775,7 +1776,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public SearchResults<ISite> listSites(ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection sites = getMongoClient().getSitesCollection();
+		DBCollection sites = getMongoClient().getSitesCollection(getTenant());
 		BasicDBObject query = new BasicDBObject();
 		BasicDBObject sort = new BasicDBObject(MongoSite.PROP_NAME, 1);
 		return MongoPersistence.search(ISite.class, sites, query, sort, criteria);
@@ -1793,7 +1794,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		Zone zone =
 				SiteWherePersistence.zoneCreateLogic(request, site.getToken(), UUID.randomUUID().toString());
 
-		DBCollection zones = getMongoClient().getZonesCollection();
+		DBCollection zones = getMongoClient().getZonesCollection(getTenant());
 		DBObject created = MongoZone.toDBObject(zone);
 		MongoPersistence.insert(zones, created);
 		return MongoZone.fromDBObject(created);
@@ -1807,7 +1808,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	@Override
 	public IZone updateZone(String token, IZoneCreateRequest request) throws SiteWhereException {
-		DBCollection zones = getMongoClient().getZonesCollection();
+		DBCollection zones = getMongoClient().getZonesCollection(getTenant());
 		DBObject match = assertZone(token);
 
 		Zone zone = MongoZone.fromDBObject(match);
@@ -1840,7 +1841,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria)
 			throws SiteWhereException {
-		DBCollection zones = getMongoClient().getZonesCollection();
+		DBCollection zones = getMongoClient().getZonesCollection(getTenant());
 		BasicDBObject query = new BasicDBObject(MongoZone.PROP_SITE_TOKEN, siteToken);
 		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 		return MongoPersistence.search(IZone.class, zones, query, sort, criteria);
@@ -1856,13 +1857,13 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	public IZone deleteZone(String zoneToken, boolean force) throws SiteWhereException {
 		DBObject existing = assertZone(zoneToken);
 		if (force) {
-			DBCollection zones = getMongoClient().getZonesCollection();
+			DBCollection zones = getMongoClient().getZonesCollection(getTenant());
 			MongoPersistence.delete(zones, existing);
 			return MongoZone.fromDBObject(existing);
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoZone.PROP_TOKEN, zoneToken);
-			DBCollection zones = getMongoClient().getZonesCollection();
+			DBCollection zones = getMongoClient().getZonesCollection(getTenant());
 			MongoPersistence.update(zones, query, existing);
 			return MongoZone.fromDBObject(existing);
 		}
@@ -1880,7 +1881,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 		DeviceGroup group = SiteWherePersistence.deviceGroupCreateLogic(request, uuid);
 
-		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+		DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 		DBObject created = MongoDeviceGroup.toDBObject(group);
 		created.put(MongoDeviceGroup.PROP_LAST_INDEX, new Long(0));
 
@@ -1897,7 +1898,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request)
 			throws SiteWhereException {
-		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+		DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 		DBObject match = assertDeviceGroup(token);
 
 		DeviceGroup group = MongoDeviceGroup.fromDBObject(match);
@@ -1933,7 +1934,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceGroup> listDeviceGroups(boolean includeDeleted, ISearchCriteria criteria)
 			throws SiteWhereException {
-		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+		DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 		DBObject dbCriteria = new BasicDBObject();
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -1952,7 +1953,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+		DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 		DBObject dbCriteria = new BasicDBObject(MongoDeviceGroup.PROP_ROLES, role);
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -1971,11 +1972,11 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	public IDeviceGroup deleteDeviceGroup(String token, boolean force) throws SiteWhereException {
 		DBObject existing = assertDeviceGroup(token);
 		if (force) {
-			DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+			DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 			MongoPersistence.delete(groups, existing);
 
 			// Delete group elements as well.
-			DBCollection elements = getMongoClient().getGroupElementsCollection();
+			DBCollection elements = getMongoClient().getGroupElementsCollection(getTenant());
 			BasicDBObject match = new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, token);
 			MongoPersistence.delete(elements, match);
 
@@ -1983,7 +1984,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
-			DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+			DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 			MongoPersistence.update(groups, query, existing);
 			return MongoDeviceGroup.fromDBObject(existing);
 		}
@@ -2001,11 +2002,11 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 			List<IDeviceGroupElementCreateRequest> elements) throws SiteWhereException {
 		List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 		for (IDeviceGroupElementCreateRequest request : elements) {
-			long index = MongoDeviceGroup.getNextGroupIndex(getMongoClient(), groupToken);
+			long index = MongoDeviceGroup.getNextGroupIndex(getMongoClient(), getTenant(), groupToken);
 			DeviceGroupElement element =
 					SiteWherePersistence.deviceGroupElementCreateLogic(request, groupToken, index);
 			DBObject created = MongoDeviceGroupElement.toDBObject(element);
-			MongoPersistence.insert(getMongoClient().getGroupElementsCollection(), created);
+			MongoPersistence.insert(getMongoClient().getGroupElementsCollection(getTenant()), created);
 			results.add(MongoDeviceGroupElement.fromDBObject(created));
 		}
 		return results;
@@ -2027,11 +2028,12 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 					new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, groupToken).append(
 							MongoDeviceGroupElement.PROP_TYPE, request.getType().name()).append(
 							MongoDeviceGroupElement.PROP_ELEMENT_ID, request.getElementId());
-			DBCursor found = getMongoClient().getGroupElementsCollection().find(match);
+			DBCursor found = getMongoClient().getGroupElementsCollection(getTenant()).find(match);
 			while (found.hasNext()) {
 				DBObject current = found.next();
 				WriteResult result =
-						MongoPersistence.delete(getMongoClient().getGroupElementsCollection(), current);
+						MongoPersistence.delete(getMongoClient().getGroupElementsCollection(getTenant()),
+								current);
 				if (result.getN() > 0) {
 					deleted.add(MongoDeviceGroupElement.fromDBObject(current));
 				}
@@ -2053,7 +2055,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		BasicDBObject match = new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, groupToken);
 		BasicDBObject sort = new BasicDBObject(MongoDeviceGroupElement.PROP_INDEX, 1);
 		return MongoPersistence.search(IDeviceGroupElement.class,
-				getMongoClient().getGroupElementsCollection(), match, sort, criteria);
+				getMongoClient().getGroupElementsCollection(getTenant()), match, sort, criteria);
 	}
 
 	/*
@@ -2069,13 +2071,13 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		String uuid = ((request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString());
 		BatchOperation batch = SiteWherePersistence.batchOperationCreateLogic(request, uuid);
 
-		DBCollection batches = getMongoClient().getBatchOperationsCollection();
+		DBCollection batches = getMongoClient().getBatchOperationsCollection(getTenant());
 		DBObject created = MongoBatchOperation.toDBObject(batch);
 		MongoPersistence.insert(batches, created);
 
 		// Insert element for each hardware id.
 		long index = 0;
-		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+		DBCollection elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
 		for (String hardwareId : request.getHardwareIds()) {
 			BatchElement element =
 					SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
@@ -2096,7 +2098,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IBatchOperation updateBatchOperation(String token, IBatchOperationUpdateRequest request)
 			throws SiteWhereException {
-		DBCollection batchops = getMongoClient().getBatchOperationsCollection();
+		DBCollection batchops = getMongoClient().getBatchOperationsCollection(getTenant());
 		DBObject match = assertBatchOperation(token);
 
 		BatchOperation operation = MongoBatchOperation.fromDBObject(match);
@@ -2129,7 +2131,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException {
-		DBCollection ops = getMongoClient().getBatchOperationsCollection();
+		DBCollection ops = getMongoClient().getBatchOperationsCollection(getTenant());
 		DBObject dbCriteria = new BasicDBObject();
 		if (!includeDeleted) {
 			MongoSiteWhereEntity.setDeleted(dbCriteria, false);
@@ -2149,11 +2151,11 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException {
 		DBObject existing = assertBatchOperation(token);
 		if (force) {
-			DBCollection ops = getMongoClient().getBatchOperationsCollection();
+			DBCollection ops = getMongoClient().getBatchOperationsCollection(getTenant());
 			MongoPersistence.delete(ops, existing);
 
 			// Delete operation elements as well.
-			DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+			DBCollection elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
 			BasicDBObject match = new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, token);
 			MongoPersistence.delete(elements, match);
 
@@ -2161,7 +2163,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
 			BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
-			DBCollection ops = getMongoClient().getBatchOperationsCollection();
+			DBCollection ops = getMongoClient().getBatchOperationsCollection(getTenant());
 			MongoPersistence.update(ops, query, existing);
 			return MongoBatchOperation.fromDBObject(existing);
 		}
@@ -2176,7 +2178,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public SearchResults<IBatchElement> listBatchElements(String batchToken,
 			IBatchElementSearchCriteria criteria) throws SiteWhereException {
-		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+		DBCollection elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
 		DBObject dbCriteria = new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, batchToken);
 		if (criteria.getProcessingStatus() != null) {
 			dbCriteria.put(MongoBatchElement.PROP_PROCESSING_STATUS, criteria.getProcessingStatus());
@@ -2195,7 +2197,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	@Override
 	public IBatchElement updateBatchElement(String operationToken, long index,
 			IBatchElementUpdateRequest request) throws SiteWhereException {
-		DBCollection elements = getMongoClient().getBatchOperationElementsCollection();
+		DBCollection elements = getMongoClient().getBatchOperationElementsCollection(getTenant());
 		DBObject dbElement = assertBatchElement(operationToken, index);
 
 		BatchElement element = MongoBatchElement.fromDBObject(dbElement);
@@ -2309,7 +2311,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	protected DBObject getZoneDBObjectByToken(String token) throws SiteWhereException {
 		try {
-			DBCollection zones = getMongoClient().getZonesCollection();
+			DBCollection zones = getMongoClient().getZonesCollection(getTenant());
 			BasicDBObject query = new BasicDBObject(MongoZone.PROP_TOKEN, token);
 			DBObject result = zones.findOne(query);
 			return result;
@@ -2346,7 +2348,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	protected DBObject getDeviceStreamDBObject(String assignmentToken, String streamId)
 			throws SiteWhereException {
 		try {
-			DBCollection streams = getMongoClient().getStreamsCollection();
+			DBCollection streams = getMongoClient().getStreamsCollection(getTenant());
 			BasicDBObject query =
 					new BasicDBObject(MongoDeviceStream.PROP_ASSIGNMENT_TOKEN, assignmentToken).append(
 							MongoDeviceStream.PROP_STREAM_ID, streamId);
@@ -2370,7 +2372,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	protected DBObject getDeviceStreamDataDBObject(String assignmentToken, String streamId,
 			long sequenceNumber) throws SiteWhereException {
 		try {
-			DBCollection events = getMongoClient().getEventsCollection();
+			DBCollection events = getMongoClient().getEventsCollection(getTenant());
 			BasicDBObject query =
 					new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 							MongoDeviceStreamData.PROP_STREAM_ID, streamId).append(
@@ -2392,7 +2394,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	protected DBObject getDeviceGroupDBObjectByToken(String token) throws SiteWhereException {
 		try {
-			DBCollection groups = getMongoClient().getDeviceGroupsCollection();
+			DBCollection groups = getMongoClient().getDeviceGroupsCollection(getTenant());
 			BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
 			DBObject result = groups.findOne(query);
 			return result;
@@ -2427,7 +2429,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	 */
 	protected DBObject getBatchOperationDBObjectByToken(String token) throws SiteWhereException {
 		try {
-			DBCollection ops = getMongoClient().getBatchOperationsCollection();
+			DBCollection ops = getMongoClient().getBatchOperationsCollection(getTenant());
 			BasicDBObject query = new BasicDBObject(MongoBatchOperation.PROP_TOKEN, token);
 			DBObject result = ops.findOne(query);
 			return result;
@@ -2464,7 +2466,7 @@ public class MongoDeviceManagement extends LifecycleComponent implements IDevice
 	protected DBObject getBatchElementDBObjectByIndex(String operationToken, long index)
 			throws SiteWhereException {
 		try {
-			DBCollection ops = getMongoClient().getBatchOperationElementsCollection();
+			DBCollection ops = getMongoClient().getBatchOperationElementsCollection(getTenant());
 			BasicDBObject query =
 					new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, operationToken).append(
 							MongoBatchElement.PROP_INDEX, index);

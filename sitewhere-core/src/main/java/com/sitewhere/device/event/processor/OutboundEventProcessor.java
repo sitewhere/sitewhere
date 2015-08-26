@@ -7,7 +7,7 @@
  */
 package com.sitewhere.device.event.processor;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -23,7 +23,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class OutboundEventProcessor extends LifecycleComponent implements IOutboundEventProcessor {
+public abstract class OutboundEventProcessor extends TenantLifecycleComponent implements
+		IOutboundEventProcessor {
 
 	public OutboundEventProcessor() {
 		super(LifecycleComponentType.OutboundEventProcessor);

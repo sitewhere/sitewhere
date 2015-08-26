@@ -101,7 +101,7 @@ public class HBaseDeviceGroup {
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 		byte[] zero = Bytes.toBytes((long) 0);
 		qualifiers.put(ENTRY_COUNTER, zero);
-		return HBaseUtils.createOrUpdate(context.getClient(), context.getPayloadMarshaler(),
+		return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
 				ISiteWhereHBase.DEVICES_TABLE_NAME, group, uuid, KEY_BUILDER, qualifiers);
 	}
 
@@ -118,8 +118,8 @@ public class HBaseDeviceGroup {
 			IDeviceGroupCreateRequest request) throws SiteWhereException {
 		DeviceGroup updated = assertDeviceGroup(context, token);
 		SiteWherePersistence.deviceGroupUpdateLogic(request, updated);
-		return HBaseUtils.put(context.getClient(), context.getPayloadMarshaler(),
-				ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER);
+		return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+				updated, token, KEY_BUILDER);
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class HBaseDeviceGroup {
 	 */
 	public static DeviceGroup getDeviceGroupByToken(IHBaseContext context, String token)
 			throws SiteWhereException {
-		return HBaseUtils.get(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
+		return HBaseUtils.get(context, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
 				DeviceGroup.class);
 	}
 
@@ -160,9 +160,8 @@ public class HBaseDeviceGroup {
 				return false;
 			}
 		};
-		return HBaseUtils.getFilteredList(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME,
-				KEY_BUILDER, includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria,
-				comparator);
+		return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
+				includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria, comparator);
 	}
 
 	/**
@@ -191,9 +190,8 @@ public class HBaseDeviceGroup {
 				return !item.getRoles().contains(role);
 			}
 		};
-		return HBaseUtils.getFilteredList(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME,
-				KEY_BUILDER, includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria,
-				comparator);
+		return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
+				includeDeleted, IDeviceGroup.class, DeviceGroup.class, filter, criteria, comparator);
 	}
 
 	/**
@@ -207,7 +205,7 @@ public class HBaseDeviceGroup {
 	public static Long allocateNextElementId(IHBaseContext context, byte[] primary) throws SiteWhereException {
 		HTableInterface devices = null;
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			Increment increment = new Increment(primary);
 			increment.addColumn(ISiteWhereHBase.FAMILY_ID, ENTRY_COUNTER, 1);
 			Result result = devices.increment(increment);
@@ -234,8 +232,8 @@ public class HBaseDeviceGroup {
 		if (force) {
 			HBaseDeviceGroupElement.deleteElements(context, token);
 		}
-		return HBaseUtils.delete(context.getClient(), context.getPayloadMarshaler(),
-				ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER, DeviceGroup.class);
+		return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+				token, force, KEY_BUILDER, DeviceGroup.class);
 	}
 
 	/**
@@ -281,5 +279,16 @@ public class HBaseDeviceGroup {
 		buffer.put(getTruncatedIdentifier(groupId));
 		buffer.put(DeviceGroupRecordType.DeviceGroup.getType());
 		return buffer.array();
+	}
+
+	/**
+	 * Get device table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

@@ -13,14 +13,14 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Manages creation of {@link IDeviceStream} entities based on requests from devices.
  * 
  * @author Derek
  */
-public interface IDeviceStreamManager extends ILifecycleComponent {
+public interface IDeviceStreamManager extends ITenantLifecycleComponent {
 
 	/**
 	 * Handle request for creating a new {@link IDeviceStream}.

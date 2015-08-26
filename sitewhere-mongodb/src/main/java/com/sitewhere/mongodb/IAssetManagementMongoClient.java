@@ -8,6 +8,7 @@
 package com.sitewhere.mongodb;
 
 import com.mongodb.DBCollection;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Mongo client that provides asset management collections.
@@ -22,17 +23,7 @@ public interface IAssetManagementMongoClient {
 	/** Default collection name for SiteWhere assets */
 	public static final String DEFAULT_ASSETS_COLLECTION_NAME = "assets";
 
-	/**
-	 * Get the collection for asset categories.
-	 * 
-	 * @return
-	 */
-	public DBCollection getAssetCategoriesCollection();
+	public DBCollection getAssetCategoriesCollection(ITenant tenant);
 
-	/**
-	 * Get the collection for assets.
-	 * 
-	 * @return
-	 */
-	public DBCollection getAssetsCollection();
+	public DBCollection getAssetsCollection(ITenant tenant);
 }

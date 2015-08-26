@@ -13,6 +13,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.util.DeviceUtils;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Provides support logic for handling interactions with nested devices.
@@ -28,7 +29,7 @@ public class NestedDeviceSupport {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static NestedDeviceInformation calculateNestedDeviceInformation(IDevice target)
+	public static NestedDeviceInformation calculateNestedDeviceInformation(IDevice target, ITenant tenant)
 			throws SiteWhereException {
 		NestedDeviceInformation nested = new NestedDeviceInformation();
 
@@ -40,7 +41,7 @@ public class NestedDeviceSupport {
 
 		// Resolve parent and verify it exists.
 		IDevice parent =
-				SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(
+				SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(
 						target.getParentHardwareId());
 		if (parent == null) {
 			throw new SiteWhereException("Parent device reference points to device that does not exist.");

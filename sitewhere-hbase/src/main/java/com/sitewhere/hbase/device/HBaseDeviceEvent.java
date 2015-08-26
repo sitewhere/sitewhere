@@ -577,7 +577,7 @@ public class HBaseDeviceEvent {
 
 		HTableInterface events = null;
 		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+			events = getEventsTableInterface(context);
 			// Increment the result counter.
 			qual[3] = EventRecordType.CommandResponseCounter.getType();
 			long counter = events.incrementColumnValue(row, ISiteWhereHBase.FAMILY_ID, qual, 1);
@@ -616,7 +616,7 @@ public class HBaseDeviceEvent {
 		HTableInterface events = null;
 		List<IDeviceCommandResponse> responses = new ArrayList<IDeviceCommandResponse>();
 		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+			events = getEventsTableInterface(context);
 
 			Get get = new Get(row);
 			Result result = events.get(get);
@@ -740,7 +740,7 @@ public class HBaseDeviceEvent {
 		HTableInterface events = null;
 		ResultScanner scanner = null;
 		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+			events = getEventsTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(startKey);
 			scan.setStopRow(endKey);
@@ -828,7 +828,7 @@ public class HBaseDeviceEvent {
 		HTableInterface events = null;
 		ResultScanner scanner = null;
 		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+			events = getEventsTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(startPrefix);
 			scan.setStopRow(afterPrefix);
@@ -1088,7 +1088,7 @@ public class HBaseDeviceEvent {
 		byte[] qual = keys[1];
 		HTableInterface events = null;
 		try {
-			events = context.getClient().getTableInterface(ISiteWhereHBase.EVENTS_TABLE_NAME);
+			events = getEventsTableInterface(context);
 			Get get = new Get(row);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, qual);
 			Result result = events.get(get);
@@ -1146,5 +1146,16 @@ public class HBaseDeviceEvent {
 			throw new SiteWhereException("Id references unknown event type.");
 		}
 		}
+	}
+
+	/**
+	 * Get events table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getEventsTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.EVENTS_TABLE_NAME);
 	}
 }

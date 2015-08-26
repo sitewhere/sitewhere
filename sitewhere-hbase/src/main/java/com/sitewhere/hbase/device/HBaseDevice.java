@@ -73,11 +73,6 @@ public class HBaseDevice {
 	/** Column qualifier for current device assignment */
 	public static final byte[] CURRENT_ASSIGNMENT = "assn".getBytes();
 
-	/** Used for cloning device results */
-	private static DeviceMarshalHelper DEVICE_HELPER =
-			new DeviceMarshalHelper().setIncludeAsset(false).setIncludeAssignment(false).setIncludeSpecification(
-					false);
-
 	/**
 	 * Create a new device.
 	 * 
@@ -178,7 +173,7 @@ public class HBaseDevice {
 		}
 
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { DeviceRecordType.Device.getType() });
 			scan.setStopRow(new byte[] { DeviceRecordType.DeviceSpecification.getType() });
@@ -242,7 +237,7 @@ public class HBaseDevice {
 
 		HTableInterface devices = null;
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			Put put = new Put(primary);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			put.add(ISiteWhereHBase.FAMILY_ID, CURRENT_SITE, Bytes.toBytes(device.getSiteToken()));
@@ -276,7 +271,11 @@ public class HBaseDevice {
 				IDevice result = context.getCacheProvider().getDeviceCache().get(hardwareId);
 				if (result != null) {
 					Tracer.info("Returning cached device.", LOGGER);
-					return DEVICE_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
+					DeviceMarshalHelper helper =
+							new DeviceMarshalHelper(context.getTenant()).setIncludeAsset(false).setIncludeAssignment(
+									false).setIncludeSpecification(false);
+					return helper.convert(result,
+							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
 			}
 			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
@@ -290,7 +289,7 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = getDeviceTableInterface(context);
 				Get get = new Get(primary);
 				HBaseUtils.addPayloadFields(get);
 				Result result = devices.get(get);
@@ -347,7 +346,7 @@ public class HBaseDevice {
 				HTableInterface devices = null;
 				try {
 					Delete delete = new Delete(primary);
-					devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+					devices = getDeviceTableInterface(context);
 					devices.delete(delete);
 					if (context.getCacheProvider() != null) {
 						context.getCacheProvider().getDeviceCache().remove(hardwareId);
@@ -364,7 +363,7 @@ public class HBaseDevice {
 
 				HTableInterface devices = null;
 				try {
-					devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+					devices = getDeviceTableInterface(context);
 					Put put = new Put(primary);
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
 							context.getPayloadMarshaler().getEncoding().getIndicator());
@@ -414,7 +413,7 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = getDeviceTableInterface(context);
 				Get get = new Get(primary);
 				get.addColumn(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT);
 				Result result = devices.get(get);
@@ -468,7 +467,7 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = getDeviceTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, CURRENT_ASSIGNMENT, assignmentToken.getBytes());
@@ -514,7 +513,7 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = getDeviceTableInterface(context);
 				Put put = new Put(primary);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
 						context.getPayloadMarshaler().getEncoding().getIndicator());
@@ -561,7 +560,7 @@ public class HBaseDevice {
 
 			HTableInterface devices = null;
 			try {
-				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = getDeviceTableInterface(context);
 				Get get = new Get(primary);
 				Result result = devices.get(get);
 
@@ -632,5 +631,16 @@ public class HBaseDevice {
 		buffer.put((byte) ~timeBytes[6]);
 		buffer.put((byte) ~timeBytes[7]);
 		return buffer.array();
+	}
+
+	/**
+	 * Get device table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

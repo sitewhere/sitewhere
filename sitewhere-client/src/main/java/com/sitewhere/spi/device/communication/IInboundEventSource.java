@@ -9,7 +9,7 @@ package com.sitewhere.spi.device.communication;
 
 import java.util.List;
 
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Entity that receives events from one or more {@link IInboundEventReceiver}, decodes
@@ -17,7 +17,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface IInboundEventSource<T> extends ILifecycleComponent {
+public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
 
 	/**
 	 * Get unique id for event source.

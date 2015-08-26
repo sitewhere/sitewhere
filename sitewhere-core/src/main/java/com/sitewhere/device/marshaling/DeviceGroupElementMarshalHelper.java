@@ -18,6 +18,7 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Configurable helper class that allows {@link DeviceGroupElement} model objects to be
@@ -30,13 +31,21 @@ public class DeviceGroupElementMarshalHelper {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DeviceGroupElementMarshalHelper.class);
 
+	/** Tenant */
+	private ITenant tenant;
+
 	/** Indicates whether detailed device or device group information is to be included */
 	private boolean includeDetails = false;
 
 	/** Helper class for enriching device information */
-	private DeviceMarshalHelper deviceHelper =
-			new DeviceMarshalHelper().setIncludeSpecification(true).setIncludeAsset(true).setIncludeAssignment(
-					true);
+	private DeviceMarshalHelper deviceHelper;
+
+	public DeviceGroupElementMarshalHelper(ITenant tenant) {
+		this.tenant = tenant;
+		this.deviceHelper =
+				new DeviceMarshalHelper(tenant).setIncludeSpecification(true).setIncludeAsset(true).setIncludeAssignment(
+						true);
+	}
 
 	/**
 	 * Convert the SPI object to a model object for marshaling.
@@ -58,7 +67,7 @@ public class DeviceGroupElementMarshalHelper {
 			switch (source.getType()) {
 			case Device: {
 				IDevice device =
-						SiteWhere.getServer().getDeviceManagement().getDeviceByHardwareId(
+						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(
 								source.getElementId());
 				if (device != null) {
 					Device inflated = deviceHelper.convert(device, manager);
@@ -70,7 +79,8 @@ public class DeviceGroupElementMarshalHelper {
 			}
 			case Group: {
 				IDeviceGroup group =
-						SiteWhere.getServer().getDeviceManagement().getDeviceGroup(source.getElementId());
+						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceGroup(
+								source.getElementId());
 				if (group != null) {
 					DeviceGroup inflated = DeviceGroup.copy(group);
 					result.setDeviceGroup(inflated);

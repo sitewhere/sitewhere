@@ -8,7 +8,6 @@
 package com.sitewhere.rest.model.user.request;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.rest.model.common.MetadataProvider;

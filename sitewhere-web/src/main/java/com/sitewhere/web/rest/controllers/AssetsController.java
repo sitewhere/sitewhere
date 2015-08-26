@@ -10,6 +10,8 @@ package com.sitewhere.web.rest.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -76,11 +78,12 @@ public class AssetsController extends SiteWhereController {
 	@ApiOperation(value = "Get information about an asset module")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public AssetModule getAssetModule(
-			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId)
-			throws SiteWhereException {
+			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetModule", LOGGER);
 		try {
-			return AssetModule.copy(SiteWhere.getServer().getAssetModuleManager().getModule(assetModuleId));
+			return AssetModule.copy(SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getModule(
+					assetModuleId));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -101,11 +104,12 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public SearchResults<? extends IAsset> searchAssets(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
-			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria)
-			throws SiteWhereException {
+			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "searchAssets", LOGGER);
 		List<? extends IAsset> found =
-				SiteWhere.getServer().getAssetModuleManager().search(assetModuleId, criteria);
+				SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).search(assetModuleId,
+						criteria);
 		SearchResults<? extends IAsset> results = new SearchResults(found);
 		Tracer.stop(LOGGER);
 		return results;
@@ -125,11 +129,12 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IAsset getAssetById(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
-			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
-			throws SiteWhereException {
+			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetModuleManager().getAssetById(assetModuleId, assetId);
+			return SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getAssetById(
+					assetModuleId, assetId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -156,15 +161,15 @@ public class AssetsController extends SiteWhereController {
 			@ApiParam(value = "Unique token that identifies site", required = true) @RequestParam String siteToken,
 			@ApiParam(value = "Assignment status", required = false) @RequestParam(required = false) String status,
 			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
 		try {
 			DeviceAssignmentStatus decodedStatus =
 					(status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentsForAsset(siteToken,
-					assetModuleId, assetId, decodedStatus, criteria);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceAssignmentsForAsset(
+					siteToken, assetModuleId, assetId, decodedStatus, criteria);
 		} catch (IllegalArgumentException e) {
 			throw new SiteWhereException("Invalid device assignment status: " + status);
 		} finally {
@@ -182,13 +187,14 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public List<AssetModule> listAssetModules(
-			@ApiParam(value = "Asset type", required = false) @RequestParam(required = false) String assetType)
-			throws SiteWhereException {
+			@ApiParam(value = "Asset type", required = false) @RequestParam(required = false) String assetType,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listAssetModules", LOGGER);
 		try {
 			AssetType type = (assetType == null) ? null : AssetType.valueOf(assetType);
 			List<AssetModule> converted = new ArrayList<AssetModule>();
-			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager().listModules();
+			List<IAssetModule<?>> modules =
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).listModules();
 			for (IAssetModule<?> module : modules) {
 				if ((type == null) || (type == module.getAssetType())) {
 					converted.add(AssetModule.copy(module));
@@ -212,10 +218,10 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Refresh the list of asset modules")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public List<ICommandResponse> refreshModules() throws SiteWhereException {
+	public List<ICommandResponse> refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetModuleManager().refreshModules();
+			return SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).refreshModules();
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -232,11 +238,12 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Create a new asset category")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public IAssetCategory createAssetCategory(@RequestBody AssetCategoryCreateRequest request)
-			throws SiteWhereException {
+	public IAssetCategory createAssetCategory(@RequestBody AssetCategoryCreateRequest request,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createAssetCategory", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().createAssetCategory(request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createAssetCategory(
+					request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -256,10 +263,12 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IAssetCategory updateAssetCategory(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-			@RequestBody AssetCategoryCreateRequest request) throws SiteWhereException {
+			@RequestBody AssetCategoryCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateAssetCategory", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().updateAssetCategory(categoryId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateAssetCategory(
+					categoryId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -277,11 +286,12 @@ public class AssetsController extends SiteWhereController {
 	@ApiOperation(value = "Find category by unique id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IAssetCategory getAssetCategoryById(
-			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId)
-			throws SiteWhereException {
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetCategoryById", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().getAssetCategory(categoryId);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).getAssetCategory(
+					categoryId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -299,11 +309,12 @@ public class AssetsController extends SiteWhereController {
 	@ApiOperation(value = "Delete an existing asset category")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IAssetCategory deleteAssetCategory(
-			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId)
-			throws SiteWhereException {
+			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteAssetCategory", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().deleteAssetCategory(categoryId);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).deleteAssetCategory(
+					categoryId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -323,12 +334,13 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IAssetCategory> listAssetCategories(
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listAssetCategories", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getAssetManagement().listAssetCategories(criteria);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).listAssetCategories(
+					criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -349,10 +361,12 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IPersonAsset createPersonAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-			@RequestBody PersonAssetCreateRequest request) throws SiteWhereException {
+			@RequestBody PersonAssetCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createPersonAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().createPersonAsset(categoryId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createPersonAsset(
+					categoryId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -374,10 +388,12 @@ public class AssetsController extends SiteWhereController {
 	public IPersonAsset updatePersonAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-			@RequestBody PersonAssetCreateRequest request) throws SiteWhereException {
+			@RequestBody PersonAssetCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updatePersonAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().updatePersonAsset(categoryId, assetId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updatePersonAsset(
+					categoryId, assetId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -398,10 +414,12 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IHardwareAsset createHardwareAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-			@RequestBody HardwareAssetCreateRequest request) throws SiteWhereException {
+			@RequestBody HardwareAssetCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createHardwareAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().createHardwareAsset(categoryId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createHardwareAsset(
+					categoryId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -423,11 +441,12 @@ public class AssetsController extends SiteWhereController {
 	public IHardwareAsset updateHardwareAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-			@RequestBody HardwareAssetCreateRequest request) throws SiteWhereException {
+			@RequestBody HardwareAssetCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateHardwareAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().updateHardwareAsset(categoryId, assetId,
-					request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateHardwareAsset(
+					categoryId, assetId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -448,10 +467,12 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ILocationAsset createLocationAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-			@RequestBody LocationAssetCreateRequest request) throws SiteWhereException {
+			@RequestBody LocationAssetCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createLocationAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().createLocationAsset(categoryId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createLocationAsset(
+					categoryId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -473,11 +494,12 @@ public class AssetsController extends SiteWhereController {
 	public ILocationAsset updateLocationAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-			@RequestBody LocationAssetCreateRequest request) throws SiteWhereException {
+			@RequestBody LocationAssetCreateRequest request, HttpServletRequest servletRequest)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateLocationAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().updateLocationAsset(categoryId, assetId,
-					request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateLocationAsset(
+					categoryId, assetId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -497,11 +519,12 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IAsset getCategoryAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
-			throws SiteWhereException {
+			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getCategoryAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().getAsset(categoryId, assetId);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).getAsset(categoryId,
+					assetId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -521,11 +544,12 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IAsset deleteCategoryAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId)
-			throws SiteWhereException {
+			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteCategoryAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement().deleteAsset(categoryId, assetId);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).deleteAsset(
+					categoryId, assetId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -547,12 +571,13 @@ public class AssetsController extends SiteWhereController {
 	public ISearchResults<IAsset> listCategoryAssets(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
 			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize)
-			throws SiteWhereException {
+			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listCategoryAssets", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getAssetManagement().listAssets(categoryId, criteria);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).listAssets(categoryId,
+					criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

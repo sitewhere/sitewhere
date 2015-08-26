@@ -24,8 +24,8 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.PayloadEncoding;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
@@ -49,7 +49,7 @@ public class HBaseUtils {
 	/**
 	 * Create or update primary record.
 	 * 
-	 * @param client
+	 * @param context
 	 * @param marshaler
 	 * @param tableName
 	 * @param entity
@@ -59,15 +59,15 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T createOrUpdate(ISiteWhereHBaseClient client, IPayloadMarshaler marshaler,
-			byte[] tableName, T entity, String token, IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers)
+	public static <T> T createOrUpdate(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName,
+			T entity, String token, IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers)
 			throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(token);
 		byte[] payload = marshaler.encode(entity);
 
 		HTableInterface table = null;
 		try {
-			table = client.getTableInterface(tableName);
+			table = context.getClient().getTableInterface(context.getTenant(), tableName);
 			Put put = new Put(primary);
 			HBaseUtils.addPayloadFields(marshaler.getEncoding(), put, payload);
 			for (byte[] key : qualifiers.keySet()) {
@@ -86,7 +86,7 @@ public class HBaseUtils {
 	/**
 	 * Save payload.
 	 * 
-	 * @param client
+	 * @param context
 	 * @param marshaler
 	 * @param tableName
 	 * @param entity
@@ -95,14 +95,14 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T put(ISiteWhereHBaseClient client, IPayloadMarshaler marshaler, byte[] tableName,
-			T entity, String token, IRowKeyBuilder builder) throws SiteWhereException {
+	public static <T> T put(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName, T entity,
+			String token, IRowKeyBuilder builder) throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(token);
 		byte[] payload = marshaler.encode(entity);
 
 		HTableInterface table = null;
 		try {
-			table = client.getTableInterface(tableName);
+			table = context.getClient().getTableInterface(context.getTenant(), tableName);
 			Put put = new Put(primary);
 			HBaseUtils.addPayloadFields(marshaler.getEncoding(), put, payload);
 			table.put(put);
@@ -126,13 +126,13 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T get(ISiteWhereHBaseClient client, byte[] tableName, String token,
-			IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
+	public static <T> T get(IHBaseContext context, byte[] tableName, String token, IRowKeyBuilder builder,
+			Class<T> type) throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(token);
 
 		HTableInterface table = null;
 		try {
-			table = client.getTableInterface(tableName);
+			table = context.getClient().getTableInterface(context.getTenant(), tableName);
 			Get get = new Get(primary);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
@@ -156,7 +156,7 @@ public class HBaseUtils {
 	 * Get all matching records, sort them, and get matching pages. TODO: This is not
 	 * efficient since it always processes all records.
 	 * 
-	 * @param client
+	 * @param context
 	 * @param tableName
 	 * @param builder
 	 * @param includeDeleted
@@ -169,10 +169,10 @@ public class HBaseUtils {
 	 * @throws SiteWhereException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <I, C> SearchResults<I> getFilteredList(ISiteWhereHBaseClient client, byte[] tableName,
+	public static <I, C> SearchResults<I> getFilteredList(IHBaseContext context, byte[] tableName,
 			IRowKeyBuilder builder, boolean includeDeleted, Class<I> intf, Class<C> clazz, IFilter<C> filter,
 			ISearchCriteria criteria, Comparator<C> comparator) throws SiteWhereException {
-		List<C> results = getRecordList(client, tableName, builder, includeDeleted, clazz, filter);
+		List<C> results = getRecordList(context, tableName, builder, includeDeleted, clazz, filter);
 		Collections.sort(results, comparator);
 		Pager<I> pager = new Pager<I>(criteria);
 		for (C result : results) {
@@ -184,7 +184,7 @@ public class HBaseUtils {
 	/**
 	 * Get list of records that match the given criteria.
 	 * 
-	 * @param client
+	 * @param context
 	 * @param tableName
 	 * @param builder
 	 * @param includeDeleted
@@ -193,13 +193,12 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> List<T> getRecordList(ISiteWhereHBaseClient client, byte[] tableName,
-			IRowKeyBuilder builder, boolean includeDeleted, Class<T> clazz, IFilter<T> filter)
-			throws SiteWhereException {
+	public static <T> List<T> getRecordList(IHBaseContext context, byte[] tableName, IRowKeyBuilder builder,
+			boolean includeDeleted, Class<T> clazz, IFilter<T> filter) throws SiteWhereException {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = client.getTableInterface(tableName);
+			table = context.getClient().getTableInterface(context.getTenant(), tableName);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { builder.getTypeIdentifier() });
 			scan.setStopRow(new byte[] { (byte) (builder.getTypeIdentifier() + 1) });
@@ -256,10 +255,10 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T extends MetadataProviderEntity> T delete(ISiteWhereHBaseClient client,
+	public static <T extends MetadataProviderEntity> T delete(IHBaseContext context,
 			IPayloadMarshaler marshaler, byte[] tableName, String token, boolean force,
 			IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
-		T existing = get(client, tableName, token, builder, type);
+		T existing = get(context, tableName, token, builder, type);
 		existing.setDeleted(true);
 
 		byte[] primary = builder.buildPrimaryKey(token);
@@ -268,7 +267,7 @@ public class HBaseUtils {
 			HTableInterface table = null;
 			try {
 				Delete delete = new Delete(primary);
-				table = client.getTableInterface(tableName);
+				table = context.getClient().getTableInterface(context.getTenant(), tableName);
 				table.delete(delete);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to delete data for token: " + token, e);
@@ -280,19 +279,19 @@ public class HBaseUtils {
 			SiteWherePersistence.setUpdatedEntityMetadata(existing);
 			byte[] updated = marshaler.encode(existing);
 
-			HTableInterface devices = null;
+			HTableInterface table = null;
 			try {
-				devices = client.getTableInterface(tableName);
+				table = context.getClient().getTableInterface(context.getTenant(), tableName);
 				Put put = new Put(primary);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
 						marshaler.getEncoding().getIndicator());
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD, updated);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
-				devices.put(put);
+				table.put(put);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to flag deleted for token: " + token, e);
 			} finally {
-				HBaseUtils.closeCleanly(devices);
+				HBaseUtils.closeCleanly(table);
 			}
 		}
 		return existing;
@@ -301,7 +300,7 @@ public class HBaseUtils {
 	/**
 	 * Delete an element without the option of undeleting it.
 	 * 
-	 * @param client
+	 * @param context
 	 * @param marshaler
 	 * @param tableName
 	 * @param token
@@ -310,16 +309,16 @@ public class HBaseUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static <T> T forcedDelete(ISiteWhereHBaseClient client, IPayloadMarshaler marshaler,
-			byte[] tableName, String token, IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
-		T existing = get(client, tableName, token, builder, type);
+	public static <T> T forcedDelete(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName,
+			String token, IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
+		T existing = get(context, tableName, token, builder, type);
 
 		byte[] primary = builder.buildPrimaryKey(token);
 		builder.deleteReference(token);
 		HTableInterface table = null;
 		try {
 			Delete delete = new Delete(primary);
-			table = client.getTableInterface(tableName);
+			table = context.getClient().getTableInterface(context.getTenant(), tableName);
 			table.delete(delete);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to delete data for token: " + token, e);

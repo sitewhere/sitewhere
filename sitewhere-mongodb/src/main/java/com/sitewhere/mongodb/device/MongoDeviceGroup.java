@@ -17,6 +17,7 @@ import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Used to load or save device group data to MongoDB.
@@ -124,15 +125,16 @@ public class MongoDeviceGroup implements MongoConverter<IDeviceGroup> {
 	 * Get the next available index for the group.
 	 * 
 	 * @param mongo
+	 * @param tenant
 	 * @param token
 	 * @return
 	 */
-	public static long getNextGroupIndex(IDeviceManagementMongoClient mongo, String token) {
+	public static long getNextGroupIndex(IDeviceManagementMongoClient mongo, ITenant tenant, String token) {
 		BasicDBObject query = new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, token);
 		BasicDBObject update = new BasicDBObject(MongoDeviceGroup.PROP_LAST_INDEX, (long) 1);
 		BasicDBObject increment = new BasicDBObject("$inc", update);
 		DBObject updated =
-				mongo.getDeviceGroupsCollection().findAndModify(query, new BasicDBObject(),
+				mongo.getDeviceGroupsCollection(tenant).findAndModify(query, new BasicDBObject(),
 						new BasicDBObject(), false, increment, true, true);
 		return (Long) updated.get(PROP_LAST_INDEX);
 	}

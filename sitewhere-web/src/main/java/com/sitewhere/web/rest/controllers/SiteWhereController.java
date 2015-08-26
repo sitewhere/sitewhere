@@ -19,9 +19,13 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Base class for common controller functionality.
@@ -32,6 +36,34 @@ public class SiteWhereController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereController.class);
+
+	/**
+	 * Get a tenant based on the authentication token passed.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ITenant getTenant(HttpServletRequest request) throws SiteWhereException {
+		String token = getTenantAuthToken(request);
+		return SiteWhere.getServer().getTenantByAuthToken(token);
+	}
+
+	/**
+	 * Get tenant authentication token from the servlet request.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected String getTenantAuthToken(HttpServletRequest request) throws SiteWhereException {
+		String token = request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_TOKEN);
+		if (token == null) {
+			throw new SiteWhereSystemException(ErrorCode.MissingTenantAuthToken, ErrorLevel.ERROR,
+					HttpServletResponse.SC_UNAUTHORIZED);
+		}
+		return token;
+	}
 
 	/**
 	 * Send message back to called indicating successful add.

@@ -18,7 +18,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.asset.AssetMatcher;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAsset;
@@ -34,7 +34,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DataStoreAssetModule<T extends IAsset> extends LifecycleComponent {
+public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleComponent {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DataStoreAssetModule.class);
@@ -127,7 +127,7 @@ public class DataStoreAssetModule<T extends IAsset> extends LifecycleComponent {
 	protected ICommandResponse doLoadAssets() {
 		try {
 			ISearchResults<IAsset> assets =
-					SiteWhere.getServer().getAssetManagement().listAssets(category.getId(),
+					SiteWhere.getServer().getAssetManagement(getTenant()).listAssets(category.getId(),
 							new SearchCriteria(1, 0));
 			assetCache.clear();
 			for (IAsset asset : assets.getResults()) {

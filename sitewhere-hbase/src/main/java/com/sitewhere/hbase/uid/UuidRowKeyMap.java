@@ -9,7 +9,7 @@ package com.sitewhere.hbase.uid;
 
 import java.util.UUID;
 
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -19,8 +19,8 @@ import com.sitewhere.spi.SiteWhereException;
  */
 public class UuidRowKeyMap extends UniqueIdMap<String, byte[]> {
 
-	public UuidRowKeyMap(ISiteWhereHBaseClient hbase, byte keyIndicator, byte valueIndicator) {
-		super(hbase, keyIndicator, valueIndicator);
+	public UuidRowKeyMap(IHBaseContext context, byte keyIndicator, byte valueIndicator) {
+		super(context, keyIndicator, valueIndicator);
 	}
 
 	/**

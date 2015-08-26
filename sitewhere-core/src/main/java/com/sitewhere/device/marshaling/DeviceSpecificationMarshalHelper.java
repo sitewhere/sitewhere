@@ -20,6 +20,7 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Configurable helper class that allows {@link DeviceSpecification} model objects to be
@@ -32,8 +33,15 @@ public class DeviceSpecificationMarshalHelper {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DeviceSpecificationMarshalHelper.class);
 
+	/** Tenant */
+	private ITenant tenant;
+
 	/** Indicates whether device specification asset information is to be included */
 	private boolean includeAsset = true;
+
+	public DeviceSpecificationMarshalHelper(ITenant tenant) {
+		this.tenant = tenant;
+	}
 
 	/**
 	 * Convert a device specification for marshaling.
@@ -50,7 +58,7 @@ public class DeviceSpecificationMarshalHelper {
 		spec.setToken(source.getToken());
 		spec.setName(source.getName());
 		HardwareAsset asset =
-				(HardwareAsset) SiteWhere.getServer().getAssetModuleManager().getAssetById(
+				(HardwareAsset) SiteWhere.getServer().getAssetModuleManager(tenant).getAssetById(
 						source.getAssetModuleId(), source.getAssetId());
 		if (asset == null) {
 			LOGGER.warn("Device specification has reference to non-existent asset.");

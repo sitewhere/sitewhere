@@ -61,10 +61,6 @@ public class HBaseDeviceSpecification {
 	/** Column qualifier for command counter */
 	public static final byte[] COMMAND_COUNTER = Bytes.toBytes("commandctr");
 
-	/** Used for cloning device assignment results */
-	private static DeviceSpecificationMarshalHelper SPECIFICATION_HELPER =
-			new DeviceSpecificationMarshalHelper().setIncludeAsset(true);
-
 	/** Used to look up row keys from tokens */
 	public static IRowKeyBuilder KEY_BUILDER = new UniqueIdCounterMapRowKeyBuilder() {
 
@@ -121,7 +117,7 @@ public class HBaseDeviceSpecification {
 			byte[] maxLong = Bytes.toBytes(Long.MAX_VALUE);
 			qualifiers.put(COMMAND_COUNTER, maxLong);
 			IDeviceSpecification created =
-					HBaseUtils.createOrUpdate(context.getClient(), context.getPayloadMarshaler(),
+					HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
 							ISiteWhereHBase.DEVICES_TABLE_NAME, specification, uuid, KEY_BUILDER, qualifiers);
 			if (context.getCacheProvider() != null) {
 				context.getCacheProvider().getDeviceSpecificationCache().put(uuid, created);
@@ -150,12 +146,15 @@ public class HBaseDeviceSpecification {
 						context.getCacheProvider().getDeviceSpecificationCache().get(token);
 				if (result != null) {
 					Tracer.info("Returning cached device specification.", LOGGER);
-					return SPECIFICATION_HELPER.convert(result, SiteWhere.getServer().getAssetModuleManager());
+					DeviceSpecificationMarshalHelper helper =
+							new DeviceSpecificationMarshalHelper(context.getTenant()).setIncludeAsset(true);
+					return helper.convert(result,
+							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
 			}
 			DeviceSpecification found =
-					HBaseUtils.get(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME, token,
-							KEY_BUILDER, DeviceSpecification.class);
+					HBaseUtils.get(context, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
+							DeviceSpecification.class);
 			if ((context.getCacheProvider() != null) && (found != null)) {
 				context.getCacheProvider().getDeviceSpecificationCache().put(token, found);
 			}
@@ -184,8 +183,8 @@ public class HBaseDeviceSpecification {
 			if (context.getCacheProvider() != null) {
 				context.getCacheProvider().getDeviceSpecificationCache().put(token, updated);
 			}
-			return HBaseUtils.put(context.getClient(), context.getPayloadMarshaler(),
-					ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER);
+			return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+					updated, token, KEY_BUILDER);
 		} finally {
 			Tracer.pop(LOGGER);
 		}
@@ -217,9 +216,9 @@ public class HBaseDeviceSpecification {
 					return false;
 				}
 			};
-			return HBaseUtils.getFilteredList(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME,
-					KEY_BUILDER, includeDeleted, IDeviceSpecification.class, DeviceSpecification.class,
-					filter, criteria, comparator);
+			return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
+					includeDeleted, IDeviceSpecification.class, DeviceSpecification.class, filter, criteria,
+					comparator);
 		} finally {
 			Tracer.pop(LOGGER);
 		}
@@ -242,7 +241,7 @@ public class HBaseDeviceSpecification {
 			if (context.getCacheProvider() != null) {
 				context.getCacheProvider().getDeviceSpecificationCache().remove(token);
 			}
-			return HBaseUtils.delete(context.getClient(), context.getPayloadMarshaler(),
+			return HBaseUtils.delete(context, context.getPayloadMarshaler(),
 					ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER, DeviceSpecification.class);
 		} finally {
 			Tracer.pop(LOGGER);
@@ -295,7 +294,7 @@ public class HBaseDeviceSpecification {
 			byte[] primary = getPrimaryRowKey(specId);
 			HTableInterface devices = null;
 			try {
-				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = getDeviceTableInterface(context);
 				Increment increment = new Increment(primary);
 				increment.addColumn(ISiteWhereHBase.FAMILY_ID, COMMAND_COUNTER, -1);
 				Result result = devices.increment(increment);
@@ -381,5 +380,16 @@ public class HBaseDeviceSpecification {
 		buffer.put(prefix);
 		buffer.put(uid);
 		return buffer.array();
+	}
+
+	/**
+	 * Get device table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

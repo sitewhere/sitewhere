@@ -23,8 +23,8 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -38,8 +38,8 @@ public abstract class UniqueIdMap<N, V> {
 	/** Qualifier for columns containing values */
 	public static final byte[] VALUE_QUAL = Bytes.toBytes("value");
 
-	/** HBase client */
-	protected ISiteWhereHBaseClient hbase;
+	/** HBase context */
+	protected IHBaseContext context;
 
 	/** Key type indicator */
 	protected byte keyIndicator;
@@ -53,8 +53,8 @@ public abstract class UniqueIdMap<N, V> {
 	/** Maps of values to names */
 	private Map<V, N> valueToName = new HashMap<V, N>();
 
-	public UniqueIdMap(ISiteWhereHBaseClient hbase, byte keyIndicator, byte valueIndicator) {
-		this.hbase = hbase;
+	public UniqueIdMap(IHBaseContext context, byte keyIndicator, byte valueIndicator) {
+		this.context = context;
 		this.keyIndicator = keyIndicator;
 		this.valueIndicator = valueIndicator;
 	}
@@ -100,7 +100,7 @@ public abstract class UniqueIdMap<N, V> {
 
 		HTableInterface uids = null;
 		try {
-			uids = hbase.getTableInterface(ISiteWhereHBase.UID_TABLE_NAME);
+			uids = getUidTableInterface(context);
 			Put put = new Put(nameBuffer.array());
 			put.add(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, valueBytes);
 			uids.put(put);
@@ -126,7 +126,7 @@ public abstract class UniqueIdMap<N, V> {
 
 		HTableInterface uids = null;
 		try {
-			uids = hbase.getTableInterface(ISiteWhereHBase.UID_TABLE_NAME);
+			uids = getUidTableInterface(context);
 			Delete delete = new Delete(nameBuffer.array());
 			uids.delete(delete);
 		} catch (IOException e) {
@@ -153,7 +153,7 @@ public abstract class UniqueIdMap<N, V> {
 
 		HTableInterface uids = null;
 		try {
-			uids = hbase.getTableInterface(ISiteWhereHBase.UID_TABLE_NAME);
+			uids = getUidTableInterface(context);
 			Put put = new Put(valueBuffer.array());
 			put.add(ISiteWhereHBase.FAMILY_ID, VALUE_QUAL, nameBytes);
 			uids.put(put);
@@ -179,7 +179,7 @@ public abstract class UniqueIdMap<N, V> {
 
 		HTableInterface uids = null;
 		try {
-			uids = hbase.getTableInterface(ISiteWhereHBase.UID_TABLE_NAME);
+			uids = getUidTableInterface(context);
 			Delete delete = new Delete(valueBuffer.array());
 			uids.delete(delete);
 		} catch (IOException e) {
@@ -238,7 +238,7 @@ public abstract class UniqueIdMap<N, V> {
 		HTableInterface uids = null;
 		ResultScanner scanner = null;
 		try {
-			uids = hbase.getTableInterface(ISiteWhereHBase.UID_TABLE_NAME);
+			uids = getUidTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(startKey);
 			scan.setStopRow(stopKey);
@@ -293,7 +293,7 @@ public abstract class UniqueIdMap<N, V> {
 
 		HTableInterface uids = null;
 		try {
-			uids = hbase.getTableInterface(ISiteWhereHBase.UID_TABLE_NAME);
+			uids = getUidTableInterface(context);
 			Get get = new Get(nameBuffer.array());
 			Result result = uids.get(get);
 			if (result.size() > 0) {
@@ -341,7 +341,7 @@ public abstract class UniqueIdMap<N, V> {
 
 		HTableInterface uids = null;
 		try {
-			uids = hbase.getTableInterface(ISiteWhereHBase.UID_TABLE_NAME);
+			uids = getUidTableInterface(context);
 			Get get = new Get(valueBuffer.array());
 			Result result = uids.get(get);
 			if (result.size() > 0) {
@@ -367,11 +367,6 @@ public abstract class UniqueIdMap<N, V> {
 	/** Used to convert stored value to correct datatype */
 	public abstract byte[] convertValue(V value);
 
-	/** Get HBase connectivity accessor */
-	public ISiteWhereHBaseClient getHbase() {
-		return hbase;
-	}
-
 	/** Get indicator for key rows for this type */
 	public byte getKeyIndicator() {
 		return keyIndicator;
@@ -380,5 +375,16 @@ public abstract class UniqueIdMap<N, V> {
 	/** Get indicator for value rows for this type */
 	public byte getValueIndicator() {
 		return valueIndicator;
+	}
+
+	/**
+	 * Get UIDs table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getUidTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.UID_TABLE_NAME);
 	}
 }

@@ -51,36 +51,8 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 				throw new RuntimeException("Unknown configuration element: " + child.getLocalName());
 			}
 			switch (type) {
-			case Globals: {
-				new GlobalsParser().parse(child, context);
-				break;
-			}
 			case Datastore: {
-				new DatastoreParser().parse(child, context);
-				break;
-			}
-			case InboundProcessingChain: {
-				new InboundProcessingChainParser().parse(child, context);
-				break;
-			}
-			case OutboundProcessingChain: {
-				new OutboundProcessingChainParser().parse(child, context);
-				break;
-			}
-			case Provisioning: {
-				new DeviceCommunicationParser().parse(child, context);
-				break;
-			}
-			case DeviceCommunication: {
-				new DeviceCommunicationParser().parse(child, context);
-				break;
-			}
-			case AssetManagement: {
-				new AssetManagementParser().parse(child, context);
-				break;
-			}
-			case SearchProviders: {
-				new SearchProvidersParser().parse(child, context);
+				new GlobalDatastoreParser().parse(child, context);
 				break;
 			}
 			}
@@ -95,29 +67,8 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 	 */
 	public static enum Elements {
 
-		/** Globals */
-		Globals("globals"),
-
 		/** Datastore */
-		Datastore("datastore"),
-
-		/** Inbound processing chain */
-		InboundProcessingChain("inbound-processing-chain"),
-
-		/** Outbound processing chain */
-		OutboundProcessingChain("outbound-processing-chain"),
-
-		/** Provisioning (DEPRECATED) */
-		Provisioning("provisioning"),
-
-		/** Device Communication Subsystem */
-		DeviceCommunication("device-communication"),
-
-		/** Asset management */
-		AssetManagement("asset-management"),
-
-		/** Search providers */
-		SearchProviders("search-providers");
+		Datastore("datastore");
 
 		/** Event code */
 		private String localName;

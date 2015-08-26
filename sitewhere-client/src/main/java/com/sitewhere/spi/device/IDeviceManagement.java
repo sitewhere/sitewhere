@@ -54,14 +54,14 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Interface for device operations.
  * 
  * @author Derek
  */
-public interface IDeviceManagement extends ILifecycleComponent {
+public interface IDeviceManagement extends ITenantLifecycleComponent {
 
 	/**
 	 * Create a new device specification.

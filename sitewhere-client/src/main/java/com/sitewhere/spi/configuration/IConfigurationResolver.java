@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Allows for pluggable implementations that can resolve the Spring configuration for the
@@ -30,6 +31,17 @@ public interface IConfigurationResolver {
 	 * @throws SiteWhereException
 	 */
 	public ApplicationContext resolveSiteWhereContext(IVersion version) throws SiteWhereException;
+
+	/**
+	 * Resolve the Spring configuration context for a tenant.
+	 * 
+	 * @param tenant
+	 * @param version
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version)
+			throws SiteWhereException;
 
 	/**
 	 * Gets the root {@link File} where SiteWhere configuration files are stored.

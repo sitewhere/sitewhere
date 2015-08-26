@@ -109,7 +109,7 @@ public class DeviceCommandEventProcessor extends OutboundEventProcessor {
 		public void run() {
 			try {
 				LOGGER.debug("Command processor thread processing command invocation.");
-				SiteWhere.getServer().getDeviceCommunicationSubsystem().deliverCommand(command);
+				SiteWhere.getServer().getDeviceCommunication(getTenant()).deliverCommand(command);
 			} catch (SiteWhereException e) {
 				LOGGER.error("Exception thrown in command processing operation.", e);
 			} catch (Throwable e) {
@@ -133,7 +133,7 @@ public class DeviceCommandEventProcessor extends OutboundEventProcessor {
 		public void run() {
 			try {
 				LOGGER.debug("Command processor thread processing batch operation.");
-				SiteWhere.getServer().getDeviceCommunicationSubsystem().getBatchOperationManager().process(
+				SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(
 						operation);
 			} catch (SiteWhereException e) {
 				LOGGER.error("Exception thrown in batch processing operation.", e);

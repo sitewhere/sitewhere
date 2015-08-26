@@ -10,6 +10,7 @@ package com.sitewhere.hbase;
 import com.sitewhere.hbase.device.IDeviceEventBuffer;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Default implementation of {@link IHBaseContext}.
@@ -17,6 +18,9 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
  * @author Derek *
  */
 public class HBaseContext implements IHBaseContext {
+
+	/** Tenant */
+	private ITenant tenant;
 
 	/** Client implementation */
 	private ISiteWhereHBaseClient client;
@@ -26,9 +30,17 @@ public class HBaseContext implements IHBaseContext {
 
 	/** Configured payload encoder */
 	private IPayloadMarshaler payloadMarshaler;
-	
+
 	/** Device event buffer */
 	private IDeviceEventBuffer deviceEventBuffer;
+
+	public ITenant getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(ITenant tenant) {
+		this.tenant = tenant;
+	}
 
 	public ISiteWhereHBaseClient getClient() {
 		return client;

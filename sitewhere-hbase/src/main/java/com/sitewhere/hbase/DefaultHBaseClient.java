@@ -8,6 +8,7 @@
 package com.sitewhere.hbase;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -19,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Default SiteWhere HBase client implementation.
@@ -111,22 +113,31 @@ public class DefaultHBaseClient implements InitializingBean, ISiteWhereHBaseClie
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(byte[])
+	 * @see
+	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere.spi.user
+	 * .ITenant, byte[])
 	 */
 	@Override
-	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException {
-		return getTableInterface(tableName, false);
+	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException {
+		return getTableInterface(tenant, tableName, false);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(byte[], boolean)
+	 * @see
+	 * com.sitewhere.hbase.ISiteWhereHBaseClient#getTableInterface(com.sitewhere.spi.user
+	 * .ITenant, byte[], boolean)
 	 */
 	@Override
-	public HTableInterface getTableInterface(byte[] tableName, boolean autoFlush) throws SiteWhereException {
+	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName, boolean autoFlush)
+			throws SiteWhereException {
 		try {
-			HTableInterface hintf = getConnection().getTable(tableName);
+			byte[] prefix = (tenant.getId() + "-").getBytes();
+			ByteBuffer buffer = ByteBuffer.allocate(prefix.length + tableName.length);
+			buffer.put(prefix);
+			buffer.put(tableName);
+			HTableInterface hintf = getConnection().getTable(buffer.array());
 			hintf.setAutoFlushTo(autoFlush);
 			return hintf;
 		} catch (IOException e) {

@@ -83,7 +83,7 @@ public class HBaseDeviceStream {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(streamKey);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				sites.put(put);
@@ -118,7 +118,7 @@ public class HBaseDeviceStream {
 
 		HTableInterface sites = null;
 		try {
-			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = getSitesTableInterface(context);
 			Get get = new Get(streamKey);
 			HBaseUtils.addPayloadFields(get);
 			Result result = sites.get(get);
@@ -156,7 +156,7 @@ public class HBaseDeviceStream {
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
-			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = getSitesTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(HBaseDeviceAssignment.getStreamRowkey(assnKey));
 			scan.setStopRow(HBaseDeviceAssignment.getEndMarkerKey(assnKey));
@@ -197,5 +197,16 @@ public class HBaseDeviceStream {
 		buffer.put(streamBase);
 		buffer.put(streamIdBytes);
 		return buffer.array();
+	}
+
+	/**
+	 * Get sites table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
 	}
 }

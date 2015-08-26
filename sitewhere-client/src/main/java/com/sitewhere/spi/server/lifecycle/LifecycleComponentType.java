@@ -17,6 +17,9 @@ public enum LifecycleComponentType {
 	/** Includes the entire system */
 	System,
 
+	/** Engine for a single tenant */
+	TenantEngine,
+
 	/** Data store management */
 	DataStore,
 
@@ -79,7 +82,7 @@ public enum LifecycleComponentType {
 
 	/** Batch operation manager */
 	BatchOperationManager,
-	
+
 	/** Device stream manager */
 	DeviceStreamManager,
 

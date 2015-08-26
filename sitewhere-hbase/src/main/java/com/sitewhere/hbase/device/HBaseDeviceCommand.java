@@ -115,7 +115,7 @@ public class HBaseDeviceCommand {
 		ResultScanner scanner = null;
 
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(HBaseDeviceSpecification.getDeviceCommandRowPrefix(specId));
 			scan.setStopRow(HBaseDeviceSpecification.getEndRowPrefix(specId));
@@ -165,7 +165,7 @@ public class HBaseDeviceCommand {
 
 		HTableInterface devices = null;
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			Get get = new Get(rowkey);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
@@ -222,7 +222,7 @@ public class HBaseDeviceCommand {
 			HTableInterface devices = null;
 			try {
 				Delete delete = new Delete(rowkey);
-				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = getDeviceTableInterface(context);
 				devices.delete(delete);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to delete device command.", e);
@@ -236,7 +236,7 @@ public class HBaseDeviceCommand {
 
 			HTableInterface devices = null;
 			try {
-				devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+				devices = getDeviceTableInterface(context);
 				Put put = new Put(rowkey);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
@@ -282,7 +282,7 @@ public class HBaseDeviceCommand {
 
 		HTableInterface devices = null;
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			Put put = new Put(rowkey);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			devices.put(put);
@@ -293,5 +293,16 @@ public class HBaseDeviceCommand {
 		}
 
 		return command;
+	}
+
+	/**
+	 * Get device table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

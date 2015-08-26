@@ -8,7 +8,7 @@
 package com.sitewhere.device.communication;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class InboundProcessingStrategy extends LifecycleComponent implements
+public abstract class InboundProcessingStrategy extends TenantLifecycleComponent implements
 		IInboundProcessingStrategy {
 
 	public InboundProcessingStrategy() {
@@ -44,35 +44,35 @@ public abstract class InboundProcessingStrategy extends LifecycleComponent imple
 	@Override
 	public void sendToInboundProcessingChain(IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
 		if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
-			SiteWhere.getServer().getInboundEventProcessorChain().onRegistrationRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain(getTenant()).onRegistrationRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceRegistrationRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
-			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceCommandResponseRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain(getTenant()).onDeviceCommandResponseRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceCommandResponseCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
-			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceMeasurementsCreateRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain(getTenant()).onDeviceMeasurementsCreateRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceMeasurementsCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
-			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceLocationCreateRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain(getTenant()).onDeviceLocationCreateRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceLocationCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
-			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceAlertCreateRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain(getTenant()).onDeviceAlertCreateRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceAlertCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {
-			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceStreamCreateRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain(getTenant()).onDeviceStreamCreateRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceStreamCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceStreamDataCreateRequest) {
-			SiteWhere.getServer().getInboundEventProcessorChain().onDeviceStreamDataCreateRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain(getTenant()).onDeviceStreamDataCreateRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceStreamDataCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof ISendDeviceStreamDataRequest) {
-			SiteWhere.getServer().getInboundEventProcessorChain().onSendDeviceStreamDataRequest(
+			SiteWhere.getServer().getInboundEventProcessorChain(getTenant()).onSendDeviceStreamDataRequest(
 					decoded.getHardwareId(), decoded.getOriginator(),
 					((ISendDeviceStreamDataRequest) decoded.getRequest()));
 		} else {

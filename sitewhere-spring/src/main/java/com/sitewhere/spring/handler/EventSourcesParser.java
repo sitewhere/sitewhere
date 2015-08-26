@@ -71,7 +71,7 @@ public class EventSourcesParser {
 		ManagedList<Object> result = new ManagedList<Object>();
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
-			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 				NamespaceHandler nested =
 						context.getReaderContext().getNamespaceHandlerResolver().resolve(
 								child.getNamespaceURI());
@@ -496,7 +496,7 @@ public class EventSourcesParser {
 			BeanDefinitionBuilder source) {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
-			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 				NamespaceHandler nested =
 						context.getReaderContext().getNamespaceHandlerResolver().resolve(
 								child.getNamespaceURI());
@@ -719,7 +719,7 @@ public class EventSourcesParser {
 	protected boolean parseBinaryDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
-			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 				NamespaceHandler nested =
 						context.getReaderContext().getNamespaceHandlerResolver().resolve(
 								child.getNamespaceURI());
@@ -770,7 +770,7 @@ public class EventSourcesParser {
 	protected boolean parseStringDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
-			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
+			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
 				NamespaceHandler nested =
 						context.getReaderContext().getNamespaceHandlerResolver().resolve(
 								child.getNamespaceURI());

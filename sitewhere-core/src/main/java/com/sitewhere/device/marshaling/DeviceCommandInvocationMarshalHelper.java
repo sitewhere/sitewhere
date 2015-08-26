@@ -19,6 +19,7 @@ import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Configurable helper class that allows {@link DeviceCommandInvocation} model objects to
@@ -31,17 +32,21 @@ public class DeviceCommandInvocationMarshalHelper {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DeviceCommandInvocationMarshalHelper.class);
 
+	/** Tenant */
+	private ITenant tenant;
+
 	/** Indicates whether to include command information */
 	private boolean includeCommand = false;
 
 	/** Cache to prevent repeated command lookups */
 	private Map<String, DeviceCommand> commandsByToken = new HashMap<String, DeviceCommand>();
 
-	public DeviceCommandInvocationMarshalHelper() {
-		this(false);
+	public DeviceCommandInvocationMarshalHelper(ITenant tenant) {
+		this(tenant, false);
 	}
 
-	public DeviceCommandInvocationMarshalHelper(boolean includeCommand) {
+	public DeviceCommandInvocationMarshalHelper(ITenant tenant, boolean includeCommand) {
+		this.tenant = tenant;
 		this.includeCommand = includeCommand;
 	}
 
@@ -71,7 +76,7 @@ public class DeviceCommandInvocationMarshalHelper {
 			DeviceCommand command = commandsByToken.get(source.getCommandToken());
 			if (command == null) {
 				IDeviceCommand found =
-						SiteWhere.getServer().getDeviceManagement().getDeviceCommandByToken(
+						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceCommandByToken(
 								source.getCommandToken());
 				if (found == null) {
 					LOGGER.warn("Device invocation references a non-existent command token.");

@@ -67,7 +67,7 @@ public class HBaseGrantedAuthority {
 
 		HTableInterface users = null;
 		try {
-			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = getUsersTableInterface(context);
 			Put put = new Put(primary);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			users.put(put);
@@ -94,7 +94,7 @@ public class HBaseGrantedAuthority {
 
 		HTableInterface users = null;
 		try {
-			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = getUsersTableInterface(context);
 			Get get = new Get(rowkey);
 			HBaseUtils.addPayloadFields(get);
 			Result result = users.get(get);
@@ -126,7 +126,7 @@ public class HBaseGrantedAuthority {
 		HTableInterface users = null;
 		ResultScanner scanner = null;
 		try {
-			users = context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
+			users = getUsersTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { UserRecordType.GrantedAuthority.getType() });
 			scan.setStopRow(new byte[] { UserRecordType.End.getType() });
@@ -175,5 +175,16 @@ public class HBaseGrantedAuthority {
 		buffer.put(UserRecordType.GrantedAuthority.getType());
 		buffer.put(gaBytes);
 		return buffer.array();
+	}
+
+	/**
+	 * Get users table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.USERS_TABLE_NAME);
 	}
 }

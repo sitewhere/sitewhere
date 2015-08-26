@@ -103,14 +103,14 @@ public class HBaseBatchOperation {
 		qualifiers.put(PROCESSING_STATUS,
 				Bytes.toBytes(String.valueOf(BatchOperationStatus.Unprocessed.getCode())));
 		BatchOperation operation =
-				HBaseUtils.createOrUpdate(context.getClient(), context.getPayloadMarshaler(),
+				HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
 						ISiteWhereHBase.DEVICES_TABLE_NAME, batch, uuid, KEY_BUILDER, qualifiers);
 
 		// Create elements for each device in the operation.
 		long index = 0;
 		HTableInterface devices = null;
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			for (String hardwareId : request.getHardwareIds()) {
 				BatchElement element =
 						SiteWherePersistence.batchElementCreateLogic(batch.getToken(), hardwareId, ++index);
@@ -145,7 +145,7 @@ public class HBaseBatchOperation {
 			qualifiers.put(PROCESSING_STATUS,
 					Bytes.toBytes(String.valueOf(updated.getProcessingStatus().getCode())));
 		}
-		return HBaseUtils.createOrUpdate(context.getClient(), context.getPayloadMarshaler(),
+		return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
 				ISiteWhereHBase.DEVICES_TABLE_NAME, updated, token, KEY_BUILDER, qualifiers);
 	}
 
@@ -159,7 +159,7 @@ public class HBaseBatchOperation {
 	 */
 	public static BatchOperation getBatchOperationByToken(IHBaseContext context, String token)
 			throws SiteWhereException {
-		return HBaseUtils.get(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
+		return HBaseUtils.get(context, ISiteWhereHBase.DEVICES_TABLE_NAME, token, KEY_BUILDER,
 				BatchOperation.class);
 	}
 
@@ -187,9 +187,8 @@ public class HBaseBatchOperation {
 				return false;
 			}
 		};
-		return HBaseUtils.getFilteredList(context.getClient(), ISiteWhereHBase.DEVICES_TABLE_NAME,
-				KEY_BUILDER, includeDeleted, IBatchOperation.class, BatchOperation.class, filter, criteria,
-				comparator);
+		return HBaseUtils.getFilteredList(context, ISiteWhereHBase.DEVICES_TABLE_NAME, KEY_BUILDER,
+				includeDeleted, IBatchOperation.class, BatchOperation.class, filter, criteria, comparator);
 	}
 
 	/**
@@ -207,8 +206,8 @@ public class HBaseBatchOperation {
 		if (force) {
 			HBaseBatchElement.deleteBatchElements(context, token);
 		}
-		return HBaseUtils.delete(context.getClient(), context.getPayloadMarshaler(),
-				ISiteWhereHBase.DEVICES_TABLE_NAME, token, force, KEY_BUILDER, BatchOperation.class);
+		return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.DEVICES_TABLE_NAME,
+				token, force, KEY_BUILDER, BatchOperation.class);
 	}
 
 	/**
@@ -254,5 +253,16 @@ public class HBaseBatchOperation {
 		buffer.put(getTruncatedIdentifier(groupId));
 		buffer.put(BatchOperationRecordType.BatchOperation.getType());
 		return buffer.array();
+	}
+
+	/**
+	 * Get device table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

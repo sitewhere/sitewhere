@@ -17,7 +17,6 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.geospatial.GeoUtils;
 import com.sitewhere.rest.model.common.Location;
@@ -49,6 +48,7 @@ import com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemLocationAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemPersonAssetModule;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.IDevice;
@@ -215,19 +215,17 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Device management implementation */
 	protected IDeviceManagement deviceManagement;
 
+	/** Asset module manager implementation */
+	protected IAssetModuleManager assetModuleManager;
+
 	/** Indiates whether model should be initialized if no console is available for input */
 	private boolean initializeIfNoConsole = false;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.device.IDeviceModelInitializer#initialize(com.sitewhere
-	 * .spi.device.IDeviceManagement)
-	 */
 	@Override
-	public void initialize(IDeviceManagement deviceManagement) throws SiteWhereException {
+	public void initialize(IDeviceManagement deviceManagement, IAssetModuleManager assetModuleManager)
+			throws SiteWhereException {
 		this.deviceManagement = deviceManagement;
+		this.assetModuleManager = assetModuleManager;
 
 		// Use the system account for logging "created by" on created elements.
 		SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
@@ -619,7 +617,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			throws SiteWhereException {
 		Date before = new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000));
 		List<DeviceAssignment> results = new ArrayList<DeviceAssignment>();
-		DeviceAssignmentMarshalHelper helper = new DeviceAssignmentMarshalHelper();
+		DeviceAssignmentMarshalHelper helper =
+				new DeviceAssignmentMarshalHelper(getDeviceManagement().getTenant());
 		helper.setIncludeDevice(true);
 		for (int x = 0; x < ASSIGNMENTS_PER_SITE; x++) {
 			IDeviceSpecification specification = getRandomDeviceSpecification();
@@ -662,7 +661,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			// createDeviceCommandResponses(assignment, before, invocations);
 			// createDeviceStateChanges(assignment, specification, before);
 
-			results.add(helper.convert(assignment, SiteWhere.getServer().getAssetModuleManager()));
+			results.add(helper.convert(assignment, assetModuleManager));
 		}
 		return results;
 	}

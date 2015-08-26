@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.request.IBatchCommandForCriteriaRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Utility methods for batch operations.
@@ -36,7 +37,7 @@ public class BatchUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<String> getHardwareIds(IBatchCommandForCriteriaRequest criteria)
+	public static List<String> getHardwareIds(IBatchCommandForCriteriaRequest criteria, ITenant tenant)
 			throws SiteWhereException {
 		if (criteria.getSpecificationToken() == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
@@ -60,12 +61,14 @@ public class BatchUtils {
 
 		Collection<IDevice> matches;
 		if (hasGroup) {
-			matches = DeviceGroupUtils.getDevicesInGroup(criteria.getGroupToken(), deviceSearch);
+			matches = DeviceGroupUtils.getDevicesInGroup(criteria.getGroupToken(), deviceSearch, tenant);
 		} else if (hasGroupsWithRole) {
-			matches = DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch);
+			matches =
+					DeviceGroupUtils.getDevicesInGroupsWithRole(criteria.getGroupsWithRole(), deviceSearch,
+							tenant);
 		} else {
 			matches =
-					SiteWhere.getServer().getDeviceManagement().listDevices(false, deviceSearch).getResults();
+					SiteWhere.getServer().getDeviceManagement(tenant).listDevices(false, deviceSearch).getResults();
 		}
 		List<String> hardwareIds = new ArrayList<String>();
 		for (IDevice match : matches) {

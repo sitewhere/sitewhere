@@ -1,3 +1,6 @@
-http\://www.sitewhere.org/schema/sitewhere/ce/1.0.2/sitewhere.xsd=META-INF/sitewhere.xsd
-http\://www.sitewhere.com/schema/sitewhere/ce/1.0.2/sitewhere.xsd=META-INF/sitewhere.xsd
+http\://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere.xsd=META-INF/sitewhere.xsd
+http\://www.sitewhere.com/schema/sitewhere/ce/1.2.0/sitewhere.xsd=META-INF/sitewhere.xsd
 http\://www.sitewhere.com/schema/sitewhere/ce/current/sitewhere.xsd=META-INF/sitewhere.xsd
+http\://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere-tenant.xsd=META-INF/sitewhere-tenant.xsd
+http\://www.sitewhere.com/schema/sitewhere/ce/1.2.0/sitewhere-tenant.xsd=META-INF/sitewhere-tenant.xsd
+http\://www.sitewhere.com/schema/sitewhere/ce/current/sitewhere-tenant.xsd=META-INF/sitewhere-tenant.xsd

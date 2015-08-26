@@ -7,7 +7,7 @@
  */
 package com.sitewhere.hbase.uid;
 
-import com.sitewhere.hbase.ISiteWhereHBaseClient;
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -60,44 +60,44 @@ public class IdManager {
 	 * @param hbase
 	 * @throws SiteWhereException
 	 */
-	public void load(ISiteWhereHBaseClient hbase) throws SiteWhereException {
+	public void load(IHBaseContext context) throws SiteWhereException {
 		siteKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.SiteKey.getIndicator(),
+				new UniqueIdCounterMap(context, UniqueIdType.SiteKey.getIndicator(),
 						UniqueIdType.SiteValue.getIndicator());
 		siteKeys.refresh();
 
 		deviceKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.DeviceKey.getIndicator(),
+				new UniqueIdCounterMap(context, UniqueIdType.DeviceKey.getIndicator(),
 						UniqueIdType.DeviceValue.getIndicator());
 		deviceKeys.refresh();
 
 		specificationKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.SpecificationKey.getIndicator(),
+				new UniqueIdCounterMap(context, UniqueIdType.SpecificationKey.getIndicator(),
 						UniqueIdType.SpecificationValue.getIndicator());
 		specificationKeys.refresh();
 
 		deviceGroupKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.DeviceGroupKey.getIndicator(),
+				new UniqueIdCounterMap(context, UniqueIdType.DeviceGroupKey.getIndicator(),
 						UniqueIdType.DeviceGroupValue.getIndicator());
 		deviceGroupKeys.refresh();
 
 		batchOperationKeys =
-				new UniqueIdCounterMap(hbase, UniqueIdType.BatchOperationKey.getIndicator(),
+				new UniqueIdCounterMap(context, UniqueIdType.BatchOperationKey.getIndicator(),
 						UniqueIdType.BatchOperationValue.getIndicator());
 		batchOperationKeys.refresh();
 
 		commandKeys =
-				new UuidRowKeyMap(hbase, UniqueIdType.CommandKey.getIndicator(),
+				new UuidRowKeyMap(context, UniqueIdType.CommandKey.getIndicator(),
 						UniqueIdType.CommandValue.getIndicator());
 		commandKeys.refresh();
 
 		zoneKeys =
-				new UuidRowKeyMap(hbase, UniqueIdType.ZoneKey.getIndicator(),
+				new UuidRowKeyMap(context, UniqueIdType.ZoneKey.getIndicator(),
 						UniqueIdType.ZoneValue.getIndicator());
 		zoneKeys.refresh();
 
 		assignmentKeys =
-				new UuidRowKeyMap(hbase, UniqueIdType.DeviceAssignmentKey.getIndicator(),
+				new UuidRowKeyMap(context, UniqueIdType.DeviceAssignmentKey.getIndicator(),
 						UniqueIdType.DeviceAssignmentValue.getIndicator());
 		assignmentKeys.refresh();
 	}

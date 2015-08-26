@@ -67,6 +67,7 @@ import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Allows classes to inject themselves as a facade around an existing device management
@@ -245,6 +246,28 @@ public class DeviceManagementDecorator implements IDeviceManagement {
 	@Override
 	public void logState() {
 		delegate.logState();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(com.sitewhere
+	 * .spi.user.ITenant)
+	 */
+	@Override
+	public void setTenant(ITenant tenant) {
+		delegate.setTenant(tenant);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+	 */
+	@Override
+	public ITenant getTenant() {
+		return delegate.getTenant();
 	}
 
 	@Override

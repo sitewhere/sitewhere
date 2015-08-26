@@ -14,14 +14,14 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Allows intereseted entities to interact with SiteWhere outbound event processing.
  * 
  * @author Derek
  */
-public interface IOutboundEventProcessor extends ILifecycleComponent {
+public interface IOutboundEventProcessor extends ITenantLifecycleComponent {
 
 	/**
 	 * Executes code after device measurements have been successfully saved.

@@ -22,7 +22,7 @@ import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.ProtobufPayloadMarshaler;
 import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -87,7 +87,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseDeviceManagement extends LifecycleComponent implements IDeviceManagement,
+public class HBaseDeviceManagement extends TenantLifecycleComponent implements IDeviceManagement,
 		ICachingDeviceManagement {
 
 	/** Static logger instance */
@@ -120,13 +120,14 @@ public class HBaseDeviceManagement extends LifecycleComponent implements IDevice
 	public void start() throws SiteWhereException {
 		ensureTablesExist();
 
-		IdManager.getInstance().load(client);
-
 		// Create context from configured options.
 		this.context = new HBaseContext();
+		context.setTenant(getTenant());
 		context.setClient(getClient());
 		context.setCacheProvider(getCacheProvider());
 		context.setPayloadMarshaler(getPayloadMarshaler());
+
+		IdManager.getInstance().load(context);
 
 		// Start buffer for saving device events.
 		buffer = new DeviceEventBuffer(context);

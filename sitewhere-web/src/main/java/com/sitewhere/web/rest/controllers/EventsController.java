@@ -7,6 +7,8 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -49,11 +51,12 @@ public class EventsController extends SiteWhereController {
 	@ApiOperation(value = "Get an event by unique id.")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public IDeviceEvent getEventById(
-			@ApiParam(value = "Event id", required = true) @PathVariable String eventId)
-			throws SiteWhereException {
+			@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getEventById", LOGGER);
 		try {
-			return SiteWhere.getServer().getDeviceManagement().getDeviceEventById(eventId);
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceEventById(
+					eventId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

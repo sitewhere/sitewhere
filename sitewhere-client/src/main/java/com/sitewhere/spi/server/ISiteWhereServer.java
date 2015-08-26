@@ -17,7 +17,6 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
@@ -25,6 +24,7 @@ import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
@@ -85,6 +85,23 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IConfigurationResolver getConfigurationResolver();
 
 	/**
+	 * Get a tenant based on its authentication token.
+	 * 
+	 * @param authToken
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ITenant getTenantByAuthToken(String authToken) throws SiteWhereException;
+
+	/**
+	 * Get list of tenants a given user can access.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public List<ITenant> getAuthorizedTenants(String userId) throws SiteWhereException;
+
+	/**
 	 * Get the user management implementation.
 	 * 
 	 * @return
@@ -92,60 +109,69 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IUserManagement getUserManagement();
 
 	/**
-	 * Get the device management implementation.
+	 * Get device management implementation for tenant.
 	 * 
+	 * @param tenant
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public IDeviceManagement getDeviceManagement();
+	public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException;
 
 	/**
-	 * Get the asset management implementation.
+	 * Get asset management implementation for the given tenant.
 	 * 
+	 * @param tenant
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public IAssetManagement getAssetManagement();
+	public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException;
 
 	/**
-	 * Get the configured device management cache provider implementation.
+	 * Get device communication subsystem for the given tenant.
 	 * 
+	 * @param tenant
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider();
+	public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException;
 
 	/**
-	 * Get the inbound event processor chain.
+	 * Get outbound event processor chain for the given tenant.
 	 * 
+	 * @param tenant
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public IInboundEventProcessorChain getInboundEventProcessorChain();
+	public IOutboundEventProcessorChain getOutboundEventProcessorChain(ITenant tenant)
+			throws SiteWhereException;
 
 	/**
-	 * Get the outbound event processor chain.
+	 * Get inbound event processor chain for the given tenant.
 	 * 
+	 * @param tenant
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain();
+	public IInboundEventProcessorChain getInboundEventProcessorChain(ITenant tenant)
+			throws SiteWhereException;
 
 	/**
-	 * Get the device communication subsystem implementation.
+	 * Get asset module manager for tenant.
 	 * 
+	 * @param tenant
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public IDeviceCommunication getDeviceCommunicationSubsystem();
+	public IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException;
 
 	/**
-	 * Get the asset modules manager instance.
+	 * Get search provider manager for tenant.
 	 * 
+	 * @param tenant
 	 * @return
+	 * @throws SiteWhereException
 	 */
-	public IAssetModuleManager getAssetModuleManager();
-
-	/**
-	 * Get the search provider manager implementation.
-	 * 
-	 * @return
-	 */
-	public ISearchProviderManager getSearchProviderManager();
+	public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException;
 
 	/**
 	 * Get list of components that have registered to participate in the server component

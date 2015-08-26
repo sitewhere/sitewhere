@@ -101,7 +101,7 @@ public class HBaseSite {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(primary);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				put.add(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, maxLong);
@@ -143,7 +143,7 @@ public class HBaseSite {
 			byte[] primary = getPrimaryRowkey(siteId);
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Get get = new Get(primary);
 				HBaseUtils.addPayloadFields(get);
 				Result result = sites.get(get);
@@ -196,7 +196,7 @@ public class HBaseSite {
 
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Put put = new Put(rowkey);
 				HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 				sites.put(put);
@@ -259,7 +259,7 @@ public class HBaseSite {
 			byte[] assnPrefix = getAssignmentRowKey(siteId);
 			byte[] after = getAfterAssignmentRowKey(siteId);
 
-			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = getSitesTableInterface(context);
 
 			Scan scan = new Scan();
 			scan.setStartRow(assnPrefix);
@@ -319,7 +319,7 @@ public class HBaseSite {
 			byte[] assnPrefix = getAssignmentRowKey(siteId);
 			byte[] after = getAfterAssignmentRowKey(siteId);
 
-			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = getSitesTableInterface(context);
 
 			Scan scan = new Scan();
 			scan.setStartRow(assnPrefix);
@@ -409,7 +409,7 @@ public class HBaseSite {
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
-			sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+			sites = getSitesTableInterface(context);
 			RowFilter matcher = new RowFilter(CompareOp.EQUAL, comparator);
 			Scan scan = new Scan();
 			if (startRow != null) {
@@ -474,7 +474,7 @@ public class HBaseSite {
 				HTableInterface sites = null;
 				try {
 					Delete delete = new Delete(rowkey);
-					sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+					sites = getSitesTableInterface(context);
 					sites.delete(delete);
 					if (context.getCacheProvider() != null) {
 						context.getCacheProvider().getSiteCache().remove(token);
@@ -490,7 +490,7 @@ public class HBaseSite {
 				byte[] updated = context.getPayloadMarshaler().encodeSite(existing);
 				HTableInterface sites = null;
 				try {
-					sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+					sites = getSitesTableInterface(context);
 					Put put = new Put(rowkey);
 					HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, updated);
 					put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.DELETED, marker);
@@ -524,7 +524,7 @@ public class HBaseSite {
 			byte[] primary = getPrimaryRowkey(siteId);
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Increment increment = new Increment(primary);
 				increment.addColumn(ISiteWhereHBase.FAMILY_ID, ZONE_COUNTER, -1);
 				Result result = sites.increment(increment);
@@ -554,7 +554,7 @@ public class HBaseSite {
 			byte[] primary = getPrimaryRowkey(siteId);
 			HTableInterface sites = null;
 			try {
-				sites = context.getClient().getTableInterface(ISiteWhereHBase.SITES_TABLE_NAME);
+				sites = getSitesTableInterface(context);
 				Increment increment = new Increment(primary);
 				increment.addColumn(ISiteWhereHBase.FAMILY_ID, ASSIGNMENT_COUNTER, -1);
 				Result result = sites.increment(increment);
@@ -637,5 +637,16 @@ public class HBaseSite {
 		rowkey.put(sid);
 		rowkey.put(SiteRecordType.End.getType());
 		return rowkey.array();
+	}
+
+	/**
+	 * Get sites table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getSitesTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.SITES_TABLE_NAME);
 	}
 }

@@ -13,7 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.communication.ICommandTargetResolver;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DefaultCommandTargetResolver extends LifecycleComponent implements ICommandTargetResolver {
+public class DefaultCommandTargetResolver extends TenantLifecycleComponent implements ICommandTargetResolver {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultCommandTargetResolver.class);
@@ -48,7 +48,7 @@ public class DefaultCommandTargetResolver extends LifecycleComponent implements 
 			throws SiteWhereException {
 		LOGGER.debug("Resolving target for invocation.");
 		IDeviceAssignment assignment =
-				SiteWhere.getServer().getDeviceManagement().getDeviceAssignmentByToken(
+				SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceAssignmentByToken(
 						invocation.getDeviceAssignmentToken());
 		List<IDeviceAssignment> results = new ArrayList<IDeviceAssignment>();
 		results.add(assignment);
@@ -62,7 +62,6 @@ public class DefaultCommandTargetResolver extends LifecycleComponent implements 
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Started command target resolver.");
 	}
 
 	/*
@@ -82,6 +81,5 @@ public class DefaultCommandTargetResolver extends LifecycleComponent implements 
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopped command target resolver");
 	}
 }

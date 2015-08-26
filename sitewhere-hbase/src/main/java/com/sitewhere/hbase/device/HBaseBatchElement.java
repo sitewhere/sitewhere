@@ -103,7 +103,7 @@ public class HBaseBatchElement {
 			IBatchElementUpdateRequest request) throws SiteWhereException {
 		HTableInterface devices = null;
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			BatchElement element = getBatchElement(context, devices, operationToken, index);
 			byte[] elementKey = getElementRowKey(operationToken, index);
 
@@ -168,7 +168,7 @@ public class HBaseBatchElement {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = getDeviceTableInterface(context);
 			byte[] primary =
 					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
 							BatchOperationRecordType.BatchElement.getType());
@@ -218,7 +218,7 @@ public class HBaseBatchElement {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = getDeviceTableInterface(context);
 			byte[] primary =
 					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
 							BatchOperationRecordType.BatchElement.getType());
@@ -288,5 +288,16 @@ public class HBaseBatchElement {
 		byte[] result = new byte[INDEX_LENGTH];
 		System.arraycopy(bytes, bytes.length - INDEX_LENGTH, result, 0, INDEX_LENGTH);
 		return result;
+	}
+
+	/**
+	 * Get device table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

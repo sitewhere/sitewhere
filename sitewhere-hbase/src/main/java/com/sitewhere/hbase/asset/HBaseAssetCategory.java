@@ -88,7 +88,7 @@ public class HBaseAssetCategory {
 		AssetCategory category = SiteWherePersistence.assetCategoryCreateLogic(request);
 
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
-		return HBaseUtils.createOrUpdate(context.getClient(), context.getPayloadMarshaler(),
+		return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
 				ISiteWhereHBase.ASSETS_TABLE_NAME, category, id, KEY_BUILDER, qualifiers);
 	}
 
@@ -105,7 +105,7 @@ public class HBaseAssetCategory {
 		if (KEY_BUILDER.getMap().getValue(id) == null) {
 			return null;
 		}
-		return HBaseUtils.get(context.getClient(), ISiteWhereHBase.ASSETS_TABLE_NAME, id, KEY_BUILDER,
+		return HBaseUtils.get(context, ISiteWhereHBase.ASSETS_TABLE_NAME, id, KEY_BUILDER,
 				AssetCategory.class);
 	}
 
@@ -122,8 +122,8 @@ public class HBaseAssetCategory {
 			IAssetCategoryCreateRequest request) throws SiteWhereException {
 		AssetCategory updated = assertAssetCategory(context, id);
 		SiteWherePersistence.assetCategoryUpdateLogic(request, updated);
-		return HBaseUtils.put(context.getClient(), context.getPayloadMarshaler(),
-				ISiteWhereHBase.ASSETS_TABLE_NAME, updated, id, KEY_BUILDER);
+		return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.ASSETS_TABLE_NAME,
+				updated, id, KEY_BUILDER);
 	}
 
 	/**
@@ -149,8 +149,8 @@ public class HBaseAssetCategory {
 				return false;
 			}
 		};
-		return HBaseUtils.getFilteredList(context.getClient(), ISiteWhereHBase.ASSETS_TABLE_NAME,
-				KEY_BUILDER, true, IAssetCategory.class, AssetCategory.class, filter, criteria, comparator);
+		return HBaseUtils.getFilteredList(context, ISiteWhereHBase.ASSETS_TABLE_NAME, KEY_BUILDER, true,
+				IAssetCategory.class, AssetCategory.class, filter, criteria, comparator);
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class HBaseAssetCategory {
 	public static AssetCategory deleteAssetCategory(IHBaseContext context, String id)
 			throws SiteWhereException {
 		// TODO: Delete all assets.
-		return HBaseUtils.forcedDelete(context.getClient(), context.getPayloadMarshaler(),
+		return HBaseUtils.forcedDelete(context, context.getPayloadMarshaler(),
 				ISiteWhereHBase.ASSETS_TABLE_NAME, id, KEY_BUILDER, AssetCategory.class);
 	}
 

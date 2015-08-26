@@ -92,7 +92,7 @@ public class HBaseDeviceGroupElement {
 
 		HTableInterface devices = null;
 		try {
-			devices = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			devices = getDeviceTableInterface(context);
 			Put put = new Put(elementKey);
 			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
 			put.add(ISiteWhereHBase.FAMILY_ID, ELEMENT_IDENTIFIER, getCombinedIdentifier(request));
@@ -138,7 +138,7 @@ public class HBaseDeviceGroupElement {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = getDeviceTableInterface(context);
 			byte[] primary =
 					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
@@ -204,7 +204,7 @@ public class HBaseDeviceGroupElement {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = getDeviceTableInterface(context);
 			byte[] primary =
 					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
@@ -258,7 +258,7 @@ public class HBaseDeviceGroupElement {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = context.getClient().getTableInterface(ISiteWhereHBase.DEVICES_TABLE_NAME);
+			table = getDeviceTableInterface(context);
 			byte[] primary =
 					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
@@ -347,5 +347,16 @@ public class HBaseDeviceGroupElement {
 		}
 		buffer.put(id);
 		return buffer.array();
+	}
+
+	/**
+	 * Get device table based on context.
+	 * 
+	 * @param context
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

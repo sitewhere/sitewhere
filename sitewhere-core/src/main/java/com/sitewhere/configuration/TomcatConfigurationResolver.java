@@ -21,6 +21,7 @@ import org.springframework.core.io.FileSystemResource;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Resolves SiteWhere configuration relative to the Tomcat installation base directory.
@@ -64,6 +65,41 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
 		reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
 		reader.loadBeanDefinitions(new FileSystemResource(serverConfigFile));
+
+		context.refresh();
+		return context;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.configuration.IConfigurationResolver#resolveTenantContext(com
+	 * .sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
+	 */
+	@Override
+	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version)
+			throws SiteWhereException {
+		LOGGER.info("Loading Spring configuration ...");
+		File sitewhereConf = getSiteWhereConfigFolder();
+		File tenantConfigFile = new File(sitewhereConf, tenant.getId() + "-tenant.xml");
+		if (!tenantConfigFile.exists()) {
+			throw new SiteWhereException("Tenant " + tenant.getName() + "(" + tenant.getId()
+					+ ") configuration not found: " + tenantConfigFile.getAbsolutePath());
+		}
+		GenericApplicationContext context = new GenericApplicationContext();
+
+		// Plug in custom property source.
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
+
+		MapPropertySource source = new MapPropertySource("sitewhere", properties);
+		context.getEnvironment().getPropertySources().addLast(source);
+
+		// Read context from XML configuration file.
+		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
+		reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
+		reader.loadBeanDefinitions(new FileSystemResource(tenantConfigFile));
 
 		context.refresh();
 		return context;
