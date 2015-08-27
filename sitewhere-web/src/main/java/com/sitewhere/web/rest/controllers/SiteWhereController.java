@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.ISiteWhereWebConstants;
+import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
@@ -46,7 +47,15 @@ public class SiteWhereController {
 	 */
 	protected ITenant getTenant(HttpServletRequest request) throws SiteWhereException {
 		String token = getTenantAuthToken(request);
-		return SiteWhere.getServer().getTenantByAuthToken(token);
+		ITenant match = SiteWhere.getServer().getTenantByAuthToken(token);
+		if (match == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidTenantAuthToken, ErrorLevel.ERROR);
+		}
+		String username = LoginManager.getCurrentlyLoggedInUser().getUsername();
+		if (match.getAuthorizedUserIds().contains(username)) {
+			return match;
+		}
+		throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
 	}
 
 	/**
@@ -59,8 +68,11 @@ public class SiteWhereController {
 	protected String getTenantAuthToken(HttpServletRequest request) throws SiteWhereException {
 		String token = request.getHeader(ISiteWhereWebConstants.HEADER_TENANT_TOKEN);
 		if (token == null) {
-			throw new SiteWhereSystemException(ErrorCode.MissingTenantAuthToken, ErrorLevel.ERROR,
-					HttpServletResponse.SC_UNAUTHORIZED);
+			token = request.getParameter(ISiteWhereWebConstants.REQUEST_TENANT_TOKEN);
+			if (token == null) {
+				throw new SiteWhereSystemException(ErrorCode.MissingTenantAuthToken, ErrorLevel.ERROR,
+						HttpServletResponse.SC_UNAUTHORIZED);
+			}
 		}
 		return token;
 	}

@@ -55,6 +55,9 @@ public enum ErrorCode {
 	/** Tenant authentication token not passed */
 	MissingTenantAuthToken(142, "Tenant authentication token required for request."),
 
+	/** Tenant authentication token passed but tenant not authorized for user */
+	NotAuthorizedForTenant(143, "Not authorized to view information for tenant."),
+
 	/***************************
 	 * INVALID OR DUPLICATE ID *
 	 ***************************/

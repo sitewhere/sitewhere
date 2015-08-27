@@ -639,7 +639,7 @@ public class SiteWhereController {
 	 * @throws SiteWhereException
 	 */
 	protected ITenant assureTenant(HttpServletRequest request) throws SiteWhereException {
-		ITenant tenant = (ITenant) request.getAttribute(SESSION_TENANT);
+		ITenant tenant = (ITenant) request.getSession().getAttribute(SESSION_TENANT);
 		if (tenant == null) {
 			throw new SiteWhereException("Tenant not found in session.");
 		}

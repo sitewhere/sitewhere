@@ -26,6 +26,8 @@
 
 .sw-logo {
 	margin-left: -15px;
+	max-width: 250px;
+	max-height: 60px;
 }
 
 .sw-main-nav {
@@ -48,9 +50,9 @@
 	border: 1px solid rgb(204, 204, 204);
 	margin-bottom: 15px;
 	padding: 7px 10px 7px;
-	-webkit-box-shadow: 4px 4px 4px 0px rgba(192,192,192,0.3);
-	-moz-box-shadow: 4px 4px 4px 0px rgba(192,192,192,0.3);
-	box-shadow: 4px 4px 4px 0px rgba(192,192,192,0.3);
+	-webkit-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
+	-moz-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
+	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
 }
 
 .sw-title-bar h1 {
@@ -243,41 +245,50 @@
 .sw-device-unit-container .sw-device-unit-container {
 	margin: 20px;
 }
+
 .sw-spec-namespace {
 	border: 1px solid #ccc;
 	margin-bottom: 15px;
 	font-family: courier;
 }
+
 .sw-spec-namespace-name {
 	color: #333;
 }
+
 .sw-spec-ns-header {
 	background-color: #eee;
 	padding: 5px;
 	font-size: 10pt;
 }
+
 .sw-spec-command {
 	font-family: courier;
 	padding: 10px 15px;
 	position: relative;
 	border-bottom: 1px solid #eee;
 }
+
 .sw-spec-command-desc {
 	color: #060;
 	font-style: italic;
 	max-width: 90%;
 }
+
 .sw-spec-command-name {
 	color: #060;
 	font-weight: bold;
 }
+
 .sw-list-entry:hover .sw-spec-command-name {
 	cursor: pointer;
 	border-bottom: 1px solid #060;
 }
+
 .sw-spec-command-param-name {
 	color: #333;
 }
+
 .sw-spec-command-param-type {
 	color: #666;
 	padding-left: 3px;

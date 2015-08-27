@@ -635,7 +635,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
 			engine.setConfigurationResolver(getConfigurationResolver());
 			engine.initialize();
-			tenantsByAuthToken.put(tenant.getId(), tenant);
+			tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
 			tenantEnginesById.put(tenant.getId(), engine);
 		}
 	}
