@@ -253,7 +253,7 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	}
 
 	public DB getTenantDatabase(ITenant tenant) {
-		return client.getDB("tenant-" + getDatabaseName());
+		return client.getDB("tenant-" + tenant.getId());
 	}
 
 	public DB getGlobalDatabase() {
