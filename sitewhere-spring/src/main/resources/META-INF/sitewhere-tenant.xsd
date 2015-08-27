@@ -29,12 +29,12 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="datastore" type="datastoreType">
+			<xsd:element name="tenant-datastore" type="tenantDatastoreType">
 				<xsd:annotation>
 					<xsd:documentation>
-						Provides information about how SiteWhere data is to be persisted
-						and how the core service provider interfaces are implemented. Caching of persisted
-						data is also configured in this section.
+						Provides information about how tenant-specific SiteWhere data is
+						to be persisted and how the core service provider interfaces are implemented.
+						Caching of persisted data is also configured in this section.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -87,9 +87,9 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="datastoreType">
+	<xsd:complexType name="tenantDatastoreType">
 		<xsd:all>
-			<xsd:element ref="abstract-datastore"/>
+			<xsd:element ref="abstract-tenant-datastore"/>
 			<xsd:element ref="abstract-cache" minOccurs="0"/>
 			<xsd:element minOccurs="0" name="default-device-model-initializer" type="defaultDeviceModelInitializerType">
 				<xsd:annotation>
@@ -108,46 +108,58 @@
 		</xsd:all>
 	</xsd:complexType>
 
-	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
-	<xsd:element name="abstract-datastore" abstract="true" type="abstractDatastoreType">
+	<!-- Used as a placeholder for tenant datastores to allow substitutionGroups -->
+	<xsd:element name="abstract-tenant-datastore" abstract="true"
+		type="abstractTenantDatastoreType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for datastore elements.
+				A placeholder for tenant datastore elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	
-	<!-- Common datastore information -->
-	<xsd:complexType name="abstractDatastoreType"/>
+	<!-- Common tenant datastore information -->
+	<xsd:complexType name="abstractTenantDatastoreType"/>
 
-	<!-- Configuration data for a MongoDB datastore -->
-	<xsd:element name="mongo-datastore" type="mongoDatastoreType"
-		substitutionGroup="abstract-datastore">
+	<!-- Configuration data for a MongoDB tenant datastore -->
+	<xsd:element name="mongo-tenant-datastore" type="mongoTenantDatastoreType"
+		substitutionGroup="abstract-tenant-datastore">
 		<xsd:annotation>
-			<xsd:documentation>Datastore that uses MongoDB for data persistence.
+			<xsd:documentation>Tenant datastore that uses MongoDB for data persistence.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="mongoDatastoreType">
+	<xsd:complexType name="mongoTenantDatastoreType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractDatastoreType">
-				<xsd:attributeGroup ref="sw:mongo-attributes"/>
+			<xsd:extension base="abstractTenantDatastoreType">
+				<xsd:attribute name="useBulkEventInserts" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Use MongoDB bulk APIs to insert events in batches.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="bulkInsertMaxChunkSize" type="sw:substitutableInt">
+					<xsd:annotation>
+						<xsd:documentation>When 'useBulkEventInserts' is true, specifies the maximum number
+							of events to send in a single call.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 	
-	<!-- Configuration data for an HBase datastore -->
-	<xsd:element name="hbase-datastore" type="hbaseDatastoreType"
-		substitutionGroup="abstract-datastore">
+	<!-- Configuration data for an HBase tenant datastore -->
+	<xsd:element name="hbase-tenant-datastore" type="hbaseTenantDatastoreType"
+		substitutionGroup="abstract-tenant-datastore">
 		<xsd:annotation>
-			<xsd:documentation>Datastore that uses Apache HBase for data persistence.
+			<xsd:documentation>Datastore that uses Apache HBase for tenant data persistence.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="hbaseDatastoreType">
+	<xsd:complexType name="hbaseTenantDatastoreType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractDatastoreType">
-				<xsd:attributeGroup ref="sw:hbase-attributes"/>
+			<xsd:extension base="abstractTenantDatastoreType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.server.batch.BatchOperationManager;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.ISystemCommand;
@@ -33,7 +33,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class DeviceCommunication extends LifecycleComponent implements IDeviceCommunication {
+public abstract class DeviceCommunication extends TenantLifecycleComponent implements IDeviceCommunication {
 
 	/** Configured registration manager */
 	private IRegistrationManager registrationManager = new RegistrationManager();

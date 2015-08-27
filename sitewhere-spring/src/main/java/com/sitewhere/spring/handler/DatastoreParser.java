@@ -18,20 +18,13 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.ehcache.DeviceManagementCacheProvider;
-import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
-import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.hbase.DefaultHBaseClient;
-import com.sitewhere.hbase.asset.HBaseAssetManagement;
-import com.sitewhere.hbase.device.HBaseDeviceManagement;
 import com.sitewhere.hbase.user.HBaseUserManagement;
 import com.sitewhere.mongodb.DockerMongoClient;
 import com.sitewhere.mongodb.SiteWhereMongoClient;
-import com.sitewhere.mongodb.asset.MongoAssetManagement;
-import com.sitewhere.mongodb.device.MongoDeviceManagement;
+import com.sitewhere.mongodb.user.MongoUserManagement;
 import com.sitewhere.server.SiteWhereServerBeans;
-import com.sitewhere.server.asset.DefaultAssetModuleInitializer;
-import com.sitewhere.server.device.DefaultDeviceModelInitializer;
+import com.sitewhere.server.user.DefaultUserModelInitializer;
 
 /**
  * Parses configuration data for the SiteWhere datastore section.
@@ -51,7 +44,7 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
 		List<Element> dsChildren = DomUtils.getChildElements(element);
 		for (Element child : dsChildren) {
-			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
+			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {
 				NamespaceHandler nested =
 						context.getReaderContext().getNamespaceHandlerResolver().resolve(
 								child.getNamespaceURI());
@@ -76,20 +69,8 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 				parseHBaseDatasource(child, context);
 				break;
 			}
-			case EHCacheDeviceManagementCache: {
-				parseEHCacheDeviceManagementCache(child, context);
-				break;
-			}
-			case HazelcastCache: {
-				parseHazelcastCache(child, context);
-				break;
-			}
-			case DefaultDeviceModelInitializer: {
-				parseDefaultDeviceModelInitializer(child, context);
-				break;
-			}
-			case DefaultAssetModelInitializer: {
-				parseDefaultAssetModelInitializer(child, context);
+			case DefaultUserModelInitializer: {
+				parseDefaultUserModelInitializer(child, context);
 				break;
 			}
 			}
@@ -143,29 +124,13 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 			client.addPropertyValue("username", username.getValue());
 			client.addPropertyValue("password", password.getValue());
 		}
+		context.getRegistry().registerBeanDefinition("mongo", client.getBeanDefinition());
 
-		// Register Mongo device management implementation.
-		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
-		dm.addPropertyReference("mongoClient", "mongo");
-
-		Attr useBulkEventInserts = element.getAttributeNode("useBulkEventInserts");
-		if (useBulkEventInserts != null) {
-			dm.addPropertyValue("useBulkEventInserts", useBulkEventInserts.getValue());
-		}
-
-		Attr bulkInsertMaxChunkSize = element.getAttributeNode("bulkInsertMaxChunkSize");
-		if (bulkInsertMaxChunkSize != null) {
-			dm.addPropertyValue("bulkInsertMaxChunkSize", bulkInsertMaxChunkSize.getValue());
-		}
-
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
-				dm.getBeanDefinition());
-
-		// Register Mongo asset management implementation.
-		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
-		am.addPropertyReference("mongoClient", "mongo");
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
-				am.getBeanDefinition());
+		// Register Mongo user management implementation.
+		BeanDefinitionBuilder um = BeanDefinitionBuilder.rootBeanDefinition(MongoUserManagement.class);
+		um.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
+				um.getBeanDefinition());
 	}
 
 	/**
@@ -199,103 +164,11 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 
 		context.getRegistry().registerBeanDefinition("hbase", client.getBeanDefinition());
 
-		// Register HBase device management implementation.
-		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(HBaseDeviceManagement.class);
-		dm.addPropertyReference("client", "hbase");
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
-				dm.getBeanDefinition());
-
 		// Register HBase user management implementation.
 		BeanDefinitionBuilder um = BeanDefinitionBuilder.rootBeanDefinition(HBaseUserManagement.class);
 		um.addPropertyReference("client", "hbase");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
 				um.getBeanDefinition());
-
-		// Register Mongo asset management implementation.
-		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(HBaseAssetManagement.class);
-		am.addPropertyReference("client", "hbase");
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
-				am.getBeanDefinition());
-	}
-
-	/**
-	 * Parse configuration for the EHCache device management cache provider.
-	 * 
-	 * @param element
-	 * @param context
-	 */
-	protected void parseEHCacheDeviceManagementCache(Element element, ParserContext context) {
-		BeanDefinitionBuilder cache =
-				BeanDefinitionBuilder.rootBeanDefinition(DeviceManagementCacheProvider.class);
-		Attr siteCacheMaxEntries = element.getAttributeNode("siteCacheMaxEntries");
-		if (siteCacheMaxEntries != null) {
-			cache.addPropertyValue("siteCacheMaxEntries", siteCacheMaxEntries.getValue());
-		}
-		Attr deviceSpecificationCacheMaxEntries =
-				element.getAttributeNode("deviceSpecificationCacheMaxEntries");
-		if (deviceSpecificationCacheMaxEntries != null) {
-			cache.addPropertyValue("deviceSpecificationCacheMaxEntries",
-					deviceSpecificationCacheMaxEntries.getValue());
-		}
-		Attr deviceCacheMaxEntries = element.getAttributeNode("deviceCacheMaxEntries");
-		if (deviceCacheMaxEntries != null) {
-			cache.addPropertyValue("deviceCacheMaxEntries", deviceCacheMaxEntries.getValue());
-		}
-		Attr deviceAssignmentCacheMaxEntries = element.getAttributeNode("deviceAssignmentCacheMaxEntries");
-		if (deviceAssignmentCacheMaxEntries != null) {
-			cache.addPropertyValue("deviceAssignmentCacheMaxEntries",
-					deviceAssignmentCacheMaxEntries.getValue());
-		}
-		Attr siteCacheTtl = element.getAttributeNode("siteCacheTtl");
-		if (siteCacheTtl != null) {
-			cache.addPropertyValue("siteCacheTtl", siteCacheTtl.getValue());
-		}
-		Attr deviceSpecificationCacheTtl = element.getAttributeNode("deviceSpecificationCacheTtl");
-		if (deviceSpecificationCacheTtl != null) {
-			cache.addPropertyValue("deviceSpecificationCacheTtl", deviceSpecificationCacheTtl.getValue());
-		}
-		Attr deviceCacheTtl = element.getAttributeNode("deviceCacheTtl");
-		if (deviceCacheTtl != null) {
-			cache.addPropertyValue("deviceCacheTtl", deviceCacheTtl.getValue());
-		}
-		Attr deviceAssignmentCacheTtl = element.getAttributeNode("deviceAssignmentCacheTtl");
-		if (deviceAssignmentCacheTtl != null) {
-			cache.addPropertyValue("deviceAssignmentCacheTtl", deviceAssignmentCacheTtl.getValue());
-		}
-		context.getRegistry().registerBeanDefinition(
-				SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER, cache.getBeanDefinition());
-	}
-
-	/**
-	 * Parse configuration for Hazelcast distributed cache.
-	 * 
-	 * @param element
-	 * @param context
-	 */
-	protected void parseHazelcastCache(Element element, ParserContext context) {
-		BeanDefinitionBuilder cache =
-				BeanDefinitionBuilder.rootBeanDefinition(HazelcastDistributedCacheProvider.class);
-		cache.addPropertyReference("configuration",
-				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
-		context.getRegistry().registerBeanDefinition(
-				SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER, cache.getBeanDefinition());
-	}
-
-	/**
-	 * Parse configuration for default device model initializer.
-	 * 
-	 * @param element
-	 * @param context
-	 */
-	protected void parseDefaultDeviceModelInitializer(Element element, ParserContext context) {
-		BeanDefinitionBuilder init =
-				BeanDefinitionBuilder.rootBeanDefinition(DefaultDeviceModelInitializer.class);
-		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
-		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
-			init.addPropertyValue("initializeIfNoConsole", "true");
-		}
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER,
-				init.getBeanDefinition());
 	}
 
 	/**
@@ -304,14 +177,14 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	 * @param element
 	 * @param context
 	 */
-	protected void parseDefaultAssetModelInitializer(Element element, ParserContext context) {
+	protected void parseDefaultUserModelInitializer(Element element, ParserContext context) {
 		BeanDefinitionBuilder init =
-				BeanDefinitionBuilder.rootBeanDefinition(DefaultAssetModuleInitializer.class);
+				BeanDefinitionBuilder.rootBeanDefinition(DefaultUserModelInitializer.class);
 		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
 		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
 			init.addPropertyValue("initializeIfNoConsole", "true");
 		}
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER,
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER,
 				init.getBeanDefinition());
 	}
 
@@ -328,17 +201,8 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		/** HBase datastore and service providers */
 		HBase("hbase-datastore"),
 
-		/** EHCache device mananagement cache provider */
-		EHCacheDeviceManagementCache("ehcache-device-management-cache"),
-
-		/** Hazelcast cache provider */
-		HazelcastCache("hazelcast-cache"),
-
-		/** Creates sample data if no device data is present */
-		DefaultDeviceModelInitializer("default-device-model-initializer"),
-
-		/** Creates sample data if no device data is present */
-		DefaultAssetModelInitializer("default-asset-model-initializer");
+		/** Creates sample data if no user data is present */
+		DefaultUserModelInitializer("default-user-model-initializer");
 
 		/** Event code */
 		private String localName;

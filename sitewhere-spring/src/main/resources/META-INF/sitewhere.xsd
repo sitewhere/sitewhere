@@ -24,7 +24,7 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="datastore" type="globalDatastoreType">
+			<xsd:element name="datastore" type="datastoreType">
 				<xsd:annotation>
 					<xsd:documentation>
 						Provides information about how SiteWhere global system data is to
@@ -35,9 +35,9 @@
 		</xsd:all>
 	</xsd:complexType>
 
-	<xsd:complexType name="globalDatastoreType">
+	<xsd:complexType name="datastoreType">
 		<xsd:all>
-			<xsd:element ref="abstract-global-datastore"/>
+			<xsd:element ref="abstract-datastore"/>
 			<xsd:element minOccurs="0" name="default-user-model-initializer" type="defaultUserModelInitializerType">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -48,30 +48,29 @@
 		</xsd:all>
 	</xsd:complexType>
 
-	<!-- Used as a placeholder for global datastores to allow substitutionGroups -->
-	<xsd:element name="abstract-global-datastore" abstract="true"
-		type="abstractGlobalDatastoreType">
+	<!-- Used as a placeholder for datastores to allow substitutionGroups -->
+	<xsd:element name="abstract-datastore" abstract="true" type="abstractDatastoreType">
 		<xsd:annotation>
 			<xsd:documentation>
-				A placeholder for global datastore elements.
+				A placeholder for datastore elements.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	
-	<!-- Common global datastore information -->
-	<xsd:complexType name="abstractGlobalDatastoreType"/>
+	<!-- Common datastore information -->
+	<xsd:complexType name="abstractDatastoreType"/>
 
 	<!-- Configuration data for a MongoDB datastore -->
-	<xsd:element name="mongo-global-datastore" type="mongoGlobalDatastoreType"
-		substitutionGroup="abstract-global-datastore">
+	<xsd:element name="mongo-datastore" type="mongoDatastoreType"
+		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
 			<xsd:documentation>Global datastore that uses MongoDB for data persistence.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="mongoGlobalDatastoreType">
+	<xsd:complexType name="mongoDatastoreType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractGlobalDatastoreType">
+			<xsd:extension base="abstractDatastoreType">
 				<xsd:attributeGroup ref="mongo-attributes"/>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -111,33 +110,19 @@
 				<xsd:documentation>Password used to authenticate.</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="useBulkEventInserts" type="xsd:boolean">
-			<xsd:annotation>
-				<xsd:documentation>Use MongoDB bulk APIs to insert events in batches.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="bulkInsertMaxChunkSize" type="substitutableInt">
-			<xsd:annotation>
-				<xsd:documentation>When 'useBulkEventInserts' is true, specifies the maximum number
-					of
-					events to send in a single call.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:attributeGroup>
 	
-	<!-- Configuration data for an HBase global datastore -->
-	<xsd:element name="hbase-global-datastore" type="hbaseGlobalDatastoreType"
-		substitutionGroup="abstract-global-datastore">
+	<!-- Configuration data for an HBase datastore -->
+	<xsd:element name="hbase-datastore" type="hbaseDatastoreType"
+		substitutionGroup="abstract-datastore">
 		<xsd:annotation>
-			<xsd:documentation>Global datastore that uses Apache HBase for data persistence.
+			<xsd:documentation>Datastore that uses Apache HBase for data persistence.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="hbaseGlobalDatastoreType">
+	<xsd:complexType name="hbaseDatastoreType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractGlobalDatastoreType">
+			<xsd:extension base="abstractDatastoreType">
 				<xsd:attributeGroup ref="hbase-attributes"/>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -172,6 +157,13 @@
 	<xsd:complexType name="defaultUserModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
 	</xsd:complexType>
+
+	<!-- Contains global configuration elements -->
+	<xsd:complexType name="globalsType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-global" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
 	
 	<!-- Used as a placeholder for global elements to allow substitutionGroups -->
 	<xsd:element name="abstract-global" abstract="true" type="abstractGlobalType">
@@ -184,13 +176,6 @@
 	
 	<!-- Common global element information -->
 	<xsd:complexType name="abstractGlobalType"/>
-
-	<!-- Contains global configuration elements -->
-	<xsd:complexType name="globalsType">
-		<xsd:sequence>
-			<xsd:element ref="abstract-global" maxOccurs="unbounded"/>
-		</xsd:sequence>
-	</xsd:complexType>
 
 	<!-- Configuration data for Hazelcast services -->
 	<xsd:element name="hazelcast-configuration" type="hazelcastConfigurationType"

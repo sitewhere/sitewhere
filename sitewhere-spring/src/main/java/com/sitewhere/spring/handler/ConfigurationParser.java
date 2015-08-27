@@ -56,7 +56,7 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 				break;
 			}
 			case Datastore: {
-				new GlobalDatastoreParser().parse(child, context);
+				new DatastoreParser().parse(child, context);
 				break;
 			}
 			}

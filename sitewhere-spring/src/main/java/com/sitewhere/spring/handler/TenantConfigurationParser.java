@@ -56,8 +56,8 @@ public class TenantConfigurationParser extends AbstractBeanDefinitionParser {
 				new GlobalsParser().parse(child, context);
 				break;
 			}
-			case Datastore: {
-				new DatastoreParser().parse(child, context);
+			case TenantDatastore: {
+				new TenantDatastoreParser().parse(child, context);
 				break;
 			}
 			case InboundProcessingChain: {
@@ -99,8 +99,8 @@ public class TenantConfigurationParser extends AbstractBeanDefinitionParser {
 		/** Globals */
 		Globals("globals"),
 
-		/** Datastore */
-		Datastore("datastore"),
+		/** Tenant datastore */
+		TenantDatastore("tenant-datastore"),
 
 		/** Inbound processing chain */
 		InboundProcessingChain("inbound-processing-chain"),

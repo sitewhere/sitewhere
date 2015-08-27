@@ -13,14 +13,14 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Base interface for system components that empower device communication.
  * 
  * @author Derek
  */
-public interface IDeviceCommunication extends ILifecycleComponent {
+public interface IDeviceCommunication extends ITenantLifecycleComponent {
 
 	/**
 	 * Get the list of sources that bring device event data into the system.
