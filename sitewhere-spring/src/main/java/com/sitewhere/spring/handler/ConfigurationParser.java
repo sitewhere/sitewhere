@@ -51,6 +51,10 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 				throw new RuntimeException("Unknown configuration element: " + child.getLocalName());
 			}
 			switch (type) {
+			case Globals: {
+				new GlobalsParser().parse(child, context);
+				break;
+			}
 			case Datastore: {
 				new GlobalDatastoreParser().parse(child, context);
 				break;
@@ -66,6 +70,9 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 	 * @author Derek
 	 */
 	public static enum Elements {
+
+		/** Globals */
+		Globals("globals"),
 
 		/** Datastore */
 		Datastore("datastore");
