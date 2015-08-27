@@ -55,7 +55,7 @@
 	function onSpecificationDeleteClicked(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swSpecificationDelete(token, onSpecificationDeleteComplete);
+		swSpecificationDelete(token, '${tenant.authenticationToken}', onSpecificationDeleteComplete);
 	}
 
 	/** Called after successful specification delete */

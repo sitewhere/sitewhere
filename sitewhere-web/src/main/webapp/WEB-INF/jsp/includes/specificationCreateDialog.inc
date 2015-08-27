@@ -98,106 +98,114 @@
 	var spcTimeout;
 	var spcLastSearch;
 
-	$(document).ready(
-		function() {
+	$(document)
+			.ready(
+				function() {
 
-			/** Create tab strip */
-			spcTabs = $("#spc-tabs").kendoTabStrip({
-				animation : false
-			}).data("kendoTabStrip");
+					/** Create tab strip */
+					spcTabs = $("#spc-tabs").kendoTabStrip({
+						animation : false
+					}).data("kendoTabStrip");
 
-			/** Create AJAX datasource for device asset modules */
-			spcAssetModulesDS = new kendo.data.DataSource({
-				transport : {
-					read : {
-						url : "${pageContext.request.contextPath}/api/assets/modules?assetType=Device",
-						dataType : "json",
+					/** Create AJAX datasource for device asset modules */
+					spcAssetModulesDS =
+							new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/assets/modules?assetType=Device&tenantAuthToken=${tenant.authenticationToken}",
+											dataType : "json",
+										}
+									},
+								});
+
+					/** Create asset modules dropdown */
+					spcAssetModules = $("#spc-asset-module").kendoDropDownList({
+						dataTextField : "name",
+						dataValueField : "id",
+						dataSource : spcAssetModulesDS,
+						index : 0,
+						change : spcAssetModuleChanged,
+						dataBound : function(e) {
+							spcAssetModuleChanged();
+						}
+					}).data("kendoDropDownList");
+
+					/** Create the hardware match list */
+					spcHardwareMatches = $("#spc-hardware-matches").kendoListView({
+						selectable : "single",
+						template : kendo.template($("#hardware-asset-entry").html()),
+						change : spcHardwareAssetChosen,
+						dataBound : function(e) {
+							var assetId = $('#spc-chosen-asset-id').val();
+							var assetElm = $('#asset-' + assetId).get(0);
+							if (assetElm) {
+								spcHardwareMatches.select(assetElm);
+							}
+						}
+					}).data("kendoListView");
+
+					/** Update hardware search datasource based on entered criteria */
+					$("#spc-hardware-search").bind("change paste keyup", function() {
+						window.clearTimeout(spcTimeout);
+						spcTimeout = window.setTimeout(spcHardwareSearchCriteriaUpdated, 300);
+					});
+
+					/** Create container policies dropdown */
+					spcContainerPolicies = $("#spc-container-policy").kendoDropDownList({
+						dataTextField : "text",
+						dataValueField : "value",
+						dataSource : spcContainerPolicyChoices,
+						index : 0,
+					}).data("kendoDropDownList");
+
+					/** Handle create dialog submit */
+					$('#spc-dialog-submit')
+							.click(
+								function(event) {
+									event.preventDefault();
+									if (!spcValidate()) {
+										return;
+									}
+									var specData = {
+										"name" : $('#spc-name').val(),
+										"containerPolicy" : $('#spc-container-policy').val(),
+										"assetModuleId" : $('#spc-asset-module').val(),
+										"assetId" : $('#spc-chosen-asset-id').val(),
+										"metadata" : swMetadataAsLookup(spcMetadataDS.data()),
+									}
+									var specToken = $('#spec-token').val();
+									if (specToken == "") {
+										$
+												.postJSON(
+													"${pageContext.request.contextPath}/api/specifications?tenantAuthToken=${tenant.authenticationToken}",
+													specData, onCreateSuccess, onCreateFail);
+									} else {
+										$.putJSON("${pageContext.request.contextPath}/api/specifications/"
+												+ specToken
+												+ "?tenantAuthToken=${tenant.authenticationToken}", specData,
+											onCreateSuccess, onUpdateFail);
+									}
+								});
+
+					/** Called on successful create */
+					function onCreateSuccess() {
+						$('#spc-dialog').modal('hide');
+						if (spcSubmitCallback != null) {
+							spcSubmitCallback();
+						}
 					}
-				},
-			});
 
-			/** Create asset modules dropdown */
-			spcAssetModules = $("#spc-asset-module").kendoDropDownList({
-				dataTextField : "name",
-				dataValueField : "id",
-				dataSource : spcAssetModulesDS,
-				index : 0,
-				change : spcAssetModuleChanged,
-				dataBound : function(e) {
-					spcAssetModuleChanged();
-				}
-			}).data("kendoDropDownList");
-
-			/** Create the hardware match list */
-			spcHardwareMatches = $("#spc-hardware-matches").kendoListView({
-				selectable : "single",
-				template : kendo.template($("#hardware-asset-entry").html()),
-				change : spcHardwareAssetChosen,
-				dataBound : function(e) {
-					var assetId = $('#spc-chosen-asset-id').val();
-					var assetElm = $('#asset-' + assetId).get(0);
-					if (assetElm) {
-						spcHardwareMatches.select(assetElm);
+					/** Handle failed call to create device specification */
+					function onCreateFail(jqXHR, textStatus, errorThrown) {
+						handleError(jqXHR, "Unable to create specification.");
 					}
-				}
-			}).data("kendoListView");
 
-			/** Update hardware search datasource based on entered criteria */
-			$("#spc-hardware-search").bind("change paste keyup", function() {
-				window.clearTimeout(spcTimeout);
-				spcTimeout = window.setTimeout(spcHardwareSearchCriteriaUpdated, 300);
-			});
-
-			/** Create container policies dropdown */
-			spcContainerPolicies = $("#spc-container-policy").kendoDropDownList({
-				dataTextField : "text",
-				dataValueField : "value",
-				dataSource : spcContainerPolicyChoices,
-				index : 0,
-			}).data("kendoDropDownList");
-
-			/** Handle create dialog submit */
-			$('#spc-dialog-submit').click(
-				function(event) {
-					event.preventDefault();
-					if (!spcValidate()) {
-						return;
-					}
-					var specData = {
-						"name" : $('#spc-name').val(),
-						"containerPolicy" : $('#spc-container-policy').val(),
-						"assetModuleId" : $('#spc-asset-module').val(),
-						"assetId" : $('#spc-chosen-asset-id').val(),
-						"metadata" : swMetadataAsLookup(spcMetadataDS.data()),
-					}
-					var specToken = $('#spec-token').val();
-					if (specToken == "") {
-						$.postJSON("${pageContext.request.contextPath}/api/specifications", specData,
-							onCreateSuccess, onCreateFail);
-					} else {
-						$.putJSON("${pageContext.request.contextPath}/api/specifications/" + specToken,
-							specData, onCreateSuccess, onUpdateFail);
+					/** Handle failed call to update device specification */
+					function onUpdateFail(jqXHR, textStatus, errorThrown) {
+						handleError(jqXHR, "Unable to update specification.");
 					}
 				});
-
-			/** Called on successful create */
-			function onCreateSuccess() {
-				$('#spc-dialog').modal('hide');
-				if (spcSubmitCallback != null) {
-					spcSubmitCallback();
-				}
-			}
-
-			/** Handle failed call to create device specification */
-			function onCreateFail(jqXHR, textStatus, errorThrown) {
-				handleError(jqXHR, "Unable to create specification.");
-			}
-
-			/** Handle failed call to update device specification */
-			function onUpdateFail(jqXHR, textStatus, errorThrown) {
-				handleError(jqXHR, "Unable to update specification.");
-			}
-		});
 
 	/** Validate everything */
 	function spcValidate() {
@@ -225,7 +233,8 @@
 					transport : {
 						read : {
 							url : "${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
-									+ "/assets?criteria=" + criteria,
+									+ "/assets?criteria=" + criteria
+									+ "&tenantAuthToken=${tenant.authenticationToken}",
 							dataType : "json",
 						}
 					},
@@ -250,7 +259,8 @@
 			if (criteria != spcLastSearch) {
 				var url =
 						"${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
-								+ "/assets?criteria=" + criteria;
+								+ "/assets?criteria=" + criteria
+								+ "&tenantAuthToken=${tenant.authenticationToken}";
 				spcHardwareDS.transport.options.read.url = url;
 				spcHardwareDS.read();
 			}
@@ -310,8 +320,9 @@
 		spcSubmitCallback = callback;
 
 		// Get specification for edit.
-		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + token,
-			spuSpecificationGetSuccess, spuSpecificationGetFailed);
+		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + token
+				+ "?tenantAuthToken=${tenant.authenticationToken}", spuSpecificationGetSuccess,
+			spuSpecificationGetFailed);
 	}
 
 	/** Open the dialog */

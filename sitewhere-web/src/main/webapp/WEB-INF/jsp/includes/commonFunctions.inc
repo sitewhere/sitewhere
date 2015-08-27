@@ -3,13 +3,14 @@
 	var swSuccessCallback;
 
 	/** Delete a specification based on its token */
-	function swSpecificationDelete(token, successCallback) {
+	function swSpecificationDelete(token, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("public.DeleteSpecification"), i18next("includes.commonFunctions.AYSTYWTDDSW") +" "+
-			"token '" + token + "'?", function(result) {
+		swConfirm(i18next("public.DeleteSpecification"), i18next("includes.commonFunctions.AYSTYWTDDSW")
+				+ " " + "token '" + token + "'?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/specifications/"
-					+ token + "?force=true", swSpecificationDeleteSuccess, swSpecificationDeleteFail);
+				$.deleteJSON("${pageContext.request.contextPath}/api/specifications/" + token
+						+ "?force=true&tenantAuthToken=" + tenantAuthToken, swSpecificationDeleteSuccess,
+					swSpecificationDeleteFail);
 			}
 		});
 	}
@@ -27,13 +28,14 @@
 	}
 
 	/** Delete a device based on its hardware id */
-	function swDeviceDelete(hardwareId, successCallback) {
+	function swDeviceDelete(hardwareId, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.commonFunctions.DD"), i18next("includes.commonFunctions.AYSTYWTDDWD")+" id "+ hardwareId + 
-			"'?", function(result) {
+		swConfirm(i18next("includes.commonFunctions.DD"), i18next("includes.commonFunctions.AYSTYWTDDWD")
+				+ " id " + hardwareId + "'?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/devices/"
-					+ hardwareId + "?force=true", swDeviceDeleteSuccess, swDeviceDeleteFail);
+				$.deleteJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
+						+ "?force=true&tenantAuthToken=" + tenantAuthToken, swDeviceDeleteSuccess,
+					swDeviceDeleteFail);
 			}
 		});
 	}
@@ -51,14 +53,16 @@
 	}
 
 	/** Delete a device assignment based on its token */
-	function swAssignmentDelete(token, successCallback) {
+	function swAssignmentDelete(token, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("public.DeleteAssignment"), i18next("includes.commonFunctions.AYSYWTDTDA"), function(result) {
-			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/assignments/"
-					+ token + "?force=true", swAssignmentDeleteSuccess, swAssignmentDeleteFail);
-			}
-		});
+		swConfirm(i18next("public.DeleteAssignment"), i18next("includes.commonFunctions.AYSYWTDTDA"),
+			function(result) {
+				if (result) {
+					$.deleteJSON("${pageContext.request.contextPath}/api/assignments/" + token
+							+ "?force=true&tenantAuthToken=" + tenantAuthToken, swAssignmentDeleteSuccess,
+						swAssignmentDeleteFail);
+				}
+			});
 	}
 
 	/** Handle successful device assignment delete */
@@ -74,14 +78,16 @@
 	}
 
 	/** Release an assignment based on its unique token */
-	function swReleaseAssignment(token, successCallback) {
+	function swReleaseAssignment(token, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.commonFunctions.RA"), i18next("includes.commonFunctions.AYSYWTRTDA"), function(result) {
-			if (result) {
-				$.postJSON("${pageContext.request.contextPath}/api/assignments/"
-					+ token + "/end", null, swReleaseSuccess, swReleaseFail);
-			}
-		});
+		swConfirm(i18next("includes.commonFunctions.RA"), i18next("includes.commonFunctions.AYSYWTRTDA"),
+			function(result) {
+				if (result) {
+					$.postJSON("${pageContext.request.contextPath}/api/assignments/" + token
+							+ "/end?tenantAuthToken=" + tenantAuthToken, null, swReleaseSuccess,
+						swReleaseFail);
+				}
+			});
 	}
 
 	/** Handle successful assignment release */
@@ -97,14 +103,16 @@
 	}
 
 	/** Report assignment missing based on its unique token */
-	function swAssignmentMissing(token, successCallback) {
+	function swAssignmentMissing(token, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.ReportMissing"), i18next("includes.commonFunctions.AYSYWTRTAM"), function(result) {
-			if (result) {
-				$.postJSON("${pageContext.request.contextPath}/api/assignments/"
-					+ token + "/missing", null, swAssignmentMissingSuccess, swAssignmentMissingFail);
-			}
-		});
+		swConfirm(i18next("includes.ReportMissing"), i18next("includes.commonFunctions.AYSYWTRTAM"),
+			function(result) {
+				if (result) {
+					$.postJSON("${pageContext.request.contextPath}/api/assignments/" + token
+							+ "/missing?tenantAuthToken=" + tenantAuthToken, null,
+						swAssignmentMissingSuccess, swAssignmentMissingFail);
+				}
+			});
 	}
 
 	/** Handle successful missing report */
@@ -120,12 +128,13 @@
 	}
 
 	/** Delete a zone based on its unique token */
-	function swZoneDelete(zoneToken, successCallback) {
+	function swZoneDelete(zoneToken, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.DeleteZone"), i18next("includes.commonFunctions.AYSYWTDTZ"), function(result) {
+		swConfirm(i18next("includes.DeleteZone"), i18next("includes.commonFunctions.AYSYWTDTZ"), function(
+				result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/zones/"
-					+ zoneToken + "?force=true", swZoneDeleteSuccess, swZoneDeleteFail);
+				$.deleteJSON("${pageContext.request.contextPath}/api/zones/" + zoneToken + "?force=true",
+					swZoneDeleteSuccess, swZoneDeleteFail);
 			}
 		});
 	}
@@ -143,13 +152,13 @@
 	}
 
 	/** Delete a device group based on its token */
-	function swDeviceGroupDelete(token, successCallback) {
+	function swDeviceGroupDelete(token, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.DeleteDeviceGroup"), i18next("includes.commonFunctions.AYSYWTDDGWT")+" '" + token + 
-			"'?", function(result) {
+		swConfirm(i18next("includes.DeleteDeviceGroup"), i18next("includes.commonFunctions.AYSYWTDDGWT")
+				+ " '" + token + "'?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/devicegroups/"
-					+ token + "?force=true", swDeviceGroupDeleteSuccess, swDeviceGroupDeleteFail);
+				$.deleteJSON("${pageContext.request.contextPath}/api/devicegroups/" + token + "?force=true",
+					swDeviceGroupDeleteSuccess, swDeviceGroupDeleteFail);
 			}
 		});
 	}
@@ -165,14 +174,14 @@
 	function swDeviceGroupDeleteFail(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, i18next("includes.commonFunctions.UTDDG"));
 	}
-	
+
 	/** Gets a string array as a comma-delimited string */
 	function swArrayAsCommaDelimited(input) {
 		var result = "";
 		if (!input) {
 			return result;
 		}
-		for (var i =0; i<input.length; i++) {
+		for (var i = 0; i < input.length; i++) {
 			if (i != 0) {
 				result += ", ";
 			}

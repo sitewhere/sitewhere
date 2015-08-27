@@ -66,8 +66,9 @@
 		event.stopPropagation();
 		swConfirm(i18next("public.DeleteSite"), i18next("sites.list.AYSDTS") + "?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/sites/" + siteToken + "?force=true",
-					onDeleteSuccess, onDeleteFail);
+				$.deleteJSON("${pageContext.request.contextPath}/api/sites/" + siteToken
+						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
+					onDeleteFail);
 			}
 		});
 	}

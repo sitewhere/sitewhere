@@ -17,15 +17,14 @@
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header">
-	<h1 class="ellipsis" data-i18n="devices.list.title">
-	</h1>
+	<h1 class="ellipsis" data-i18n="devices.list.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-filter-results" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
 			<i class="icon-search sw-button-icon"></i>
-		</a> <a id="btn-batch-command" class="btn hide" href="javascript:void(0)" data-i18n="devices.list.BatchCommand">
-			<i class="icon-bolt sw-button-icon"></i>
-		</a> <a id="btn-add-device" class="btn" href="javascript:void(0)" data-i18n="devices.list.AddNewDevice"> <i
-			class="icon-plus sw-button-icon"></i>
+		</a> <a id="btn-batch-command" class="btn hide" href="javascript:void(0)"
+			data-i18n="devices.list.BatchCommand"> <i class="icon-bolt sw-button-icon"></i>
+		</a> <a id="btn-add-device" class="btn" href="javascript:void(0)"
+			data-i18n="devices.list.AddNewDevice"> <i class="icon-plus sw-button-icon"></i>
 		</a>
 	</div>
 </div>
@@ -44,8 +43,8 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
-    /** Set sitewhere_title */
-    sitewhere_i18next.sitewhere_title = "devices.list.title";
+	/** Set sitewhere_title */
+	sitewhere_i18next.sitewhere_title = "devices.list.title";
 
 	/** Reference for device list datasource */
 	var devicesDS;
@@ -87,7 +86,7 @@
 	function onDeviceDeleteClicked(e, hardwareId) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swDeviceDelete(hardwareId, onDeviceDeleteComplete);
+		swDeviceDelete(hardwareId, '${tenant.authenticationToken}', onDeviceDeleteComplete);
 	}
 
 	/** Called after successful device delete */
@@ -107,7 +106,7 @@
 	function onReleaseAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swReleaseAssignment(token, onReleaseAssignmentComplete);
+		swReleaseAssignment(token, '${tenant.authenticationToken}', onReleaseAssignmentComplete);
 	}
 
 	/** Called after successful release assignment */
@@ -119,7 +118,7 @@
 	function onMissingAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentMissing(token, onMissingAssignmentComplete);
+		swAssignmentMissing(token, '${tenant.authenticationToken}', onMissingAssignmentComplete);
 	}
 
 	/** Called after successful missing assignment */
@@ -172,8 +171,10 @@
 	/** Display filter criteria being used */
 	function showFilterCriteria() {
 		var showCriteria = false;
-		var criteriaDesc = "<a class='btn btn-mini' style='float: right;' href='javascript:void(0)' onclick='clearCriteria()'>Clear Filter</a>";
-		criteriaDesc += "<span style='width: 90%; display: block;'><i class='icon-filter sw-button-icon'></i> Displaying";
+		var criteriaDesc =
+				"<a class='btn btn-mini' style='float: right;' href='javascript:void(0)' onclick='clearCriteria()'>Clear Filter</a>";
+		criteriaDesc +=
+				"<span style='width: 90%; display: block;'><i class='icon-filter sw-button-icon'></i> Displaying";
 
 		if ("true" == rqExcludeAssigned) {
 			criteriaDesc += " <strong>unassigned</strong>";
@@ -211,18 +212,24 @@
 			criteriaDesc += " created in the last <strong>week</strong>";
 			showCriteria = true;
 		} else if (rqDateRange == "before") {
-			criteriaDesc += " created before <strong>"
-					+ moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
+			criteriaDesc +=
+					" created before <strong>"
+							+ moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss')
+							+ "</strong>";
 			showCriteria = true;
 		} else if (rqDateRange == "after") {
-			criteriaDesc += " created after <strong>"
-					+ moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
+			criteriaDesc +=
+					" created after <strong>"
+							+ moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss')
+							+ "</strong>";
 			showCriteria = true;
 		} else if (rqDateRange == "between") {
-			criteriaDesc += " created between <strong>"
-					+ moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss')
-					+ "</strong> and <strong>"
-					+ moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss') + "</strong>";
+			criteriaDesc +=
+					" created between <strong>"
+							+ moment(rqAfterDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss')
+							+ "</strong> and <strong>"
+							+ moment(rqBeforeDate, moment.ISO_8601).format('MM/DD/YYYY HH:mm:ss')
+							+ "</strong>";
 			showCriteria = true;
 		}
 
@@ -232,7 +239,7 @@
 			$('#filter-criteria').show();
 		}
 	}
-	
+
 	/** Called after a batch command is invoked */
 	function onBatchCommandInvoked() {
 	}
@@ -287,7 +294,7 @@
 		devicesDS = new kendo.data.DataSource({
 			transport : {
 				read : {
-					url : dsUrl,
+					url : dsUrl + "&tenantAuthToken=${tenant.authenticationToken}",
 					dataType : "json",
 				}
 			},
@@ -305,7 +312,7 @@
 			serverSorting : true,
 			pageSize : 15,
 		});
-		
+
 		// Only show batch command button if specification is chosen.
 		if (rqSpecificationToken) {
 			$('#btn-batch-command').show();
