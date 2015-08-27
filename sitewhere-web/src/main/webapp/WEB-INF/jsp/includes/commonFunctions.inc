@@ -133,8 +133,9 @@
 		swConfirm(i18next("includes.DeleteZone"), i18next("includes.commonFunctions.AYSYWTDTZ"), function(
 				result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/zones/" + zoneToken + "?force=true",
-					swZoneDeleteSuccess, swZoneDeleteFail);
+				$.deleteJSON("${pageContext.request.contextPath}/api/zones/" + zoneToken
+						+ "?force=true&tenantAuthToken=" + tenantAuthToken, swZoneDeleteSuccess,
+					swZoneDeleteFail);
 			}
 		});
 	}
@@ -157,8 +158,9 @@
 		swConfirm(i18next("includes.DeleteDeviceGroup"), i18next("includes.commonFunctions.AYSYWTDDGWT")
 				+ " '" + token + "'?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/devicegroups/" + token + "?force=true",
-					swDeviceGroupDeleteSuccess, swDeviceGroupDeleteFail);
+				$.deleteJSON("${pageContext.request.contextPath}/api/devicegroups/" + token
+						+ "?force=true&tenantAuthToken=" + tenantAuthToken, swDeviceGroupDeleteSuccess,
+					swDeviceGroupDeleteFail);
 			}
 		});
 	}

@@ -28,8 +28,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
-		<a id="duc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+			id="duc-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+			data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -37,7 +38,7 @@
 <script>
 	/** Function called when dialog is submitted */
 	var ducSubmitCallback;
-	
+
 	/** Specification token */
 	var ducSpecToken;
 
@@ -46,65 +47,75 @@
 
 	/** Parent context */
 	var ducContext;
-	
+
 	/** Schema before addition */
 	var ducElementSchema;
 
-	$(document).ready(function() {
-		
-		/** Create tab strip */
-		ducTabs = $("#duc-tabs").kendoTabStrip({
-			animation: false
-		}).data("kendoTabStrip");
-		
-        /** Handle create dialog submit */
-		$('#duc-dialog-submit').click(function(event) {
-			event.preventDefault();
-			if (!ducValidate()) {
-				return;
+	$(document).ready(
+		function() {
+
+			/** Create tab strip */
+			ducTabs = $("#duc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			/** Handle create dialog submit */
+			$('#duc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!ducValidate()) {
+						return;
+					}
+					var name = $("#duc-unit-name").val();
+					var path = $("#duc-path").val();
+					var unit = swGetDeviceUnitForContext(ducContext, ducElementSchema);
+					var subunit = {
+						"name" : name,
+						"path" : path,
+						"deviceSlots" : [],
+						"deviceUnits" : []
+					};
+					unit.deviceUnits.push(subunit);
+					var specData = {
+						"deviceElementSchema" : ducElementSchema,
+					}
+					$.putJSON("${pageContext.request.contextPath}/api/specifications/" + ducSpecToken
+							+ "?tenantAuthToken=${tenant.authenticationToken}", specData, onCreateSuccess,
+						onUpdateFail);
+				});
+
+			/** Called on successful create */
+			function onCreateSuccess() {
+				$('#duc-dialog').modal('hide');
+				if (ducSubmitCallback != null) {
+					ducSubmitCallback();
+				}
 			}
-			var name = $("#duc-unit-name").val();
-			var path = $("#duc-path").val();
-			var unit = swGetDeviceUnitForContext(ducContext, ducElementSchema);
-			var subunit = {"name": name, "path": path, "deviceSlots": [], "deviceUnits": []};
-			unit.deviceUnits.push(subunit);
-			var specData = {
-				"deviceElementSchema": ducElementSchema, 
+
+			/** Handle failed call to create device unit */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to add device unit.");
 			}
-			$.putJSON("${pageContext.request.contextPath}/api/specifications/" + ducSpecToken, 
-					specData, onCreateSuccess, onUpdateFail);
 		});
-        
-        /** Called on successful create */
-        function onCreateSuccess() {
-        	$('#duc-dialog').modal('hide');
-			if (ducSubmitCallback != null) {
-				ducSubmitCallback();
-			}
-        }
-        
-		/** Handle failed call to create device unit */
-		function onUpdateFail(jqXHR, textStatus, errorThrown) {
-			handleError(jqXHR, "Unable to add device unit.");
-		}
-    });
-	
+
 	/** Perform validation */
 	function ducValidate() {
-		$.validity.setup({ outputMode:"label" });
+		$.validity.setup({
+			outputMode : "label"
+		});
 		$.validity.start();
 
-        /** Validate fields */
+		/** Validate fields */
 		$("#duc-unit-name").require();
 		$("#duc-path").require();
-		
+
 		/** Make sure path is not already used */
 		$("#duc-path").assert(ducUnitNameValidate, "Path is already being used.");
-      
+
 		var result = $.validity.end();
 		return result.valid;
 	}
-	
+
 	/** Check for path already in use */
 	function ducUnitNameValidate() {
 		var value = $("#duc-path").val();
@@ -126,7 +137,7 @@
 		}
 		return false;
 	}
-	
+
 	/** Open the dialog */
 	function ducOpen(specToken, context, schema, callback) {
 		ducSpecToken = specToken;
@@ -134,16 +145,16 @@
 		// Store context information.
 		ducContext = context;
 		ducElementSchema = schema;
-		
-		// Reset form and metadata.
-    	$('#duc-general-form')[0].reset();
 
-    	// Select first tab.
+		// Reset form and metadata.
+		$('#duc-general-form')[0].reset();
+
+		// Select first tab.
 		ducTabs.select(0);
-		
+
 		// Function called on submit.
 		ducSubmitCallback = callback;
-		
+
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
 		$('#duc-dialog').modal('show');

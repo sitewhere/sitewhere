@@ -40,56 +40,60 @@
 	/** Device matches list view */
 	var dvsMatches;
 
-	$(document).ready(function() {
+	$(document)
+			.ready(
+				function() {
 
-		/** Create AJAX datasource for devices list */
-		dvsMatchesDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/devices?includeSpecification=true",
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-				parse : function(response) {
-					$.each(response.results, function(index, item) {
-						parseDeviceData(item);
+					/** Create AJAX datasource for devices list */
+					dvsMatchesDS =
+							new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/devices?includeSpecification=true&tenantAuthToken=${tenant.authenticationToken}",
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : function(response) {
+											$.each(response.results, function(index, item) {
+												parseDeviceData(item);
+											});
+											return response;
+										}
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : 10,
+								});
+
+					/** Create the list of devices */
+					dvsMatches = $("#dvs-device-matches").kendoListView({
+						dataSource : dvsMatchesDS,
+						selectable : "single",
+						template : kendo.template($("#tpl-device-entry-small").html()),
+						change : dvsDeviceChosen
+					}).data("kendoListView");
+
+					/** Pager for device list */
+					$("#dvs-device-matches-pager").kendoPager({
+						dataSource : dvsMatchesDS
 					});
-					return response;
-				}
-			},
-			serverPaging : true,
-			serverSorting : true,
-			pageSize : 10,
-		});
 
-		/** Create the list of devices */
-		dvsMatches = $("#dvs-device-matches").kendoListView({
-			dataSource : dvsMatchesDS,
-			selectable : "single",
-			template : kendo.template($("#tpl-device-entry-small").html()),
-			change : dvsDeviceChosen
-		}).data("kendoListView");
-
-		/** Pager for device list */
-		$("#dvs-device-matches-pager").kendoPager({
-			dataSource : dvsMatchesDS
-		});
-
-		/** Handle create dialog submit */
-		$('#dvs-dialog-submit').click(function(event) {
-			event.preventDefault();
-			if (!dvsValidate()) {
-				return;
-			}
-			$('#dvs-dialog').modal('hide');
-			if (dvsSubmitCallback != null) {
-				dvsSubmitCallback(dvsPassthrough, $('#dvs-selected-hardware-id').val());
-			}
-		});
-	});
+					/** Handle create dialog submit */
+					$('#dvs-dialog-submit').click(function(event) {
+						event.preventDefault();
+						if (!dvsValidate()) {
+							return;
+						}
+						$('#dvs-dialog').modal('hide');
+						if (dvsSubmitCallback != null) {
+							dvsSubmitCallback(dvsPassthrough, $('#dvs-selected-hardware-id').val());
+						}
+					});
+				});
 
 	/** Perform validation */
 	function dvsValidate() {

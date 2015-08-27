@@ -14,7 +14,7 @@
 	<h1 class="ellipsis" data-i18n="batch.command.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-refresh-operation" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-			<i class="icon-refresh sw-button-icon"></i> 
+			<i class="icon-refresh sw-button-icon"></i>
 		</a>
 	</div>
 </div>
@@ -31,10 +31,10 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="batch.command.BCIE"></div>
 			<div>
-				<a id="btn-filter-elements" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
-					<i class="icon-search sw-button-icon"></i>
+				<a id="btn-filter-elements" class="btn" href="javascript:void(0)"
+					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i>
 				</a> <a id="btn-refresh-elements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i> 
+					<i class="icon-refresh sw-button-icon"></i>
 				</a>
 			</div>
 		</div>
@@ -71,76 +71,81 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
-    /** Set sitewhere_title */
-    sitewhere_i18next.sitewhere_title = "batch.command.title";
+	/** Set sitewhere_title */
+	sitewhere_i18next.sitewhere_title = "batch.command.title";
 
 	/** Unique batch operation token */
 	var batchToken = '<c:out value="${operation.token}"/>';
-	
+
 	/** JSON command information */
-	var command = ${command};
+	var command = $
+	{
+		command
+	};
 
 	/** Datasource for elements */
 	var elementsDS;
 
-	$(document).ready(function() {
+	$(document).ready(
+		function() {
 
-		/** Create AJAX datasource for elements list */
-		elementsDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/batch/" + batchToken + "/elements",
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-				parse : function(response) {
-					$.each(response.results, function(index, item) {
-						parseBatchElementData(item);
+			/** Create AJAX datasource for elements list */
+			elementsDS =
+					new kendo.data.DataSource({
+						transport : {
+							read : {
+								url : "${pageContext.request.contextPath}/api/batch/" + batchToken
+										+ "/elements?tenantAuthToken=${tenant.authenticationToken}",
+								dataType : "json",
+							}
+						},
+						schema : {
+							data : "results",
+							total : "numResults",
+							parse : function(response) {
+								$.each(response.results, function(index, item) {
+									parseBatchElementData(item);
+								});
+								return response;
+							}
+						},
+						serverPaging : true,
+						serverSorting : true,
+						pageSize : 50,
 					});
-					return response;
-				}
-			},
-			serverPaging : true,
-			serverSorting : true,
-			pageSize : 50,
-		});
 
-		/** Create the elements grid */
-		$("#elements").kendoGrid({
-			dataSource : elementsDS,
-			rowTemplate : kendo.template($("#tpl-batch-command-invocation-element-entry").html()),
-			scrollable : true,
-			height : 400,
-		});
+			/** Create the elements grid */
+			$("#elements").kendoGrid({
+				dataSource : elementsDS,
+				rowTemplate : kendo.template($("#tpl-batch-command-invocation-element-entry").html()),
+				scrollable : true,
+				height : 400,
+			});
 
-		$("#elements-pager").kendoPager({
-			dataSource : elementsDS
-		});
+			$("#elements-pager").kendoPager({
+				dataSource : elementsDS
+			});
 
-		$("#btn-refresh-operation").click(function() {
+			$("#btn-refresh-operation").click(function() {
+				loadBatchOperation();
+			});
+
+			$("#btn-refresh-elements").click(function() {
+				elementsDS.read();
+			});
+
+			/** Create the tab strip */
+			tabs = $("#tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
 			loadBatchOperation();
 		});
 
-		$("#btn-refresh-elements").click(function() {
-			elementsDS.read();
-		});
-
-		/** Create the tab strip */
-		tabs = $("#tabs").kendoTabStrip({
-			animation : false
-		}).data("kendoTabStrip");
-
-		loadBatchOperation();
-	});
-
 	/** Loads information for the selected batch command invocation */
 	function loadBatchOperation() {
-		$
-				.getJSON("${pageContext.request.contextPath}/api/batch/" + batchToken, loadGetSuccess,
-					loadGetFailed);
+		$.getJSON("${pageContext.request.contextPath}/api/batch/" + batchToken
+				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful batch operation load request */
@@ -156,7 +161,7 @@
 	function loadGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to load batch command invocation data.");
 	}
-	
+
 	/** View a command invocation that has been clicked on */
 	function viewCommandInvocation(event, id) {
 		ivOpen(id);

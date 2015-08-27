@@ -28,8 +28,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
-		<a id="dsc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+			id="dsc-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+			data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -37,7 +38,7 @@
 <script>
 	/** Function called when dialog is submitted */
 	var dscSubmitCallback;
-	
+
 	/** Specification token */
 	var dscSpecToken;
 
@@ -46,65 +47,73 @@
 
 	/** Parent context */
 	var dscContext;
-	
+
 	/** Schema before addition */
 	var dscElementSchema;
 
-	$(document).ready(function() {
-		
-		/** Create tab strip */
-		dscTabs = $("#dsc-tabs").kendoTabStrip({
-			animation: false
-		}).data("kendoTabStrip");
-		
-        /** Handle create dialog submit */
-		$('#dsc-dialog-submit').click(function(event) {
-			event.preventDefault();
-			if (!dscValidate()) {
-				return;
+	$(document).ready(
+		function() {
+
+			/** Create tab strip */
+			dscTabs = $("#dsc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			/** Handle create dialog submit */
+			$('#dsc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!dscValidate()) {
+						return;
+					}
+					var name = $("#dsc-slot-name").val();
+					var path = $("#dsc-path").val();
+					var unit = swGetDeviceUnitForContext(dscContext, dscElementSchema);
+					var slot = {
+						"name" : name,
+						"path" : path
+					};
+					unit.deviceSlots.push(slot);
+					var specData = {
+						"deviceElementSchema" : dscElementSchema,
+					}
+					$.putJSON("${pageContext.request.contextPath}/api/specifications/" + dscSpecToken
+							+ "?tenantAuthToken=${tenant.authenticationToken}", specData, onCreateSuccess,
+						onUpdateFail);
+				});
+
+			/** Called on successful create */
+			function onCreateSuccess() {
+				$('#dsc-dialog').modal('hide');
+				if (dscSubmitCallback != null) {
+					dscSubmitCallback();
+				}
 			}
-			var name = $("#dsc-slot-name").val();
-			var path = $("#dsc-path").val();
-			var unit = swGetDeviceUnitForContext(dscContext, dscElementSchema);
-			var slot = {"name": name, "path": path};
-			unit.deviceSlots.push(slot);
-			var specData = {
-				"deviceElementSchema": dscElementSchema, 
+
+			/** Handle failed call to create device slot */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to add device slot.");
 			}
-			$.putJSON("${pageContext.request.contextPath}/api/specifications/" + dscSpecToken, 
-					specData, onCreateSuccess, onUpdateFail);
 		});
-        
-        /** Called on successful create */
-        function onCreateSuccess() {
-        	$('#dsc-dialog').modal('hide');
-			if (dscSubmitCallback != null) {
-				dscSubmitCallback();
-			}
-        }
-        
-		/** Handle failed call to create device slot */
-		function onUpdateFail(jqXHR, textStatus, errorThrown) {
-			handleError(jqXHR, "Unable to add device slot.");
-		}
-    });
-	
+
 	/** Perform validation */
 	function dscValidate() {
-		$.validity.setup({ outputMode:"label" });
+		$.validity.setup({
+			outputMode : "label"
+		});
 		$.validity.start();
 
-        /** Validate fields */
+		/** Validate fields */
 		$("#dsc-slot-name").require();
 		$("#dsc-path").require();
-		
+
 		/** Make sure path is not already used */
 		$("#dsc-path").assert(dscSlotNameValidate, "Path is already being used.");
-      
+
 		var result = $.validity.end();
 		return result.valid;
 	}
-	
+
 	/** Check for path already in use */
 	function dscSlotNameValidate() {
 		var value = $("#dsc-path").val();
@@ -126,7 +135,7 @@
 		}
 		return false;
 	}
-	
+
 	/** Open the dialog */
 	function dscOpen(specToken, context, schema, callback) {
 		dscSpecToken = specToken;
@@ -134,16 +143,16 @@
 		// Store context information.
 		dscContext = context;
 		dscElementSchema = schema;
-		
-		// Reset form and metadata.
-    	$('#dsc-general-form')[0].reset();
 
-    	// Select first tab.
+		// Reset form and metadata.
+		$('#dsc-general-form')[0].reset();
+
+		// Select first tab.
 		dscTabs.select(0);
-		
+
 		// Function called on submit.
 		dscSubmitCallback = callback;
-		
+
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
 		$('#dsc-dialog').modal('show');

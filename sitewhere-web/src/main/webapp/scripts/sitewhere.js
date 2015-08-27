@@ -115,7 +115,7 @@ function asISO8601(date) {
 function formattedMetadata(metadata) {
 	var result = "";
 	var first = true;
-	for (var i in metadata) {
+	for ( var i in metadata) {
 		if (!first) {
 			result += ", ";
 		} else {
@@ -128,16 +128,16 @@ function formattedMetadata(metadata) {
 
 /** Converts fields that need to be parsed in a site */
 function parseSiteData(item) {
-    if (item.createdDate && typeof item.createdDate === "string") {
-    	item.createdDate = kendo.parseDate(item.createdDate);
-    }
-    if (item.updatedDate && typeof item.updatedDate === "string") {
-    	item.updatedDate = kendo.parseDate(item.updatedDate);
-    }
+	if (item.createdDate && typeof item.createdDate === "string") {
+		item.createdDate = kendo.parseDate(item.createdDate);
+	}
+	if (item.updatedDate && typeof item.updatedDate === "string") {
+		item.updatedDate = kendo.parseDate(item.updatedDate);
+	}
 }
 
 /** Converts fields that need to be parsed in a device specification */
-function parseSpecificationData(item){
+function parseSpecificationData(item) {
 	if (item.createdDate && typeof item.createdDate === "string") {
 		item.createdDate = kendo.parseDate(item.createdDate);
 	}
@@ -147,7 +147,7 @@ function parseSpecificationData(item){
 }
 
 /** Converts fields that need to be parsed in a device */
-function parseDeviceData(item){
+function parseDeviceData(item) {
 	if (item.createdDate && typeof item.createdDate === "string") {
 		item.createdDate = kendo.parseDate(item.createdDate);
 	}
@@ -155,14 +155,14 @@ function parseDeviceData(item){
 		item.updatedDate = kendo.parseDate(item.updatedDate);
 	}
 	if (item.assignment) {
-	    if (item.assignment.activeDate && typeof item.assignment.activeDate === "string") {
-	    	item.assignment.activeDate = kendo.parseDate(item.assignment.activeDate);
-	    }
+		if (item.assignment.activeDate && typeof item.assignment.activeDate === "string") {
+			item.assignment.activeDate = kendo.parseDate(item.assignment.activeDate);
+		}
 	}
 }
 
 /** Converts fields that need to be parsed in a device group */
-function parseDeviceGroupData(item){
+function parseDeviceGroupData(item) {
 	if (item.createdDate && typeof item.createdDate === "string") {
 		item.createdDate = kendo.parseDate(item.createdDate);
 	}
@@ -170,95 +170,99 @@ function parseDeviceGroupData(item){
 		item.updatedDate = kendo.parseDate(item.updatedDate);
 	}
 	if (item.roles) {
-    	item.cdRoles = swArrayAsCommaDelimited(item.roles);
+		item.cdRoles = swArrayAsCommaDelimited(item.roles);
 	}
 }
 
 /** Converts fields that need to be parsed in an assignment */
 function parseAssignmentData(item) {
-    if (item.createdDate && typeof item.createdDate === "string") {
-    	item.createdDate = kendo.parseDate(item.createdDate);
-    }
-    if (item.updatedDate && typeof item.updatedDate === "string") {
-    	item.updatedDate = kendo.parseDate(item.updatedDate);
-    }
-    if (item.activeDate && typeof item.activeDate === "string") {
-    	item.activeDate = kendo.parseDate(item.activeDate);
-    }
-    if (item.releasedDate && typeof item.releasedDate === "string") {
-    	item.releasedDate = kendo.parseDate(item.releasedDate);
-    }
+	if (item.createdDate && typeof item.createdDate === "string") {
+		item.createdDate = kendo.parseDate(item.createdDate);
+	}
+	if (item.updatedDate && typeof item.updatedDate === "string") {
+		item.updatedDate = kendo.parseDate(item.updatedDate);
+	}
+	if (item.activeDate && typeof item.activeDate === "string") {
+		item.activeDate = kendo.parseDate(item.activeDate);
+	}
+	if (item.releasedDate && typeof item.releasedDate === "string") {
+		item.releasedDate = kendo.parseDate(item.releasedDate);
+	}
 }
 
 /** Converts fields that need to be parsed in an event */
 function parseEventData(item) {
-    if (item.eventDate && typeof item.eventDate === "string") {
-    	item.eventDate = kendo.parseDate(item.eventDate);
-    }
-    if (item.receivedDate && typeof item.receivedDate === "string") {
-    	item.receivedDate = kendo.parseDate(item.receivedDate);
-    }
+	if (item.eventDate && typeof item.eventDate === "string") {
+		item.eventDate = kendo.parseDate(item.eventDate);
+	}
+	if (item.receivedDate && typeof item.receivedDate === "string") {
+		item.receivedDate = kendo.parseDate(item.receivedDate);
+	}
 }
 
 /** Converts fields that need to be parsed in a zone */
 function parseZoneData(item) {
-    if (item.createdDate && typeof item.createdDate === "string") {
-    	item.createdDate = kendo.parseDate(item.createdDate);
-    }
-    if (item.updatedDate && typeof item.updatedDate === "string") {
-    	item.updatedDate = kendo.parseDate(item.updatedDate);
-    }
+	if (item.createdDate && typeof item.createdDate === "string") {
+		item.createdDate = kendo.parseDate(item.createdDate);
+	}
+	if (item.updatedDate && typeof item.updatedDate === "string") {
+		item.updatedDate = kendo.parseDate(item.updatedDate);
+	}
 }
 
 /** Converts fields that need to be parsed in a batch operation */
 function parseBatchOperationData(item) {
-    if (item.createdDate && typeof item.createdDate === "string") {
-    	item.createdDate = kendo.parseDate(item.createdDate);
-    }
-    if (item.updatedDate && typeof item.updatedDate === "string") {
-    	item.updatedDate = kendo.parseDate(item.updatedDate);
-    }
-    if (item.processingStartedDate && typeof item.processingStartedDate === "string") {
-    	item.processingStartedDate = kendo.parseDate(item.processingStartedDate);
-    }
-    if (item.processingEndedDate && typeof item.processingEndedDate === "string") {
-    	item.processingEndedDate = kendo.parseDate(item.processingEndedDate);
-    }
+	if (item.createdDate && typeof item.createdDate === "string") {
+		item.createdDate = kendo.parseDate(item.createdDate);
+	}
+	if (item.updatedDate && typeof item.updatedDate === "string") {
+		item.updatedDate = kendo.parseDate(item.updatedDate);
+	}
+	if (item.processingStartedDate && typeof item.processingStartedDate === "string") {
+		item.processingStartedDate = kendo.parseDate(item.processingStartedDate);
+	}
+	if (item.processingEndedDate && typeof item.processingEndedDate === "string") {
+		item.processingEndedDate = kendo.parseDate(item.processingEndedDate);
+	}
 }
 
 /** Converts fields that need to be parsed in a batch operation */
 function parseBatchElementData(item) {
-    if (item.processedDate && typeof item.processedDate === "string") {
-    	item.processedDate = kendo.parseDate(item.processedDate);
-    }
+	if (item.processedDate && typeof item.processedDate === "string") {
+		item.processedDate = kendo.parseDate(item.processedDate);
+	}
 }
 
 /** Converts fields that need to be parsed in a user */
 function parseUserData(item) {
-    if (item.createdDate && typeof item.createdDate === "string") {
-    	item.createdDate = kendo.parseDate(item.createdDate);
-    }
-    if (item.updatedDate && typeof item.updatedDate === "string") {
-    	item.updatedDate = kendo.parseDate(item.updatedDate);
-    }
-    if (item.lastLogin && typeof item.lastLogin === "string") {
-    	item.lastLogin = kendo.parseDate(item.lastLogin);
-    }
+	if (item.createdDate && typeof item.createdDate === "string") {
+		item.createdDate = kendo.parseDate(item.createdDate);
+	}
+	if (item.updatedDate && typeof item.updatedDate === "string") {
+		item.updatedDate = kendo.parseDate(item.updatedDate);
+	}
+	if (item.lastLogin && typeof item.lastLogin === "string") {
+		item.lastLogin = kendo.parseDate(item.lastLogin);
+	}
 }
 
 /** Creates datasource for SiteWhere metadata */
 function swMetadataDatasource() {
 	return new kendo.data.DataSource({
-        data: new Array(),
-        schema: {
-        	model: {
-        		id: "name",
-        		fields: {
-        			name: { type: "string" },
-        			value: { type: "string" }
-        		}
-        	}
-        }
+		data : new Array(),
+		schema : {
+			model : {
+				id : "name",
+				fields : {
+					name : {
+						type : "string"
+					},
+					value : {
+						type : "string"
+					}
+				}
+			}
+		}
 	});
 }
 
@@ -268,33 +272,59 @@ function swMetadataGridOptions(datasource, title) {
 		title = "Add Metadata Entry";
 	}
 	return {
-        dataSource: datasource,
-        sortable: true,
-        toolbar: [{name: "create", text: title, template: "<a class='btn k-grid-add' href='javascript:void(0)'><i class='icon-remove sw-button-icon'></i>" + title + "</a>"}],
-		columns: [
-			{ field: "name", title: "Name", width: "125px" },
-			{ field: "value", title: "Value", width: "125px" },
-			{ command: [
-			    {name: "destroy", text: "Delete", template: "<a class='btn k-grid-delete' href='javascript:void(0)'><i class='icon-remove sw-button-icon'></i> Delete</a>"},
-				{name: "edit", text: "Edit", template: "<a class='btn k-grid-edit' href='javascript:void(0)' style='margin-left: 5px;'><i class='icon-edit sw-button-icon'></i> Edit</a>"}], 
-				title: "&nbsp;", width: "175px", attributes: { "class" : "command-buttons"} },
-		],
-        editable: "inline",
-        edit: function(e) {
-            var commandCell = e.container.find("td:last");
-            commandCell.html('<a class="btn k-grid-update" href="javascript:void(0)">' +
-            		'<i class="icon-check sw-button-icon"></i> Update</a>' +
-            		'<a class="btn k-grid-cancel" href="javascript:void(0)" style="margin-left: 5px;">' +
-            		'<i class="icon-remove sw-button-icon"></i> Cancel</a>');
-        }
-    }
+		dataSource : datasource,
+		sortable : true,
+		toolbar : [ {
+			name : "create",
+			text : title,
+			template : "<a class='btn k-grid-add' href='javascript:void(0)'><i class='icon-remove sw-button-icon'></i>"
+					+ title + "</a>"
+		} ],
+		columns : [
+				{
+					field : "name",
+					title : "Name",
+					width : "125px"
+				},
+				{
+					field : "value",
+					title : "Value",
+					width : "125px"
+				},
+				{
+					command : [
+							{
+								name : "destroy",
+								text : "Delete",
+								template : "<a class='btn k-grid-delete' href='javascript:void(0)'><i class='icon-remove sw-button-icon'></i> Delete</a>"
+							},
+							{
+								name : "edit",
+								text : "Edit",
+								template : "<a class='btn k-grid-edit' href='javascript:void(0)' style='margin-left: 5px;'><i class='icon-edit sw-button-icon'></i> Edit</a>"
+							} ],
+					title : "&nbsp;",
+					width : "175px",
+					attributes : {
+						"class" : "command-buttons"
+					}
+				}, ],
+		editable : "inline",
+		edit : function(e) {
+			var commandCell = e.container.find("td:last");
+			commandCell.html('<a class="btn k-grid-update" href="javascript:void(0)">'
+					+ '<i class="icon-check sw-button-icon"></i> Update</a>'
+					+ '<a class="btn k-grid-cancel" href="javascript:void(0)" style="margin-left: 5px;">'
+					+ '<i class="icon-remove sw-button-icon"></i> Cancel</a>');
+		}
+	}
 }
 
 /** Create block for handling metadata */
 function swMetadata(uid, dsource) {
 	var data = {
-		"uid": uid,
-		"dsname": dsource,
+		"uid" : uid,
+		"dsname" : dsource,
 	};
 	var template = kendo.template($("#tpl-metadata").html());
 	return template(data);
@@ -305,7 +335,10 @@ function swLookupAsMetadata(lookup) {
 	var metadata = [];
 	var key;
 	for (key in lookup) {
-		metadata.push({"name": key, "value": lookup[key]});
+		metadata.push({
+			"name" : key,
+			"value" : lookup[key]
+		});
 	}
 	return metadata;
 }
@@ -314,7 +347,7 @@ function swLookupAsMetadata(lookup) {
 function swMetadataAsLookup(metadata) {
 	var lookup = {};
 	for (var i = 0, len = metadata.length; i < len; i++) {
-	    lookup[metadata[i].name] = metadata[i].value;
+		lookup[metadata[i].name] = metadata[i].value;
 	}
 	return lookup;
 }
@@ -323,12 +356,13 @@ function swMetadataAsLookup(metadata) {
 function swHtmlifyCommand(command) {
 	var chtml = "";
 	if (command.description) {
-    	chtml += "<div class='sw-spec-command-desc'>";
-    	chtml += "/** " + command.description + " **/</div>"
+		chtml += "<div class='sw-spec-command-desc'>";
+		chtml += "/** " + command.description + " **/</div>"
 	}
-    chtml += "<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '" + command.token + "')\">" + 
-    	command.name + "</span>(";
-    for (var i = 0, param; param = command.parameters[i]; i++) {
+	chtml +=
+			"<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '" + command.token + "')\">"
+					+ command.name + "</span>(";
+	for (var i = 0, param; param = command.parameters[i]; i++) {
 		if (param.required) {
 			chtml += "<strong>"
 		}
@@ -342,18 +376,18 @@ function swHtmlifyCommand(command) {
 		}
 	}
 	chtml += ")"
-		return chtml;
+	return chtml;
 }
 
 /** Creates an HTML highlighted version of a command */
 function swHtmlifyCommandWithValues(command, values) {
 	var chtml = "";
 	if (command.description) {
-    	chtml += "<div class='sw-spec-command-desc'>";
-    	chtml += "/** " + command.description + " **/</div>"
+		chtml += "<div class='sw-spec-command-desc'>";
+		chtml += "/** " + command.description + " **/</div>"
 	}
-    chtml += "<span class=\"sw-spec-command-name\">" + command.name + "</span>(";
-    for (var i = 0, param; param = command.parameters[i]; i++) {
+	chtml += "<span class=\"sw-spec-command-name\">" + command.name + "</span>(";
+	for (var i = 0, param; param = command.parameters[i]; i++) {
 		if (param.required) {
 			chtml += "<strong>"
 		}
@@ -367,7 +401,7 @@ function swHtmlifyCommandWithValues(command, values) {
 		}
 	}
 	chtml += ")"
-		return chtml;
+	return chtml;
 }
 
 /** Create map of slot path to device data */
@@ -490,35 +524,44 @@ function swRemoveDeviceSlotForUnit(unit, slotPath) {
 
 /** Initializes a map based on site map metadata */
 /** TODO: This should be replaced by the sitewhere Leaflet library!! */
-function swInitMapForSite(map, site, tokenToSkip, onLoaded) {
+function swInitMapForSite(map, site, tenantAuthToken, tokenToSkip, onLoaded) {
 	var lookup = site.map.metadata;
 	var latitude = (lookup.centerLatitude ? lookup.centerLatitude : 39.9853);
 	var longitude = (lookup.centerLongitude ? lookup.centerLongitude : -104.6688);
 	var zoomLevel = (lookup.zoomLevel ? lookup.zoomLevel : 10);
-	var map = map.setView([latitude, longitude], zoomLevel);
+	var map = map.setView([ latitude, longitude ], zoomLevel);
 	if (site.map.type === MAP_TYPE_MAPQUEST) {
 		var mapquestUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
-		var subDomains = ['otile1','otile2','otile3','otile4'];
+		var subDomains = [ 'otile1', 'otile2', 'otile3', 'otile4' ];
 		var mapquestAttrib = 'MapQuest data';
-		var mapquest = new L.TileLayer(mapquestUrl, {maxZoom: 18, attribution: mapquestAttrib, subdomains: subDomains});		
+		var mapquest = new L.TileLayer(mapquestUrl, {
+			maxZoom : 18,
+			attribution : mapquestAttrib,
+			subdomains : subDomains
+		});
 		mapquest.addTo(map);
 	} else if (site.map.type == MAP_TYPE_GEOSERVER) {
-		var gsBaseUrl = (lookup.geoserverBaseUrl ? lookup.geoserverBaseUrl : "http://localhost:8080/geoserver/");
+		var gsBaseUrl =
+				(lookup.geoserverBaseUrl ? lookup.geoserverBaseUrl : "http://localhost:8080/geoserver/");
 		var gsRelativeUrl = "geoserver/gwc/service/gmaps?layers=";
 		var gsLayerName = (lookup.geoserverLayerName ? lookup.geoserverLayerName : "tiger:tiger_roads");
 		var gsParams = "&zoom={z}&x={x}&y={y}&format=image/png";
 		var gsUrl = gsBaseUrl + gsRelativeUrl + gsLayerName + gsParams;
-		var geoserver = new L.TileLayer(gsUrl, {maxZoom: 18});		
+		var geoserver = new L.TileLayer(gsUrl, {
+			maxZoom : 18
+		});
 		geoserver.addTo(map);
 	}
 	// Asyncronously load zones and add layer to map.
 	if (site.token) {
 		var featureGroup = new L.FeatureGroup();
 		map.addLayer(featureGroup);
-		$.getJSON("/sitewhere/api/sites/" + site.token + "/zones", 
-				function(zones) { swAddZonesToFeatureGroup(featureGroup, zones, tokenToSkip, onLoaded) }, 
-				function(jqXHR, textStatus, errorThrown) { handleError(jqXHR, "Unable to load zone data."); }
-		);
+		$.getJSON("/sitewhere/api/sites/" + site.token + "/zones?tenantAuthToken=" + tenantAuthToken,
+			function(zones) {
+				swAddZonesToFeatureGroup(featureGroup, zones, tokenToSkip, onLoaded)
+			}, function(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to load zone data.");
+			});
 	}
 	return map;
 }
@@ -527,10 +570,10 @@ function swInitMapForSite(map, site, tokenToSkip, onLoaded) {
 function swAddZonesToFeatureGroup(layers, zones, tokenToSkip, onLoaded) {
 	var zone, results = zones.results;
 	var polygon;
-	
+
 	// Add newest last.
 	results.reverse();
-	
+
 	for (var zoneIndex = 0; zoneIndex < results.length; zoneIndex++) {
 		zone = results[zoneIndex];
 		if (zone.token != tokenToSkip) {
@@ -552,38 +595,42 @@ function swCreatePolygonForZone(zone) {
 		latLngs.push(new L.LatLng(coordinate.latitude, coordinate.longitude));
 	}
 	var polygon = new L.Polygon(latLngs, {
-		"color": zone.borderColor, "opacity": 1, weight: 3,
-		"fillColor": zone.fillColor, "fillOpacity": zone.opacity,
-		"clickable": false});
+		"color" : zone.borderColor,
+		"opacity" : 1,
+		weight : 3,
+		"fillColor" : zone.fillColor,
+		"fillOpacity" : zone.opacity,
+		"clickable" : false
+	});
 	return polygon;
 }
 
 /** Enables drawing features on map */
 function swEnableMapDrawing(map, borderColor, fillColor, fillAlpha) {
 	var options = {
-			position: 'topright',
-			draw: {
-		        polyline: false,
-		        circle: false,
-		        marker: false,
-		        polygon: {
-        	        shapeOptions: {
-        	        	color: borderColor,
-        	        	opacity: 1,
-        	            fillColor: fillColor,
-        	            fillOpacity: fillAlpha
-        	        }
-		        },
-		        rectangle: {
-        	        shapeOptions: {
-        	        	color: borderColor,
-        	        	opacity: 1,
-        	            fillColor: fillColor,
-        	            fillOpacity: fillAlpha
-        	        }
-		        }
-		    },
-		    edit: false
+		position : 'topright',
+		draw : {
+			polyline : false,
+			circle : false,
+			marker : false,
+			polygon : {
+				shapeOptions : {
+					color : borderColor,
+					opacity : 1,
+					fillColor : fillColor,
+					fillOpacity : fillAlpha
+				}
+			},
+			rectangle : {
+				shapeOptions : {
+					color : borderColor,
+					opacity : 1,
+					fillColor : fillColor,
+					fillOpacity : fillAlpha
+				}
+			}
+		},
+		edit : false
 	};
 
 	var drawControl = new L.Control.Draw(options);
@@ -594,12 +641,12 @@ function swEnableMapDrawing(map, borderColor, fillColor, fillAlpha) {
 /** Enables drawing features on map */
 function swEnableMapEditing(map, editableLayers) {
 	var options = {
-			position: 'topright',
-			draw: false,
-		    edit: {
-		        featureGroup: editableLayers,
-		        remove: false
-		    }
+		position : 'topright',
+		draw : false,
+		edit : {
+			featureGroup : editableLayers,
+			remove : false
+		}
 	};
 
 	var drawControl = new L.Control.Draw(options);
