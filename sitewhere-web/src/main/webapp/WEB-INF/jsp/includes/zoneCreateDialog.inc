@@ -241,7 +241,7 @@
 			zcNewZoneLayer = e.layer;
 			zcMap.addLayer(zcNewZoneLayer);
 		});
-		swInitMapForSite(zcMap, zcSite);
+		swInitMapForSite(zcMap, zcSite, '${tenant.authenticationToken}');
 
 		// Function called on submit.
 		zcSubmitCallback = callback;

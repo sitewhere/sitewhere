@@ -19,8 +19,7 @@
 </script>
 <div id="dfl-dialog" class="modal hide">
 	<div class="modal-header k-header">
-		<button type="button" class="close" data-dismiss="modal"
-			aria-hidden="true">&times;</button>
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3>Filter Device List</h3>
 	</div>
 	<div class="modal-body">
@@ -32,12 +31,9 @@
 				<li>Other Options</li>
 			</ul>
 			<div>
-				<form id="dfl-spec-form" class="form-horizontal"
-					style="padding-top: 15px;">
-					<div class="control-group"
-						style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-						<label class="control-label" for="dfl-filter-type">Filter
-							by Specification</label>
+				<form id="dfl-spec-form" class="form-horizontal" style="padding-top: 15px;">
+					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
+						<label class="control-label" for="dfl-filter-type">Filter by Specification</label>
 						<div class="controls">
 							<input id="dfl-spec-filter-type" style="width: 300px;" />
 						</div>
@@ -45,8 +41,8 @@
 				</form>
 				<div id="dfl-spec-forms">
 					<form id="dfl-spec-all" class="form-horizontal">
-						<div class="sw-info-text">This filter does not limit results
-							based on device specification.</div>
+						<div class="sw-info-text">This filter does not limit results based on device
+							specification.</div>
 					</form>
 					<form id="dfl-spec-choice" class="form-horizontal hide">
 						<div class="control-group">
@@ -54,20 +50,16 @@
 								Specification</label>
 							<div class="controls">
 								<div id="dfl-specifications" class="sw-form-search-results"></div>
-								<input type="hidden" id="dfl-chosen-specification-token"
-									title="Specification" />
+								<input type="hidden" id="dfl-chosen-specification-token" title="Specification" />
 							</div>
 						</div>
 					</form>
 				</div>
 			</div>
 			<div>
-				<form id="dfl-groups-form" class="form-horizontal"
-					style="padding-top: 15px;">
-					<div class="control-group"
-						style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-						<label class="control-label" for="dfl-filter-type">Group
-							Filter</label>
+				<form id="dfl-groups-form" class="form-horizontal" style="padding-top: 15px;">
+					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
+						<label class="control-label" for="dfl-filter-type">Group Filter</label>
 						<div class="controls">
 							<input id="dfl-group-filter-type" style="width: 300px;" />
 						</div>
@@ -75,24 +67,21 @@
 				</form>
 				<div id="dfl-groups-forms">
 					<form id="dfl-group-all" class="form-horizontal">
-						<div class="sw-info-text">This filter will choose all
-							devices without regard to which group they belong to.</div>
+						<div class="sw-info-text">This filter will choose all devices without regard to which
+							group they belong to.</div>
 					</form>
 					<form id="dfl-group-choice" class="form-horizontal hide">
 						<div class="control-group">
-							<label class="control-label" for="dfl-chosen-group-token">Choose
-								Device Group</label>
+							<label class="control-label" for="dfl-chosen-group-token">Choose Device Group</label>
 							<div class="controls">
 								<div id="dfl-devicegroups" class="sw-form-search-results"></div>
-								<input type="hidden" id="dfl-chosen-group-token"
-									title="Device Group" />
+								<input type="hidden" id="dfl-chosen-group-token" title="Device Group" />
 							</div>
 						</div>
 					</form>
 					<form id="dfl-groups-by-role" class="form-horizontal hide">
 						<div class="control-group">
-							<label class="control-label" for="dfl-groups-role-text">Enter
-								Role</label>
+							<label class="control-label" for="dfl-groups-role-text">Enter Role</label>
 							<div class="controls">
 								<input type="text" id="dfl-groups-role-text" title="Role" />
 							</div>
@@ -101,12 +90,9 @@
 				</div>
 			</div>
 			<div>
-				<form id="dfl-cdate-form" class="form-horizontal"
-					style="padding-top: 15px;">
-					<div class="control-group"
-						style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-						<label class="control-label" for="dfl-cdate-type">Created
-							Date Range</label>
+				<form id="dfl-cdate-form" class="form-horizontal" style="padding-top: 15px;">
+					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
+						<label class="control-label" for="dfl-cdate-type">Created Date Range</label>
 						<div class="controls">
 							<input id="dfl-cdate-type" class="input-xlarge" />
 						</div>
@@ -114,56 +100,45 @@
 				</form>
 				<div id="dfl-cdate-type-forms">
 					<form id="dfl-cdate-any" class="form-horizontal">
-						<div class="sw-info-text">All devices are returned
-							regardless of when they were created.</div>
+						<div class="sw-info-text">All devices are returned regardless of when they were created.</div>
 					</form>
 					<form id="dfl-cdate-hour" class="form-horizontal hide">
-						<div class="sw-info-text">Devices that were created more
-							than and hour ago are filtered.</div>
+						<div class="sw-info-text">Devices that were created more than and hour ago are filtered.</div>
 					</form>
 					<form id="dfl-cdate-day" class="form-horizontal hide">
-						<div class="sw-info-text">Devices that were created more
-							than a day ago are filtered.</div>
+						<div class="sw-info-text">Devices that were created more than a day ago are filtered.</div>
 					</form>
 					<form id="dfl-cdate-week" class="form-horizontal hide">
-						<div class="sw-info-text">Devices that were created more
-							than a week ago are filtered.</div>
+						<div class="sw-info-text">Devices that were created more than a week ago are filtered.</div>
 					</form>
 					<form id="dfl-cdate-after" class="form-horizontal hide">
-						<div class="sw-info-text">Devices that were created after
-							the given date are included.</div>
+						<div class="sw-info-text">Devices that were created after the given date are included.</div>
 						<div class="control-group">
-							<label class="control-label" for="dfl-cdate-after-date">After
-								Date</label>
+							<label class="control-label" for="dfl-cdate-after-date">After Date</label>
 							<div class="controls">
 								<input id="dfl-cdate-after-date" />
 							</div>
 						</div>
 					</form>
 					<form id="dfl-cdate-before" class="form-horizontal hide">
-						<div class="sw-info-text">Devices that were created before
-							the given date are included.</div>
+						<div class="sw-info-text">Devices that were created before the given date are included.</div>
 						<div class="control-group">
-							<label class="control-label" for="dfl-cdate-before-date">Before
-								Date</label>
+							<label class="control-label" for="dfl-cdate-before-date">Before Date</label>
 							<div class="controls">
 								<input id="dfl-cdate-before-date" />
 							</div>
 						</div>
 					</form>
 					<form id="dfl-cdate-between" class="form-horizontal hide">
-						<div class="sw-info-text">Devices that were created within
-							the date range are included.</div>
+						<div class="sw-info-text">Devices that were created within the date range are included.</div>
 						<div class="control-group">
-							<label class="control-label" for="dfl-cdate-between-date-start">Start
-								Date</label>
+							<label class="control-label" for="dfl-cdate-between-date-start">Start Date</label>
 							<div class="controls">
 								<input id="dfl-cdate-between-date-start" />
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="dfl-cdate-between-date-end">End
-								Date</label>
+							<label class="control-label" for="dfl-cdate-between-date-end">End Date</label>
 							<div class="controls">
 								<input id="dfl-cdate-between-date-end" />
 							</div>
@@ -172,14 +147,11 @@
 				</div>
 			</div>
 			<div>
-				<form id="dfl-other-options" class="form-horizontal"
-					style="padding-top: 15px;">
-					<div class="sw-info-text">Choose the option below to exclude
-						devices that have a current assignment. Otherwise, both assigned
-						and unassigned devices will be returned.</div>
+				<form id="dfl-other-options" class="form-horizontal" style="padding-top: 15px;">
+					<div class="sw-info-text">Choose the option below to exclude devices that have a current
+						assignment. Otherwise, both assigned and unassigned devices will be returned.</div>
 					<div class="control-group">
-						<label class="control-label" for="dfl-option-excl-assigned">Exclude
-							Assigned</label>
+						<label class="control-label" for="dfl-option-excl-assigned">Exclude Assigned</label>
 						<div class="controls">
 							<input type="checkbox" id="dfl-option-excl-assigned" />
 						</div>
@@ -189,9 +161,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a>
-		<a id="dfl-dialog-submit" href="javascript:void(0)"
-			class="btn btn-primary" data-i18n="includes.deviceFilterDialog.ApplyFilter"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+			id="dfl-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+			data-i18n="includes.deviceFilterDialog.ApplyFilter"></a>
 	</div>
 </div>
 
@@ -272,109 +244,115 @@
 		value : "dfl-cdate-between"
 	}, ];
 
-	$(document).ready(function() {
+	$(document)
+			.ready(
+				function() {
 
-		/** Create tab strip */
-		dflTabs = $("#dfl-tabs").kendoTabStrip({
-			animation : false
-		}).data("kendoTabStrip");
+					/** Create tab strip */
+					dflTabs = $("#dfl-tabs").kendoTabStrip({
+						animation : false
+					}).data("kendoTabStrip");
 
-		// Specification filter dropdown.
-		dflSpecFilterType = $("#dfl-spec-filter-type").kendoDropDownList({
-			dataTextField : "text",
-			dataValueField : "value",
-			dataSource : dflSpecFilterTypes,
-			index : 0,
-			change : dflSpecFilterTypeChanged
-		}).data("kendoDropDownList");
+					// Specification filter dropdown.
+					dflSpecFilterType = $("#dfl-spec-filter-type").kendoDropDownList({
+						dataTextField : "text",
+						dataValueField : "value",
+						dataSource : dflSpecFilterTypes,
+						index : 0,
+						change : dflSpecFilterTypeChanged
+					}).data("kendoDropDownList");
 
-		/** Create AJAX datasource for specifications list */
-		dflSpecificationsDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/specifications",
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-			},
-		});
+					/** Create AJAX datasource for specifications list */
+					dflSpecificationsDS =
+							new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/specifications?tenantAuthToken=${tenant.authenticationToken}",
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+									},
+								});
 
-		/** Create the specifications list */
-		dflSpecifications = $("#dfl-specifications").kendoListView({
-			dataSource : dflSpecificationsDS,
-			selectable : "single",
-			template : kendo.template($("#dfl-specification-template").html()),
-			change : dflSpecificationChosen
-		}).data("kendoListView");
-		
-		// Group filter dropdown.
-		dflGroupFilterType = $("#dfl-group-filter-type").kendoDropDownList({
-			dataTextField : "text",
-			dataValueField : "value",
-			dataSource : dflGroupFilterTypes,
-			index : 0,
-			change : dflGroupFilterTypeChanged
-		}).data("kendoDropDownList");
+					/** Create the specifications list */
+					dflSpecifications = $("#dfl-specifications").kendoListView({
+						dataSource : dflSpecificationsDS,
+						selectable : "single",
+						template : kendo.template($("#dfl-specification-template").html()),
+						change : dflSpecificationChosen
+					}).data("kendoListView");
 
-		/** Create AJAX datasource for device groups list */
-		dflDeviceGroupsDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/devicegroups",
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-			},
-		});
+					// Group filter dropdown.
+					dflGroupFilterType = $("#dfl-group-filter-type").kendoDropDownList({
+						dataTextField : "text",
+						dataValueField : "value",
+						dataSource : dflGroupFilterTypes,
+						index : 0,
+						change : dflGroupFilterTypeChanged
+					}).data("kendoDropDownList");
 
-		/** Create the specifications list */
-		dflDeviceGroups = $("#dfl-devicegroups").kendoListView({
-			dataSource : dflDeviceGroupsDS,
-			selectable : "single",
-			template : kendo.template($("#dfl-group-template").html()),
-			change : dflDeviceGroupChosen
-		}).data("kendoListView");
+					/** Create AJAX datasource for device groups list */
+					dflDeviceGroupsDS =
+							new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/devicegroups?tenantAuthToken=${tenant.authenticationToken}",
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+									},
+								});
 
-		/** Create dropdown list for choosing create date range */
-		dflCdateType = $("#dfl-cdate-type").kendoDropDownList({
-			dataTextField : "text",
-			dataValueField : "value",
-			dataSource : dflDateRanges,
-			index : 0,
-			change : dflCreateDateTypeChanged
-		}).data("kendoDropDownList");
+					/** Create the specifications list */
+					dflDeviceGroups = $("#dfl-devicegroups").kendoListView({
+						dataSource : dflDeviceGroupsDS,
+						selectable : "single",
+						template : kendo.template($("#dfl-group-template").html()),
+						change : dflDeviceGroupChosen
+					}).data("kendoListView");
 
-		dflDateAfter = $("#dfl-cdate-after-date").kendoDateTimePicker({
-			value : new Date()
-		}).data("kendoDateTimePicker");
-		dflDateBefore = $("#dfl-cdate-before-date").kendoDateTimePicker({
-			value : new Date()
-		}).data("kendoDateTimePicker");
-		dflDateBetweenStart = $("#dfl-cdate-between-date-start").kendoDateTimePicker({
-			value : new Date()
-		}).data("kendoDateTimePicker");
-		dflDateBetweenEnd = $("#dfl-cdate-between-date-end").kendoDateTimePicker({
-			value : new Date()
-		}).data("kendoDateTimePicker");
+					/** Create dropdown list for choosing create date range */
+					dflCdateType = $("#dfl-cdate-type").kendoDropDownList({
+						dataTextField : "text",
+						dataValueField : "value",
+						dataSource : dflDateRanges,
+						index : 0,
+						change : dflCreateDateTypeChanged
+					}).data("kendoDropDownList");
 
-		/** Handle dialog submit */
-		$('#dfl-dialog-submit').click(function(event) {
-			event.preventDefault();
-			if (!dflValidate()) {
-				return;
-			}
-			if (dflSubmitCallback != null) {
-				dflSubmitCallback(createFilterCriteria());
-			}
-			$('#dfl-dialog').modal('hide');
-		});
-	});
+					dflDateAfter = $("#dfl-cdate-after-date").kendoDateTimePicker({
+						value : new Date()
+					}).data("kendoDateTimePicker");
+					dflDateBefore = $("#dfl-cdate-before-date").kendoDateTimePicker({
+						value : new Date()
+					}).data("kendoDateTimePicker");
+					dflDateBetweenStart = $("#dfl-cdate-between-date-start").kendoDateTimePicker({
+						value : new Date()
+					}).data("kendoDateTimePicker");
+					dflDateBetweenEnd = $("#dfl-cdate-between-date-end").kendoDateTimePicker({
+						value : new Date()
+					}).data("kendoDateTimePicker");
+
+					/** Handle dialog submit */
+					$('#dfl-dialog-submit').click(function(event) {
+						event.preventDefault();
+						if (!dflValidate()) {
+							return;
+						}
+						if (dflSubmitCallback != null) {
+							dflSubmitCallback(createFilterCriteria());
+						}
+						$('#dfl-dialog').modal('hide');
+					});
+				});
 
 	/** Create an object that describes chosen filter criteria */
 	function createFilterCriteria() {
@@ -387,7 +365,7 @@
 		if ("dfl-spec-choice" == specFilterType) {
 			criteria.specification = $("#dfl-chosen-specification-token").val();
 		}
-		
+
 		if ("dfl-group-choice" == groupFilterType) {
 			criteria.group = $("#dfl-chosen-group-token").val();
 		} else if ("dfl-groups-by-role" == groupFilterType) {

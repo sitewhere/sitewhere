@@ -93,99 +93,105 @@
 	var acTimeout;
 	var acLastSearch;
 
-	$(document).ready(
-		function() {
+	$(document)
+			.ready(
+				function() {
 
-			/** Handle hiding asset selection based on checkbox */
-			$("#ac-associate-asset").click(onAssetCheckChange).change(onAssetCheckChange);
+					/** Handle hiding asset selection based on checkbox */
+					$("#ac-associate-asset").click(onAssetCheckChange).change(onAssetCheckChange);
 
-			/** Create AJAX datasource for all asset modules */
-			acAssetModulesDS = new kendo.data.DataSource({
-				transport : {
-					read : {
-						url : "${pageContext.request.contextPath}/api/assets/modules",
-						dataType : "json",
+					/** Create AJAX datasource for all asset modules */
+					acAssetModulesDS =
+							new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/assets/modules?tenantAuthToken=${tenant.authenticationToken}",
+											dataType : "json",
+										}
+									},
+								});
+
+					/** Create asset modules dropdown */
+					acAssetModules = $("#ac-asset-module").kendoDropDownList({
+						dataTextField : "name",
+						dataValueField : "id",
+						dataSource : acAssetModulesDS,
+						index : 0,
+						change : acAssetModuleChanged,
+						dataBound : function(e) {
+							acAssetModuleChanged();
+						}
+					}).data("kendoDropDownList");
+
+					/** Create the asset match list */
+					acAssetMatches = $("#ac-asset-matches").kendoListView({
+						selectable : "single",
+						template : kendo.template($("#hardware-asset-entry").html()),
+						change : acAssetChosen
+					}).data("kendoListView");
+
+					/** Update hardware search datasource based on entered criteria */
+					$("#ac-asset-search").bind("change paste keyup", function() {
+						window.clearTimeout(acTimeout);
+						acTimeout = window.setTimeout(acSearchCriteriaUpdated, 300);
+					});
+
+					/** Create tab strip for the update dialog */
+					acTabs = $("#ac-tabs").kendoTabStrip({
+						animation : false
+					}).data("kendoTabStrip");
+
+					/** Handle dialog submit */
+					$('#ac-submit')
+							.click(
+								function(event) {
+									event.preventDefault();
+									if (!acValidate()) {
+										return;
+									}
+
+									var assignmentData = {
+										"deviceHardwareId" : $('#ac-hardware-id').val(),
+										"metadata" : swMetadataAsLookup(acMetadataDS.data()),
+									}
+									if (hasAssociatedAsset()) {
+										var assetModuleId = $("#ac-asset-module").val();
+										var assetId = $('#ac-asset-id').val();
+										assignmentData.assignmentType = "Associated";
+										assignmentData.assetModuleId = assetModuleId;
+										assignmentData.assetId = assetId;
+									} else {
+										assignmentData.assignmentType = "Unassociated";
+									}
+									$
+											.postJSON(
+												"${pageContext.request.contextPath}/api/assignments?tenantAuthToken=${tenant.authenticationToken}",
+												assignmentData, onCreateSuccess, onCreateFail);
+								});
+
+					/** Called on successful create */
+					function onCreateSuccess() {
+						$('#ac-dialog').modal('hide');
+						if (acSubmitCallback != null) {
+							acSubmitCallback();
+						}
 					}
-				},
-			});
 
-			/** Create asset modules dropdown */
-			acAssetModules = $("#ac-asset-module").kendoDropDownList({
-				dataTextField : "name",
-				dataValueField : "id",
-				dataSource : acAssetModulesDS,
-				index : 0,
-				change : acAssetModuleChanged,
-				dataBound : function(e) {
-					acAssetModuleChanged();
-				}
-			}).data("kendoDropDownList");
-
-			/** Create the asset match list */
-			acAssetMatches = $("#ac-asset-matches").kendoListView({
-				selectable : "single",
-				template : kendo.template($("#hardware-asset-entry").html()),
-				change : acAssetChosen
-			}).data("kendoListView");
-
-			/** Update hardware search datasource based on entered criteria */
-			$("#ac-asset-search").bind("change paste keyup", function() {
-				window.clearTimeout(acTimeout);
-				acTimeout = window.setTimeout(acSearchCriteriaUpdated, 300);
-			});
-
-			/** Create tab strip for the update dialog */
-			acTabs = $("#ac-tabs").kendoTabStrip({
-				animation : false
-			}).data("kendoTabStrip");
-
-			/** Handle dialog submit */
-			$('#ac-submit').click(
-				function(event) {
-					event.preventDefault();
-					if (!acValidate()) {
-						return;
+					/** Handle failed call to create device */
+					function onCreateFail(jqXHR, textStatus, errorThrown) {
+						handleError(jqXHR, "Unable to assign device.");
 					}
 
-					var assignmentData = {
-						"deviceHardwareId" : $('#ac-hardware-id').val(),
-						"metadata" : swMetadataAsLookup(acMetadataDS.data()),
+					/** Called when checkbox for asset association changes */
+					function onAssetCheckChange() {
+						if (hasAssociatedAsset()) {
+							$("#ac-asset-information").show();
+						} else {
+							$("#ac-asset-information").hide();
+						}
 					}
-					if (hasAssociatedAsset()) {
-						var assetModuleId = $("#ac-asset-module").val();
-						var assetId = $('#ac-asset-id').val();
-						assignmentData.assignmentType = "Associated";
-						assignmentData.assetModuleId = assetModuleId;
-						assignmentData.assetId = assetId;
-					} else {
-						assignmentData.assignmentType = "Unassociated";
-					}
-					$.postJSON("${pageContext.request.contextPath}/api/assignments", assignmentData,
-						onCreateSuccess, onCreateFail);
 				});
-
-			/** Called on successful create */
-			function onCreateSuccess() {
-				$('#ac-dialog').modal('hide');
-				if (acSubmitCallback != null) {
-					acSubmitCallback();
-				}
-			}
-
-			/** Handle failed call to create device */
-			function onCreateFail(jqXHR, textStatus, errorThrown) {
-				handleError(jqXHR, "Unable to assign device.");
-			}
-
-			/** Called when checkbox for asset association changes */
-			function onAssetCheckChange() {
-				if (hasAssociatedAsset()) {
-					$("#ac-asset-information").show();
-				} else {
-					$("#ac-asset-information").hide();
-				}
-			}
-		});
 
 	/** Validate the dialog */
 	function acValidate() {
@@ -221,7 +227,8 @@
 					transport : {
 						read : {
 							url : "${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
-									+ "/assets?criteria=" + criteria,
+									+ "/assets?criteria=" + criteria
+									+ "&tenantAuthToken=${tenant.authenticationToken}",
 							dataType : "json",
 						}
 					},
@@ -272,7 +279,8 @@
 		if (criteria != acLastSearch) {
 			var url =
 					"${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
-							+ "/assets?criteria=" + criteria;
+							+ "/assets?criteria=" + criteria
+							+ "&tenantAuthToken=${tenant.authenticationToken}";
 			acAssetDS.transport.options.read.url = url;
 			acAssetDS.read();
 		}

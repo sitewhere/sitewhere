@@ -304,7 +304,7 @@
 	function onDeleteZone(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swZoneDelete(token, onDeleteZoneComplete);
+		swZoneDelete(token, '${tenant.authenticationToken}', onDeleteZoneComplete);
 	}
 
 	/** Called after successful delete zone */
