@@ -585,6 +585,23 @@ public class SiteWhereController {
 	}
 
 	/**
+	 * Display the "list tenants" page.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/tenants/list")
+	public ModelAndView listTenants(HttpServletRequest request) {
+		try {
+			Map<String, Object> data = createBaseData(request);
+			return new ModelAndView("tenants/list", data);
+		} catch (SiteWhereException e) {
+			LOGGER.error(e);
+			return showError(e.getMessage());
+		}
+	}
+
+	/**
 	 * Returns a {@link ModelAndView} that will display an error message.
 	 * 
 	 * @param message

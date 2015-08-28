@@ -110,21 +110,31 @@
 						<c:choose>
 							<c:when test="${sitewhere_section == 'batch'}">
 								<li class="active"><a href="${pageContext.request.contextPath}/admin/batch/list.html"
-									data-i18n="public.Batch"></a></li>
+									data-i18n="public.Batch">Batch</a></li>
 							</c:when>
 							<c:otherwise>
 								<li><a href="${pageContext.request.contextPath}/admin/batch/list.html"
-									data-i18n="public.Batch"></a></li>
+									data-i18n="public.Batch">Batch</a></li>
 							</c:otherwise>
 						</c:choose>
 						<c:choose>
 							<c:when test="${sitewhere_section == 'users'}">
 								<li class="active"><a href="${pageContext.request.contextPath}/admin/users/list.html"
-									data-i18n="public.Users"></a></li>
+									data-i18n="public.Users">Users</a></li>
 							</c:when>
 							<c:otherwise>
 								<li><a href="${pageContext.request.contextPath}/admin/users/list.html"
-									data-i18n="public.Users"></a></li>
+									data-i18n="public.Users">Users</a></li>
+							</c:otherwise>
+						</c:choose>
+						<c:choose>
+							<c:when test="${sitewhere_section == 'tenants'}">
+								<li class="active"><a href="${pageContext.request.contextPath}/admin/tenants/list.html"
+									data-i18n="public.Tenants">Tenants</a></li>
+							</c:when>
+							<c:otherwise>
+								<li><a href="${pageContext.request.contextPath}/admin/tenants/list.html"
+									data-i18n="public.Tenants">Tenants</a></li>
 							</c:otherwise>
 						</c:choose>
 					</ul>
