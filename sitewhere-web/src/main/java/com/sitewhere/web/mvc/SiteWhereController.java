@@ -196,8 +196,8 @@ public class SiteWhereController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/sites/detail")
-	public ModelAndView siteDetail(@RequestParam("siteToken") String siteToken, HttpServletRequest request) {
+	@RequestMapping("/sites/{siteToken}")
+	public ModelAndView siteDetail(@PathVariable("siteToken") String siteToken, HttpServletRequest request) {
 		if (siteToken != null) {
 			try {
 				Map<String, Object> data = createBaseData(request);
@@ -224,8 +224,8 @@ public class SiteWhereController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/assignments/detail")
-	public ModelAndView assignmentDetail(@RequestParam("token") String token, HttpServletRequest request) {
+	@RequestMapping("/assignments/{token}")
+	public ModelAndView assignmentDetail(@PathVariable("token") String token, HttpServletRequest request) {
 		if (token != null) {
 			try {
 				Map<String, Object> data = createBaseData(request);
@@ -256,8 +256,8 @@ public class SiteWhereController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/assignments/emulator")
-	public ModelAndView assignmentEmulator(@RequestParam("token") String token, HttpServletRequest request) {
+	@RequestMapping("/assignments/{token}/emulator")
+	public ModelAndView assignmentEmulator(@PathVariable("token") String token, HttpServletRequest request) {
 		if (token != null) {
 			try {
 				Map<String, Object> data = createBaseData(request);
@@ -301,8 +301,8 @@ public class SiteWhereController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/specifications/detail")
-	public ModelAndView specificationDetail(@RequestParam("token") String token, HttpServletRequest request) {
+	@RequestMapping("/specifications/{token}")
+	public ModelAndView specificationDetail(@PathVariable("token") String token, HttpServletRequest request) {
 		if (token != null) {
 			try {
 				Map<String, Object> data = createBaseData(request);
@@ -389,8 +389,8 @@ public class SiteWhereController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/devices/detail")
-	public ModelAndView deviceDetail(@RequestParam("hardwareId") String hardwareId, HttpServletRequest request) {
+	@RequestMapping("/devices/{hardwareId}")
+	public ModelAndView deviceDetail(@PathVariable("hardwareId") String hardwareId, HttpServletRequest request) {
 		if (hardwareId != null) {
 			try {
 				Map<String, Object> data = createBaseData(request);
@@ -437,8 +437,8 @@ public class SiteWhereController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/groups/detail")
-	public ModelAndView deviceGroupDetail(@RequestParam("groupToken") String groupToken,
+	@RequestMapping("/groups/{groupToken}")
+	public ModelAndView deviceGroupDetail(@PathVariable("groupToken") String groupToken,
 			HttpServletRequest request) {
 		if (groupToken != null) {
 			try {
@@ -538,8 +538,8 @@ public class SiteWhereController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/batch/command")
-	public ModelAndView batchCommandInvocationDetail(@RequestParam("token") String batchToken,
+	@RequestMapping("/batch/command/{token}")
+	public ModelAndView batchCommandInvocationDetail(@PathVariable("token") String batchToken,
 			HttpServletRequest request) {
 		if (batchToken != null) {
 			try {

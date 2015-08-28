@@ -48,17 +48,17 @@
 			</div>
 			<div>
 				<span class="sw-device-header-label" title="Device specification used">Device Specification:</span>
-				<span title="#:specification.name#"><a href='/sitewhere/admin/specifications/detail.html?token=#:specification.token#'>#:specification.name#</a></span>
+				<span title="#:specification.name#"><a href='/sitewhere/admin/specifications/#:specification.token#.html'>#:specification.name#</a></span>
 			</div>
 			<div>
 				<span class="sw-device-header-label" title="Site where device is deployed">Deployed Site:</span>
-				<span title="#:site.name#"><a href='/sitewhere/admin/sites/detail.html?siteToken=#:site.token#'>#:site.name#</a></span>
+				<span title="#:site.name#"><a href='/sitewhere/admin/sites/#:site.token#.html'>#:site.name#</a></span>
 			</div>
 			<div>
 				<span class="sw-device-header-label" title="Currently assigned asset">Current Assignment:</span>
 # if (data.assignment) { #
 # if (assignment.assignmentType != 'Unassociated') { #
-				<span title="#:assignment.assetName#"><a href='/sitewhere/admin/assignments/detail.html?token=#:assignment.token#'>#:assignment.assetName#</a></span>
+				<span title="#:assignment.assetName#"><a href='/sitewhere/admin/assignments/#:assignment.token#.html'>#:assignment.assetName#</a></span>
 # } else { #
 				<span title="Not associated with an asset">#= i18next("public.DeviceNotAssociated") #</span>
 # } #

@@ -23,9 +23,7 @@
 <div id="groups" class="sw-device-group-list"></div>
 <div id="pager" class="k-pager-wrap"></div>
 
-<form id="view-device-group-detail" method="get" action="detail.html">
-	<input id="detail-group-token" name="groupToken" type="hidden" />
-</form>
+<form id="view-device-group-detail" method="get"></form>
 
 <%@ include file="../includes/templateRoleEntry.inc"%>
 <%@ include file="../includes/deviceGroupCreateDialog.inc"%>
@@ -43,7 +41,8 @@
 	function onDeviceGroupOpenClicked(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$('#detail-group-token').val(token);
+		$("#view-device-group-detail").attr("action",
+			"${pageContext.request.contextPath}/admin/groups/" + token + ".html");
 		$('#view-device-group-detail').submit();
 	}
 

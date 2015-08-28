@@ -56,9 +56,7 @@
 	</c:choose>
 </div>
 
-<form id="view-assignment-detail" method="get" action="../assignments/detail.html">
-	<input id="detail-assignment-token" name="token" type="hidden" />
-</form>
+<form id="view-assignment-detail" method="get"></form>
 
 <%@ include file="../includes/deviceUpdateDialog.inc"%>
 <%@ include file="../includes/deviceSearchDialog.inc"%>
@@ -111,7 +109,7 @@
 	function onViewAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$('#detail-assignment-token').val(token);
+		$("#view-assignment-detail").attr("action", "assignments/" + token + ".html");
 		$('#view-assignment-detail').submit();
 	}
 

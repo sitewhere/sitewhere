@@ -11,6 +11,7 @@ L.Map.SiteWhere = L.Map.extend({
 	options: {
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		siteToken: null,
+		tenantAuthToken: null,
 		showZones: true,
 		onZonesLoaded: null,
 	},
@@ -23,6 +24,8 @@ L.Map.SiteWhere = L.Map.extend({
 		// Error if no site token specified.
 		if (!this.options.siteToken) {
 			this._handleNoSiteToken();
+		} else if (!this.options.tenantAuthToken) {
+			this._handleNoTenantAuthToken();
 		} else {
 			this.refresh();
 		}
@@ -31,7 +34,8 @@ L.Map.SiteWhere = L.Map.extend({
 	/** Refresh site information */
 	refresh: function() {
 		var self = this;
-		var url = this.options.siteWhereApi + 'sites/' + this.options.siteToken;
+		var url = this.options.siteWhereApi + 'sites/' + this.options.siteToken + 
+			'?tenantAuthToken=' + this.options.tenantAuthToken;
 		L.SiteWhere.Util.getJSON(url, 
 				function(site, status, jqXHR) { self._onSiteLoaded(site); }, 
 				function(jqXHR, textStatus, errorThrown) { self._onSiteFailed(jqXHR, textStatus, errorThrown); }
@@ -50,6 +54,7 @@ L.Map.SiteWhere = L.Map.extend({
 			var zones = L.FeatureGroup.SiteWhere.zones({
 				siteWhereApi: this.options.siteWhereApi,
 				siteToken: this.options.siteToken,
+				tenantAuthToken: this.options.tenantAuthToken,
 				onZonesLoaded: this.options.onZonesLoaded,
 			});
 			this.addLayer(zones);
@@ -84,6 +89,11 @@ L.Map.SiteWhere = L.Map.extend({
 	_handleNoSiteToken: function() {
 		alert('No site token.');
 	},
+	
+	/** Handle error condition if no tenant authentication token was specified */
+	_handleNoTenantAuthToken: function() {
+		alert('No tenant authentication token.');
+	},
 });
 
 L.Map.siteWhere = function (id, options) {
@@ -103,6 +113,7 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 	options: {
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		siteToken: null,
+		tenantAuthToken: null,
 		onZonesLoaded: null,
 		zoneTokenToSkip: null,
 	},
@@ -114,6 +125,8 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 		// Error if no site token specified.
 		if (!this.options.siteToken) {
 			this._handleNoSiteToken();
+		} else if (!this.options.tenantAuthToken) {
+			this._handleNoTenantAuthToken();
 		} else {
 			this.refresh();
 		}
@@ -122,7 +135,8 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 	/** Refresh zones information */
 	refresh: function() {
 		var self = this;
-		var url = this.options.siteWhereApi + 'sites/' + this.options.siteToken + "/zones";
+		var url = this.options.siteWhereApi + 'sites/' + this.options.siteToken + 
+			'/zones?tenantAuthToken=' + this.options.tenantAuthToken;
 		L.SiteWhere.Util.getJSON(url, 
 				function(zones, status, jqXHR) { self._onZonesLoaded(zones); }, 
 				function(jqXHR, textStatus, errorThrown) { self._onZonesFailed(jqXHR, textStatus, errorThrown); }
@@ -176,6 +190,11 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 	_handleNoSiteToken: function() {
 		alert('No site token.');
 	},
+	
+	/** Handle error condition if no tenant authentication token was specified */
+	_handleNoTenantAuthToken: function() {
+		alert('No tenant authentication token.');
+	},
 });
 
 L.FeatureGroup.SiteWhere.zones = function (options) {
@@ -192,6 +211,7 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 		// Data options.
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		assignmentToken: null,
+		tenantAuthToken: null,
 		maxResults: 30,
 		
 		// Line rendering options (see L.Path).
@@ -218,15 +238,18 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 		// Error if no assignment token specified.
 		if (!this.options.assignmentToken) {
 			this._handleNoAssignmentToken();
+		} else if (!this.options.tenantAuthToken) {
+			this._handleNoTenantAuthToken();
 		} else {
 			this.refresh();
 		}
 	},
 	
-	/** Refresh zones information */
+	/** Refresh locations information */
 	refresh: function() {
 		var self = this;
-		var url = this.options.siteWhereApi + 'assignments/' + this.options.assignmentToken + '/locations';
+		var url = this.options.siteWhereApi + 'assignments/' + this.options.assignmentToken + 
+			'/locations?tenantAuthToken=' + this.options.tenantAuthToken;
 		L.SiteWhere.Util.getJSON(url, 
 			function(locations, status, jqXHR) { 
 				self._onLocationsLoaded(locations); }, 
@@ -298,6 +321,11 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 	/** Handle error condition if no assignment token was specified */
 	_handleNoAssignmentToken: function() {
 		this._handleError('No assignment token specified.');
+	},
+	
+	/** Handle error condition if no tenant authentication token was specified */
+	_handleNoTenantAuthToken: function() {
+		alert('No tenant authentication token.');
 	},
 	
 	/** Handle error in processing */

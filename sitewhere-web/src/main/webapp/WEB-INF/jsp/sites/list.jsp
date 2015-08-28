@@ -35,9 +35,7 @@
 <div id="sites" class="sw-site-list"></div>
 <div id="pager" class="k-pager-wrap"></div>
 
-<form id="view-site-detail" method="get" action="detail.html">
-	<input id="detail-site-token" name="siteToken" type="hidden" value="${site.token}" />
-</form>
+<form id="view-site-detail" method="get"></form>
 
 <%@ include file="../includes/templateSiteEntry.inc"%>
 
@@ -87,7 +85,8 @@
 	function onSiteOpenClicked(e, siteToken) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$('#detail-site-token').val(siteToken);
+		$("#view-site-detail").attr("action",
+			"${pageContext.request.contextPath}/admin/sites/" + siteToken + ".html");
 		$('#view-site-detail').submit();
 	}
 

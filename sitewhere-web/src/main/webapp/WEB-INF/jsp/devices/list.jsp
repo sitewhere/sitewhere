@@ -32,9 +32,7 @@
 <div id="devices" class="sw-device-list"></div>
 <div id="pager" class="k-pager-wrap"></div>
 
-<form id="view-device-detail" method="get" action="detail.html">
-	<input id="detail-hardware-id" name="hardwareId" type="hidden" />
-</form>
+<form id="view-device-detail" method="get"></form>
 
 <%@ include file="../includes/templateDeviceEntry.inc"%>
 <%@ include file="../includes/templateSpecificationEntrySmall.inc"%>
@@ -98,7 +96,8 @@
 	function onDeviceOpenClicked(e, hardwareId) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$('#detail-hardware-id').val(hardwareId);
+		$("#view-device-detail").attr("action",
+			"${pageContext.request.contextPath}/admin/devices/" + hardwareId + ".html");
 		$('#view-device-detail').submit();
 	}
 

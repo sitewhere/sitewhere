@@ -6,24 +6,26 @@
 <%@ include file="../includes/top.inc"%>
 
 <style>
-	.emulator-map {
-		height: 400px; 
-		margin-top: 10px; 
-		border: 1px solid #cccccc;
-		cursor: crosshair;
-	}
-	
-	#mc-measurements .k-grid-content {
-		min-height: 150px;
-	}
+.emulator-map {
+	height: 400px;
+	margin-top: 10px;
+	border: 1px solid #cccccc;
+	cursor: crosshair;
+}
+
+#mc-measurements .k-grid-content {
+	min-height: 150px;
+}
 </style>
 
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="assignments.emulator.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-assignment-detail" class="btn" href="detail.html?token=<c:out value="${assignment.token}"/>" data-i18n="assignments.emulator.AssignmentDetails">
-			<i class="icon-circle-arrow-left sw-button-icon"></i></a>
+		<a id="btn-assignment-detail" class="btn"
+			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>.html"
+			data-i18n="assignments.emulator.AssignmentDetails"> <i
+			class="icon-circle-arrow-left sw-button-icon"></i></a>
 	</div>
 </div>
 
@@ -40,21 +42,23 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="assignments.emulator.DeviceAssignmentEmulator"></div>
 			<div>
-				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)" data-i18n="assignments.emulator.RefreshLocations">
-					<i class="icon-refresh sw-button-icon"></i></a>
+				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)"
+					data-i18n="assignments.emulator.RefreshLocations"> <i class="icon-refresh sw-button-icon"></i></a>
 				<div class="btn-group">
-					<a class="btn" href="javascript:void(0)" data-i18n="public.Create">
-						<i class="icon-plus sw-button-icon"></i></a>
+					<a class="btn" href="javascript:void(0)" data-i18n="public.Create"> <i
+						class="icon-plus sw-button-icon"></i></a>
 					<button class="btn dropdown-toggle" data-toggle="dropdown">
-					<span class="caret"></span>
+						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" style="text-align: left;">
-						<li><a tabindex="-1" href="javascript:void(0)" onclick="mcOpen()" data-i18n="public.Measurements"></a></li>
-						<li><a tabindex="-1" href="javascript:void(0)" onclick="acOpen()" data-i18n="public.Alert"></a></li>
+						<li><a tabindex="-1" href="javascript:void(0)" onclick="mcOpen()"
+							data-i18n="public.Measurements"></a></li>
+						<li><a tabindex="-1" href="javascript:void(0)" onclick="acOpen()"
+							data-i18n="public.Alert"></a></li>
 					</ul>
-				</div>			
-				<a id="mqtt-btn-connect" class="btn btn-primary" href="javascript:void(0)" data-i18n="assignments.emulator.Connect">
-					<i class="icon-bolt sw-button-icon"></i></a>
+				</div>
+				<a id="mqtt-btn-connect" class="btn btn-primary" href="javascript:void(0)"
+					data-i18n="assignments.emulator.Connect"> <i class="icon-bolt sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div id="emulator-map" class="emulator-map"></div>
@@ -63,8 +67,8 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="assignments.emulator.MQTTInformation"></div>
 			<div>
-				<a id="mqtt-btn-test-connect" class="btn" href="javascript:void(0)" data-i18n="assignments.emulator.TestConnection">
-					<i class="icon-bolt sw-button-icon"></i></a>
+				<a id="mqtt-btn-test-connect" class="btn" href="javascript:void(0)"
+					data-i18n="assignments.emulator.TestConnection"> <i class="icon-bolt sw-button-icon"></i></a>
 			</div>
 		</div>
 		<div>
@@ -74,30 +78,33 @@
 					<li data-i18n="assignments.emulator.LastMessage"></li>
 				</ul>
 				<div>
-					<form class="form-horizontal" style="padding-top: 20px; display: inline-block; vertical-align: top">
+					<form class="form-horizontal"
+						style="padding-top: 20px; display: inline-block; vertical-align: top">
 						<div class="control-group">
-							<label class="control-label" for="mqtt-host-name" data-i18n="assignments.emulator.MQTTHostName"></label>
+							<label class="control-label" for="mqtt-host-name"
+								data-i18n="assignments.emulator.MQTTHostName"></label>
 							<div class="controls">
-								<input type="text" id="mqtt-host-name" value="<%= request.getServerName() %>"
+								<input type="text" id="mqtt-host-name" value="<%=request.getServerName()%>"
 									class="input-large" title="Host name">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="mqtt-port" data-i18n="assignments.emulator.MQTTWebsocketPort"></label>
+							<label class="control-label" for="mqtt-port"
+								data-i18n="assignments.emulator.MQTTWebsocketPort"></label>
 							<div class="controls">
 								<input id="mqtt-port" type="number" value="61623" min="0" step="1" class="input-large"
-									title="Port" onkeyup="this.value=this.value.replace(/[^\d]/,'')"/>
+									title="Port" onkeyup="this.value=this.value.replace(/[^\d]/,'')" />
 							</div>
 						</div>
 						<div class="control-group">
 							<label class="control-label" for="mqtt-client-id" data-i18n="assignments.emulator.ClientID"></label>
 							<div class="controls">
-								<input type="text" id="mqtt-client-id" value="SiteWhereWeb"
-									class="input-large">
+								<input type="text" id="mqtt-client-id" value="SiteWhereWeb" class="input-large">
 							</div>
 						</div>
 					</form>
-					<form class="form-horizontal" style="padding-top: 20px; display: inline-block; vertical-align: top">
+					<form class="form-horizontal"
+						style="padding-top: 20px; display: inline-block; vertical-align: top">
 						<div class="control-group">
 							<label class="control-label" for="mqtt-username" data-i18n="public.Username"></label>
 							<div class="controls">
@@ -120,8 +127,8 @@
 				</div>
 				<div>
 					<div id="mqtt-last-message">
-						<div style="padding: 25px; font-size: 14pt; text-align: center;" data-i18n="assignments.emulator.jsonmessage">
-						</div>
+						<div style="padding: 25px; font-size: 14pt; text-align: center;"
+							data-i18n="assignments.emulator.jsonmessage"></div>
 					</div>
 				</div>
 			</div>
@@ -164,8 +171,7 @@
 					<div class="control-group">
 						<label class="control-label" for="lc-event-date" data-i18n="public.EventDate"></label>
 						<div class="controls">
-							<select id="lc-date-type" class="input-xlarge" 
-								style="margin-bottom: 10px; width: 300px;"/>
+							<select id="lc-date-type" class="input-xlarge" style="margin-bottom: 10px; width: 300px;" />
 							<input id="lc-event-date" class="input-large">
 						</div>
 					</div>
@@ -174,15 +180,15 @@
 			<div>
 				<div id="lc-metadata">
 					<jsp:include page="../includes/metadata.jsp" flush="true">
-					    <jsp:param name="uid" value="lc"/>
+						<jsp:param name="uid" value="lc" />
 					</jsp:include>
 				</div>
-            </div>
+			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
-		<a id="lc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+			id="lc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -222,37 +228,37 @@
 						<div style="width: 225px; margin-left: 3px;" data-i18n="public.Name"></div>
 						<div style="width: 145px" data-i18n="public.Value"></div>
 					</div>
-					<input type="text" id="sw-mx-name" 
+					<input type="text" id="sw-mx-name"
 						style="width: 205px; margin-bottom: 0px; margin-right: 10px;" title="Measurement name">
-					<input type="text" id="sw-mx-value" 
+					<input type="text" id="sw-mx-value"
 						style="width: 150px; margin-bottom: 0px; margin-right: 10px;" title="Measurement value">
 					<a class="btn" href="javascript:void(0)" onclick="mcAddMeasurement()" data-i18n="public.Add">
-						<i class="icon-plus sw-button-icon"></i></a>
+						<i class="icon-plus sw-button-icon"></i>
+					</a>
 					<div id="sw-mx-error" style="color: #f00; display: none;"></div>
-				</div>	
+				</div>
 				<form class="form-horizontal" style="padding-top: 20px">
 					<div class="control-group">
 						<label class="control-label" for="lc-event-date" data-i18n="public.EventDate"></label>
 						<div class="controls">
-							<select id="mc-date-type" class="input-xlarge" 
-								style="margin-bottom: 10px; width: 300px;"/>
+							<select id="mc-date-type" class="input-xlarge" style="margin-bottom: 10px; width: 300px;" />
 							<input id="mc-event-date" class="input-large">
 						</div>
 					</div>
 				</form>
-            </div>
+			</div>
 			<div>
 				<div id="mc-metadata">
 					<jsp:include page="../includes/metadata.jsp" flush="true">
-					    <jsp:param name="uid" value="mc"/>
+						<jsp:param name="uid" value="mc" />
 					</jsp:include>
 				</div>
-            </div>
+			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
-		<a id="mc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+			id="mc-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -285,8 +291,7 @@
 					<div class="control-group">
 						<label class="control-label" for="ac-event-date" data-i18n="public.EventDate"></label>
 						<div class="controls">
-							<select id="ac-date-type" class="input-xlarge" 
-								style="margin-bottom: 10px; width: 300px;"/>
+							<select id="ac-date-type" class="input-xlarge" style="margin-bottom: 10px; width: 300px;" />
 							<input id="ac-event-date" class="input-large">
 						</div>
 					</div>
@@ -295,15 +300,15 @@
 			<div>
 				<div id="ac-metadata">
 					<jsp:include page="../includes/metadata.jsp" flush="true">
-					    <jsp:param name="uid" value="ac"/>
+						<jsp:param name="uid" value="ac" />
 					</jsp:include>
 				</div>
-            </div>
+			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
-		<a id="ac-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+			id="ac-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Create"></a>
 	</div>
 </div>
 
@@ -312,75 +317,75 @@
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
-    /** Set sitewhere_title */
-    sitewhere_i18next.sitewhere_title = "assignments.emulator.title";
+	/** Set sitewhere_title */
+	sitewhere_i18next.sitewhere_title = "assignments.emulator.title";
 
 	/** Assignment token */
 	var token = '<c:out value="${assignment.token}"/>';
-	
+
 	/** Site token */
 	var siteToken = '<c:out value="${assignment.siteToken}"/>';
-	
+
 	/** Device hardware id */
 	var hardwareId = '<c:out value="${assignment.deviceHardwareId}"/>';
 
 	/** Tab strip */
 	var tabs;
-	
+
 	/** Tabs for MQTT */
 	var mqttTabs;
 
 	/** Provides external access to tabs */
 	var lcTabs;
-	
+
 	/** Event date type */
 	var lcDateType;
-	
+
 	/** Picker for event date */
 	var lcDatePicker;
 
 	/** Provides external access to tabs */
 	var mcTabs;
-	
+
 	/** Measurements datasource */
 	var mcMeasurementsDS;
-	
+
 	/** Event date type */
 	var mcDateType;
-	
+
 	/** Picker for event date */
 	var mcDatePicker;
 
 	/** Provides external access to tabs */
 	var acTabs;
-	
+
 	/** Event date type */
 	var acDateType;
-	
+
 	/** Picker for event date */
 	var acDatePicker;
 
 	/** MQTT client */
 	var client;
-	
+
 	/** Indicates if client is connected */
 	var connected = false;
-	
+
 	/** Emulator map */
 	var map;
-	
+
 	/** Indicates if we are testing the connection */
 	var testingConnection = false;
-	
+
 	/** Shows text instructions for adding location */
 	var tooltip;
-	
+
 	/** Layer that holds most recent location info */
 	var locationsLayer;
-	
+
 	/** Last location recorded for the selected assignment */
 	var lastLocation;
-	
+
 	/** Attempt to connect */
 	function doConnect() {
 		if (client && connected) {
@@ -392,13 +397,18 @@
 		var clientId = $('#mqtt-client-id').val();
 		var username = $('#mqtt-username').val();
 		var password = $('#mqtt-password').val();
-		
+
 		client = new Messaging.Client(host, Number(port), clientId);
 		client.onConnectionLost = onConnectionLost;
 		client.onMessageArrived = onMessageArrived;
-		client.connect({userName:username, password:password, onSuccess:onConnect, onFailure:onConnectFailed});
+		client.connect({
+			userName : username,
+			password : password,
+			onSuccess : onConnect,
+			onFailure : onConnectFailed
+		});
 	}
-	
+
 	/** Stores connection values for next page load if localStorage is supported */
 	function saveValues(host, port, clientId, username, password) {
 		if (Modernizr.localStorage) {
@@ -409,18 +419,18 @@
 			localStorage.swEmulatorMqttPassword = password;
 		}
 	}
-	
+
 	/** Called on successful connection */
 	function onConnect() {
 		if (testingConnection) {
 			swAlert(i18next("assignments.Connected"), i18next("assignments.emulator.MQTTCS"));
 		}
-//		saveValues(host, port, clientId, username, password);
+		//		saveValues(host, port, clientId, username, password);
 		showConnectedButton();
 		testingConnection = false;
 		connected = true;
 	}
-	
+
 	/** Called if connection fails */
 	function onConnectFailed() {
 		swAlert(i18next("assignments.emulator.ConnectFailed"), i18next("assignments.emulator.MQTTCF"));
@@ -428,13 +438,13 @@
 		testingConnection = false;
 		connected = false;
 	}
-	
+
 	/** Called if connection is broken */
 	function onConnectionLost(responseObject) {
 		showConnectButton();
 		connected = false;
 	}
-	
+
 	/** Send a message to the given destination */
 	function sendMessage(payload, destinationOverride) {
 		if (checkConnected()) {
@@ -449,83 +459,88 @@
 			hljs.highlightBlock(document.getElementById('mqtt-last-message').childNodes[0]);
 		}
 	}
-	
+
 	/** Called when a message is received */
 	function onMessageArrived(message) {
 	}
-    
-    /** Brings locations layer to front once zones are loaded */
-    function onZonesLoaded() {
-        initMap();
-        hideTooltip();
-    }
-	
+
+	/** Brings locations layer to front once zones are loaded */
+	function onZonesLoaded() {
+		initMap();
+		hideTooltip();
+	}
+
 	/** Show the connect button */
 	function showConnectButton() {
-		$('#mqtt-btn-connect').removeClass('btn-sw-success').addClass('btn-primary').html('<i class="icon-bolt sw-button-icon"></i> '+i18next("assignments.emulator.Connect"));
+		$('#mqtt-btn-connect').removeClass('btn-sw-success').addClass('btn-primary').html(
+			'<i class="icon-bolt sw-button-icon"></i> ' + i18next("assignments.emulator.Connect"));
 		$('#mqtt-btn-connect').click(function(event) {
 			event.preventDefault();
 			doConnect();
 		});
 	}
-	
+
 	/** Hide the connect button */
 	function showConnectedButton() {
-		$('#mqtt-btn-connect').removeClass('btn-primary').addClass('btn-sw-success').html('<i class="icon-check sw-button-icon"></i> '+i18next("assignments.Connected"));
+		$('#mqtt-btn-connect').removeClass('btn-primary').addClass('btn-sw-success').html(
+			'<i class="icon-check sw-button-icon"></i> ' + i18next("assignments.Connected"));
 		$('#mqtt-btn-connect').unbind('click');
 	}
-	
+
 	/** Initialize the map */
 	function initMap() {
 		// Create tooltip for help message.
 		tooltip = new L.Tooltip(map);
-		tooltip.updateContent({text: "Click map to add a new location"});
-		
+		tooltip.updateContent({
+			text : "Click map to add a new location"
+		});
+
 		// Hook up mouse events for tooltip.
 		map.on('mousemove', onMouseMove);
 		map.on('mouseout', onMouseOut);
 		map.on('click', onMouseClick);
-		
+
 		// Create layer for locations
 		locationsLayer = L.FeatureGroup.SiteWhere.assignmentLocations({
-			siteWhereApi: '${pageContext.request.contextPath}/api/',
-			assignmentToken: token,
-			onLocationsLoaded: onLocationsUpdated,
+			siteWhereApi : '${pageContext.request.contextPath}/api/',
+			assignmentToken : token,
+			tenantAuthToken : '${tenant.authenticationToken}',
+			onLocationsLoaded : onLocationsUpdated,
 		});
 		map.addLayer(locationsLayer);
 	}
-	
+
 	/** Refresh the location layer */
 	function refreshLocations() {
 		locationsLayer.refresh();
 	}
-	
+
 	/** When locations are updated, re-recenter map on last location */
 	function onLocationsUpdated() {
 		locationsLayer.panToLastLocation(map);
 	}
-	
+
 	/** Called when mouse moves over map */
 	function onMouseMove(e) {
 		tooltip.updatePosition(e.latlng);
 	}
-	
+
 	/** Called when mouse moves out of map area */
 	function onMouseOut(e) {
 		hideTooltip();
 	}
-	
+
 	/** Hide tooltip by moving it to southeast corner */
 	function hideTooltip() {
 		var se = map.getBounds().getSouthEast();
 		tooltip.updatePosition(se);
 	}
-	
+
 	/** Called when mouse is clicked over map */
 	function onMouseClick(e) {
 		lcOpen(e.latlng.lat, e.latlng.lng);
 	}
-	
+
 	/** Create an option for the event date dropdown */
 	function createDateOption(label, value) {
 		var option = {};
@@ -533,23 +548,22 @@
 		option.value = value;
 		return option;
 	}
-	
+
 	/** Create option for a delta based on current time and offset in minutes */
 	function createDeltaOption(label, deltaInMinutes) {
-		return createDateOption("Set to " + label + " after last location event", 
-				"delta" + deltaInMinutes);
+		return createDateOption("Set to " + label + " after last location event", "delta" + deltaInMinutes);
 	}
-	
+
 	/** Create an option that accesses a date picker */
 	function createDatePickerOption() {
 		return createDateOption("Choose date/time for event", "picker");
 	}
-	
+
 	/** Create an option that returns the current date/time */
 	function createCurrentOption(datePicker) {
 		return createDateOption("Use current date/time for event", "current");
 	}
-	
+
 	/** Open the location dialog */
 	function lcOpen(lat, lng) {
 		lcTabs.select(0);
@@ -559,15 +573,15 @@
 			$("#lc-elevation").val("0");
 			lcDatePicker.value(new Date());
 			lcMetadataDS.data(new Array());
-			
+
 			var dataSource = createOptionsDatasource();
 			lcDateType.setDataSource(dataSource);
 			lcDateTypeChanged();
-			
+
 			$('#lc-dialog').modal('show');
 		}
 	}
-	
+
 	/** Called when event date type dropdown selection changes */
 	function lcDateTypeChanged() {
 		var option = lcDateType.dataItem();
@@ -576,7 +590,7 @@
 			$('#lc-dialog .k-datetimepicker').addClass("hide");
 		}
 	}
-	
+
 	/** Get date value based on dropdown setting */
 	function calculateDateValue(dropdown, picker) {
 		var option = dropdown.dataItem();
@@ -598,7 +612,7 @@
 		}
 		return new Date();
 	}
-	
+
 	/** Create datasource for event date options */
 	function createOptionsDatasource() {
 		var options = [];
@@ -610,11 +624,11 @@
 			options.push(createDeltaOption("one hour", 60));
 		}
 		var dataSource = new kendo.data.DataSource({
-			data: options
+			data : options
 		});
 		return dataSource;
 	}
-	
+
 	/** Submit location data via MQTT */
 	function lcSubmit() {
 		var lat = $("#lc-lat").val();
@@ -625,29 +639,36 @@
 			return;
 		}
 		var eventDateStr = asISO8601(eventDate);
-		var batch = {"hardwareId": hardwareId};
-		batch.locations = [{"latitude": lat, "longitude": lng, "elevation": elevation, 
-			"eventDate": eventDateStr, "metadata": swMetadataAsLookup(lcMetadataDS.data())}];
+		var batch = {
+			"hardwareId" : hardwareId
+		};
+		batch.locations = [ {
+			"latitude" : lat,
+			"longitude" : lng,
+			"elevation" : elevation,
+			"eventDate" : eventDateStr,
+			"metadata" : swMetadataAsLookup(lcMetadataDS.data())
+		} ];
 		sendMessage(JSON.stringify(batch, null, "\t"));
-    	$('#lc-dialog').modal('hide');
-    	setTimeout(refreshLocations, 2000);
+		$('#lc-dialog').modal('hide');
+		setTimeout(refreshLocations, 2000);
 	}
-	
+
 	/** Open the measurements dialog */
 	function mcOpen() {
 		mcTabs.select(0);
 		if (checkConnected()) {
 			mcMeasurementsDS.data(new Array());
 			mcMetadataDS.data(new Array());
-			
+
 			var dataSource = createOptionsDatasource();
 			mcDateType.setDataSource(dataSource);
 			mcDateTypeChanged();
-			
+
 			$('#mc-dialog').modal('show');
 		}
 	}
-	
+
 	/** Called when event date type dropdown selection changes */
 	function mcDateTypeChanged() {
 		var option = mcDateType.dataItem();
@@ -656,18 +677,18 @@
 			$('#mc-dialog .k-datetimepicker').addClass("hide");
 		}
 	}
-	
+
 	/** Add a new measurement */
 	function mcAddMeasurement() {
 		// Reset error.
 		$("#sw-mx-error").hide();
 		var error = "";
-		
+
 		// Create measurement entry.
 		var mx = {};
 		mx.name = $("#sw-mx-name").val();
 		mx.value = $("#sw-mx-value").val();
-		
+
 		// Check for empty.
 		if (mx.name.length == 0) {
 			error = "Name is required.";
@@ -676,7 +697,7 @@
 		if (!nameRegex.test(mx.name)) {
 			error = "Invalid measurement in name."
 		}
-		
+
 		// Check for empty.
 		if (mx.value.length == 0) {
 			error = "Value is required.";
@@ -685,7 +706,7 @@
 		if (!valueRegex.test(mx.value)) {
 			error = "Invalid value."
 		}
-		
+
 		// Check for already used.
 		var data = mcMeasurementsDS.data();
 		for (var index = 0, existing; existing = data[index]; index++) {
@@ -714,7 +735,7 @@
 			}
 		}
 	}
-	
+
 	/** Submit measurements data via MQTT */
 	function mcSubmit() {
 		var eventDate = calculateDateValue(mcDateType, mcDatePicker);
@@ -722,14 +743,18 @@
 			return;
 		}
 		var eventDateStr = asISO8601(eventDate);
-		var batch = {"hardwareId": hardwareId};
-		batch.measurements = [{"eventDate": eventDateStr, 
-			"measurements": swMetadataAsLookup(mcMeasurementsDS.data()), 
-			"metadata": swMetadataAsLookup(mcMetadataDS.data())}];
+		var batch = {
+			"hardwareId" : hardwareId
+		};
+		batch.measurements = [ {
+			"eventDate" : eventDateStr,
+			"measurements" : swMetadataAsLookup(mcMeasurementsDS.data()),
+			"metadata" : swMetadataAsLookup(mcMetadataDS.data())
+		} ];
 		sendMessage(JSON.stringify(batch, null, "\t"));
-    	$('#mc-dialog').modal('hide');
+		$('#mc-dialog').modal('hide');
 	}
-	
+
 	/** Open the alert dialog */
 	function acOpen() {
 		acTabs.select(0);
@@ -738,15 +763,15 @@
 			$("#ac-message").val("");
 			acDatePicker.value(new Date());
 			acMetadataDS.data(new Array());
-			
+
 			var dataSource = createOptionsDatasource();
 			acDateType.setDataSource(dataSource);
 			acDateTypeChanged();
-			
+
 			$('#ac-dialog').modal('show');
 		}
 	}
-	
+
 	/** Called when event date type dropdown selection changes */
 	function acDateTypeChanged() {
 		var option = acDateType.dataItem();
@@ -755,7 +780,7 @@
 			$('#ac-dialog .k-datetimepicker').addClass("hide");
 		}
 	}
-	
+
 	/** Submit alert data via MQTT */
 	function acSubmit() {
 		var type = $("#ac-type").val();
@@ -765,13 +790,19 @@
 			return;
 		}
 		var eventDateStr = asISO8601(eventDate);
-		var batch = {"hardwareId": hardwareId};
-		batch.alerts = [{"type": type, "message": message, "eventDate": eventDateStr,
-			"metadata": swMetadataAsLookup(acMetadataDS.data())}];
+		var batch = {
+			"hardwareId" : hardwareId
+		};
+		batch.alerts = [ {
+			"type" : type,
+			"message" : message,
+			"eventDate" : eventDateStr,
+			"metadata" : swMetadataAsLookup(acMetadataDS.data())
+		} ];
 		sendMessage(JSON.stringify(batch, null, "\t"));
-    	$('#ac-dialog').modal('hide');
+		$('#ac-dialog').modal('hide');
 	}
-	
+
 	/** Make sure client is connected and warn if not */
 	function checkConnected() {
 		if (!connected) {
@@ -779,171 +810,174 @@
 		}
 		return connected;
 	}
-	
+
 	/** Loads information for the selected assignment */
 	function loadAssignment() {
-		$.getJSON("${pageContext.request.contextPath}/api/assignments/" + token, 
-			loadGetSuccess, loadGetFailed);
+		$.getJSON("${pageContext.request.contextPath}/api/assignments/" + token
+				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
-    
-    /** Called on successful assignment load request */
-    function loadGetSuccess(data, status, jqXHR) {
+
+	/** Called on successful assignment load request */
+	function loadGetSuccess(data, status, jqXHR) {
 		var template = kendo.template($("#tpl-assignment-entry").html());
 		parseAssignmentData(data);
 		data.inDetailView = true;
 		$('#assignment-details').html(template(data));
-    }
-    
+	}
+
 	/** Handle error on getting assignment data */
 	function loadGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to load assignment data.");
 	}
-	
+
 	/** Called when 'release assignment' is clicked */
 	function onReleaseAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
 		swReleaseAssignment(token, onReleaseAssignmentComplete);
 	}
-	
+
 	/** Called after successful release assignment */
 	function onReleaseAssignmentComplete() {
 		loadAssignment();
 	}
-	
+
 	/** Called when 'missing assignment' is clicked */
 	function onMissingAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
 		swAssignmentMissing(token, onMissingAssignmentComplete);
 	}
-	
+
 	/** Called after successful missing assignment */
 	function onMissingAssignmentComplete() {
 		loadAssignment();
 	}
-	
-	$(document).ready(function() {
-		
-		/** Handle browsers without websocket support */
-		if (!Modernizr.websockets) {
-	        loadAssignment();
-			$("#tabs").html('<div style="padding: 25px; font-size: 14pt; text-align: center;">' +
-				'Your browser does not support websockets, which is required by the emulator. ' +
-				'Download the latest version of your browser to enable this feature.' +
-				'</div>');
-			return;
-		}
-		
-		/** Create the tab strip */
-		tabs = $("#tabs").kendoTabStrip({
-			animation: false
-		}).data("kendoTabStrip");
-		
-		/** Create the MQTT tab strip */
-		mqttTabs = $("#mqtt-tabs").kendoTabStrip({
-			animation: false
-		}).data("kendoTabStrip");
-		
-		/** Create tab strip */
-		lcTabs = $("#lc-tabs").kendoTabStrip({
-			animation: false
-		}).data("kendoTabStrip");
 
-    	// Create DropDownList for location event date type.
-    	lcDateType = $("#lc-date-type").kendoDropDownList({
-    		dataTextField: "label",
-    		dataValueField: "value",
-    	    index: 0,
-    	    change: lcDateTypeChanged
-    	}).data("kendoDropDownList");
-		
-        lcDatePicker = $("#lc-event-date").kendoDateTimePicker({
-            value:new Date()
-        }).data("kendoDateTimePicker");
-		
-        /** Handle location create dialog submit */
-		$('#lc-dialog-submit').click(function(event) {
-			lcSubmit();
-		});
-		
-		/** Create tab strip */
-		mcTabs = $("#mc-tabs").kendoTabStrip({
-			animation: false
-		}).data("kendoTabStrip");
-		
-		/** Local source for metadata entries */
-		mcMeasurementsDS = swMetadataDatasource();
-		
-		/** Grid for measurements */
-		$("#mc-measurements").kendoListView({
-			dataSource : mcMeasurementsDS,
-			template : kendo.template($("#tpl-sw-mx-entry").html())
-		});
+	$(document).ready(
+		function() {
 
-    	// Create DropDownList for measurements event date type.
-    	mcDateType = $("#mc-date-type").kendoDropDownList({
-    		dataTextField: "label",
-    		dataValueField: "value",
-    	    index: 0,
-    	    change: mcDateTypeChanged
-    	}).data("kendoDropDownList");
-		
-        mcDatePicker = $("#mc-event-date").kendoDateTimePicker({
-            value:new Date()
-        }).data("kendoDateTimePicker");
-		
-        /** Handle location create dialog submit */
-		$('#mc-dialog-submit').click(function(event) {
-			mcSubmit();
-		});
-		
-		/** Create tab strip */
-		acTabs = $("#ac-tabs").kendoTabStrip({
-			animation: false
-		}).data("kendoTabStrip");
+			/** Handle browsers without websocket support */
+			if (!Modernizr.websockets) {
+				loadAssignment();
+				$("#tabs").html(
+					'<div style="padding: 25px; font-size: 14pt; text-align: center;">'
+							+ 'Your browser does not support websockets, which is required by the emulator. '
+							+ 'Download the latest version of your browser to enable this feature.'
+							+ '</div>');
+				return;
+			}
 
-    	// Create DropDownList for alert event date type.
-    	acDateType = $("#ac-date-type").kendoDropDownList({
-    		dataTextField: "label",
-    		dataValueField: "value",
-    	    index: 0,
-    	    change: acDateTypeChanged
-    	}).data("kendoDropDownList");
-		
-        acDatePicker = $("#ac-event-date").kendoDateTimePicker({
-            value:new Date()
-        }).data("kendoDateTimePicker");
-		
-        /** Handle location create dialog submit */
-		$('#ac-dialog-submit').click(function(event) {
-			acSubmit();
-		});
-		
-        /** Handle dialog submit */
-		$('#mqtt-btn-test-connect').click(function(event) {
-			testingConnection = true;
-			event.preventDefault();
-			doConnect();
-		});
-		
-        /** Handle 'refresh locations' button */
-		$('#btn-refresh-locations').click(function(event) {
-			refreshLocations();
-		});
-		
-        /** Start in disconnected mode */
-        showConnectButton();
-       
-        /** Create emulator map */
-		map = L.Map.siteWhere('emulator-map', {
-			siteWhereApi: '${pageContext.request.contextPath}/api/',
-		    siteToken: siteToken,
-		    onZonesLoaded: onZonesLoaded,
-		});
+			/** Create the tab strip */
+			tabs = $("#tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
 
-        loadAssignment();
-	});
+			/** Create the MQTT tab strip */
+			mqttTabs = $("#mqtt-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			/** Create tab strip */
+			lcTabs = $("#lc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			// Create DropDownList for location event date type.
+			lcDateType = $("#lc-date-type").kendoDropDownList({
+				dataTextField : "label",
+				dataValueField : "value",
+				index : 0,
+				change : lcDateTypeChanged
+			}).data("kendoDropDownList");
+
+			lcDatePicker = $("#lc-event-date").kendoDateTimePicker({
+				value : new Date()
+			}).data("kendoDateTimePicker");
+
+			/** Handle location create dialog submit */
+			$('#lc-dialog-submit').click(function(event) {
+				lcSubmit();
+			});
+
+			/** Create tab strip */
+			mcTabs = $("#mc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			/** Local source for metadata entries */
+			mcMeasurementsDS = swMetadataDatasource();
+
+			/** Grid for measurements */
+			$("#mc-measurements").kendoListView({
+				dataSource : mcMeasurementsDS,
+				template : kendo.template($("#tpl-sw-mx-entry").html())
+			});
+
+			// Create DropDownList for measurements event date type.
+			mcDateType = $("#mc-date-type").kendoDropDownList({
+				dataTextField : "label",
+				dataValueField : "value",
+				index : 0,
+				change : mcDateTypeChanged
+			}).data("kendoDropDownList");
+
+			mcDatePicker = $("#mc-event-date").kendoDateTimePicker({
+				value : new Date()
+			}).data("kendoDateTimePicker");
+
+			/** Handle location create dialog submit */
+			$('#mc-dialog-submit').click(function(event) {
+				mcSubmit();
+			});
+
+			/** Create tab strip */
+			acTabs = $("#ac-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			// Create DropDownList for alert event date type.
+			acDateType = $("#ac-date-type").kendoDropDownList({
+				dataTextField : "label",
+				dataValueField : "value",
+				index : 0,
+				change : acDateTypeChanged
+			}).data("kendoDropDownList");
+
+			acDatePicker = $("#ac-event-date").kendoDateTimePicker({
+				value : new Date()
+			}).data("kendoDateTimePicker");
+
+			/** Handle location create dialog submit */
+			$('#ac-dialog-submit').click(function(event) {
+				acSubmit();
+			});
+
+			/** Handle dialog submit */
+			$('#mqtt-btn-test-connect').click(function(event) {
+				testingConnection = true;
+				event.preventDefault();
+				doConnect();
+			});
+
+			/** Handle 'refresh locations' button */
+			$('#btn-refresh-locations').click(function(event) {
+				refreshLocations();
+			});
+
+			/** Start in disconnected mode */
+			showConnectButton();
+
+			/** Create emulator map */
+			map = L.Map.siteWhere('emulator-map', {
+				siteWhereApi : '${pageContext.request.contextPath}/api/',
+				siteToken : siteToken,
+				tenantAuthToken : '${tenant.authenticationToken}',
+				onZonesLoaded : onZonesLoaded,
+			});
+
+			loadAssignment();
+		});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

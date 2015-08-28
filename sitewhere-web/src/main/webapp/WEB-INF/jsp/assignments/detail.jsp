@@ -13,7 +13,8 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
 	<h1 class="ellipsis" data-i18n="assignments.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-emulator" class="btn" href="emulator.html?token=<c:out value="${assignment.token}"/>"
+		<a id="btn-emulator" class="btn"
+			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>/emulator.html"
 			data-i18n="assignments.detail.EmulateAssignment"> <i class="icon-bolt sw-button-icon"></i></a> <a
 			id="btn-edit-assignment" class="btn" href="javascript:void(0)" data-i18n="public.EditAssignment">
 			<i class="icon-edit sw-button-icon"></i>

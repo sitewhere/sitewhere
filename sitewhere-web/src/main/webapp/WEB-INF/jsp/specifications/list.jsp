@@ -24,9 +24,7 @@
 
 <%@ include file="../includes/specificationCreateDialog.inc"%>
 
-<form id="view-spec-detail" method="get" action="detail.html">
-	<input id="detail-spec-token" name="token" type="hidden" />
-</form>
+<form id="view-spec-detail" method="get"></form>
 
 <%@ include file="../includes/templateSpecificationEntry.inc"%>
 <%@ include file="../includes/assetTemplates.inc"%>
@@ -72,7 +70,8 @@
 	function onSpecificationOpenClicked(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$('#detail-spec-token').val(token);
+		$("#view-spec-detail").attr("action",
+			"${pageContext.request.contextPath}/admin/specifications/" + token + ".html");
 		$('#view-spec-detail').submit();
 	}
 

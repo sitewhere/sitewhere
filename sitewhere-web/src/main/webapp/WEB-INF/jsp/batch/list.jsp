@@ -45,9 +45,7 @@
 </table>
 <div id="pager" class="k-pager-wrap"></div>
 
-<form id="view-batch-operation-detail" method="get">
-	<input id="batch-operation-token" name="token" type="hidden" />
-</form>
+<form id="view-batch-operation-detail" method="get"></form>
 
 <%@ include file="../includes/templateBatchOperationEntry.inc"%>
 <%@ include file="../includes/commonFunctions.inc"%>
@@ -62,8 +60,8 @@
 	/** View a batch operation */
 	function viewBatchOperation(type, token) {
 		if (type == "InvokeCommand") {
-			$("#batch-operation-token").val(token);
-			$("#view-batch-operation-detail").get(0).setAttribute('action', 'command.html');
+			$("#view-batch-operation-detail").attr("action",
+				"${pageContext.request.contextPath}/admin/batch/command/" + token + ".html");
 			$("#view-batch-operation-detail").submit();
 		}
 	}
