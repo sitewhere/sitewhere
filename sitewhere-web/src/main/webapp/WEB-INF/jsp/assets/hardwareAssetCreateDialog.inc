@@ -190,10 +190,13 @@
 					}
 					if (isCreate) {
 						$.postJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-								+ "/hardware", assetData, onCreateSuccess, onCreateFail);
+								+ "/hardware?tenantAuthToken=${tenant.authenticationToken}", assetData,
+							onCreateSuccess, onCreateFail);
 					} else {
 						$.putJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-								+ "/hardware/" + initAssetId, assetData, onCreateSuccess, onUpdateFail);
+								+ "/hardware/" + initAssetId
+								+ "?tenantAuthToken=${tenant.authenticationToken}", assetData,
+							onCreateSuccess, onUpdateFail);
 					}
 				});
 
@@ -265,7 +268,8 @@
 
 		// Get latest device data for hardware id.
 		$.getJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId + "/assets/"
-				+ assetId, auUpdateGetSuccess, auUpdateGetFailed);
+				+ assetId + "?tenantAuthToken=${tenant.authenticationToken}", auUpdateGetSuccess,
+			auUpdateGetFailed);
 	}
 
 	/** Called on successful device load request */

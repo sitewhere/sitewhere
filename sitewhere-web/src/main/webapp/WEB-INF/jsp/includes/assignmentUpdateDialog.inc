@@ -12,9 +12,10 @@
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
-    max-width: 100px;
-    max-height: 100px;
-    border: 1px solid rgb(221, 221, 221);
+	max-width: 100px;
+	max-height: 100px;
+	border: 1px solid rgb(221, 221, 221);
+	max-height: 100px;
 }
 
 .sw-assignment-update-label {
@@ -45,16 +46,16 @@
 			<div>
 				<div id="au-metadata">
 					<jsp:include page="../includes/metadata.jsp" flush="true">
-					    <jsp:param name="uid" value="au"/>
+						<jsp:param name="uid" value="au" />
 					</jsp:include>
 				</div>
-            </div>
+			</div>
 		</div>
-		<input type="hidden" id="au-token"/>
+		<input type="hidden" id="au-token" />
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> 
-		<a id="au-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Update"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+			id="au-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Update"></a>
 	</div>
 </div>
 
@@ -122,78 +123,83 @@
 	/** Provides external access to tabs */
 	var auTabs;
 
-	$(document).ready(function() {
-		
-		/** Create tab strip for the update dialog */
-		auTabs = $("#au-tabs").kendoTabStrip({
-			animation: false
-		}).data("kendoTabStrip");
-		
-        /** Handle dialog submit */
-		$('#au-submit').click(function(event) {
-			event.preventDefault();
-			if (!auValidate()) {
-				return;
+	$(document).ready(
+		function() {
+
+			/** Create tab strip for the update dialog */
+			auTabs = $("#au-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			/** Handle dialog submit */
+			$('#au-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!auValidate()) {
+						return;
+					}
+
+					var token = $('#au-token').val();
+					var data = {
+						"metadata" : swMetadataAsLookup(auMetadataDS.data()),
+					}
+					$.putJSON("${pageContext.request.contextPath}/api/assignments/" + token
+							+ "/metadata?tenantAuthToken=${tenant.authenticationToken}", data,
+						onUpdateSuccess, onUpdateFail);
+				});
+
+			/** Called on successful update */
+			function onUpdateSuccess() {
+				$('#au-dialog').modal('hide');
+				if (auSubmitCallback != null) {
+					auSubmitCallback();
+				}
 			}
-	        
-			var token = $('#au-token').val();
-			var data = {
-				"metadata": swMetadataAsLookup(auMetadataDS.data()),
+
+			/** Handle failed call to update device */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to update assignment.");
 			}
-			$.putJSON("${pageContext.request.contextPath}/api/assignments/" + token + "/metadata", 
-					data, onUpdateSuccess, onUpdateFail);
 		});
-        
-        /** Called on successful update */
-        function onUpdateSuccess() {
-        	$('#au-dialog').modal('hide');
-			if (auSubmitCallback != null) {
-				auSubmitCallback();
-			}
-        }
-        
-		/** Handle failed call to update device */
-		function onUpdateFail(jqXHR, textStatus, errorThrown) {
-			handleError(jqXHR, "Unable to update assignment.");
-		}
-    });
-	
+
 	/** Validate the dialog */
 	function auValidate() {
-		$.validity.setup({ outputMode:"label" });
+		$.validity.setup({
+			outputMode : "label"
+		});
 		$.validity.start();
 
-        /** These should all be in hidden fields */
+		/** These should all be in hidden fields */
 		$("#au-token").require();
-     
+
 		var result = $.validity.end();
 		return result.valid;
 	}
-	
+
 	/** Called to open the assignment update dialog */
 	function auOpen(token, callback) {
 		// Function called on submit.
 		auSubmitCallback = callback;
-		
+
 		// Get latest device data for hardware id.
-		$.getJSON("${pageContext.request.contextPath}/api/assignments/" + token, 
-			auUpdateGetSuccess, auUpdateGetFailed);
+		$.getJSON("${pageContext.request.contextPath}/api/assignments/" + token
+				+ "?tenantAuthToken=${tenant.authenticationToken}", auUpdateGetSuccess, auUpdateGetFailed);
 	}
-    
-    /** Called on successful assignment load request */
-    function auUpdateGetSuccess(data, status, jqXHR) {
+
+	/** Called on successful assignment load request */
+	function auUpdateGetSuccess(data, status, jqXHR) {
 		var template = kendo.template($("#au-static-block").html());
 		$('#au-static-header').html(template(data));
 		$('#au-token').val(data.token);
 		auMetadataDS.data(swLookupAsMetadata(data.metadata));
-		
+
 		auTabs.select(0);
-		
+
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
 		$('#au-dialog').modal('show');
-    }
-    
+	}
+
 	/** Handle error on getting site */
 	function auUpdateGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to get assignment for update.");

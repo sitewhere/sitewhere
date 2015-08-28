@@ -49,8 +49,10 @@
 		swConfirm(i18next("public.DeleteAssetCategory"), i18next("assetCategories.list.AYSD") + "?",
 			function(result) {
 				if (result) {
-					$.deleteJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId,
-						onDeleteSuccess, onDeleteFail);
+					$
+							.deleteJSON("${pageContext.request.contextPath}/api/assets/categories/"
+									+ categoryId + "?tenantAuthToken=${tenant.authenticationToken}",
+								onDeleteSuccess, onDeleteFail);
 				}
 			});
 	}
@@ -69,7 +71,8 @@
 	function onCategoryOpenClicked(e, categoryId, assetType) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$("#view-category-assets").attr("action", "categories/" + categoryId + ".html");
+		$("#view-category-assets").attr("action",
+			"${pageContext.request.contextPath}/admin/assets/categories/" + categoryId + ".html");
 		$('#view-category-assets').submit();
 	}
 
@@ -78,39 +81,43 @@
 		categoriesDS.read();
 	}
 
-	$(document).ready(function() {
-		/** Create AJAX datasource for sites list */
-		categoriesDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/assets/categories",
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-			},
-			serverPaging : true,
-			serverSorting : true,
-			pageSize : 10
-		});
+	$(document)
+			.ready(
+				function() {
+					/** Create AJAX datasource for sites list */
+					categoriesDS =
+							new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/assets/categories?tenantAuthToken=${tenant.authenticationToken}",
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : 10
+								});
 
-		/** Create the site list */
-		$("#categories").kendoListView({
-			dataSource : categoriesDS,
-			template : kendo.template($("#tpl-category-entry").html())
-		});
+					/** Create the site list */
+					$("#categories").kendoListView({
+						dataSource : categoriesDS,
+						template : kendo.template($("#tpl-category-entry").html())
+					});
 
-		$("#pager").kendoPager({
-			dataSource : categoriesDS
-		});
+					$("#pager").kendoPager({
+						dataSource : categoriesDS
+					});
 
-		/** Handle add category functionality */
-		$('#btn-add-category').click(function(event) {
-			ccOpen(event, onCategoryCreated);
-		});
-	});
+					/** Handle add category functionality */
+					$('#btn-add-category').click(function(event) {
+						ccOpen(event, onCategoryCreated);
+					});
+				});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

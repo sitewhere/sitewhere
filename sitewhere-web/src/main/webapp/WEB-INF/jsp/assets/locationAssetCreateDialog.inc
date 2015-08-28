@@ -2,8 +2,8 @@
 <div id="ac-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="ac-dialog-header" data-i18n="assetCategories.dialog.LocationCreateTitle">Create Location
-			Asset</h3>
+		<h3 id="ac-dialog-header" data-i18n="assetCategories.dialog.LocationCreateTitle">Create
+			Location Asset</h3>
 	</div>
 	<div class="modal-body">
 		<div id="ac-tabs">
@@ -176,19 +176,19 @@
 				template : kendo.template($("#tpl-property-entry").html()),
 				height : 400,
 			}).data("kendoListView");
-			
+
 			$("#ac-asset-latitude").kendoNumericTextBox({
-				format: "n6",
-                decimals: 6
-            });
+				format : "n6",
+				decimals : 6
+			});
 			$("#ac-asset-longitude").kendoNumericTextBox({
-				format: "n6",
-                decimals: 6
-            });
+				format : "n6",
+				decimals : 6
+			});
 			$("#ac-asset-elevation").kendoNumericTextBox({
-				format: "n6",
-                decimals: 6
-            });
+				format : "n6",
+				decimals : 6
+			});
 
 			/** Handle create dialog submit */
 			$('#ac-dialog-submit').click(
@@ -210,10 +210,13 @@
 					}
 					if (isCreate) {
 						$.postJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-								+ "/locations", assetData, onCreateSuccess, onCreateFail);
+								+ "/locations?tenantAuthToken=${tenant.authenticationToken}", assetData,
+							onCreateSuccess, onCreateFail);
 					} else {
 						$.putJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-								+ "/locations/" + initAssetId, assetData, onCreateSuccess, onUpdateFail);
+								+ "/locations/" + initAssetId
+								+ "?tenantAuthToken=${tenant.authenticationToken}", assetData,
+							onCreateSuccess, onUpdateFail);
 					}
 				});
 
@@ -256,7 +259,7 @@
 	function acOpen(e, callback) {
 		var event = e || window.event;
 		event.stopPropagation();
-		
+
 		$('#ac-init-asset-id').val("");
 		$('#ac-asset-id-row').show();
 
@@ -287,7 +290,8 @@
 
 		// Get latest device data for hardware id.
 		$.getJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId + "/assets/"
-				+ assetId, auUpdateGetSuccess, auUpdateGetFailed);
+				+ assetId + "?tenantAuthToken=${tenant.authenticationToken}", auUpdateGetSuccess,
+			auUpdateGetFailed);
 	}
 
 	/** Called on successful device load request */

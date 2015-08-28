@@ -69,7 +69,8 @@
 		swConfirm("Delete Asset", "Are you sure you want to delete this asset?", function(result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-						+ "/assets/" + assetId, onDeleteSuccess, onDeleteFail);
+						+ "/assets/" + assetId + "?tenantAuthToken=${tenant.authenticationToken}",
+					onDeleteSuccess, onDeleteFail);
 			}
 		});
 	}
@@ -97,7 +98,8 @@
 						transport : {
 							read : {
 								url : "${pageContext.request.contextPath}/api/assets/categories/"
-										+ categoryId + "/assets",
+										+ categoryId
+										+ "/assets?tenantAuthToken=${tenant.authenticationToken}",
 								dataType : "json",
 							}
 						},

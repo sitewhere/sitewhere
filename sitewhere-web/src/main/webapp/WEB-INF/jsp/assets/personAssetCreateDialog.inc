@@ -190,10 +190,13 @@
 					}
 					if (isCreate) {
 						$.postJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-								+ "/persons", assetData, onCreateSuccess, onCreateFail);
+								+ "/persons?tenantAuthToken=${tenant.authenticationToken}", assetData,
+							onCreateSuccess, onCreateFail);
 					} else {
 						$.putJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-								+ "/persons/" + initAssetId, assetData, onCreateSuccess, onUpdateFail);
+								+ "/persons/" + initAssetId
+								+ "?tenantAuthToken=${tenant.authenticationToken}", assetData,
+							onCreateSuccess, onUpdateFail);
 					}
 				});
 
@@ -236,7 +239,7 @@
 	function acOpen(e, callback) {
 		var event = e || window.event;
 		event.stopPropagation();
-		
+
 		$('#ac-init-asset-id').val("");
 		$('#ac-asset-id-row').show();
 
@@ -266,7 +269,8 @@
 
 		// Get latest device data for hardware id.
 		$.getJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId + "/assets/"
-				+ assetId, auUpdateGetSuccess, auUpdateGetFailed);
+				+ assetId + "?tenantAuthToken=${tenant.authenticationToken}", auUpdateGetSuccess,
+			auUpdateGetFailed);
 	}
 
 	/** Called on successful device load request */
