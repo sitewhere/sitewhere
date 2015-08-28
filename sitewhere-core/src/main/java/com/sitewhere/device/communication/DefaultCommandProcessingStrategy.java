@@ -120,13 +120,13 @@ public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent i
 		if (getCommandExecutionBuilder() == null) {
 			throw new SiteWhereException("No command execution builder configured for command processing.");
 		}
-		getCommandExecutionBuilder().lifecycleStart();
+		startNestedComponent(getCommandExecutionBuilder(), true);
 
 		// Start command target resolver.
 		if (getCommandTargetResolver() == null) {
 			throw new SiteWhereException("No command target resolver configured for command processing.");
 		}
-		getCommandTargetResolver().lifecycleStart();
+		startNestedComponent(getCommandTargetResolver(), true);
 	}
 
 	/*

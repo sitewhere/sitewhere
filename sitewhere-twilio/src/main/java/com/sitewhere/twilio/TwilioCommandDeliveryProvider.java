@@ -15,7 +15,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.device.communication.sms.SmsParameters;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -33,7 +33,7 @@ import com.twilio.sdk.resource.instance.Account;
  * 
  * @author Derek
  */
-public class TwilioCommandDeliveryProvider extends LifecycleComponent implements
+public class TwilioCommandDeliveryProvider extends TenantLifecycleComponent implements
 		ICommandDeliveryProvider<String, SmsParameters> {
 
 	/** Static logger instance */

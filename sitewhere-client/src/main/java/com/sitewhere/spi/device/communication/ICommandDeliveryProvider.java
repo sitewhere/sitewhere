@@ -11,7 +11,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Handles delivery of encoded command information on an underlying transport.
@@ -23,7 +23,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * @param <P>
  *            parameters specific to the delivery provider
  */
-public interface ICommandDeliveryProvider<T, P> extends ILifecycleComponent {
+public interface ICommandDeliveryProvider<T, P> extends ITenantLifecycleComponent {
 
 	/**
 	 * Deliver the given encoded invocation. The device, assignment and invocation details

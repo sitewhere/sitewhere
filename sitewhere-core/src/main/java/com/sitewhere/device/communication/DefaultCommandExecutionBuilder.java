@@ -148,7 +148,6 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Started command execution builder.");
 	}
 
 	/*
@@ -168,6 +167,5 @@ public class DefaultCommandExecutionBuilder extends LifecycleComponent implement
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopped command execution builder.");
 	}
 }

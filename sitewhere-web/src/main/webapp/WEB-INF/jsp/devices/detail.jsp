@@ -109,7 +109,8 @@
 	function onViewAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$("#view-assignment-detail").attr("action", "assignments/" + token + ".html");
+		$("#view-assignment-detail").attr("action",
+			"${pageContext.request.contextPath}/admin/assignments/" + token + ".html");
 		$('#view-assignment-detail').submit();
 	}
 

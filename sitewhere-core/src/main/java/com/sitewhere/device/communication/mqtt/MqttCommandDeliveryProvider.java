@@ -16,7 +16,7 @@ import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -30,7 +30,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MqttCommandDeliveryProvider extends LifecycleComponent implements
+public class MqttCommandDeliveryProvider extends TenantLifecycleComponent implements
 		ICommandDeliveryProvider<byte[], MqttParameters> {
 
 	/** Static logger instance */

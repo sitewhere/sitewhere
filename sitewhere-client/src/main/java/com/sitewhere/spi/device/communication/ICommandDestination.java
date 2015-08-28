@@ -12,7 +12,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.command.ISystemCommand;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Delivers commands to devices by encoding the commands, finding the list of target
@@ -22,7 +22,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @param <T>
  */
-public interface ICommandDestination<T, P> extends ILifecycleComponent {
+public interface ICommandDestination<T, P> extends ITenantLifecycleComponent {
 
 	/**
 	 * Get unique identifier for destination.
