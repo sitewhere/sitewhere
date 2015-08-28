@@ -87,7 +87,7 @@
 	function onDeleteAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentDelete(token, onDeleteAssignmentComplete);
+		swAssignmentDelete(token, '${tenant.authenticationToken}', onDeleteAssignmentComplete);
 	}
 
 	/** Called after successful delete assignment */
@@ -119,7 +119,7 @@
 	function onReleaseAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swReleaseAssignment(token, onReleaseAssignmentComplete);
+		swReleaseAssignment(token, '${tenant.authenticationToken}', onReleaseAssignmentComplete);
 	}
 
 	/** Called after successful release assignment */
@@ -132,7 +132,7 @@
 	function onMissingAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentMissing(token, onMissingAssignmentComplete);
+		swAssignmentMissing(token, '${tenant.authenticationToken}', onMissingAssignmentComplete);
 	}
 
 	/** Called after successful missing assignment */
