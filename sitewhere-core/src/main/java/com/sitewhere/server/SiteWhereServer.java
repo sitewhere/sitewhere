@@ -632,11 +632,15 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		TenantSearchCriteria criteria = new TenantSearchCriteria(1, 0);
 		ISearchResults<ITenant> tenants = getUserManagement().listTenants(criteria);
 		for (ITenant tenant : tenants.getResults()) {
-			SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
-			engine.setConfigurationResolver(getConfigurationResolver());
-			engine.initialize();
-			tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
-			tenantEnginesById.put(tenant.getId(), engine);
+			try {
+				SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
+				engine.setConfigurationResolver(getConfigurationResolver());
+				engine.initialize();
+				tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
+				tenantEnginesById.put(tenant.getId(), engine);
+			} catch (SiteWhereException e) {
+				LOGGER.error("Tenant engine (" + tenant.getId() + ") initialization failed.", e);
+			}
 		}
 	}
 

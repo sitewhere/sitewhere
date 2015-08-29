@@ -9,6 +9,7 @@
 }
 </style>
 
+<%@ include file="tenantCreateDialog.inc"%>
 <%@ include file="tenantEntry.inc"%>
 
 <!-- Title Bar -->
@@ -33,7 +34,7 @@
 	function onTenantEditClicked(e, tenantId) {
 		var event = e || window.event;
 		event.stopPropagation();
-		//cuOpen(categoryId, onEditSuccess);
+		tuOpen(tenantId, onEditSuccess);
 	}
 
 	/** Called on successful edit */
@@ -49,7 +50,8 @@
 				result) {
 			if (result) {
 				$.deleteJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-						+ "?tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
+						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
+					onDeleteFail);
 			}
 		});
 	}
@@ -73,7 +75,7 @@
 		$('#view-tenant').submit();
 	}
 
-	/** Called after a new asset category has been created */
+	/** Called after a new tenant has been created */
 	function onTenantCreated() {
 		tenantsDS.read();
 	}
@@ -110,9 +112,9 @@
 						dataSource : tenantsDS
 					});
 
-					/** Handle add category functionality */
+					/** Handle add tenant functionality */
 					$('#btn-add-tenant').click(function(event) {
-						//ccOpen(event, onCategoryCreated);
+						tcOpen(event, onTenantCreated);
 					});
 				});
 </script>
