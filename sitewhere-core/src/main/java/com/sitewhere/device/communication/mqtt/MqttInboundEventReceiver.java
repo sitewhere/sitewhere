@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
+import org.fusesource.hawtdispatch.internal.DispatcherConfig;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
@@ -203,6 +204,7 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 				LOGGER.error("Error shutting down MQTT device event receiver.", e);
 			}
 		}
+		DispatcherConfig.getDefaultDispatcher().shutdown();
 	}
 
 	/*

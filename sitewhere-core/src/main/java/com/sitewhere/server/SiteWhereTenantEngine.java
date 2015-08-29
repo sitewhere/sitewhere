@@ -48,6 +48,7 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -172,26 +173,40 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/**
 	 * Initialize components from Spring beans.
 	 * 
-	 * @throws SiteWhereException
+	 * @return
 	 */
-	public void initialize() throws SiteWhereException {
-		// Initialize the tenant Spring context.
-		initializeSpringContext();
+	public boolean initialize() {
+		try {
+			// Initialize the tenant Spring context.
+			initializeSpringContext();
 
-		// Initialize device communication subsystem.
-		initializeDeviceCommunicationSubsystem();
+			// Initialize device communication subsystem.
+			initializeDeviceCommunicationSubsystem();
 
-		// Initialize device management.
-		initializeDeviceManagement();
+			// Initialize device management.
+			initializeDeviceManagement();
 
-		// Initialize processing chain for inbound events.
-		initializeInboundEventProcessorChain();
+			// Initialize processing chain for inbound events.
+			initializeInboundEventProcessorChain();
 
-		// Initialize asset management.
-		initializeAssetManagement();
+			// Initialize asset management.
+			initializeAssetManagement();
 
-		// Initialize search provider management.
-		initializeSearchProviderManagement();
+			// Initialize search provider management.
+			initializeSearchProviderManagement();
+
+			return true;
+		} catch (SiteWhereException e) {
+			setLifecycleError(e);
+			setLifecycleStatus(LifecycleStatus.Error);
+			return false;
+		} catch (Throwable e) {
+			setLifecycleError(new SiteWhereException("Unhandled exception in tenant engine initialization.",
+					e));
+			setLifecycleStatus(LifecycleStatus.Error);
+			LOGGER.error("Unhandled exception in tenant engine initialization.", e);
+			return false;
+		}
 	}
 
 	/**
