@@ -124,22 +124,15 @@ public class SiteWhereClient implements ISiteWhereClient {
 	}
 
 	public SiteWhereClient(String url, String username, String password) {
-		this(url, username, password, DEFAULT_TENANT_AUTH_TOKEN);
+		this(url, username, password, DEFAULT_TENANT_AUTH_TOKEN, 0);
+	}
+
+	public SiteWhereClient(String url, String username, String password, int connectTimeoutMs) {
+		this(url, username, password, DEFAULT_TENANT_AUTH_TOKEN, connectTimeoutMs);
 	}
 
 	public SiteWhereClient(String url, String username, String password, String tenantAuthToken) {
-		if (DEBUG_ENABLED) {
-			enableDebugging();
-		}
-		this.client = new RestTemplate();
-		this.username = username;
-		this.password = password;
-		this.tenantAuthToken = tenantAuthToken;
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-		addMessageConverters(converters);
-		client.setMessageConverters(converters);
-		client.setErrorHandler(new SiteWhereErrorHandler());
-		this.baseUrl = url;
+		this(url, username, password, tenantAuthToken, 0);
 	}
 
 	public SiteWhereClient(String url, String username, String password, String tenantAuthToken,
@@ -162,7 +155,9 @@ public class SiteWhereClient implements ISiteWhereClient {
 				return super.createHttpUriRequest(httpMethod, uri);
 			}
 		};
-		factory.setConnectTimeout(connectTimeoutMs);
+		if (connectTimeoutMs > 0) {
+			factory.setConnectTimeout(connectTimeoutMs);
+		}
 		client.setRequestFactory(factory);
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
 		addMessageConverters(converters);
