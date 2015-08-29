@@ -28,6 +28,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -93,6 +94,9 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/** Default REST password */
 	private static final String DEFAULT_PASSWORD = "password";
 
+	/** Default tenant authentication token */
+	private static final String DEFAULT_TENANT_AUTH_TOKEN = "sitewhere1234567890";
+
 	/** Default connection timeout in milliseconds */
 	private static final int DEFAULT_CONNECT_TIMEOUT = 3 * 1000;
 
@@ -111,17 +115,26 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/** Password used for REST calls */
 	private String password = DEFAULT_PASSWORD;
 
+	/** Tenant auth token used for REST calls */
+	private String tenantAuthToken = DEFAULT_TENANT_AUTH_TOKEN;
+
 	public SiteWhereClient() {
-		this(DEFAULT_BASE_URL, DEFAULT_USERNAME, DEFAULT_PASSWORD, DEFAULT_CONNECT_TIMEOUT);
+		this(DEFAULT_BASE_URL, DEFAULT_USERNAME, DEFAULT_PASSWORD, DEFAULT_TENANT_AUTH_TOKEN,
+				DEFAULT_CONNECT_TIMEOUT);
 	}
 
 	public SiteWhereClient(String url, String username, String password) {
+		this(url, username, password, DEFAULT_TENANT_AUTH_TOKEN);
+	}
+
+	public SiteWhereClient(String url, String username, String password, String tenantAuthToken) {
 		if (DEBUG_ENABLED) {
 			enableDebugging();
 		}
 		this.client = new RestTemplate();
 		this.username = username;
 		this.password = password;
+		this.tenantAuthToken = tenantAuthToken;
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
 		addMessageConverters(converters);
 		client.setMessageConverters(converters);
@@ -129,13 +142,15 @@ public class SiteWhereClient implements ISiteWhereClient {
 		this.baseUrl = url;
 	}
 
-	public SiteWhereClient(String url, String username, String password, int connectTimeoutMs) {
+	public SiteWhereClient(String url, String username, String password, String tenantAuthToken,
+			int connectTimeoutMs) {
 		if (DEBUG_ENABLED) {
 			enableDebugging();
 		}
 		this.client = new RestTemplate();
 		this.username = username;
 		this.password = password;
+		this.tenantAuthToken = tenantAuthToken;
 
 		// Special handling for delete requests with request body passed.
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory() {
@@ -938,6 +953,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Authorization", getAuthHeader());
+			headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
 			HttpEntity<T> entity = new HttpEntity<T>(input, headers);
 			ResponseEntity<S> response = getClient().exchange(url, method, entity, clazz, vars);
 			return response.getBody();
@@ -954,6 +970,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Authorization", getAuthHeader());
+			headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			HttpEntity<T> entity = new HttpEntity<T>(input, headers);
 			ResponseEntity<S> response = getClient().exchange(url, method, entity, clazz, vars);
@@ -980,6 +997,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Authorization", getAuthHeader());
+			headers.add(ISiteWhereWebConstants.HEADER_TENANT_TOKEN, getTenantAuthToken());
 
 			ResponseEntity<byte[]> response =
 					getClient().exchange(url, method, new HttpEntity<byte[]>(headers), byte[].class, vars);
@@ -1053,5 +1071,13 @@ public class SiteWhereClient implements ISiteWhereClient {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getTenantAuthToken() {
+		return tenantAuthToken;
+	}
+
+	public void setTenantAuthToken(String tenantAuthToken) {
+		this.tenantAuthToken = tenantAuthToken;
 	}
 }
