@@ -63,10 +63,10 @@
 	</div>
 </div>
 
+<%@ include file="deviceGroupElementAddDialog.inc"%>
+<%@ include file="deviceGroupCreateDialog.inc"%>
 <%@ include file="../includes/templateRoleEntry.inc"%>
 <%@ include file="../includes/templateElementRoleEntry.inc"%>
-<%@ include file="../includes/deviceGroupElementAddDialog.inc"%>
-<%@ include file="../includes/deviceGroupCreateDialog.inc"%>
 <%@ include file="../includes/templateDeviceGroupEntry.inc"%>
 <%@ include file="../includes/templateDeviceGroupElementEntry.inc"%>
 <%@ include file="../includes/commonFunctions.inc"%>

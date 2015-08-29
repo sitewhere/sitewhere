@@ -25,8 +25,8 @@
 
 <form id="view-device-group-detail" method="get"></form>
 
+<%@ include file="deviceGroupCreateDialog.inc"%>
 <%@ include file="../includes/templateRoleEntry.inc"%>
-<%@ include file="../includes/deviceGroupCreateDialog.inc"%>
 <%@ include file="../includes/templateDeviceGroupEntry.inc"%>
 <%@ include file="../includes/commonFunctions.inc"%>
 
