@@ -21,6 +21,11 @@
 <link href="${pageContext.request.contextPath}/css/sitewhere.css" rel="stylesheet" />
 <%@ include file="includes/i18next.inc"%>
 </head>
+<style>
+.sw-tenant-list {
+	border: 0px;
+}
+</style>
 <body class="sw-body">
 	<div class="sw-container">
 		<div class="sw-top-bar"></div>
@@ -31,6 +36,59 @@
 				</div>
 			</div>
 
-			<div>Choose tenant here!</div>
+			<!-- Title Bar -->
+			<div class="sw-title-bar content k-header">
+				<h1 class="ellipsis" data-i18n="tenants.select.tenant">Select Tenant</h1>
+			</div>
+			<div id="tenants" class="sw-tenant-list"></div>
+
+			<form id="view-tenant" method="get" />
+
+			<%@ include file="tenants/tenantChooserEntry.inc"%>
+
+			<script>
+				/** Set sitewhere_title */
+				sitewhere_i18next.sitewhere_title = "Choose Tenant";
+
+				/** Tenants datasource */
+				var tenantsDS;
+
+				/** Called when tenant 'Select' button is clicked */
+				function onTenantSelected(event, tenantId) {
+					var redirect = '${redirect}';
+					if (redirect.length == 0) {
+						$("#view-tenant").attr("action",
+							"${pageContext.request.contextPath}/admin/tenant/" + tenantId + ".html");
+					} else {
+						$("#view-tenant").attr(
+							"action",
+							"${pageContext.request.contextPath}/admin/tenant/" + tenantId + ".html?redirect="
+									+ redirect);
+					}
+					$('#view-tenant').submit();
+				}
+
+				$(document)
+						.ready(
+							function() {
+								/** Create AJAX datasource for sites list */
+								tenantsDS =
+										new kendo.data.DataSource(
+											{
+												transport : {
+													read : {
+														url : "${pageContext.request.contextPath}/api/users/${currentUser.username}/tenants",
+														dataType : "json",
+													}
+												},
+											});
+
+								/** Create the site list */
+								$("#tenants").kendoListView({
+									dataSource : tenantsDS,
+									template : kendo.template($("#tpl-tenant-entry").html())
+								});
+							});
+			</script>
 
 			<%@ include file="includes/bottom.inc"%>

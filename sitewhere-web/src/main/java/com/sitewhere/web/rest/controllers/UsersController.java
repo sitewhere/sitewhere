@@ -37,6 +37,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -211,6 +212,28 @@ public class UsersController extends SiteWhereController {
 			}
 			SearchResults<User> results = new SearchResults<User>(usersConv);
 			return results;
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get tenants associated with a user.
+	 * 
+	 * @param username
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{username}/tenants", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Find tenants associated with a given user")
+	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	public List<ITenant> getTenantsForUsername(
+			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
+		try {
+			return SiteWhere.getServer().getAuthorizedTenants(username);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

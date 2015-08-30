@@ -102,9 +102,9 @@ public class SiteWhereController {
 	 * @return
 	 */
 	@RequestMapping("/tenant")
-	public ModelAndView chooseTenant(@RequestParam(required = false) String redirect,
+	public ModelAndView showTenantChoices(@RequestParam(required = false) String redirect,
 			HttpServletRequest servletRequest) {
-		Tracer.start(TracerCategory.AdminUserInterface, "chooseTenant", LOGGER);
+		Tracer.start(TracerCategory.AdminUserInterface, "showTenantChoices", LOGGER);
 		try {
 			if ((SecurityContextHolder.getContext() == null)
 					|| (SecurityContextHolder.getContext().getAuthentication() == null)) {
@@ -128,8 +128,48 @@ public class SiteWhereController {
 
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put(DATA_VERSION, VersionHelper.getVersion());
+			data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
 			data.put(DATA_REDIRECT, redirect);
 			return new ModelAndView("tenant", data);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping("/tenant/{tenantId}")
+	public ModelAndView chooseTenant(@PathVariable("tenantId") String tenantId,
+			@RequestParam(required = false) String redirect, HttpServletRequest servletRequest) {
+		Tracer.start(TracerCategory.AdminUserInterface, "chooseTenant", LOGGER);
+		try {
+			if ((SecurityContextHolder.getContext() == null)
+					|| (SecurityContextHolder.getContext().getAuthentication() == null)) {
+				return login();
+			}
+
+			// If no redirect specified, show server info page.
+			if (redirect == null) {
+				redirect = "../server.html";
+			}
+
+			// Find tenants the logged in user is able to view.
+			IUser user = LoginManager.getCurrentlyLoggedInUser();
+			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername());
+			ITenant chosen = null;
+			for (ITenant tenant : matches) {
+				if (tenant.getId().equals(tenantId)) {
+					chosen = tenant;
+				}
+			}
+
+			// Trying to choose an invalid or unauthorized tenant.
+			if (chosen == null) {
+				return showError("Invalid tenant choice.");
+			}
+
+			setChosenTenant(chosen, servletRequest);
+			return new ModelAndView("redirect:" + redirect);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -168,7 +208,7 @@ public class SiteWhereController {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("server/server", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -189,7 +229,7 @@ public class SiteWhereController {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("sites/list", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -218,7 +258,7 @@ public class SiteWhereController {
 			}
 			return showError("Site for token '" + siteToken + "' not found.");
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -250,7 +290,7 @@ public class SiteWhereController {
 			}
 			return showError("Assignment for token '" + token + "' not found.");
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -279,7 +319,7 @@ public class SiteWhereController {
 			}
 			return showError("Assignment for token '" + token + "' not found.");
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -300,7 +340,7 @@ public class SiteWhereController {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("specifications/list", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -329,7 +369,7 @@ public class SiteWhereController {
 			}
 			return showError("Specification for token '" + token + "' not found.");
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -393,7 +433,7 @@ public class SiteWhereController {
 			data.put("excludeAssigned", excludeAssigned);
 			return new ModelAndView("devices/list", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -425,7 +465,7 @@ public class SiteWhereController {
 			}
 			return showError("Device for hardware id '" + hardwareId + "' not found.");
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -446,7 +486,7 @@ public class SiteWhereController {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("groups/list", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -476,7 +516,7 @@ public class SiteWhereController {
 			}
 			return showError("Device group for token '" + groupToken + "' not found.");
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -497,7 +537,7 @@ public class SiteWhereController {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("assets/categories", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -524,7 +564,7 @@ public class SiteWhereController {
 			data.put("category", category);
 			return new ModelAndView("assets/categoryAssets", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -545,7 +585,7 @@ public class SiteWhereController {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("batch/list", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -582,7 +622,7 @@ public class SiteWhereController {
 			}
 			return showError("Batch operation for token '" + batchToken + "' not found.");
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -603,7 +643,7 @@ public class SiteWhereController {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("users/list", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -624,7 +664,7 @@ public class SiteWhereController {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("tenants/list", data);
 		} catch (NoTenantException e) {
-			return chooseTenant(getUrl(request), request);
+			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
