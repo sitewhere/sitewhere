@@ -7,10 +7,15 @@
  */
 package com.sitewhere.configuration;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
@@ -35,6 +40,9 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 
 	/** File name for SiteWhere server config file */
 	public static final String SERVER_CONFIG_FILE_NAME = "sitewhere-server.xml";
+
+	/** File name for SiteWhere default tenant config file */
+	public static final String TENANT_CONFIG_FILE_NAME = "sitewhere-tenant.xml";
 
 	/*
 	 * (non-Javadoc)
@@ -85,14 +93,23 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 		File sitewhereConf = getSiteWhereConfigFolder();
 		File tenantConfigFile = new File(sitewhereConf, tenant.getId() + "-tenant.xml");
 		if (!tenantConfigFile.exists()) {
-			throw new SiteWhereException("Tenant " + tenant.getName() + "(" + tenant.getId()
-					+ ") configuration not found: " + tenantConfigFile.getAbsolutePath());
+			LOGGER.info("Tenant " + tenant.getName() + "(" + tenant.getId() + ") configuration not found: "
+					+ tenantConfigFile.getAbsolutePath());
+			File tenantDefault = new File(sitewhereConf, TENANT_CONFIG_FILE_NAME);
+			if (!tenantDefault.exists()) {
+				throw new SiteWhereException("Default tenant configuration not found at: "
+						+ tenantDefault.getAbsolutePath());
+			}
+			LOGGER.info("Copying configuration from " + tenantDefault.getAbsolutePath() + ".");
+			copyDefaultTenantConfiguration(tenantDefault, tenantConfigFile);
+			createTenantPropertiesFile(tenant, sitewhereConf);
 		}
 		GenericApplicationContext context = new GenericApplicationContext(global);
 
 		// Plug in custom property source.
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("sitewhere.edition", version.getEditionIdentifier().toLowerCase());
+		properties.put("tenant.id", tenant.getId());
 
 		MapPropertySource source = new MapPropertySource("sitewhere", properties);
 		context.getEnvironment().getPropertySources().addLast(source);
@@ -104,6 +121,51 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 
 		context.refresh();
 		return context;
+	}
+
+	/**
+	 * Copy the default tenant configuration to initialize a new tenant.
+	 * 
+	 * @param defaultConfig
+	 * @param tenantConfig
+	 * @throws SiteWhereException
+	 */
+	protected void copyDefaultTenantConfiguration(File defaultConfig, File tenantConfig)
+			throws SiteWhereException {
+		try {
+			// Copy the default configuration to the tenant configuration.
+			tenantConfig.createNewFile();
+			FileInputStream in = new FileInputStream(defaultConfig);
+			FileOutputStream out = new FileOutputStream(tenantConfig);
+			IOUtils.copy(in, out);
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to copy tenant configuration file: "
+					+ defaultConfig.getAbsolutePath(), e);
+		}
+	}
+
+	/**
+	 * Create a default properties file for a tenant.
+	 * 
+	 * @param tenant
+	 * @param folder
+	 * @throws SiteWhereException
+	 */
+	protected void createTenantPropertiesFile(ITenant tenant, File folder) throws SiteWhereException {
+		File tenantPropsFile = new File(folder, tenant.getId() + "-tenant.properties");
+		try {
+			tenantPropsFile.createNewFile();
+			String content = "# Properties for '" + tenant.getName() + "' tenant configuration.\n";
+			ByteArrayInputStream in = new ByteArrayInputStream(content.getBytes());
+			FileOutputStream out = new FileOutputStream(tenantPropsFile);
+			IOUtils.copy(in, out);
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+		} catch (IOException e) {
+			LOGGER.error("Unable to copy tenant configuration file: " + tenantPropsFile.getAbsolutePath(), e);
+		}
 	}
 
 	/*
