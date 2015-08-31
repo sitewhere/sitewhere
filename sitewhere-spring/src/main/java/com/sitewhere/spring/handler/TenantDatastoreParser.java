@@ -253,7 +253,7 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		MongoTenantDatastore("mongo-tenant-datastore"),
 
 		/** HBase tenant datastore service providers */
-		HBaseTenantDatastore("hbase-datastore"),
+		HBaseTenantDatastore("hbase-tenant-datastore"),
 
 		/** EHCache device mananagement cache provider */
 		EHCacheDeviceManagementCache("ehcache-device-management-cache"),

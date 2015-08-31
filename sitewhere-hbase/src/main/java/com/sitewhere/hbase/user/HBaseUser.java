@@ -342,6 +342,6 @@ public class HBaseUser {
 	 * @throws SiteWhereException
 	 */
 	protected static HTableInterface getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
-		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.USERS_TABLE_NAME);
+		return context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 	}
 }

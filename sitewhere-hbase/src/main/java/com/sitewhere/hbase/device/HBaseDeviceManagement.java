@@ -118,14 +118,14 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
-		ensureTablesExist();
-
 		// Create context from configured options.
 		this.context = new HBaseContext();
 		context.setTenant(getTenant());
 		context.setClient(getClient());
 		context.setCacheProvider(getCacheProvider());
 		context.setPayloadMarshaler(getPayloadMarshaler());
+
+		ensureTablesExist();
 
 		IdManager.getInstance().load(context);
 
@@ -151,11 +151,11 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
 	 * @throws SiteWhereException
 	 */
 	protected void ensureTablesExist() throws SiteWhereException {
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.SITES_TABLE_NAME, BloomType.ROW);
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.EVENTS_TABLE_NAME, BloomType.ROW);
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.DEVICES_TABLE_NAME, BloomType.ROW);
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.STREAMS_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.SITES_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.EVENTS_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.DEVICES_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.STREAMS_TABLE_NAME, BloomType.ROW);
 	}
 
 	/*

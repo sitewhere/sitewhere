@@ -36,7 +36,16 @@ public interface ISiteWhereHBaseClient {
 	public HBaseAdmin getAdmin();
 
 	/**
-	 * Get the named table interface. Auto flush is disabled.
+	 * Get a table that has global scope.
+	 * 
+	 * @param tableName
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public HTableInterface getTableInterface(byte[] tableName) throws SiteWhereException;
+
+	/**
+	 * Get a table with tenant scope. Auto flush is disabled.
 	 * 
 	 * @param tenant
 	 * @param tableName
@@ -46,7 +55,7 @@ public interface ISiteWhereHBaseClient {
 	public HTableInterface getTableInterface(ITenant tenant, byte[] tableName) throws SiteWhereException;
 
 	/**
-	 * Get the named table interface.
+	 * Get a table with tenant scope.
 	 * 
 	 * @param tenant
 	 * @param tableName

@@ -67,7 +67,7 @@ public class HBaseUtils {
 
 		HTableInterface table = null;
 		try {
-			table = context.getClient().getTableInterface(context.getTenant(), tableName);
+			table = getTableInterface(context, tableName);
 			Put put = new Put(primary);
 			HBaseUtils.addPayloadFields(marshaler.getEncoding(), put, payload);
 			for (byte[] key : qualifiers.keySet()) {
@@ -102,7 +102,7 @@ public class HBaseUtils {
 
 		HTableInterface table = null;
 		try {
-			table = context.getClient().getTableInterface(context.getTenant(), tableName);
+			table = getTableInterface(context, tableName);
 			Put put = new Put(primary);
 			HBaseUtils.addPayloadFields(marshaler.getEncoding(), put, payload);
 			table.put(put);
@@ -132,7 +132,7 @@ public class HBaseUtils {
 
 		HTableInterface table = null;
 		try {
-			table = context.getClient().getTableInterface(context.getTenant(), tableName);
+			table = getTableInterface(context, tableName);
 			Get get = new Get(primary);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 			get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
@@ -198,7 +198,7 @@ public class HBaseUtils {
 		HTableInterface table = null;
 		ResultScanner scanner = null;
 		try {
-			table = context.getClient().getTableInterface(context.getTenant(), tableName);
+			table = getTableInterface(context, tableName);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { builder.getTypeIdentifier() });
 			scan.setStopRow(new byte[] { (byte) (builder.getTypeIdentifier() + 1) });
@@ -267,7 +267,7 @@ public class HBaseUtils {
 			HTableInterface table = null;
 			try {
 				Delete delete = new Delete(primary);
-				table = context.getClient().getTableInterface(context.getTenant(), tableName);
+				table = getTableInterface(context, tableName);
 				table.delete(delete);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to delete data for token: " + token, e);
@@ -281,7 +281,7 @@ public class HBaseUtils {
 
 			HTableInterface table = null;
 			try {
-				table = context.getClient().getTableInterface(context.getTenant(), tableName);
+				table = getTableInterface(context, tableName);
 				Put put = new Put(primary);
 				put.add(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE,
 						marshaler.getEncoding().getIndicator());
@@ -318,7 +318,7 @@ public class HBaseUtils {
 		HTableInterface table = null;
 		try {
 			Delete delete = new Delete(primary);
-			table = context.getClient().getTableInterface(context.getTenant(), tableName);
+			table = getTableInterface(context, tableName);
 			table.delete(delete);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to delete data for token: " + token, e);
@@ -351,6 +351,20 @@ public class HBaseUtils {
 	public static void addPayloadFields(Get get) throws SiteWhereException {
 		get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 		get.addColumn(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+	}
+
+	/**
+	 * Get a table interface.
+	 * 
+	 * @param context
+	 * @param tableName
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static HTableInterface getTableInterface(IHBaseContext context, byte[] tableName)
+			throws SiteWhereException {
+		return (context.getTenant() == null) ? context.getClient().getTableInterface(tableName)
+				: context.getClient().getTableInterface(context.getTenant(), tableName);
 	}
 
 	/**

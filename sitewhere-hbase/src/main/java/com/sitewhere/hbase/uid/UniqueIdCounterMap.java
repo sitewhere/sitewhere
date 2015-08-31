@@ -69,7 +69,7 @@ public class UniqueIdCounterMap extends UniqueIdMap<String, Long> {
 		byte[] counterKey = counterRow.array();
 		HTableInterface uids = null;
 		try {
-			uids = context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.UID_TABLE_NAME);
+			uids = HBaseUtils.getTableInterface(context, ISiteWhereHBase.UID_TABLE_NAME);
 			return uids.incrementColumnValue(counterKey, ISiteWhereHBase.FAMILY_ID, UniqueIdMap.VALUE_QUAL,
 					1L);
 		} catch (IOException e) {

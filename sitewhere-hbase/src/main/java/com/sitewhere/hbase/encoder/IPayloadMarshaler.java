@@ -31,6 +31,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.user.GrantedAuthority;
+import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -57,6 +58,7 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 
 /**
@@ -543,4 +545,22 @@ public interface IPayloadMarshaler {
 	 * @throws SiteWhereException
 	 */
 	public LocationAsset decodeLocationAsset(byte[] payload) throws SiteWhereException;
+
+	/**
+	 * Encode an {@link ITenant}.
+	 * 
+	 * @param tenant
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] encodeTenant(ITenant tenant) throws SiteWhereException;
+
+	/**
+	 * Deocde a {@link Tenant}.
+	 * 
+	 * @param payload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public Tenant decodeTenant(byte[] payload) throws SiteWhereException;
 }

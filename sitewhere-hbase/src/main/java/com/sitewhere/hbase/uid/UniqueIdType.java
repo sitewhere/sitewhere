@@ -41,6 +41,9 @@ public enum UniqueIdType {
 	/** Key and value for batch operation UUIDs */
 	BatchOperationKey((byte) 0x10), BatchOperationValue((byte) 0x11),
 
+	/** Key and value for tenant ids */
+	TenantKey((byte) 0x11), TenantValue((byte) 0x12),
+
 	/** Key and value for asset UUIDs */
 	AssetKey((byte) 0x01), AssetValue((byte) 0x02);
 

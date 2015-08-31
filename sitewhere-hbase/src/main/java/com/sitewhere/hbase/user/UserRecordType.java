@@ -14,11 +14,14 @@ package com.sitewhere.hbase.user;
  */
 public enum UserRecordType {
 
-	/** Assignment record */
+	/** User record */
 	User((byte) 0x01),
 
-	/** Assignment record */
+	/** Granted authority record */
 	GrantedAuthority((byte) 0x02),
+
+	/** Tenant record */
+	Tenant((byte) 0x03),
 
 	/** Marker for scans */
 	End((byte) 0x03);

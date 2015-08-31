@@ -18,7 +18,7 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
-import com.sitewhere.hbase.uid.IdManager;
+import com.sitewhere.hbase.tenant.HBaseTenant;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.ISearchResults;
@@ -71,7 +71,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 		context.setClient(getClient());
 		context.setPayloadMarshaler(getPayloadMarshaler());
 
-		IdManager.getInstance().load(context);
+		UserIdManager.getInstance().load(context);
 	}
 
 	/*
@@ -101,6 +101,7 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	protected void ensureTablesExist() throws SiteWhereException {
 		SiteWhereTables.assureTable(client, ISiteWhereHBase.USERS_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTable(client, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
 	}
 
 	/*
@@ -264,40 +265,71 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 		throw new SiteWhereException("Not implemented.");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#createTenant(com.sitewhere.spi.user.request
+	 * .ITenantCreateRequest)
+	 */
 	@Override
 	public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseTenant.createTenant(context, request);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.IUserManagement#updateTenant(java.lang.String,
+	 * com.sitewhere.spi.user.request.ITenantCreateRequest)
+	 */
 	@Override
 	public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseTenant.updateTenant(context, id, request);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.IUserManagement#getTenantById(java.lang.String)
+	 */
 	@Override
 	public ITenant getTenantById(String id) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseTenant.getTenantById(context, id);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#getTenantByAuthenticationToken(java.lang
+	 * .String)
+	 */
 	@Override
 	public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseTenant.getTenantByAuthenticationToken(context, token);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#listTenants(com.sitewhere.spi.search.user
+	 * .ITenantSearchCriteria)
+	 */
 	@Override
 	public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseTenant.listTenants(context, criteria);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.IUserManagement#deleteTenant(java.lang.String, boolean)
+	 */
 	@Override
 	public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseTenant.deleteTenant(context, tenantId, force);
 	}
 
 	public ISiteWhereHBaseClient getClient() {

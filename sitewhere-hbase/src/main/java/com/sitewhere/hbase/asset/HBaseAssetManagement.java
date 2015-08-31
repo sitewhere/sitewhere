@@ -62,13 +62,13 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		ensureTablesExist();
-
 		// Create context from configured options.
 		this.context = new HBaseContext();
 		context.setTenant(getTenant());
 		context.setClient(getClient());
 		context.setPayloadMarshaler(getPayloadMarshaler());
+
+		ensureTablesExist();
 
 		AssetIdManager.getInstance().load(context);
 	}
@@ -98,8 +98,8 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	 * @throws SiteWhereException
 	 */
 	protected void ensureTablesExist() throws SiteWhereException {
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
-		SiteWhereTables.assureTable(client, ISiteWhereHBase.ASSETS_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.UID_TABLE_NAME, BloomType.ROW);
+		SiteWhereTables.assureTenantTable(context, ISiteWhereHBase.ASSETS_TABLE_NAME, BloomType.ROW);
 	}
 
 	/*

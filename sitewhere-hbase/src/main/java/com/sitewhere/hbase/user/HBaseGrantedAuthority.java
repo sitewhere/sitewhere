@@ -129,7 +129,7 @@ public class HBaseGrantedAuthority {
 			users = getUsersTableInterface(context);
 			Scan scan = new Scan();
 			scan.setStartRow(new byte[] { UserRecordType.GrantedAuthority.getType() });
-			scan.setStopRow(new byte[] { UserRecordType.End.getType() });
+			scan.setStopRow(new byte[] { (byte) (UserRecordType.GrantedAuthority.getType() + 1) });
 			scanner = users.getScanner(scan);
 
 			ArrayList<IGrantedAuthority> matches = new ArrayList<IGrantedAuthority>();
@@ -185,6 +185,6 @@ public class HBaseGrantedAuthority {
 	 * @throws SiteWhereException
 	 */
 	protected static HTableInterface getUsersTableInterface(IHBaseContext context) throws SiteWhereException {
-		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.USERS_TABLE_NAME);
+		return context.getClient().getTableInterface(ISiteWhereHBase.USERS_TABLE_NAME);
 	}
 }

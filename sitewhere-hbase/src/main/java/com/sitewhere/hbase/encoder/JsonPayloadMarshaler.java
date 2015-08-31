@@ -32,6 +32,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.user.GrantedAuthority;
+import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -58,6 +59,7 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 
 /**
@@ -650,5 +652,27 @@ public class JsonPayloadMarshaler implements IPayloadMarshaler {
 	@Override
 	public LocationAsset decodeLocationAsset(byte[] payload) throws SiteWhereException {
 		return MarshalUtils.unmarshalJson(payload, LocationAsset.class);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.hbase.encoder.IPayloadMarshaler#encodeTenant(com.sitewhere.spi.user
+	 * .ITenant)
+	 */
+	@Override
+	public byte[] encodeTenant(ITenant tenant) throws SiteWhereException {
+		return MarshalUtils.marshalJson(tenant);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.encoder.IPayloadMarshaler#decodeTenant(byte[])
+	 */
+	@Override
+	public Tenant decodeTenant(byte[] payload) throws SiteWhereException {
+		return MarshalUtils.unmarshalJson(payload, Tenant.class);
 	}
 }

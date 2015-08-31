@@ -5,20 +5,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.hbase.asset;
+package com.sitewhere.hbase.tenant;
 
 /**
- * Indicators for asset category record subtype.
+ * Indicators for tenant record subtype.
  * 
  * @author Derek
  */
-public enum AssetCategorySubtype {
+public enum TenantSubtype {
 
-	/** Asset category record */
-	AssetCategory((byte) 0x00),
-
-	/** Asset record */
-	Asset((byte) 0x01);
+	/** Tenant record */
+	Tenant((byte) 0x00);
 
 	/** Type indicator */
 	private byte type;
@@ -28,7 +25,7 @@ public enum AssetCategorySubtype {
 	 * 
 	 * @param value
 	 */
-	private AssetCategorySubtype(byte type) {
+	private TenantSubtype(byte type) {
 		this.type = type;
 	}
 

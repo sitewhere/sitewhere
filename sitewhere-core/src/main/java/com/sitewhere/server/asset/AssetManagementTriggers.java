@@ -13,6 +13,7 @@ import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModule;
+import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.asset.IHardwareAsset;
 import com.sitewhere.spi.asset.ILocationAsset;
 import com.sitewhere.spi.asset.IPersonAsset;
@@ -20,6 +21,7 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
 import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
 import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Trigger actions based on asset management API calls.
@@ -42,7 +44,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 	@Override
 	public IAssetCategory createAssetCategory(IAssetCategoryCreateRequest request) throws SiteWhereException {
 		IAssetCategory created = super.createAssetCategory(request);
-		SiteWhere.getServer().getAssetModuleManager(getTenant()).refreshDatastoreModules();
+		refreshAll();
 		return created;
 	}
 
@@ -57,7 +59,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 	public IAssetCategory updateAssetCategory(String categoryId, IAssetCategoryCreateRequest request)
 			throws SiteWhereException {
 		IAssetCategory updated = super.updateAssetCategory(categoryId, request);
-		SiteWhere.getServer().getAssetModuleManager(getTenant()).refreshDatastoreModules();
+		refreshAll();
 		return updated;
 	}
 
@@ -71,7 +73,7 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 	@Override
 	public IAssetCategory deleteAssetCategory(String categoryId) throws SiteWhereException {
 		IAssetCategory deleted = super.deleteAssetCategory(categoryId);
-		SiteWhere.getServer().getAssetModuleManager(getTenant()).refreshDatastoreModules();
+		refreshAll();
 		return deleted;
 	}
 
@@ -183,15 +185,30 @@ public class AssetManagementTriggers extends AssetManagementDecorator {
 	}
 
 	/**
+	 * Refresh all datastore modules.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void refreshAll() throws SiteWhereException {
+		IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
+		if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
+			manager.refreshDatastoreModules();
+		}
+	}
+
+	/**
 	 * Refresh an asset module.
 	 * 
 	 * @param id
 	 * @throws SiteWhereException
 	 */
 	protected void refreshModule(String id) throws SiteWhereException {
-		IAssetModule<?> module = SiteWhere.getServer().getAssetModuleManager(getTenant()).getModule(id);
-		if (module != null) {
-			module.refresh();
+		IAssetModuleManager manager = SiteWhere.getServer().getAssetModuleManager(getTenant());
+		if (manager.getLifecycleStatus() == LifecycleStatus.Started) {
+			IAssetModule<?> module = SiteWhere.getServer().getAssetModuleManager(getTenant()).getModule(id);
+			if (module != null) {
+				module.refresh();
+			}
 		}
 	}
 }

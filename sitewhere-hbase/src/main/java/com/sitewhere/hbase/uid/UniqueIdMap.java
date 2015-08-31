@@ -385,6 +385,6 @@ public abstract class UniqueIdMap<N, V> {
 	 * @throws SiteWhereException
 	 */
 	protected static HTableInterface getUidTableInterface(IHBaseContext context) throws SiteWhereException {
-		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.UID_TABLE_NAME);
+		return HBaseUtils.getTableInterface(context, ISiteWhereHBase.UID_TABLE_NAME);
 	}
 }
