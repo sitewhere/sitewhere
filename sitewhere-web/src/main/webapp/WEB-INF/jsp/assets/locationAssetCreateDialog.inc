@@ -248,8 +248,11 @@
 
 		$("#ac-asset-id").require();
 		$("#ac-asset-name").require();
+		$("#ac-asset-image").require();
 		$("#ac-asset-username").require();
 		$("#ac-asset-email").require();
+
+		$('#ac-asset-id').match(/^[\w\-]+$/, "Ids are alphanumeric with dashes or underscores.");
 
 		var result = $.validity.end();
 		return result.valid;

@@ -141,6 +141,8 @@
 		$("#cc-category-id").require();
 		$("#cc-category-name").require();
 
+		$('#cc-category-id').match(/^[\w\-]+$/, "Ids are alphanumeric with dashes or underscores.");
+
 		var result = $.validity.end();
 		return result.valid;
 	}
