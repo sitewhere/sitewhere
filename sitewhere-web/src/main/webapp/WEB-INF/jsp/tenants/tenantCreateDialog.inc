@@ -151,6 +151,8 @@
 		$("#tc-tenant-logo").require();
 		$("#tc-tenant-auth-token").require();
 
+		$('#tc-tenant-id').match(/^[\w\-]+$/, "Ids are alphanumeric with dashes or underscores.");
+
 		var result = $.validity.end();
 		return result.valid;
 	}
