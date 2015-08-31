@@ -42,7 +42,9 @@
 			</div>
 			<div id="tenants" class="sw-tenant-list"></div>
 
-			<form id="view-tenant" method="get" />
+			<form id="view-tenant" method="get">
+				<input id="view-tenant-redirect" type="hidden" name="redirect" value="${redirect}" />
+			</form>
 
 			<%@ include file="tenants/tenantChooserEntry.inc"%>
 
@@ -55,16 +57,8 @@
 
 				/** Called when tenant 'Select' button is clicked */
 				function onTenantSelected(event, tenantId) {
-					var redirect = '${redirect}';
-					if (redirect.length == 0) {
-						$("#view-tenant").attr("action",
-							"${pageContext.request.contextPath}/admin/tenant/" + tenantId + ".html");
-					} else {
-						$("#view-tenant").attr(
-							"action",
-							"${pageContext.request.contextPath}/admin/tenant/" + tenantId + ".html?redirect="
-									+ redirect);
-					}
+					$("#view-tenant").attr("action",
+						"${pageContext.request.contextPath}/admin/tenant/" + tenantId + ".html");
 					$('#view-tenant').submit();
 				}
 

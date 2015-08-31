@@ -111,17 +111,16 @@ public class SiteWhereController {
 				return login();
 			}
 
-			// If no redirect specified, show server info page.
-			if (redirect == null) {
-				redirect = "server.html";
-			}
-
 			// Find tenants the logged in user is able to view.
 			IUser user = LoginManager.getCurrentlyLoggedInUser();
 			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername());
 			if (matches.size() == 0) {
 				return showError("User is not authorized to access any of the available tenants.");
 			} else if (matches.size() == 1) {
+				// If no redirect specified, show server info page.
+				if (redirect == null) {
+					redirect = "server.html";
+				}
 				setChosenTenant(matches.get(0), servletRequest);
 				return new ModelAndView("redirect:" + redirect);
 			}
@@ -149,7 +148,7 @@ public class SiteWhereController {
 			}
 
 			// If no redirect specified, show server info page.
-			if (redirect == null) {
+			if ((redirect == null) || (redirect.length() == 0)) {
 				redirect = "../server.html";
 			}
 
