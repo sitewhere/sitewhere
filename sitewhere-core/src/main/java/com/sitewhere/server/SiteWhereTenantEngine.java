@@ -28,6 +28,7 @@ import com.sitewhere.device.event.processor.DeviceStreamProcessor;
 import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
 import com.sitewhere.device.event.processor.RegistrationProcessor;
 import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.spi.SiteWhereException;
@@ -331,8 +332,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected void initializeAssetManagement() throws SiteWhereException {
 		try {
-			assetManagement =
+			IAssetManagement implementation =
 					(IAssetManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
+			assetManagement = new AssetManagementTriggers(implementation);
 			assetModuleManager =
 					(IAssetModuleManager) tenantContext.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
 		} catch (NoSuchBeanDefinitionException e) {

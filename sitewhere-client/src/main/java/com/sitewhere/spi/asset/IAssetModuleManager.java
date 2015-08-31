@@ -46,6 +46,14 @@ public interface IAssetModuleManager extends ITenantLifecycleComponent {
 	public List<ICommandResponse> refreshModules() throws SiteWhereException;
 
 	/**
+	 * Refresh modules loaded from datastore.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public List<ICommandResponse> refreshDatastoreModules() throws SiteWhereException;
+
+	/**
 	 * Finds an asset in a given module.
 	 * 
 	 * @param assetModuleId

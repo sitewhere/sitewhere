@@ -9,9 +9,8 @@ package com.sitewhere.device;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -64,9 +63,6 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -75,177 +71,14 @@ import com.sitewhere.spi.user.ITenant;
  * 
  * @author Derek
  */
-public class DeviceManagementDecorator implements IDeviceManagement {
+public class DeviceManagementDecorator extends LifecycleComponentDecorator implements IDeviceManagement {
 
 	/** Delegate instance */
 	private IDeviceManagement delegate;
 
 	public DeviceManagementDecorator(IDeviceManagement delegate) {
+		super(delegate);
 		this.delegate = delegate;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentId()
-	 */
-	@Override
-	public String getComponentId() {
-		return delegate.getComponentId();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentType()
-	 */
-	@Override
-	public LifecycleComponentType getComponentType() {
-		return delegate.getComponentType();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStart()
-	 */
-	@Override
-	public void lifecycleStart() {
-		delegate.lifecycleStart();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
-	 */
-	@Override
-	public void start() throws SiteWhereException {
-		delegate.start();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#lifecyclePause()
-	 */
-	@Override
-	public void lifecyclePause() {
-		delegate.lifecyclePause();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#canPause()
-	 */
-	@Override
-	public boolean canPause() throws SiteWhereException {
-		return delegate.canPause();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#pause()
-	 */
-	@Override
-	public void pause() throws SiteWhereException {
-		delegate.pause();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
-	 */
-	@Override
-	public Logger getLogger() {
-		return delegate.getLogger();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#lifecycleStop()
-	 */
-	@Override
-	public void lifecycleStop() {
-		delegate.lifecycleStop();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getComponentName()
-	 */
-	@Override
-	public String getComponentName() {
-		return delegate.getComponentName();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleStatus()
-	 */
-	@Override
-	public LifecycleStatus getLifecycleStatus() {
-		return delegate.getLifecycleStatus();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleError()
-	 */
-	@Override
-	public SiteWhereException getLifecycleError() {
-		return delegate.getLifecycleError();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLifecycleComponents()
-	 */
-	@Override
-	public List<ILifecycleComponent> getLifecycleComponents() {
-		return delegate.getLifecycleComponents();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	@Override
-	public void stop() throws SiteWhereException {
-		delegate.stop();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ILifecycleComponent#findComponentsOfType(com
-	 * .sitewhere.spi.server.lifecycle.LifecycleComponentType)
-	 */
-	@Override
-	public List<ILifecycleComponent> findComponentsOfType(LifecycleComponentType type)
-			throws SiteWhereException {
-		return delegate.findComponentsOfType(type);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#logState()
-	 */
-	@Override
-	public void logState() {
-		delegate.logState();
 	}
 
 	/*

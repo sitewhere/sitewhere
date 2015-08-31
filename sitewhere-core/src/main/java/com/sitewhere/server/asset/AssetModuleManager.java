@@ -70,12 +70,12 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 		refreshDatastoreModules();
 	}
 
-	/**
-	 * Refreshes all modules loaded from the datastore.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @throws SiteWhereException
+	 * @see com.sitewhere.spi.asset.IAssetModuleManager#refreshDatastoreModules()
 	 */
-	protected List<ICommandResponse> refreshDatastoreModules() throws SiteWhereException {
+	public List<ICommandResponse> refreshDatastoreModules() throws SiteWhereException {
 		List<ICommandResponse> responses = new ArrayList<ICommandResponse>();
 		dsModulesById.clear();
 		ISearchResults<IAssetCategory> categories =
