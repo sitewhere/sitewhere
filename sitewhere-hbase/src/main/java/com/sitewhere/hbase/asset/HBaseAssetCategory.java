@@ -42,8 +42,8 @@ public class HBaseAssetCategory {
 	public static UniqueIdCounterMapRowKeyBuilder KEY_BUILDER = new UniqueIdCounterMapRowKeyBuilder() {
 
 		@Override
-		public UniqueIdCounterMap getMap() {
-			return AssetIdManager.getInstance().getAssetKeys();
+		public UniqueIdCounterMap getMap(IHBaseContext context) {
+			return context.getAssetIdManager().getAssetKeys();
 		}
 
 		@Override
@@ -82,7 +82,7 @@ public class HBaseAssetCategory {
 		}
 
 		// Add new key to table.
-		String id = KEY_BUILDER.getMap().useExistingId(request.getId());
+		String id = KEY_BUILDER.getMap(context).useExistingId(request.getId());
 
 		// Use common logic so all backend implementations work the same.
 		AssetCategory category = SiteWherePersistence.assetCategoryCreateLogic(request);
@@ -102,7 +102,7 @@ public class HBaseAssetCategory {
 	 */
 	public static AssetCategory getAssetCategoryById(IHBaseContext context, String id)
 			throws SiteWhereException {
-		if (KEY_BUILDER.getMap().getValue(id) == null) {
+		if (KEY_BUILDER.getMap(context).getValue(id) == null) {
 			return null;
 		}
 		return HBaseUtils.get(context, ISiteWhereHBase.ASSETS_TABLE_NAME, id, KEY_BUILDER,

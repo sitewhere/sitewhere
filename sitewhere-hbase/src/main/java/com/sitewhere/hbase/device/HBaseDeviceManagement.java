@@ -20,7 +20,6 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.ProtobufPayloadMarshaler;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -108,6 +107,9 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
 	/** Allows puts to be buffered for device events */
 	private DeviceEventBuffer buffer;
 
+	/** Device id manager */
+	private DeviceIdManager deviceIdManager;
+
 	public HBaseDeviceManagement() {
 		super(LifecycleComponentType.DataStore);
 	}
@@ -127,7 +129,10 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
 
 		ensureTablesExist();
 
-		IdManager.getInstance().load(context);
+		// Create device id manager instance.
+		deviceIdManager = new DeviceIdManager();
+		deviceIdManager.load(context);
+		context.setDeviceIdManager(deviceIdManager);
 
 		// Start buffer for saving device events.
 		buffer = new DeviceEventBuffer(context);

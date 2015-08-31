@@ -25,7 +25,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -64,7 +63,7 @@ public class HBaseDeviceStream {
 		try {
 			// Verify that the assignment token is valid.
 			DeviceAssignment assignment = HBaseDeviceAssignment.getDeviceAssignment(context, assignmentToken);
-			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignmentToken);
+			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
 			if (assignment == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 			}
@@ -110,7 +109,7 @@ public class HBaseDeviceStream {
 	 */
 	public static DeviceStream getDeviceStream(IHBaseContext context, String assignmentToken, String streamId)
 			throws SiteWhereException {
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignmentToken);
+		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
 		if (assnKey == null) {
 			return null;
 		}
@@ -148,7 +147,7 @@ public class HBaseDeviceStream {
 	 */
 	public static ISearchResults<IDeviceStream> listDeviceStreams(IHBaseContext context,
 			String assignmentToken, ISearchCriteria criteria) throws SiteWhereException {
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignmentToken);
+		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignmentToken);
 		if (assnKey == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}

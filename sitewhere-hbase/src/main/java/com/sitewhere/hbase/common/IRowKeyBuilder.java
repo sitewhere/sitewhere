@@ -7,6 +7,7 @@
  */
 package com.sitewhere.hbase.common;
 
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -47,27 +48,30 @@ public interface IRowKeyBuilder {
 	/**
 	 * Builds a primary entity row key based on a unique token.
 	 * 
+	 * @param context
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] buildPrimaryKey(String token) throws SiteWhereException;
+	public byte[] buildPrimaryKey(IHBaseContext context, String token) throws SiteWhereException;
 
 	/**
 	 * Builds a subordinate key based on the type indicator.
 	 * 
+	 * @param context
 	 * @param token
 	 * @param type
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] buildSubkey(String token, byte type) throws SiteWhereException;
+	public byte[] buildSubkey(IHBaseContext context, String token, byte type) throws SiteWhereException;
 
 	/**
 	 * Deletes a reference to a token.
 	 * 
+	 * @param context
 	 * @param token
 	 * @throws SiteWhereException
 	 */
-	public void deleteReference(String token) throws SiteWhereException;
+	public void deleteReference(IHBaseContext context, String token) throws SiteWhereException;
 }

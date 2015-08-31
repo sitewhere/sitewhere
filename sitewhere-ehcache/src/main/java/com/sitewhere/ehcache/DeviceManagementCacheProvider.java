@@ -37,16 +37,16 @@ public class DeviceManagementCacheProvider extends TenantLifecycleComponent impl
 	private static final Logger LOGGER = Logger.getLogger(DeviceManagementCacheProvider.class);
 
 	/** Cache id for site cache */
-	public static final String SITE_CACHE_ID = "sitewhere-site-cache";
+	public static final String SITE_CACHE_ID = "site-cache";
 
 	/** Cache id for device specification cache */
-	public static final String DEVICE_SPECIFICATION_CACHE_ID = "sitewhere-device-specification-cache";
+	public static final String DEVICE_SPECIFICATION_CACHE_ID = "device-specification-cache";
 
 	/** Cache id for device cache */
-	public static final String DEVICE_CACHE_ID = "sitewhere-device-cache";
+	public static final String DEVICE_CACHE_ID = "device-cache";
 
 	/** Cache id for device assignment cache */
-	public static final String DEVICE_ASSIGNMENT_CACHE_ID = "sitewhere-device-assignment-cache";
+	public static final String DEVICE_ASSIGNMENT_CACHE_ID = "device-assignment-cache";
 
 	/** Max number of entries in site cache */
 	public long siteCacheMaxEntries = 50;
@@ -106,25 +106,35 @@ public class DeviceManagementCacheProvider extends TenantLifecycleComponent impl
 
 		// Create site cache.
 		siteCache =
-				createCache(manager, ISite.class, SITE_CACHE_ID, CacheType.SiteCache,
+				createCache(manager, ISite.class, addTenantPrefix(SITE_CACHE_ID), CacheType.SiteCache,
 						getSiteCacheMaxEntries(), getSiteCacheTtl());
 
 		// Create device specification cache.
 		deviceSpecificationCache =
-				createCache(manager, IDeviceSpecification.class, DEVICE_SPECIFICATION_CACHE_ID,
-						CacheType.DeviceSpecificationCache, getDeviceSpecificationCacheMaxEntries(),
-						getDeviceSpecificationCacheTtl());
+				createCache(manager, IDeviceSpecification.class,
+						addTenantPrefix(DEVICE_SPECIFICATION_CACHE_ID), CacheType.DeviceSpecificationCache,
+						getDeviceSpecificationCacheMaxEntries(), getDeviceSpecificationCacheTtl());
 
 		// Create device cache.
 		deviceCache =
-				createCache(manager, IDevice.class, DEVICE_CACHE_ID, CacheType.DeviceCache,
+				createCache(manager, IDevice.class, addTenantPrefix(DEVICE_CACHE_ID), CacheType.DeviceCache,
 						getDeviceCacheMaxEntries(), getDeviceCacheTtl());
 
 		// Create device assignment cache.
 		deviceAssignmentCache =
-				createCache(manager, IDeviceAssignment.class, DEVICE_ASSIGNMENT_CACHE_ID,
+				createCache(manager, IDeviceAssignment.class, addTenantPrefix(DEVICE_ASSIGNMENT_CACHE_ID),
 						CacheType.DeviceAssignmentCache, getDeviceAssignmentCacheMaxEntries(),
 						getDeviceAssignmentCacheTtl());
+	}
+
+	/**
+	 * Add prefix so that each tenant has a unique cache.
+	 * 
+	 * @param cacheName
+	 * @return
+	 */
+	protected String addTenantPrefix(String cacheName) {
+		return getTenant().getId() + "-" + cacheName;
 	}
 
 	/*

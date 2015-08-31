@@ -17,23 +17,10 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class AssetIdManager {
-
-	/** Singleton instance */
-	private static AssetIdManager SINGLETON;
+public class AssetIdManager implements IAssetIdManager {
 
 	/** Manager for category ids */
 	private UniqueIdCounterMap categoryKeys;
-
-	private AssetIdManager() {
-	}
-
-	public static AssetIdManager getInstance() {
-		if (SINGLETON == null) {
-			SINGLETON = new AssetIdManager();
-		}
-		return SINGLETON;
-	}
 
 	/**
 	 * Load existing keys from table.
@@ -48,10 +35,10 @@ public class AssetIdManager {
 		categoryKeys.refresh();
 	}
 
-	/**
-	 * Get asset key manager.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.hbase.asset.IAssetIdManager#getAssetKeys()
 	 */
 	public UniqueIdCounterMap getAssetKeys() {
 		return categoryKeys;

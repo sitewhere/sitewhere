@@ -61,7 +61,7 @@ public class HBaseDeviceGroupElement {
 	 */
 	public static List<IDeviceGroupElement> createDeviceGroupElements(IHBaseContext context,
 			String groupToken, List<IDeviceGroupElementCreateRequest> requests) throws SiteWhereException {
-		byte[] groupKey = HBaseDeviceGroup.KEY_BUILDER.buildPrimaryKey(groupToken);
+		byte[] groupKey = HBaseDeviceGroup.KEY_BUILDER.buildPrimaryKey(context, groupToken);
 		List<IDeviceGroupElement> results = new ArrayList<IDeviceGroupElement>();
 		for (IDeviceGroupElementCreateRequest request : requests) {
 			Long eid = HBaseDeviceGroup.allocateNextElementId(context, groupKey);
@@ -82,7 +82,7 @@ public class HBaseDeviceGroupElement {
 	 */
 	public static IDeviceGroupElement createDeviceGroupElement(IHBaseContext context, String groupToken,
 			Long index, IDeviceGroupElementCreateRequest request) throws SiteWhereException {
-		byte[] elementKey = getElementRowKey(groupToken, index);
+		byte[] elementKey = getElementRowKey(context, groupToken, index);
 
 		// Use common processing logic so all backend implementations work the same.
 		DeviceGroupElement element =
@@ -140,10 +140,10 @@ public class HBaseDeviceGroupElement {
 		try {
 			table = getDeviceTableInterface(context);
 			byte[] primary =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
 			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
 							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
@@ -206,10 +206,10 @@ public class HBaseDeviceGroupElement {
 		try {
 			table = getDeviceTableInterface(context);
 			byte[] primary =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
 			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
 							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
@@ -260,10 +260,10 @@ public class HBaseDeviceGroupElement {
 		try {
 			table = getDeviceTableInterface(context);
 			byte[] primary =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
 							DeviceGroupRecordType.DeviceGroupElement.getType());
 			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
 							(byte) (DeviceGroupRecordType.DeviceGroupElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
@@ -291,16 +291,18 @@ public class HBaseDeviceGroupElement {
 	}
 
 	/**
-	 * Get key for a network element.
+	 * Get key for a group element.
 	 * 
+	 * @param context
 	 * @param groupToken
 	 * @param elementId
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static byte[] getElementRowKey(String groupToken, Long elementId) throws SiteWhereException {
+	public static byte[] getElementRowKey(IHBaseContext context, String groupToken, Long elementId)
+			throws SiteWhereException {
 		byte[] baserow =
-				HBaseDeviceGroup.KEY_BUILDER.buildSubkey(groupToken,
+				HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, groupToken,
 						DeviceGroupRecordType.DeviceGroupElement.getType());
 		byte[] eidBytes = getTruncatedIdentifier(elementId);
 		ByteBuffer buffer = ByteBuffer.allocate(baserow.length + eidBytes.length);

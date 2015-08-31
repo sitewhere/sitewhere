@@ -27,7 +27,6 @@ import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.IRowKeyBuilder;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
 import com.sitewhere.rest.model.device.DeviceSpecification;
@@ -65,8 +64,8 @@ public class HBaseDeviceSpecification {
 	public static IRowKeyBuilder KEY_BUILDER = new UniqueIdCounterMapRowKeyBuilder() {
 
 		@Override
-		public UniqueIdCounterMap getMap() {
-			return IdManager.getInstance().getSpecificationKeys();
+		public UniqueIdCounterMap getMap(IHBaseContext context) {
+			return context.getDeviceIdManager().getSpecificationKeys();
 		}
 
 		@Override
@@ -104,9 +103,9 @@ public class HBaseDeviceSpecification {
 		try {
 			String uuid = null;
 			if (request.getToken() != null) {
-				uuid = IdManager.getInstance().getSpecificationKeys().useExistingId(request.getToken());
+				uuid = context.getDeviceIdManager().getSpecificationKeys().useExistingId(request.getToken());
 			} else {
-				uuid = IdManager.getInstance().getSpecificationKeys().createUniqueId();
+				uuid = context.getDeviceIdManager().getSpecificationKeys().createUniqueId();
 			}
 
 			// Use common logic so all backend implementations work the same.

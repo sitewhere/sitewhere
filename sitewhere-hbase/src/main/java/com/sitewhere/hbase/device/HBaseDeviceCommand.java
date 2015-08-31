@@ -27,7 +27,6 @@ import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -55,7 +54,7 @@ public class HBaseDeviceCommand {
 	 */
 	public static IDeviceCommand createDeviceCommand(IHBaseContext context, IDeviceSpecification spec,
 			IDeviceCommandCreateRequest request) throws SiteWhereException {
-		Long specId = IdManager.getInstance().getSpecificationKeys().getValue(spec.getToken());
+		Long specId = context.getDeviceIdManager().getSpecificationKeys().getValue(spec.getToken());
 		if (specId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 		}
@@ -68,7 +67,7 @@ public class HBaseDeviceCommand {
 		// Create unique row for new device.
 		Long nextId = HBaseDeviceSpecification.allocateNextCommandId(context, specId);
 		byte[] rowkey = HBaseDeviceSpecification.getDeviceCommandRowKey(specId, nextId);
-		IdManager.getInstance().getCommandKeys().create(uuid, rowkey);
+		context.getDeviceIdManager().getCommandKeys().create(uuid, rowkey);
 
 		return putDeviceCommandPayload(context, command);
 	}
@@ -106,7 +105,7 @@ public class HBaseDeviceCommand {
 	 */
 	protected static List<IDeviceCommand> getFilteredDeviceCommands(IHBaseContext context, String specToken,
 			boolean includeDeleted) throws SiteWhereException {
-		Long specId = IdManager.getInstance().getSpecificationKeys().getValue(specToken);
+		Long specId = context.getDeviceIdManager().getSpecificationKeys().getValue(specToken);
 		if (specId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceSpecificationToken, ErrorLevel.ERROR);
 		}
@@ -158,7 +157,7 @@ public class HBaseDeviceCommand {
 	 */
 	public static DeviceCommand getDeviceCommandByToken(IHBaseContext context, String token)
 			throws SiteWhereException {
-		byte[] rowkey = IdManager.getInstance().getCommandKeys().getValue(token);
+		byte[] rowkey = context.getDeviceIdManager().getCommandKeys().getValue(token);
 		if (rowkey == null) {
 			return null;
 		}
@@ -216,9 +215,9 @@ public class HBaseDeviceCommand {
 		DeviceCommand existing = assertDeviceCommand(context, token);
 		existing.setDeleted(true);
 
-		byte[] rowkey = IdManager.getInstance().getCommandKeys().getValue(token);
+		byte[] rowkey = context.getDeviceIdManager().getCommandKeys().getValue(token);
 		if (force) {
-			IdManager.getInstance().getSpecificationKeys().delete(token);
+			context.getDeviceIdManager().getSpecificationKeys().delete(token);
 			HTableInterface devices = null;
 			try {
 				Delete delete = new Delete(rowkey);
@@ -277,7 +276,7 @@ public class HBaseDeviceCommand {
 	 */
 	public static DeviceCommand putDeviceCommandPayload(IHBaseContext context, DeviceCommand command)
 			throws SiteWhereException {
-		byte[] rowkey = IdManager.getInstance().getCommandKeys().getValue(command.getToken());
+		byte[] rowkey = context.getDeviceIdManager().getCommandKeys().getValue(command.getToken());
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceCommand(command);
 
 		HTableInterface devices = null;

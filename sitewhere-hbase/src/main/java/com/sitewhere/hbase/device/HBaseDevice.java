@@ -34,7 +34,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -85,14 +84,14 @@ public class HBaseDevice {
 			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "createDevice (HBase)", LOGGER);
 		try {
-			Long existing = IdManager.getInstance().getDeviceKeys().getValue(request.getHardwareId());
+			Long existing = context.getDeviceIdManager().getDeviceKeys().getValue(request.getHardwareId());
 			if (existing != null) {
 				throw new SiteWhereSystemException(ErrorCode.DuplicateHardwareId, ErrorLevel.ERROR,
 						HttpServletResponse.SC_CONFLICT);
 			}
-			Long value = IdManager.getInstance().getDeviceKeys().getNextCounterValue();
+			Long value = context.getDeviceIdManager().getDeviceKeys().getNextCounterValue();
 			Long inverse = Long.MAX_VALUE - value;
-			IdManager.getInstance().getDeviceKeys().create(request.getHardwareId(), inverse);
+			context.getDeviceIdManager().getDeviceKeys().create(request.getHardwareId(), inverse);
 
 			Device device = SiteWherePersistence.deviceCreateLogic(request);
 			return putDevicePayload(context, device);
@@ -228,7 +227,7 @@ public class HBaseDevice {
 	 * @throws SiteWhereException
 	 */
 	public static Device putDevicePayload(IHBaseContext context, Device device) throws SiteWhereException {
-		Long value = IdManager.getInstance().getDeviceKeys().getValue(device.getHardwareId());
+		Long value = context.getDeviceIdManager().getDeviceKeys().getValue(device.getHardwareId());
 		if (value == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 		}
@@ -278,7 +277,7 @@ public class HBaseDevice {
 							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
 			}
-			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
+			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
 				Tracer.info("Device not found for hardware id.", LOGGER);
 				return null;
@@ -332,7 +331,7 @@ public class HBaseDevice {
 			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDevice (HBase) " + hardwareId, LOGGER);
 		try {
-			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
+			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
 				Tracer.warn("Unable to find device to delete by hardware id.", null, LOGGER);
 				throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
@@ -342,7 +341,7 @@ public class HBaseDevice {
 			existing.setDeleted(true);
 			byte[] primary = getDeviceRowKey(deviceId);
 			if (force) {
-				IdManager.getInstance().getDeviceKeys().delete(hardwareId);
+				context.getDeviceIdManager().getDeviceKeys().delete(hardwareId);
 				HTableInterface devices = null;
 				try {
 					Delete delete = new Delete(primary);
@@ -405,7 +404,7 @@ public class HBaseDevice {
 					return result.getAssignmentToken();
 				}
 			}
-			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
+			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
 				return null;
 			}
@@ -458,7 +457,7 @@ public class HBaseDevice {
 			updated.setAssignmentToken(assignmentToken);
 			byte[] payload = context.getPayloadMarshaler().encodeDevice(updated);
 
-			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
+			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 			}
@@ -501,7 +500,7 @@ public class HBaseDevice {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "removeDeviceAssignment (HBase) " + hardwareId,
 				LOGGER);
 		try {
-			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
+			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 			}
@@ -552,7 +551,7 @@ public class HBaseDevice {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceAssignmentHistory (HBase) "
 				+ hardwareId, LOGGER);
 		try {
-			Long deviceId = IdManager.getInstance().getDeviceKeys().getValue(hardwareId);
+			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 			}

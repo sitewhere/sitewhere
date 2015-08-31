@@ -228,9 +228,10 @@ public class HBaseAsset {
 		HTableInterface assets = null;
 		ResultScanner scanner = null;
 		byte[] start =
-				HBaseAssetCategory.KEY_BUILDER.buildSubkey(categoryId, AssetCategorySubtype.Asset.getType());
+				HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
+						AssetCategorySubtype.Asset.getType());
 		byte[] end =
-				HBaseAssetCategory.KEY_BUILDER.buildSubkey(categoryId,
+				HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
 						(byte) (AssetCategorySubtype.Asset.getType() + 1));
 		try {
 			assets = getAssetsTableInterface(context);
@@ -313,7 +314,8 @@ public class HBaseAsset {
 	public static byte[] getAssetKey(IHBaseContext context, String categoryId, String assetId)
 			throws SiteWhereException {
 		byte[] baseKey =
-				HBaseAssetCategory.KEY_BUILDER.buildSubkey(categoryId, AssetCategorySubtype.Asset.getType());
+				HBaseAssetCategory.KEY_BUILDER.buildSubkey(context, categoryId,
+						AssetCategorySubtype.Asset.getType());
 		byte[] idBytes = assetId.getBytes();
 		ByteBuffer buffer = ByteBuffer.allocate(baseKey.length + idBytes.length);
 		buffer.put(baseKey);

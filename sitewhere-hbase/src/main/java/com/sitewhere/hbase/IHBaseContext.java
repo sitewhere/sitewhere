@@ -7,8 +7,11 @@
  */
 package com.sitewhere.hbase;
 
+import com.sitewhere.hbase.asset.IAssetIdManager;
 import com.sitewhere.hbase.device.IDeviceEventBuffer;
+import com.sitewhere.hbase.device.IDeviceIdManager;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
+import com.sitewhere.hbase.user.IUserIdManager;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.user.ITenant;
 
@@ -53,4 +56,25 @@ public interface IHBaseContext {
 	 * @return
 	 */
 	public IDeviceEventBuffer getDeviceEventBuffer();
+
+	/**
+	 * Device id manager.
+	 * 
+	 * @return
+	 */
+	public IDeviceIdManager getDeviceIdManager();
+
+	/**
+	 * Asset id manager.
+	 * 
+	 * @return
+	 */
+	public IAssetIdManager getAssetIdManager();
+
+	/**
+	 * User id manager.
+	 * 
+	 * @return
+	 */
+	public IUserIdManager getUserIdManager();
 }

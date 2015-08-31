@@ -17,23 +17,10 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class UserIdManager {
-
-	/** Singleton instance */
-	private static UserIdManager SINGLETON;
+public class UserIdManager implements IUserIdManager {
 
 	/** Manager for tenant ids */
 	private UniqueIdCounterMap tenantKeys;
-
-	private UserIdManager() {
-	}
-
-	public static UserIdManager getInstance() {
-		if (SINGLETON == null) {
-			SINGLETON = new UserIdManager();
-		}
-		return SINGLETON;
-	}
 
 	/**
 	 * Load existing keys from table.
@@ -48,6 +35,11 @@ public class UserIdManager {
 		tenantKeys.refresh();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.user.IUserIdManager#getTenantKeys()
+	 */
 	public UniqueIdCounterMap getTenantKeys() {
 		return tenantKeys;
 	}

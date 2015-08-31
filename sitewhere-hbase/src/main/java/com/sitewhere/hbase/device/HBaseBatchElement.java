@@ -65,7 +65,7 @@ public class HBaseBatchElement {
 	 */
 	public static IBatchElement createBatchElement(IHBaseContext context, HTableInterface devices,
 			IBatchElement request) throws SiteWhereException {
-		byte[] elementKey = getElementRowKey(request.getBatchOperationToken(), request.getIndex());
+		byte[] elementKey = getElementRowKey(context, request.getBatchOperationToken(), request.getIndex());
 
 		// Use common processing logic so all backend implementations work the same.
 		BatchElement element =
@@ -105,7 +105,7 @@ public class HBaseBatchElement {
 		try {
 			devices = getDeviceTableInterface(context);
 			BatchElement element = getBatchElement(context, devices, operationToken, index);
-			byte[] elementKey = getElementRowKey(operationToken, index);
+			byte[] elementKey = getElementRowKey(context, operationToken, index);
 
 			SiteWherePersistence.batchElementUpdateLogic(request, element);
 			byte[] payload = context.getPayloadMarshaler().encodeBatchElement(element);
@@ -136,7 +136,7 @@ public class HBaseBatchElement {
 	 */
 	public static BatchElement getBatchElement(IHBaseContext context, HTableInterface devices,
 			String operationToken, long index) throws SiteWhereException {
-		byte[] elementKey = getElementRowKey(operationToken, index);
+		byte[] elementKey = getElementRowKey(context, operationToken, index);
 		try {
 			Get get = new Get(elementKey);
 			HBaseUtils.addPayloadFields(get);
@@ -170,10 +170,10 @@ public class HBaseBatchElement {
 		try {
 			table = getDeviceTableInterface(context);
 			byte[] primary =
-					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
+					HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
 							BatchOperationRecordType.BatchElement.getType());
 			byte[] after =
-					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
+					HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
 							(byte) (BatchOperationRecordType.BatchElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
@@ -220,10 +220,10 @@ public class HBaseBatchElement {
 		try {
 			table = getDeviceTableInterface(context);
 			byte[] primary =
-					HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
+					HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
 							BatchOperationRecordType.BatchElement.getType());
 			byte[] after =
-					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(batchToken,
+					HBaseDeviceGroup.KEY_BUILDER.buildSubkey(context, batchToken,
 							(byte) (BatchOperationRecordType.BatchElement.getType() + 1));
 			Scan scan = new Scan();
 			scan.setStartRow(primary);
@@ -260,14 +260,16 @@ public class HBaseBatchElement {
 	/**
 	 * Get key for batch element.
 	 * 
+	 * @param context
 	 * @param batchToken
 	 * @param index
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static byte[] getElementRowKey(String batchToken, Long index) throws SiteWhereException {
+	public static byte[] getElementRowKey(IHBaseContext context, String batchToken, Long index)
+			throws SiteWhereException {
 		byte[] baserow =
-				HBaseBatchOperation.KEY_BUILDER.buildSubkey(batchToken,
+				HBaseBatchOperation.KEY_BUILDER.buildSubkey(context, batchToken,
 						BatchOperationRecordType.BatchElement.getType());
 		byte[] eidBytes = getTruncatedIdentifier(index);
 		ByteBuffer buffer = ByteBuffer.allocate(baserow.length + eidBytes.length);

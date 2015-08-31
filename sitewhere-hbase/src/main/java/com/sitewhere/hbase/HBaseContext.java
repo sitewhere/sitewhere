@@ -7,8 +7,11 @@
  */
 package com.sitewhere.hbase;
 
+import com.sitewhere.hbase.asset.IAssetIdManager;
 import com.sitewhere.hbase.device.IDeviceEventBuffer;
+import com.sitewhere.hbase.device.IDeviceIdManager;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
+import com.sitewhere.hbase.user.IUserIdManager;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.user.ITenant;
 
@@ -33,6 +36,15 @@ public class HBaseContext implements IHBaseContext {
 
 	/** Device event buffer */
 	private IDeviceEventBuffer deviceEventBuffer;
+
+	/** Device id manager */
+	private IDeviceIdManager deviceIdManager;
+
+	/** Asset id manager */
+	private IAssetIdManager assetIdManager;
+
+	/** User id manager */
+	private IUserIdManager userIdManager;
 
 	public ITenant getTenant() {
 		return tenant;
@@ -72,5 +84,29 @@ public class HBaseContext implements IHBaseContext {
 
 	public void setDeviceEventBuffer(IDeviceEventBuffer deviceEventBuffer) {
 		this.deviceEventBuffer = deviceEventBuffer;
+	}
+
+	public IDeviceIdManager getDeviceIdManager() {
+		return deviceIdManager;
+	}
+
+	public void setDeviceIdManager(IDeviceIdManager deviceIdManager) {
+		this.deviceIdManager = deviceIdManager;
+	}
+
+	public IAssetIdManager getAssetIdManager() {
+		return assetIdManager;
+	}
+
+	public void setAssetIdManager(IAssetIdManager assetIdManager) {
+		this.assetIdManager = assetIdManager;
+	}
+
+	public IUserIdManager getUserIdManager() {
+		return userIdManager;
+	}
+
+	public void setUserIdManager(IUserIdManager userIdManager) {
+		this.userIdManager = userIdManager;
 	}
 }

@@ -73,13 +73,14 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent 
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		this.siteCache = new HazelcastCache<ISite>(SITE_CACHE, CacheType.SiteCache);
+		this.siteCache = new HazelcastCache<ISite>(addTenantPrefix(SITE_CACHE), CacheType.SiteCache);
 		this.specificationCache =
-				new HazelcastCache<IDeviceSpecification>(SPECIFICATION_CACHE,
+				new HazelcastCache<IDeviceSpecification>(addTenantPrefix(SPECIFICATION_CACHE),
 						CacheType.DeviceSpecificationCache);
-		this.deviceCache = new HazelcastCache<IDevice>(DEVICE_CACHE, CacheType.DeviceCache);
+		this.deviceCache = new HazelcastCache<IDevice>(addTenantPrefix(DEVICE_CACHE), CacheType.DeviceCache);
 		this.assignmentCache =
-				new HazelcastCache<IDeviceAssignment>(ASSIGNMENT_CACHE, CacheType.DeviceAssignmentCache);
+				new HazelcastCache<IDeviceAssignment>(addTenantPrefix(ASSIGNMENT_CACHE),
+						CacheType.DeviceAssignmentCache);
 	}
 
 	/*
@@ -89,6 +90,16 @@ public class HazelcastDistributedCacheProvider extends TenantLifecycleComponent 
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+	}
+
+	/**
+	 * Add prefix so that each tenant has a unique cache.
+	 * 
+	 * @param cacheName
+	 * @return
+	 */
+	protected String addTenantPrefix(String cacheName) {
+		return getTenant().getId() + "-" + cacheName;
 	}
 
 	/*

@@ -33,7 +33,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
@@ -90,8 +89,8 @@ public class HBaseSite {
 			// Use common logic so all backend implementations work the same.
 			Site site = SiteWherePersistence.siteCreateLogic(request);
 
-			Long value = IdManager.getInstance().getSiteKeys().getNextCounterValue();
-			IdManager.getInstance().getSiteKeys().create(site.getToken(), value);
+			Long value = context.getDeviceIdManager().getSiteKeys().getNextCounterValue();
+			context.getDeviceIdManager().getSiteKeys().create(site.getToken(), value);
 
 			byte[] primary = getPrimaryRowkey(value);
 
@@ -136,7 +135,7 @@ public class HBaseSite {
 					return Site.copy(result);
 				}
 			}
-			Long siteId = IdManager.getInstance().getSiteKeys().getValue(token);
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
 			if (siteId == null) {
 				return null;
 			}
@@ -190,7 +189,7 @@ public class HBaseSite {
 			// Use common update logic so that backend implemetations act the same way.
 			SiteWherePersistence.siteUpdateLogic(request, updated);
 
-			Long siteId = IdManager.getInstance().getSiteKeys().getValue(token);
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
 			byte[] rowkey = getPrimaryRowkey(siteId);
 			byte[] payload = context.getPayloadMarshaler().encodeSite(updated);
 
@@ -252,7 +251,7 @@ public class HBaseSite {
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
-			Long siteId = IdManager.getInstance().getSiteKeys().getValue(siteToken);
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
 			if (siteId == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
@@ -312,7 +311,7 @@ public class HBaseSite {
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
-			Long siteId = IdManager.getInstance().getSiteKeys().getValue(siteToken);
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
 			if (siteId == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
@@ -373,7 +372,7 @@ public class HBaseSite {
 			ISearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listZonesForSite (HBase) " + siteToken, LOGGER);
 		try {
-			Long siteId = IdManager.getInstance().getSiteKeys().getValue(siteToken);
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
 			if (siteId == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
@@ -467,10 +466,10 @@ public class HBaseSite {
 			}
 			existing.setDeleted(true);
 
-			Long siteId = IdManager.getInstance().getSiteKeys().getValue(token);
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
 			byte[] rowkey = getPrimaryRowkey(siteId);
 			if (force) {
-				IdManager.getInstance().getSiteKeys().delete(token);
+				context.getDeviceIdManager().getSiteKeys().delete(token);
 				HTableInterface sites = null;
 				try {
 					Delete delete = new Delete(rowkey);

@@ -20,7 +20,6 @@ import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
 import com.sitewhere.rest.model.device.batch.BatchElement;
@@ -54,8 +53,8 @@ public class HBaseBatchOperation {
 	public static UniqueIdCounterMapRowKeyBuilder KEY_BUILDER = new UniqueIdCounterMapRowKeyBuilder() {
 
 		@Override
-		public UniqueIdCounterMap getMap() {
-			return IdManager.getInstance().getBatchOperationKeys();
+		public UniqueIdCounterMap getMap(IHBaseContext context) {
+			return context.getDeviceIdManager().getBatchOperationKeys();
 		}
 
 		@Override
@@ -91,9 +90,9 @@ public class HBaseBatchOperation {
 			IBatchOperationCreateRequest request) throws SiteWhereException {
 		String uuid = null;
 		if (request.getToken() != null) {
-			uuid = KEY_BUILDER.getMap().useExistingId(request.getToken());
+			uuid = KEY_BUILDER.getMap(context).useExistingId(request.getToken());
 		} else {
-			uuid = KEY_BUILDER.getMap().createUniqueId();
+			uuid = KEY_BUILDER.getMap(context).createUniqueId();
 		}
 
 		// Use common logic so all backend implementations work the same.

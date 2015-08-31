@@ -5,9 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.hbase.uid;
+package com.sitewhere.hbase.device;
 
 import com.sitewhere.hbase.IHBaseContext;
+import com.sitewhere.hbase.uid.UniqueIdCounterMap;
+import com.sitewhere.hbase.uid.UniqueIdType;
+import com.sitewhere.hbase.uid.UuidRowKeyMap;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -15,10 +18,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class IdManager {
-
-	/** Singleton instance */
-	private static IdManager SINGLETON;
+public class DeviceIdManager implements IDeviceIdManager {
 
 	/** Manager for site tokens */
 	private UniqueIdCounterMap siteKeys;
@@ -43,16 +43,6 @@ public class IdManager {
 
 	/** Manager for device assignment ids */
 	private UuidRowKeyMap assignmentKeys;
-
-	private IdManager() {
-	}
-
-	public static IdManager getInstance() {
-		if (SINGLETON == null) {
-			SINGLETON = new IdManager();
-		}
-		return SINGLETON;
-	}
 
 	/**
 	 * Load key managers from HBase.
@@ -102,6 +92,11 @@ public class IdManager {
 		assignmentKeys.refresh();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getSiteKeys()
+	 */
 	public UniqueIdCounterMap getSiteKeys() {
 		return siteKeys;
 	}
@@ -110,6 +105,11 @@ public class IdManager {
 		this.siteKeys = siteKeys;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getDeviceKeys()
+	 */
 	public UniqueIdCounterMap getDeviceKeys() {
 		return deviceKeys;
 	}
@@ -118,6 +118,11 @@ public class IdManager {
 		this.deviceKeys = deviceKeys;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getSpecificationKeys()
+	 */
 	public UniqueIdCounterMap getSpecificationKeys() {
 		return specificationKeys;
 	}
@@ -126,6 +131,11 @@ public class IdManager {
 		this.specificationKeys = specificationKeys;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getCommandKeys()
+	 */
 	public UuidRowKeyMap getCommandKeys() {
 		return commandKeys;
 	}
@@ -134,6 +144,11 @@ public class IdManager {
 		this.commandKeys = commandKeys;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getDeviceGroupKeys()
+	 */
 	public UniqueIdCounterMap getDeviceGroupKeys() {
 		return deviceGroupKeys;
 	}
@@ -142,6 +157,11 @@ public class IdManager {
 		this.deviceGroupKeys = deviceGroupKeys;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getBatchOperationKeys()
+	 */
 	public UniqueIdCounterMap getBatchOperationKeys() {
 		return batchOperationKeys;
 	}
@@ -150,6 +170,11 @@ public class IdManager {
 		this.batchOperationKeys = batchOperationKeys;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getZoneKeys()
+	 */
 	public UuidRowKeyMap getZoneKeys() {
 		return zoneKeys;
 	}
@@ -158,6 +183,11 @@ public class IdManager {
 		this.zoneKeys = zoneKeys;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.hbase.device.IDeviceIdManager#getAssignmentKeys()
+	 */
 	public UuidRowKeyMap getAssignmentKeys() {
 		return assignmentKeys;
 	}

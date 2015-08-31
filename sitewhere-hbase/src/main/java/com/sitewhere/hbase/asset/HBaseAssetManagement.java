@@ -51,6 +51,9 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 	/** Supplies context to implementation methods */
 	private HBaseContext context;
 
+	/** Asset id manager */
+	private AssetIdManager assetIdManager;
+
 	public HBaseAssetManagement() {
 		super(LifecycleComponentType.DataStore);
 	}
@@ -70,7 +73,10 @@ public class HBaseAssetManagement extends TenantLifecycleComponent implements IA
 
 		ensureTablesExist();
 
-		AssetIdManager.getInstance().load(context);
+		// Create device id manager instance.
+		assetIdManager = new AssetIdManager();
+		assetIdManager.load(context);
+		context.setAssetIdManager(assetIdManager);
 	}
 
 	/*

@@ -62,7 +62,7 @@ public class HBaseUtils {
 	public static <T> T createOrUpdate(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName,
 			T entity, String token, IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers)
 			throws SiteWhereException {
-		byte[] primary = builder.buildPrimaryKey(token);
+		byte[] primary = builder.buildPrimaryKey(context, token);
 		byte[] payload = marshaler.encode(entity);
 
 		HTableInterface table = null;
@@ -97,7 +97,7 @@ public class HBaseUtils {
 	 */
 	public static <T> T put(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName, T entity,
 			String token, IRowKeyBuilder builder) throws SiteWhereException {
-		byte[] primary = builder.buildPrimaryKey(token);
+		byte[] primary = builder.buildPrimaryKey(context, token);
 		byte[] payload = marshaler.encode(entity);
 
 		HTableInterface table = null;
@@ -128,7 +128,7 @@ public class HBaseUtils {
 	 */
 	public static <T> T get(IHBaseContext context, byte[] tableName, String token, IRowKeyBuilder builder,
 			Class<T> type) throws SiteWhereException {
-		byte[] primary = builder.buildPrimaryKey(token);
+		byte[] primary = builder.buildPrimaryKey(context, token);
 
 		HTableInterface table = null;
 		try {
@@ -261,9 +261,9 @@ public class HBaseUtils {
 		T existing = get(context, tableName, token, builder, type);
 		existing.setDeleted(true);
 
-		byte[] primary = builder.buildPrimaryKey(token);
+		byte[] primary = builder.buildPrimaryKey(context, token);
 		if (force) {
-			builder.deleteReference(token);
+			builder.deleteReference(context, token);
 			HTableInterface table = null;
 			try {
 				Delete delete = new Delete(primary);
@@ -313,8 +313,8 @@ public class HBaseUtils {
 			String token, IRowKeyBuilder builder, Class<T> type) throws SiteWhereException {
 		T existing = get(context, tableName, token, builder, type);
 
-		byte[] primary = builder.buildPrimaryKey(token);
-		builder.deleteReference(token);
+		byte[] primary = builder.buildPrimaryKey(context, token);
+		builder.deleteReference(context, token);
 		HTableInterface table = null;
 		try {
 			Delete delete = new Delete(primary);

@@ -19,7 +19,6 @@ import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
@@ -54,7 +53,7 @@ public class HBaseDeviceStreamData {
 		sdata.setId(event.getId());
 
 		// Save data in streams table.
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
+		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignment.getToken());
 		byte[] streamKey = HBaseDeviceStream.getDeviceStreamKey(assnKey, request.getStreamId());
 		byte[] payload = context.getPayloadMarshaler().encodeDeviceStreamData(sdata);
 		byte[] seqnum = Bytes.toBytes(request.getSequenceNumber());
@@ -86,7 +85,7 @@ public class HBaseDeviceStreamData {
 	 */
 	public static DeviceStreamData getDeviceStreamData(IHBaseContext context, IDeviceAssignment assignment,
 			String streamId, long sequenceNumber) throws SiteWhereException {
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
+		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignment.getToken());
 		byte[] streamKey = HBaseDeviceStream.getDeviceStreamKey(assnKey, streamId);
 		byte[] seqnum = Bytes.toBytes(sequenceNumber);
 

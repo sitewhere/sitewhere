@@ -27,7 +27,6 @@ import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
@@ -78,7 +77,7 @@ public class HBaseDeviceAssignment {
 			if (device == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
 			}
-			Long siteId = IdManager.getInstance().getSiteKeys().getValue(device.getSiteToken());
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(device.getSiteToken());
 			if (siteId == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
@@ -94,7 +93,7 @@ public class HBaseDeviceAssignment {
 			byte[] assnKey = buffer.array();
 
 			// Associate new UUID with assignment row key.
-			String uuid = IdManager.getInstance().getAssignmentKeys().createUniqueId(assnKey);
+			String uuid = context.getDeviceIdManager().getAssignmentKeys().createUniqueId(assnKey);
 
 			byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -150,7 +149,7 @@ public class HBaseDeviceAssignment {
 							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
 			}
-			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 			if (assnKey == null) {
 				return null;
 			}
@@ -213,7 +212,7 @@ public class HBaseDeviceAssignment {
 			MetadataProvider.copy(metadata, updated);
 			SiteWherePersistence.setUpdatedEntityMetadata(updated);
 
-			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 			byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -257,7 +256,7 @@ public class HBaseDeviceAssignment {
 			DeviceAssignment updated = getDeviceAssignment(context, token);
 			updated.setState(DeviceAssignmentState.copy(state));
 
-			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 			byte[] updatedState = context.getPayloadMarshaler().encodeDeviceAssignmentState(state);
 			byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -301,7 +300,7 @@ public class HBaseDeviceAssignment {
 			updated.setStatus(status);
 			SiteWherePersistence.setUpdatedEntityMetadata(updated);
 
-			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 			byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -350,7 +349,7 @@ public class HBaseDeviceAssignment {
 			HBaseDevice.removeDeviceAssignment(context, updated.getDeviceHardwareId());
 
 			// Update json and status qualifier.
-			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 			byte[] payload = context.getPayloadMarshaler().encodeDeviceAssignment(updated);
 			byte[] primary = getPrimaryRowkey(assnKey);
 
@@ -394,7 +393,7 @@ public class HBaseDeviceAssignment {
 			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDeviceAssignment (HBase) " + token, LOGGER);
 		try {
-			byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(token);
+			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 			if (assnKey == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 			}
@@ -410,7 +409,7 @@ public class HBaseDeviceAssignment {
 				// assignment.
 			}
 			if (force) {
-				IdManager.getInstance().getAssignmentKeys().delete(token);
+				context.getDeviceIdManager().getAssignmentKeys().delete(token);
 				HTableInterface sites = null;
 				try {
 					Delete delete = new Delete(primary);

@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.hadoop.hbase.util.Bytes;
 
+import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.common.IRowKeyBuilder;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -27,16 +28,17 @@ public abstract class UniqueIdCounterMapRowKeyBuilder implements IRowKeyBuilder 
 	 * 
 	 * @return
 	 */
-	public abstract UniqueIdCounterMap getMap();
+	public abstract UniqueIdCounterMap getMap(IHBaseContext context);
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.hbase.common.IRowKeyBuilder#buildPrimaryKey(java.lang.String)
+	 * @see com.sitewhere.hbase.common.IRowKeyBuilder#buildPrimaryKey(com.sitewhere.hbase.
+	 * IHBaseContext, java.lang.String)
 	 */
 	@Override
-	public byte[] buildPrimaryKey(String token) throws SiteWhereException {
-		Long entityId = getMap().getValue(token);
+	public byte[] buildPrimaryKey(IHBaseContext context, String token) throws SiteWhereException {
+		Long entityId = getMap(context).getValue(token);
 		if (entityId == null) {
 			throwInvalidKey();
 		}
@@ -50,11 +52,13 @@ public abstract class UniqueIdCounterMapRowKeyBuilder implements IRowKeyBuilder 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.hbase.common.IRowKeyBuilder#buildSubkey(java.lang.String, byte)
+	 * @see
+	 * com.sitewhere.hbase.common.IRowKeyBuilder#buildSubkey(com.sitewhere.hbase.IHBaseContext
+	 * , java.lang.String, byte)
 	 */
 	@Override
-	public byte[] buildSubkey(String token, byte type) throws SiteWhereException {
-		Long entityId = getMap().getValue(token);
+	public byte[] buildSubkey(IHBaseContext context, String token, byte type) throws SiteWhereException {
+		Long entityId = getMap(context).getValue(token);
 		if (entityId == null) {
 			throwInvalidKey();
 		}
@@ -68,11 +72,12 @@ public abstract class UniqueIdCounterMapRowKeyBuilder implements IRowKeyBuilder 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.hbase.common.IRowKeyBuilder#deleteReference(java.lang.String)
+	 * @see com.sitewhere.hbase.common.IRowKeyBuilder#deleteReference(com.sitewhere.hbase.
+	 * IHBaseContext, java.lang.String)
 	 */
 	@Override
-	public void deleteReference(String token) throws SiteWhereException {
-		getMap().delete(token);
+	public void deleteReference(IHBaseContext context, String token) throws SiteWhereException {
+		getMap(context).delete(token);
 	}
 
 	/**

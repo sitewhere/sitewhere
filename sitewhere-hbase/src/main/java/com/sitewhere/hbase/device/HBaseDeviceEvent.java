@@ -37,7 +37,6 @@ import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.encoder.PayloadEncoding;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -112,7 +111,7 @@ public class HBaseDeviceEvent {
 	public static IDeviceMeasurements createDeviceMeasurements(IHBaseContext context,
 			IDeviceAssignment assignment, IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
+		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignment.getToken());
 		if (assnKey == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
@@ -185,7 +184,7 @@ public class HBaseDeviceEvent {
 	public static IDeviceLocation createDeviceLocation(IHBaseContext context, IDeviceAssignment assignment,
 			IDeviceLocationCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
-		byte[] rowkey = getEventRowKey(assignment, time);
+		byte[] rowkey = getEventRowKey(context, assignment, time);
 		byte[] qualifier =
 				getQualifier(EventRecordType.Location, time, context.getPayloadMarshaler().getEncoding());
 
@@ -253,7 +252,7 @@ public class HBaseDeviceEvent {
 	public static IDeviceAlert createDeviceAlert(IHBaseContext context, IDeviceAssignment assignment,
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
-		byte[] rowkey = getEventRowKey(assignment, time);
+		byte[] rowkey = getEventRowKey(context, assignment, time);
 		byte[] qualifier =
 				getQualifier(EventRecordType.Alert, time, context.getPayloadMarshaler().getEncoding());
 
@@ -323,12 +322,12 @@ public class HBaseDeviceEvent {
 		DeviceStreamData sdata = SiteWherePersistence.deviceStreamDataCreateLogic(assignment, request);
 
 		// Save data in streams table.
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
+		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignment.getToken());
 		byte[] streamKey = HBaseDeviceStream.getDeviceStreamKey(assnKey, request.getStreamId());
 
 		// Save event with reference to stream key.
 		long time = getEventTime(request);
-		byte[] eventKey = getEventRowKey(assignment, time);
+		byte[] eventKey = getEventRowKey(context, assignment, time);
 		byte[] qualifier =
 				getQualifier(EventRecordType.StreamData, time, context.getPayloadMarshaler().getEncoding());
 
@@ -397,7 +396,7 @@ public class HBaseDeviceEvent {
 			IDeviceAssignment assignment, IDeviceCommand command,
 			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
-		byte[] rowkey = getEventRowKey(assignment, time);
+		byte[] rowkey = getEventRowKey(context, assignment, time);
 		byte[] qualifier =
 				getQualifier(EventRecordType.CommandInvocation, time,
 						context.getPayloadMarshaler().getEncoding());
@@ -473,7 +472,7 @@ public class HBaseDeviceEvent {
 	public static IDeviceStateChange createDeviceStateChange(IHBaseContext context,
 			IDeviceAssignment assignment, IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 		long time = getEventTime(request);
-		byte[] rowkey = getEventRowKey(assignment, time);
+		byte[] rowkey = getEventRowKey(context, assignment, time);
 		byte[] qualifier =
 				getQualifier(EventRecordType.StateChange, time, context.getPayloadMarshaler().getEncoding());
 
@@ -535,7 +534,7 @@ public class HBaseDeviceEvent {
 			IDeviceAssignment assignment, IDeviceCommandResponseCreateRequest request)
 			throws SiteWhereException {
 		long time = getEventTime(request);
-		byte[] rowkey = getEventRowKey(assignment, time);
+		byte[] rowkey = getEventRowKey(context, assignment, time);
 		byte[] qualifier =
 				getQualifier(EventRecordType.CommandResponse, time,
 						context.getPayloadMarshaler().getEncoding());
@@ -698,8 +697,9 @@ public class HBaseDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static byte[] getEventRowKey(IDeviceAssignment assignment, long time) throws SiteWhereException {
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assignment.getToken());
+	protected static byte[] getEventRowKey(IHBaseContext context, IDeviceAssignment assignment, long time)
+			throws SiteWhereException {
+		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assignment.getToken());
 		if (assnKey == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
@@ -719,7 +719,7 @@ public class HBaseDeviceEvent {
 	 */
 	protected static Pager<EventMatch> getEventRowsForAssignment(IHBaseContext context, String assnToken,
 			EventRecordType eventType, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		byte[] assnKey = IdManager.getInstance().getAssignmentKeys().getValue(assnToken);
+		byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(assnToken);
 		if (assnKey == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceAssignmentToken, ErrorLevel.ERROR);
 		}
@@ -818,7 +818,7 @@ public class HBaseDeviceEvent {
 	 */
 	protected static Pager<EventMatch> getEventRowsForSite(IHBaseContext context, String siteToken,
 			EventRecordType eventType, IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Long siteId = IdManager.getInstance().getSiteKeys().getValue(siteToken);
+		Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
 		if (siteId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 		}

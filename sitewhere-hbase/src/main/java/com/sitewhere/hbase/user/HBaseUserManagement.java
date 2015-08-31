@@ -53,6 +53,9 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/** Supplies context to implementation methods */
 	private HBaseContext context;
 
+	/** User id manager */
+	private UserIdManager userIdManager;
+
 	public HBaseUserManagement() {
 		super(LifecycleComponentType.DataStore);
 	}
@@ -71,7 +74,10 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 		context.setClient(getClient());
 		context.setPayloadMarshaler(getPayloadMarshaler());
 
-		UserIdManager.getInstance().load(context);
+		// Create device id manager instance.
+		userIdManager = new UserIdManager();
+		userIdManager.load(context);
+		context.setUserIdManager(userIdManager);
 	}
 
 	/*

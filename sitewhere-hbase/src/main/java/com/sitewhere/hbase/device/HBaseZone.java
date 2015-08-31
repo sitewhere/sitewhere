@@ -22,7 +22,6 @@ import com.sitewhere.hbase.IHBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
-import com.sitewhere.hbase.uid.IdManager;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -53,7 +52,7 @@ public class HBaseZone {
 	 */
 	public static IZone createZone(IHBaseContext context, ISite site, IZoneCreateRequest request)
 			throws SiteWhereException {
-		Long siteId = IdManager.getInstance().getSiteKeys().getValue(site.getToken());
+		Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(site.getToken());
 		if (siteId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 		}
@@ -61,7 +60,7 @@ public class HBaseZone {
 		byte[] rowkey = getPrimaryRowkey(siteId, zoneId);
 
 		// Associate new UUID with zone row key.
-		String uuid = IdManager.getInstance().getZoneKeys().createUniqueId(rowkey);
+		String uuid = context.getDeviceIdManager().getZoneKeys().createUniqueId(rowkey);
 
 		// Use common processing logic so all backend implementations work the same.
 		Zone zone = SiteWherePersistence.zoneCreateLogic(request, site.getToken(), uuid);
@@ -99,7 +98,7 @@ public class HBaseZone {
 		// Use common update logic so that backend implemetations act the same way.
 		SiteWherePersistence.zoneUpdateLogic(request, updated);
 
-		byte[] zoneId = IdManager.getInstance().getZoneKeys().getValue(token);
+		byte[] zoneId = context.getDeviceIdManager().getZoneKeys().getValue(token);
 		byte[] payload = context.getPayloadMarshaler().encodeZone(updated);
 
 		HTableInterface sites = null;
@@ -125,7 +124,7 @@ public class HBaseZone {
 	 * @throws SiteWhereException
 	 */
 	public static Zone getZone(IHBaseContext context, String token) throws SiteWhereException {
-		byte[] rowkey = IdManager.getInstance().getZoneKeys().getValue(token);
+		byte[] rowkey = context.getDeviceIdManager().getZoneKeys().getValue(token);
 		if (rowkey == null) {
 			return null;
 		}
@@ -162,14 +161,14 @@ public class HBaseZone {
 	 */
 	public static Zone deleteZone(IHBaseContext context, String token, boolean force)
 			throws SiteWhereException {
-		byte[] zoneId = IdManager.getInstance().getZoneKeys().getValue(token);
+		byte[] zoneId = context.getDeviceIdManager().getZoneKeys().getValue(token);
 		if (zoneId == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidZoneToken, ErrorLevel.ERROR);
 		}
 		Zone existing = getZone(context, token);
 		existing.setDeleted(true);
 		if (force) {
-			IdManager.getInstance().getZoneKeys().delete(token);
+			context.getDeviceIdManager().getZoneKeys().delete(token);
 			HTableInterface sites = null;
 			try {
 				Delete delete = new Delete(zoneId);

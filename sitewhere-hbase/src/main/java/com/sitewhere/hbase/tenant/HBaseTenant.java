@@ -17,7 +17,6 @@ import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
-import com.sitewhere.hbase.user.UserIdManager;
 import com.sitewhere.hbase.user.UserRecordType;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
@@ -45,8 +44,8 @@ public class HBaseTenant {
 	public static UniqueIdCounterMapRowKeyBuilder KEY_BUILDER = new UniqueIdCounterMapRowKeyBuilder() {
 
 		@Override
-		public UniqueIdCounterMap getMap() {
-			return UserIdManager.getInstance().getTenantKeys();
+		public UniqueIdCounterMap getMap(IHBaseContext context) {
+			return context.getUserIdManager().getTenantKeys();
 		}
 
 		@Override
@@ -85,7 +84,7 @@ public class HBaseTenant {
 		}
 
 		// Add new key to table.
-		String id = KEY_BUILDER.getMap().useExistingId(request.getId());
+		String id = KEY_BUILDER.getMap(context).useExistingId(request.getId());
 
 		// Use common logic so all backend implementations work the same.
 		Tenant tenant = SiteWherePersistence.tenantCreateLogic(request);
@@ -104,7 +103,7 @@ public class HBaseTenant {
 	 * @throws SiteWhereException
 	 */
 	public static Tenant getTenantById(IHBaseContext context, String id) throws SiteWhereException {
-		if (KEY_BUILDER.getMap().getValue(id) == null) {
+		if (KEY_BUILDER.getMap(context).getValue(id) == null) {
 			return null;
 		}
 		return HBaseUtils.get(context, ISiteWhereHBase.USERS_TABLE_NAME, id, KEY_BUILDER, Tenant.class);
