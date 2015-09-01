@@ -26,9 +26,6 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public class MongoDeviceEvent {
 
-	/** Event id for events nested in other objects */
-	public static final String PROP_NESTED_ID = "eventId";
-
 	/** Event type indicator */
 	public static final String PROP_EVENT_TYPE = "eventType";
 
@@ -61,9 +58,7 @@ public class MongoDeviceEvent {
 	 * @param isNested
 	 */
 	public static void toDBObject(IDeviceEvent source, BasicDBObject target, boolean isNested) {
-		if (isNested) {
-			target.append(PROP_NESTED_ID, source.getId());
-		}
+		target.append("_id", new ObjectId());
 		target.append(PROP_EVENT_TYPE, source.getEventType().name());
 		target.append(PROP_SITE_TOKEN, source.getSiteToken());
 		target.append(PROP_DEVICE_ASSIGNMENT_TOKEN, source.getDeviceAssignmentToken());
@@ -96,9 +91,6 @@ public class MongoDeviceEvent {
 
 		if (id != null) {
 			target.setId(id.toString());
-		}
-		if (isNested) {
-			target.setId((String) source.get(PROP_NESTED_ID));
 		}
 		if (eventType != null) {
 			target.setEventType(DeviceEventType.valueOf(eventType));
