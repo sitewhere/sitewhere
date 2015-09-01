@@ -46,6 +46,7 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -169,6 +170,18 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		getAssetModuleManager().lifecycleStop();
 		getAssetManagement().lifecycleStop();
 		getSearchProviderManager().lifecycleStop();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getEngineState()
+	 */
+	@Override
+	public ISiteWhereTenantEngineState getEngineState() {
+		SiteWhereTenantEngineState state = new SiteWhereTenantEngineState();
+		state.setLifecycleStatus(getLifecycleStatus());
+		return state;
 	}
 
 	/**

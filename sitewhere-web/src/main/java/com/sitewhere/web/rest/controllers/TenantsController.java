@@ -142,13 +142,15 @@ public class TenantsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
 	public ISearchResults<ITenant> listTenants(
 			@ApiParam(value = "Authorized user id", required = false) @RequestParam(required = false) String authUserId,
-			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(required = false, defaultValue = "1") int page,
+			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
+			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(required = false, defaultValue = "1") int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listTenants", LOGGER);
 		try {
 			TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
 			criteria.setUserId(authUserId);
+			criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
 			return SiteWhere.getServer().getUserManagement().listTenants(criteria);
 		} finally {
 			Tracer.stop(LOGGER);

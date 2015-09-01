@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.HardwareAsset;
@@ -113,6 +114,9 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.util.DeviceSpecificationUtils;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.user.ITenantSearchCriteria;
+import com.sitewhere.spi.server.ISiteWhereTenantEngine;
+import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.ITenantCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
@@ -1427,6 +1431,25 @@ public class SiteWherePersistence {
 		SiteWherePersistence.setUpdatedEntityMetadata(existing);
 
 		return existing;
+	}
+
+	/**
+	 * Common tenant list logic.
+	 * 
+	 * @param results
+	 * @param criteria
+	 * @throws SiteWhereException
+	 */
+	public static void tenantListLogic(List<ITenant> results, ITenantSearchCriteria criteria)
+			throws SiteWhereException {
+		if (criteria.isIncludeRuntimeInfo()) {
+			for (ITenant tenant : results) {
+				ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
+				if (engine != null) {
+					((Tenant) tenant).setEngineState(engine.getEngineState());
+				}
+			}
+		}
 	}
 
 	/**

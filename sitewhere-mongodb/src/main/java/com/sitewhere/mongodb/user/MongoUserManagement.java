@@ -467,7 +467,10 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 			dbCriteria.append(MongoTenant.PROP_AUTH_USERS, criteria.getUserId());
 		}
 		BasicDBObject sort = new BasicDBObject(MongoTenant.PROP_NAME, 1);
-		return MongoPersistence.search(ITenant.class, tenants, dbCriteria, sort, criteria);
+		ISearchResults<ITenant> list =
+				MongoPersistence.search(ITenant.class, tenants, dbCriteria, sort, criteria);
+		SiteWherePersistence.tenantListLogic(list.getResults(), criteria);
+		return list;
 	}
 
 	/*

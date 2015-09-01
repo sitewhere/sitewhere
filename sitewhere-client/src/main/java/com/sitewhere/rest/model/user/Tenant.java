@@ -11,7 +11,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -19,6 +22,7 @@ import com.sitewhere.spi.user.ITenant;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class Tenant extends MetadataProviderEntity implements ITenant, Serializable {
 
 	/** Serial version UUID */
@@ -41,6 +45,9 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
 
 	/** SiteWhere engine configuration for tenant */
 	private String engineConfiguration;
+
+	/** Runtime state of tenant engine */
+	private ISiteWhereTenantEngineState engineState;
 
 	/*
 	 * (non-Javadoc)
@@ -118,5 +125,18 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
 
 	public void setEngineConfiguration(String engineConfiguration) {
 		this.engineConfiguration = engineConfiguration;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.ITenant#getEngineState()
+	 */
+	public ISiteWhereTenantEngineState getEngineState() {
+		return engineState;
+	}
+
+	public void setEngineState(ISiteWhereTenantEngineState engineState) {
+		this.engineState = engineState;
 	}
 }

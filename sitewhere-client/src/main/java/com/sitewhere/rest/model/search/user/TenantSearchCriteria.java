@@ -20,6 +20,9 @@ public class TenantSearchCriteria extends SearchCriteria implements ITenantSearc
 	/** User id */
 	private String userId;
 
+	/** Include tenant runtime information */
+	private boolean includeRuntimeInfo;
+
 	public TenantSearchCriteria(int pageNumber, int pageSize) {
 		super(pageNumber, pageSize);
 	}
@@ -35,5 +38,18 @@ public class TenantSearchCriteria extends SearchCriteria implements ITenantSearc
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.search.user.ITenantSearchCriteria#isIncludeRuntimeInfo()
+	 */
+	public boolean isIncludeRuntimeInfo() {
+		return includeRuntimeInfo;
+	}
+
+	public void setIncludeRuntimeInfo(boolean includeRuntimeInfo) {
+		this.includeRuntimeInfo = includeRuntimeInfo;
 	}
 }

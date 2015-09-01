@@ -22,4 +22,12 @@ public interface ITenantSearchCriteria extends ISearchCriteria {
 	 * @return
 	 */
 	public String getUserId();
+
+	/**
+	 * Indicates whether runtime information should be included for the corresponding
+	 * tenant engine.
+	 * 
+	 * @return
+	 */
+	public boolean isIncludeRuntimeInfo();
 }

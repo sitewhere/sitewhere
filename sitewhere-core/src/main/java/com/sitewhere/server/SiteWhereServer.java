@@ -210,6 +210,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantEngine(java.lang.String)
+	 */
+	@Override
+	public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException {
+		return tenantEnginesById.get(tenantId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getUserManagement()
 	 */
 	public IUserManagement getUserManagement() {

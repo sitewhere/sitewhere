@@ -10,6 +10,7 @@ package com.sitewhere.spi.user;
 import java.util.List;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 
 /**
  * Interface for information about a tenant.
@@ -59,4 +60,11 @@ public interface ITenant extends IMetadataProviderEntity {
 	 * @return
 	 */
 	public String getEngineConfiguration();
+
+	/**
+	 * Get runtime state of tenant engine.
+	 * 
+	 * @return
+	 */
+	public ISiteWhereTenantEngineState getEngineState();
 }

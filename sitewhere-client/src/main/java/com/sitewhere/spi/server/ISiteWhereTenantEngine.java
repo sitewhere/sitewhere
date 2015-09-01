@@ -88,4 +88,11 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public ISearchProviderManager getSearchProviderManager();
+
+	/**
+	 * Get current runtime state of engine.
+	 * 
+	 * @return
+	 */
+	public ISiteWhereTenantEngineState getEngineState();
 }

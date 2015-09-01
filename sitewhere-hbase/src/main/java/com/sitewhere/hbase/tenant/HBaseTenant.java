@@ -175,8 +175,11 @@ public class HBaseTenant {
 				return false;
 			}
 		};
-		return HBaseUtils.getFilteredList(context, ISiteWhereHBase.USERS_TABLE_NAME, KEY_BUILDER, true,
-				ITenant.class, Tenant.class, filter, criteria, comparator);
+		SearchResults<ITenant> list =
+				HBaseUtils.getFilteredList(context, ISiteWhereHBase.USERS_TABLE_NAME, KEY_BUILDER, true,
+						ITenant.class, Tenant.class, filter, criteria, comparator);
+		SiteWherePersistence.tenantListLogic(list.getResults(), criteria);
+		return list;
 	}
 
 	/**
