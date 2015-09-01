@@ -24,6 +24,10 @@ import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
@@ -113,6 +117,26 @@ public class TenantsController extends SiteWhereController {
 				}
 			}
 			return tenant;
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/{tenantId}/engine/{command}", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Send a command to a tenant engine")
+	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	public ICommandResponse issueTenantEngineCommand(
+			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+			@ApiParam(value = "Command", required = true) @PathVariable String command)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "issueTenantEngineCommand", LOGGER);
+		try {
+			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
+			if (engine == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
+			}
+			return engine.issueCommand(command, 10);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

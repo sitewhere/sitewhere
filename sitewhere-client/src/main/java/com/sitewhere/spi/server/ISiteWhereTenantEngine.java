@@ -7,8 +7,10 @@
  */
 package com.sitewhere.spi.server;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
@@ -95,4 +97,14 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public ISiteWhereTenantEngineState getEngineState();
+
+	/**
+	 * Issue a command to the tenant engine.
+	 * 
+	 * @param command
+	 * @param maxWaitSeconds
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ICommandResponse issueCommand(String command, int maxWaitSeconds) throws SiteWhereException;
 }

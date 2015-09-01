@@ -58,6 +58,12 @@ public enum ErrorCode {
 	/** Tenant authentication token passed but tenant not authorized for user */
 	NotAuthorizedForTenant(143, "Not authorized to view information for tenant."),
 
+	/** Invalid tenant engine reference */
+	InvalidTenantEngineId(144, "Tenant engine does not exist."),
+
+	/** Invalid tenant engine command */
+	InvalidTenantEngineCommand(145, "Invalid tenant engine command."),
+
 	/***************************
 	 * INVALID OR DUPLICATE ID *
 	 ***************************/

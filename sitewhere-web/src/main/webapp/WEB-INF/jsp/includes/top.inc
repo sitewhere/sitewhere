@@ -43,7 +43,7 @@
 		<div class="k-content container sw-content">
 			<div class="sw-header">
 				<div class="sw-logo">
-					<img src="${currentTenant.logoUrl}" />
+					<img src="${tenant.logoUrl}" />
 				</div>
 				<div class="sw-main-nav">
 					<ul class="nav nav-pills">

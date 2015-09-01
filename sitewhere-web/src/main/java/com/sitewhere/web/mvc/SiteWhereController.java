@@ -65,7 +65,7 @@ public class SiteWhereController {
 	public static final String DATA_CURRENT_USER = "currentUser";
 
 	/** Tenant information sent in request */
-	public static final String DATA_TENANT = "currentTenant";
+	public static final String DATA_TENANT = "tenant";
 
 	/** Redirect URL for tenant selection page */
 	public static final String DATA_REDIRECT = "redirect";
@@ -688,7 +688,7 @@ public class SiteWhereController {
 			if (tenant == null) {
 				showError("Invalid tenant id.");
 			}
-			data.put("tenant", tenant);
+			data.put("selected", tenant);
 
 			return new ModelAndView("tenants/detail", data);
 		} catch (NoTenantException e) {

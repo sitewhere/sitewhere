@@ -21,8 +21,8 @@
 		<li class="k-state-active">Details<font data-i18n="tenant.detail.Details"></font></li>
 		<li>Logs<font data-i18n="tenant.detail.Logs"></font></li>
 	</ul>
-	<div>Details</div>
-	<div>Logs</div>
+	<div></div>
+	<div></div>
 </div>
 
 <%@ include file="tenantEntry.inc"%>
@@ -31,13 +31,39 @@
 	/** Set sitewhere_title */
 	sitewhere_i18next.sitewhere_title = "sites.detail.title";
 
-	var tenantId = '<c:out value="${tenant.id}"/>';
+	var tenantId = '<c:out value="${selected.id}"/>';
 
 	/** Tenant information */
 	var tenant;
 
 	/** Tabs */
 	var tabs;
+
+	/** Called when stop button is clicked */
+	function onTenantStopClicked() {
+		$.postJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
+				+ "/engine/stop?tenantAuthToken=${tenant.authenticationToken}", null, commandSuccess,
+			stopFailed);
+	}
+
+	function commandSuccess(data, status, jqXHR) {
+		loadTenant();
+	}
+
+	function stopFailed(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to process engine stop command.");
+	}
+
+	/** Called when start button is clicked */
+	function onTenantStartClicked() {
+		$.postJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
+				+ "/engine/start?tenantAuthToken=${tenant.authenticationToken}", null, commandSuccess,
+			startFailed);
+	}
+
+	function startFailed(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to process engine start command.");
+	}
 
 	$(document).ready(function() {
 		/** Handle refresh button */

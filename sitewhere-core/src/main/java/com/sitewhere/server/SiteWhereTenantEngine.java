@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.mule.util.StringMessageUtils;
@@ -27,14 +33,20 @@ import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
 import com.sitewhere.device.event.processor.DeviceStreamProcessor;
 import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
 import com.sitewhere.device.event.processor.RegistrationProcessor;
+import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.search.SearchProviderManager;
+import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
+import com.sitewhere.server.tenant.TenantEngineCommand;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
+import com.sitewhere.spi.command.CommandResult;
+import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -43,6 +55,8 @@ import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
@@ -96,6 +110,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	/** Interface for the search provider manager */
 	private ISearchProviderManager searchProviderManager;
+
+	/** Threads used to issue engine commands */
+	private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
 
 	public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent) {
 		super(LifecycleComponentType.TenantEngine);
@@ -182,6 +199,37 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		SiteWhereTenantEngineState state = new SiteWhereTenantEngineState();
 		state.setLifecycleStatus(getLifecycleStatus());
 		return state;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#issueCommand(java.lang.String,
+	 * int)
+	 */
+	@Override
+	public ICommandResponse issueCommand(String command, int maxWaitSeconds) throws SiteWhereException {
+		Class<? extends TenantEngineCommand> commandClass =
+				SiteWhereTenantEngineCommands.Command.getCommandClass(command);
+		if (commandClass == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineCommand, ErrorLevel.ERROR);
+		}
+		try {
+			TenantEngineCommand cmd = commandClass.newInstance();
+			cmd.setEngine(this);
+			Future<ICommandResponse> response = commandExecutor.submit(cmd);
+			return response.get(maxWaitSeconds, TimeUnit.SECONDS);
+		} catch (InstantiationException e) {
+			throw new SiteWhereException(e);
+		} catch (IllegalAccessException e) {
+			throw new SiteWhereException(e);
+		} catch (InterruptedException e) {
+			throw new SiteWhereException(e);
+		} catch (ExecutionException e) {
+			throw new SiteWhereException(e);
+		} catch (TimeoutException e) {
+			return new CommandResponse(CommandResult.Successful, "Command submitted.");
+		}
 	}
 
 	/**
