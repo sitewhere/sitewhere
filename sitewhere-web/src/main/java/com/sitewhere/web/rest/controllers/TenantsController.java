@@ -21,9 +21,11 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
+import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.ITenant;
 import com.wordnik.swagger.annotations.Api;
@@ -97,11 +99,20 @@ public class TenantsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Find tenant by unique id")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
-	public ITenant getTenantById(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
+	public ITenant getTenantById(
+			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantById", LOGGER);
 		try {
-			return SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
+			ITenant tenant = SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
+			if (includeRuntimeInfo) {
+				ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
+				if (engine != null) {
+					((Tenant) tenant).setEngineState(engine.getEngineState());
+				}
+			}
+			return tenant;
 		} finally {
 			Tracer.stop(LOGGER);
 		}

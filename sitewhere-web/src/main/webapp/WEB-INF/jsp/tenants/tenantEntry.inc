@@ -9,25 +9,35 @@
 	text-align: left;
 	display: block;
 	min-height: 60px;
+	position: relative;
 }
 
 .sw-tenant-list-entry-heading {
 	font-size: 14pt;
 	font-weight: bold;
 	line-height: 1;
+	position: absolute;
+	left: 400px;
+}
+
+.sw-tenant-list-state-icon {
+	font-size: 35px;
+	position: absolute;
+	left: 20px;
+	top: 20px;
 }
 
 .sw-tenant-list-entry-logowrapper {
-	float: left;
-	margin-right: 15px;
 	width: 220px;
 	height: 60px;
 	background-color: #F0F0F0;
-	border: 1px solid #DDD;
 	font-size: 35px;
 	text-align: center;
 	vertical-align: middle;
-	position: relative;
+	display: inline-block;
+	left: 80px;
+	position: absolute;
+	border: 1px solid #DDD;
 }
 
 .sw-tenant-logo-tag {
@@ -38,38 +48,49 @@
 
 .sw-tenant-list-entry-actions {
 	float: right;
-	width: 110px;
-	height: 100%;
-	padding-left: 10px;
-	margin-left: 10px;
-	border-left: solid 1px #e0e0e0;
-	position: relative;
+	margin-top: 5px;
 }
 
 .sw-tenant-list-label {
-	font-size: 16pt;
 	padding-top: 17px;
+	position: absolute;
+	left: 325px;
+	font-size: 26px;
 }
 </style>
 
 <!-- Template for tenant row -->
 <script type="text/x-kendo-tmpl" id="tpl-tenant-entry">
 	<div class="sw-tenant-list-entry sw-list-entry gradient-bg">
+		<div class="sw-tenant-list-state-icon">
+# if (!data.engineState) { #
+			<i class="icon-remove" title="Uninitialized" style="color: \\#c00;"></i>
+# } else if (data.engineState.lifecycleStatus == 'Started') { #
+			<i class="icon-check" title="Started" style="color: \\#090;"></i>
+# } else if (data.engineState.lifecycleStatus == 'Stopped') { #
+			<i class="icon-power-off" title="Stopped" style="color: \\#c00;"></i>
+# } else if (data.engineState.lifecycleStatus == 'Error') { #
+			<i class="icon-warning-sign" title="Error" style="color: \\#c00;"></i>
+# } else { #
+			<i class="icon-time" title="In progress" style="color: \\#c00;"></i>
+# } #
+		</div>
 		<div class="sw-tenant-list-entry-logowrapper" style="background-image: url(#:logoUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-tenant-logo-tag">Tenant</span>
 		</div>
 		<div class="sw-tenant-list-entry-actions">
-			<div class="btn-group" style="position: absolute; right: 0px; top: 17px;">
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Tenant" style="color: \\#009;" 
-					href="javascript:void(0)" onclick="onTenantEditClicked(event, '#:id#');">
-					<i class="icon-edit icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Tenant" style="color: \\#900;" 
-					href="javascript:void(0)" onclick="onTenantDeleteClicked(event, '#:id#')">
-					<i class="icon-remove icon-white"></i></a>
-				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Tenant" style="color: \\#060;" 
-					href="javascript:void(0)" onclick="onTenantOpenClicked(event, '#:id#')">
-					<i class="icon-chevron-right icon-white"></i></a>
-			</div>
+# if (!data.inDetailView) { #
+			<a class="btn btn-large sw-action-glyph sw-primary-glyph" title="View Tenant" style="color: \\#090; font-size: 25px;" href="javascript:void(0)" onclick="onTenantOpenClicked(event, '#:id#')">
+				<i class="icon-chevron-right icon-white"></i>
+			</a>
+# } else { #
+			<a id="tenant-power-off" class="btn btn-large" title="Stop Tenant Engine" style="color: \\#c00; font-size: 25px;" href="javascript:void(0)" onclick="onTenantStopClicked()">
+				<i class="icon-power-off icon-white"></i>
+			</a>
+			<a id="tenant-power-on" class="btn btn-large" title="Start Tenant Engine" style="color: \\#090; font-size: 25px;" href="javascript:void(0)" onclick="onTenantStopClicked()">
+				<i class="icon-power-off icon-white"></i>
+			</a>
+# } #
 		</div>
 		<div>
 			<p class="ellipsis sw-tenant-list-label">#:name# (#:id#)</p>

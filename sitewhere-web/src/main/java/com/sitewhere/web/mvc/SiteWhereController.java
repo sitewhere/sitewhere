@@ -65,7 +65,7 @@ public class SiteWhereController {
 	public static final String DATA_CURRENT_USER = "currentUser";
 
 	/** Tenant information sent in request */
-	public static final String DATA_TENANT = "tenant";
+	public static final String DATA_TENANT = "currentTenant";
 
 	/** Redirect URL for tenant selection page */
 	public static final String DATA_REDIRECT = "redirect";
@@ -662,6 +662,35 @@ public class SiteWhereController {
 		try {
 			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("tenants/list", data);
+		} catch (NoTenantException e) {
+			return showTenantChoices(getUrl(request), request);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * View tenant details.
+	 * 
+	 * @param tenantId
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/tenants/{tenantId}")
+	public ModelAndView viewTenant(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
+		Tracer.start(TracerCategory.AdminUserInterface, "viewTenant", LOGGER);
+		try {
+			Map<String, Object> data = createBaseData(request);
+
+			ITenant tenant = SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
+			if (tenant == null) {
+				showError("Invalid tenant id.");
+			}
+			data.put("tenant", tenant);
+
+			return new ModelAndView("tenants/detail", data);
 		} catch (NoTenantException e) {
 			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {

@@ -18,6 +18,8 @@
 	<div class="sw-title-bar-right">
 		<a id="btn-add-tenant" class="btn" href="javascript:void(0)" data-i18n="tenants.list.AddNew">
 			<i class="icon-plus sw-button-icon"></i>Add New
+		</a> <a id="btn-refresh-tenants" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
+			<i class="icon-refresh sw-button-icon"></i>
 		</a>
 	</div>
 </div>
@@ -89,7 +91,7 @@
 								{
 									transport : {
 										read : {
-											url : "${pageContext.request.contextPath}/api/tenants?tenantAuthToken=${tenant.authenticationToken}",
+											url : "${pageContext.request.contextPath}/api/tenants?includeRuntimeInfo=true&tenantAuthToken=${tenant.authenticationToken}",
 											dataType : "json",
 										}
 									},
@@ -115,6 +117,11 @@
 					/** Handle add tenant functionality */
 					$('#btn-add-tenant').click(function(event) {
 						tcOpen(event, onTenantCreated);
+					});
+
+					/** Handle refresh functionality */
+					$('#btn-refresh-tenants').click(function(event) {
+						tenantsDS.read();
 					});
 				});
 </script>
