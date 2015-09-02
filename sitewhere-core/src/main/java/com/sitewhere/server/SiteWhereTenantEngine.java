@@ -131,6 +131,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		// Clear the component list.
+		getLifecycleComponents().clear();
+
 		// Start asset management.
 		startNestedComponent(getAssetManagement(), "Asset management startup failed.", true);
 
@@ -215,7 +218,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected List<ITenantEngineComponent> getComponentHierarchyState() {
 		List<ITenantEngineComponent> results = new ArrayList<ITenantEngineComponent>();
-		
+
 		TenantEngineComponent engine = new TenantEngineComponent();
 		engine.setId(getComponentId());
 		engine.setName(getComponentName());
@@ -223,7 +226,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		engine.setType(getComponentType());
 		engine.setParentId(null);
 		results.add(engine);
-		
+
 		getComponentHierarchyState(this, results);
 		return results;
 	}

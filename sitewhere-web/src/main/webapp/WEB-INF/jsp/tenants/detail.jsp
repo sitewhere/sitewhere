@@ -33,7 +33,7 @@
 <!-- Details panel shown for a started engine -->
 <script type="text/x-kendo-tmpl" id="tpl-engine-started">
 	<div>
-		<div id="tenant-engine-hierarchy"></div>
+		<div id="tenant-engine-hierarchy" style="margin-top: 10px; margin-bottom: 10px;"></div>
 	</div>
 </script>
 
@@ -198,7 +198,7 @@
 
         $("#tenant-engine-hierarchy").kendoTreeList({
             dataSource: dataSource,
-            height: 350,
+            height: 375,
             columns: [
                 { field: "name", title: "Component Name", width: 400 },
                 { field: "type", title: "Type", width: 150 },

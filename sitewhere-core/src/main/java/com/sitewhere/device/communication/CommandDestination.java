@@ -93,7 +93,8 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Starting command destination '" + getDestinationId() + "'.");
+		// Clear the component list.
+		getLifecycleComponents().clear();
 
 		// Start command execution encoder.
 		if (getCommandExecutionEncoder() == null) {
@@ -141,8 +142,6 @@ public class CommandDestination<T, P> extends TenantLifecycleComponent implement
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopping command destination '" + getDestinationId() + "'.");
-
 		// Stop command execution encoder.
 		if (getCommandExecutionEncoder() != null) {
 			getCommandExecutionEncoder().lifecycleStop();

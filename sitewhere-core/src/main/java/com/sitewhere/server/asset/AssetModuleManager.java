@@ -62,6 +62,8 @@ public class AssetModuleManager extends TenantLifecycleComponent implements IAss
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	public void start() throws SiteWhereException {
+		getLifecycleComponents().clear();
+
 		modulesById.clear();
 		for (IAssetModule<?> module : modules) {
 			startNestedComponent(module, true);

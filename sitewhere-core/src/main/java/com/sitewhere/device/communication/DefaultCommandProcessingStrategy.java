@@ -114,7 +114,7 @@ public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent i
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		LOGGER.info("Started command processing strategy.");
+		getLifecycleComponents().clear();
 
 		// Start command execution builder.
 		if (getCommandExecutionBuilder() == null) {
@@ -146,8 +146,6 @@ public class DefaultCommandProcessingStrategy extends TenantLifecycleComponent i
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("Stopped command processing strategy");
-
 		// Stop command execution builder.
 		if (getCommandExecutionBuilder() != null) {
 			getCommandExecutionBuilder().lifecycleStop();
