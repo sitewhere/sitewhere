@@ -35,6 +35,8 @@ import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
 import com.sitewhere.device.event.processor.RegistrationProcessor;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
+import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.search.SearchProviderManager;
@@ -61,8 +63,10 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
+import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.user.ITenant;
@@ -198,7 +202,50 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	public ISiteWhereTenantEngineState getEngineState() {
 		SiteWhereTenantEngineState state = new SiteWhereTenantEngineState();
 		state.setLifecycleStatus(getLifecycleStatus());
+		if (getLifecycleStatus() == LifecycleStatus.Started) {
+			state.setComponentHierarchyState(getComponentHierarchyState());
+		}
 		return state;
+	}
+
+	/**
+	 * Use recursion to get state of hierarchy of lifecycle components.
+	 * 
+	 * @return
+	 */
+	protected List<ITenantEngineComponent> getComponentHierarchyState() {
+		List<ITenantEngineComponent> results = new ArrayList<ITenantEngineComponent>();
+		
+		TenantEngineComponent engine = new TenantEngineComponent();
+		engine.setId(getComponentId());
+		engine.setName(getComponentName());
+		engine.setStatus(getLifecycleStatus());
+		engine.setType(getComponentType());
+		engine.setParentId(null);
+		results.add(engine);
+		
+		getComponentHierarchyState(this, results);
+		return results;
+	}
+
+	/**
+	 * Recursive call to capture hierarchy of components.
+	 * 
+	 * @param parent
+	 * @param results
+	 */
+	protected void getComponentHierarchyState(ILifecycleComponent parent, List<ITenantEngineComponent> results) {
+		List<ILifecycleComponent> children = parent.getLifecycleComponents();
+		for (ILifecycleComponent child : children) {
+			TenantEngineComponent component = new TenantEngineComponent();
+			component.setId(child.getComponentId());
+			component.setName(child.getComponentName());
+			component.setStatus(child.getLifecycleStatus());
+			component.setType(child.getComponentType());
+			component.setParentId(parent.getComponentId());
+			results.add(component);
+			getComponentHierarchyState(child, results);
+		}
 	}
 
 	/*

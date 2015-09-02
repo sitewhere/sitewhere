@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.server;
 
+import java.util.List;
+
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -22,4 +24,11 @@ public interface ISiteWhereTenantEngineState {
 	 * @return
 	 */
 	public LifecycleStatus getLifecycleStatus();
+
+	/**
+	 * Get state of tenant engine component hierarchy.
+	 * 
+	 * @return
+	 */
+	public List<ITenantEngineComponent> getComponentHierarchyState();
 }

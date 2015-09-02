@@ -30,6 +30,13 @@
 <%@ include file="tenantCreateDialog.inc"%>
 <%@ include file="tenantEntry.inc"%>
 
+<!-- Details panel shown for a started engine -->
+<script type="text/x-kendo-tmpl" id="tpl-engine-started">
+	<div>
+		<div id="tenant-engine-hierarchy"></div>
+	</div>
+</script>
+
 <!-- Details panel shown for a stopped engine -->
 <script type="text/x-kendo-tmpl" id="tpl-engine-stopped">
 	<div style="text-align: center; font-size: 26px; padding: 50px;">
@@ -149,6 +156,9 @@
 				$('#tenant-power-on').hide();
 				$('#tenant-edit').hide();
 				$('#tenant-delete').hide();
+				template = kendo.template($("#tpl-engine-started").html());
+				$('#detail-content').html(template(data));
+				loadEngineHierarchy(data);
 			} else if (data.engineState.lifecycleStatus == 'Stopped') {
 				$('#tenant-power-off').hide();
 				$('#tenant-power-on').show();
@@ -172,6 +182,29 @@
 			template = kendo.template($("#tpl-engine-not-running").html());
 			$('#detail-content').html(template(data));
 		}
+	}
+	
+	/** Load engine hierarchy into tree */
+	function loadEngineHierarchy(engine) {
+        var dataSource = new kendo.data.TreeListDataSource({
+            data: engine.engineState.componentHierarchyState,
+            schema: {
+                model: {
+                    id: "id",
+                    expanded: true
+                }
+            }
+        });
+
+        $("#tenant-engine-hierarchy").kendoTreeList({
+            dataSource: dataSource,
+            height: 350,
+            columns: [
+                { field: "name", title: "Component Name", width: 400 },
+                { field: "type", title: "Type", width: 150 },
+                { field: "status", title: "Status", width: 150 }
+            ]
+        });
 	}
 
 	/** Handle error on getting tenant data */
