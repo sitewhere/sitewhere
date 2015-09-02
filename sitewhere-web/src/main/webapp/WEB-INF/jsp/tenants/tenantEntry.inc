@@ -68,7 +68,7 @@
 # } else if (data.engineState.lifecycleStatus == 'Started') { #
 			<i class="icon-check" title="Started" style="color: \\#090;"></i>
 # } else if (data.engineState.lifecycleStatus == 'Stopped') { #
-			<i class="icon-power-off" title="Stopped" style="color: \\#c00;"></i>
+			<i class="icon-power-off" title="Stopped" style="color: \\#ccc;"></i>
 # } else if (data.engineState.lifecycleStatus == 'Error') { #
 			<i class="icon-warning-sign" title="Error" style="color: \\#c00;"></i>
 # } else { #
@@ -84,6 +84,12 @@
 				<i class="icon-chevron-right icon-white"></i>
 			</a>
 # } else { #
+			<a id="tenant-edit" class="btn btn-large" title="Edit Tenant" style="color: \\#009; font-size: 25px;" href="javascript:void(0)" onclick="onEditClicked()">
+				<i class="icon-edit icon-white"></i>
+			</a>
+			<a id="tenant-delete" class="btn btn-large" title="Delete Tenant" style="color: \\#c00; font-size: 25px;" href="javascript:void(0)" onclick="onDeleteClicked()">
+				<i class="icon-remove icon-white"></i>
+			</a>
 			<a id="tenant-power-off" class="btn btn-large" title="Stop Tenant Engine" style="color: \\#c00; font-size: 25px;" href="javascript:void(0)" onclick="onTenantStopClicked()">
 				<i class="icon-power-off icon-white"></i>
 			</a>

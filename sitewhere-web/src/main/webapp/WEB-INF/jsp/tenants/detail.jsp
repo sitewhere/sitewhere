@@ -7,8 +7,8 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="tenant.detail.title">View Tenant</h1>
 	<div class="sw-title-bar-right">
-		</a> <a id="btn-refresh-tenant" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-			<i class="icon-refresh sw-button-icon"></i>
+		<a id="btn-refresh-tenant" class="btn" href="javascript:void(0)" data-i18n="public.Refresh"> <i
+			class="icon-refresh sw-button-icon"></i>
 		</a>
 	</div>
 </div>
@@ -18,14 +18,31 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Details<font data-i18n="tenant.detail.Details"></font></li>
-		<li>Logs<font data-i18n="tenant.detail.Logs"></font></li>
+		<li class="k-state-active">Engine Details<font data-i18n="tenant.detail.Details"></font></li>
 	</ul>
-	<div></div>
-	<div></div>
+	<div>
+		<div id="detail-content"></div>
+	</div>
 </div>
 
+<form id="view-tenant-list" method="get"></form>
+
+<%@ include file="tenantCreateDialog.inc"%>
 <%@ include file="tenantEntry.inc"%>
+
+<!-- Details panel shown for a stopped engine -->
+<script type="text/x-kendo-tmpl" id="tpl-engine-stopped">
+	<div style="text-align: center; font-size: 26px; padding: 50px;">
+		<i class="icon-power-off sw-button-icon" style="color: \\#ccc;"></i> Tenant Engine is Stopped
+	</div>
+</script>
+
+<!-- Details panel shown for a engine in other non-running states -->
+<script type="text/x-kendo-tmpl" id="tpl-engine-not-running">
+	<div style="text-align: center; font-size: 26px; padding: 50px;">
+		<i class="icon-power-off sw-button-icon" style="color: \\#ccc;"></i> Tenant Engine is Not Running
+	</div>
+</script>
 
 <script>
 	/** Set sitewhere_title */
@@ -38,6 +55,39 @@
 
 	/** Tabs */
 	var tabs;
+
+	/** Called when delete button is clicked */
+	function onDeleteClicked() {
+		swConfirm("Delete Tenant", "Are you sure you want to delete tenant '" + tenantId + "'?", function(
+				result) {
+			if (result) {
+				$.deleteJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
+						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
+					onDeleteFail);
+			}
+		});
+	}
+
+	/** Called on successful delete */
+	function onDeleteSuccess() {
+		$("#view-tenant-list").attr("action", "${pageContext.request.contextPath}/admin/tenants/list.html");
+		$('#view-tenant-list').submit();
+	}
+
+	/** Handle failed delete call */
+	function onDeleteFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete tenant.");
+	}
+
+	/** Called when edit button is clicked */
+	function onEditClicked() {
+		tuOpen(tenantId, onEditSuccess);
+	}
+
+	/** Called on successful edit */
+	function onEditSuccess() {
+		loadTenant();
+	}
 
 	/** Called when stop button is clicked */
 	function onTenantStopClicked() {
@@ -97,10 +147,30 @@
 			if (data.engineState.lifecycleStatus == 'Started') {
 				$('#tenant-power-off').show();
 				$('#tenant-power-on').hide();
+				$('#tenant-edit').hide();
+				$('#tenant-delete').hide();
 			} else if (data.engineState.lifecycleStatus == 'Stopped') {
 				$('#tenant-power-off').hide();
 				$('#tenant-power-on').show();
+				$('#tenant-edit').show();
+				$('#tenant-delete').show();
+				template = kendo.template($("#tpl-engine-stopped").html());
+				$('#detail-content').html(template(data));
+			} else {
+				$('#tenant-power-off').hide();
+				$('#tenant-power-on').hide();
+				$('#tenant-edit').hide();
+				$('#tenant-delete').hide();
+				template = kendo.template($("#tpl-engine-not-running").html());
+				$('#detail-content').html(template(data));
 			}
+		} else {
+			$('#tenant-power-off').hide();
+			$('#tenant-power-on').show();
+			$('#tenant-edit').show();
+			$('#tenant-delete').show();
+			template = kendo.template($("#tpl-engine-not-running").html());
+			$('#detail-content').html(template(data));
 		}
 	}
 

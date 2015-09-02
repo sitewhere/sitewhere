@@ -32,42 +32,6 @@
 	/** Tenants datasource */
 	var tenantsDS;
 
-	/** Called when edit button is clicked */
-	function onTenantEditClicked(e, tenantId) {
-		var event = e || window.event;
-		event.stopPropagation();
-		tuOpen(tenantId, onEditSuccess);
-	}
-
-	/** Called on successful edit */
-	function onEditSuccess() {
-		tenantsDS.read();
-	}
-
-	/** Called when delete button is clicked */
-	function onTenantDeleteClicked(e, tenantId) {
-		var event = e || window.event;
-		event.stopPropagation();
-		swConfirm("Delete Tenants", "Are you sure you want to delete tenant '" + tenantId + "'?", function(
-				result) {
-			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
-					onDeleteFail);
-			}
-		});
-	}
-
-	/** Called on successful delete */
-	function onDeleteSuccess() {
-		tenantsDS.read();
-	}
-
-	/** Handle failed delete call */
-	function onDeleteFail(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to delete tenant.");
-	}
-
 	/** Called when open button is clicked */
 	function onTenantOpenClicked(e, tenantId) {
 		var event = e || window.event;

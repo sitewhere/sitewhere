@@ -195,7 +195,7 @@
 	/** Called on successful tenant load request */
 	function tuUpdateGetSuccess(data, status, jqXHR) {
 		// Indicates an update operation.
-		$('#tc-tenant-id').val(data.id);
+		$('#tc-init-tenant-id').val(data.id);
 		$('#tc-tenant-id-row').hide();
 
 		$('#tc-dialog-header').html(i18next("public.Update") + " Tenant");
@@ -203,6 +203,7 @@
 
 		tcTabs.select(0);
 
+		$('#tc-tenant-id').val(data.id);
 		$('#tc-tenant-name').val(data.name);
 		$('#tc-tenant-logo').val(data.logoUrl);
 		$('#tc-tenant-auth-token').val(data.authenticationToken);

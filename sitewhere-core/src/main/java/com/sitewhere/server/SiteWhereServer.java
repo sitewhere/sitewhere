@@ -214,7 +214,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	@Override
 	public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException {
-		return tenantEnginesById.get(tenantId);
+		ISiteWhereTenantEngine engine = tenantEnginesById.get(tenantId);
+		if (engine == null) {
+			ITenant tenant = getUserManagement().getTenantById(tenantId);
+			if (tenant == null) {
+				return null;
+			}
+			engine = initializeTenantEngine(tenant);
+			startTenantEngine(engine);
+		}
+		return engine;
 	}
 
 	/*
@@ -428,17 +437,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Initialize and start tenant engines.
 		initializeTenantEngines();
 		for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
-			try {
-				if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
-					startNestedComponent(engine, "Tenant engine startup failed.", true);
-				} else {
-					getLifecycleComponents().add(engine);
-					LOGGER.info("Skipping startup for tenant engine '" + engine.getTenant().getName()
-							+ "' due to initialization errors.");
-				}
-			} catch (SiteWhereException e) {
-				LOGGER.error("Tenant engine (" + engine.getTenant().getId() + ") startup failed.", e);
-			}
+			startTenantEngine(engine);
 		}
 
 		// Force refresh on components-by-id map.
@@ -446,6 +445,25 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		// Set uptime timestamp.
 		this.uptime = System.currentTimeMillis();
+	}
+
+	/**
+	 * Start a tenant engine.
+	 * 
+	 * @param engine
+	 */
+	protected void startTenantEngine(ISiteWhereTenantEngine engine) {
+		try {
+			if (engine.getLifecycleStatus() != LifecycleStatus.Error) {
+				startNestedComponent(engine, "Tenant engine startup failed.", true);
+			} else {
+				getLifecycleComponents().add(engine);
+				LOGGER.info("Skipping startup for tenant engine '" + engine.getTenant().getName()
+						+ "' due to initialization errors.");
+			}
+		} catch (SiteWhereException e) {
+			LOGGER.error("Tenant engine (" + engine.getTenant().getId() + ") startup failed.", e);
+		}
 	}
 
 	/*
@@ -656,15 +674,27 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		TenantSearchCriteria criteria = new TenantSearchCriteria(1, 0);
 		ISearchResults<ITenant> tenants = getUserManagement().listTenants(criteria);
 		for (ITenant tenant : tenants.getResults()) {
-			SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
-			engine.setConfigurationResolver(getConfigurationResolver());
-			if (!engine.initialize()) {
-				LOGGER.error("Tenant engine initialization for '" + tenant.getName() + "' failed.",
-						engine.getLifecycleError());
-			}
-			tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
-			tenantEnginesById.put(tenant.getId(), engine);
+			initializeTenantEngine(tenant);
 		}
+	}
+
+	/**
+	 * Initialize a tenant engine.
+	 * 
+	 * @param tenant
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
+		SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
+		engine.setConfigurationResolver(getConfigurationResolver());
+		if (!engine.initialize()) {
+			LOGGER.error("Tenant engine initialization for '" + tenant.getName() + "' failed.",
+					engine.getLifecycleError());
+		}
+		tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
+		tenantEnginesById.put(tenant.getId(), engine);
+		return engine;
 	}
 
 	/**
