@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="sitewhere_title" value="View Site" />
 <c:set var="sitewhere_section" value="tenants" />
+<c:set var="use_highlight" value="true" />
 <%@ include file="../includes/top.inc"%>
 
 <!-- Title Bar -->
@@ -18,10 +19,18 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Engine Details<font data-i18n="tenant.detail.Details"></font></li>
+		<li class="k-state-active">Engine Details<font data-i18n="tenant.detail.EngineDetails"></font></li>
+		<li>Engine Configuration<font data-i18n="tenant.detail.EngineConfiguration"></font></li>
 	</ul>
 	<div>
 		<div id="detail-content"></div>
+	</div>
+	<div>
+		<div style="max-height: 500px; overflow-y: scroll;">
+			<pre class="language-markup">
+				<code id="config-content"></code>
+			</pre>
+		</div>
 	</div>
 </div>
 
@@ -143,7 +152,7 @@
 			loadGetFailed);
 	}
 
-	/** Called on successful site load request */
+	/** Called on successful tenant load request */
 	function loadGetSuccess(data, status, jqXHR) {
 		tenant = data;
 		var template = kendo.template($("#tpl-tenant-entry").html());
@@ -159,6 +168,7 @@
 				template = kendo.template($("#tpl-engine-started").html());
 				$('#detail-content').html(template(data));
 				loadEngineHierarchy(data);
+				loadEngineConfiguration();
 			} else if (data.engineState.lifecycleStatus == 'Stopped') {
 				$('#tenant-power-off').hide();
 				$('#tenant-power-on').show();
@@ -183,33 +193,59 @@
 			$('#detail-content').html(template(data));
 		}
 	}
-	
-	/** Load engine hierarchy into tree */
-	function loadEngineHierarchy(engine) {
-        var dataSource = new kendo.data.TreeListDataSource({
-            data: engine.engineState.componentHierarchyState,
-            schema: {
-                model: {
-                    id: "id",
-                    expanded: true
-                }
-            }
-        });
-
-        $("#tenant-engine-hierarchy").kendoTreeList({
-            dataSource: dataSource,
-            height: 375,
-            columns: [
-                { field: "name", title: "Component Name", width: 400 },
-                { field: "type", title: "Type", width: 150 },
-                { field: "status", title: "Status", width: 150 }
-            ]
-        });
-	}
 
 	/** Handle error on getting tenant data */
 	function loadGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to load tenant data.");
+	}
+
+	/** Load engine hierarchy into tree */
+	function loadEngineHierarchy(engine) {
+		var dataSource = new kendo.data.TreeListDataSource({
+			data : engine.engineState.componentHierarchyState,
+			schema : {
+				model : {
+					id : "id",
+					expanded : true
+				}
+			}
+		});
+
+		$("#tenant-engine-hierarchy").kendoTreeList({
+			dataSource : dataSource,
+			height : 500,
+			columns : [ {
+				field : "name",
+				title : "Component Name",
+				width : 400
+			}, {
+				field : "type",
+				title : "Type",
+				width : 150
+			}, {
+				field : "status",
+				title : "Status",
+				width : 150
+			} ]
+		});
+	}
+
+	/** Load the running engine configuration */
+	function loadEngineConfiguration() {
+		$.getJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
+				+ "/engine/configuration?tenantAuthToken=${tenant.authenticationToken}", configGetSuccess,
+			configGetFailed);
+	}
+
+	/** Called on successful configuration load request */
+	function configGetSuccess(data, status, jqXHR) {
+		$("#config-content").text(data);
+		Prism.highlightElement(document.getElementById('config-content'));
+	}
+
+	/** Handle error on getting configuration data */
+	function configGetFailed(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to load tenant configuration.");
 	}
 </script>
 

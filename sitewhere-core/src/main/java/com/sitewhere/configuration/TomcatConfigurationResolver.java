@@ -8,8 +8,10 @@
 package com.sitewhere.configuration;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -82,6 +84,31 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.configuration.IConfigurationResolver#getTenantConfiguration(com
+	 * .sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
+	 */
+	@Override
+	public String getTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException {
+		File sitewhereConf = getSiteWhereConfigFolder();
+		File tenantConfigFile = getTenantConfigurationFile(sitewhereConf, tenant, version);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			FileInputStream in = new FileInputStream(tenantConfigFile);
+			IOUtils.copy(in, out);
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+			return new String(out.toByteArray());
+		} catch (FileNotFoundException e) {
+			throw new SiteWhereException(e);
+		} catch (IOException e) {
+			throw new SiteWhereException(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.configuration.IConfigurationResolver#resolveTenantContext(com
 	 * .sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion,
 	 * org.springframework.context.ApplicationContext)
@@ -91,19 +118,7 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 			throws SiteWhereException {
 		LOGGER.info("Loading Spring configuration ...");
 		File sitewhereConf = getSiteWhereConfigFolder();
-		File tenantConfigFile = new File(sitewhereConf, tenant.getId() + "-tenant.xml");
-		if (!tenantConfigFile.exists()) {
-			LOGGER.info("Tenant " + tenant.getName() + "(" + tenant.getId() + ") configuration not found: "
-					+ tenantConfigFile.getAbsolutePath());
-			File tenantDefault = new File(sitewhereConf, TENANT_CONFIG_FILE_NAME);
-			if (!tenantDefault.exists()) {
-				throw new SiteWhereException("Default tenant configuration not found at: "
-						+ tenantDefault.getAbsolutePath());
-			}
-			LOGGER.info("Copying configuration from " + tenantDefault.getAbsolutePath() + ".");
-			copyDefaultTenantConfiguration(tenantDefault, tenantConfigFile);
-			createTenantPropertiesFile(tenant, sitewhereConf);
-		}
+		File tenantConfigFile = getTenantConfigurationFile(sitewhereConf, tenant, version);
 		GenericApplicationContext context = new GenericApplicationContext(global);
 
 		// Plug in custom property source.
@@ -121,6 +136,33 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 
 		context.refresh();
 		return context;
+	}
+
+	/**
+	 * Get the tenant configuration file. Create one from the template if necessary.
+	 * 
+	 * @param sitewhereConf
+	 * @param tenant
+	 * @param version
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected File getTenantConfigurationFile(File sitewhereConf, ITenant tenant, IVersion version)
+			throws SiteWhereException {
+		File tenantConfigFile = new File(sitewhereConf, tenant.getId() + "-tenant.xml");
+		if (!tenantConfigFile.exists()) {
+			LOGGER.info("Tenant " + tenant.getName() + "(" + tenant.getId() + ") configuration not found: "
+					+ tenantConfigFile.getAbsolutePath());
+		}
+		File tenantDefault = new File(sitewhereConf, TENANT_CONFIG_FILE_NAME);
+		if (!tenantDefault.exists()) {
+			throw new SiteWhereException("Default tenant configuration not found at: "
+					+ tenantDefault.getAbsolutePath());
+		}
+		LOGGER.info("Copying configuration from " + tenantDefault.getAbsolutePath() + ".");
+		copyDefaultTenantConfiguration(tenantDefault, tenantConfigFile);
+		createTenantPropertiesFile(tenant, sitewhereConf);
+		return tenantConfigFile;
 	}
 
 	/**

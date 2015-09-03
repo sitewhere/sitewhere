@@ -24,6 +24,14 @@ import com.sitewhere.spi.user.ITenant;
 public interface IConfigurationResolver {
 
 	/**
+	 * Gets the root {@link File} where SiteWhere configuration files are stored.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public File getConfigurationRoot() throws SiteWhereException;
+
+	/**
 	 * Resolves the SiteWhere Spring configuration context.
 	 * 
 	 * @param version
@@ -31,6 +39,16 @@ public interface IConfigurationResolver {
 	 * @throws SiteWhereException
 	 */
 	public ApplicationContext resolveSiteWhereContext(IVersion version) throws SiteWhereException;
+
+	/**
+	 * Gets the current Spring configuration content for a tenant.
+	 * 
+	 * @param tenant
+	 * @param version
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public String getTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException;
 
 	/**
 	 * Resolve the Spring configuration context for a tenant.
@@ -43,12 +61,4 @@ public interface IConfigurationResolver {
 	 */
 	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version, ApplicationContext parent)
 			throws SiteWhereException;
-
-	/**
-	 * Gets the root {@link File} where SiteWhere configuration files are stored.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public File getConfigurationRoot() throws SiteWhereException;
 }

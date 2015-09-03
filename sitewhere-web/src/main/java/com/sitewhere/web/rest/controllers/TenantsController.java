@@ -31,6 +31,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -137,6 +138,33 @@ public class TenantsController extends SiteWhereController {
 				throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 			}
 			return engine.issueCommand(command, 10);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get the current configuration for a tenant engine.
+	 * 
+	 * @param tenantId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{tenantId}/engine/configuration", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get current configuration for a tenant engine")
+	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	public String getTenantEngineConfiguration(
+			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
+		try {
+			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
+			if (engine == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
+			}
+			IVersion version = SiteWhere.getServer().getVersion();
+			return engine.getConfigurationResolver().getTenantConfiguration(engine.getTenant(), version);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

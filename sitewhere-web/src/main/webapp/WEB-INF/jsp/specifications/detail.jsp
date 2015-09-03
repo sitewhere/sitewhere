@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="sitewhere_title" value="View Specification" />
 <c:set var="sitewhere_section" value="devices" />
-<c:set var="use_map_includes" value="true" />
+<c:set var="use_highlight" value="true" />
 <%@ include file="../includes/top.inc"%>
 
 <!-- Title Bar -->
@@ -49,7 +49,11 @@
 					data-i18n="specifications.detail.Download"> <i class="icon-download-alt sw-button-icon"></i></a>
 			</div>
 		</div>
-		<div id="sw-proto-section" class="protobuf"></div>
+		<div style="max-height: 500px; overflow-y: scroll;">
+			<pre class="language-javascript">
+				<code id="sw-proto-section"></code>
+			</pre>
+		</div>
 	</div>
 	<c:choose>
 		<c:when test="${specification.containerPolicy == 'Composite'}">
@@ -245,8 +249,8 @@
 	function loadProtobuf() {
 		$.get("${pageContext.request.contextPath}/api/specifications/" + specToken
 				+ "/proto?tenantAuthToken=${tenant.authenticationToken}", function(data) {
-			$("#sw-proto-section").html("<pre><code>" + data + "</code></pre>");
-			hljs.highlightBlock(document.getElementById('sw-proto-section').childNodes[0]);
+			$("#sw-proto-section").text('\n' + data);
+			Prism.highlightElement(document.getElementById('sw-proto-section'));
 		});
 	}
 
