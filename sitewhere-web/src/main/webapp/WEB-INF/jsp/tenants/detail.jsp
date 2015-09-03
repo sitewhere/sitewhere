@@ -61,9 +61,6 @@
 </script>
 
 <script>
-	/** Set sitewhere_title */
-	sitewhere_i18next.sitewhere_title = "sites.detail.title";
-
 	var tenantId = '<c:out value="${selected.id}"/>';
 
 	/** Tenant information */
