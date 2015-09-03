@@ -27,7 +27,7 @@
 	</div>
 	<div>
 		<div style="max-height: 500px; overflow-y: scroll;">
-			<pre class="language-markup">
+			<pre class="language-markup" style="background-color: #fff;">
 				<code id="config-content"></code>
 			</pre>
 		</div>
