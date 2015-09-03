@@ -19,8 +19,8 @@
 		)
 	</h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-add-asset" class="btn" href="javascript:void(0)" data-i18n="public.AddNew"> <i
-			class="icon-plus sw-button-icon"></i>Add New
+		<a id="btn-add-asset" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-plus sw-button-icon"></i> <span data-i18n="public.AddNew">Add New</span>
 		</a>
 	</div>
 </div>

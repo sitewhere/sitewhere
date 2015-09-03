@@ -64,13 +64,13 @@
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: 3px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next('public.EditSite') #" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onSiteEditClicked(event, '#:token#');">
-					<i class="icon-edit icon-white"></i></a>
+					<i class="fa fa-edit fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.DeleteSite") #" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onSiteDeleteClicked(event, '#:token#')">
-					<i class="icon-remove icon-white"></i></a>
+					<i class="fa fa-remove fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.ViewSite") #" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onSiteOpenClicked(event, '#:token#')">
-					<i class="icon-chevron-right icon-white"></i></a>
+					<i class="fa fa-chevron-right fa-white"></i></a>
 			</div>
 # } #
 		</div>

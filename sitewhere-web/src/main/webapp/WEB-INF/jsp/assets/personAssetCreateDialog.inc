@@ -63,7 +63,7 @@
 						type="text" id="ac-property-value"
 						style="width: 150px; margin-bottom: 0px; margin-right: 10px;" title="Metadata value">
 					<a class="btn" href="javascript:void(0)" onclick="acAddProperty()" data-i18n="public.Add">
-						<i class="icon-plus sw-button-icon"></i>
+						<i class="fa fa-plus sw-button-icon"></i>
 					</a>
 					<div id="ac-property-error" style="color: #f00; display: none;"></div>
 				</div>
@@ -83,7 +83,7 @@
 		<td style="width: 145px">#:value#</td>
 		<td>
 			<div style="text-align: right;">
-				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="Delete Property"
+				<i class="fa fa-remove sw-action-glyph sw-delete-glyph" title="Delete Property"
 					onclick="acDeleteProperty('#:name#')"></i>
 			</div>
 		</td>

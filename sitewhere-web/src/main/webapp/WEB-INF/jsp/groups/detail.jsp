@@ -13,8 +13,9 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="groups.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-device-group" class="btn" href="javascript:void(0)"
-			data-i18n="public.EditDeviceGroup"> <i class="icon-pencil sw-button-icon"></i></a>
+		<a id="btn-edit-device-group" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-pencil sw-button-icon"></i> <span data-i18n="public.EditDeviceGroup">Edit
+				Device Group</span></a>
 	</div>
 </div>
 
@@ -30,12 +31,13 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="groups.detail.DeviceGroupElements"></div>
 			<div>
-				<a id="btn-filter-elements" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i></a> <a
-					id="btn-refresh-elements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
-				</a> <a id="btn-add-element" class="btn" href="javascript:void(0)"
-					data-i18n="groups.detail.AddGroupElement"> <i class="icon-plus sw-button-icon"></i></a>
+				<a id="btn-filter-elements" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span></a> <a id="btn-refresh-elements" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				</a> <a id="btn-add-element" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-plus sw-button-icon"></i> <span data-i18n="groups.detail.AddGroupElement">Add
+						Element</span></a>
 			</div>
 		</div>
 		<table id="elements">

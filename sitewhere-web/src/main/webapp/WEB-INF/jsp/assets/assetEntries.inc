@@ -9,10 +9,10 @@
 			<div class="btn-group" style="position: absolute; right: 7px; top: 17px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Asset" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onAssetEditClicked(event, '#:id#');">
-					<i class="icon-edit icon-white"></i></a>
+					<i class="fa fa-edit fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Asset" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onAssetDeleteClicked(event, '#:id#')">
-					<i class="icon-remove icon-white"></i></a>
+					<i class="fa fa-remove fa-white"></i></a>
 			</div>
 		</div>
 	</div>
@@ -29,10 +29,10 @@
 			<div class="btn-group" style="position: absolute; right: 7px; top: 17px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Asset" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onAssetEditClicked(event, '#:id#');">
-					<i class="icon-edit icon-white"></i></a>
+					<i class="fa fa-edit fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Asset" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onAssetDeleteClicked(event, '#:id#')">
-					<i class="icon-remove icon-white"></i></a>
+					<i class="fa fa-remove fa-white"></i></a>
 			</div>
 		</div>
 	</div>
@@ -49,10 +49,10 @@
 			<div class="btn-group" style="position: absolute; right: 7px; top: 17px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Asset" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onAssetEditClicked(event, '#:id#');">
-					<i class="icon-edit icon-white"></i></a>
+					<i class="fa fa-edit fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Asset" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onAssetDeleteClicked(event, '#:id#')">
-					<i class="icon-remove icon-white"></i></a>
+					<i class="fa fa-remove fa-white"></i></a>
 			</div>
 		</div>
 	</div>

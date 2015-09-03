@@ -43,7 +43,7 @@
 								<div class="controls">
 									<div class="input-append">
 										<input class="input-xlarge" id="ac-asset-search" type="text"> <span class="add-on"><i
-											class="icon-search"></i></span>
+											class="fa fa-search"></i></span>
 									</div>
 									<div id="ac-asset-matches" class="sw-form-search-results" style="height: 180px;"></div>
 									<input type="hidden" id="ac-asset-id" title="Asset" />

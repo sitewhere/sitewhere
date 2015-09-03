@@ -16,10 +16,10 @@
 <div class="sw-title-bar content k-header">
 	<h1 class="ellipsis" data-i18n="tenants.list.title">Manage Tenants</h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-add-tenant" class="btn" href="javascript:void(0)" data-i18n="tenants.list.AddNew">
-			<i class="icon-plus sw-button-icon"></i>Add New
-		</a> <a id="btn-refresh-tenants" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-			<i class="icon-refresh sw-button-icon"></i>
+		<a id="btn-add-tenant" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-plus sw-button-icon"></i> <span data-i18n="tenants.list.AddNew">Add Tenant</span>
+		</a> <a id="btn-refresh-tenants" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 		</a>
 	</div>
 </div>

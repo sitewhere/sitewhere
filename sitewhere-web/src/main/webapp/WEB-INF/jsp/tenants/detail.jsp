@@ -8,8 +8,8 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="tenant.detail.title">View Tenant</h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-refresh-tenant" class="btn" href="javascript:void(0)" data-i18n="public.Refresh"> <i
-			class="icon-refresh sw-button-icon"></i>
+		<a id="btn-refresh-tenant" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 		</a>
 	</div>
 </div>
@@ -49,14 +49,14 @@
 <!-- Details panel shown for a stopped engine -->
 <script type="text/x-kendo-tmpl" id="tpl-engine-stopped">
 	<div style="text-align: center; font-size: 26px; padding: 50px;">
-		<i class="icon-power-off sw-button-icon" style="color: \\#ccc;"></i> Tenant Engine is Stopped
+		<i class="fa fa-power-off sw-button-icon" style="color: \\#ccc;"></i> Tenant Engine is Stopped
 	</div>
 </script>
 
 <!-- Details panel shown for a engine in other non-running states -->
 <script type="text/x-kendo-tmpl" id="tpl-engine-not-running">
 	<div style="text-align: center; font-size: 26px; padding: 50px;">
-		<i class="icon-power-off sw-button-icon" style="color: \\#ccc;"></i> Tenant Engine is Not Running
+		<i class="fa fa-power-off sw-button-icon" style="color: \\#ccc;"></i> Tenant Engine is Not Running
 	</div>
 </script>
 

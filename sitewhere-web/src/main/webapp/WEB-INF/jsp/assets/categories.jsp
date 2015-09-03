@@ -13,9 +13,9 @@
 <div class="sw-title-bar content k-header">
 	<h1 class="ellipsis" data-i18n="assets.list.title">Manage Asset Categories</h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-add-category" class="btn" href="javascript:void(0)"
-			data-i18n="assetCategories.list.AddNew"> <i class="icon-plus sw-button-icon"></i>Add New
-		</a>
+		<a id="btn-add-category" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-plus sw-button-icon"></i> <span data-i18n="assetCategories.list.AddNew">Add
+				New</span></a>
 	</div>
 </div>
 <div id="categories" class="w-category-list"></div>

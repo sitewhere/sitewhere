@@ -37,7 +37,7 @@
 						<div class="controls">
 							<div class="input-append">
 								<input class="input-xlarge" id="spc-hardware-search" type="text"> <span
-									class="add-on"><i class="icon-search"></i></span>
+									class="add-on"><i class="fa fa-search"></i></span>
 							</div>
 							<div id="spc-hardware-matches" class="sw-form-search-results"></div>
 							<input type="hidden" id="spc-chosen-asset-id" title="Hardware type" />

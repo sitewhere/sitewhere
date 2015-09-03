@@ -14,10 +14,12 @@
 	<h1 class="ellipsis" data-i18n="assignments.detail.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-emulator" class="btn"
-			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>/emulator.html"
-			data-i18n="assignments.detail.EmulateAssignment"> <i class="icon-bolt sw-button-icon"></i></a> <a
-			id="btn-edit-assignment" class="btn" href="javascript:void(0)" data-i18n="public.EditAssignment">
-			<i class="icon-edit sw-button-icon"></i>
+			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>/emulator.html">
+			<i class="fa fa-bolt sw-button-icon"></i> <span data-i18n="assignments.detail.EmulateAssignment">Emulate
+				Assignment</span>
+		</a> <a id="btn-edit-assignment" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-edit sw-button-icon"></i> <span data-i18n="public.EditAssignment">Edit
+				Assignment</span>
 		</a>
 	</div>
 </div>
@@ -37,10 +39,10 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceLocations"></div>
 			<div>
-				<a id="btn-filter-locations" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i></a> <a
-					id="btn-refresh-locations" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-filter-locations" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span></a> <a id="btn-refresh-locations" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -71,10 +73,10 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceMeasurements"></div>
 			<div>
-				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i></a> <a
-					id="btn-refresh-measurements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span></a> <a id="btn-refresh-measurements" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -101,10 +103,11 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceAlerts"></div>
 			<div>
-				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
-					<i class="icon-search sw-button-icon"></i>
-				</a> <a id="btn-refresh-alerts" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span>
+				</a> <a id="btn-refresh-alerts" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -135,12 +138,13 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="assignments.detail.DeviceCommandInvocations"></div>
 			<div>
-				<a id="btn-filter-invocations" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i></a> <a
-					id="btn-refresh-invocations" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
-				</a> <a id="btn-create-invocation" class="btn" href="javascript:void(0)"
-					data-i18n="assignments.detail.InvokeCommand"> <i class="icon-bolt sw-button-icon"></i></a>
+				<a id="btn-filter-invocations" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span></a> <a id="btn-refresh-invocations" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				</a> <a id="btn-create-invocation" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-bolt sw-button-icon"></i> <span data-i18n="assignments.detail.InvokeCommand">Invoke
+						Command</span></a>
 			</div>
 		</div>
 		<table id="invocations">

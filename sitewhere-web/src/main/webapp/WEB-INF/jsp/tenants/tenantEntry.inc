@@ -64,15 +64,15 @@
 	<div class="sw-tenant-list-entry sw-list-entry gradient-bg">
 		<div class="sw-tenant-list-state-icon">
 # if (!data.engineState) { #
-			<i class="icon-remove" title="Uninitialized" style="color: \\#c00;"></i>
+			<i class="fa fa-remove" title="Uninitialized" style="color: \\#c00;"></i>
 # } else if (data.engineState.lifecycleStatus == 'Started') { #
-			<i class="icon-check" title="Started" style="color: \\#090;"></i>
+			<i class="fa fa-check-square" title="Started" style="color: \\#090;"></i>
 # } else if (data.engineState.lifecycleStatus == 'Stopped') { #
-			<i class="icon-power-off" title="Stopped" style="color: \\#ccc;"></i>
+			<i class="fa fa-power-off" title="Stopped" style="color: \\#ccc;"></i>
 # } else if (data.engineState.lifecycleStatus == 'Error') { #
-			<i class="icon-warning-sign" title="Error" style="color: \\#c00;"></i>
+			<i class="fa fa-warning-sign" title="Error" style="color: \\#c00;"></i>
 # } else { #
-			<i class="icon-time" title="In progress" style="color: \\#c00;"></i>
+			<i class="fa fa-time" title="In progress" style="color: \\#c00;"></i>
 # } #
 		</div>
 		<div class="sw-tenant-list-entry-logowrapper" style="background-image: url(#:logoUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
@@ -81,20 +81,20 @@
 		<div class="sw-tenant-list-entry-actions">
 # if (!data.inDetailView) { #
 			<a class="btn btn-large sw-action-glyph sw-primary-glyph" title="View Tenant" style="color: \\#090; font-size: 25px;" href="javascript:void(0)" onclick="onTenantOpenClicked(event, '#:id#')">
-				<i class="icon-chevron-right icon-white"></i>
+				<i class="fa fa-chevron-right fa-white"></i>
 			</a>
 # } else { #
 			<a id="tenant-edit" class="btn btn-large" title="Edit Tenant" style="color: \\#009; font-size: 25px;" href="javascript:void(0)" onclick="onEditClicked()">
-				<i class="icon-edit icon-white"></i>
+				<i class="fa fa-edit fa-white"></i>
 			</a>
 			<a id="tenant-delete" class="btn btn-large" title="Delete Tenant" style="color: \\#c00; font-size: 25px;" href="javascript:void(0)" onclick="onDeleteClicked()">
-				<i class="icon-remove icon-white"></i>
+				<i class="fa fa-remove fa-white"></i>
 			</a>
 			<a id="tenant-power-off" class="btn btn-large" title="Stop Tenant Engine" style="color: \\#c00; font-size: 25px;" href="javascript:void(0)" onclick="onTenantStopClicked()">
-				<i class="icon-power-off icon-white"></i>
+				<i class="fa fa-power-off fa-white"></i>
 			</a>
 			<a id="tenant-power-on" class="btn btn-large" title="Start Tenant Engine" style="color: \\#090; font-size: 25px;" href="javascript:void(0)" onclick="onTenantStartClicked()">
-				<i class="icon-power-off icon-white"></i>
+				<i class="fa fa-power-off fa-white"></i>
 			</a>
 # } #
 		</div>

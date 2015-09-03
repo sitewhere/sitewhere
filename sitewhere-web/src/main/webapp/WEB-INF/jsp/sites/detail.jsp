@@ -19,8 +19,8 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="sites.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-site" class="btn" href="javascript:void(0)" data-i18n="public.EditSite"> <i
-			class="icon-edit sw-button-icon"></i></a>
+		<a id="btn-edit-site" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-edit sw-button-icon"></i> <span data-i18n="public.EditSite">Edit Site</span></a>
 	</div>
 </div>
 
@@ -40,10 +40,10 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="sites.detail.DeviceAssignments"></div>
 			<div>
-				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i></a> <a
-					id="btn-refresh-assignments" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span></a> <a id="btn-refresh-assignments" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -54,10 +54,10 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceLocations"></div>
 			<div>
-				<a id="btn-filter-locations" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i></a> <a
-					id="btn-refresh-locations" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-filter-locations" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span></a> <a id="btn-refresh-locations" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -88,10 +88,10 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceMeasurements"></div>
 			<div>
-				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i></a> <a
-					id="btn-refresh-measurements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span></a> <a id="btn-refresh-measurements" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -122,10 +122,11 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceAlerts"></div>
 			<div>
-				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
-					<i class="icon-search sw-button-icon"></i>
-				</a> <a id="btn-refresh-alerts" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span>
+				</a> <a id="btn-refresh-alerts" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -160,10 +161,11 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="sites.detail.Zones"></div>
 			<div>
-				<a id="btn-refresh-zones" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
-				</a> <a id="btn-add-zone" class="btn" href="javascript:void(0)" data-i18n="sites.detail.AddNewZone">
-					<i class="icon-plus sw-button-icon"></i>
+				<a id="btn-refresh-zones" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				</a> <a id="btn-add-zone" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-plus sw-button-icon"></i> <span data-i18n="sites.detail.AddNewZone">Add New
+						Zone</span>
 				</a>
 			</div>
 		</div>

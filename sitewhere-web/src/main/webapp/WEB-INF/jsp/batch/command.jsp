@@ -13,8 +13,8 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
 	<h1 class="ellipsis" data-i18n="batch.command.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-refresh-operation" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-			<i class="icon-refresh sw-button-icon"></i>
+		<a id="btn-refresh-operation" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 		</a>
 	</div>
 </div>
@@ -31,10 +31,11 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="batch.command.BCIE"></div>
 			<div>
-				<a id="btn-filter-elements" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i>
-				</a> <a id="btn-refresh-elements" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-filter-elements" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span>
+				</a> <a id="btn-refresh-elements" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>

@@ -68,13 +68,13 @@
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: 3px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next('public.EditSpecification') #" style="color: \\#009;"  
 					href="javascript:void(0)" onclick="onSpecificationEditClicked(event, '#:token#');">
-					<i class="icon-edit icon-white"></i></a>
+					<i class="fa fa-edit fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next('public.DeleteSpecification') #" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onSpecificationDeleteClicked(event, '#:token#')">
-					<i class="icon-remove icon-white"></i></a>
+					<i class="fa fa-remove fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.ViewSpecification") #" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onSpecificationOpenClicked(event, '#:token#')">
-					<i class="icon-chevron-right icon-white"></i></a>
+					<i class="fa fa-chevron-right fa-white"></i></a>
 			</div>
 # } #
 		</div>

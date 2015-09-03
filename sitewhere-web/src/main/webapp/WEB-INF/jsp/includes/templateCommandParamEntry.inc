@@ -9,13 +9,13 @@
 		<td class="sw-cc-command-params-col-name">#:name#</td>
 		<td class="sw-cc-command-params-col-type">#:type#</td>
 # if (data.required) { #
-		<td class="sw-cc-command-params-col-req"><i class="icon-check sw-button-icon"></i></td>
+		<td class="sw-cc-command-params-col-req"><i class="fa fa-check sw-button-icon"></i></td>
 # } else { #
 		<td class="sw-cc-command-params-col-req"></td>
 # } #
 		<td class="sw-cc-command-params-col-add">
 			<div class="sw-command-param-actions">
-				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="Delete Parameter"
+				<i class="fa fa-remove sw-action-glyph sw-delete-glyph" title="Delete Parameter"
 					onclick="onDeleteParameter('#:data.name#')"></i>
 			</div>
 		</td>

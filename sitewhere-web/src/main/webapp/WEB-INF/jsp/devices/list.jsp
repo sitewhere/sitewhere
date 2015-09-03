@@ -19,12 +19,15 @@
 <div class="sw-title-bar content k-header">
 	<h1 class="ellipsis" data-i18n="devices.list.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-filter-results" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
-			<i class="icon-search sw-button-icon"></i>
-		</a> <a id="btn-batch-command" class="btn hide" href="javascript:void(0)"
-			data-i18n="devices.list.BatchCommand"> <i class="icon-bolt sw-button-icon"></i>
-		</a> <a id="btn-add-device" class="btn" href="javascript:void(0)"
-			data-i18n="devices.list.AddNewDevice"> <i class="icon-plus sw-button-icon"></i>
+		<a id="btn-filter-results" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+				Results</span>
+		</a> <a id="btn-batch-command" class="btn hide" href="javascript:void(0)"> <i
+			class="fa fa-bolt sw-button-icon"></i> <span data-i18n="devices.list.BatchCommand">Batch
+				Command</span>
+		</a> <a id="btn-add-device" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-plus sw-button-icon"></i> <span data-i18n="devices.list.AddNewDevice">Add New
+				Device</span>
 		</a>
 	</div>
 </div>
@@ -173,7 +176,7 @@
 		var criteriaDesc =
 				"<a class='btn btn-mini' style='float: right;' href='javascript:void(0)' onclick='clearCriteria()'>Clear Filter</a>";
 		criteriaDesc +=
-				"<span style='width: 90%; display: block;'><i class='icon-filter sw-button-icon'></i> Displaying";
+				"<span style='width: 90%; display: block;'><i class='fa fa-filter sw-button-icon'></i> Displaying";
 
 		if ("true" == rqExcludeAssigned) {
 			criteriaDesc += " <strong>unassigned</strong>";

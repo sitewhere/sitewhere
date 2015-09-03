@@ -13,10 +13,12 @@
 <div class="sw-title-bar content k-header">
 	<h1 class="ellipsis" data-i18n="specifications.list.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-filter-results" class="btn" href="javascript:void(0)" data-i18n="public.FilterResults">
-			<i class="icon-search sw-button-icon"></i>
-		</a> <a id="btn-add-specification" class="btn" href="javascript:void(0)"
-			data-i18n="specifications.list.AddNewSpecification"> <i class="icon-plus sw-button-icon"></i></a>
+		<a id="btn-filter-results" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+				Results</span>
+		</a> <a id="btn-add-specification" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-plus sw-button-icon"></i> <span data-i18n="specifications.list.AddNewSpecification">Add
+				New Specification</span></a>
 	</div>
 </div>
 <div id="specifications" class="sw-specification-list"></div>

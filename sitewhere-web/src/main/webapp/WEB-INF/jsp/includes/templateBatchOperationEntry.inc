@@ -7,7 +7,7 @@
 		<td>#= formattedDate(processingStartedDate) #</td>
 		<td>#= formattedDate(processingEndedDate) #</td>
 		<td>
-			<i class="icon-circle-arrow-right sw-action-glyph sw-view-glyph" title="View Batch Details"
+			<i class="fa fa-circle-arrow-right sw-action-glyph sw-view-glyph" title="View Batch Details"
 				style="vertical-align: middle;" onclick="viewBatchOperation('#:operationType#', '#:token#')"></i>
 		</td>
 	</tr>

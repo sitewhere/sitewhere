@@ -66,10 +66,10 @@
 		<td>
 <% if (request.getParameter("mdReadOnly") == null) { %>
 			<div style="text-align: right;">
-				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="#= i18next("includes.metadata.DeleteMetadata") #"
+				<i class="fa fa-remove sw-action-glyph sw-delete-glyph" title="#= i18next("includes.metadata.DeleteMetadata") #"
 					onclick="onDeleteMetadata_<%= request.getParameter("uid")%>('#:name#')"></i>
 			</div>
-<% } %>
+<%}%>
 		</td>
 	</tr>
 </script>
@@ -77,21 +77,26 @@
 	<div style="width: 205px;" data-i18n="public.Name"></div>
 	<div style="width: 145px" data-i18n="public.Value"></div>
 </div>
-<table id="sw-metadata-<%= request.getParameter("uid")%>" class="sw-sublist-list">
+<table id="sw-metadata-<%=request.getParameter("uid")%>" class="sw-sublist-list">
 </table>
 
-<% if (request.getParameter("mdReadOnly") == null) { %>
+<%
+	if (request.getParameter("mdReadOnly") == null) {
+%>
 <div class="sw-sublist-add-new">
 	<div class="sw-sublist-footer">
 		<div style="width: 225px; margin-left: 3px;" data-i18n="public.Name"></div>
 		<div style="width: 145px" data-i18n="public.Value"></div>
 	</div>
-	<input type="text" id="sw-metadata-name-<%= request.getParameter("uid")%>" 
-		style="width: 205px; margin-bottom: 0px; margin-right: 10px;" title="Metadata name">
-	<input type="text" id="sw-metadata-value-<%= request.getParameter("uid")%>" 
-		style="width: 150px; margin-bottom: 0px; margin-right: 10px;" title="Metadata value">
-	<a class="btn" href="javascript:void(0)" onclick="onAddMetadata_<%= request.getParameter("uid")%>()" data-i18n="public.Add">
-		<i class="icon-plus sw-button-icon"></i></a>
-	<div id="sw-metadata-error-<%= request.getParameter("uid")%>" style="color: #f00; display: none;"></div>
-</div>	
-<% } %>
+	<input type="text" id="sw-metadata-name-<%=request.getParameter("uid")%>"
+		style="width: 205px; margin-bottom: 0px; margin-right: 10px;" title="Metadata name"> <input
+		type="text" id="sw-metadata-value-<%=request.getParameter("uid")%>"
+		style="width: 150px; margin-bottom: 0px; margin-right: 10px;" title="Metadata value"> <a
+		class="btn" href="javascript:void(0)" onclick="onAddMetadata_<%=request.getParameter("uid")%>()">
+		<i class="fa fa-plus sw-button-icon"></i> <span data-i18n="public.Add">Add</span>
+	</a>
+	<div id="sw-metadata-error-<%=request.getParameter("uid")%>" style="color: #f00; display: none;"></div>
+</div>
+<%
+	}
+%>

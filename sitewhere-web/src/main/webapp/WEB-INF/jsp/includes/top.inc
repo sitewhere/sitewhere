@@ -144,7 +144,7 @@
 				<div class="sw-user-info">
 					<div class="btn-group">
 						<a class="btn dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"> <i
-							class="icon-off sw-button-icon"></i>
+							class="fa fa-power-off sw-button-icon"></i>
 							<div class="ellipsis" style="max-width: 120px; display: inline-block; vertical-align: top;">
 								<span> <c:out value="${currentUser.firstName}" />&nbsp;<c:out
 										value="${currentUser.lastName}" />

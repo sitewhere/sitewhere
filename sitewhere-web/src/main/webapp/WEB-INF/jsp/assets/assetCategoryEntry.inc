@@ -49,26 +49,26 @@
 	<div class="sw-category-list-entry sw-list-entry gradient-bg">
 		<div class="sw-category-list-entry-logowrapper"> 
 # if (data.assetType == 'Device') { #
-			<i class="icon-tablet icon-white"></i>
+			<i class="fa fa-tablet fa-white"></i>
 # } else if (data.assetType == 'Hardware') { #
-			<i class="icon-laptop icon-white"></i>
+			<i class="fa fa-laptop fa-white"></i>
 # } else if (data.assetType == 'Person') { #
-			<i class="icon-user icon-white"></i>
+			<i class="fa fa-user fa-white"></i>
 # } else if (data.assetType == 'Location') { #
-			<i class="icon-map-marker icon-white"></i>
+			<i class="fa fa-map-marker fa-white"></i>
 # } #
 		</div>
 		<div class="sw-category-list-entry-actions">
 			<div class="btn-group" style="position: absolute; right: 0px; top: 7px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Asset Category" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onCategoryEditClicked(event, '#:id#', '#:assetType#');">
-					<i class="icon-edit icon-white"></i></a>
+					<i class="fa fa-edit fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Delete Asset Category" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onCategoryDeleteClicked(event, '#:id#', '#:assetType#')">
-					<i class="icon-remove icon-white"></i></a>
+					<i class="fa fa-remove fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="View Asset Category" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onCategoryOpenClicked(event, '#:id#', '#:assetType#')">
-					<i class="icon-chevron-right icon-white"></i></a>
+					<i class="fa fa-chevron-right fa-white"></i></a>
 			</div>
 		</div>
 		<div>

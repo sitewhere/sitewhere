@@ -23,9 +23,10 @@
 	<h1 class="ellipsis" data-i18n="assignments.emulator.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-assignment-detail" class="btn"
-			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>.html"
-			data-i18n="assignments.emulator.AssignmentDetails"> <i
-			class="icon-circle-arrow-left sw-button-icon"></i></a>
+			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>.html">
+			<i class="fa fa-arrow-circle-o-left sw-button-icon"></i><span
+			data-i18n="assignments.emulator.AssignmentDetails">Assignment Details</span>
+		</a>
 	</div>
 </div>
 
@@ -42,11 +43,12 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="assignments.emulator.DeviceAssignmentEmulator"></div>
 			<div>
-				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)"
-					data-i18n="assignments.emulator.RefreshLocations"> <i class="icon-refresh sw-button-icon"></i></a>
+				<a id="btn-refresh-locations" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="assignments.emulator.RefreshLocations">Refresh Locations</span></a>
 				<div class="btn-group">
-					<a class="btn" href="javascript:void(0)" data-i18n="public.Create"> <i
-						class="icon-plus sw-button-icon"></i></a>
+					<a class="btn" href="javascript:void(0)"> <i class="fa fa-plus sw-button-icon"></i> <span
+						data-i18n="public.Create">Create</span></a>
 					<button class="btn dropdown-toggle" data-toggle="dropdown">
 						<span class="caret"></span>
 					</button>
@@ -57,8 +59,8 @@
 							data-i18n="public.Alert"></a></li>
 					</ul>
 				</div>
-				<a id="mqtt-btn-connect" class="btn btn-primary" href="javascript:void(0)"
-					data-i18n="assignments.emulator.Connect"> <i class="icon-bolt sw-button-icon"></i></a>
+				<a id="mqtt-btn-connect" class="btn btn-primary" href="javascript:void(0)"> <i
+					class="fa fa-bolt sw-button-icon"></i> <span data-i18n="assignments.emulator.Connect">Connect</span></a>
 			</div>
 		</div>
 		<div id="emulator-map" class="emulator-map"></div>
@@ -67,8 +69,9 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="assignments.emulator.MQTTInformation"></div>
 			<div>
-				<a id="mqtt-btn-test-connect" class="btn" href="javascript:void(0)"
-					data-i18n="assignments.emulator.TestConnection"> <i class="icon-bolt sw-button-icon"></i></a>
+				<a id="mqtt-btn-test-connect" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-bolt sw-button-icon"></i> <span data-i18n="assignments.emulator.TestConnection">Test
+						Connection</span></a>
 			</div>
 		</div>
 		<div>
@@ -199,7 +202,7 @@
 		<td style="width: 145px">#:value#</td>
 		<td>
 			<div style="text-align: right;">
-				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="Delete Measurement"
+				<i class="fa fa-remove sw-action-glyph sw-delete-glyph" title="Delete Measurement"
 					onclick="mcDeleteMeasurement('#:name#')"></i>
 			</div>
 		</td>
@@ -232,8 +235,8 @@
 						style="width: 205px; margin-bottom: 0px; margin-right: 10px;" title="Measurement name">
 					<input type="text" id="sw-mx-value"
 						style="width: 150px; margin-bottom: 0px; margin-right: 10px;" title="Measurement value">
-					<a class="btn" href="javascript:void(0)" onclick="mcAddMeasurement()" data-i18n="public.Add">
-						<i class="icon-plus sw-button-icon"></i>
+					<a class="btn" href="javascript:void(0)" onclick="mcAddMeasurement()"> <i
+						class="fa fa-plus sw-button-icon"></i> <span data-i18n="public.Add">Add</span>
 					</a>
 					<div id="sw-mx-error" style="color: #f00; display: none;"></div>
 				</div>
@@ -473,7 +476,7 @@
 	/** Show the connect button */
 	function showConnectButton() {
 		$('#mqtt-btn-connect').removeClass('btn-sw-success').addClass('btn-primary').html(
-			'<i class="icon-bolt sw-button-icon"></i> ' + i18next("assignments.emulator.Connect"));
+			'<i class="fa fa-bolt sw-button-icon"></i> ' + i18next("assignments.emulator.Connect"));
 		$('#mqtt-btn-connect').click(function(event) {
 			event.preventDefault();
 			doConnect();
@@ -483,7 +486,7 @@
 	/** Hide the connect button */
 	function showConnectedButton() {
 		$('#mqtt-btn-connect').removeClass('btn-primary').addClass('btn-sw-success').html(
-			'<i class="icon-check sw-button-icon"></i> ' + i18next("assignments.Connected"));
+			'<i class="fa fa-check sw-button-icon"></i> ' + i18next("assignments.Connected"));
 		$('#mqtt-btn-connect').unbind('click');
 	}
 

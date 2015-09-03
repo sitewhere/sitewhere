@@ -24,8 +24,8 @@
 <div class="sw-title-bar content k-header">
 	<h1 class="ellipsis" data-i18n="server.title">Server Information</h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-refresh-data" class="btn" href="javascript:void(0)" data-i18n="public.Refresh"> <i
-			class="icon-refresh sw-button-icon"></i>
+		<a id="btn-refresh-data" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 		</a>
 	</div>
 </div>

@@ -67,7 +67,7 @@
 						id="cc-new-datatype" class="sw-cc-command-params-col-type" style="margin-right: 10px;"
 						title="Datatype"> <input type="checkbox" id="cc-new-required"
 						style="margin-right: 35px;" title="Required"> <a class="btn" href="javascript:void(0)"
-						onclick="onAddParameter()"> <i class="icon-plus sw-button-icon"></i>&nbsp<font
+						onclick="onAddParameter()"> <i class="fa fa-plus sw-button-icon"></i>&nbsp<font
 						data-i18n="public.Add"></font></a>
 					<div id="cc-new-error" style="color: #f00; display: none;"></div>
 				</div>

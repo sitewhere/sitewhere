@@ -12,9 +12,9 @@
 		<td>#= formattedDate(updatedDate) #</td>
 		<td>
 			<div style="width: 100%; text-align: left">
-				<i class="icon-edit sw-action-glyph sw-edit-glyph" title="#= i18next("includes.EditZone") #"
+				<i class="fa fa-edit sw-action-glyph sw-edit-glyph" title="#= i18next("includes.EditZone") #"
 					onclick="onEditZone(event, '#:token#')"></i>
-				<i class="icon-remove sw-action-glyph sw-delete-glyph" title="#= i18next("includes.DeleteZone") #"
+				<i class="fa fa-remove sw-action-glyph sw-delete-glyph" title="#= i18next("includes.DeleteZone") #"
 					onclick="onDeleteZone(event, '#:token#')"></i>
 			</div>
 		</td>

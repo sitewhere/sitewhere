@@ -13,8 +13,8 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="devices.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-device" class="btn" href="javascript:void(0)" data-i18n="public.EditDevice"> <i
-			class="icon-pencil sw-button-icon"></i></a>
+		<a id="btn-edit-device" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-pencil sw-button-icon"></i> <span data-i18n="public.EditDevice">Edit Device</span></a>
 	</div>
 </div>
 
@@ -35,12 +35,12 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="devices.detail.DeviceAssignmentHistory"></div>
 			<div>
-				<a id="btn-assign-device" class="btn hide" href="javascript:void(0)"
-					data-i18n="devices.detail.AssignDevice"> <i class="icon-tag sw-button-icon"></i></a> <a
-					id="btn-filter-assignments" class="btn" href="javascript:void(0)"
-					data-i18n="public.FilterResults"> <i class="icon-search sw-button-icon"></i></a> <a
-					id="btn-refresh-assignments" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
+				<a id="btn-assign-device" class="btn hide" href="javascript:void(0)"> <i
+					class="fa fa-tag sw-button-icon"></i> <span data-i18n="devices.detail.AssignDevice">Assign
+						Device</span></a> <a id="btn-filter-assignments" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
+						Results</span></a> <a id="btn-refresh-assignments" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -310,7 +310,7 @@
 		if (slength > 0) {
 			uhtml += "<div class='sw-device-slot-container'>";
 			uhtml +=
-					"<div class='sw-device-slot-header'><i class='icon-link sw-button-icon'></i> Device Slots</div>";
+					"<div class='sw-device-slot-header'><i class='fa fa-link sw-button-icon'></i> Device Slots</div>";
 			for (var i = 0; i < slength; i++) {
 				uhtml += getSlotHtml(unit.deviceSlots[i], context);
 			}
@@ -330,7 +330,7 @@
 	/** Create HTML for device unit header bar */
 	function getUnitHeaderHtml(unit, relContext) {
 		var uhtml =
-				"<div class='sw-device-unit-header'><i class='icon-folder-close sw-button-icon'></i>"
+				"<div class='sw-device-unit-header'><i class='fa fa-folder-close sw-button-icon'></i>"
 						+ unit.name + " (<span class='sw-device-unit-path'>" + relContext + "</span>)</div>";
 		return uhtml;
 	}
@@ -343,26 +343,26 @@
 		if (mapping) {
 			shtml =
 					"<div class='sw-device-slot' style='border: 2px solid #006; background-color: #ddf;'>"
-							+ "<i class='icon-link sw-button-icon' style='padding-right: 5px'></i>"
+							+ "<i class='fa fa-link sw-button-icon' style='padding-right: 5px'></i>"
 							+ slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
 			shtml +=
 					"<div class='sw-device-slot-buttons'>"
-							+ "<i class='icon-link sw-button-icon' style='color: #030; margin-right: 1px;'></i>"
+							+ "<i class='fa fa-link sw-button-icon' style='color: #030; margin-right: 1px;'></i>"
 							+ "<a class='sw-device-slot-mapped-device' href='${pageContext.request.contextPath}/admin/devices/detail.html?hardwareId="
 							+ mapping.hardwareId
 							+ "'>"
 							+ mapping.specification.assetName
 							+ "</a>"
-							+ "<i class='icon-remove sw-button-icon sw-action-glyph sw-delete-glyph' style='margin-top: -2px;' "
+							+ "<i class='fa fa-remove sw-button-icon sw-action-glyph sw-delete-glyph' style='margin-top: -2px;' "
 							+ "onclick=\"deleteMapping('" + relContext
 							+ "');\" title='Delete Device Element Mapping'></i>" + "</div></div>";
 		} else {
 			shtml =
-					"<div class='sw-device-slot'><i class='icon-link sw-button-icon' style='padding-right: 5px'></i>"
+					"<div class='sw-device-slot'><i class='fa fa-link sw-button-icon' style='padding-right: 5px'></i>"
 							+ slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
 			shtml +=
 					"<div class='sw-device-slot-buttons'>"
-							+ "<i class='icon-plus sw-button-icon sw-action-glyph sw-view-glyph' "
+							+ "<i class='fa fa-plus sw-button-icon sw-action-glyph sw-view-glyph' "
 							+ "onclick=\"addMapping('" + relContext
 							+ "');\" title='Add Device Element Mapping'></i>" + "</div></div>";
 		}

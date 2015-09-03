@@ -35,7 +35,7 @@
 				<div style="position: relative;" class="sw-sublist-add-new">
 					<input type="text" id="dgc-add-role-value" style="width: 82%; margin-bottom: 0px;"
 						title="New Role Value"> <a style="float: right;" class="btn" href="javascript:void(0)"
-						onclick="dgcAddRole()"> <i class="icon-plus sw-button-icon"></i>&nbsp<font
+						onclick="dgcAddRole()"> <i class="fa fa-plus sw-button-icon"></i>&nbsp<font
 						data-i18n="public.Add"></font></a>
 					<div id="dgc-role-create-error" style="color: #f00; display: none;"></div>
 				</div>

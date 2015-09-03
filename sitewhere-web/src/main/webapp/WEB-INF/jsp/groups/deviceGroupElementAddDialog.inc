@@ -34,7 +34,7 @@
 				<div style="position: relative;" class="sw-sublist-add-new">
 					<input type="text" id="gea-add-role-value" style="width: 82%; margin-bottom: 0px;"
 						title="New Role Value"> <a style="float: right;" class="btn" href="javascript:void(0)"
-						onclick="geaAddRole()"> <i class="icon-plus sw-button-icon"></i>&nbsp<font
+						onclick="geaAddRole()"> <i class="fa fa-plus sw-button-icon"></i>&nbsp<font
 						data-i18n="public.Add"></font></a>
 					<div id="gea-role-create-error" style="color: #f00; display: none;"></div>
 				</div>

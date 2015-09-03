@@ -89,13 +89,13 @@
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: -2px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.EditDevice") #" style="color: \\#009;" 
 					href="javascript:void(0)" onclick="onDeviceEditClicked(event, '#:hardwareId#');">
-					<i class="icon-edit icon-white"></i></a>
+					<i class="fa fa-edit fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.DeleteDevice") #" style="color: \\#900;" 
 					href="javascript:void(0)" onclick="onDeviceDeleteClicked(event, '#:hardwareId#')">
-					<i class="icon-remove icon-white"></i></a>
+					<i class="fa fa-remove fa-white"></i></a>
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.ViewDevice") #" style="color: \\#060;" 
 					href="javascript:void(0)" onclick="onDeviceOpenClicked(event, '#:hardwareId#')">
-					<i class="icon-chevron-right icon-white"></i></a>
+					<i class="fa fa-chevron-right fa-white"></i></a>
 			</div>
 # } #
 		</div>
@@ -109,7 +109,7 @@
 			<p class="sw-device-list-entry-heading ellipsis">
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/#:assignment.token#.html">
-					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
+					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 				<span title="#:assignment.assetName#">#:assignment.assetName#</span>
 			</p>
 # } else { #
@@ -120,7 +120,7 @@
 			<p class="sw-device-list-entry-heading ellipsis">
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/#:assignment.token#.html">
-					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
+					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 				#= i18next("public.UnassociatedDevice") #
 			</p>
 # } #
@@ -165,7 +165,7 @@
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/devices/#:hardwareId#.html">
-					<i class="icon-external-link icon-white" title="#= i18next("includes.i18next.OpenDevice") #"></i></a>
+					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenDevice") #"></i></a>
 # } #
 				<span title="#:specification.asset.name#">#:specification.asset.name#</span>
 			</p>

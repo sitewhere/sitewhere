@@ -8,8 +8,9 @@
 <div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="specifications.detail.title"></h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-edit-specification" class="btn" href="javascript:void(0)"
-			data-i18n="public.EditSpecification"> <i class="icon-pencil sw-button-icon"></i></a>
+		<a id="btn-edit-specification" class="btn" href="javascript:void(0)"> <i
+			class="fa fa-pencil sw-button-icon"></i> <span data-i18n="public.EditSpecification">Edit
+				Specification</span></a>
 	</div>
 </div>
 
@@ -31,10 +32,11 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="specifications.detail.DeviceCommands"></div>
 			<div>
-				<a id="btn-refresh-commands" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
-				</a> <a id="btn-add-command" class="btn" href="javascript:void(0)"
-					data-i18n="specifications.detail.AddNewCommand"> <i class="icon-plus sw-button-icon"></i></a>
+				<a id="btn-refresh-commands" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				</a> <a id="btn-add-command" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-plus sw-button-icon"></i> <span data-i18n="specifications.detail.AddNewCommand">Add
+						New Command</span></a>
 			</div>
 		</div>
 		<div id="commands" class="sw-assignment-list"></div>
@@ -43,10 +45,10 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="specifications.detail.GPBD"></div>
 			<div>
-				<a id="btn-refresh-protobuf" class="btn" href="javascript:void(0)" data-i18n="public.Refresh">
-					<i class="icon-refresh sw-button-icon"></i>
-				</a> <a id="btn-download-protobuf" class="btn" href="javascript:void(0)"
-					data-i18n="specifications.detail.Download"> <i class="icon-download-alt sw-button-icon"></i></a>
+				<a id="btn-refresh-protobuf" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				</a> <a id="btn-download-protobuf" class="btn" href="javascript:void(0)"> <i
+					class="fa fa-download sw-button-icon"></i> <span data-i18n="specifications.detail.Download">Download</span></a>
 			</div>
 		</div>
 		<div style="max-height: 500px; overflow-y: scroll;">
@@ -61,11 +63,11 @@
 				<div class="k-header sw-button-bar">
 					<div class="sw-button-bar-title" data-i18n="specifications.detail.DeviceElementSchema"></div>
 					<div>
-						<a id="btn-add-unit" class="btn" href="javascript:void(0)"
-							data-i18n="specifications.detail.AddDeviceUnit"> <i
-							class="icon-folder-close sw-button-icon"></i></a> <a id="btn-add-slot" class="btn"
-							href="javascript:void(0)" data-i18n="specifications.detail.AddDeviceSlot"> <i
-							class="icon-link sw-button-icon"></i></a>
+						<a id="btn-add-unit" class="btn" href="javascript:void(0)"> <i
+							class="fa fa-folder-close sw-button-icon"></i> <span
+							data-i18n="specifications.detail.AddDeviceUnit">Add Device Unit</span></a> <a id="btn-add-slot"
+							class="btn" href="javascript:void(0)"> <i class="fa fa-link sw-button-icon"></i> <span
+							data-i18n="specifications.detail.AddDeviceSlot">Add Device Slot</span></a>
 					</div>
 				</div>
 				<div id="sw-composition-section"></div>
@@ -392,7 +394,7 @@
 		var slength = unit.deviceSlots.length;
 		uhtml += "<div class='sw-device-slot-container'>";
 		uhtml +=
-				"<div class='sw-device-slot-header'><i class='icon-link sw-button-icon'></i> Device Slots</div>";
+				"<div class='sw-device-slot-header'><i class='f fa-link sw-button-icon'></i> Device Slots</div>";
 		if (slength == 0) {
 			uhtml +=
 					"<div class='sw-nodata-container'<span class='sw-nodata-message'>No Slots Currently Configured</span></div>";
@@ -416,16 +418,16 @@
 	/** Create HTML for device unit header bar */
 	function getUnitHeaderHtml(unit, relContext) {
 		var uhtml =
-				"<div class='sw-device-unit-header'><i class='icon-folder-close sw-button-icon'></i>"
+				"<div class='sw-device-unit-header'><i class='fa fa-folder-close sw-button-icon'></i>"
 						+ unit.name + " (<span class='sw-device-unit-path'>" + relContext + "</span>)";
 		uhtml +=
 				"<div class='sw-device-unit-buttons'>"
-						+ "<i class='icon-folder-close sw-button-icon sw-action-glyph sw-normal-glyph' "
+						+ "<i class='fa fa-folder-close sw-button-icon sw-action-glyph sw-normal-glyph' "
 						+ "style='padding-right: 5px;' title='Add Nested Device Unit' onclick=\"createUnit('"
 						+ relContext + "');\"></i>"
-						+ "<i class='icon-link sw-button-icon sw-action-glyph sw-normal-glyph' "
+						+ "<i class='fa fa-link sw-button-icon sw-action-glyph sw-normal-glyph' "
 						+ "onclick=\"createSlot('" + relContext + "');\" title='Add Device Slot'></i>"
-						+ "<i class='icon-remove sw-button-icon sw-action-glyph sw-delete-glyph' "
+						+ "<i class='fa fa-remove sw-button-icon sw-action-glyph sw-delete-glyph' "
 						+ "onclick=\"deleteUnit('" + relContext + "');\" title='Delete Device Unit'></i>"
 						+ "</div></div>";
 		return uhtml;
@@ -435,11 +437,11 @@
 	function getSlotHtml(slot, context) {
 		var relContext = context + "/" + slot.path;
 		var shtml =
-				"<div class='sw-device-slot'><i class='icon-link sw-button-icon' style='padding-right: 5px'></i>"
+				"<div class='sw-device-slot'><i class='fa fa-link sw-button-icon' style='padding-right: 5px'></i>"
 						+ slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
 		shtml +=
 				"<div class='sw-device-slot-buttons'>"
-						+ "<i class='icon-remove sw-button-icon sw-action-glyph sw-delete-glyph' "
+						+ "<i class='fa fa-remove sw-button-icon sw-action-glyph sw-delete-glyph' "
 						+ "onclick=\"deleteSlot('" + relContext
 						+ "');\" title='Delete Device Slot'></i></div></div>";
 		return shtml;
