@@ -23,8 +23,19 @@
 .sw-tenant-list-state-icon {
 	font-size: 35px;
 	position: absolute;
-	left: 20px;
-	top: 20px;
+	padding: 18px 10px 0px 10px;
+	background-color: #efe;
+	border: 1px solid #393;
+	width: 50px;
+	text-align: center;
+}
+
+.sw-tenant-list-state-label {
+	position: absolute;
+	font-size: 12px;
+	top: 0px;
+	left: 0px;
+	width: 70px;
 }
 
 .sw-tenant-list-entry-logowrapper {
@@ -35,7 +46,7 @@
 	text-align: center;
 	vertical-align: middle;
 	display: inline-block;
-	left: 80px;
+	left: 97px;
 	position: absolute;
 	border: 1px solid #DDD;
 }
@@ -54,7 +65,7 @@
 .sw-tenant-list-label {
 	padding-top: 17px;
 	position: absolute;
-	left: 325px;
+	left: 335px;
 	font-size: 26px;
 }
 </style>
@@ -62,21 +73,29 @@
 <!-- Template for tenant row -->
 <script type="text/x-kendo-tmpl" id="tpl-tenant-entry">
 	<div class="sw-tenant-list-entry sw-list-entry gradient-bg">
-		<div class="sw-tenant-list-state-icon">
 # if (!data.engineState) { #
+		<div class="sw-tenant-list-state-icon" style="background-color: \\#fee; border: 1px solid \\#933;">
 			<i class="fa fa-remove" title="Uninitialized" style="color: \\#c00;"></i>
+			<div class="sw-tenant-list-state-label" style="	background-color: \\#933; color: \\#fff;">Not Init</div>
 # } else if (data.engineState.lifecycleStatus == 'Started') { #
+		<div class="sw-tenant-list-state-icon" style="background-color: \\#efe; border: 1px solid \\#393;">
 			<i class="fa fa-check-square" title="Started" style="color: \\#090;"></i>
+			<div class="sw-tenant-list-state-label" style="	background-color: \\#393; color: \\#fff;">Started</div>
 # } else if (data.engineState.lifecycleStatus == 'Stopped') { #
+		<div class="sw-tenant-list-state-icon" style="background-color: \\#eee; border: 1px solid \\#999;">
 			<i class="fa fa-power-off" title="Stopped" style="color: \\#ccc;"></i>
+			<div class="sw-tenant-list-state-label" style="	background-color: \\#999; color: \\#fff;">Stopped</div>
 # } else if (data.engineState.lifecycleStatus == 'Error') { #
+		<div class="sw-tenant-list-state-icon" style="background-color: \\#fee; border: 1px solid \\#933;">
 			<i class="fa fa-warning-sign" title="Error" style="color: \\#c00;"></i>
+			<div class="sw-tenant-list-state-label" style="	background-color: \\#933; color: \\#fff;">Error</div>
 # } else { #
+		<div class="sw-tenant-list-state-icon" style="background-color: \\#fee; border: 1px solid \\#933;">
 			<i class="fa fa-time" title="In progress" style="color: \\#c00;"></i>
+			<div class="sw-tenant-list-state-label" style="	background-color: \\#933; color: \\#fff;">Unknown</div>
 # } #
 		</div>
 		<div class="sw-tenant-list-entry-logowrapper" style="background-image: url(#:logoUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-tenant-logo-tag">Tenant</span>
 		</div>
 		<div class="sw-tenant-list-entry-actions">
 # if (!data.inDetailView) { #

@@ -40,6 +40,13 @@
 						</div>
 					</div>
 					<div class="control-group">
+						<label class="control-label" for="tc-tenant-auth-users" data-i18n="public.TenantAuthUsers">Authorized
+							Users</label>
+						<div class="controls">
+							<select id="tc-auth-users"></select>
+						</div>
+					</div>
+					<div class="control-group">
 						<label class="control-label" for="tc-configuration-type" data-i18n="public.TenantConfigType">Configuration
 							Type</label>
 						<div class="controls">
@@ -68,6 +75,9 @@
 	/** Dropdown with list of asset types */
 	var tcConfigTypesDropdown;
 
+	/** Chooser for picking authorized users */
+	var tcAuthUsersChooser;
+
 	$(document)
 			.ready(
 				function() {
@@ -89,6 +99,35 @@
 						dataSource : ccConfigTypes,
 					}).data("kendoDropDownList");
 
+					/** Chooser for authorized users */
+					tcAuthUsersChooser =
+							$("#tc-auth-users").kendoMultiSelect(
+								{
+									placeholder : "Select users...",
+									dataTextField : "username",
+									dataValueField : "username",
+									dataSource : {
+										transport : {
+											read : {
+												url : "${pageContext.request.contextPath}/api/users"
+														+ "?tenantAuthToken=${tenant.authenticationToken}",
+												dataType : "json",
+											}
+										},
+										schema : {
+											data : "results",
+											total : "numResults",
+											parse : function(response) {
+												$.each(response.results, function(index, item) {
+													parseUserData(item);
+												});
+												return response;
+											}
+										},
+										pageSize : 10
+									},
+								}).data("kendoMultiSelect");
+
 					/** Handle dialog submit */
 					$('#tc-dialog-submit')
 							.click(
@@ -105,7 +144,7 @@
 										"name" : $('#tc-tenant-name').val(),
 										"logoUrl" : $('#tc-tenant-logo').val(),
 										"authenticationToken" : $('#tc-tenant-auth-token').val(),
-										"authorizedUserIds" : [ "admin" ],
+										"authorizedUserIds" : tcAuthUsersChooser.value(),
 									}
 									if (isCreate) {
 										$
@@ -177,6 +216,9 @@
 		// Function called on submit.
 		tcSubmitCallback = callback;
 
+		// Clear user values.
+		tcAuthUsersChooser.value([]);
+
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
 		$('#tc-dialog').modal('show');
@@ -207,6 +249,9 @@
 		$('#tc-tenant-name').val(data.name);
 		$('#tc-tenant-logo').val(data.logoUrl);
 		$('#tc-tenant-auth-token').val(data.authenticationToken);
+
+		// Set auth user values.
+		tcAuthUsersChooser.value(data.authorizedUserIds);
 
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
