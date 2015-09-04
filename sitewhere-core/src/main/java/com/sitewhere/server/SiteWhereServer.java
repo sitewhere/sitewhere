@@ -35,6 +35,7 @@ import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.user.UserManagementTriggers;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -222,9 +223,32 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 				return null;
 			}
 			engine = initializeTenantEngine(tenant);
-			startTenantEngine(engine);
 		}
 		return engine;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#onTenantInformationUpdated(com.sitewhere
+	 * .spi.user.ITenant)
+	 */
+	@Override
+	public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException {
+		// Account for updated authentication token.
+		for (ITenant current : tenantsByAuthToken.values()) {
+			if (current.getId().equals(tenant.getId())) {
+				tenantsByAuthToken.remove(current);
+			}
+		}
+		tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
+
+		// Update tenant information in tenant engine.
+		ISiteWhereTenantEngine engine = tenantEnginesById.get(tenant.getId());
+		if (engine != null) {
+			engine.setTenant(tenant);
+		}
 	}
 
 	/*
@@ -659,8 +683,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void initializeUserManagement() throws SiteWhereException {
 		try {
-			userManagement =
+			IUserManagement implementation =
 					(IUserManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
+			this.userManagement = new UserManagementTriggers(implementation);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No user management implementation configured.");
 		}

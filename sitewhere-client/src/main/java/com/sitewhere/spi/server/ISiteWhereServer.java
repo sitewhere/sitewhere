@@ -112,6 +112,15 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException;
 
 	/**
+	 * Called when tenant information has been updated so that cached data is kept
+	 * current.
+	 * 
+	 * @param tenant
+	 * @throws SiteWhereException
+	 */
+	public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException;
+
+	/**
 	 * Get the user management implementation.
 	 * 
 	 * @return

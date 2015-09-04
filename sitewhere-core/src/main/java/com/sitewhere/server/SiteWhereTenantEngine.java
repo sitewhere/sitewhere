@@ -307,6 +307,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			// Initialize search provider management.
 			initializeSearchProviderManagement();
 
+			setLifecycleStatus(LifecycleStatus.Stopped);
 			return true;
 		} catch (SiteWhereException e) {
 			setLifecycleError(e);
