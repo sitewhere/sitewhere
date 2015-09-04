@@ -25,6 +25,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,6 +39,7 @@ import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.user.ITenant;
@@ -766,11 +768,26 @@ public class SiteWhereController {
 	 * @throws NoTenantException
 	 */
 	protected ITenant assureTenant(HttpServletRequest request) throws NoTenantException {
-		ITenant tenant = (ITenant) request.getSession().getAttribute(SESSION_TENANT);
+		Tenant tenant = (Tenant) request.getSession().getAttribute(SESSION_TENANT);
 		if (tenant == null) {
 			throw new NoTenantException("Tenant not found in session.");
 		}
-		return tenant;
+
+		try {
+			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
+			if (engine == null) {
+				throw new NoTenantException("Engine not found for tenant.");
+			}
+			tenant.setEngineState(engine.getEngineState());
+
+			if ((tenant.getEngineState() != null)
+					&& (tenant.getEngineState().getLifecycleStatus() != LifecycleStatus.Started)) {
+				throw new NoTenantException("Tenant engine not started.");
+			}
+			return tenant;
+		} catch (SiteWhereException e) {
+			throw new NoTenantException("Error loading tenant state.", e);
+		}
 	}
 
 	/**
