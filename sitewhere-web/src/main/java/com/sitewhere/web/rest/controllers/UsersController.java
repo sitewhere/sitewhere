@@ -27,6 +27,7 @@ import com.sitewhere.Tracer;
 import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
+import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
@@ -34,6 +35,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
@@ -229,11 +231,21 @@ public class UsersController extends SiteWhereController {
 	@ApiOperation(value = "Find tenants associated with a given user")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
 	public List<ITenant> getTenantsForUsername(
-			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
+			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
+			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
 		try {
-			return SiteWhere.getServer().getAuthorizedTenants(username);
+			List<ITenant> results = SiteWhere.getServer().getAuthorizedTenants(username);
+			if (includeRuntimeInfo) {
+				for (ITenant tenant : results) {
+					ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
+					if (engine != null) {
+						((Tenant) tenant).setEngineState(engine.getEngineState());
+					}
+				}
+			}
+			return results;
 		} finally {
 			Tracer.stop(LOGGER);
 		}

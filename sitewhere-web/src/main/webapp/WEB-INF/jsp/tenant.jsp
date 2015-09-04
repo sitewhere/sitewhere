@@ -71,7 +71,8 @@
 											{
 												transport : {
 													read : {
-														url : "${pageContext.request.contextPath}/api/users/${currentUser.username}/tenants",
+														url : "${pageContext.request.contextPath}/api/users/${currentUser.username}/tenants"
+																+ "?includeRuntimeInfo=true",
 														dataType : "json",
 													}
 												},

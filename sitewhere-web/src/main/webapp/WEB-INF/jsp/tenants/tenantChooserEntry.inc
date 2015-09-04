@@ -41,7 +41,6 @@
 	height: 100%;
 	padding-left: 20px;
 	margin-left: 10px;
-	border-left: 1px solid #E0E0E0;
 	position: relative;
 	margin-top: 9px;
 	margin-right: 10px;
@@ -60,7 +59,11 @@
 			<span class="label label-info sw-tenant-logo-tag">Tenant</span>
 		</div>
 		<div class="sw-tenant-list-entry-actions">
-			<a href="javascript:void(0);" class="btn btn-large btn-primary" onclick="onTenantSelected(event, '#:id#');">Select</a>
+# if (data.engineState.lifecycleStatus == 'Started') { #
+			<a href="javascript:void(0);" class="btn btn-large" onclick="onTenantSelected(event, '#:id#');">Select</a>
+# } else { #
+			<a href="javascript:void(0);" class="btn btn-large disabled">Tenant Not Started</a>
+# } #
 		</div>
 		<div>
 			<p class="ellipsis sw-tenant-list-label">#:name# (#:id#)</p>
