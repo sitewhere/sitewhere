@@ -10,7 +10,7 @@
 </style>
 
 <!-- Title Bar -->
-<div class="sw-title-bar content k-header" style="margin-bottom: -1px;">
+<div class="sw-title-bar content k-header" style="margin-bottom: 10px;">
 	<h1 class="ellipsis" data-i18n="batch.command.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-refresh-operation" class="btn" href="javascript:void(0)"> <i
@@ -79,10 +79,7 @@
 	var batchToken = '<c:out value="${operation.token}"/>';
 
 	/** JSON command information */
-	var command = $
-	{
-		command
-	};
+	var command = <c:out value="${command}" escapeXml="false"/>;
 
 	/** Datasource for elements */
 	var elementsDS;

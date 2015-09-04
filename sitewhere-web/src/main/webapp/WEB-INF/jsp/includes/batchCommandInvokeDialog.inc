@@ -106,9 +106,9 @@
 						params[param.name] = value;
 					}
 					invocationData.parameterValues = params;
-					$.postJSON("${pageContext.request.contextPath}/api/batch/command/criteria",
-						invocationData + "?tenantAuthToken=${tenant.authenticationToken}", onCreateSuccess,
-						onCreateFail);
+					$.postJSON("${pageContext.request.contextPath}/api/batch/command/criteria"
+							+ "?tenantAuthToken=${tenant.authenticationToken}", invocationData,
+						onCreateSuccess, onCreateFail);
 				});
 
 			/** Called on successful create */
