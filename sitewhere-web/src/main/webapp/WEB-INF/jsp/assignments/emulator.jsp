@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="sitewhere_title" value="Assignment Emulator" />
 <c:set var="sitewhere_section" value="sites" />
+<c:set var="use_map_includes" value="true" />
 <c:set var="use_highlight" value="true" />
 <c:set var="use_mqtt" value="true" />
 <%@ include file="../includes/top.inc"%>
