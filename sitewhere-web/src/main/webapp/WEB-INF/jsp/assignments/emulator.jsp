@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="sitewhere_title" value="Assignment Emulator" />
 <c:set var="sitewhere_section" value="sites" />
-<c:set var="use_map_includes" value="true" />
+<c:set var="use_highlight" value="true" />
 <c:set var="use_mqtt" value="true" />
 <%@ include file="../includes/top.inc"%>
 
@@ -129,9 +129,10 @@
 					</form>
 				</div>
 				<div>
-					<div id="mqtt-last-message">
-						<div style="padding: 25px; font-size: 14pt; text-align: center;"
-							data-i18n="assignments.emulator.jsonmessage"></div>
+					<div style="max-height: 500px; overflow-y: scroll;">
+						<pre class="language-json">
+							<code id="mqtt-last-message"></code>
+						</pre>
 					</div>
 				</div>
 			</div>
@@ -458,8 +459,8 @@
 			}
 			message.destinationName = destination;
 			client.send(message);
-			$('#mqtt-last-message').html("<pre><code>" + payload + "</code></pre>");
-			hljs.highlightBlock(document.getElementById('mqtt-last-message').childNodes[0]);
+			$("#mqtt-last-message").text('\n' + payload);
+			Prism.highlightElement(document.getElementById('mqtt-last-message'));
 		}
 	}
 
