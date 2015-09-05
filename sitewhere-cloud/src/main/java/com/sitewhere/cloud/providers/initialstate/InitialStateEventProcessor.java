@@ -28,6 +28,8 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
 
@@ -98,6 +100,48 @@ public class InitialStateEventProcessor extends OutboundEventProcessor {
 			events.add(event);
 		}
 		DeviceAssignment assignment = assureBucket(measurements.getDeviceAssignmentToken());
+		createEvents(assignment.getToken(), events);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onLocation(com.sitewhere
+	 * .spi.device.event.IDeviceLocation)
+	 */
+	@Override
+	public void onLocation(IDeviceLocation location) throws SiteWhereException {
+		List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
+
+		EventCreateRequest event = new EventCreateRequest();
+		event.setKey("location");
+		event.setValue("" + location.getLatitude() + "," + location.getLongitude());
+		event.setEpoch(((double) System.currentTimeMillis()) / ((double) 1000));
+		events.add(event);
+
+		DeviceAssignment assignment = assureBucket(location.getDeviceAssignmentToken());
+		createEvents(assignment.getToken(), events);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onAlert(com.sitewhere
+	 * .spi.device.event.IDeviceAlert)
+	 */
+	@Override
+	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+		List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
+
+		EventCreateRequest event = new EventCreateRequest();
+		event.setKey(alert.getType());
+		event.setValue(alert.getMessage());
+		event.setEpoch(((double) System.currentTimeMillis()) / ((double) 1000));
+		events.add(event);
+
+		DeviceAssignment assignment = assureBucket(alert.getDeviceAssignmentToken());
 		createEvents(assignment.getToken(), events);
 	}
 
