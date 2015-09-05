@@ -39,6 +39,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-cloud</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-ehcache</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>

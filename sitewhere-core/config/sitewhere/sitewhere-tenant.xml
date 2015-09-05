@@ -7,7 +7,7 @@
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
            http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere.xsd?z=5
-           http://www.sitewhere.com/schema/sitewhere/ce/tenant http://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere-tenant.xsd?z=5">
+           http://www.sitewhere.com/schema/sitewhere/ce/tenant http://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere-tenant.xsd?z=6">
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder
@@ -209,6 +209,11 @@
 			<!-- 
 			<sw:azure-eventhub-event-processor sasKey="{azure.sas.key}"
 				sasName="default" serviceBusName="sitewhere.servicebus.windows.net" eventHubName="sitewhere"/>
+			 -->
+			 
+			<!-- Sends events to InitialState.com -->
+			<!-- 
+			<sw:initial-state-event-processor streamingAccessKey="your_access_key"/>
 			 -->
 
 			<!-- Processes event streams using Siddhi for complex event processing -->

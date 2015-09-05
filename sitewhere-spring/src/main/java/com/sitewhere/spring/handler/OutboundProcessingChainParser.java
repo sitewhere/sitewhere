@@ -20,6 +20,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.azure.device.communication.EventHubOutboundEventProcessor;
+import com.sitewhere.cloud.providers.initialstate.InitialStateEventProcessor;
 import com.sitewhere.device.communication.DeviceCommandEventProcessor;
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
 import com.sitewhere.geospatial.ZoneTest;
@@ -82,6 +83,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 			case AzureEventHubEventProcessor: {
 				processors.add(parseAzureEventHubEventProcessor(child, context));
+				break;
+			}
+			case InitialStateEventProcessor: {
+				processors.add(parseInitialStateEventProcessor(child, context));
 				break;
 			}
 			case ProvisioningEventProcessor: {
@@ -259,6 +264,26 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parse configuration for event processor that delivers events to InitialState.com.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseInitialStateEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(InitialStateEventProcessor.class);
+
+		Attr streamingAccessKey = element.getAttributeNode("streamingAccessKey");
+		if (streamingAccessKey == null) {
+			throw new RuntimeException("Streaming access key is required for InitialState.com connectivity.");
+		}
+		processor.addPropertyValue("streamingAccessKey", streamingAccessKey.getValue());
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
 	 * Parse configuration for event processor that routes commands to communication
 	 * subsystem.
 	 * 
@@ -401,6 +426,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		/** Sends outbound events to an Azure EventHub */
 		AzureEventHubEventProcessor("azure-eventhub-event-processor"),
+
+		/** Sends outbound events to InitialState.com */
+		InitialStateEventProcessor("initial-state-event-processor"),
 
 		/** DEPRECATED: Use 'command-delivery-event-processor' */
 		ProvisioningEventProcessor("provisioning-event-processor"),

@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="sitewhere-azure/src/test/java"/>
 	<classpathentry kind="src" path="sitewhere-client/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-client/src/test/java"/>
+	<classpathentry kind="src" path="sitewhere-cloud/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-core/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-core/src/main/test"/>
 	<classpathentry kind="src" path="sitewhere-documentation/src/main/java"/>

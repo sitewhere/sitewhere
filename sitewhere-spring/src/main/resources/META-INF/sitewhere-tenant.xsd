@@ -540,6 +540,31 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+
+	<!-- InitialState.com outbound event processor -->
+	<xsd:element name="initial-state-event-processor" type="initialStateEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends events to the InitialState.com cloud service where they can be
+				viewed in a customized dashboard.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="initialStateEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorType">
+				<xsd:attribute name="streamingAccessKey" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Access key obtained from the InitialState.com website that
+							specifies the account that the events will be associated with.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
 	<!-- Siddhi CEP outbound event processor -->
 	<xsd:element name="siddhi-event-processor" type="siddhiEventProcessorType"

@@ -2,6 +2,7 @@
 /sitewhere-activemq/target
 /sitewhere-azure/target
 /sitewhere-client/target
+/sitewhere-cloud/target
 /sitewhere-core/target
 /sitewhere-documentation/target
 /sitewhere-ehcache/target
