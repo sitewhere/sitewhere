@@ -23,6 +23,7 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.user.ITenant;
 
@@ -95,12 +96,12 @@ public class DeviceAssignmentMarshalHelper {
 		}
 		result.setSiteToken(source.getSiteToken());
 		if (isIncludeSite()) {
-			ISite site = SiteWhere.getServer().getDeviceManagement(tenant).getSiteForAssignment(source);
+			ISite site = getDeviceManagement().getSiteForAssignment(source);
 			result.setSite(Site.copy(site));
 		}
 		result.setDeviceHardwareId(source.getDeviceHardwareId());
 		if (isIncludeDevice()) {
-			IDevice device = SiteWhere.getServer().getDeviceManagement(tenant).getDeviceForAssignment(source);
+			IDevice device = getDeviceManagement().getDeviceForAssignment(source);
 			if (device != null) {
 				result.setDevice(getDeviceHelper().convert(device, manager));
 			} else {
@@ -108,6 +109,16 @@ public class DeviceAssignmentMarshalHelper {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Get the device management implementation.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
+		return SiteWhere.getServer().getDeviceManagement(tenant);
 	}
 
 	/**
