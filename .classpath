@@ -102,5 +102,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/xmlpull/xmlpull/1.1.3.3/xmlpull-1.1.3.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/net/sourceforge/kxml/kxml/2.2.4/kxml-2.2.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/mqtt-client/mqtt-client/1.11/mqtt-client-1.11.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/reflections/reflections/0.9.10/reflections-0.9.10.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/pegdown/pegdown/1.5.0/pegdown-1.5.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
