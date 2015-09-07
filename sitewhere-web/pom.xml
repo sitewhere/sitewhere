@@ -256,7 +256,8 @@
 								<!-- Hack to remove conflicting asm libraries from classpath -->
 								<pathconvert pathsep=";" refid="maven.compile.classpath" property="corrected">
 									<firstmatchmapper>
-										<regexpmapper from=".*asm\\asm.*\\3\.1\\.*\.jar$" to="ignore.jar"/>
+										<regexpmapper from=".*asm/asm.*/3\.1/.*\.jar$" to="ignore.jar"
+											handledirsep="true"/>
 										<identitymapper/>
 									</firstmatchmapper>
 								</pathconvert>
