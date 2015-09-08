@@ -10,6 +10,8 @@ package com.sitewhere.rest.model.device.request;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
@@ -18,6 +20,7 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
  * 
  * @author Derek Adams
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateRequest, Serializable {
 
 	/** Serialization version identifier */

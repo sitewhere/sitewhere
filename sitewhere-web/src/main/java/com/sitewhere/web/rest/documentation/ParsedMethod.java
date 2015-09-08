@@ -7,6 +7,9 @@
  */
 package com.sitewhere.web.rest.documentation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
@@ -27,6 +30,9 @@ public class ParsedMethod {
 
 	/** HTML description */
 	private String description;
+
+	/** List of examples */
+	private List<ParsedExample> examples = new ArrayList<ParsedExample>();
 
 	public String getBaseUri() {
 		return baseUri;
@@ -58,5 +64,13 @@ public class ParsedMethod {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public List<ParsedExample> getExamples() {
+		return examples;
+	}
+
+	public void setExamples(List<ParsedExample> examples) {
+		this.examples = examples;
 	}
 }

@@ -48,6 +48,8 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -60,6 +62,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/assets")
 @Api(value = "assets", description = "Operations related to SiteWhere assets.")
+@DocumentedController(name = "Asset Management")
 public class AssetsController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -77,6 +80,7 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get information about an asset module")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {})
 	public AssetModule getAssetModule(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			HttpServletRequest servletRequest) throws SiteWhereException {

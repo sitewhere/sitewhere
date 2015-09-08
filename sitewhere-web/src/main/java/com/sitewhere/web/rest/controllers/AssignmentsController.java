@@ -93,9 +93,9 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
-@DocumentedController()
 @RequestMapping(value = "/assignments")
 @Api(value = "assignments", description = "Operations related to SiteWhere device assignments.")
+@DocumentedController(name = "Device Assignments")
 public class AssignmentsController extends SiteWhereController {
 
 	/** Static logger instance */
