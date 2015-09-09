@@ -50,6 +50,9 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Assets;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -80,7 +83,7 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get information about an asset module")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = {})
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssetModuleResponse.class, description = "assets/get-asset-module-response.md") })
 	public AssetModule getAssetModule(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			HttpServletRequest servletRequest) throws SiteWhereException {

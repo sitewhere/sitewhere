@@ -11,9 +11,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
+import com.sitewhere.spi.asset.AssetType;
 
 @SuppressWarnings("serial")
 public class ExampleData {
@@ -23,6 +25,9 @@ public class ExampleData {
 
 	/** Devices */
 	public static Device_Tracker1 TRACKER1 = new Device_Tracker1();
+
+	/** Persons asset module */
+	public static AssetModule_Persons AM_PERSONS = new AssetModule_Persons();
 
 	public static class Site_Construction extends Site {
 
@@ -49,6 +54,15 @@ public class ExampleData {
 
 		public Device_Tracker1() {
 			setHardwareId("b6daecc5-b0b2-48a8-90ab-4c4a170dd2a0");
+		}
+	}
+
+	public static class AssetModule_Persons extends AssetModule {
+
+		public AssetModule_Persons() {
+			setId("ac-persons");
+			setName("Default Identity Management");
+			setAssetType(AssetType.Person);
 		}
 	}
 }

@@ -185,23 +185,91 @@ public class RestDocumentationGenerator {
 		String html = "<a id=\"" + controller.getResource() + "\"></a>\n";
 		html += controller.getDescription();
 		for (ParsedMethod method : controller.getMethods()) {
-			String methodHtml = "<a id=\"" + method.getName() + "\"></a>\n";
-			methodHtml +=
-					"<div><p>" + method.getRequestMethod().toString() + " " + method.getBaseUri()
-							+ method.getRelativeUri() + "</p>" + method.getDescription() + "</div>\n";
+			String methodHtml =
+					createSplitter() + "<a id=\"" + method.getName() + "\"></a>\n" + method.getDescription();
+			methodHtml += createUriBlock(method) + "\n";
 			for (ParsedExample example : method.getExamples()) {
 				String exampleHtml = "";
 				if (example.getDescription() != null) {
 					exampleHtml += "<div>" + example.getDescription() + "</div>\n";
 				}
 				if (example.getJson() != null) {
-					exampleHtml += "<pre><code class='json'>" + example.getJson() + "</code></pre>\n";
+					exampleHtml +=
+							"<pre><code class='json'>" + example.getJson()
+									+ "</code><span class=\"code-tag\">" + example.getStage().toString()
+									+ "</span></pre>\n";
 				}
 				methodHtml += exampleHtml;
 			}
 			html += methodHtml;
 		}
+		html += createSplitter();
 		return html;
+	}
+
+	/**
+	 * Create a splitter between sections.
+	 * 
+	 * @return
+	 */
+	protected static String createSplitter() {
+		return "<div style=\"border-bottom: 1px solid #eee; margin-top: 30px; margin-bottom: 30px;\"></div>\n";
+	}
+
+	/**
+	 * Create block that displays REST service URI.
+	 * 
+	 * @param method
+	 * @return
+	 */
+	protected static String createUriBlock(ParsedMethod method) {
+		String tagName, tagColor, bgColor, brdColor;
+		switch (method.getRequestMethod()) {
+		case GET: {
+			tagName = "GET";
+			tagColor = "#10A54A";
+			bgColor = "#E7F6EC";
+			brdColor = "C3E8D1";
+			break;
+		}
+		case POST: {
+			tagName = "POST";
+			tagColor = "#0F6AB4";
+			bgColor = "#E7F0F7";
+			brdColor = "#C3D9EC";
+			break;
+		}
+		case PUT: {
+			tagName = "PUT";
+			tagColor = "#C5862B";
+			bgColor = "#F9F2E9";
+			brdColor = "#F0E0CA";
+			break;
+		}
+		case DELETE: {
+			tagName = "DELETE";
+			tagColor = "#A41E22";
+			bgColor = "#F5E8E8";
+			brdColor = "#E8C6C7";
+			break;
+		}
+		default: {
+			tagName = "???";
+			tagColor = "#999";
+			bgColor = "#ccc";
+			brdColor = "#aaa";
+			break;
+		}
+		}
+		return "<div style=\"background-color: "
+				+ bgColor
+				+ "; border: 1px solid "
+				+ brdColor
+				+ "; font-size: 13px; margin: 20px 0px;\"><span style=\"width: 80px; background-color: "
+				+ tagColor
+				+ "; color: #fff; text-align: center; display: inline-block; margin-right: 15px; padding: 5px;\">"
+				+ tagName + "</span><span style=\"width: 100%; font-family: courier; font-weight: bold;\">"
+				+ method.getBaseUri() + method.getRelativeUri() + "</span></div>";
 	}
 
 	/**
