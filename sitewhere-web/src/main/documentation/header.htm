@@ -1,18 +1,19 @@
+<!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>SiteWhere REST Services Documentation</title>
-<link rel="stylesheet"
-	href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/default.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script>
-	hljs.initHighlightingOnLoad();
-</script>
-</head>
+<script type='text/javascript' src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
+<link rel="stylesheet" type="text/css"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script type='text/javascript'
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/default.min.css">
+<script type='text/javascript'
+	src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
 
-<style>
+<style type='text/css'>
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
 		sans-serif;
@@ -29,7 +30,7 @@ body {
 
 .bs-docs-sidenav {
 	width: 258px;
-	margin: 10px 0 0;
+	margin: 25px 0 0;
 	padding: 0;
 	background-color: #fff;
 	-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
@@ -40,9 +41,24 @@ body {
 .affix {
 	position: fixed;
 }
+
+ul.nav li.active {
+	border-left: 3px solid #99c;
+}
 </style>
 
-<body data-spy="scroll" data-target="#rest-navigation">
+<script type='text/javascript'>
+	//<![CDATA[
+	$(window).load(function() {
+		hljs.initHighlightingOnLoad();
+		$('body').scrollspy({
+			target : "#rest-navigation"
+		})
+	});//]]>
+</script>
+</head>
+
+<body>
 
 	<div class="container">
 		<div class="row">

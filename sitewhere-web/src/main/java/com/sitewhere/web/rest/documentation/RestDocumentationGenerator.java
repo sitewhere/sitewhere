@@ -115,12 +115,12 @@ public class RestDocumentationGenerator {
 		String completeDoc = readFile(header);
 		completeDoc += generateNavigation(controllers);
 
-		completeDoc += "<div class=\"col-md-9\">";
+		completeDoc += "<div class=\"col-md-9\">\n";
 		for (ParsedController controller : controllers) {
 			String controllerDoc = generateControllerDocumentation(controller);
 			completeDoc += controllerDoc;
 		}
-		completeDoc += "</div>";
+		completeDoc += "</div>\n";
 
 		File footer = new File(resourcesFolder, "footer.htm");
 		if (!footer.exists()) {
@@ -149,22 +149,20 @@ public class RestDocumentationGenerator {
 	 * @return
 	 */
 	protected static String generateNavigation(List<ParsedController> controllers) {
-		String html = "<div id=\"rest-navigation\" class=\"col-md-3 bs-docs-sidebar\">";
-		html +=
-				"<ul class=\"nav nav-list bs-docs-sidenav affix-top\""
-						+ " data-spy=\"affix\" data-offset-top=\"10\">";
+		String html = "<div id=\"rest-navigation\" class=\"col-md-3 bs-docs-sidebar\">\n";
+		html += "<ul class=\"nav nav-list bs-docs-sidenav affix\">\n";
 
 		boolean setActive = false;
 		for (ParsedController controller : controllers) {
 			html +=
 					"<li" + ((!setActive) ? " class=\"active\"" : "") + "><a href=\"#"
 							+ controller.getResource() + "\"><i class=\"icon-chevron-right\"></i> "
-							+ controller.getName() + "</a></li>";
+							+ controller.getName() + "</a></li>\n";
 			setActive = true;
 		}
 
-		html += "</ul>";
-		html += "</div>";
+		html += "</ul>\n";
+		html += "</div>\n";
 		return html;
 	}
 
@@ -175,19 +173,19 @@ public class RestDocumentationGenerator {
 	 * @return
 	 */
 	protected static String generateControllerDocumentation(ParsedController controller) {
-		String html = "<a id=\"" + controller.getResource() + "\"></a>";
+		String html = "<a id=\"" + controller.getResource() + "\"></a>\n";
 		html += controller.getDescription();
 		for (ParsedMethod method : controller.getMethods()) {
 			String methodHtml =
 					"<div><p>" + method.getRequestMethod().toString() + " " + method.getBaseUri()
-							+ method.getRelativeUri() + "</p>" + method.getDescription() + "</div>";
+							+ method.getRelativeUri() + "</p>" + method.getDescription() + "</div>\n";
 			for (ParsedExample example : method.getExamples()) {
 				String exampleHtml = "";
 				if (example.getDescription() != null) {
-					exampleHtml += "<div>" + example.getDescription() + "</div>";
+					exampleHtml += "<div>" + example.getDescription() + "</div>\n";
 				}
 				if (example.getJson() != null) {
-					exampleHtml += "<pre><code class='json'>" + example.getJson() + "</code></pre>";
+					exampleHtml += "<pre><code class='json'>" + example.getJson() + "</code></pre>\n";
 				}
 				methodHtml += exampleHtml;
 			}
