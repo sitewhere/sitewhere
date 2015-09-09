@@ -33,6 +33,7 @@ import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
  * Introspects the REST controllers to pull out documentation and generate it into an HTML
@@ -115,7 +116,7 @@ public class RestDocumentationGenerator {
 		String completeDoc = readFile(header);
 		completeDoc += generateNavigation(controllers);
 
-		completeDoc += "<div class=\"col-md-9\">\n";
+		completeDoc += "<div class=\"col-md-8\">\n";
 		for (ParsedController controller : controllers) {
 			String controllerDoc = generateControllerDocumentation(controller);
 			completeDoc += controllerDoc;
@@ -149,20 +150,28 @@ public class RestDocumentationGenerator {
 	 * @return
 	 */
 	protected static String generateNavigation(List<ParsedController> controllers) {
-		String html = "<div id=\"rest-navigation\" class=\"col-md-3 bs-docs-sidebar\">\n";
-		html += "<ul class=\"nav nav-list bs-docs-sidenav affix\">\n";
+		String html = "<nav id=\"rest-navigation\" class=\"col-md-4 bs-docs-sidenav\">\n";
+		html += "<ul class=\"nav nav-list affix\">\n";
 
 		boolean setActive = false;
 		for (ParsedController controller : controllers) {
 			html +=
 					"<li" + ((!setActive) ? " class=\"active\"" : "") + "><a href=\"#"
 							+ controller.getResource() + "\"><i class=\"icon-chevron-right\"></i> "
-							+ controller.getName() + "</a></li>\n";
+							+ controller.getName() + "</a>\n";
+			html += "<ul class=\"nav\">\n";
+			for (ParsedMethod method : controller.getMethods()) {
+				html +=
+						"<li><a href=\"#" + method.getName() + "\"><i class=\"icon-chevron-right\"></i> "
+								+ method.getSummary() + "</a>\n";
+			}
+			html += "</ul>\n";
+			html += "</li>";
 			setActive = true;
 		}
 
 		html += "</ul>\n";
-		html += "</div>\n";
+		html += "</nav>\n";
 		return html;
 	}
 
@@ -176,7 +185,8 @@ public class RestDocumentationGenerator {
 		String html = "<a id=\"" + controller.getResource() + "\"></a>\n";
 		html += controller.getDescription();
 		for (ParsedMethod method : controller.getMethods()) {
-			String methodHtml =
+			String methodHtml = "<a id=\"" + method.getName() + "\"></a>\n";
+			methodHtml +=
 					"<div><p>" + method.getRequestMethod().toString() + " " + method.getBaseUri()
 							+ method.getRelativeUri() + "</p>" + method.getDescription() + "</div>\n";
 			for (ParsedExample example : method.getExamples()) {
@@ -267,7 +277,15 @@ public class RestDocumentationGenerator {
 	protected static ParsedMethod parseMethod(String baseUri, Method method, File resources)
 			throws SiteWhereException {
 		ParsedMethod parsed = new ParsedMethod();
+		parsed.setName(method.getName());
 		parsed.setBaseUri(baseUri);
+
+		ApiOperation op = method.getAnnotation(ApiOperation.class);
+		if (op == null) {
+			throw new SiteWhereException("Spring ApiOperation annotation missing on documented method: "
+					+ method.getName());
+		}
+		parsed.setSummary(op.value());
 
 		RequestMapping mapping = method.getAnnotation(RequestMapping.class);
 		if (mapping == null) {

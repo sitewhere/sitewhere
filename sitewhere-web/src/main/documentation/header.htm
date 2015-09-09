@@ -12,7 +12,9 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/default.min.css">
 <script type='text/javascript'
 	src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
-
+<script>
+	hljs.initHighlightingOnLoad();
+</script>
 <style type='text/css'>
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
@@ -25,32 +27,66 @@ body {
 }
 
 .bs-docs-sidenav {
-	width: 258px;
-}
-
-.bs-docs-sidenav {
-	width: 258px;
+	width: 320px;
 	margin: 25px 0 0;
 	padding: 0;
 	background-color: #fff;
-	-webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
-	-moz-box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
-	box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
 }
 
-.affix {
-	position: fixed;
+/* Hide nested elements if not active */
+.bs-docs-sidenav .nav>.active>ul {
+	display: block;
 }
 
-ul.nav li.active {
-	border-left: 3px solid #99c;
+/* Hide nested elements if not active */
+.bs-docs-sidenav>ul.nav>li {
+	width: 300px;
+}
+
+/* Box around active section */
+.bs-docs-sidenav>ul.nav>li.active {
+	background-color: #fafafa;
+	border: 1px solid #eee;
+	-webkit-box-shadow: 0 1px 4px rgba(128, 128, 128, 0.2);
+	-moz-box-shadow: 0 1px 4px rgba(128, 128, 128, 0.2);
+	box-shadow: 0px 1px 4px rgba(128, 128, 128, 0.2);
+	padding: 5px;
+}
+
+.bs-docs-sidenav ul.nav li.active a {
+	padding: 10px 10px 4px;
+}
+
+.bs-docs-sidenav ul.nav li.active ul.nav li.active {
+	font-weight: bold;
+	border: none;
+}
+
+.bs-docs-sidenav ul.nav li.active ul.nav li a {
+	padding: 4px 10px 2px;
+}
+
+.bs-docs-sidenav .nav {
+	font-size: 18px;
+}
+
+.bs-docs-sidenav .nav .nav {
+	display: none;
+	padding-bottom: 10px;
+	font-size: 12px;
+	padding-left: 10px;
+}
+
+@media screen and (max-width: 1024px) {
+	.bs-docs-sidenav {
+		display: none;
+	}
 }
 </style>
 
 <script type='text/javascript'>
 	//<![CDATA[
 	$(window).load(function() {
-		hljs.initHighlightingOnLoad();
 		$('body').scrollspy({
 			target : "#rest-navigation"
 		})

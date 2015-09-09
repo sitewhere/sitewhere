@@ -19,6 +19,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 public class ParsedMethod {
 
+	/** Method name */
+	private String name;
+
+	/** Short description */
+	private String summary;
+
 	/** Base URL */
 	private String baseUri;
 
@@ -33,6 +39,22 @@ public class ParsedMethod {
 
 	/** List of examples */
 	private List<ParsedExample> examples = new ArrayList<ParsedExample>();
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
 
 	public String getBaseUri() {
 		return baseUri;
