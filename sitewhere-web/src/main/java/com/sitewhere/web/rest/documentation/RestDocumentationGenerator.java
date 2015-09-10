@@ -265,7 +265,7 @@ public class RestDocumentationGenerator {
 				+ bgColor
 				+ "; border: 1px solid "
 				+ brdColor
-				+ "; font-size: 13px; margin: 20px 0px;\"><span style=\"width: 80px; background-color: "
+				+ "; font-size: 13px; margin: 20px 0px;\"><span style=\"width: 70px; background-color: "
 				+ tagColor
 				+ "; color: #fff; text-align: center; display: inline-block; margin-right: 15px; padding: 5px;\">"
 				+ tagName + "</span><span style=\"width: 100%; font-family: courier; font-weight: bold;\">"
@@ -331,6 +331,13 @@ public class RestDocumentationGenerator {
 				parsed.getMethods().add(parsedMethod);
 			}
 		}
+		Collections.sort(parsed.getMethods(), new Comparator<ParsedMethod>() {
+
+			@Override
+			public int compare(ParsedMethod o1, ParsedMethod o2) {
+				return o1.getSummary().compareTo(o2.getSummary());
+			}
+		});
 		return parsed;
 	}
 

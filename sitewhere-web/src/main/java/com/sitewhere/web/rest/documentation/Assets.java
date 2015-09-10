@@ -7,7 +7,12 @@
  */
 package com.sitewhere.web.rest.documentation;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetModule;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 
 public class Assets {
@@ -18,6 +23,23 @@ public class Assets {
 			setId(ExampleData.AM_PERSONS.getId());
 			setName(ExampleData.AM_PERSONS.getName());
 			setAssetType(ExampleData.AM_PERSONS.getAssetType());
+		}
+	}
+
+	public static class SearchAssetModuleResponse extends SearchResults<Asset> {
+
+		private static List<Asset> assets = new ArrayList<Asset>();
+
+		public SearchAssetModuleResponse() {
+			super(assets);
+			assets.add(ExampleData.ASSET_DEREK);
+			setNumResults(1);
+		}
+	}
+
+	public static class GetAssetByIdResponse extends ExampleData.Person_Derek {
+
+		public GetAssetByIdResponse() {
 		}
 	}
 }

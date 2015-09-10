@@ -48,6 +48,8 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.web.rest.annotations.Concerns;
+import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -106,9 +108,10 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/modules/{assetModuleId}/assets", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Search hardware assets")
+	@ApiOperation(value = "Search for assets in an asset module")
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.SearchAssetModuleResponse.class, description = "assets/search-asset-module-response.md") })
 	public SearchResults<? extends IAsset> searchAssets(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria,
@@ -132,8 +135,9 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/modules/{assetModuleId}/assets/{assetId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Find hardware asset by unique id")
+	@ApiOperation(value = "Get asset by unique id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssetByIdResponse.class, description = "assets/get-asset-by-id-response.md") })
 	public IAsset getAssetById(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
@@ -160,15 +164,17 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/modules/{assetModuleId}/assets/{assetId}/assignments", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List all assignments for a given asset")
+	@ApiOperation(value = "List assignments associated with an asset")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Concerns(values = { ConcernType.Paging })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssetByIdResponse.class, description = "assets/get-asset-by-id-response.md") })
 	public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
 			@ApiParam(value = "Unique token that identifies site", required = true) @RequestParam String siteToken,
 			@ApiParam(value = "Assignment status", required = false) @RequestParam(required = false) String status,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
 		try {

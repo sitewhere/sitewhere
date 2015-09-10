@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sitewhere.rest.model.asset.AssetModule;
+import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
@@ -28,6 +29,9 @@ public class ExampleData {
 
 	/** Persons asset module */
 	public static AssetModule_Persons AM_PERSONS = new AssetModule_Persons();
+
+	/** Person asset */
+	public static Person_Derek ASSET_DEREK = new Person_Derek();
 
 	public static class Site_Construction extends Site {
 
@@ -63,6 +67,18 @@ public class ExampleData {
 			setId("ac-persons");
 			setName("Default Identity Management");
 			setAssetType(AssetType.Person);
+		}
+	}
+
+	public static class Person_Derek extends PersonAsset {
+
+		public Person_Derek() {
+			setId("derek");
+			setUserName("dadams");
+			setEmailAddress("dadams@sitewhere.com");
+			setImageUrl("https://s3.amazonaws.com/sitewhere-demo/people/derek.jpg");
+			getProperties().put("phone.number", "777-555-1212");
+			getRoles().add("dev");
 		}
 	}
 }
