@@ -1,6 +1,6 @@
 Search for Assets in an Asset Module
 ------------------------------------
-Searches all assets in the asset module and returns the list of matches.
+Performs a search of all assets in the asset module and returns the list of matches.
 The search criteria applies differently depending on asset type. 
 Fields searched for each type are listed below:
 

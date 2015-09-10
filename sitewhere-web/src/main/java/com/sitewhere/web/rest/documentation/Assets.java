@@ -14,6 +14,7 @@ import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceAssignment;
 
 public class Assets {
 
@@ -30,16 +31,46 @@ public class Assets {
 
 		private static List<Asset> assets = new ArrayList<Asset>();
 
+		static {
+			assets.add(ExampleData.ASSET_DEREK);
+		}
+
 		public SearchAssetModuleResponse() {
 			super(assets);
-			assets.add(ExampleData.ASSET_DEREK);
 			setNumResults(1);
 		}
 	}
 
-	public static class GetAssetByIdResponse extends ExampleData.Person_Derek {
+	public static class GetAssetByIdPersonResponse extends ExampleData.Person_Derek {
 
-		public GetAssetByIdResponse() {
+		public GetAssetByIdPersonResponse() {
+		}
+	}
+
+	public static class GetAssetByIdHardwareResponse extends ExampleData.Hardware_Caterpillar {
+
+		public GetAssetByIdHardwareResponse() {
+		}
+	}
+
+	public static class GetAssetByIdLocationResponse extends ExampleData.Location_Trailer {
+
+		public GetAssetByIdLocationResponse() {
+		}
+	}
+
+	public static class GetAssignmentsForAsset extends SearchResults<IDeviceAssignment> {
+
+		private static List<IDeviceAssignment> assignments = new ArrayList<IDeviceAssignment>();
+
+		static {
+			assignments.add(ExampleData.TRACKER_TO_DEREK);
+			assignments.add(ExampleData.HEART_MONITOR_TO_DEREK);
+		}
+
+		public GetAssignmentsForAsset() {
+			super(assignments);
+			setNumResults(2);
 		}
 	}
 }

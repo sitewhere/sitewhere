@@ -112,9 +112,9 @@ public class AssignmentsController extends SiteWhereController {
 	@ApiOperation(value = "Create a new device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Assignments.CreateUnassociatedRequest.class, description = "assignments/create-unassociated-request.md"),
-			@Example(stage = Stage.Request, json = Assignments.CreateAssociatedRequest.class, description = "assignments/create-associated-request.md"),
-			@Example(stage = Stage.Response, json = Assignments.CreateAssociatedRequest.class, description = "assignments/create-associated-request.md") })
+			@Example(stage = Stage.Request, json = Assignments.CreateUnassociatedRequest.class, description = "createUnassociatedRequest.md"),
+			@Example(stage = Stage.Request, json = Assignments.CreateAssociatedRequest.class, description = "createAssociatedRequest.md"),
+			@Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "createAssociatedResponse.md") })
 	public DeviceAssignment createDeviceAssignment(@RequestBody DeviceAssignmentCreateRequest request,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDeviceAssignment", LOGGER);

@@ -137,7 +137,10 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get asset by unique id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssetByIdResponse.class, description = "assets/get-asset-by-id-response.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Assets.GetAssetByIdPersonResponse.class, description = "getAssetByIdPersonResponse.md"),
+			@Example(stage = Stage.Response, json = Assets.GetAssetByIdHardwareResponse.class, description = "getAssetByIdHardwareResponse.md"),
+			@Example(stage = Stage.Response, json = Assets.GetAssetByIdLocationResponse.class, description = "getAssetByIdLocationResponse.md") })
 	public IAsset getAssetById(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
@@ -167,7 +170,7 @@ public class AssetsController extends SiteWhereController {
 	@ApiOperation(value = "List assignments associated with an asset")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Concerns(values = { ConcernType.Paging })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssetByIdResponse.class, description = "assets/get-asset-by-id-response.md") })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssignmentsForAsset.class, description = "assets/get-assignments-for-assets-response.md") })
 	public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,

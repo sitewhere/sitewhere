@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.core.SiteWherePersistence;
-import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -55,17 +54,9 @@ public class Assignments {
 		}
 	}
 
-	public static class CreateAssociatedResponse extends DeviceAssignment {
+	public static class CreateAssociatedResponse extends ExampleData.Assignment_TrackerToDerek {
 
 		public CreateAssociatedResponse() {
-			setDeviceHardwareId(ExampleData.TRACKER1.getHardwareId());
-			setAssignmentType(DeviceAssignmentType.Associated);
-			setAssetModuleId("fs-persons");
-			setAssetId("bob");
-			Map<String, String> metadata = new HashMap<String, String>();
-			metadata.put("validUntil", "2016-10-10");
-			metadata.put("renewable", "true");
-			setMetadata(metadata);
 		}
 	}
 }
