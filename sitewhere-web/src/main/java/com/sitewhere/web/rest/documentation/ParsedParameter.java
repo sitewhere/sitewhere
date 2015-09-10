@@ -10,6 +10,8 @@ package com.sitewhere.web.rest.documentation;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
+
 /**
  * Parameter-level information parsed from annotations.
  * 
@@ -32,11 +34,14 @@ public class ParsedParameter {
 	/** Parameter type */
 	private ParameterType type;
 
+	/** Parameter description */
+	private String description;
+
 	/** Is parameter required? */
 	private boolean required;
 
 	/** Cross-cutting concerns */
-	private List<String> concerns = new ArrayList<String>();
+	private List<ConcernType> concerns = new ArrayList<ConcernType>();
 
 	public String getName() {
 		return name;
@@ -54,6 +59,14 @@ public class ParsedParameter {
 		this.type = type;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public boolean isRequired() {
 		return required;
 	}
@@ -62,11 +75,11 @@ public class ParsedParameter {
 		this.required = required;
 	}
 
-	public List<String> getConcerns() {
+	public List<ConcernType> getConcerns() {
 		return concerns;
 	}
 
-	public void setConcerns(List<String> concerns) {
+	public void setConcerns(List<ConcernType> concerns) {
 		this.concerns = concerns;
 	}
 }

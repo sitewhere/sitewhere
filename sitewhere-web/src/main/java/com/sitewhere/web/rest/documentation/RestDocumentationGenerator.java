@@ -12,8 +12,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -23,17 +25,24 @@ import org.apache.commons.io.IOUtils;
 import org.pegdown.PegDownProcessor;
 import org.reflections.Reflections;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.documentation.ParsedParameter.ParameterType;
+import com.thoughtworks.paranamer.BytecodeReadingParanamer;
+import com.thoughtworks.paranamer.Paranamer;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 /**
  * Introspects the REST controllers to pull out documentation and generate it into an HTML
@@ -388,6 +397,7 @@ public class RestDocumentationGenerator {
 			markdownFilename = method.getName() + ".md";
 		}
 
+		// Parse method-level markdown description.
 		File markdownFile = new File(resources, markdownFilename);
 		if (!markdownFile.exists()) {
 			throw new SiteWhereException("Method markdown file missing: " + markdownFile.getAbsolutePath());
@@ -396,7 +406,71 @@ public class RestDocumentationGenerator {
 		String markdown = readFile(markdownFile);
 		parsed.setDescription(processor.markdownToHtml(markdown));
 
+		// Parse parameters.
+		List<ParsedParameter> params = parseParameters(method);
+		parsed.setParameters(params);
+		for (ParsedParameter param : params) {
+			System.out.println(MarshalUtils.marshalJsonAsPrettyString(param));
+		}
+
 		parseExamples(method, parsed, resources);
+
+		return parsed;
+	}
+
+	protected static List<ParsedParameter> parseParameters(Method method) throws SiteWhereException {
+		List<ParsedParameter> parsed = new ArrayList<ParsedParameter>();
+
+		Paranamer paranamer = new BytecodeReadingParanamer();
+		String[] paramNames = paranamer.lookupParameterNames(method);
+
+		if (paramNames.length > 0) {
+			int i = 0;
+			for (Annotation[] annotations : method.getParameterAnnotations()) {
+				RequestParam request = null;
+				PathVariable path = null;
+				ApiParam api = null;
+				Concerns concerns = null;
+				for (Annotation annotation : annotations) {
+					if (annotation instanceof RequestParam) {
+						request = (RequestParam) annotation;
+					} else if (annotation instanceof PathVariable) {
+						path = (PathVariable) annotation;
+					} else if (annotation instanceof ApiParam) {
+						api = (ApiParam) annotation;
+					} else if (annotation instanceof Concerns) {
+						concerns = (Concerns) annotation;
+					}
+				}
+				if (request != null) {
+					ParsedParameter param = new ParsedParameter();
+					param.setType(ParameterType.Request);
+					param.setName(paramNames[i]);
+					param.setRequired(request.required());
+					if (api != null) {
+						param.setRequired(api.required());
+						param.setDescription(api.value());
+					}
+					if (concerns != null) {
+						param.getConcerns().addAll(Arrays.asList(concerns.values()));
+					}
+					parsed.add(param);
+				} else if (path != null) {
+					ParsedParameter param = new ParsedParameter();
+					param.setType(ParameterType.Path);
+					param.setName(paramNames[i]);
+					param.setRequired(true);
+					if (api != null) {
+						param.setDescription(api.value());
+					}
+					if (concerns != null) {
+						param.getConcerns().addAll(Arrays.asList(concerns.values()));
+					}
+					parsed.add(param);
+				}
+				i++;
+			}
+		}
 
 		return parsed;
 	}

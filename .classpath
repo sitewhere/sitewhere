@@ -104,5 +104,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/mqtt-client/mqtt-client/1.11/mqtt-client-1.11.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/reflections/reflections/0.9.10/reflections-0.9.10.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/pegdown/pegdown/1.5.0/pegdown-1.5.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/thoughtworks/paranamer/paranamer/2.8/paranamer-2.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

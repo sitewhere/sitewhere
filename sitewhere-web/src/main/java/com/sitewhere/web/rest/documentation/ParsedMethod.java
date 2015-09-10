@@ -37,6 +37,9 @@ public class ParsedMethod {
 	/** HTML description */
 	private String description;
 
+	/** List of parsed parameters */
+	private List<ParsedParameter> parameters = new ArrayList<ParsedParameter>();
+
 	/** List of examples */
 	private List<ParsedExample> examples = new ArrayList<ParsedExample>();
 
@@ -86,6 +89,14 @@ public class ParsedMethod {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public List<ParsedParameter> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(List<ParsedParameter> parameters) {
+		this.parameters = parameters;
 	}
 
 	public List<ParsedExample> getExamples() {
