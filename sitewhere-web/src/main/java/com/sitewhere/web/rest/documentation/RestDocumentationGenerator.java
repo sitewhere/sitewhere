@@ -194,9 +194,11 @@ public class RestDocumentationGenerator {
 		String html = "<a id=\"" + controller.getResource() + "\"></a>\n";
 		html += controller.getDescription();
 		for (ParsedMethod method : controller.getMethods()) {
+			RequestMethodColors colors = getRequestMethodColors(method);
 			String methodHtml =
 					createSplitter() + "<a id=\"" + method.getName() + "\"></a>\n" + method.getDescription();
-			methodHtml += createUriBlock(method) + "\n";
+			methodHtml += createUriBlock(method, colors) + "\n";
+			methodHtml += createParametersBlock(method, colors) + "\n";
 			for (ParsedExample example : method.getExamples()) {
 				String exampleHtml = "";
 				if (example.getDescription() != null) {
@@ -229,9 +231,52 @@ public class RestDocumentationGenerator {
 	 * Create block that displays REST service URI.
 	 * 
 	 * @param method
+	 * @param colors
 	 * @return
 	 */
-	protected static String createUriBlock(ParsedMethod method) {
+	protected static String createUriBlock(ParsedMethod method, RequestMethodColors colors) {
+		String uri =
+				"<h3>Request URI</h3><div style=\"background-color: "
+						+ colors.getBgColor()
+						+ "; border: 1px solid "
+						+ colors.getBrdColor()
+						+ "; font-size: 13px; margin: 20px 0px;\"><span style=\"width: 70px; background-color: "
+						+ colors.getTagColor()
+						+ "; color: #fff; text-align: center; display: inline-block; margin-right: 15px; padding: 5px;\">"
+						+ colors.getTagName()
+						+ "</span><span style=\"width: 100%; font-family: courier; font-size: 12px; color: #000;\">"
+						+ method.getBaseUri() + method.getRelativeUri() + "</span></div>";
+
+		int pathParamsCount = 0;
+		String table =
+				"<h3>Path Parameters</h3><table class=\"param-table\"><thead><tr style=\"background-color: "
+						+ colors.getTagColor() + "; color: #fff;\"><th>Name</th>"
+						+ "<th>Description</th></thead><tbody>";
+		for (ParsedParameter param : method.getParameters()) {
+			if (param.getType() == ParameterType.Path) {
+				table +=
+						"<tr style=\"background-color: " + colors.getBgColor()
+								+ "\"><td style=\"border: 1px solid " + colors.getBrdColor() + ";\">"
+								+ param.getName() + "</td><td>" + param.getDescription() + "</td></tr>";
+				pathParamsCount++;
+			}
+		}
+		table += "</table>";
+
+		if (pathParamsCount > 0) {
+			uri += table;
+		}
+
+		return uri;
+	}
+
+	/**
+	 * Find colors associated with request method.
+	 * 
+	 * @param method
+	 * @return
+	 */
+	protected static RequestMethodColors getRequestMethodColors(ParsedMethod method) {
 		String tagName, tagColor, bgColor, brdColor;
 		switch (method.getRequestMethod()) {
 		case GET: {
@@ -270,15 +315,88 @@ public class RestDocumentationGenerator {
 			break;
 		}
 		}
-		return "<div style=\"background-color: "
-				+ bgColor
-				+ "; border: 1px solid "
-				+ brdColor
-				+ "; font-size: 13px; margin: 20px 0px;\"><span style=\"width: 70px; background-color: "
-				+ tagColor
-				+ "; color: #fff; text-align: center; display: inline-block; margin-right: 15px; padding: 5px;\">"
-				+ tagName + "</span><span style=\"width: 100%; font-family: courier; font-weight: bold;\">"
-				+ method.getBaseUri() + method.getRelativeUri() + "</span></div>";
+		RequestMethodColors colors = new RequestMethodColors();
+		colors.setTagName(tagName);
+		colors.setTagColor(tagColor);
+		colors.setBgColor(bgColor);
+		colors.setBrdColor(brdColor);
+		return colors;
+	}
+
+	/**
+	 * Holder object for colors associated with request method;
+	 * 
+	 * @author Derek
+	 */
+	protected static class RequestMethodColors {
+		private String tagName;
+		private String tagColor;
+		private String bgColor;
+		private String brdColor;
+
+		public String getTagName() {
+			return tagName;
+		}
+
+		public void setTagName(String tagName) {
+			this.tagName = tagName;
+		}
+
+		public String getTagColor() {
+			return tagColor;
+		}
+
+		public void setTagColor(String tagColor) {
+			this.tagColor = tagColor;
+		}
+
+		public String getBgColor() {
+			return bgColor;
+		}
+
+		public void setBgColor(String bgColor) {
+			this.bgColor = bgColor;
+		}
+
+		public String getBrdColor() {
+			return brdColor;
+		}
+
+		public void setBrdColor(String brdColor) {
+			this.brdColor = brdColor;
+		}
+	}
+
+	/**
+	 * Create the table of parameters.
+	 * 
+	 * @param method
+	 * @return
+	 */
+	protected static String createParametersBlock(ParsedMethod method, RequestMethodColors colors) {
+		if (method.getParameters().isEmpty()) {
+			return "";
+		}
+		String table =
+				"<h3>Request Parameters</h3><table class=\"param-table\"><thead><tr><th>Name</th>"
+						+ "<th>Description</th><th>Required</th></thead><tbody>";
+
+		int reqParamsCount = 0;
+		for (ParsedParameter param : method.getParameters()) {
+			if (param.getType() == ParameterType.Request) {
+				table +=
+						"<tr><td>" + param.getName() + "</td><td>" + param.getDescription() + "</td><td>"
+								+ param.isRequired() + "</td></tr>";
+				reqParamsCount++;
+			}
+		}
+
+		table += "</tbody></table>";
+		if (reqParamsCount > 0) {
+			return table;
+		} else {
+			return "";
+		}
 	}
 
 	/**
@@ -408,16 +526,27 @@ public class RestDocumentationGenerator {
 
 		// Parse parameters.
 		List<ParsedParameter> params = parseParameters(method);
+		Collections.sort(params, new Comparator<ParsedParameter>() {
+
+			@Override
+			public int compare(ParsedParameter o1, ParsedParameter o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
 		parsed.setParameters(params);
-		for (ParsedParameter param : params) {
-			System.out.println(MarshalUtils.marshalJsonAsPrettyString(param));
-		}
 
 		parseExamples(method, parsed, resources);
 
 		return parsed;
 	}
 
+	/**
+	 * Parse method parameters.
+	 * 
+	 * @param method
+	 * @return
+	 * @throws SiteWhereException
+	 */
 	protected static List<ParsedParameter> parseParameters(Method method) throws SiteWhereException {
 		List<ParsedParameter> parsed = new ArrayList<ParsedParameter>();
 
