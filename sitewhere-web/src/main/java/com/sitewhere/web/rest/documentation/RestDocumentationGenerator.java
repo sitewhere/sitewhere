@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -632,6 +633,18 @@ public class RestDocumentationGenerator {
 			if (jsonObj != null) {
 				try {
 					Object instance = jsonObj.newInstance();
+					try {
+						Method generate = jsonObj.getMethod("generate");
+						instance = generate.invoke(instance);
+					} catch (NoSuchMethodException e) {
+						// Fall through if method is not implemented.
+					} catch (SecurityException e) {
+						throw new SiteWhereException("Error executing generator method.", e);
+					} catch (IllegalArgumentException e) {
+						throw new SiteWhereException("Error executing generator method.", e);
+					} catch (InvocationTargetException e) {
+						throw new SiteWhereException("Error executing generator method.", e);
+					}
 					String marshaled = MarshalUtils.marshalJsonAsPrettyString(instance);
 					parsed.setJson(marshaled);
 				} catch (InstantiationException e) {

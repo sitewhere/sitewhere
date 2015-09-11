@@ -42,7 +42,8 @@ public class MarshalUtils {
 		try {
 			return MAPPER.writeValueAsBytes(object);
 		} catch (JsonProcessingException e) {
-			throw new SiteWhereException("Could not marshal device as JSON.", e);
+			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(),
+					e);
 		}
 	}
 
@@ -57,7 +58,8 @@ public class MarshalUtils {
 		try {
 			return MAPPER.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw new SiteWhereException("Could not marshal device as JSON.", e);
+			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(),
+					e);
 		}
 	}
 
@@ -72,7 +74,8 @@ public class MarshalUtils {
 		try {
 			return PRETTY_MAPPER.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw new SiteWhereException("Could not marshal device as JSON.", e);
+			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(),
+					e);
 		}
 	}
 

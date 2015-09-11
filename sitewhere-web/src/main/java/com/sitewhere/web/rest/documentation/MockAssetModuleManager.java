@@ -7,6 +7,9 @@
  */
 package com.sitewhere.web.rest.documentation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sitewhere.server.asset.AssetModuleManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAsset;
@@ -19,8 +22,15 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
  */
 public class MockAssetModuleManager extends AssetModuleManager {
 
-	/** Always return the same asset */
-	private IAsset asset = ExampleData.ASSET_DEREK;
+	/** Static map of available assets */
+	private Map<String, IAsset> assets = new HashMap<String, IAsset>();
+
+	public MockAssetModuleManager() {
+		assets.put(ExampleData.ASSET_CATERPILLAR.getId(), ExampleData.ASSET_CATERPILLAR);
+		assets.put(ExampleData.ASSET_DEREK.getId(), ExampleData.ASSET_DEREK);
+		assets.put(ExampleData.ASSET_MARTIN.getId(), ExampleData.ASSET_MARTIN);
+		assets.put(ExampleData.ASSET_CATERPILLAR.getId(), ExampleData.ASSET_CATERPILLAR);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -30,6 +40,11 @@ public class MockAssetModuleManager extends AssetModuleManager {
 	 */
 	@Override
 	public IAsset getAssetById(String assetModuleId, String id) throws SiteWhereException {
-		return asset;
+		IAsset match = assets.get(id);
+		if (match == null) {
+			throw new SiteWhereException("Missing sample asset: assetModuleId:" + assetModuleId + " assetId:"
+					+ id);
+		}
+		return match;
 	}
 }

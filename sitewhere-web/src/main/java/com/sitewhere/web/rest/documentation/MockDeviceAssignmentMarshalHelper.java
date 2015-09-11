@@ -9,7 +9,8 @@ package com.sitewhere.web.rest.documentation;
 
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
 
 /**
  * Marshals device assignment information while mocking underlying API calls.
@@ -21,8 +22,22 @@ public class MockDeviceAssignmentMarshalHelper extends DeviceAssignmentMarshalHe
 	/** Mock helper that returns a hard-coded device */
 	private MockDeviceMarshalHelper helper = new MockDeviceMarshalHelper();
 
-	public MockDeviceAssignmentMarshalHelper(ITenant tenant) {
+	/** Mock version of device management that runs on static sample data */
+	private MockDeviceManagement deviceManagement = new MockDeviceManagement();
+
+	public MockDeviceAssignmentMarshalHelper() {
 		super(null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper#getDeviceManagement()
+	 */
+	@Override
+	protected IDeviceManagement getDeviceManagement() throws SiteWhereException {
+		return deviceManagement;
 	}
 
 	/*

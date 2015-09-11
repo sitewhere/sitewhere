@@ -7,18 +7,23 @@
  */
 package com.sitewhere.web.rest.documentation;
 
+import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceMarshalHelper;
-import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Example marshaler that always returns the same device.
  * 
- * @author Derek
-s */
+ * @author Derek s
+ */
 public class MockDeviceMarshalHelper extends DeviceMarshalHelper {
+
+	/** Mock device management imlementation that wraps sample data */
+	private MockDeviceManagement deviceManagement = new MockDeviceManagement();
+
+	private MockDeviceAssignmentMarshalHelper assignmentHelper;
 
 	public MockDeviceMarshalHelper() {
 		super(null);
@@ -28,11 +33,27 @@ public class MockDeviceMarshalHelper extends DeviceMarshalHelper {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.device.marshaling.DeviceMarshalHelper#convert(com.sitewhere.spi.device
-	 * .IDevice, com.sitewhere.spi.asset.IAssetModuleManager)
+	 * com.sitewhere.device.marshaling.DeviceMarshalHelper#getDeviceManagement(com.sitewhere
+	 * .spi.user.ITenant)
 	 */
 	@Override
-	public Device convert(IDevice source, IAssetModuleManager manager) throws SiteWhereException {
-		return ExampleData.TRACKER1;
+	protected IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
+		return deviceManagement;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.marshaling.DeviceMarshalHelper#getAssignmentHelper()
+	 */
+	@Override
+	protected DeviceAssignmentMarshalHelper getAssignmentHelper() {
+		if (assignmentHelper == null) {
+			assignmentHelper = new MockDeviceAssignmentMarshalHelper();
+			assignmentHelper.setIncludeAsset(false);
+			assignmentHelper.setIncludeDevice(false);
+			assignmentHelper.setIncludeSite(false);
+		}
+		return assignmentHelper;
 	}
 }

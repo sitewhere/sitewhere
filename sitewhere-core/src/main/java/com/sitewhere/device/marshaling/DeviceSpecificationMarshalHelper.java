@@ -9,7 +9,6 @@ package com.sitewhere.device.marshaling;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.DeviceSpecification;
@@ -58,8 +57,7 @@ public class DeviceSpecificationMarshalHelper {
 		spec.setToken(source.getToken());
 		spec.setName(source.getName());
 		HardwareAsset asset =
-				(HardwareAsset) SiteWhere.getServer().getAssetModuleManager(tenant).getAssetById(
-						source.getAssetModuleId(), source.getAssetId());
+				(HardwareAsset) manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
 		if (asset == null) {
 			LOGGER.warn("Device specification has reference to non-existent asset.");
 			throw new SiteWhereSystemException(ErrorCode.InvalidAssetReferenceId, ErrorLevel.ERROR);
@@ -83,5 +81,13 @@ public class DeviceSpecificationMarshalHelper {
 	public DeviceSpecificationMarshalHelper setIncludeAsset(boolean includeAsset) {
 		this.includeAsset = includeAsset;
 		return this;
+	}
+
+	public ITenant getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(ITenant tenant) {
+		this.tenant = tenant;
 	}
 }

@@ -27,13 +27,13 @@ public class Assignments {
 	public static class CreateUnassociatedRequest extends DeviceAssignmentCreateRequest {
 
 		public CreateUnassociatedRequest() throws SiteWhereException {
-			setDeviceHardwareId(ExampleData.TRACKER1.getHardwareId());
+			setDeviceHardwareId(ExampleData.TRACKER.getHardwareId());
 			setAssignmentType(DeviceAssignmentType.Unassociated);
 			Map<String, String> metadata = new HashMap<String, String>();
 			metadata.put("validUntil", "2016-10-10");
 			metadata.put("renewable", "true");
 			setMetadata(metadata);
-			SiteWherePersistence.deviceAssignmentCreateLogic(this, ExampleData.TRACKER1,
+			SiteWherePersistence.deviceAssignmentCreateLogic(this, ExampleData.TRACKER,
 					UUID.randomUUID().toString());
 		}
 	}
@@ -41,22 +41,27 @@ public class Assignments {
 	public static class CreateAssociatedRequest extends DeviceAssignmentCreateRequest {
 
 		public CreateAssociatedRequest() throws SiteWhereException {
-			setDeviceHardwareId(ExampleData.TRACKER1.getHardwareId());
+			setDeviceHardwareId(ExampleData.TRACKER.getHardwareId());
 			setAssignmentType(DeviceAssignmentType.Associated);
-			setAssetModuleId("fs-persons");
-			setAssetId("bob");
+			setAssetModuleId(ExampleData.AM_PERSONS.getId());
+			setAssetId(ExampleData.ASSET_DEREK.getId());
 			Map<String, String> metadata = new HashMap<String, String>();
 			metadata.put("validUntil", "2016-10-10");
 			metadata.put("renewable", "true");
 			setMetadata(metadata);
-			SiteWherePersistence.deviceAssignmentCreateLogic(this, ExampleData.TRACKER1,
+			SiteWherePersistence.deviceAssignmentCreateLogic(this, ExampleData.TRACKER,
 					UUID.randomUUID().toString());
 		}
 	}
 
-	public static class CreateAssociatedResponse extends ExampleData.Assignment_TrackerToDerek {
+	public static class CreateAssociatedResponse {
 
-		public CreateAssociatedResponse() {
+		public Object generate() throws SiteWhereException {
+			MockDeviceAssignmentMarshalHelper helper = new MockDeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(ExampleData.TRACKER_TO_DEREK, new MockAssetModuleManager());
 		}
 	}
 }

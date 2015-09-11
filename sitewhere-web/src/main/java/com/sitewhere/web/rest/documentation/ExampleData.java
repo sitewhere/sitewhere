@@ -53,7 +53,7 @@ public class ExampleData {
 	public static Specification_HeartMonitor SPEC_HEART_MONITOR = new Specification_HeartMonitor();
 
 	/** Devices */
-	public static Device_Tracker1 TRACKER1 = new Device_Tracker1();
+	public static Device_Tracker TRACKER = new Device_Tracker();
 
 	/** Devices */
 	public static Device_HeartMonitor HEART_MONITOR = new Device_HeartMonitor();
@@ -91,8 +91,8 @@ public class ExampleData {
 		public Specification_MeiTrack() {
 			setToken("82043707-9e3d-441f-bdcc-33cf0f4f7260");
 			setName("MeiTrack GPS");
-			setAssetModuleId("fs-devices");
-			setAssetId("175");
+			setAssetModuleId(ExampleData.AM_PERSONS.getId());
+			setAssetId(ExampleData.ASSET_CATERPILLAR.getId());
 			setContainerPolicy(DeviceContainerPolicy.Standalone);
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
@@ -105,8 +105,8 @@ public class ExampleData {
 		public Specification_HeartMonitor() {
 			setToken("2f540b66-b6ab-4fbe-bdf3-ca6aaf103848");
 			setName("Heart Monitor");
-			setAssetModuleId("fs-devices");
-			setAssetId("333");
+			setAssetModuleId(ExampleData.AM_PERSONS.getId());
+			setAssetId(ExampleData.ASSET_CATERPILLAR.getId());
 			setContainerPolicy(DeviceContainerPolicy.Standalone);
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
@@ -114,9 +114,9 @@ public class ExampleData {
 		}
 	}
 
-	public static class Device_Tracker1 extends Device {
+	public static class Device_Tracker extends Device {
 
-		public Device_Tracker1() {
+		public Device_Tracker() {
 			setHardwareId("b6daecc5-b0b2-48a8-90ab-4c4a170dd2a0");
 			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
 			setSpecificationToken(ExampleData.SPEC_MEITRACK.getToken());
@@ -144,7 +144,7 @@ public class ExampleData {
 
 		public Assignment_TrackerToDerek() {
 			setToken("1ad74fe3-2cbf-443f-aede-9ec70a9a4ab5");
-			setDeviceHardwareId(ExampleData.TRACKER1.getHardwareId());
+			setDeviceHardwareId(ExampleData.TRACKER.getHardwareId());
 			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
 			setAssignmentType(DeviceAssignmentType.Associated);
 			setAssetModuleId(ExampleData.AM_PERSONS.getId());
@@ -176,7 +176,7 @@ public class ExampleData {
 
 		public Assignment_TrackerToMartin() {
 			setToken("1ad74fe3-2cbf-443f-aede-9ec70a9a4ab5");
-			setDeviceHardwareId(ExampleData.TRACKER1.getHardwareId());
+			setDeviceHardwareId(ExampleData.TRACKER.getHardwareId());
 			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
 			setAssignmentType(DeviceAssignmentType.Associated);
 			setAssetModuleId(ExampleData.AM_PERSONS.getId());
@@ -188,12 +188,33 @@ public class ExampleData {
 		}
 	}
 
+	public static class AssetModule_Devices extends AssetModule {
+
+		public AssetModule_Devices() {
+			setId("ac-devices");
+			setName("Default Device Management");
+			setAssetType(AssetType.Device);
+		}
+	}
+
 	public static class AssetModule_Persons extends AssetModule {
 
 		public AssetModule_Persons() {
 			setId("ac-persons");
 			setName("Default Identity Management");
 			setAssetType(AssetType.Person);
+		}
+	}
+
+	public static class Device_MeiTrack extends HardwareAsset {
+
+		public Device_MeiTrack() {
+			setId("1");
+			setName("MeiTrack Location Tracker");
+			setType(AssetType.Hardware);
+			setImageUrl("https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-320e.jpg");
+			setSku("M-TRACK");
+			setDescription("Tracking device.");
 		}
 	}
 
