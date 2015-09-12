@@ -23,6 +23,7 @@ public class MockDeviceMarshalHelper extends DeviceMarshalHelper {
 	/** Mock device management imlementation that wraps sample data */
 	private MockDeviceManagement deviceManagement = new MockDeviceManagement();
 
+	/** Mock device assignment marshal helper */
 	private MockDeviceAssignmentMarshalHelper assignmentHelper;
 
 	public MockDeviceMarshalHelper() {

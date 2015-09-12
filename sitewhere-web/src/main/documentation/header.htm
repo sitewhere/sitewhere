@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <script type='text/javascript'
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/default.min.css">
 <script type='text/javascript'
@@ -150,12 +150,11 @@ pre {
 </style>
 
 <script type='text/javascript'>
-	//<![CDATA[
-	$(window).load(function() {
-		$('body').scrollspy({
+	$(document).ready(function() {
+		$("body").scrollspy({
 			target : "#rest-navigation"
 		})
-	});//]]>
+	});
 </script>
 </head>
 

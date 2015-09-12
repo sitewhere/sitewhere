@@ -20,7 +20,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 public class MockDeviceAssignmentMarshalHelper extends DeviceAssignmentMarshalHelper {
 
 	/** Mock helper that returns a hard-coded device */
-	private MockDeviceMarshalHelper helper = new MockDeviceMarshalHelper();
+	private MockDeviceMarshalHelper helper;
 
 	/** Mock version of device management that runs on static sample data */
 	private MockDeviceManagement deviceManagement = new MockDeviceManagement();
@@ -48,6 +48,13 @@ public class MockDeviceAssignmentMarshalHelper extends DeviceAssignmentMarshalHe
 	 */
 	@Override
 	protected DeviceMarshalHelper getDeviceHelper() {
+		if (helper == null) {
+			helper = new MockDeviceMarshalHelper();
+			helper.setIncludeSite(false);
+			helper.setIncludeSpecification(false);
+			helper.setIncludeAssignment(false);
+			helper.setIncludeAsset(false);
+		}
 		return helper;
 	}
 }

@@ -197,7 +197,8 @@ public class RestDocumentationGenerator {
 		for (ParsedMethod method : controller.getMethods()) {
 			RequestMethodColors colors = getRequestMethodColors(method);
 			String methodHtml =
-					createSplitter() + "<a id=\"" + method.getName() + "\"></a>\n" + method.getDescription();
+					createSplitter() + "<a id=\"" + method.getName() + "\" style=\"display:block;\"></a>\n"
+							+ method.getDescription();
 			methodHtml += createUriBlock(method, colors) + "\n";
 			methodHtml += createParametersBlock(method, colors) + "\n";
 			for (ParsedExample example : method.getExamples()) {
