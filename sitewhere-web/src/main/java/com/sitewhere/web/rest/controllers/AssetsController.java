@@ -170,7 +170,7 @@ public class AssetsController extends SiteWhereController {
 	@ApiOperation(value = "List assignments associated with an asset")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Concerns(values = { ConcernType.Paging })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssignmentsForAsset.class, description = "assets/get-assignments-for-assets-response.md") })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssignmentsForAsset.class, description = "getAssignmentsForAsset.md") })
 	public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
@@ -201,7 +201,9 @@ public class AssetsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/modules", method = RequestMethod.GET)
 	@ResponseBody
+	@ApiOperation(value = "List asset modules matching criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.ListAssetModules.class, description = "listAssetModules.md") })
 	public List<AssetModule> listAssetModules(
 			@ApiParam(value = "Asset type", required = false) @RequestParam(required = false) String assetType,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -234,6 +236,7 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Refresh the list of asset modules")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.RefreshAssetModules.class, description = "refreshModules.md") })
 	public List<ICommandResponse> refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
 		try {

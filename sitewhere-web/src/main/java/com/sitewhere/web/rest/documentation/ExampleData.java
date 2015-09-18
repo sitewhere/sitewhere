@@ -31,6 +31,9 @@ public class ExampleData {
 	/** Persons asset module */
 	public static AssetModule_Persons AM_PERSONS = new AssetModule_Persons();
 
+	/** Devices asset module */
+	public static AssetModule_Devices AM_DEVICES= new AssetModule_Devices();
+
 	/** Person asset */
 	public static Person_Derek ASSET_DEREK = new Person_Derek();
 

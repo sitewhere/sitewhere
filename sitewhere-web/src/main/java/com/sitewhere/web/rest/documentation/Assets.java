@@ -12,8 +12,10 @@ import java.util.List;
 
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetModule;
+import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.device.IDeviceAssignment;
 
 public class Assets {
@@ -72,5 +74,26 @@ public class Assets {
 			super(assignments);
 			setNumResults(2);
 		}
+	}
+
+	public static class ListAssetModules {
+
+		public Object generate() throws SiteWhereException {
+			List<AssetModule> modules = new ArrayList<AssetModule>();
+			modules.add(ExampleData.AM_PERSONS);
+			modules.add(ExampleData.AM_DEVICES);
+			return modules;
+		}
+	}
+
+	public static class RefreshAssetModules {
+
+		public Object generate() throws SiteWhereException {
+			List<CommandResponse> responses = new ArrayList<CommandResponse>();
+			responses.add(new CommandResponse(CommandResult.Successful, "Module loaded successfully."));
+			responses.add(new CommandResponse(CommandResult.Failed, "Module failed to refresh."));
+			return responses;
+		}
+
 	}
 }
