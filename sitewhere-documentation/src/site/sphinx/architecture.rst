@@ -16,11 +16,11 @@ systems.
    :align: left
    
 -----------------
-System Components
+Global Components
 -----------------
 As shown in the architecture diagram, SiteWhere is composed of many different components that are wired
-together to provide the core platform. In the sections below, we will cover the individual components in
-more detail.
+together to provide the core platform. In the sections below, we will cover the components that are
+global to the system. All tenants share these global settings.
 
 Web Application Container
 -------------------------
@@ -30,26 +30,148 @@ such as Apache Tomcat. SiteWhere will run on a vanilla version of Apache Tomcat 
 are copied into the Tomcat **conf** folder. The configuration files may be altered to change
 the way SiteWhere processes device events and integrates with external services.
 
-Datastores
-----------
+SiteWhere Server
+----------------
+SiteWhere Server is the central application that controls all of the other SiteWhere components. It is
+started automatically from the deployed WAR file and bootstraps using a Spring configuration file located
+in **conf/sitewhere/sitewhere-server.xml**. The server manages the common system components such as user 
+management and the REST services. It also bootstraps one or more **tenant engines** which handle most of 
+the other processing logic.
+
+Administrative Application
+--------------------------
+SiteWhere includes an HTML5 administrative application that can be used to manage how the system functions.
+The information that appears in the application is dependent on the login credentials provided and
+the permissions associated with that user. By default, a new SiteWhere instance has a single **admin**
+user that has all permissions and is associated with the default tenant.
+
+Some aspects of the system such as users and tenants are global in scope. Changes made to these entities
+will be reflected across all tenants. Administrative access at this level should be limited since these
+users can create new users and tenants as well as shutting down running tenants, deleting existing 
+users and affecting other system data across the board.
+
+Most other aspects of the system are tenant-specific. Each user account may be associated with one or
+more tenants, allowing the user to manage information for multiple tenants. When logging in to the
+system, if a user is associated with more than one tenant, they are asked to choose which tenant to
+manage before proceeding. All other system data such as sites, device specifications, devices, assignments,
+etc are managed at a per-tenant level, so most of the data in the administrative interface depends on 
+the user logged in and which tenant was selected.
+
+REST Services
+-------------
+Most of the core functionality related to the SiteWhere APIs is accessible externally via REST services. Using the
+services, an external entity can create, view, update, or delete entities in the system. The services can also 
+interact with subsystems such as asset management. All REST calls are subject to authentication and use Spring Security
+to verify that the user is authorized for the operation.
+
+SiteWhere includes a working version of `Swagger <http://swagger.wordnik.com/>`_ which adds a user interface around
+the REST services. Using the Swagger interface, you can interactively execute REST calls against a running SiteWhere
+server and view the JSON responses. The default Swagger URL for a server is:
+
+   http://sitewhere.hostname/sitewhere/
+   
+where **sitewhere.hostname** is the hostname of the server running SiteWhere.
+
+Global Datastore
+----------------
 When storing and retrieving data, SiteWhere never deals directly with a database. Instead, the system defines
 Service Provider Interfaces (SPIs) for the data operations it needs to operate and expects datastore 
-implementations to comply with the required interfaces. The two core interfaces that a datastore needs
-to implement are:
+implementations to comply with the required interfaces. The user management datastore is configured at
+the global level and is based on the following APIs:
 
-:`IDeviceManagement <apidocs/com/sitewhere/spi/device/IDeviceManagement.html>`_: Contains all of the core 
-	device management calls including CRUD methods for sites, specifications, devices, events, etc.
 :`IUserManagement <apidocs/com/sitewhere/spi/user/IUserManagement.html>`_: Contains all of the core
-	user management calls including CRUD methods for users, authorities, etc.
+   user management calls including CRUD methods for users, authorities, etc.
 
 When configuring a new SiteWhere server instance, you change settings in the core 
 Spring configuration file to indicate which type of datastore to use for the underlying 
 data implementation. The types of datastores currently supported include MongoDB and Apache 
-HBase. MongoDB is a great choice for running on a personal workstation or a  cloud instance with limited 
-resources. HBase is better suited for projects that require massive scalability,  but at the expense of 
-more overhead both in system configuration and system resources. For more information
-on configuring a datastore for SiteWhere see `Datastore Configuration <userguide/configuration.html#datastore-configuration>`_ 
-in the configuration guide.
+HBase.
+
+Hazelcast Services
+------------------
+Hazelcast is an in-memory datagrid designed with high performance in mind. By default, each SiteWhere Server 
+instance also acts as a Hazelcast instance. In the default global configuration, the Hazelcast configuration 
+is loaded from **conf/sitewhere/hazelcast.xml**. Hazelcast support can be removed by removing the corresponding 
+entry from the configuration file.
+
+SiteWhere can use Hazelcast to interactively broadcast event data to other interested systems. 
+For example, the SiteWhere plugin for Mule Studio uses Hazelcast to connect to a SiteWhere server 
+instance and pull events into the bus as they occur. The events can then be processed using 
+Mule flow logic in order to integrate event data with other cloud systems or perform other 
+asynchronous processing tasks in real time. Access to Hazelcast clients can be limited by 
+adjusting the SiteWhere server Hazelcast configuration so that, for instance, only machines in certain IP
+ranges can receive the event data.
+
+-----------------
+Tenant Components
+-----------------
+Most components of the system are configured at the per-tenant level. This allows for clean separation 
+of data and processing logic from one tenant to the next.
+
+Tenant Engines
+--------------
+SiteWhere (starting with version 1.2.0) is designed as a multitenant system. That means that multiple IoT
+applications can be served from a single SiteWhere instance. Each system tenant has a separate data store
+so data is not intermingled between tenants. Each tenant also has a separate processing pipeline that can
+be customized without affecting the processing of other tenants. When SiteWhere Server starts for the first
+time, a default tenant is created based on the default tenant configuration file found at
+**conf/sitewhere/sitewhere-tenant.xml**. The default configuration is copied to a tenant-specific
+configuration file located at **conf/sitewhere/xxx-tenant.xml** where **xxx** is the unique id for the tenant.
+Making changes to the configuration file for a tenant will alter the processing logic for just that tenant.
+New tenants can be added from the SiteWhere administrative application. Once created, tenants can be started
+and stopped dynamically without shutting down the entire server. For instance, to make configuration changes
+to one tenant, it may be shut down, reconfigured, and brought back up without affecting other running tenants.
+
+Tenant Datastores
+-----------------
+As with global datastores, tenant datastores configure SPI implementations that provide persistence of
+tenant-level information such as device and asset management. Service provider interfaces implemented
+include:
+
+:`IDeviceManagement <apidocs/com/sitewhere/spi/device/IDeviceManagement.html>`_: Contains all of the core 
+	device management calls including CRUD methods for sites, specifications, devices, events, etc.
+:`IAssetManagement <apidocs/com/sitewhere/spi/asset/IAssetManagement.html>`_: Contains all of the core 
+   asset management calls including CRUD methods for asset categories and assets.
+
+Tenant datastores are configured in the **conf/sitewhere/xxx-tenant.xml** configuration file (where **xxx** 
+is the tenant id).
+
+Communication Engine
+--------------------
+The SiteWhere communication engine handles all functionality related to interacting with devices. 
+Its responsibilities include:
+
+:Registration of new or existing devices:
+   SiteWhere devices can be created manually with API calls, but it is often preferable to have devices
+   self-register. In that case, the device provides a unique hardware id and a specification token to the
+   system which in turns creates a new device record that can start accepting events. SiteWhere assumes that
+   each device will have a unique id in the system so it can be independently addressed. The specification 
+   token passed at startup indicates the type of hardware the device is using and references a device specification
+   that already exists in the system. Devices send a registration event when they boot or connect to the network
+   and SiteWhere either creates a new device record or finds an existing one. SiteWhere returns a response message
+   to the device indicating the registration status.
+   
+:Receipt of events from connected devices:
+   Once registered with the system, devices can report any number or type of events to SiteWhere, which in turn stores
+   the events. Event types include location updates, sensor measurements and other acquired data, or alerts in response
+   to exceptional events. Devices also have the ability to acknowledge receipt of commands issued by SiteWhere.
+   Events are delivered to SiteWhere via an inbound event pipeline which provides a modular way
+   of introducing new functionality for processing incoming data.
+   
+:Delivery of commands to connected devices:
+   Each device registered with SiteWhere has an associated device specification which is tied to the type
+   of hardware running on the device. Each device specification has a list of commands that can be executed
+   against devices with that specification. SiteWhere allows any number of commands to be added for a specification
+   and each command can carry any number of arguments. The commands and arguments can be added via the administrative
+   user interface or via REST calls. When commands are executed, they travel through a pipeline that encodes them
+   in an expected format and delivers them across an expected protocol.
+   
+The flow of data in the SiteWhere communication engine is shown below:
+
+.. image:: /_static/images/communication-engine.png
+   :width: 100%
+   :alt: SiteWhere Communication Engine
+   :align: left
 
 Asset Modules
 -------------
@@ -67,146 +189,10 @@ ever references entities based on a unique id understood by the underlying asset
 of available assets is left to the systems behind the asset modules (which usually already have a user interface
 specific to the features they provide).
 
-REST Services
--------------
-Most of the core functionality related to the SiteWhere APIs is accessible externally via REST services. Using the
-services, an external entity can create, view, update, or delete entities in the system. The services can also 
-interact with subsystems such as asset management. All REST calls are subject to authentication and use Spring Security
-to verify that the user is authorized for the operation. Currently the system uses basic authentication over an
-unencrypted pipe, so the data is not secure. Data can be secured by changing communication to use basic authentication over SSL,
-which is considered a reasonable approach for sending REST data securely. This will become the default setup as 
-SiteWhere nears a 1.0 release.
-
-SiteWhere includes a working version of `Swagger <http://swagger.wordnik.com/>`_ which adds a user interface around
-the REST services. Using the Swagger interface, you can interactively execute REST calls against a running SiteWhere
-server and view the JSON responses. The default Swagger URL for a server is:
-
-	http://sitewhere.hostname/sitewhere/
-	
-where **sitewhere.hostname** is the hostname of the server running SiteWhere.
-
-Administrative Application
---------------------------
-SiteWhere includes an HTML5 administrative application that can be used to set up system data to allow it to process
-information from devices. The application offers the following features:
-
-:Manage site information:
-	Sites are a coarse-grained constructs used for grouping related devices. They are very useful for location-based
-	processing because each site can have map information associated with it. The admin UI allows sites to be created,
-	updated, viewed, and deleted. It also allows the type of map, initial location and zoom level to be associated
-	so that visualizations have a map on which to display markers. A SiteWhere `Leaflet <http://leafletjs.com/>`_ 
-	plugin is available which can automatically load the correct map and display device location information
-	based on data stored with the site.
-	
-:Manage device specifications:
-	Device specifications can be created, updated, viewed or deleted via the administrative interface. For a 
-	given specification, you can drill down to manage the list of commands available to devices that use it. 
-	The UI includes utilities for generating  
-	`Google Protocol Buffer <https://developers.google.com/protocol-buffers/docs/overview>`_ descriptors for 
-	automated building of an encoded command protocol between SiteWhere and connected devices. Using the 
-	protocol buffer definition, code stubs can be generated in a number of languages so that messages can be
-	passed to the device efficiently.
-	
-:Manage available devices:
-	The administrative UI allows information for all existing devices to be viewed including information about
-	the asset (if any) that the device is assigned to. New devices can be registered in the system manually 
-	using the interface. A history of all assets the device has ever been assigned to is available as part of
-	the interface. From there, a user can navigate to any individual assignment to review events that occurred
-	while the device was assigned.
-	
-:Manage device assignments:
-	Devices may be assigned to assets using the administrative UI. The interface dynamically queries the 
-	asset management modules to allow the user to browse the underlying assets and associate them with devices.
-	Existing assignments can have their assignment state changed from the interface to mark them as missing or 
-	to end the assignment so that the device can be reassigned to another asset. For each device assignment,
-	the user can view detailed records of all events that occurred during the assignment.
-	
-:Emulate events from an assignment:
-	When viewing a device assignment, you have the option of using a built-in device emulator that sends events
-	into the system under the identity of the given device. This feature is useful for testing of backend logic
-	because event data can be added to the system witout the need for a physical device. The emulator interface
-	includes a map for adding location data. It also includes interfaces for adding custom measurements and
-	alerts on behalf of the device. The emulator uses MQTT over web sockets to deliver the event data to 
-	SiteWhere, so an external MQTT broker is required for delivery of events.
-	
-:Manage system users:
-	The user management system controls which agents are allowed to access which resources in SiteWhere. The 
-	adminstrative UI allows new users to be created and provides an easy way to manage permissions for access 
-	various parts of the system.
-
-Hazelcast Services
-------------------
-SiteWhere uses Hazelcast to interactively broadcast event data to other interested systems. Hazelcast is an 
-in-memory datagrid designed with high performance in mind. For example, the SiteWhere plugin for Mule Studio
-uses Hazelcast to connect to a SiteWhere server instance and pull events into the bus as they occur. The events
-can then be processed using Mule flow logic in order to integrate event data with other cloud systems or
-perform other asynchronous processing tasks in real time. Access to Hazelcast clients can be limited by 
-adjusting the SiteWhere server Hazelcast configuration so that, for instance, only machines in certain IP
-ranges can receive the event data.
-
-Solr Integration
-----------------
-The backend datastores used by SiteWhere are intended to store a lot of information which is accessed in a 
-very specific pattern -- namely, events are stored based on device assignment and time they occur. This 
-approach scales well and stores all the information so that it can easily be retrieved, but it does not
-do a good job of supporting adhoc queries. Apache Solr Cloud is a highly scalable, distributed search
-engine that indexes data in a document-centric view. Rather than try to reinvent the wheel and provide
-advanced searching directly in SiteWhere, a module has been created that translates SiteWhere events into
-Solr documents and indexes them in the engine. This allows for advanced queries that would not be possible
-using the underlying data stores alone. Solr allows for advanced searches using a custom SiteWhere schema
-that indicates how event data should be indexed. Solr can then be queried for SiteWhere events based on
-features like geospatial searches, faceted result sets, and other complicated searches that make it possible
-to derive more meaning from the event data.
-
-External Search Providers
--------------------------
-SiteWhere supports an abstracted view of external search engines that operate on 
-SiteWhere data. External search providers allow the SiteWhere REST services to take advantage of features 
-particular to the underlying search engine while still returning results in a predictable format. 
-For instance, the Solr external search provider allows a user to pass a Solr query string as part of the
-REST call, taking advantage of powerful Solr features while returning a result set in the same format
-SiteWhere uses for searches on its core datastores. This approach allows SiteWhere to enrich the result 
-data if necessary, and presents a single view of the data whether stored in SiteWhere or indexed in an
-engine optimized for adhoc queries.
-
---------------------
-Communication Engine
---------------------
-The SiteWhere communication engine handles all functionality related to interacting with devices. 
-Its responsibilities include:
-
-:Registration of new or existing devices:
-	SiteWhere devices can be created manually with API calls, but it is often preferable to have devices
-	self-register. In that case, the device provides a unique hardware id and a specification token to the
-	system which in turns creates a new device record that can start accepting events. SiteWhere assumes that
-	each device will have a unique id in the system so it can be independently addressed. The specification 
-	token passed at startup indicates the type of hardware the device is using and references a device specification
-	that already exists in the system. Devices send a registration event when they boot or connect to the network
-	and SiteWhere either creates a new device record or finds an existing one. SiteWhere returns a response message
-	to the device indicating the registration status.
-	
-:Receipt of events from connected devices:
-   Once registered with the system, devices can report any number or type of events to SiteWhere, which in turn stores
-   the events. Event types include location updates, sensor measurements and other acquired data, or alerts in response
-   to exceptional events. Devices also have the ability to acknowledge receipt of commands issued by SiteWhere.
-   Events are delivered to SiteWhere via an inbound event pipeline which provides a modular way
-   of introducing new functionality for processing incoming data.
-	
-:Delivery of commands to connected devices:
-	Each device registered with SiteWhere has an associated device specification which is tied to the type
-	of hardware running on the device. Each device specification has a list of commands that can be executed
-	against devices with that specification. SiteWhere allows any number of commands to be added for a specification
-	and each command can carry any number of arguments. The commands and arguments can be added via the administrative
-	user interface or via REST calls. When commands are executed, they travel through a pipeline that encodes them
-	in an expected format and delivers them across an expected protocol.
-	
-The flow of data in the SiteWhere communication engine is shown below:
-
-.. image:: /_static/images/communication-engine.png
-   :width: 100%
-   :alt: SiteWhere Communication Engine
-   :align: left
-
+SiteWhere also provides the concept of **asset categories** which reside in the SiteWhere datastore. Asset 
+categories are containers for assets of a given type and may be added/edited from within the administrative console. 
+Asset categories are loaded as asset modules at runtime, allowing assets to be pulled from the datastore in addition 
+to modules loaded from other sources such as XML files or third-party systems.
 	
 ------------
 Object Model
