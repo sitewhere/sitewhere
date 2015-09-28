@@ -8,13 +8,18 @@
 package com.sitewhere.web.rest.documentation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.sitewhere.rest.model.asset.Asset;
+import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.AssetModule;
+import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
+import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.device.IDeviceAssignment;
 
@@ -95,5 +100,71 @@ public class Assets {
 			return responses;
 		}
 
+	}
+
+	public static class CreateAssetCategoryRequest {
+
+		public Object generate() throws SiteWhereException {
+			AssetCategoryCreateRequest request = new AssetCategoryCreateRequest();
+			request.setId("my-devices");
+			request.setName("My Devices");
+			request.setAssetType(AssetType.Device);
+			return request;
+		}
+	}
+
+	public static class UpdateAssetCategoryRequest {
+
+		public Object generate() throws SiteWhereException {
+			AssetCategoryCreateRequest request = new AssetCategoryCreateRequest();
+			request.setId("my-devices");
+			request.setName("My Updated Devices");
+			request.setAssetType(AssetType.Device);
+			return request;
+		}
+	}
+
+	public static class GetAssetCategoryByIdResponse {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.AC_DEVICES;
+		}
+	}
+
+	public static class ListAssetCategories {
+
+		public Object generate() throws SiteWhereException {
+			List<AssetCategory> categories = new ArrayList<AssetCategory>();
+			categories.add(ExampleData.AC_DEVICES);
+			categories.add(ExampleData.AC_PERSONS);
+			return categories;
+		}
+	}
+
+	public static class CreatePersonAssetInCategory {
+
+		public Object generate() throws SiteWhereException {
+			PersonAssetCreateRequest request = new PersonAssetCreateRequest();
+			request.setId("john");
+			request.setName("John Doe");
+			request.setUserName("jdoe");
+			request.setEmailAddress("jdoe@example.com");
+			request.setImageUrl("http://example.com/joe.jpg");
+			request.setRoles(Arrays.asList(new String[] { "developer" }));
+			return request;
+		}
+	}
+
+	public static class UpdatePersonAssetInCategory {
+
+		public Object generate() throws SiteWhereException {
+			PersonAssetCreateRequest request = new PersonAssetCreateRequest();
+			request.setName("John Doe");
+			request.setUserName("jdoe");
+			request.setEmailAddress("jdoe@example.com");
+			request.setImageUrl("http://example.com/joe.jpg");
+			request.setRoles(Arrays.asList(new String[] { "developer" }));
+			return request;
+		}
 	}
 }

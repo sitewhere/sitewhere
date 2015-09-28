@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
@@ -32,7 +33,13 @@ public class ExampleData {
 	public static AssetModule_Persons AM_PERSONS = new AssetModule_Persons();
 
 	/** Devices asset module */
-	public static AssetModule_Devices AM_DEVICES= new AssetModule_Devices();
+	public static AssetModule_Devices AM_DEVICES = new AssetModule_Devices();
+
+	/** Devices asset category */
+	public static AssetCategory_Devices AC_DEVICES = new AssetCategory_Devices();
+
+	/** Persons asset category */
+	public static AssetCategory_Persons AC_PERSONS = new AssetCategory_Persons();
 
 	/** Person asset */
 	public static Person_Derek ASSET_DEREK = new Person_Derek();
@@ -205,6 +212,24 @@ public class ExampleData {
 		public AssetModule_Persons() {
 			setId("ac-persons");
 			setName("Default Identity Management");
+			setAssetType(AssetType.Person);
+		}
+	}
+
+	public static class AssetCategory_Devices extends AssetCategory {
+
+		public AssetCategory_Devices() {
+			setId("my-devices");
+			setName("My Devices");
+			setAssetType(AssetType.Device);
+		}
+	}
+
+	public static class AssetCategory_Persons extends AssetCategory {
+
+		public AssetCategory_Persons() {
+			setId("developers");
+			setName("Developers");
 			setAssetType(AssetType.Person);
 		}
 	}

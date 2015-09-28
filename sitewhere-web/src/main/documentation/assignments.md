@@ -5,7 +5,7 @@ For instance, a visitor badge may be assigned to a new person every day. Rather 
 data from all the people a badge has been assigned to, the concept of a device assignment allows events 
 to be associated with the asset they relate to. 
 
-A device assignment is an association between a device, a site, and (optionally) a related asset. 
+A device assignment is an association between a device and (optionally) a related asset. 
 Some assignments do not specify an asset and are referred to as *unassociated*. A real-world example 
 of this is a vending machine that has wireless connectivity to report inventory. The device *is* the 
 asset, so there is no need to associate an external asset.

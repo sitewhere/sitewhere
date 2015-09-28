@@ -10,6 +10,8 @@ package com.sitewhere.rest.model.asset.request;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 
 /**
@@ -17,6 +19,7 @@ import com.sitewhere.spi.asset.request.IAssetCreateRequest;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class AssetCreateRequest implements IAssetCreateRequest {
 
 	/** Asset id */

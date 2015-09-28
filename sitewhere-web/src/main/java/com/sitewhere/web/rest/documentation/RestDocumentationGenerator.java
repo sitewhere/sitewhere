@@ -297,7 +297,7 @@ public class RestDocumentationGenerator {
 		}
 		case PUT: {
 			tagName = "PUT";
-			tagColor = "#C5862B";
+			tagColor = "#DDAA44";
 			bgColor = "#F9F2E9";
 			brdColor = "#F0E0CA";
 			break;
