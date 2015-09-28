@@ -69,7 +69,7 @@
 			<span class="label label-info sw-assignment-header-logo-tag">#= i18next("public.Asset") #</span>
 # } else if ((data.assignmentType == 'Unassociated') && (data.device)) { #
 			style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-header-logo-tag">#= i18next("public.Unassociated") #</span>
+			<span class="label label-info sw-assignment-header-logo-tag">Unassociated</span>
 # } #
 		</div>
 		<div>

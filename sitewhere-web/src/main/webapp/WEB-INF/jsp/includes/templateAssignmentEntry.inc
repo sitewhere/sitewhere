@@ -114,7 +114,7 @@
 # } else if ((data.assignmentType == 'Unassociated') && (data.device)) { #
 		<div class="sw-assignment-list-entry-logowrapper"
 			style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
-			<span class="label label-info sw-assignment-list-entry-logo-tag">#= i18next("public.Unassociated") #</span>
+			<span class="label label-info sw-assignment-list-entry-logo-tag">Unassociated</span>
 		</div>
 # } #
 		<div class="sw-assignment-list-entry-actions">
@@ -228,7 +228,7 @@
 					href="/sitewhere/admin/assignments/#:token#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
-				#= i18next("public.UnassociatedDevice") #
+				Unassociated Device
 			</p>
 		</div>
 # } #
