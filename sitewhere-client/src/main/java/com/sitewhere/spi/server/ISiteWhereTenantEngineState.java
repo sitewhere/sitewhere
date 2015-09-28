@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.server;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -16,7 +17,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public interface ISiteWhereTenantEngineState {
+public interface ISiteWhereTenantEngineState extends Serializable {
 
 	/**
 	 * Get lifecycle status of tenant engine.

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.server;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
@@ -15,7 +17,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public interface ITenantEngineComponent {
+public interface ITenantEngineComponent extends Serializable {
 
 	/**
 	 * Get component id.

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.rest.model.user;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +133,7 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
 	 * 
 	 * @see com.sitewhere.spi.user.ITenant#getEngineState()
 	 */
+	@Transient
 	public ISiteWhereTenantEngineState getEngineState() {
 		return engineState;
 	}

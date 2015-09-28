@@ -23,6 +23,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 @JsonInclude(Include.NON_NULL)
 public class SiteWhereTenantEngineState implements ISiteWhereTenantEngineState {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 2078848111680197247L;
+
 	/** Lifecycle status */
 	private LifecycleStatus lifecycleStatus;
 

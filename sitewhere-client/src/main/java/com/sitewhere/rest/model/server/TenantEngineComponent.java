@@ -19,6 +19,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  */
 public class TenantEngineComponent implements ITenantEngineComponent {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -5074018616141612387L;
+
 	/** Component id */
 	private String id;
 
