@@ -115,13 +115,13 @@
 # } else { #
 			<div class="sw-device-list-entry-logowrapper">
 				<img class="sw-device-list-entry-logo" src="#:specification.asset.imageUrl#"/>
-				<span class="label label-info sw-device-list-entry-logo-tag">#= i18next("public.Unassociated") #</span>
+				<span class="label label-info sw-device-list-entry-logo-tag">Unassociated</span>
 			</div>
 			<p class="sw-device-list-entry-heading ellipsis">
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
 					href="/sitewhere/admin/assignments/#:assignment.token#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
-				#= i18next("public.UnassociatedDevice") #
+				Unassociated Device
 			</p>
 # } #
 			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Assigned") #:</span> #= formattedDate(assignment.activeDate) #</p>
