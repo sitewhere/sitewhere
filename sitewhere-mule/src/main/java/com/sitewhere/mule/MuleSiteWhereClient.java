@@ -22,8 +22,8 @@ import com.sitewhere.rest.client.SiteWhereClient;
  */
 public class MuleSiteWhereClient extends SiteWhereClient {
 
-	public MuleSiteWhereClient(String url, String username, String password) {
-		super(url, username, password);
+	public MuleSiteWhereClient(String url, String username, String password, String tenantAuthToken) {
+		super(url, username, password, tenantAuthToken);
 	}
 
 	/*
