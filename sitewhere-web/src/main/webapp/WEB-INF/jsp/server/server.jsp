@@ -78,7 +78,8 @@
 
 	$(document).ready(function() {
 		panelBar = $("#panelbar").kendoPanelBar({
-			expandMode : "multiple"
+			expandMode : "multiple",
+			animation: false
 		}).data("kendoPanelBar");
 
 		/** Handle add site functionality */
