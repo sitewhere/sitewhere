@@ -40,6 +40,8 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.web.rest.annotations.Concerns;
+import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -179,8 +181,8 @@ public class DeviceGroupsController extends SiteWhereController {
 	public ISearchResults<IDeviceGroup> listDeviceGroups(
 			@ApiParam(value = "Role", required = false) @RequestParam(required = false) String role,
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroups", LOGGER);
 		try {
@@ -221,8 +223,8 @@ public class DeviceGroupsController extends SiteWhereController {
 	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
 			@ApiParam(value = "Include detailed element information", required = false) @RequestParam(defaultValue = "false") boolean includeDetails,
-			@ApiParam(value = "Page Number (First page is 1)", required = false) @RequestParam(defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroupElements", LOGGER);
 		try {

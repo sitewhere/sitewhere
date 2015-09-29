@@ -33,6 +33,8 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.web.rest.annotations.Concerns;
+import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -206,8 +208,8 @@ public class TenantsController extends SiteWhereController {
 	public ISearchResults<ITenant> listTenants(
 			@ApiParam(value = "Authorized user id", required = false) @RequestParam(required = false) String authUserId,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
-			@ApiParam(value = "Page number (First page is 1)", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize)
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listTenants", LOGGER);
 		try {

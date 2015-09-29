@@ -357,8 +357,8 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.ListAssetCategories.class, description = "assets/listAssetCategoriesResponse.md") })
 	public ISearchResults<IAssetCategory> listAssetCategories(
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listAssetCategories", LOGGER);
 		try {
@@ -596,8 +596,8 @@ public class AssetsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IAsset> listCategoryAssets(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listCategoryAssets", LOGGER);
 		try {

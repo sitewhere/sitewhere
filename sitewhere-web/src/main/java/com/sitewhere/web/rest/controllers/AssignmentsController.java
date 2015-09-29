@@ -78,9 +78,11 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Example.Stage;
 import com.sitewhere.web.rest.documentation.Assignments;
 import com.wordnik.swagger.annotations.Api;
@@ -258,8 +260,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceEvent> listEvents(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -287,8 +289,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceMeasurements> listMeasurements(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -316,8 +318,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public List<IChartSeries<Double>> listMeasurementsAsChartSeries(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			@ApiParam(value = "Measurement Ids", required = false) @RequestParam(required = false) String[] measurementIds,
@@ -376,8 +378,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceLocation> listLocations(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -432,8 +434,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceAlert> listAlerts(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -507,8 +509,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceStream> listDeviceStreams(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -735,8 +737,8 @@ public class AssignmentsController extends SiteWhereController {
 	public ISearchResults<IDeviceCommandInvocation> listCommandInvocations(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Include command information", required = false) @RequestParam(defaultValue = "true") boolean includeCommand,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -799,8 +801,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceStateChange> listStateChanges(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -854,8 +856,8 @@ public class AssignmentsController extends SiteWhereController {
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	public ISearchResults<IDeviceCommandResponse> listCommandResponses(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			@ApiParam(value = "Start date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
 			@ApiParam(value = "End date", required = false) @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
 			HttpServletRequest servletRequest) throws SiteWhereException {
