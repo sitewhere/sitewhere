@@ -150,10 +150,13 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 	protected File getTenantConfigurationFile(File sitewhereConf, ITenant tenant, IVersion version)
 			throws SiteWhereException {
 		File tenantConfigFile = new File(sitewhereConf, tenant.getId() + "-tenant.xml");
-		if (!tenantConfigFile.exists()) {
-			LOGGER.info("Tenant " + tenant.getName() + "(" + tenant.getId() + ") configuration not found: "
-					+ tenantConfigFile.getAbsolutePath());
+		if (tenantConfigFile.exists()) {
+			LOGGER.info("Tenant " + tenant.getName() + "(" + tenant.getId()
+					+ ") configuration loading from: " + tenantConfigFile.getAbsolutePath());
+			return tenantConfigFile;
 		}
+		LOGGER.info("Tenant " + tenant.getName() + "(" + tenant.getId() + ") configuration not found: "
+				+ tenantConfigFile.getAbsolutePath());
 		File tenantDefault = new File(sitewhereConf, TENANT_CONFIG_FILE_NAME);
 		if (!tenantDefault.exists()) {
 			throw new SiteWhereException("Default tenant configuration not found at: "
