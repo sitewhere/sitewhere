@@ -86,22 +86,22 @@ import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 public class SiteWhereClient implements ISiteWhereClient {
 
 	/** Default base url for calling REST services */
-	private static final String DEFAULT_BASE_URL = "http://localhost:8080/sitewhere/api/";
+	public static final String DEFAULT_BASE_URL = "http://localhost:8080/sitewhere/api/";
 
 	/** Default REST username */
-	private static final String DEFAULT_USERNAME = "admin";
+	public static final String DEFAULT_USERNAME = "admin";
 
 	/** Default REST password */
-	private static final String DEFAULT_PASSWORD = "password";
+	public static final String DEFAULT_PASSWORD = "password";
 
 	/** Default tenant authentication token */
-	private static final String DEFAULT_TENANT_AUTH_TOKEN = "sitewhere1234567890";
+	public static final String DEFAULT_TENANT_AUTH_TOKEN = "sitewhere1234567890";
 
 	/** Default connection timeout in milliseconds */
-	private static final int DEFAULT_CONNECT_TIMEOUT = 3 * 1000;
+	public static final int DEFAULT_CONNECT_TIMEOUT = 3 * 1000;
 
 	/** Indicates whether to write debug information to the console */
-	private static final boolean DEBUG_ENABLED = true;
+	public static final boolean DEBUG_ENABLED = true;
 
 	/** Use CXF web client to send requests */
 	private RestTemplate client;
