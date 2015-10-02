@@ -1,0 +1,1 @@
+If the asset returned is a location asset, the response will resemble the output below:

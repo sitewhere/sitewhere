@@ -1,0 +1,1 @@
+If the asset deleted was a hardware asset, the response will resemble the output below:

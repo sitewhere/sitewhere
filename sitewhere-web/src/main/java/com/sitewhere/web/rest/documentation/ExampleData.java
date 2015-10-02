@@ -295,6 +295,7 @@ public class ExampleData {
 			setImageUrl("https://s3.amazonaws.com/sitewhere-demo/construction/trailer.jpg");
 			setLatitude(33.755);
 			setLongitude(-84.39);
+			getProperties().put("worksite.id", "GA-ATL-101-Peachtree");
 		}
 	}
 }
