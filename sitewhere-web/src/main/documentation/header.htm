@@ -6,8 +6,7 @@
 <script type='text/javascript' src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
 <link rel="stylesheet" type="text/css"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<script type='text/javascript'
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
+<script type='text/javascript' src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/default.min.css">
 <script type='text/javascript'
@@ -42,11 +41,11 @@ h3 {
 }
 
 iframe {
-    display: block;
-    background: #000;
-    border: none;
-    height: 100vh;
-    width: 100vw;
+	display: block;
+	background: #000;
+	border: none;
+	height: 100vh;
+	width: 100vw;
 }
 
 .bs-docs-sidenav.affix {
@@ -54,7 +53,7 @@ iframe {
 }
 
 .bs-docs-sidenav {
-	width: 320px;
+	width: 350px;
 	margin: 25px 0 0;
 	padding: 0;
 	background-color: #fff;
@@ -63,11 +62,13 @@ iframe {
 /* Hide nested elements if not active */
 .bs-docs-sidenav .nav>.active>ul {
 	display: block;
+	max-height: 200px;
+	overflow-y: auto;
 }
 
 /* Hide nested elements if not active */
 .bs-docs-sidenav>ul.nav>li {
-	width: 300px;
+	width: 325px;
 }
 
 /* Box around active section */
@@ -104,7 +105,7 @@ iframe {
 	padding-left: 10px;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1200px) {
 	.bs-docs-sidenav {
 		display: none;
 	}

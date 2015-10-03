@@ -80,11 +80,20 @@ public class ExampleData {
 	/** Location event */
 	public static LocationEvent1 EVENT_LOCATION1 = new LocationEvent1();
 
+	/** Location event */
+	public static LocationEvent2 EVENT_LOCATION2 = new LocationEvent2();
+
 	/** Measurement event */
 	public static MeasurementEvent1 EVENT_MEASUREMENT1 = new MeasurementEvent1();
 
+	/** Measurement event */
+	public static MeasurementEvent2 EVENT_MEASUREMENT2 = new MeasurementEvent2();
+
 	/** Alert event */
 	public static AlertEvent1 EVENT_ALERT1 = new AlertEvent1();
+
+	/** Alert event */
+	public static AlertEvent2 EVENT_ALERT2 = new AlertEvent2();
 
 	/** Assignment */
 	public static Assignment_HeartMonitorToDerek HEART_MONITOR_TO_DEREK =
@@ -199,6 +208,24 @@ public class ExampleData {
 		}
 	}
 
+	public static class LocationEvent2 extends DeviceLocation {
+
+		public LocationEvent2() {
+			setId("230984233904");
+			setEventType(DeviceEventType.Location);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+			setLatitude(34.10345084984494);
+			setLongitude(-84.23983484847486);
+			setElevation(0.1);
+		}
+	}
+
 	public static class MeasurementEvent1 extends DeviceMeasurements {
 
 		public MeasurementEvent1() {
@@ -213,6 +240,23 @@ public class ExampleData {
 			setReceivedDate(new Date());
 			addOrReplaceMeasurement("fuel.level", 32.68);
 			addOrReplaceMeasurement("engine.temperature", 86.21);
+		}
+	}
+
+	public static class MeasurementEvent2 extends DeviceMeasurements {
+
+		public MeasurementEvent2() {
+			setId("230948239489");
+			setEventType(DeviceEventType.Measurements);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+			addOrReplaceMeasurement("fuel.level", 33.78);
+			addOrReplaceMeasurement("engine.temperature", 84.26);
 		}
 	}
 
@@ -231,6 +275,24 @@ public class ExampleData {
 			setSource(AlertSource.Device);
 			setLevel(AlertLevel.Warning);
 			setMessage("Engine temperature is at top of operating range.");
+		}
+	}
+
+	public static class AlertEvent2 extends DeviceAlert {
+
+		public AlertEvent2() {
+			setId("230493483398");
+			setEventType(DeviceEventType.Alert);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+			setSource(AlertSource.Device);
+			setLevel(AlertLevel.Critical);
+			setMessage("Fuel level is critical.");
 		}
 	}
 

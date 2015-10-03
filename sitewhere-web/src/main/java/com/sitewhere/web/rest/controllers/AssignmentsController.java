@@ -258,9 +258,9 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/events", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List all events for device assignment")
+	@ApiOperation(value = "List events for device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Request, json = Assignments.ListAssignmentEventsResponse.class, description = "listEventsResponse.md") })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentEventsResponse.class, description = "listEventsResponse.md") })
 	public ISearchResults<IDeviceEvent> listEvents(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -290,6 +290,7 @@ public class AssignmentsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "List measurement events for device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsResponse.class, description = "listMeasurementsResponse.md") })
 	public ISearchResults<IDeviceMeasurements> listMeasurements(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -317,8 +318,9 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/measurements/series", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List measurement events for device assignment in chart format")
+	@ApiOperation(value = "List assignment measurements as chart series")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsChartSeriesResponse.class, description = "listMeasurementsAsChartSeriesResponse.md") })
 	public List<IChartSeries<Double>> listMeasurementsAsChartSeries(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -352,8 +354,11 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/measurements", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create measurements event for a device assignment")
+	@ApiOperation(value = "Create measurements event for device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Assignments.CreateAssignmentMeasurementsRequest.class, description = "createMeasurementsRequest.md"),
+			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "createMeasurementsResponse.md") })
 	public DeviceMeasurements createMeasurements(@RequestBody DeviceMeasurementsCreateRequest input,
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -377,8 +382,9 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/locations", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List location events for a device assignment")
+	@ApiOperation(value = "List location events for device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmenLocationsResponse.class, description = "listLocationsResponse.md") })
 	public ISearchResults<IDeviceLocation> listLocations(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
