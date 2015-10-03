@@ -24,7 +24,10 @@ public @interface Concerns {
 	public enum ConcernType {
 
 		/** Paging configuration */
-		Paging;
+		Paging,
+
+		/** Forced delete */
+		ForceDelete;
 	}
 
 	/** Concern types */

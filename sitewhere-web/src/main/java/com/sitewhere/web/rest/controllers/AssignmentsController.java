@@ -161,7 +161,7 @@ public class AssignmentsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get a device assignment by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented()
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "getDeviceAssignmentResponse.md") })
 	public DeviceAssignment getDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -181,7 +181,7 @@ public class AssignmentsController extends SiteWhereController {
 	}
 
 	/**
-	 * Get an assignment by its unique token.
+	 * Delete an existing device assignment.
 	 * 
 	 * @param token
 	 * @return
@@ -189,11 +189,12 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
 	@ResponseBody
-	@ApiOperation(value = "Delete a device assignment")
+	@ApiOperation(value = "Delete an existing device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "deleteDeviceAssignmentResponse.md") })
 	public DeviceAssignment deleteDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
-			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
+			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") @Concerns(values = { ConcernType.ForceDelete }) boolean force,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteDeviceAssignment", LOGGER);
 		try {
@@ -220,8 +221,9 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/metadata", method = RequestMethod.PUT)
 	@ResponseBody
-	@ApiOperation(value = "Update metadata for a device assignment")
+	@ApiOperation(value = "Update device assignment metadata")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Request, json = Assignments.UpdateAssignmentMetadataRequest.class, description = "updateAssignmentMetadataRequest.md") })
 	public DeviceAssignment updateDeviceAssignmentMetadata(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@RequestBody MetadataProvider metadata, HttpServletRequest servletRequest)
@@ -258,6 +260,7 @@ public class AssignmentsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "List all events for device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Request, json = Assignments.ListAssignmentEventsResponse.class, description = "listEventsResponse.md") })
 	public ISearchResults<IDeviceEvent> listEvents(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,

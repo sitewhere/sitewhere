@@ -7,14 +7,19 @@
  */
 package com.sitewhere.web.rest.documentation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Example of REST request for creating an assignment.
@@ -62,6 +67,27 @@ public class Assignments {
 			helper.setIncludeDevice(true);
 			helper.setIncludeSite(true);
 			return helper.convert(ExampleData.TRACKER_TO_DEREK, new MockAssetModuleManager());
+		}
+	}
+
+	public static class UpdateAssignmentMetadataRequest {
+
+		public Object generate() throws SiteWhereException {
+			MetadataProvider provider = new MetadataProvider();
+			provider.addOrReplaceMetadata("key1", "value1");
+			provider.addOrReplaceMetadata("key2", "value2");
+			return provider;
+		}
+	}
+
+	public static class ListAssignmentEventsResponse {
+
+		public Object generate() throws SiteWhereException {
+			List<IDeviceEvent> events = new ArrayList<IDeviceEvent>();
+			events.add(ExampleData.EVENT_LOCATION1);
+			events.add(ExampleData.EVENT_MEASUREMENT1);
+			events.add(ExampleData.EVENT_ALERT1);
+			return new SearchResults<IDeviceEvent>(events, 3);
 		}
 	}
 }

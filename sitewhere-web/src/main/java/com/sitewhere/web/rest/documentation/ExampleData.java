@@ -21,10 +21,16 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
+import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceLocation;
+import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
+import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.DeviceEventType;
 
 @SuppressWarnings("serial")
 public class ExampleData {
@@ -70,6 +76,15 @@ public class ExampleData {
 
 	/** Assignment */
 	public static Assignment_TrackerToDerek TRACKER_TO_DEREK = new Assignment_TrackerToDerek();
+
+	/** Location event */
+	public static LocationEvent1 EVENT_LOCATION1 = new LocationEvent1();
+
+	/** Measurement event */
+	public static MeasurementEvent1 EVENT_MEASUREMENT1 = new MeasurementEvent1();
+
+	/** Alert event */
+	public static AlertEvent1 EVENT_ALERT1 = new AlertEvent1();
 
 	/** Assignment */
 	public static Assignment_HeartMonitorToDerek HEART_MONITOR_TO_DEREK =
@@ -163,6 +178,59 @@ public class ExampleData {
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
 			setStatus(DeviceAssignmentStatus.Active);
+		}
+	}
+
+	public static class LocationEvent1 extends DeviceLocation {
+
+		public LocationEvent1() {
+			setId("203948023656");
+			setEventType(DeviceEventType.Location);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+			setLatitude(34.103270338359664);
+			setLongitude(-84.23874458667342);
+			setElevation(0.0);
+		}
+	}
+
+	public static class MeasurementEvent1 extends DeviceMeasurements {
+
+		public MeasurementEvent1() {
+			setId("234203504574");
+			setEventType(DeviceEventType.Measurements);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+			addOrReplaceMeasurement("fuel.level", 32.68);
+			addOrReplaceMeasurement("engine.temperature", 86.21);
+		}
+	}
+
+	public static class AlertEvent1 extends DeviceAlert {
+
+		public AlertEvent1() {
+			setId("239472398473");
+			setEventType(DeviceEventType.Alert);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+			setSource(AlertSource.Device);
+			setLevel(AlertLevel.Warning);
+			setMessage("Engine temperature is at top of operating range.");
 		}
 	}
 
