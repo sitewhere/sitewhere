@@ -24,6 +24,7 @@ import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -94,6 +95,12 @@ public class ExampleData {
 
 	/** Alert event */
 	public static AlertEvent2 EVENT_ALERT2 = new AlertEvent2();
+	
+	/** Stream */
+	public static Stream1 STREAM1 = new Stream1();
+	
+	/** Stream */
+	public static Stream2 STREAM2 = new Stream2();
 
 	/** Assignment */
 	public static Assignment_HeartMonitorToDerek HEART_MONITOR_TO_DEREK =
@@ -274,6 +281,7 @@ public class ExampleData {
 			setReceivedDate(new Date());
 			setSource(AlertSource.Device);
 			setLevel(AlertLevel.Warning);
+			setType("engine.overheat");
 			setMessage("Engine temperature is at top of operating range.");
 		}
 	}
@@ -292,7 +300,30 @@ public class ExampleData {
 			setReceivedDate(new Date());
 			setSource(AlertSource.Device);
 			setLevel(AlertLevel.Critical);
+			setType("fuel.level");
 			setMessage("Fuel level is critical.");
+		}
+	}
+
+	public static class Stream1 extends DeviceStream {
+
+		public Stream1() {
+			setAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setStreamId("video-stream-1");
+			setContentType("video/mpeg");
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+		}
+	}
+
+	public static class Stream2 extends DeviceStream {
+
+		public Stream2() {
+			setAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setStreamId("video-stream-2");
+			setContentType("video/mpeg");
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
 		}
 	}
 

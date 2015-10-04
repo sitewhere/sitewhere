@@ -17,11 +17,15 @@ import java.util.UUID;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
@@ -143,6 +147,76 @@ public class Assignments {
 			events.add(ExampleData.EVENT_LOCATION1);
 			events.add(ExampleData.EVENT_LOCATION2);
 			return new SearchResults<IDeviceLocation>(events, 2);
+		}
+	}
+
+	public static class CreateAssignmentLocationRequest {
+
+		public Object generate() throws SiteWhereException {
+			DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
+			request.setLatitude(ExampleData.EVENT_LOCATION1.getLatitude());
+			request.setLongitude(ExampleData.EVENT_LOCATION1.getLongitude());
+			request.setElevation(ExampleData.EVENT_LOCATION1.getElevation());
+			request.setEventDate(new Date());
+			request.setUpdateState(true);
+			return request;
+		}
+	}
+
+	public static class CreateAssignmentLocationResponse {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.EVENT_LOCATION1;
+		}
+	}
+
+	public static class ListAssignmenAlertsResponse {
+
+		public Object generate() throws SiteWhereException {
+			List<IDeviceAlert> events = new ArrayList<IDeviceAlert>();
+			events.add(ExampleData.EVENT_ALERT1);
+			events.add(ExampleData.EVENT_ALERT2);
+			return new SearchResults<IDeviceAlert>(events, 2);
+		}
+	}
+
+	public static class CreateAssignmentAlertRequest {
+
+		public Object generate() throws SiteWhereException {
+			DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
+			request.setSource(ExampleData.EVENT_ALERT1.getSource());
+			request.setType(ExampleData.EVENT_ALERT1.getType());
+			request.setLevel(ExampleData.EVENT_ALERT1.getLevel());
+			request.setMessage(ExampleData.EVENT_ALERT1.getMessage());
+			request.setEventDate(new Date());
+			request.setUpdateState(true);
+			return request;
+		}
+	}
+
+	public static class CreateAssignmentAlertResponse {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.EVENT_ALERT1;
+		}
+	}
+
+	public static class CreateDeviceStreamRequest {
+
+		public Object generate() throws SiteWhereException {
+			DeviceStreamCreateRequest request = new DeviceStreamCreateRequest();
+			request.setStreamId(ExampleData.STREAM1.getStreamId());
+			request.setContentType(ExampleData.STREAM1.getContentType());
+			request.setEventDate(new Date());
+			request.setUpdateState(true);
+			return request;
+		}
+	}
+
+	public static class CreateDeviceStreamResponse {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.STREAM1;
 		}
 	}
 }
