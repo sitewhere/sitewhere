@@ -79,10 +79,10 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.web.rest.annotations.Concerns;
+import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
-import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Example.Stage;
 import com.sitewhere.web.rest.documentation.Assignments;
 import com.wordnik.swagger.annotations.Api;
@@ -159,7 +159,7 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get a device assignment by unique token")
+	@ApiOperation(value = "Get device assignment by token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "getDeviceAssignmentResponse.md") })
 	public DeviceAssignment getDeviceAssignment(
@@ -503,7 +503,7 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/streams", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create new stream for a device assignment")
+	@ApiOperation(value = "Create data stream for a device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateDeviceStreamRequest.class, description = "createDeviceStreamRequest.md"),
@@ -524,8 +524,9 @@ public class AssignmentsController extends SiteWhereController {
 
 	@RequestMapping(value = "/{token}/streams", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List streams for a device assignment")
+	@ApiOperation(value = "List data streams for device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListDeviceStreamsResponse.class, description = "listDeviceStreamsResponse.md") })
 	public ISearchResults<IDeviceStream> listDeviceStreams(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -560,8 +561,9 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	@ApiOperation(value = "Get an existing stream for a device assignment")
+	@ApiOperation(value = "Get device assignment data stream by id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.GetDeviceStreamResponse.class, description = "getDeviceStreamResponse.md") })
 	public DeviceStream getDeviceStream(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
@@ -593,8 +595,9 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Add data to a stream for a device assignment")
+	@ApiOperation(value = "Add data to device assignment data stream")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented
 	public void addDeviceStreamData(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
@@ -644,8 +647,9 @@ public class AssignmentsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/streams/{streamId:.+}/data/{sequenceNumber}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get one chunk of data from stream")
+	@ApiOperation(value = "Get data from device assignment data stream")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented
 	public void getDeviceStreamData(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,
@@ -668,8 +672,9 @@ public class AssignmentsController extends SiteWhereController {
 
 	@RequestMapping(value = "/{token}/streams/{streamId:.+}/data", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get all content from stream")
+	@ApiOperation(value = "Get all data from device assignment data stream")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented
 	public void listDeviceStreamData(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Stream Id", required = true) @PathVariable String streamId,

@@ -1,3 +1,3 @@
-Get an Existing Device Assignment
----------------------------------
-This method creates a new device assignment.
+Get Device Assignment By Token
+------------------------------
+Get an existing device assignment based on its unique token.

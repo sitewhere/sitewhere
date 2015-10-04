@@ -29,6 +29,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchResults;
 
 /**
@@ -212,6 +213,23 @@ public class Assignments {
 	}
 
 	public static class CreateDeviceStreamResponse {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.STREAM1;
+		}
+	}
+
+	public static class ListDeviceStreamsResponse {
+
+		public Object generate() throws SiteWhereException {
+			List<IDeviceStream> streams = new ArrayList<IDeviceStream>();
+			streams.add(ExampleData.STREAM1);
+			streams.add(ExampleData.STREAM2);
+			return new SearchResults<IDeviceStream>(streams, 2);
+		}
+	}
+
+	public static class GetDeviceStreamResponse {
 
 		public Object generate() throws SiteWhereException {
 			return ExampleData.STREAM1;
