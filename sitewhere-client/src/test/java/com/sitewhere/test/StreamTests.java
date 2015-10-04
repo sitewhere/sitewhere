@@ -7,7 +7,6 @@
  */
 package com.sitewhere.test;
 
-import java.util.Date;
 import java.util.UUID;
 
 import org.junit.Assert;
@@ -39,7 +38,6 @@ public class StreamTests {
 		DeviceStreamCreateRequest screate = new DeviceStreamCreateRequest();
 		screate.setStreamId(streamId);
 		screate.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-		screate.setEventDate(new Date());
 		client.createDeviceStream(ASSN_TOKEN, screate);
 
 		byte[] chunk1 = "This is the first chunk of data.".getBytes();

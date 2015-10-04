@@ -207,8 +207,6 @@ public class Assignments {
 			DeviceStreamCreateRequest request = new DeviceStreamCreateRequest();
 			request.setStreamId(ExampleData.STREAM1.getStreamId());
 			request.setContentType(ExampleData.STREAM1.getContentType());
-			request.setEventDate(new Date());
-			request.setUpdateState(true);
 			return request;
 		}
 	}

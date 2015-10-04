@@ -9,7 +9,8 @@ package com.sitewhere.rest.model.device.request;
 
 import java.util.Map;
 
-import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 
 /**
@@ -17,10 +18,8 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
  * 
  * @author Derek
  */
-public class DeviceStreamCreateRequest extends DeviceEventCreateRequest implements IDeviceStreamCreateRequest {
-
-	/** Serial version UID */
-	private static final long serialVersionUID = -8694774984728607410L;
+@JsonInclude(Include.NON_NULL)
+public class DeviceStreamCreateRequest implements IDeviceStreamCreateRequest {
 
 	/** Stream id */
 	private String streamId;
