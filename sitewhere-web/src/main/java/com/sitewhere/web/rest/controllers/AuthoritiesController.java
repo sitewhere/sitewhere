@@ -92,8 +92,9 @@ public class AuthoritiesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Find authority by unique name")
+	@ApiOperation(value = "Get authority by id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "getAuthorityByNameResponse.md") })
 	public GrantedAuthority getAuthorityByName(
 			@ApiParam(value = "Authority name", required = true) @PathVariable String name)
 			throws SiteWhereException {
@@ -119,8 +120,9 @@ public class AuthoritiesController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List authorities that match certain criteria")
+	@ApiOperation(value = "List authorities that match criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Authorities.ListAuthoritiesResponse.class, description = "listAuthoritiesResponse.md") })
 	public SearchResults<GrantedAuthority> listAuthorities(
 			@ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
 			throws SiteWhereException {

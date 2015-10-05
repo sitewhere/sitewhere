@@ -12,6 +12,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion;
+import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.request.IBatchCommandForCriteriaRequest;
 
 /**
@@ -19,6 +24,7 @@ import com.sitewhere.spi.device.request.IBatchCommandForCriteriaRequest;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaRequest, Serializable {
 
 	/** Serialization version identifier */
@@ -107,6 +113,7 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 		this.groupsWithRole = groupsWithRole;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class, include = Inclusion.NON_NULL)
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -115,6 +122,7 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 		this.startDate = startDate;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class, include = Inclusion.NON_NULL)
 	public Date getEndDate() {
 		return endDate;
 	}

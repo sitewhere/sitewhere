@@ -10,7 +10,10 @@ package com.sitewhere.rest.model.device.batch;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.batch.ElementProcessingStatus;
@@ -21,6 +24,7 @@ import com.sitewhere.spi.device.batch.IBatchElement;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class BatchElement extends MetadataProvider implements IBatchElement, Serializable {
 
 	/** Serialization version identifier */
@@ -98,7 +102,7 @@ public class BatchElement extends MetadataProvider implements IBatchElement, Ser
 	 * 
 	 * @see com.sitewhere.spi.device.batch.IBatchElement#getProcessedDate()
 	 */
-	@JsonSerialize(using = JsonDateSerializer.class)
+	@JsonSerialize(using = JsonDateSerializer.class, include = Inclusion.NON_NULL)
 	public Date getProcessedDate() {
 		return processedDate;
 	}

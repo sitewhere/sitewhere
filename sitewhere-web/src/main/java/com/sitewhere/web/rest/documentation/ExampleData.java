@@ -7,6 +7,7 @@
  */
 package com.sitewhere.web.rest.documentation;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,8 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
+import com.sitewhere.rest.model.device.batch.BatchElement;
+import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -29,12 +32,16 @@ import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
+import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
+import com.sitewhere.spi.device.batch.BatchOperationStatus;
+import com.sitewhere.spi.device.batch.ElementProcessingStatus;
+import com.sitewhere.spi.device.batch.OperationType;
 import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
@@ -132,6 +139,24 @@ public class ExampleData {
 	/** Assignment */
 	public static Assignment_HeartMonitorToDerek HEART_MONITOR_TO_DEREK =
 			new Assignment_HeartMonitorToDerek();
+
+	/** Batch operation */
+	public static BatchOperation1 BATCH_OPERATION1 = new BatchOperation1();
+
+	/** Batch element */
+	public static BatchElement1 BATCH_ELEMENT1 = new BatchElement1();
+
+	/** Batch element */
+	public static BatchElement2 BATCH_ELEMENT2 = new BatchElement2();
+
+	/** Batch operation */
+	public static BatchOperation2 BATCH_OPERATION2 = new BatchOperation2();
+	
+	/** Device group */
+	public static DeviceGroup_SouthEast DEVICEGROUP_SOUTHEAST = new DeviceGroup_SouthEast();
+	
+	/** Device group */
+	public static DeviceGroup_NorthEast DEVICEGROUP_NORTHEAST = new DeviceGroup_NorthEast();
 
 	/** Authority */
 	public static Auth_AdminSites AUTH_ADMIN_SITES = new Auth_AdminSites();
@@ -610,6 +635,87 @@ public class ExampleData {
 			setLatitude(33.755);
 			setLongitude(-84.39);
 			getProperties().put("worksite.id", "GA-ATL-101-Peachtree");
+		}
+	}
+
+	public static class BatchOperation1 extends BatchOperation {
+
+		public BatchOperation1() {
+			setCreatedDate(new Date());
+			setCreatedBy("admin");
+			setUpdatedDate(new Date());
+			setUpdatedBy("system");
+			setToken("27f65236-ae80-40fe-8634-3a9781077754");
+			setOperationType(OperationType.InvokeCommand);
+			getParameters().put("commandToken", ExampleData.COMMAND_SET_RPT_INTV.getToken());
+			getMetadata().put("interval", "60");
+			getMetadata().put("reboot", "true");
+			setProcessingStatus(BatchOperationStatus.FinishedSuccessfully);
+			setProcessingStartedDate(new Date());
+			setProcessingEndedDate(new Date());
+		}
+	}
+
+	public static class BatchElement1 extends BatchElement {
+
+		public BatchElement1() {
+			setBatchOperationToken(ExampleData.BATCH_OPERATION1.getToken());
+			setIndex(0);
+			setHardwareId(ExampleData.TRACKER.getHardwareId());
+			setProcessingStatus(ElementProcessingStatus.Succeeded);
+			setProcessedDate(new Date());
+			getMetadata().put("invocation", ExampleData.INVOCATION_SET_RPT_INTV.getId());
+		}
+	}
+
+	public static class BatchElement2 extends BatchElement {
+
+		public BatchElement2() {
+			setBatchOperationToken(ExampleData.BATCH_OPERATION1.getToken());
+			setIndex(1);
+			setHardwareId(ExampleData.HEART_MONITOR.getHardwareId());
+			setProcessingStatus(ElementProcessingStatus.Unprocessed);
+		}
+	}
+
+	public static class BatchOperation2 extends BatchOperation {
+
+		public BatchOperation2() {
+			setCreatedDate(new Date());
+			setCreatedBy("admin");
+			setUpdatedDate(new Date());
+			setUpdatedBy("system");
+			setToken("dcb73dd2-4b3f-4c00-a73a-61b974cae6a9");
+			setOperationType(OperationType.InvokeCommand);
+			getParameters().put("commandToken", ExampleData.COMMAND_GET_FW_VER.getToken());
+			getMetadata().put("verbose", "true");
+			setProcessingStatus(BatchOperationStatus.FinishedSuccessfully);
+			setProcessingStartedDate(new Date());
+			setProcessingEndedDate(new Date());
+		}
+	}
+
+	public static class DeviceGroup_SouthEast extends DeviceGroup {
+
+		public DeviceGroup_SouthEast() {
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			setToken("24288cbd-e8aa-4b35-a6b3-27e24a123718");
+			setName("Southeast");
+			setDescription("Devices in the southeast region.");
+			setRoles(Arrays.asList(new String[] { "region", "americas" }));
+		}
+	}
+
+	public static class DeviceGroup_NorthEast extends DeviceGroup {
+
+		public DeviceGroup_NorthEast() {
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			setToken("8e560981-f3a4-4f31-ada4-c72e69984179");
+			setName("Northeast");
+			setDescription("Devices in the northeast region.");
+			setRoles(Arrays.asList(new String[] { "region", "americas" }));
 		}
 	}
 
