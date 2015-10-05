@@ -17,15 +17,21 @@ import java.util.UUID;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.event.IDeviceAlert;
+import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
@@ -233,6 +239,103 @@ public class Assignments {
 
 		public Object generate() throws SiteWhereException {
 			return ExampleData.STREAM1;
+		}
+	}
+
+	public static class CreateCommandInvocationRequest {
+
+		public Object generate() throws SiteWhereException {
+			DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
+			request.setInitiator(ExampleData.INVOCATION_SET_RPT_INTV.getInitiator());
+			request.setInitiatorId(ExampleData.INVOCATION_SET_RPT_INTV.getInitiatorId());
+			request.setTarget(ExampleData.INVOCATION_SET_RPT_INTV.getTarget());
+			request.setCommandToken(ExampleData.INVOCATION_SET_RPT_INTV.getCommandToken());
+			request.getParameterValues().putAll(ExampleData.INVOCATION_SET_RPT_INTV.getParameterValues());
+			request.setEventDate(ExampleData.INVOCATION_SET_RPT_INTV.getEventDate());
+			return request;
+		}
+	}
+
+	public static class CreateCommandInvocationResponse {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.INVOCATION_SET_RPT_INTV;
+		}
+	}
+
+	public static class ListCommandInvocationsResponse {
+
+		public Object generate() throws SiteWhereException {
+			List<IDeviceCommandInvocation> streams = new ArrayList<IDeviceCommandInvocation>();
+			streams.add(ExampleData.INVOCATION_GET_FW_VER);
+			streams.add(ExampleData.INVOCATION_SET_RPT_INTV);
+			return new SearchResults<IDeviceCommandInvocation>(streams, 2);
+		}
+	}
+
+	public static class CreateCommandResponseEventRequest {
+
+		public Object generate() throws SiteWhereException {
+			DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
+			request.setOriginatingEventId(ExampleData.RESPONSE_SET_RPT_INTV.getOriginatingEventId());
+			request.setResponseEventId(ExampleData.RESPONSE_SET_RPT_INTV.getResponseEventId());
+			request.setEventDate(ExampleData.RESPONSE_SET_RPT_INTV.getEventDate());
+			return request;
+		}
+	}
+
+	public static class CreateCommandResponseSimpleRequest {
+
+		public Object generate() throws SiteWhereException {
+			DeviceCommandResponseCreateRequest request = new DeviceCommandResponseCreateRequest();
+			request.setOriginatingEventId(ExampleData.RESPONSE_SET_RPT_INTV.getOriginatingEventId());
+			request.setResponse("Reporting interval set successfully.");
+			request.setEventDate(ExampleData.RESPONSE_SET_RPT_INTV.getEventDate());
+			return request;
+		}
+	}
+
+	public static class CreateCommandResponseResponse {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.RESPONSE_SET_RPT_INTV;
+		}
+	}
+
+	public static class ListCommandResponsesResponse {
+
+		public Object generate() throws SiteWhereException {
+			List<IDeviceCommandResponse> events = new ArrayList<IDeviceCommandResponse>();
+			events.add(ExampleData.RESPONSE_GET_FW_VER);
+			events.add(ExampleData.RESPONSE_SET_RPT_INTV);
+			return new SearchResults<IDeviceCommandResponse>(events, 2);
+		}
+	}
+
+	public static class EndDeviceAssignmentResponse {
+
+		public Object generate() throws SiteWhereException {
+			DeviceAssignment assn = new ExampleData.Assignment_TrackerToDerek();
+			assn.setReleasedDate(new Date());
+			assn.setStatus(DeviceAssignmentStatus.Released);
+			MockDeviceAssignmentMarshalHelper helper = new MockDeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(assn, new MockAssetModuleManager());
+		}
+	}
+
+	public static class MissingDeviceAssignmentResponse {
+
+		public Object generate() throws SiteWhereException {
+			DeviceAssignment assn = new ExampleData.Assignment_TrackerToDerek();
+			assn.setStatus(DeviceAssignmentStatus.Missing);
+			MockDeviceAssignmentMarshalHelper helper = new MockDeviceAssignmentMarshalHelper();
+			helper.setIncludeAsset(true);
+			helper.setIncludeDevice(true);
+			helper.setIncludeSite(true);
+			return helper.convert(assn, new MockAssetModuleManager());
 		}
 	}
 }

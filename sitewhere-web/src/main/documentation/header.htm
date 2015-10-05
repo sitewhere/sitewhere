@@ -71,6 +71,11 @@ iframe {
 	width: 325px;
 }
 
+/* Hide nested elements if not active */
+.bs-docs-sidenav>ul.nav>li>a {
+	padding: 5px 15px;
+}
+
 /* Box around active section */
 .bs-docs-sidenav>ul.nav>li.active {
 	background-color: #fafafa;
@@ -82,7 +87,7 @@ iframe {
 }
 
 .bs-docs-sidenav ul.nav li.active a {
-	padding: 10px 10px 4px;
+	padding: 7px 10px;
 }
 
 .bs-docs-sidenav ul.nav li.active ul.nav li.active {

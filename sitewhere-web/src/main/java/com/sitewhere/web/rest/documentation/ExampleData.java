@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sitewhere.core.user.ISiteWhereAuthorities;
 import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.asset.HardwareAsset;
@@ -21,16 +22,24 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
+import com.sitewhere.rest.model.device.command.CommandParameter;
+import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
+import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.CommandInitiator;
+import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
 
 @SuppressWarnings("serial")
@@ -66,6 +75,12 @@ public class ExampleData {
 	/** Device specification */
 	public static Specification_MeiTrack SPEC_MEITRACK = new Specification_MeiTrack();
 
+	/** Specification command */
+	public static Command_GetFirmwareVersion COMMAND_GET_FW_VER = new Command_GetFirmwareVersion();
+
+	/** Specification command */
+	public static Command_SetReportInterval COMMAND_SET_RPT_INTV = new Command_SetReportInterval();
+
 	/** Device specification */
 	public static Specification_HeartMonitor SPEC_HEART_MONITOR = new Specification_HeartMonitor();
 
@@ -95,16 +110,34 @@ public class ExampleData {
 
 	/** Alert event */
 	public static AlertEvent2 EVENT_ALERT2 = new AlertEvent2();
-	
+
+	/** Command invocation */
+	public static Invocation_GetFirmwareVersion INVOCATION_GET_FW_VER = new Invocation_GetFirmwareVersion();
+
+	/** Command invocation */
+	public static Invocation_SetReportInterval INVOCATION_SET_RPT_INTV = new Invocation_SetReportInterval();
+
+	/** Command response */
+	public static Response_GetFirmwareVersion RESPONSE_GET_FW_VER = new Response_GetFirmwareVersion();
+
+	/** Command response */
+	public static Response_SetReportInterval RESPONSE_SET_RPT_INTV = new Response_SetReportInterval();
+
 	/** Stream */
 	public static Stream1 STREAM1 = new Stream1();
-	
+
 	/** Stream */
 	public static Stream2 STREAM2 = new Stream2();
 
 	/** Assignment */
 	public static Assignment_HeartMonitorToDerek HEART_MONITOR_TO_DEREK =
 			new Assignment_HeartMonitorToDerek();
+
+	/** Authority */
+	public static Auth_AdminSites AUTH_ADMIN_SITES = new Auth_AdminSites();
+
+	/** Authority */
+	public static Auth_AdminUsers AUTH_ADMIN_USERS = new Auth_AdminUsers();
 
 	public static class Site_Construction extends Site {
 
@@ -152,6 +185,126 @@ public class ExampleData {
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
 			setAssetImageUrl("https://s3.amazonaws.com/sitewhere-demo/construction/health/heartmonitor.jpg");
+		}
+	}
+
+	public static class Command_GetFirmwareVersion extends DeviceCommand {
+
+		public Command_GetFirmwareVersion() {
+			setToken("3c1c61a3-652f-407e-80e7-fcfb13c10624");
+			setName("getFirmwareVersion");
+			setDescription("Get version of device firmware.");
+			setNamespace("http://mycompany.com/devices");
+			setSpecificationToken(ExampleData.SPEC_MEITRACK.getToken());
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			CommandParameter verbose = new CommandParameter();
+			verbose.setName("verbose");
+			verbose.setType(ParameterType.Bool);
+			verbose.setRequired(false);
+			getParameters().add(verbose);
+		}
+	}
+
+	public static class Invocation_GetFirmwareVersion extends DeviceCommandInvocation {
+
+		public Invocation_GetFirmwareVersion() {
+			setId("230983938938");
+			setEventType(DeviceEventType.CommandInvocation);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+
+			setInitiator(CommandInitiator.REST);
+			setInitiatorId("admin");
+			setTarget(CommandTarget.Assignment);
+			setCommandToken(ExampleData.COMMAND_GET_FW_VER.getToken());
+			getParameterValues().put("verbose", "true");
+		}
+	}
+
+	public static class Command_SetReportInterval extends DeviceCommand {
+
+		public Command_SetReportInterval() {
+			setToken(" 2a3a344d-f09b-44a7-b36b-afb04993eb414");
+			setName("setReportInterval");
+			setDescription("Set the device reporting interval (in seconds).");
+			setNamespace("http://mycompany.com/devices");
+			setSpecificationToken(ExampleData.SPEC_MEITRACK.getToken());
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			CommandParameter interval = new CommandParameter();
+			interval.setName("interval");
+			interval.setType(ParameterType.Int32);
+			interval.setRequired(true);
+			getParameters().add(interval);
+			CommandParameter reboot = new CommandParameter();
+			reboot.setName("reboot");
+			reboot.setType(ParameterType.Bool);
+			reboot.setRequired(false);
+			getParameters().add(reboot);
+		}
+	}
+
+	public static class Invocation_SetReportInterval extends DeviceCommandInvocation {
+
+		public Invocation_SetReportInterval() {
+			setId("239402938454");
+			setEventType(DeviceEventType.CommandInvocation);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+
+			setInitiator(CommandInitiator.REST);
+			setInitiatorId("admin");
+			setTarget(CommandTarget.Assignment);
+			setCommandToken(ExampleData.COMMAND_SET_RPT_INTV.getToken());
+			getParameterValues().put("interval", "60");
+			getParameterValues().put("reboot", "true");
+		}
+	}
+
+	public static class Response_SetReportInterval extends DeviceCommandResponse {
+
+		public Response_SetReportInterval() {
+			setId("287494894849");
+			setEventType(DeviceEventType.CommandResponse);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+
+			setOriginatingEventId(ExampleData.INVOCATION_SET_RPT_INTV.getId());
+			setResponseEventId(ExampleData.EVENT_ALERT1.getId());
+		}
+	}
+
+	public static class Response_GetFirmwareVersion extends DeviceCommandResponse {
+
+		public Response_GetFirmwareVersion() {
+			setId("254449849440");
+			setEventType(DeviceEventType.CommandResponse);
+			setSiteToken(SITE_CONSTRUCTION.getToken());
+			setDeviceAssignmentToken(TRACKER_TO_DEREK.getToken());
+			setAssignmentType(TRACKER_TO_DEREK.getAssignmentType());
+			setAssetModuleId(TRACKER_TO_DEREK.getAssetModuleId());
+			setAssetId(TRACKER_TO_DEREK.getAssetId());
+			setEventDate(new Date());
+			setReceivedDate(new Date());
+
+			setOriginatingEventId(ExampleData.INVOCATION_GET_FW_VER.getId());
+			setResponse("Firmware 1.1.0 (1.1.0.201512310800)");
 		}
 	}
 
@@ -457,6 +610,22 @@ public class ExampleData {
 			setLatitude(33.755);
 			setLongitude(-84.39);
 			getProperties().put("worksite.id", "GA-ATL-101-Peachtree");
+		}
+	}
+
+	public static class Auth_AdminSites extends GrantedAuthority {
+
+		public Auth_AdminSites() {
+			setAuthority(ISiteWhereAuthorities.AUTH_ADMIN_SITES);
+			setDescription("Administer sites");
+		}
+	}
+
+	public static class Auth_AdminUsers extends GrantedAuthority {
+
+		public Auth_AdminUsers() {
+			setAuthority(ISiteWhereAuthorities.AUTH_ADMIN_USERS);
+			setDescription("Administer users");
 		}
 	}
 }

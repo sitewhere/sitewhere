@@ -35,6 +35,11 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Authorities;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -47,6 +52,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/authorities")
 @Api(value = "authorities", description = "Operations related to SiteWhere authorities.")
+@DocumentedController(name = "Granted Authorities")
 public class AuthoritiesController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -63,6 +69,9 @@ public class AuthoritiesController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Create a new authority")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Authorities.CreateAuthorityRequest.class, description = "createUnassociatedRequest.md"),
+			@Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "createAssociatedResponse.md") })
 	public GrantedAuthority createAuthority(@RequestBody GrantedAuthorityCreateRequest input)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createAuthority", LOGGER);
