@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
@@ -21,6 +23,7 @@ import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, Serializable {
 
 	/** Serialization version identifier */

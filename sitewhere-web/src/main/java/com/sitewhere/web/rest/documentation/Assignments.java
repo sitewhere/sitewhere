@@ -39,7 +39,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.ISearchResults;
 
 /**
- * Example of REST request for creating an assignment.
+ * Examples of REST payloads for various assignment methods.
  * 
  * @author Derek
  */
