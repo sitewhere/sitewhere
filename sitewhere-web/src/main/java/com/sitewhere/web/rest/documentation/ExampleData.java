@@ -20,6 +20,7 @@ import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
@@ -100,10 +101,19 @@ public class ExampleData {
 	public static Device_Tracker TRACKER = new Device_Tracker();
 
 	/** Devices */
+	public static Device_Tracker2 TRACKER2 = new Device_Tracker2();
+
+	/** Devices */
 	public static Device_HeartMonitor HEART_MONITOR = new Device_HeartMonitor();
+
+	/** Device element mapping */
+	public static Mapping_HeartMonitor MAPPING_HEART_MONITOR = new Mapping_HeartMonitor();
 
 	/** Assignment */
 	public static Assignment_TrackerToDerek TRACKER_TO_DEREK = new Assignment_TrackerToDerek();
+
+	/** Assignment */
+	public static Assignment_TrackerToMartin TRACKER_TO_MARTIN = new Assignment_TrackerToMartin();
 
 	/** Location event */
 	public static LocationEvent1 EVENT_LOCATION1 = new LocationEvent1();
@@ -363,6 +373,18 @@ public class ExampleData {
 		}
 	}
 
+	public static class Device_Tracker2 extends Device {
+
+		public Device_Tracker2() {
+			setHardwareId("02efd10-da41-4b06-81fe-d478188daf0e");
+			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
+			setSpecificationToken(ExampleData.SPEC_MEITRACK.getToken());
+			setComments("Equipment tracker 2.");
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+		}
+	}
+
 	public static class Device_HeartMonitor extends Device {
 
 		public Device_HeartMonitor() {
@@ -372,6 +394,14 @@ public class ExampleData {
 			setComments("Tracks vital statistics including heart rate.");
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
+		}
+	}
+
+	public static class Mapping_HeartMonitor extends DeviceElementMapping {
+
+		public Mapping_HeartMonitor() {
+			setHardwareId(ExampleData.HEART_MONITOR.getHardwareId());
+			setDeviceElementSchemaPath("/sensors/vitals");
 		}
 	}
 
@@ -388,6 +418,23 @@ public class ExampleData {
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
 			setStatus(DeviceAssignmentStatus.Active);
+		}
+	}
+
+	public static class Assignment_TrackerToMartin extends DeviceAssignment {
+
+		public Assignment_TrackerToMartin() {
+			setToken("b91b8f1a-7040-475a-bf05-275418b335d8");
+			setDeviceHardwareId(ExampleData.TRACKER.getHardwareId());
+			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
+			setAssignmentType(DeviceAssignmentType.Associated);
+			setAssetModuleId(ExampleData.AM_PERSONS.getId());
+			setAssetId(ExampleData.ASSET_MARTIN.getId());
+			setActiveDate(new Date());
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			setStatus(DeviceAssignmentStatus.Released);
+			setReleasedDate(new Date());
 		}
 	}
 
@@ -537,22 +584,6 @@ public class ExampleData {
 		}
 	}
 
-	public static class Assignment_TrackerToMartin extends DeviceAssignment {
-
-		public Assignment_TrackerToMartin() {
-			setToken("1ad74fe3-2cbf-443f-aede-9ec70a9a4ab5");
-			setDeviceHardwareId(ExampleData.TRACKER.getHardwareId());
-			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
-			setAssignmentType(DeviceAssignmentType.Associated);
-			setAssetModuleId(ExampleData.AM_PERSONS.getId());
-			setAssetId(ExampleData.ASSET_DEREK.getId());
-			setActiveDate(new Date());
-			setCreatedBy("admin");
-			setCreatedDate(new Date());
-			setStatus(DeviceAssignmentStatus.Active);
-		}
-	}
-
 	public static class AssetModule_Devices extends AssetModule {
 
 		public AssetModule_Devices() {
@@ -605,6 +636,7 @@ public class ExampleData {
 
 		public Person_Derek() {
 			setId("derek");
+			setName("Derek Adams");
 			setUserName("dadams");
 			setEmailAddress("dadams@demoserver.com");
 			setImageUrl("https://s3.amazonaws.com/sitewhere-demo/people/derek.jpg");
@@ -617,6 +649,7 @@ public class ExampleData {
 
 		public Person_Martin() {
 			setId("martin");
+			setName("Martin Weber");
 			setUserName("mweber");
 			setEmailAddress("martin@demoserver.com");
 			setImageUrl("https://s3.amazonaws.com/sitewhere-demo/people/martin.jpg");

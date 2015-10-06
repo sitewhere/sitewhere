@@ -258,8 +258,9 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{hardwareId}/assignments", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get assignment history for a device")
+	@ApiOperation(value = "List assignment history for device")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDeviceAssignmentHistoryResponse.class, description = "listDeviceAssignmentHistoryResponse.md") })
 	public ISearchResults<IDeviceAssignment> listDeviceAssignmentHistory(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
@@ -298,8 +299,11 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new device element mapping")
+	@ApiOperation(value = "Create new device element mapping")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Devices.AddMappingRequest.class, description = "addDeviceElementMappingRequest.md"),
+			@Example(stage = Stage.Response, json = Devices.AddMappingResponse.class, description = "addDeviceElementMappingResponse.md") })
 	public IDevice addDeviceElementMapping(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceElementMapping request, HttpServletRequest servletRequest)
@@ -321,8 +325,9 @@ public class DevicesController extends SiteWhereController {
 
 	@RequestMapping(value = "/{hardwareId}/mappings", method = RequestMethod.DELETE)
 	@ResponseBody
-	@ApiOperation(value = "Delete an existing device element mapping")
+	@ApiOperation(value = "Delete existing device element mapping")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.DeleteMappingResponse.class, description = "deleteDeviceElementMappingResponse.md") })
 	public IDevice deleteDeviceElementMapping(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Device element path", required = true) @RequestParam(required = true) String path,
@@ -350,8 +355,9 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List devices that match certain criteria")
+	@ApiOperation(value = "List devices that match criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDevicesForCriteriaResponse.class, description = "listDevicesResponse.md") })
 	public ISearchResults<IDevice> listDevices(
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
@@ -387,8 +393,9 @@ public class DevicesController extends SiteWhereController {
 
 	@RequestMapping(value = "/specification/{specificationToken}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List devices that use a given specification")
+	@ApiOperation(value = "List devices using a given specification")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForSpecificationResponse.md") })
 	public ISearchResults<IDevice> listDevicesForSpecification(
 			@ApiParam(value = "Specification token", required = true) @PathVariable String specificationToken,
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
@@ -425,8 +432,9 @@ public class DevicesController extends SiteWhereController {
 
 	@RequestMapping(value = "/group/{groupToken}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List devices that belong to a given group")
+	@ApiOperation(value = "List devices in device group")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForGroupResponse.md") })
 	public ISearchResults<IDevice> listDevicesForGroup(
 			@ApiParam(value = "Group token", required = true) @PathVariable String groupToken,
 			@ApiParam(value = "Specification token", required = false) @RequestParam(required = false) String specification,
@@ -470,8 +478,9 @@ public class DevicesController extends SiteWhereController {
 
 	@RequestMapping(value = "/grouprole/{role}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List devices that belong to a groups with a given role")
+	@ApiOperation(value = "List devices in device groups with role")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForGroupsWithRoleResponse.md") })
 	public ISearchResults<IDevice> listDevicesForGroupsWithRole(
 			@ApiParam(value = "Group role", required = true) @PathVariable String role,
 			@ApiParam(value = "Specification token", required = false) @RequestParam(required = false) String specification,
@@ -523,8 +532,11 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{hardwareId}/batch", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Send a batch of events for the current assignment of the given device.")
+	@ApiOperation(value = "Add multiple events for device.")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Devices.AddDeviceEventBatchRequest.class, description = "addDeviceEventBatchRequest.md"),
+			@Example(stage = Stage.Response, json = Devices.AddDeviceEventBatchResponse.class, description = "addDeviceEventBatchResponse.md") })
 	public IDeviceEventBatchResponse addDeviceEventBatch(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceEventBatch batch, HttpServletRequest servletRequest) throws SiteWhereException {
