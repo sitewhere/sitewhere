@@ -8,9 +8,10 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 
@@ -19,6 +20,7 @@ import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreateRequest, Serializable {
 
 	/** Serialization version identifier */
@@ -31,7 +33,7 @@ public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreat
 	private String elementId;
 
 	/** List of roles for element */
-	private List<String> roles = new ArrayList<String>();
+	private List<String> roles;
 
 	public GroupElementType getType() {
 		return type;

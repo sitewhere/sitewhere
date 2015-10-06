@@ -66,8 +66,8 @@ public class CommandsController extends SiteWhereController {
 	@ApiOperation(value = "Update an existing device command")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Commands.DeviceCommandUpdateRequest.class, description = "createBatchCommandInvocationRequest.md"),
-			@Example(stage = Stage.Response, json = Commands.DeviceCommandUpdateResponse.class, description = "createBatchCommandInvocationResponse.md") })
+			@Example(stage = Stage.Request, json = Commands.DeviceCommandUpdateRequest.class, description = "updateDeviceCommandRequest.md"),
+			@Example(stage = Stage.Response, json = Commands.DeviceCommandUpdateResponse.class, description = "updateDeviceCommandResponse.md") })
 	public IDeviceCommand updateDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
@@ -91,7 +91,7 @@ public class CommandsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get device command by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "createBatchCommandInvocationResponse.md") })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "getDeviceCommandByTokenResponse.md") })
 	public IDeviceCommand getDeviceCommandByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -115,7 +115,7 @@ public class CommandsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Delete device command by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "createBatchCommandInvocationResponse.md") })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "deleteDeviceCommandResponse.md") })
 	public IDeviceCommand deleteDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,

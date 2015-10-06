@@ -33,6 +33,7 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
+import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.asset.AssetType;
@@ -48,6 +49,7 @@ import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
+import com.sitewhere.spi.device.group.GroupElementType;
 
 @SuppressWarnings("serial")
 public class ExampleData {
@@ -151,12 +153,24 @@ public class ExampleData {
 
 	/** Batch operation */
 	public static BatchOperation2 BATCH_OPERATION2 = new BatchOperation2();
-	
+
+	/** Device group */
+	public static DeviceGroup_UnitedStates DEVICEGROUP_UNITEDSTATES = new DeviceGroup_UnitedStates();
+
 	/** Device group */
 	public static DeviceGroup_SouthEast DEVICEGROUP_SOUTHEAST = new DeviceGroup_SouthEast();
-	
+
 	/** Device group */
 	public static DeviceGroup_NorthEast DEVICEGROUP_NORTHEAST = new DeviceGroup_NorthEast();
+
+	/** Group element */
+	public static GroupElement_Southeast GROUPELEMENT_SOUTHEAST = new GroupElement_Southeast();
+
+	/** Group element */
+	public static GroupElement_Northeast GROUPELEMENT_NORTHEAST = new GroupElement_Northeast();
+
+	/** Group element */
+	public static GroupElement_Tracker GROUPELEMENT_TRACKER = new GroupElement_Tracker();
 
 	/** Authority */
 	public static Auth_AdminSites AUTH_ADMIN_SITES = new Auth_AdminSites();
@@ -695,6 +709,18 @@ public class ExampleData {
 		}
 	}
 
+	public static class DeviceGroup_UnitedStates extends DeviceGroup {
+
+		public DeviceGroup_UnitedStates() {
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			setToken("38745f7f-b5c6-477a-8388-48844ee38862");
+			setName("United States");
+			setDescription("Devices in the United States region.");
+			setRoles(Arrays.asList(new String[] { "region", "americas" }));
+		}
+	}
+
 	public static class DeviceGroup_SouthEast extends DeviceGroup {
 
 		public DeviceGroup_SouthEast() {
@@ -704,6 +730,39 @@ public class ExampleData {
 			setName("Southeast");
 			setDescription("Devices in the southeast region.");
 			setRoles(Arrays.asList(new String[] { "region", "americas" }));
+		}
+	}
+
+	public static class GroupElement_Southeast extends DeviceGroupElement {
+
+		public GroupElement_Southeast() {
+			setGroupToken(ExampleData.DEVICEGROUP_UNITEDSTATES.getToken());
+			setIndex(0);
+			setType(GroupElementType.Group);
+			setElementId(ExampleData.DEVICEGROUP_SOUTHEAST.getToken());
+			getRoles().add("region");
+		}
+	}
+
+	public static class GroupElement_Northeast extends DeviceGroupElement {
+
+		public GroupElement_Northeast() {
+			setGroupToken(ExampleData.DEVICEGROUP_UNITEDSTATES.getToken());
+			setIndex(1);
+			setType(GroupElementType.Group);
+			setElementId(ExampleData.DEVICEGROUP_NORTHEAST.getToken());
+			getRoles().add("region");
+		}
+	}
+
+	public static class GroupElement_Tracker extends DeviceGroupElement {
+
+		public GroupElement_Tracker() {
+			setGroupToken(ExampleData.DEVICEGROUP_UNITEDSTATES.getToken());
+			setIndex(2);
+			setType(GroupElementType.Device);
+			setElementId(ExampleData.TRACKER.getHardwareId());
+			getRoles().add("standalone");
 		}
 	}
 
