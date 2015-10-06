@@ -78,6 +78,9 @@ public class ExampleData {
 	/** Hardware asset */
 	public static Hardware_Caterpillar ASSET_CATERPILLAR = new Hardware_Caterpillar();
 
+	/** Hardware asset */
+	public static Hardware_Meitrack ASSET_MEITRACK = new Hardware_Meitrack();
+
 	/** Site */
 	public static Site_Construction SITE_CONSTRUCTION = new Site_Construction();
 
@@ -204,8 +207,8 @@ public class ExampleData {
 		public Specification_MeiTrack() {
 			setToken("82043707-9e3d-441f-bdcc-33cf0f4f7260");
 			setName("MeiTrack GPS");
-			setAssetModuleId(ExampleData.AM_PERSONS.getId());
-			setAssetId(ExampleData.ASSET_CATERPILLAR.getId());
+			setAssetModuleId(ExampleData.AC_DEVICES.getId());
+			setAssetId(ExampleData.ASSET_MEITRACK.getId());
 			setContainerPolicy(DeviceContainerPolicy.Standalone);
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
@@ -353,8 +356,8 @@ public class ExampleData {
 			setHardwareId("b6daecc5-b0b2-48a8-90ab-4c4a170dd2a0");
 			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
 			setSpecificationToken(ExampleData.SPEC_MEITRACK.getToken());
+			setAssignmentToken("1ad74fe3-2cbf-443f-aede-9ec70a9a4ab5");
 			setComments("Equipment tracker.");
-			setAssetId("175");
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
 		}
@@ -367,7 +370,6 @@ public class ExampleData {
 			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
 			setSpecificationToken(ExampleData.SPEC_HEART_MONITOR.getToken());
 			setComments("Tracks vital statistics including heart rate.");
-			setAssetId("333");
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
 		}
@@ -636,6 +638,21 @@ public class ExampleData {
 			getProperties().put("manufacturer", "Caterpillar");
 			getProperties().put("net.power", "153");
 			getProperties().put("fuel.tank", "108.3");
+		}
+	}
+
+	public static class Hardware_Meitrack extends HardwareAsset {
+
+		public Hardware_Meitrack() {
+			setId("175");
+			setName("MeiTrack MT90");
+			setType(AssetType.Device);
+			setImageUrl("https://s3.amazonaws.com/sitewhere-demo/construction/meitrack/mt90.jpg");
+			setSku("MT90");
+			setDescription("MT90 is a waterproof GPS personal tracker suitable for lone workers, kids, aged, pet, assets, vehicle and fleet management.");
+			getProperties().put("manufacturer", "MeiTrack");
+			getProperties().put("weight", "1.000");
+			getProperties().put("sos.button", "true");
 		}
 	}
 

@@ -56,6 +56,11 @@ import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Devices;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -68,6 +73,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/devices")
 @Api(value = "devices", description = "Operations related to SiteWhere devices.")
+@DocumentedController(name = "Devices")
 public class DevicesController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -81,8 +87,11 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new device")
+	@ApiOperation(value = "Create new device")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Devices.CreateDeviceRequest.class, description = "createDeviceGroupRequest.md"),
+			@Example(stage = Stage.Response, json = Devices.CreateDeviceResponse.class, description = "createDeviceGroupResponse.md") })
 	public IDevice createDevice(@RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDevice", LOGGER);
@@ -107,8 +116,9 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{hardwareId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get a device by unique hardware id")
+	@ApiOperation(value = "Get device by unique hardware id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.GetDeviceByHardwareIdResponse.class, description = "getDeviceByHardwareIdResponse.md") })
 	public IDevice getDeviceByHardwareId(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(defaultValue = "true") boolean includeSpecification,
@@ -145,8 +155,11 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{hardwareId}", method = RequestMethod.PUT)
 	@ResponseBody
-	@ApiOperation(value = "Update device information")
+	@ApiOperation(value = "Update an existing device")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Devices.UpdateDeviceRequest.class, description = "updateDeviceRequest.md"),
+			@Example(stage = Stage.Response, json = Devices.UpdateDeviceResponse.class, description = "updateDeviceResponse.md") })
 	public IDevice updateDevice(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@RequestBody DeviceCreateRequest request, HttpServletRequest servletRequest)
@@ -174,8 +187,9 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{hardwareId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	@ApiOperation(value = "Delete a device based on unique hardware id")
+	@ApiOperation(value = "Delete device based on unique hardware id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.CreateDeviceResponse.class, description = "deleteDeviceResponse.md") })
 	public IDevice deleteDevice(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
@@ -204,8 +218,9 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{hardwareId}/assignment", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get the current assignment for a device")
+	@ApiOperation(value = "Get current assignment for device")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.GetCurrentDeviceAssignmentResponse.class, description = "getDeviceCurrentAssignmentResponse.md") })
 	public IDeviceAssignment getDeviceCurrentAssignment(
 			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
