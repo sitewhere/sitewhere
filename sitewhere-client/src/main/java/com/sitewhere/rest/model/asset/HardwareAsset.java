@@ -9,14 +9,13 @@ package com.sitewhere.rest.model.asset;
 
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IHardwareAsset;
-import java.io.Serializable;
 
 /**
  * Model class for a hardware asset.
  * 
  * @author dadams
  */
-public class HardwareAsset extends Asset implements IHardwareAsset, Serializable {
+public class HardwareAsset extends Asset implements IHardwareAsset {
 
 	/** SKU */
 	private String sku;

@@ -9,14 +9,13 @@ package com.sitewhere.rest.model.asset;
 
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.ILocationAsset;
-import java.io.Serializable;
 
 /**
  * Default implementation of {@link ILocationAsset}.
  * 
  * @author Derek
  */
-public class LocationAsset extends Asset implements ILocationAsset, Serializable {
+public class LocationAsset extends Asset implements ILocationAsset {
 
 	/** Latitude */
 	private Double latitude;
