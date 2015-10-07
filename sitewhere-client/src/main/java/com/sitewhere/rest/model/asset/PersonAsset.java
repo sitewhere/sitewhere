@@ -12,13 +12,14 @@ import java.util.List;
 
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IPersonAsset;
+import java.io.Serializable;
 
 /**
  * Model class for a person asset.
  * 
  * @author dadams
  */
-public class PersonAsset extends Asset implements IPersonAsset {
+public class PersonAsset extends Asset implements IPersonAsset, Serializable {
 
 	/** Asset username */
 	private String userName;
