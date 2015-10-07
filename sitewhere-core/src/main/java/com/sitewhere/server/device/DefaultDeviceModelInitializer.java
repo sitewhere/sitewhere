@@ -22,6 +22,7 @@ import com.sitewhere.geospatial.GeoUtils;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
+import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.rest.model.device.element.DeviceSlot;
@@ -540,10 +541,12 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					+ "administrators if any of the assets move outside of the general site area or "
 					+ "into areas where they are not allowed.");
 			request.setImageUrl(SITE_IMAGE_URL);
-			request.getMap().setType("mapquest");
-			request.getMap().addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LATITUDE, "34.10469794977326");
-			request.getMap().addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LONGITUDE, "-84.23966646194458");
-			request.getMap().addOrReplaceMetadata(ISiteMapMetadata.MAP_ZOOM_LEVEL, "15");
+			SiteMapData map = new SiteMapData();
+			map.setType("mapquest");
+			map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LATITUDE, "34.10469794977326");
+			map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LONGITUDE, "-84.23966646194458");
+			map.addOrReplaceMetadata(ISiteMapMetadata.MAP_ZOOM_LEVEL, "15");
+			request.setMap(map);
 			ISite site = getDeviceManagement().createSite(request);
 			results.add(site);
 			LOGGER.info(PREFIX_CREATE_SITE + " " + request.getName());

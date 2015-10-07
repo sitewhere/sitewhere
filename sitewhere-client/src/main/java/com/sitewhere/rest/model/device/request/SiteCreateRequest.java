@@ -10,6 +10,8 @@ package com.sitewhere.rest.model.device.request;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.SiteMapData;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 
@@ -18,6 +20,7 @@ import com.sitewhere.spi.device.request.ISiteCreateRequest;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 
 	/** Serialization version identifier */
@@ -36,7 +39,7 @@ public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 	private String imageUrl;
 
 	/** Map data */
-	private SiteMapData map = new SiteMapData();
+	private SiteMapData map;
 
 	/** Metadata values */
 	private Map<String, String> metadata;

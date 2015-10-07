@@ -60,6 +60,12 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Assignments;
+import com.sitewhere.web.rest.documentation.Sites;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -72,6 +78,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/sites")
 @Api(value = "sites", description = "Operations related to SiteWhere sites.")
+@DocumentedController(name = "Sites")
 public class SitesController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -86,8 +93,11 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new site")
+	@ApiOperation(value = "Create new site")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Sites.CreateSiteRequest.class, description = "createSiteRequest.md"),
+			@Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "createSiteResponse.md") })
 	public Site createSite(@RequestBody SiteCreateRequest input, HttpServletRequest servletRequest)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createSite", LOGGER);
@@ -109,8 +119,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get a site by unique token")
+	@ApiOperation(value = "Get site by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "getSiteByTokenResponse.md") })
 	public Site getSiteByToken(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -137,8 +148,11 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}", method = RequestMethod.PUT)
 	@ResponseBody
-	@ApiOperation(value = "Update an existing site")
+	@ApiOperation(value = "Update existing site")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Sites.UpdateSiteRequest.class, description = "updateSiteRequest.md"),
+			@Example(stage = Stage.Response, json = Sites.UpdateSiteResponse.class, description = "updateSiteResponse.md") })
 	public Site updateSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@RequestBody SiteCreateRequest request, HttpServletRequest servletRequest)
@@ -164,8 +178,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}", method = RequestMethod.DELETE)
 	@ResponseBody
-	@ApiOperation(value = "Delete a site by unique token")
+	@ApiOperation(value = "Delete site by unique token")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.CreateSiteResponse.class, description = "deleteSiteByTokenResponse.md") })
 	public Site deleteSiteByToken(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
@@ -189,8 +204,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List all sites")
+	@ApiOperation(value = "List sites matching criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.ListDevicesResponse.class, description = "listSitesResponse.md") })
 	public ISearchResults<ISite> listSites(
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
@@ -214,8 +230,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}/measurements", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List measurements associated with a site")
+	@ApiOperation(value = "List measurements for site")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsResponse.class, description = "listDeviceMeasurementsForSiteResponse.md") })
 	public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -254,8 +271,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}/locations", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List locations associated with a site")
+	@ApiOperation(value = "List locations for site")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listDeviceLocationsForSiteResponse.md") })
 	public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -294,8 +312,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}/alerts", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List alerts associated with a site")
+	@ApiOperation(value = "List alerts for site")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmenAlertsResponse.class, description = "listDeviceAlertsForSiteResponse.md") })
 	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -334,8 +353,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}/invocations", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List command invocations associated with a site")
+	@ApiOperation(value = "List command invocations for a site")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListCommandInvocationsResponse.class, description = "listDeviceCommandInvocationsForSiteResponse.md") })
 	public ISearchResults<IDeviceCommandInvocation> listDeviceCommandInvocationsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -374,8 +394,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}/responses", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List command responses associated with a site")
+	@ApiOperation(value = "List command responses for site")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListCommandResponsesResponse.class, description = "listDeviceCommandResponsesForSiteResponse.md") })
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,

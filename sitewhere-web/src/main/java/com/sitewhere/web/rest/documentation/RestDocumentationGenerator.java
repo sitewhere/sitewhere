@@ -102,7 +102,12 @@ public class RestDocumentationGenerator {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
-		System.out.println("Found " + controllers.size() + " documented controllers.");
+		int methodCount = 0;
+		for (ParsedController controller : results) {
+			methodCount += controller.getMethods().size();
+		}
+		System.out.println("Found " + controllers.size() + " documented controllers containing "
+				+ methodCount + " methods.");
 		return results;
 	}
 

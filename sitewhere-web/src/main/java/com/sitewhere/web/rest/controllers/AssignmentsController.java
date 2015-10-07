@@ -384,7 +384,7 @@ public class AssignmentsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "List location events for device assignment")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmenLocationsResponse.class, description = "listLocationsResponse.md") })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listLocationsResponse.md") })
 	public ISearchResults<IDeviceLocation> listLocations(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,

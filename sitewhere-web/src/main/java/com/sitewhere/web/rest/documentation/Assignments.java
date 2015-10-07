@@ -147,7 +147,7 @@ public class Assignments {
 		}
 	}
 
-	public static class ListAssignmenLocationsResponse {
+	public static class ListAssignmentLocationsResponse {
 
 		public Object generate() throws SiteWhereException {
 			List<IDeviceLocation> events = new ArrayList<IDeviceLocation>();

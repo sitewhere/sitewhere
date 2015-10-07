@@ -570,12 +570,18 @@ public class SiteWherePersistence {
 	 * @throws SiteWhereException
 	 */
 	public static void siteUpdateLogic(ISiteCreateRequest request, Site target) throws SiteWhereException {
-		target.setName(request.getName());
-		target.setDescription(request.getDescription());
-		target.setImageUrl(request.getImageUrl());
-		target.clearMetadata();
-		target.setMap(SiteMapData.copy(request.getMap()));
-
+		if (request.getName() != null) {
+			target.setName(request.getName());
+		}
+		if (request.getDescription() != null) {
+			target.setDescription(request.getDescription());
+		}
+		if (request.getImageUrl() != null) {
+			target.setImageUrl(request.getImageUrl());
+		}
+		if (request.getMap() != null) {
+			target.setMap(SiteMapData.copy(request.getMap()));
+		}
 		if (request.getMetadata() != null) {
 			target.getMetadata().clear();
 			MetadataProvider.copy(request.getMetadata(), target);
