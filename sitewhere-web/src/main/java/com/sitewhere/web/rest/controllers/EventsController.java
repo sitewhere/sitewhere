@@ -23,6 +23,11 @@ import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Assignments;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -35,6 +40,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/events")
 @Api(value = "events", description = "Operations related to SiteWhere device events.")
+@DocumentedController(name = "Events")
 public class EventsController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -48,8 +54,12 @@ public class EventsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get an event by unique id.")
+	@ApiOperation(value = "Get event by unique id")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "getEventByIdMeasurementsResponse.md"),
+			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentLocationResponse.class, description = "getEventByIdLocationResponse.md"),
+			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentAlertResponse.class, description = "getEventByIdAlertResponse.md") })
 	public IDeviceEvent getEventById(
 			@ApiParam(value = "Event id", required = true) @PathVariable String eventId,
 			HttpServletRequest servletRequest) throws SiteWhereException {

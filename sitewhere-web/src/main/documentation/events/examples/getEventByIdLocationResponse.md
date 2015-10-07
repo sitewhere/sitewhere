@@ -1,0 +1,1 @@
+If the result is a location event, the response will be similar to the one below:

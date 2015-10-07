@@ -532,7 +532,7 @@ public class DevicesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{hardwareId}/batch", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Add multiple events for device.")
+	@ApiOperation(value = "Add multiple events for device")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Devices.AddDeviceEventBatchRequest.class, description = "addDeviceEventBatchRequest.md"),

@@ -15,11 +15,13 @@ import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
+import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 
 /**
  * Device management facade using static sample data. This is used to generate JSON for
@@ -41,6 +43,9 @@ public class MockDeviceManagement extends DeviceManagementDecorator {
 	/** Assignments by token */
 	private Map<String, DeviceAssignment> assignments = new HashMap<String, DeviceAssignment>();
 
+	/** Device commands by token */
+	private Map<String, DeviceCommand> commands = new HashMap<String, DeviceCommand>();
+
 	public MockDeviceManagement() {
 		super(null);
 
@@ -48,6 +53,9 @@ public class MockDeviceManagement extends DeviceManagementDecorator {
 
 		specifications.put(ExampleData.SPEC_MEITRACK.getToken(), ExampleData.SPEC_MEITRACK);
 		specifications.put(ExampleData.SPEC_HEART_MONITOR.getToken(), ExampleData.SPEC_HEART_MONITOR);
+
+		commands.put(ExampleData.COMMAND_GET_FW_VER.getToken(), ExampleData.COMMAND_GET_FW_VER);
+		commands.put(ExampleData.COMMAND_SET_RPT_INTV.getToken(), ExampleData.COMMAND_SET_RPT_INTV);
 
 		devices.put(ExampleData.TRACKER.getHardwareId(), ExampleData.TRACKER);
 		devices.put(ExampleData.HEART_MONITOR.getHardwareId(), ExampleData.HEART_MONITOR);
@@ -101,6 +109,18 @@ public class MockDeviceManagement extends DeviceManagementDecorator {
 	@Override
 	public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException {
 		return assignments.get(token);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.DeviceManagementDecorator#getDeviceCommandByToken(java.lang
+	 * .String)
+	 */
+	@Override
+	public IDeviceCommand getDeviceCommandByToken(String token) throws SiteWhereException {
+		return commands.get(token);
 	}
 
 	/*
