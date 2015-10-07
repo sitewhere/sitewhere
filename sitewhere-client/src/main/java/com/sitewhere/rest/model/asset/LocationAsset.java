@@ -18,6 +18,9 @@ import java.io.Serializable;
  */
 public class LocationAsset extends Asset implements ILocationAsset, Serializable {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 4622767499562304759L;
+
 	/** Latitude */
 	private Double latitude;
 

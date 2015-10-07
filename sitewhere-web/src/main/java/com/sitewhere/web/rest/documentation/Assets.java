@@ -52,17 +52,23 @@ public class Assets {
 
 	public static class GetAssetByIdPersonResponse extends ExampleData.Person_Derek {
 
+		private static final long serialVersionUID = -2017792156204810161L;
+
 		public GetAssetByIdPersonResponse() {
 		}
 	}
 
 	public static class GetAssetByIdHardwareResponse extends ExampleData.Hardware_Caterpillar {
 
+		private static final long serialVersionUID = 2878695642408035468L;
+
 		public GetAssetByIdHardwareResponse() {
 		}
 	}
 
 	public static class GetAssetByIdLocationResponse extends ExampleData.Location_Trailer {
+
+		private static final long serialVersionUID = -7626071163612595490L;
 
 		public GetAssetByIdLocationResponse() {
 		}

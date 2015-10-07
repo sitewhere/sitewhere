@@ -16,6 +16,9 @@ import com.sitewhere.rest.model.asset.PersonAsset;
  */
 public class Wso2ScimAsset extends PersonAsset {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 1502215265529667999L;
+
 	/*
 	 * (non-Javadoc)
 	 * 

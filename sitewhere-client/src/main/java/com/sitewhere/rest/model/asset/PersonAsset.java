@@ -21,6 +21,9 @@ import java.io.Serializable;
  */
 public class PersonAsset extends Asset implements IPersonAsset, Serializable {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 367520855621148358L;
+
 	/** Asset username */
 	private String userName;
 

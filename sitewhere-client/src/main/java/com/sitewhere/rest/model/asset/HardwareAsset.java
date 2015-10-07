@@ -18,6 +18,9 @@ import java.io.Serializable;
  */
 public class HardwareAsset extends Asset implements IHardwareAsset, Serializable {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -9215203722090581894L;
+
 	/** SKU */
 	private String sku;
 
