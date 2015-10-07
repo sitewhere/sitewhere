@@ -7,6 +7,7 @@
  */
 package com.sitewhere.web.rest.documentation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,6 +36,15 @@ public class Invocations {
 			ISearchResults<IDeviceCommandResponse> responses =
 					new SearchResults<IDeviceCommandResponse>(list, 1);
 			return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(), null);
+		}
+	}
+
+	public static class GetDeviceCommandInvocationResponsesResponse {
+
+		public Object generate() throws SiteWhereException {
+			List<IDeviceCommandResponse> list = new ArrayList<IDeviceCommandResponse>();
+			list.add(ExampleData.RESPONSE_GET_FW_VER);
+			return new SearchResults<IDeviceCommandResponse>(list, 1);
 		}
 	}
 }

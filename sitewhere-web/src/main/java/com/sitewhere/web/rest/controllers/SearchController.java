@@ -33,6 +33,11 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Search;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -45,6 +50,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/search")
 @Api(value = "search", description = "Operations related to external search providers.")
+@DocumentedController(name = "External Search")
 public class SearchController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -52,8 +58,9 @@ public class SearchController extends SiteWhereController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get list of available search providers")
+	@ApiOperation(value = "List available search providers")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Search.ListSearchProvidersResponse.class, description = "listSearchProvidersResponse.md") })
 	public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listSearchProviders", LOGGER);
@@ -72,8 +79,9 @@ public class SearchController extends SiteWhereController {
 
 	@RequestMapping(value = "/{providerId}/events", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Search provider for events that match the given criteria")
+	@ApiOperation(value = "Search for events in provider")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Search.ListExternalEventsResponse.class, description = "searchDeviceEventsResponse.md") })
 	public List<IDeviceEvent> searchDeviceEvents(
 			@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 			HttpServletRequest request, HttpServletRequest servletRequest) throws SiteWhereException {

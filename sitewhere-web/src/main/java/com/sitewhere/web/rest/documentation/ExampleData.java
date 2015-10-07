@@ -36,6 +36,7 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -184,6 +185,9 @@ public class ExampleData {
 
 	/** Group element */
 	public static GroupElement_Tracker GROUPELEMENT_TRACKER = new GroupElement_Tracker();
+
+	/** Search provider */
+	public static Search_Solr SEARCH_SOLR = new Search_Solr();
 
 	/** Authority */
 	public static Auth_AdminSites AUTH_ADMIN_SITES = new Auth_AdminSites();
@@ -825,6 +829,14 @@ public class ExampleData {
 			setName("Northeast");
 			setDescription("Devices in the northeast region.");
 			setRoles(Arrays.asList(new String[] { "region", "americas" }));
+		}
+	}
+
+	public static class Search_Solr extends SearchProvider {
+
+		public Search_Solr() {
+			setId("solr");
+			setName("Apache Solr");
 		}
 	}
 

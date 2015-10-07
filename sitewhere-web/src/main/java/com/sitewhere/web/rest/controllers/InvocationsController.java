@@ -132,8 +132,9 @@ public class InvocationsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{id}/responses", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List all responses for a device command invocation.")
+	@ApiOperation(value = "List responses for command invocation")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Invocations.GetDeviceCommandInvocationResponsesResponse.class, description = "listCommandInvocationResponsesResponse.md") })
 	public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(
 			@ApiParam(value = "Invocation id", required = true) @PathVariable String id,
 			HttpServletRequest servletRequest) throws SiteWhereException {
