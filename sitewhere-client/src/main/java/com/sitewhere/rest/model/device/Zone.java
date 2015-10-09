@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.SiteWhereException;
@@ -22,6 +24,7 @@ import com.sitewhere.spi.device.IZone;
  * 
  * @author dadams
  */
+@JsonInclude(Include.NON_NULL)
 public class Zone extends MetadataProviderEntity implements IZone, Serializable {
 
 	/** Serialization version identifier */

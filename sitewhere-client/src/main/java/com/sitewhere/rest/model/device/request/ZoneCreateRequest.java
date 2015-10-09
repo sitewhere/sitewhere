@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.spi.common.ILocation;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
@@ -21,6 +23,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class ZoneCreateRequest implements IZoneCreateRequest, Serializable {
 
 	/** Serialization version identifier */

@@ -474,9 +474,10 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}/assignments", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List device assignments associated with a site")
+	@ApiOperation(value = "List device assignments for site")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	public ISearchResults<DeviceAssignment> findAssignmentsForSite(
+	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.ListAssignmentsForSiteResponse.class, description = "findAssignmentsForSiteResponse.md") })
+	public ISearchResults<DeviceAssignment> listAssignmentsForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Include detailed device information", required = false) @RequestParam(defaultValue = "false") boolean includeDevice,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "false") boolean includeAsset,
@@ -484,7 +485,7 @@ public class SitesController extends SiteWhereController {
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "findAssignmentsForSite", LOGGER);
+		Tracer.start(TracerCategory.RestApiCall, "listAssignmentsForSite", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
 			ISearchResults<IDeviceAssignment> matches =
@@ -515,8 +516,11 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new zone associated with a site")
+	@ApiOperation(value = "Create new zone for site")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_SITES })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Sites.CreateZoneRequest.class, description = "createZoneRequest.md"),
+			@Example(stage = Stage.Response, json = Sites.CreateZoneResponse.class, description = "createZoneResponse.md") })
 	public Zone createZone(
 			@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
 			@RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest)
@@ -546,8 +550,9 @@ public class SitesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{siteToken}/zones", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List zones associated with a site")
+	@ApiOperation(value = "List zones for site")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.ListZonesForSiteResponse.class, description = "listZonesForSiteResponse.md") })
 	public ISearchResults<IZone> listZonesForSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,

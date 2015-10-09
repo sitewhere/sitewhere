@@ -18,12 +18,14 @@ import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
+import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.SiteMapData;
+import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.batch.BatchElement;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.CommandParameter;
@@ -85,6 +87,12 @@ public class ExampleData {
 
 	/** Site */
 	public static Site_Construction SITE_CONSTRUCTION = new Site_Construction();
+	
+	/** Zone */
+	public static Zone_ConstructionSite ZONE_CONSTRUCTION_SITE = new Zone_ConstructionSite();
+	
+	/** Zone */
+	public static Zone_OffLimits ZONE_OFF_LIMITS = new Zone_OffLimits();
 
 	/** Site */
 	public static Site_VehicleTracking SITE_VEHICLE_TRACKING = new Site_VehicleTracking();
@@ -216,6 +224,42 @@ public class ExampleData {
 			map.setMetadata(mapMetadata);
 			setMap(map);
 			setMetadata(new HashMap<String, String>());
+		}
+	}
+
+	public static class Zone_ConstructionSite extends Zone {
+
+		public Zone_ConstructionSite() {
+			setToken("6fdaa5bc-a96a-4a65-bf01-db791e038f8b");
+			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
+			setName("Construction Site");
+			setBorderColor("#017112");
+			setFillColor("#1db32e");
+			setOpacity(0.4);
+			getCoordinates().add(new Location(34.10260138703638, -84.24412965774536));
+			getCoordinates().add(new Location(34.101837372446774, -84.24243450164795));
+			getCoordinates().add(new Location(34.101517550337825, -84.24091100692749));
+			getCoordinates().add(new Location(34.10154953265732, -84.238566756248479));
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+		}
+	}
+
+	public static class Zone_OffLimits extends Zone {
+
+		public Zone_OffLimits() {
+			setToken("9707c31a-71b0-4fd2-8e0b-e9c7a5d249e8");
+			setSiteToken(ExampleData.SITE_CONSTRUCTION.getToken());
+			setName("OffLimits");
+			setBorderColor("#990000");
+			setFillColor("#660000");
+			setOpacity(0.5);
+			getCoordinates().add(new Location(34.10260138703638, -84.24412965774536));
+			getCoordinates().add(new Location(34.101837372446774, -84.24243450164795));
+			getCoordinates().add(new Location(34.101517550337825, -84.24091100692749));
+			getCoordinates().add(new Location(34.10154953265732, -84.238566756248479));
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
 		}
 	}
 
