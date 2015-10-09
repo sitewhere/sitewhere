@@ -10,6 +10,8 @@ package com.sitewhere.rest.model.device.request;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
@@ -20,6 +22,7 @@ import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
  * 
  * @author Derek Adams
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCreateRequest, Serializable {
 
 	/** Serialization version identifier */

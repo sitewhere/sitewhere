@@ -52,6 +52,11 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Specifications;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -64,6 +69,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/specifications")
 @Api(value = "specifications", description = "Operations related to SiteWhere device specifications.")
+@DocumentedController(name = "Device Specifications")
 public class SpecificationsController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -77,8 +83,11 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new device specification")
+	@ApiOperation(value = "Create new device specification")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Specifications.CreateSpecificationRequest.class, description = "createDeviceSpecificationRequest.md"),
+			@Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "createDeviceSpecificationResponse.md") })
 	public IDeviceSpecification createDeviceSpecification(
 			@RequestBody DeviceSpecificationCreateRequest request, HttpServletRequest servletRequest)
 			throws SiteWhereException {
@@ -112,8 +121,9 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get a device specification by unique token")
+	@ApiOperation(value = "Get specification by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "getDeviceSpecificationByTokenResponse.md") })
 	public IDeviceSpecification getDeviceSpecificationByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
