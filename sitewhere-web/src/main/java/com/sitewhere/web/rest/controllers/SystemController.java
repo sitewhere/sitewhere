@@ -21,6 +21,11 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.SystemInfo;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -32,6 +37,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping(value = "/system")
 @Api(value = "system", description = "Operations related to SiteWhere CE system management.")
+@DocumentedController(name = "System Information")
 public class SystemController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -47,6 +53,7 @@ public class SystemController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Get version information")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = SystemInfo.GetVersionResponse.class, description = "getVersionResponse.md") })
 	public IVersion getVersion() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getVersion", LOGGER);
 		try {
@@ -64,8 +71,9 @@ public class SystemController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/state", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get server runtime information")
+	@ApiOperation(value = "Get server runtime state")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = SystemInfo.GetServerStateResponse.class, description = "getServerStateResponse.md") })
 	public ISiteWhereServerState getServerState() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getServerState", LOGGER);
 		try {
