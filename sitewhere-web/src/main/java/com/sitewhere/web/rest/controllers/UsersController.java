@@ -41,6 +41,12 @@ import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Tenants;
+import com.sitewhere.web.rest.documentation.Users;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -53,6 +59,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/users")
 @Api(value = "users", description = "Operations related to SiteWhere users.")
+@DocumentedController(name = "Users")
 public class UsersController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -67,8 +74,11 @@ public class UsersController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new user")
+	@ApiOperation(value = "Create new user")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Users.CreateUserRequest.class, description = "createUserRequest.md"),
+			@Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "createUserResponse.md") })
 	public User createUser(@RequestBody UserCreateRequest input) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createUser", LOGGER);
 		try {
@@ -95,8 +105,11 @@ public class UsersController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{username}", method = RequestMethod.PUT)
 	@ResponseBody
-	@ApiOperation(value = "Update an existing user.")
+	@ApiOperation(value = "Update existing user.")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Users.UpdateUserRequest.class, description = "updateUserRequest.md"),
+			@Example(stage = Stage.Response, json = Users.UpdateUserResponse.class, description = "updateUserResponse.md") })
 	public User updateUser(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@RequestBody UserCreateRequest input) throws SiteWhereException {
@@ -118,8 +131,9 @@ public class UsersController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{username}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Find user by unique username")
+	@ApiOperation(value = "Get user by username")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "getUserByUsernameResponse.md") })
 	public User getUserByUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
 			throws SiteWhereException {
@@ -146,8 +160,9 @@ public class UsersController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
 	@ResponseBody
-	@ApiOperation(value = "Delete a user by unique username")
+	@ApiOperation(value = "Delete user by username")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "deleteUserByUsernameResponse.md") })
 	public User deleteUserByUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
@@ -170,8 +185,9 @@ public class UsersController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{username}/authorities", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Find authorities assigned to a given user")
+	@ApiOperation(value = "Get authorities for user")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Users.ListAuthoritiesForUserResponse.class, description = "getAuthoritiesForUsernameResponse.md") })
 	public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
 			throws SiteWhereException {
@@ -197,8 +213,9 @@ public class UsersController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List users that match certain criteria")
+	@ApiOperation(value = "List users matching criteria")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Users.ListUsersResponse.class, description = "listUsersResponse.md") })
 	public SearchResults<User> listUsers(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
@@ -228,8 +245,9 @@ public class UsersController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{username}/tenants", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Find tenants associated with a given user")
+	@ApiOperation(value = "List authorized tenants for user")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "getTenantsForUsernameResponse.md") })
 	public List<ITenant> getTenantsForUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)

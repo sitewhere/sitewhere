@@ -8,9 +8,10 @@
 package com.sitewhere.rest.model.user.request;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
@@ -20,6 +21,7 @@ import com.sitewhere.spi.user.request.IUserCreateRequest;
  * 
  * @author Derek Adams
  */
+@JsonInclude(Include.NON_NULL)
 public class UserCreateRequest extends MetadataProvider implements IUserCreateRequest, Serializable {
 
 	/** Serialization version identifier */
@@ -41,7 +43,7 @@ public class UserCreateRequest extends MetadataProvider implements IUserCreateRe
 	private AccountStatus status;
 
 	/** List of granted authorities */
-	private List<String> authorities = new ArrayList<String>();
+	private List<String> authorities;
 
 	/*
 	 * (non-Javadoc)

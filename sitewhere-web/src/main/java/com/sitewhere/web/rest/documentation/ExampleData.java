@@ -41,6 +41,7 @@ import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.Tenant;
+import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -55,6 +56,7 @@ import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.user.AccountStatus;
 
 @SuppressWarnings("serial")
 public class ExampleData {
@@ -206,6 +208,12 @@ public class ExampleData {
 
 	/** Authority */
 	public static Auth_AdminUsers AUTH_ADMIN_USERS = new Auth_AdminUsers();
+
+	/** User */
+	public static User_Admin USER_ADMIN = new User_Admin();
+
+	/** User */
+	public static User_John USER_JOHN = new User_John();
 
 	/** Tenant */
 	public static Tenant_Default TENANT_DEFAULT = new Tenant_Default();
@@ -912,6 +920,40 @@ public class ExampleData {
 		public Search_Solr() {
 			setId("solr");
 			setName("Apache Solr");
+		}
+	}
+
+	public static class User_Admin extends User {
+
+		public User_Admin() {
+			setUsername("admin");
+			setFirstName("Admin");
+			setLastName("User");
+			setHashedPassword("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8");
+			setStatus(AccountStatus.Active);
+			getAuthorities().add(ISiteWhereAuthorities.AUTH_ADMIN_SITES);
+			getAuthorities().add(ISiteWhereAuthorities.AUTH_ADMIN_USERS);
+			getAuthorities().add(ISiteWhereAuthorities.AUTH_AUTHENTICATED_USER);
+			setCreatedBy("system");
+			setCreatedDate(new Date());
+			setLastLogin(new Date());
+		}
+	}
+
+	public static class User_John extends User {
+		
+
+		public User_John() {
+			setUsername("jdoe");
+			setFirstName("John");
+			setLastName("Doe");
+			setHashedPassword("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8");
+			setStatus(AccountStatus.Locked);
+			getAuthorities().add(ISiteWhereAuthorities.AUTH_AUTHENTICATED_USER);
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			setLastLogin(new Date());
+			getMetadata().put("phone.number", "777-555-1212");
 		}
 	}
 

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
@@ -24,6 +26,7 @@ import com.sitewhere.spi.user.IUser;
  * 
  * @author Derek Adams
  */
+@JsonInclude(Include.NON_NULL)
 public class User extends MetadataProviderEntity implements IUser, Serializable {
 
 	/** For {@link Serializable} */
