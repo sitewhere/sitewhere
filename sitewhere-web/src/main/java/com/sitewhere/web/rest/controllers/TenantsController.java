@@ -168,8 +168,9 @@ public class TenantsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{tenantId}/engine/configuration", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get current configuration for a tenant engine")
+	@ApiOperation(value = "Get tenant engine configuration")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented
 	public String getTenantEngineConfiguration(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
 			throws SiteWhereException {
@@ -195,8 +196,9 @@ public class TenantsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/authtoken/{authToken}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Find tenant by authentication token")
+	@ApiOperation(value = "Get tenant by authentication token")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByAuthTokenResponse.md") })
 	public ITenant getTenantByAuthToken(
 			@ApiParam(value = "Authentication token", required = true) @PathVariable String authToken)
 			throws SiteWhereException {
@@ -217,8 +219,9 @@ public class TenantsController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Find tenants that match criteria")
+	@ApiOperation(value = "List tenants that match criteria")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "listTenantsResponse.md") })
 	public ISearchResults<ITenant> listTenants(
 			@ApiParam(value = "Authorized user id", required = false) @RequestParam(required = false) String authUserId,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
@@ -246,8 +249,9 @@ public class TenantsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{tenantId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	@ApiOperation(value = "Delete a tenant by id")
+	@ApiOperation(value = "Delete existing tenant")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "deleteTenantByIdResponse.md") })
 	public ITenant deleteTenantById(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)

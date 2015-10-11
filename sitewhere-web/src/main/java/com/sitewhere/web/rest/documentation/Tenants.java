@@ -7,10 +7,15 @@
  */
 package com.sitewhere.web.rest.documentation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.rest.model.command.CommandResponse;
+import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.CommandResult;
+import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.web.rest.documentation.ExampleData.Tenant_Default;
 
 /**
@@ -67,6 +72,16 @@ public class Tenants {
 			response.setResult(CommandResult.Successful);
 			response.setMessage("Tenant engine was stopped.");
 			return response;
+		}
+	}
+
+	public static class ListTenantsResponse {
+
+		public Object generate() throws SiteWhereException {
+			List<ITenant> list = new ArrayList<ITenant>();
+			list.add(ExampleData.TENANT_DEFAULT);
+			list.add(ExampleData.TENANT_MERCHANT1);
+			return new SearchResults<ITenant>(list, 2);
 		}
 	}
 }

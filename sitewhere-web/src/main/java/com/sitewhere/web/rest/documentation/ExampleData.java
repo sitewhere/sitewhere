@@ -210,6 +210,9 @@ public class ExampleData {
 	/** Tenant */
 	public static Tenant_Default TENANT_DEFAULT = new Tenant_Default();
 
+	/** Tenant */
+	public static Tenant_Merchant1 TENANT_MERCHANT1 = new Tenant_Merchant1();
+
 	public static class Site_Construction extends Site {
 
 		public Site_Construction() {
@@ -934,6 +937,19 @@ public class ExampleData {
 			setId("default");
 			setName("Default Tenant");
 			setAuthenticationToken("sitewhere1234567890");
+			setLogoUrl("https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png");
+			getAuthorizedUserIds().add("admin");
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+		}
+	}
+
+	public static class Tenant_Merchant1 extends Tenant {
+
+		public Tenant_Merchant1() {
+			setId("merchant1");
+			setName("Merchant1");
+			setAuthenticationToken("m1-349384344839");
 			setLogoUrl("https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png");
 			getAuthorizedUserIds().add("admin");
 			setCreatedBy("admin");
