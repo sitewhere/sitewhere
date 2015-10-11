@@ -149,8 +149,9 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/proto", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get a device specification by unique token")
+	@ApiOperation(value = "Get specification GPB by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented()
 	public String getDeviceSpecificationProtoByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -175,8 +176,9 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/spec.proto", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get a device specification by unique token")
+	@ApiOperation(value = "Get specification GPB file by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented()
 	public ResponseEntity<byte[]> getDeviceSpecificationProtoFileByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
@@ -207,8 +209,11 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
 	@ResponseBody
-	@ApiOperation(value = "Update device specification information")
+	@ApiOperation(value = "Update existing device specification")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Specifications.UpdateSpecificationRequest.class, description = "updateDeviceSpecificationRequest.md"),
+			@Example(stage = Stage.Response, json = Specifications.UpdateSpecificationResponse.class, description = "updateDeviceSpecificationResponse.md") })
 	public IDeviceSpecification updateDeviceSpecification(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceSpecificationCreateRequest request, HttpServletRequest servletRequest)
@@ -240,8 +245,9 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List device specifications that match certain criteria")
+	@ApiOperation(value = "List specifications that match criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.ListSpecificationsResponse.class, description = "listDeviceSpecificationsResponse.md") })
 	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Include detailed asset information", required = false) @RequestParam(defaultValue = "true") boolean includeAsset,
@@ -283,8 +289,9 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
 	@ResponseBody
-	@ApiOperation(value = "Delete a device specification based on token")
+	@ApiOperation(value = "Delete existing device specification")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "deleteDeviceSpecificationResponse.md") })
 	public IDeviceSpecification deleteDeviceSpecification(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
@@ -310,8 +317,11 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/commands", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new device command for a specification.")
+	@ApiOperation(value = "Create device command for specification.")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Specifications.CreateDeviceCommandRequest.class, description = "createDeviceCommandRequest.md"),
+			@Example(stage = Stage.Response, json = Specifications.CreateDeviceCommandResponse.class, description = "createDeviceCommandResponse.md") })
 	public IDeviceCommand createDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
@@ -330,8 +340,9 @@ public class SpecificationsController extends SiteWhereController {
 
 	@RequestMapping(value = "/{token}/commands", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List device commands for a specification")
+	@ApiOperation(value = "List device commands for specification")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.ListDeviceCommandsResponse.class, description = "listDeviceCommandsResponse.md") })
 	public ISearchResults<IDeviceCommand> listDeviceCommands(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
@@ -365,8 +376,9 @@ public class SpecificationsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}/namespaces", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List device command namespaces for a specification")
+	@ApiOperation(value = "List device commands by namespace")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.ListDeviceCommandsByNamespaceResponse.class, description = "listDeviceCommandsByNamespaceResponse.md") })
 	public ISearchResults<IDeviceCommandNamespace> listDeviceCommandsByNamespace(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,

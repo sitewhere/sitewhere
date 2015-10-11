@@ -67,7 +67,7 @@ public class Sites {
 		}
 	}
 
-	public static class ListDevicesResponse {
+	public static class ListSitesResponse {
 
 		public Object generate() throws SiteWhereException {
 			List<ISite> list = new ArrayList<ISite>();

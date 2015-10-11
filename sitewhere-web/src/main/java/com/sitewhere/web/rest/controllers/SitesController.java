@@ -206,7 +206,7 @@ public class SitesController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "List sites matching criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.ListDevicesResponse.class, description = "listSitesResponse.md") })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.ListSitesResponse.class, description = "listSitesResponse.md") })
 	public ISearchResults<ISite> listSites(
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,

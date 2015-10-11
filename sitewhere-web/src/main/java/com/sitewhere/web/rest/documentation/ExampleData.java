@@ -354,7 +354,7 @@ public class ExampleData {
 	public static class Command_SetReportInterval extends DeviceCommand {
 
 		public Command_SetReportInterval() {
-			setToken(" 2a3a344d-f09b-44a7-b36b-afb04993eb414");
+			setToken("2a3a344d-f09b-44a7-b36b-afb04993eb414");
 			setName("setReportInterval");
 			setDescription("Set the device reporting interval (in seconds).");
 			setNamespace("http://mycompany.com/devices");
