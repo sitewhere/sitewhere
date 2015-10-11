@@ -35,6 +35,11 @@ import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.Tenants;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -47,6 +52,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/tenants")
 @Api(value = "tenants", description = "Operations related to SiteWhere tenants.")
+@DocumentedController(name = "Tenants")
 public class TenantsController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -61,8 +67,11 @@ public class TenantsController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new tenant")
+	@ApiOperation(value = "Create new tenant")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Tenants.CreateTenantRequest.class, description = "createTenantRequest.md"),
+			@Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "createTenantResponse.md") })
 	public ITenant createTenant(@RequestBody TenantCreateRequest request) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createTenant", LOGGER);
 		try {
@@ -84,6 +93,9 @@ public class TenantsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Update an existing tenant.")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Tenants.UpdateTenantRequest.class, description = "updateTenantRequest.md"),
+			@Example(stage = Stage.Response, json = Tenants.UpdateTenantResponse.class, description = "updateTenantResponse.md") })
 	public ITenant updateTenant(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@RequestBody TenantCreateRequest request) throws SiteWhereException {
@@ -104,8 +116,9 @@ public class TenantsController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{tenantId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Find tenant by unique id")
+	@ApiOperation(value = "Get tenant by unique id")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByIdResponse.md") })
 	public ITenant getTenantById(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
@@ -127,8 +140,9 @@ public class TenantsController extends SiteWhereController {
 
 	@RequestMapping(value = "/{tenantId}/engine/{command}", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Send a command to a tenant engine")
+	@ApiOperation(value = "Send command to tenant engine")
 	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.IssueTenantEngineCommandResponse.class, description = "issueTenantEngineCommandResponse.md") })
 	public ICommandResponse issueTenantEngineCommand(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Command", required = true) @PathVariable String command)

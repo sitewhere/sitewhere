@@ -40,6 +40,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.rest.model.user.GrantedAuthority;
+import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -87,10 +88,10 @@ public class ExampleData {
 
 	/** Site */
 	public static Site_Construction SITE_CONSTRUCTION = new Site_Construction();
-	
+
 	/** Zone */
 	public static Zone_ConstructionSite ZONE_CONSTRUCTION_SITE = new Zone_ConstructionSite();
-	
+
 	/** Zone */
 	public static Zone_OffLimits ZONE_OFF_LIMITS = new Zone_OffLimits();
 
@@ -205,6 +206,9 @@ public class ExampleData {
 
 	/** Authority */
 	public static Auth_AdminUsers AUTH_ADMIN_USERS = new Auth_AdminUsers();
+
+	/** Tenant */
+	public static Tenant_Default TENANT_DEFAULT = new Tenant_Default();
 
 	public static class Site_Construction extends Site {
 
@@ -921,6 +925,19 @@ public class ExampleData {
 		public Auth_AdminUsers() {
 			setAuthority(ISiteWhereAuthorities.AUTH_ADMIN_USERS);
 			setDescription("Administer users");
+		}
+	}
+
+	public static class Tenant_Default extends Tenant {
+
+		public Tenant_Default() {
+			setId("default");
+			setName("Default Tenant");
+			setAuthenticationToken("sitewhere1234567890");
+			setLogoUrl("https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png");
+			getAuthorizedUserIds().add("admin");
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
 		}
 	}
 }

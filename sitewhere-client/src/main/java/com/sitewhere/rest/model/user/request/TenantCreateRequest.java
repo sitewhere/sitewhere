@@ -10,6 +10,8 @@ package com.sitewhere.rest.model.user.request;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.user.request.ITenantCreateRequest;
 
@@ -18,6 +20,7 @@ import com.sitewhere.spi.user.request.ITenantCreateRequest;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class TenantCreateRequest extends MetadataProvider implements ITenantCreateRequest, Serializable {
 
 	/** Serial version UID */
