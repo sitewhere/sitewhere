@@ -100,6 +100,11 @@ public class RestDocumentationGenerator {
 
 			@Override
 			public int compare(ParsedController o1, ParsedController o2) {
+				if (o1.isGlobal() && !o2.isGlobal()) {
+					return -1;
+				} else if (!o1.isGlobal() && o2.isGlobal()) {
+					return 1;
+				}
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
@@ -171,10 +176,12 @@ public class RestDocumentationGenerator {
 
 		boolean setActive = false;
 		for (ParsedController controller : controllers) {
+			String globalClass =
+					(controller.isGlobal() ? " style=\"font-style: normal;font-weight: bold;\" " : "");
 			html +=
 					"<li" + ((!setActive) ? " class=\"active\"" : "") + "><a href=\"#"
-							+ controller.getResource() + "\"><i class=\"icon-chevron-right\"></i> "
-							+ controller.getName() + "</a>\n";
+							+ controller.getResource() + "\"" + globalClass
+							+ "><i class=\"icon-chevron-right\"></i> " + controller.getName() + "</a>\n";
 			html += "<ul class=\"nav\">\n";
 			for (ParsedMethod method : controller.getMethods()) {
 				html +=
@@ -205,22 +212,24 @@ public class RestDocumentationGenerator {
 			String methodHtml =
 					"<a id=\"" + method.getName() + "\" style=\"display:block;\">&nbsp;</a>\n"
 							+ method.getDescription();
-			methodHtml += createUriBlock(method, colors) + "\n";
+			if (!controller.isGlobal()) {
+				methodHtml += createUriBlock(method, colors) + "\n";
 
-			MethodParameterBreakdown breakdown = MethodParameterBreakdown.parse(method);
-			methodHtml += createParametersBlock(breakdown) + "\n";
-			for (ParsedExample example : method.getExamples()) {
-				String exampleHtml = "";
-				if (example.getDescription() != null) {
-					exampleHtml += "<div>" + example.getDescription() + "</div>\n";
+				MethodParameterBreakdown breakdown = MethodParameterBreakdown.parse(method);
+				methodHtml += createParametersBlock(breakdown) + "\n";
+				for (ParsedExample example : method.getExamples()) {
+					String exampleHtml = "";
+					if (example.getDescription() != null) {
+						exampleHtml += "<div>" + example.getDescription() + "</div>\n";
+					}
+					if (example.getJson() != null) {
+						exampleHtml +=
+								"<pre><code class='json'>" + example.getJson()
+										+ "</code><span class=\"code-tag\">" + example.getStage().toString()
+										+ "</span></pre>\n";
+					}
+					methodHtml += exampleHtml;
 				}
-				if (example.getJson() != null) {
-					exampleHtml +=
-							"<pre><code class='json'>" + example.getJson()
-									+ "</code><span class=\"code-tag\">" + example.getStage().toString()
-									+ "</span></pre>\n";
-				}
-				methodHtml += exampleHtml;
 			}
 			html += methodHtml;
 		}
@@ -396,7 +405,7 @@ public class RestDocumentationGenerator {
 							+ type.getLink()
 							+ "\">"
 							+ type.getTitle()
-							+ "</a> Parameters</h3><table class=\"param-table\"><thead><tr><th style=\"width: 25%\">Name</th>"
+							+ "</a> Request Parameters</h3><table class=\"param-table\"><thead><tr><th style=\"width: 25%\">Name</th>"
 							+ "<th style=\"width: 50%\">Description</th><th>Required</th></thead><tbody>";
 
 			for (ParsedParameter param : params) {
@@ -431,6 +440,7 @@ public class RestDocumentationGenerator {
 
 		DocumentedController doc = controller.getAnnotation(DocumentedController.class);
 		parsed.setName(doc.name());
+		parsed.setGlobal(doc.global());
 
 		System.out.println("Processing controller: " + parsed.getName() + " (" + parsed.getResource() + ")");
 

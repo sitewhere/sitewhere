@@ -26,4 +26,7 @@ public @interface DocumentedController {
 
 	/** Controller description markdown relative path */
 	String description() default "";
+	
+	/** Indicates a global controller */
+	boolean global() default false;
 }

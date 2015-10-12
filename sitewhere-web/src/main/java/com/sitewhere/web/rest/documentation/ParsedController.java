@@ -32,6 +32,9 @@ public class ParsedController {
 	/** List of methods */
 	private List<ParsedMethod> methods = new ArrayList<ParsedMethod>();
 
+	/** Indicates global controller */
+	private boolean global;
+
 	public String getName() {
 		return name;
 	}
@@ -70,5 +73,13 @@ public class ParsedController {
 
 	public void setMethods(List<ParsedMethod> methods) {
 		this.methods = methods;
+	}
+
+	public boolean isGlobal() {
+		return global;
+	}
+
+	public void setGlobal(boolean global) {
+		this.global = global;
 	}
 }
