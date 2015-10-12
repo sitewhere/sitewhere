@@ -24,10 +24,37 @@ public @interface Concerns {
 	public enum ConcernType {
 
 		/** Paging configuration */
-		Paging,
+		Paging("Result Paging", "overview-paging"),
 
 		/** Forced delete */
-		ForceDelete;
+		ForceDelete("Delete Policies", "overview-delete");
+
+		/** Title shown for parameters */
+		private String title;
+
+		/** In-document link into overview section */
+		private String link;
+
+		private ConcernType(String title, String link) {
+			this.title = title;
+			this.link = link;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public void setTitle(String title) {
+			this.title = title;
+		}
+
+		public String getLink() {
+			return link;
+		}
+
+		public void setLink(String link) {
+			this.link = link;
+		}
 	}
 
 	/** Concern types */

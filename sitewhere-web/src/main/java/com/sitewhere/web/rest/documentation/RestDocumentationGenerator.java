@@ -35,6 +35,7 @@ import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.web.rest.annotations.Concerns;
+import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -205,7 +206,9 @@ public class RestDocumentationGenerator {
 					"<a id=\"" + method.getName() + "\" style=\"display:block;\">&nbsp;</a>\n"
 							+ method.getDescription();
 			methodHtml += createUriBlock(method, colors) + "\n";
-			methodHtml += createParametersBlock(method, colors) + "\n";
+
+			MethodParameterBreakdown breakdown = MethodParameterBreakdown.parse(method);
+			methodHtml += createParametersBlock(breakdown) + "\n";
 			for (ParsedExample example : method.getExamples()) {
 				String exampleHtml = "";
 				if (example.getDescription() != null) {
@@ -370,30 +373,42 @@ public class RestDocumentationGenerator {
 	 * @param method
 	 * @return
 	 */
-	protected static String createParametersBlock(ParsedMethod method, RequestMethodColors colors) {
-		if (method.getParameters().isEmpty()) {
-			return "";
-		}
-		String table =
-				"<h3>Request Parameters</h3><table class=\"param-table\"><thead><tr><th>Name</th>"
-						+ "<th>Description</th><th>Required</th></thead><tbody>";
+	protected static String createParametersBlock(MethodParameterBreakdown breakdown) {
+		String block = "";
+		if (breakdown.getNonConcernParameters().size() > 0) {
+			String table =
+					"<h3>Request Parameters</h3><table class=\"param-table\"><thead><tr><th style=\"width: 25%\">Name</th>"
+							+ "<th style=\"width: 50%\">Description</th><th>Required</th></thead><tbody>";
 
-		int reqParamsCount = 0;
-		for (ParsedParameter param : method.getParameters()) {
-			if (param.getType() == ParameterType.Request) {
+			for (ParsedParameter param : breakdown.getNonConcernParameters()) {
 				table +=
 						"<tr><td>" + param.getName() + "</td><td>" + param.getDescription() + "</td><td>"
 								+ param.isRequired() + "</td></tr>";
-				reqParamsCount++;
 			}
-		}
 
-		table += "</tbody></table>";
-		if (reqParamsCount > 0) {
-			return table;
-		} else {
-			return "";
+			table += "</tbody></table>";
+			block += table;
 		}
+		for (ConcernType type : breakdown.getConcernParameters().keySet()) {
+			List<ParsedParameter> params = breakdown.getConcernParameters().get(type);
+			String table =
+					"<h3><a href=\"#"
+							+ type.getLink()
+							+ "\">"
+							+ type.getTitle()
+							+ "</a> Parameters</h3><table class=\"param-table\"><thead><tr><th style=\"width: 25%\">Name</th>"
+							+ "<th style=\"width: 50%\">Description</th><th>Required</th></thead><tbody>";
+
+			for (ParsedParameter param : params) {
+				table +=
+						"<tr><td>" + param.getName() + "</td><td>" + param.getDescription() + "</td><td>"
+								+ param.isRequired() + "</td></tr>";
+			}
+
+			table += "</tbody></table>";
+			block += table;
+		}
+		return block;
 	}
 
 	/**
