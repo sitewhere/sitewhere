@@ -29,10 +29,12 @@ p {
 h1 {
 	border-bottom: 1px solid #ccc;
 	padding-bottom: 7px;
+	margin-top: 35px;
 	margin-bottom: 20px;
 }
 
 h2 {
+	margin-top: 35px;
 	font-size: 25px;
 }
 
@@ -62,7 +64,7 @@ iframe {
 /* Hide nested elements if not active */
 .bs-docs-sidenav .nav>.active>ul {
 	display: block;
-	max-height: 160px;
+	max-height: 140px;
 	overflow-y: auto;
 }
 
@@ -163,12 +165,32 @@ pre {
 	padding: 3px 10px;
 	border-bottom: 1px solid #ddd;
 }
+
+.top-header {
+	text-align: center;
+	position: fixed;
+	top: 0px;
+	width: 100%;
+	background-color: #fff;
+	font-size: 22px;
+	padding: 7px;
+	-webkit-box-shadow: 0 8px 6px -6px black;
+	-moz-box-shadow: 0 8px 6px -6px black;
+	box-shadow: 0 8px 6px -6px black;
+}
+
+.header-logo {
+	position: absolute;
+	left: 15px;
+	top: 3px;
+	height: 40px;
+}
 </style>
 
 <script type='text/javascript'>
 	$(document).ready(function() {
 		$("body").scrollspy({
-			target : "#rest-navigation"
+			target : "#rest-navigation",
 		})
 	});
 </script>
@@ -176,5 +198,6 @@ pre {
 
 <body>
 
+	<div style="height: 40px;"></div>
 	<div class="container">
 		<div class="row">

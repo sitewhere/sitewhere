@@ -197,12 +197,12 @@ public class RestDocumentationGenerator {
 	 * @return
 	 */
 	protected static String generateControllerDocumentation(ParsedController controller) {
-		String html = "<a id=\"" + controller.getResource() + "\"></a>\n";
+		String html = "<a id=\"" + controller.getResource() + "\">&nbsp;</a>\n";
 		html += controller.getDescription();
 		for (ParsedMethod method : controller.getMethods()) {
 			RequestMethodColors colors = getRequestMethodColors(method);
 			String methodHtml =
-					createSplitter() + "<a id=\"" + method.getName() + "\" style=\"display:block;\"></a>\n"
+					"<a id=\"" + method.getName() + "\" style=\"display:block;\">&nbsp;</a>\n"
 							+ method.getDescription();
 			methodHtml += createUriBlock(method, colors) + "\n";
 			methodHtml += createParametersBlock(method, colors) + "\n";
@@ -221,17 +221,7 @@ public class RestDocumentationGenerator {
 			}
 			html += methodHtml;
 		}
-		html += createSplitter();
 		return html;
-	}
-
-	/**
-	 * Create a splitter between sections.
-	 * 
-	 * @return
-	 */
-	protected static String createSplitter() {
-		return "<div style=\"border-bottom: 1px solid #eee; margin-top: 30px; margin-bottom: 30px;\"></div>\n";
 	}
 
 	/**
