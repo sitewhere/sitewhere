@@ -3,38 +3,32 @@ System Configuration
 ====================
 SiteWhere uses a hierarchy of `Spring <http://projects.spring.io/spring-framework/>`_ XML files as
 its configuration mechanism. When the SiteWhere server starts, one of the first steps is to bootstrap
-the core system components by loading the *conf/sitewhere/sitewhere-server.xml* file.
-Versions of SiteWhere prior to 0.9.7 only used the generic Spring beans schema for defining the core
-list of beans needed to configure the server. Starting with version 0.9.7 SiteWhere has added a custom
-XML schema that is more succinct and expressive. The schema provides shortcuts for many common 
-configuration options while still allowing the user to extend the core architecture with custom
-component implementations.
+the core system components by loading the **conf/sitewhere/sitewhere-server.xml** file. This file
+acts as the global server configuration, specifying aspects of the system shared by all tenants such
+as the user datastore implementation and Hazelcast configuration. In addition to the global configuration,
+there is a per-tenant configuration in **conf/sitewhere/xxx-tenant.xml** (where **xxx** is the tenant id)
+which specifies details about how the tenant engine is to be configured. Most other SiteWhere features 
+such as device management and communication engine are configured in these tenant configuration files.
 
 .. contents:: Contents
    :local:
 
---------------------------
-Configuration Fundamentals
---------------------------
+---------------------------------
+Global Configuration Fundamentals
+---------------------------------
 A valid SiteWhere configuration is based on a standard Spring beans XML file with an embedded section
 that uses a schema specific to SiteWhere. The XML below is a partial configuration file illustrating some
 of the key features. 
 
 Notice the schema declarations and enclosing *<beans>* element at the top of the file. These are standard for a 
 `Spring beans <http://docs.spring.io/spring-framework/docs/current/spring-framework-reference/html/beans.html>`_ 
-configuration file. There is an *http://www.sitewhere.com/schema/sitewhere* namespace declared and 
-pointed to the SiteWhere schema for the 0.9.7 release. Often a new SiteWhere release will add 
-features to the schema, so it is important to point to the schema
-for the version of SiteWhere being run on the server.
+configuration file. There is an *http://www.sitewhere.com/schema/sitewhere/ce* namespace declared and 
+pointed to the schema for the targeted release. Often a new SiteWhere release will add features to the 
+schema, so it is important to point to the schema for the version of SiteWhere being run on the server.
 
 The *<sw:configuraton>* section contains all of the schema-based SiteWhere configuration elements. If a
 schema-aware editor such as Eclipse is being used, the editor will provide syntax completion based on the 
-SiteWhere schema. The SiteWhere schema contains many of the most often used building blocks for setting up
-a SiteWhere server. It also allows for the introduction of user-defined component implementations. For example,
-in the configuration below, the *<sw:outbound-event-processor>* contains a *ref* attribute that points to an
-external Spring bean. By implementing components that conform to SiteWhere interfaces and plugging them in via
-Spring beans, the system may be customized to add new behaviors. In this case, the system has been configured 
-to broadcast all processed events via Hazelcast.
+SiteWhere schema. An example of a SiteWhere global configuration file is included below:
 
 .. code-block:: xml
 
@@ -45,34 +39,46 @@ to broadcast all processed events via Hazelcast.
               http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.0.3/sitewhere.xsd">
+              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere.xsd">
+              
+      <!-- Load property values for substitution -->
+      <context:property-placeholder location="file:${catalina.home}/conf/sitewhere/sitewhere.properties"
+         ignore-resource-not-found="true"/>
       
+      <!-- ########################### -->
+      <!-- # SITEWHERE CONFIGURATION # -->
+      <!-- ########################### -->
       <sw:configuration>
-               
-         <sw:outbound-processing-chain>
-         
-            <!-- Send outbound device events over Hazelcast -->
-            <sw:outbound-event-processor ref="hazelcastDeviceEventProcessor"/>
    
-         </sw:outbound-processing-chain>
+         <!-- ################################# -->
+         <!-- # GLOBAL SERVICES CONFIGURATION # -->
+         <!-- ################################# -->
+         <sw:globals>
+            <sw:hazelcast-configuration configFileLocation="${catalina.home}/conf/sitewhere/hazelcast.xml"/>
+            <sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
+            <sw:groovy-configuration debug="true" verbose="true"/>
+         </sw:globals>
+         
+         <!-- ################################## -->
+         <!-- # GLOBAL DATASTORE CONFIGURATION # -->
+         <!-- ################################## -->
+         <sw:datastore>
+         
+            <!-- MongoDB datastore used for global data model -->
+            <sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
+            
+            <!-- Initializes users and tenant data if datastore is empty -->
+            <sw:default-user-model-initializer/>
+   
+         </sw:datastore>
    
       </sw:configuration>
    
-      <!-- Provides access to a local Hazelcast instance for SiteWhere -->
-      <bean id="hazelcastConfig" class="com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration">
-         <property name="configFileName" value="hazelcast.xml"/>
-      </bean>
-   
-   
-      <!-- Broadcasts SiteWhere state over Hazelcast -->
-      <bean id="hazelcastDeviceEventProcessor" class="com.sitewhere.hazelcast.HazelcastEventProcessor">
-         <property name="configuration" ref="hazelcastConfig"/>
-      </bean>
-   
    </beans>
+
    
-Moving Sensitive Data Outside the Configuration
------------------------------------------------
+Moving Sensitive Data Outside of the Configuration
+--------------------------------------------------
 SiteWhere configuration files often contain login credentials or other information that should not
 be shared with other users. Also, there are situations where settings for a system are 
 environment-specific (production vs. staging vs. development) and maintaining a separate configuration 
@@ -108,32 +114,33 @@ The properties file would contain values for the placeholders as shown below:
    mongo.host=localhost
    mongo.port=1234
 
------------------------
-Datastore Configuration
------------------------
+------------------------------
+Global Datastore Configuration
+------------------------------
 SiteWhere can use either `MongoDB <http://www.mongodb.org/>`_ or `Apache HBase <https://hbase.apache.org/>`_ for 
-underlying data storage. For small installations where extreme scalability is not needed, it is much quicker and 
-easier to use MongoDB. For true "big data" applications, the HBase backend is the better choice. 
+underlying data storage. Tenant datastores must use the same database type as is specified in the 
+global configuration.
 
 Configuring a MongoDB Datastore
 -------------------------------
-To use MongoDB as the backing datastore, edit the SiteWhere configuration *<sw:datastore>* section
-and uncomment the *<sw:mongo-datastore>* element while leaving the *<sw:hbase-datastore>* element
-commented as shown below:
+To use MongoDB as the global datastore, edit the SiteWhere configuration *<sw:datastore>* section
+and use the *<sw:mongo-datastore>* element as shown below:
 
 .. code-block:: xml
-   :emphasize-lines: 4, 7-9
+   :emphasize-lines: 7
 
-	<sw:datastore>
-	
-		<!-- Default MongoDB Datastore -->
-      <sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"
-         useBulkEventInserts="true" bulkInsertMaxChunkSize="1000"/>
-	
-		<!-- Default HBase Datastore -->
-		<!--  
-		<sw:hbase-datastore quorum="localhost"/>
-		-->
+   <!-- ################################## -->
+   <!-- # GLOBAL DATASTORE CONFIGURATION # -->
+   <!-- ################################## -->
+   <sw:datastore>
+   
+      <!-- MongoDB datastore used for global data model -->
+      <sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
+      
+      <!-- Initializes users and tenant data if datastore is empty -->
+      <sw:default-user-model-initializer/>
+
+   </sw:datastore>
 
 Note that the default settings assume a local MongoDB instance running on the default port and using a database
 named **sitewhere**.
@@ -152,33 +159,28 @@ The following attributes may be specified for the *<sw:mongo-datastore>* element
 | databaseName           | optional | MongoDB database name for SiteWhere storage.     |
 |                        |          | Defaults to *sitewhere*.                         |
 +------------------------+----------+--------------------------------------------------+
-| useBulkEventInserts    | optional | Indicates whether the bulk loading APIs should   |
-|                        |          | be used to increase event write performance.     |
-|                        |          | Defaults to *false*.                             |
-+------------------------+----------+--------------------------------------------------+
-| bulkInsertMaxChunkSize | optional | Indicates the max number of events to queue      |
-|                        |          | before sending a batch via the bulk APIs.        |
-|                        |          | Defaults to *1000*.                              |
-+------------------------+----------+--------------------------------------------------+
 
 Configuring an HBase Datastore
 ------------------------------
-To use Apache HBase as the backing datastore, edit the SiteWhere configuration  *<sw:datastore>* section 
-and uncomment the *<sw:hbase-datastore>* element while leaving the *<sw:mongo-datastore>* element
-commented as shown below:
+To use Apache HBase as the global datastore, edit the SiteWhere configuration  *<sw:datastore>* section 
+and use the *<sw:hbase-datastore>* element as shown below:
 
 .. code-block:: xml
-   :emphasize-lines: 4-6, 9
+   :emphasize-lines: 7-8
 
-	<sw:datastore>
-	
-		<!-- Default MongoDB Datastore -->
-		<!--  
-		<sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
-		-->
-	
-		<!-- Default HBase Datastore -->
-		<sw:hbase-datastore quorum="sandbox.hortonworks.com" zookeeperZnodeParent="/hbase-unsecure"/>
+   <!-- ################################## -->
+   <!-- # GLOBAL DATASTORE CONFIGURATION # -->
+   <!-- ################################## -->
+   <sw:datastore>
+
+      <!-- Default HBase Datastore -->
+      <sw:hbase-datastore quorum="sandbox.hortonworks.com"
+         zookeeperZnodeParent="/hbase-unsecure"/>
+
+      <!-- Initializes users and tenant data if datastore is empty -->
+      <sw:default-user-model-initializer/>
+
+   </sw:datastore>
 
 The above configuration may be used to connect to a Hortonworks HDP instance.
 
@@ -197,36 +199,121 @@ The following attributes may be specified for the *<sw:hbase-datastore>* element
 |                          |          | 'root-region-server'.                            |
 +--------------------------+----------+--------------------------------------------------+
 
-Populating Sample Data
-----------------------
+Populating Sample User and Tenant Data
+--------------------------------------
 In both MongoDB and HBase installations, SiteWhere will automatically create the underlying database if it does 
 not already exist. After that, each time that SiteWhere server starts up, it will check whether there is data 
 in the database and, if data initializers are configured, will prompt to populate 
 the database with sample data (for non-console startup, there are properties on the 
 model initializers in the configuration file that allow you to specify whether 
-to populate the sample data automatically). SiteWhere provides initializers that will
-create sample data for user, device, and asset models. They can be configured by adding
-the *<sw:default-device-model-initializer/>*, *<sw:default-user-model-initializer/>*,
-and *<sw:default-asset-model-initializer/>* elements to the *<sw:datastore>* section 
-as shown below:
+to populate the sample data automatically). SiteWhere has an initializer that will
+create sample data for user and tenant data models. It can be configured by adding 
+*<sw:default-user-model-initializer/>* to the *<sw:datastore>* section as shown in
+the datastore examples above.
+
+---------------------------------
+Tenant Configuration Fundamentals
+---------------------------------
+In addition to the global configuration file, there is a per-tenant configuration file
+located at **conf/sitewhere/xxx-tenant.xml** (where **xxx** is the tenant id). Each tenant
+has its own device data and configurable processing pipeline. The tenant configuration file
+uses Spring beans and a custom schema like the global configuration, but with a different
+schema targeted at tenant-specific features:
 
 .. code-block:: xml
-   :emphasize-lines: 7, 10
 
-		<sw:datastore>
-		
-			<!-- Default MongoDB Datastore -->
-			<sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
-			
-         <!-- Initializes data model with sample data if datastore is empty -->
-         <sw:default-device-model-initializer/>
-         <sw:default-user-model-initializer/>
-         <sw:default-asset-model-initializer/>
- 
-It is usually a good choice to allow the user model to be populated since a valid user and permissions 
-are required to log in to the management application. Populating the sample device data gives a nice 
-starting point for understanding SiteWhere in the context of a real application. The default device 
-data references the default asset model data, so both should be used together.
+   <?xml version="1.0" encoding="UTF-8"?>
+   <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:context="http://www.springframework.org/schema/context" xmlns:sw="http://www.sitewhere.com/schema/sitewhere/ce/tenant"
+      xmlns:global="http://www.sitewhere.com/schema/sitewhere/ce"
+      xsi:schemaLocation="
+              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+              http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere.xsd
+              http://www.sitewhere.com/schema/sitewhere/ce/tenant http://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere-tenant.xsd">
+              
+      <!-- Load property values for substitution -->
+      <context:property-placeholder
+         location="file:${catalina.home}/conf/sitewhere/${tenant.id}-tenant.properties"
+         ignore-resource-not-found="true"/>
+      
+      <!-- ######################## -->
+      <!-- # TENANT CONFIGURATION # -->
+      <!-- ######################## -->
+      <sw:tenant-configuration>
+
+------------------------------
+Tenant Datastore Configuration
+------------------------------
+Tenant datastores extend the features of the global datastore with
+implementations of the device and asset data models.
+
+Configuring a MongoDB Tenant Datastore
+--------------------------------------
+To use MongoDB as the tenant datastore, edit the SiteWhere configuration *<sw:tenant-datastore>* section
+and use the *<sw:mongo-tenant-datastore>* element as shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 7-8
+
+   <!-- ########################### -->
+   <!-- # DATASTORE CONFIGURATION # -->
+   <!-- ########################### -->
+   <sw:tenant-datastore>
+   
+      <!-- Default MongoDB Datastore -->
+      <sw:mongo-tenant-datastore useBulkEventInserts="true"
+         bulkInsertMaxChunkSize="1000"/>
+
+      <!-- Improves performance by using Hazelcast for distributed caching -->
+      <sw:hazelcast-cache/>
+      
+      <!-- Initializes data model with sample data if datastore is empty -->
+      <sw:default-device-model-initializer/>
+      <sw:default-asset-model-initializer/>
+
+   </sw:tenant-datastore>
+
+The following attributes may be specified for the *<sw:mongo-tenant-datastore>* element.
+      
++------------------------+----------+--------------------------------------------------+
+| Attribute              | Required | Description                                      |
++========================+==========+==================================================+
+| useBulkEventInserts    | optional | Indicates whether the bulk loading APIs should   |
+|                        |          | be used to increase event write performance.     |
+|                        |          | Defaults to *false*.                             |
++------------------------+----------+--------------------------------------------------+
+| bulkInsertMaxChunkSize | optional | Indicates the max number of events to queue      |
+|                        |          | before sending a batch via the bulk APIs.        |
+|                        |          | Defaults to *1000*.                              |
++------------------------+----------+--------------------------------------------------+
+
+Configuring an HBase Tenant Datastore
+-------------------------------------
+To use HBase as the tenant datastore, edit the SiteWhere configuration  *<sw:tenant-datastore>* section 
+and use the *<sw:hbase-tenant-datastore/>* element as shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 7
+
+   <!-- ########################### -->
+   <!-- # DATASTORE CONFIGURATION # -->
+   <!-- ########################### -->
+   <sw:tenant-datastore>
+
+      <!-- Default HBase Datastore -->
+      <sw:hbase-tenant-datastore/>
+
+      <!-- Improves performance by using Hazelcast for distributed caching -->
+      <sw:hazelcast-cache/>
+      
+      <!-- Initializes data model with sample data if datastore is empty -->
+      <sw:default-device-model-initializer/>
+      <sw:default-asset-model-initializer/>
+
+   </sw:tenant-datastore>
+
 
 Device Management Cache Providers
 ---------------------------------
@@ -243,14 +330,15 @@ SiteWhere offers a default device management cache implementation based on `Haze
 which can be configured as shown below:
 
 .. code-block:: xml
-   :emphasize-lines: 7
+   :emphasize-lines: 8
 
-   <sw:datastore>
+   <sw:tenant-datastore>
    
       <!-- Default MongoDB Datastore -->
-      <sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
-      
-      <!-- Improves performance by using Hazelcast to store device management entities -->
+      <sw:mongo-tenant-datastore useBulkEventInserts="true"
+         bulkInsertMaxChunkSize="1000"/>
+
+      <!-- Improves performance by using Hazelcast for distributed caching -->
       <sw:hazelcast-cache/>
 
 The Hazelcast cache works well in standalone mode as well as in clustered environments since the cache
@@ -262,13 +350,14 @@ SiteWhere offers a device management cache implementation based on `Ehcache <htt
 which can be configured as shown below:
 
 .. code-block:: xml
-   :emphasize-lines: 7
+   :emphasize-lines: 8
 
-	<sw:datastore>
-	
-		<!-- Default MongoDB Datastore -->
-		<sw:mongo-datastore hostname="localhost" port="27017" databaseName="sitewhere"/>
-		
+   <sw:tenant-datastore>
+   
+      <!-- Default MongoDB Datastore -->
+      <sw:mongo-tenant-datastore useBulkEventInserts="true"
+         bulkInsertMaxChunkSize="1000"/>
+
 		<!-- Improves performance by using EHCache to store device management entities -->
 		<sw:ehcache-device-management-cache/>
 
@@ -1019,6 +1108,29 @@ add the outbound event processor to the chain, reference it as shown below:
 
 Note that on system startup, the event processor attempts to ping the Solr server to verify the 
 settings are correct. If the ping fails, server startup will fail.
+
+Sending Events to InitialState.com
+----------------------------------
+SiteWhere events can be forwarded to `IniitialState.com <https://www.initialstate.com/>`_ to
+allow them to be visualized using the advanced dashboarding features offered by the platform.
+To enable event forwarding, add the *<sw:initial-state-event-processor/>* element and
+specify the streaming access key made available when you create an InitialState account.
+Separate data streams are created for each device assignment based on the unique token
+for the assignment. An example configuration is shown below:
+
+.. code-block:: xml
+   :emphasize-lines: 7
+   
+   <sw:outbound-processing-chain>
+      
+      <!-- Routes commands for outbound processing -->
+      <sw:command-delivery-event-processor/>
+         
+      <!-- Sends events to InitialState.com -->
+      <sw:initial-state-event-processor streamingAccessKey="your_access_key"/>
+
+   </sw:outbound-processing-chain>
+
 
 Using Siddhi for Complex Event Processing (CEP)
 -----------------------------------------------

@@ -30,4 +30,10 @@ public class Overview {
 	@Documented
 	public void calling() {
 	}
+
+	@RequestMapping(value = "/overview/paging", method = RequestMethod.GET)
+	@ApiOperation(value = "Paged Results")
+	@Documented
+	public void paging() {
+	}
 }
