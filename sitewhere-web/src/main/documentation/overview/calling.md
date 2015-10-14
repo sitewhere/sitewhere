@@ -1,6 +1,22 @@
 ## Calling SiteWhere REST Services
 SiteWhere REST services can be invoked by submitting an HTTP request to 
-the proper URI for the specified operation. 
+the proper URI for the specified operation. An example of a valid HTTP
+request-response interaction is captured below:
+
+<pre><code class="http">GET /sitewhere/api/sites HTTP/1.1
+Authorization: Basic YWRtaW46cGFzc3dvcmQ=
+X-SiteWhere-Tenant: sitewhere1234567890
+
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Cache-Control: max-age=0,no-cache,no-store,post-check=0,pre-check=0
+Expires: Mon, 26 Jul 1997 05:00:00 GMT
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 14 Oct 2015 13:00:23 GMT
+
+{"numResults":1,"results":[{"createdDate":"2015-10-13T12:41:04.061-0400","createdBy":"system","updatedDate":null,"deleted":false,"token":"bb105f8d-3150-41f5-b9d1-db04965668d3","name":"Construction Site 1","description":"A construction site with many high-value assets that should not be taken offsite. The system provides location tracking for the assets and notifies administrators if any of the assets move outside of the general site area or into areas where they are not allowed.","imageUrl":"https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg","map":{"type":"mapquest","metadata":{"centerLongitude":"-84.23966646194458","centerLatitude":"34.10469794977326","zoomLevel":"15"}},"metadata":{}}]}
+</code></pre>
 
 ### HTTP Verbs
 SiteWhere REST services follow the standard pattern of using HTTP verbs to 
