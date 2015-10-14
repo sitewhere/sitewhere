@@ -17,6 +17,9 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class SystemCommand implements ISystemCommand {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -7968782253104914645L;
+
 	/** Command type */
 	private SystemCommandType type;
 

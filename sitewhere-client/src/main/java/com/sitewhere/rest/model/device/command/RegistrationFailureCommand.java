@@ -18,6 +18,9 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class RegistrationFailureCommand extends SystemCommand implements IRegistrationFailureCommand {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -2141636538202966306L;
+
 	/** Failure reason */
 	private RegistrationFailureReason reason;
 

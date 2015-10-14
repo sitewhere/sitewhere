@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.device.command;
 
+import java.io.Serializable;
+
 /**
  * Sends a chunk of device stream data to a device.
  * 
  * @author Derek
  */
-public interface ISendDeviceStreamDataCommand extends ISystemCommand {
+public interface ISendDeviceStreamDataCommand extends ISystemCommand, Serializable {
 
 	/**
 	 * Hardware id of device to receive data.

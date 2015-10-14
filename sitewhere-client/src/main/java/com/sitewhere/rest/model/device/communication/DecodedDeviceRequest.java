@@ -7,8 +7,6 @@
  */
 package com.sitewhere.rest.model.device.communication;
 
-import java.io.Serializable;
-
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 
 /**
@@ -16,7 +14,7 @@ import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
  * 
  * @author Derek
  */
-public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T>, Serializable {
+public class DecodedDeviceRequest<T> implements IDecodedDeviceRequest<T> {
 
 	/** Serial version UID */
 	private static final long serialVersionUID = 4280270339471220181L;

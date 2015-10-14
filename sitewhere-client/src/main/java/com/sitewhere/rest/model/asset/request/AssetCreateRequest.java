@@ -22,6 +22,9 @@ import com.sitewhere.spi.asset.request.IAssetCreateRequest;
 @JsonInclude(Include.NON_NULL)
 public class AssetCreateRequest implements IAssetCreateRequest {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -3557255561907642778L;
+
 	/** Asset id */
 	private String id;
 

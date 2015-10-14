@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.device.command;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
  * 
  * @author Derek
  */
-public interface IDeviceCommandNamespace {
+public interface IDeviceCommandNamespace extends Serializable {
 
 	/**
 	 * Namespace value.

@@ -20,6 +20,9 @@ import com.sitewhere.spi.device.command.IDeviceCommandNamespace;
  */
 public class DeviceCommandNamespace implements IDeviceCommandNamespace {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 4615235653915060558L;
+
 	/** Namespace value */
 	private String value;
 

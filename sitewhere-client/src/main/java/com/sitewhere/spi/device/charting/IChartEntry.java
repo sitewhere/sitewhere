@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.device.charting;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Date;
  * 
  * @param <T>
  */
-public interface IChartEntry<T> extends Comparable<IChartEntry<T>> {
+public interface IChartEntry<T> extends Comparable<IChartEntry<T>>, Serializable {
 
 	/**
 	 * Get value for the entry.

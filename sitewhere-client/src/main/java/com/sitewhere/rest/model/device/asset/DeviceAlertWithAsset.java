@@ -22,6 +22,9 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
  */
 public class DeviceAlertWithAsset extends DeviceEventWithAsset implements IDeviceAlert {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -8737823382691759826L;
+
 	public DeviceAlertWithAsset(IDeviceAlert wrapped, IAssetModuleManager assets) throws SiteWhereException {
 		super(wrapped, assets);
 	}

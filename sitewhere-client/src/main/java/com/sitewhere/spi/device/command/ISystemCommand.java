@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.device.command;
 
+import java.io.Serializable;
+
 /**
  * System command issued to device.
  * 
  * @author Derek
  */
-public interface ISystemCommand {
+public interface ISystemCommand extends Serializable {
 
 	/**
 	 * Gets the command type.

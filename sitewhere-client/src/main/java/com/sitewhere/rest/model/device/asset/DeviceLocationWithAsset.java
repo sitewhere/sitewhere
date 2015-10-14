@@ -20,6 +20,9 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
  */
 public class DeviceLocationWithAsset extends DeviceEventWithAsset implements IDeviceLocation {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -8449689938042640635L;
+
 	public DeviceLocationWithAsset(IDeviceLocation wrapped, IAssetModuleManager assets)
 			throws SiteWhereException {
 		super(wrapped, assets);

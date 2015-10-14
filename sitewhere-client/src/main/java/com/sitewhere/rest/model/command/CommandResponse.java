@@ -17,6 +17,9 @@ import com.sitewhere.spi.command.ICommandResponse;
  */
 public class CommandResponse implements ICommandResponse {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 2189097956869085792L;
+
 	/** Command result */
 	private CommandResult result;
 

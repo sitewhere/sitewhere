@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.common;
 
+import java.io.Serializable;
+
 /**
  * Coordinates that identify a point in 3d space.
  * 
  * @author dadams
  */
-public interface ILocation {
+public interface ILocation extends Serializable {
 
 	/**
 	 * Get latitude measurement.

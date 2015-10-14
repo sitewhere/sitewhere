@@ -21,6 +21,9 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  */
 public class DeviceCommandExecution implements IDeviceCommandExecution {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 2511870502556301534L;
+
 	/** Command being executed */
 	private IDeviceCommand command;
 

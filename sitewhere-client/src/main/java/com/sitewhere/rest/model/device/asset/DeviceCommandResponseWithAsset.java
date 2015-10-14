@@ -20,6 +20,9 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
  */
 public class DeviceCommandResponseWithAsset extends DeviceEventWithAsset implements IDeviceCommandResponse {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 6946071189269318157L;
+
 	public DeviceCommandResponseWithAsset(IDeviceCommandResponse wrapped, IAssetModuleManager assets)
 			throws SiteWhereException {
 		super(wrapped, assets);

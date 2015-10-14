@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.asset.request;
 
+import java.io.Serializable;
+
 import com.sitewhere.spi.asset.AssetType;
 
 /**
@@ -14,7 +16,7 @@ import com.sitewhere.spi.asset.AssetType;
  * 
  * @author Derek
  */
-public interface IAssetCategoryCreateRequest {
+public interface IAssetCategoryCreateRequest extends Serializable {
 
 	/**
 	 * Get category id.

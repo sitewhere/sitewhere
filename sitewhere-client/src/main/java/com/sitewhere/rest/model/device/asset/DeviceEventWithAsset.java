@@ -28,6 +28,9 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
  */
 public class DeviceEventWithAsset implements IDeviceEventWithAsset {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 4865401913475898245L;
+
 	/** Text shown when an asset is not assigned */
 	public static final String UNASSOCIATED_ASSET_NAME = "Unassociated";
 

@@ -36,6 +36,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleComponent implements
 		IAssetModule<T> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 8266923437767568336L;
+
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(FileSystemAssetModule.class);
 

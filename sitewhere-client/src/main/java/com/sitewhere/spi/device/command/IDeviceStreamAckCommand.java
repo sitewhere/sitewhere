@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.device.command;
 
+import java.io.Serializable;
+
 /**
  * Acknowledges device stream create request.
  * 
  * @author Derek
  */
-public interface IDeviceStreamAckCommand extends ISystemCommand {
+public interface IDeviceStreamAckCommand extends ISystemCommand, Serializable {
 
 	/**
 	 * Get unique id of stream being created.

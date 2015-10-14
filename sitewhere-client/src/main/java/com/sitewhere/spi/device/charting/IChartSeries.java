@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.device.charting;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ import java.util.List;
  * 
  * @param <T>
  */
-public interface IChartSeries<T> {
+public interface IChartSeries<T> extends Serializable {
 
 	/**
 	 * Get id a measurement represented by the series.

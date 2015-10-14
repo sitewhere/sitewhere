@@ -16,6 +16,9 @@ import com.sitewhere.spi.common.ILocation;
  */
 public class Location implements ILocation {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 7247443984993993837L;
+
 	/** Latitude measurement */
 	private Double latitude;
 

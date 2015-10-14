@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.asset;
 
+import java.io.Serializable;
+
 /**
  * Groups related assets of a given type.
  * 
  * @author Derek
  */
-public interface IAssetCategory {
+public interface IAssetCategory extends Serializable {
 
 	/**
 	 * Get the unique module identifier.

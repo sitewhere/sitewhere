@@ -46,6 +46,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetModule<PersonAsset> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 1382873664520089825L;
+
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(Wso2ScimAssetModule.class);
 

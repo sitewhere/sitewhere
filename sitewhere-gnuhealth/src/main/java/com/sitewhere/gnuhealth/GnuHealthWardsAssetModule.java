@@ -29,6 +29,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class GnuHealthWardsAssetModule extends LifecycleComponent implements IAssetModule<LocationAsset> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 5506023623346185300L;
+
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GnuHealthWardsAssetModule.class);
 

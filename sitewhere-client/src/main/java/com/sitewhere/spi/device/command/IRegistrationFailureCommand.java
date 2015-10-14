@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.device.command;
 
+import java.io.Serializable;
+
 /**
  * Command that indicates device registration failed.
  * 
  * @author Derek
  */
-public interface IRegistrationFailureCommand extends ISystemCommand {
+public interface IRegistrationFailureCommand extends ISystemCommand, Serializable {
 
 	/**
 	 * Get reason for registration failure.

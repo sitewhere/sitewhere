@@ -16,6 +16,9 @@ import com.sitewhere.spi.asset.request.IHardwareAssetCreateRequest;
  */
 public class HardwareAssetCreateRequest extends AssetCreateRequest implements IHardwareAssetCreateRequest {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 3642557287516095012L;
+
 	/** SKU */
 	private String sku;
 

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.asset.request;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Map;
  * 
  * @author Derek
  */
-public interface IAssetCreateRequest {
+public interface IAssetCreateRequest extends Serializable {
 
 	/**
 	 * Unique asset id.

@@ -67,6 +67,9 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  */
 public class MagentoAssetModule extends LifecycleComponent implements IAssetModule<HardwareAsset> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -7456910723802707486L;
+
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MagentoAssetModule.class);
 

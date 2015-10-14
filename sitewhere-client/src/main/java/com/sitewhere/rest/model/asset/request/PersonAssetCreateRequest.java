@@ -19,6 +19,9 @@ import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
  */
 public class PersonAssetCreateRequest extends AssetCreateRequest implements IPersonAssetCreateRequest {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 2735460736378688736L;
+
 	/** Username */
 	private String userName;
 

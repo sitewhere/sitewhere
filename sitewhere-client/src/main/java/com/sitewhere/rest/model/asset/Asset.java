@@ -25,6 +25,9 @@ import com.sitewhere.spi.asset.IAsset;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Asset implements IAsset {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -853673101089583873L;
+
 	/** Unique id */
 	private String id;
 

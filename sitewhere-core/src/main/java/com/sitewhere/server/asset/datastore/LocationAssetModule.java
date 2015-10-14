@@ -22,6 +22,9 @@ import com.sitewhere.spi.asset.ILocationAsset;
 public class LocationAssetModule extends DataStoreAssetModule<ILocationAsset> implements
 		IAssetModule<ILocationAsset> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 8162055977499293110L;
+
 	public LocationAssetModule(IAssetCategory category) {
 		super(category);
 	}

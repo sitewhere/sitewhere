@@ -17,6 +17,9 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class SendDeviceStreamDataCommand extends SystemCommand implements ISendDeviceStreamDataCommand {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -5372263771806975660L;
+
 	/** Hardware id */
 	private String hardwareId;
 

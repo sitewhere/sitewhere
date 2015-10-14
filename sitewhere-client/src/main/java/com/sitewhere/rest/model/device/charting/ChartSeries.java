@@ -20,6 +20,9 @@ import com.sitewhere.spi.device.charting.IChartSeries;
  */
 public class ChartSeries<T> implements IChartSeries<T> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 6247118353120214502L;
+
 	/** Measurement id */
 	private String measurementId;
 

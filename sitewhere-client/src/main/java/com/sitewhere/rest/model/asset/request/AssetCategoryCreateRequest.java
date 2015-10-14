@@ -17,6 +17,9 @@ import com.sitewhere.spi.asset.request.IAssetCategoryCreateRequest;
  */
 public class AssetCategoryCreateRequest implements IAssetCategoryCreateRequest {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 8950287661317676377L;
+
 	/** Category id */
 	private String id;
 

@@ -16,6 +16,9 @@ import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
  */
 public class LocationAssetCreateRequest extends AssetCreateRequest implements ILocationAssetCreateRequest {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 8696062232875414486L;
+
 	/** Latitude */
 	private Double latitude;
 

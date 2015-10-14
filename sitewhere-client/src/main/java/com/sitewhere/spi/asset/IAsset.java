@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.asset;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Map;
  * 
  * @author dadams
  */
-public interface IAsset extends Comparable<IAsset> {
+public interface IAsset extends Comparable<IAsset>, Serializable {
 
 	/**
 	 * Unique asset id.

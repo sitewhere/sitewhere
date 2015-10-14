@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.device.event;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -17,7 +18,7 @@ import com.sitewhere.spi.device.DeviceAssignmentType;
  * 
  * @author Derek
  */
-public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent> {
+public interface IDeviceEvent extends IMetadataProvider, Comparable<IDeviceEvent>, Serializable {
 
 	/**
 	 * Get a string that uniquely identifies the event.

@@ -22,6 +22,9 @@ import com.sitewhere.spi.asset.IPersonAsset;
 public class PersonAssetModule extends DataStoreAssetModule<IPersonAsset> implements
 		IAssetModule<IPersonAsset> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -6530318818641755281L;
+
 	public PersonAssetModule(IAssetCategory category) {
 		super(category);
 	}

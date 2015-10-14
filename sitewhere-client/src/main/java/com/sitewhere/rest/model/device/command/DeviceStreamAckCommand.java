@@ -18,6 +18,9 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class DeviceStreamAckCommand extends SystemCommand implements IDeviceStreamAckCommand {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -6363023316760034867L;
+
 	/** Id of stream being created */
 	private String streamId;
 

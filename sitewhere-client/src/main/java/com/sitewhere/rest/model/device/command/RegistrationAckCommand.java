@@ -18,6 +18,9 @@ import com.sitewhere.spi.device.command.SystemCommandType;
  */
 public class RegistrationAckCommand extends SystemCommand implements IRegistrationAckCommand {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 1831724152286696862L;
+
 	/** Success reason */
 	private RegistrationSuccessReason reason;
 

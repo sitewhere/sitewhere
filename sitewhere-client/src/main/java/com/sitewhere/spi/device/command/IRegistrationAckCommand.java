@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.device.command;
 
+import java.io.Serializable;
+
 /**
  * Acknowledges successful registration.
  * 
  * @author Derek
  */
-public interface IRegistrationAckCommand extends ISystemCommand {
+public interface IRegistrationAckCommand extends ISystemCommand, Serializable {
 
 	/**
 	 * Indicates why registration was successful.

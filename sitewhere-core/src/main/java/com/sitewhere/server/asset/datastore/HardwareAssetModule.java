@@ -22,6 +22,9 @@ import com.sitewhere.spi.asset.IHardwareAsset;
 public class HardwareAssetModule extends DataStoreAssetModule<IHardwareAsset> implements
 		IAssetModule<IHardwareAsset> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = 8273484848445563832L;
+
 	public HardwareAssetModule(IAssetCategory category) {
 		super(category);
 	}

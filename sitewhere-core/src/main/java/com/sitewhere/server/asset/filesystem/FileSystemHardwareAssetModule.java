@@ -25,6 +25,9 @@ import com.sitewhere.spi.asset.IAssetModule;
 public class FileSystemHardwareAssetModule extends FileSystemAssetModule<HardwareAsset> implements
 		IAssetModule<HardwareAsset> {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -8641817304295833195L;
+
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(FileSystemHardwareAssetModule.class);
 

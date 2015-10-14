@@ -23,6 +23,9 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
  */
 public class DeviceStateChangeWithAsset extends DeviceEventWithAsset implements IDeviceStateChange {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -8012486373686574551L;
+
 	public DeviceStateChangeWithAsset(IDeviceStateChange wrapped, IAssetModuleManager assets)
 			throws SiteWhereException {
 		super(wrapped, assets);

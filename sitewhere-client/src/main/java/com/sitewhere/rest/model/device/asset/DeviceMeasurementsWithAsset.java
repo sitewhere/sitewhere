@@ -27,6 +27,9 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 @JsonInclude(Include.NON_NULL)
 public class DeviceMeasurementsWithAsset extends DeviceEventWithAsset implements IDeviceMeasurements {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -732056996257170342L;
+
 	public DeviceMeasurementsWithAsset(IDeviceMeasurements wrapped, IAssetModuleManager assets)
 			throws SiteWhereException {
 		super(wrapped, assets);

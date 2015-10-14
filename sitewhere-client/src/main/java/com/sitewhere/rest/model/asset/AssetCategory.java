@@ -18,6 +18,9 @@ import com.sitewhere.spi.asset.IAssetCategory;
  */
 public class AssetCategory implements IAssetCategory {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -5414318045800776591L;
+
 	/** Category id */
 	private String id;
 
