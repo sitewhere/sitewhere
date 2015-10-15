@@ -8,10 +8,15 @@
 package com.sitewhere.spi.scheduling;
 
 /**
- * Manages a list of schedules that are applied to system actions.
+ * Enumerates types of triggers the scheduler can process.
  * 
  * @author Derek
  */
-public interface IScheduleManager {
+public enum TriggerType {
 
+	/** Simple trigger */
+	SimpleTrigger,
+
+	/** Trigger based on cron expression */
+	CronTrigger;
 }

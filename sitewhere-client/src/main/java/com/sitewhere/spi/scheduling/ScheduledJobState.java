@@ -8,10 +8,18 @@
 package com.sitewhere.spi.scheduling;
 
 /**
- * Manages a list of schedules that are applied to system actions.
+ * Indicates state of a scheduled job.
  * 
  * @author Derek
  */
-public interface IScheduleManager {
+public enum ScheduledJobState {
 
+	/** Job not yet submitted to scheduler */
+	Unsubmitted,
+
+	/** Job submitted to scheduler */
+	Active,
+
+	/** Job complete */
+	Complete;
 }

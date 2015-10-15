@@ -8,10 +8,10 @@
 package com.sitewhere.spi.scheduling;
 
 /**
- * Manages a list of schedules that are applied to system actions.
+ * Represents a named schedule that can be applied to system actions.
  * 
  * @author Derek
  */
-public interface IScheduleManager {
+public interface ISchedule {
 
 }

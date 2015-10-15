@@ -8,10 +8,15 @@
 package com.sitewhere.spi.scheduling;
 
 /**
- * Manages a list of schedules that are applied to system actions.
+ * Types of jobs that may be scheduled.
  * 
  * @author Derek
  */
-public interface IScheduleManager {
+public enum ScheduledJobType {
 
+	/** Scheduled command invocation */
+	CommandInvocation,
+
+	/** Scheduled batch command invocation */
+	BatchCommandInvocation;
 }
