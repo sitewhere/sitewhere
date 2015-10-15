@@ -86,6 +86,9 @@ public enum LifecycleComponentType {
 	/** Device stream manager */
 	DeviceStreamManager,
 
+	/** Schedule manager */
+	ScheduleManager,
+
 	/** Inbound processing strategy */
 	InboundProcessingStrategy,
 

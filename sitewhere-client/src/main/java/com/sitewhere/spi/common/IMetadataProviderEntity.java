@@ -7,7 +7,6 @@
  */
 package com.sitewhere.spi.common;
 
-
 /**
  * Interface that merges metadata provider and base entity.
  * 

@@ -54,6 +54,7 @@ import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
@@ -114,6 +115,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.util.DeviceSpecificationUtils;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.user.ITenant;
@@ -1692,6 +1694,65 @@ public class SiteWherePersistence {
 		if (request.getElevation() != null) {
 			location.setElevation(request.getElevation());
 		}
+	}
+
+	/**
+	 * Handle common logic for creating a schedule.
+	 * 
+	 * @param request
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static Schedule scheduleCreateLogic(IScheduleCreateRequest request, String token)
+			throws SiteWhereException {
+		Schedule schedule = new Schedule();
+
+		// Unique token is required.
+		if (token == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		schedule.setToken(token);
+
+		// Name is required.
+		if (request.getName() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		schedule.setName(request.getName());
+
+		// Trigger type is required.
+		if (request.getTriggerType() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		schedule.setTriggerType(request.getTriggerType());
+		schedule.setTriggerConfiguration(request.getTriggerConfiguration());
+
+		SiteWherePersistence.initializeEntityMetadata(schedule);
+		MetadataProvider.copy(request.getMetadata(), schedule);
+
+		return schedule;
+	}
+
+	/**
+	 * Handle common logic for updating a location asset.
+	 * 
+	 * @param location
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public static void scheduleUpdateLogic(Schedule schedule, IScheduleCreateRequest request)
+			throws SiteWhereException {
+		if (request.getName() != null) {
+			schedule.setName(request.getName());
+		}
+		if (request.getTriggerType() != null) {
+			schedule.setTriggerType(request.getTriggerType());
+		}
+		if (request.getTriggerConfiguration() != null) {
+			schedule.getTriggerConfiguration().clear();
+			schedule.getTriggerConfiguration().putAll(request.getTriggerConfiguration());
+		}
+		SiteWherePersistence.setUpdatedEntityMetadata(schedule);
 	}
 
 	/**

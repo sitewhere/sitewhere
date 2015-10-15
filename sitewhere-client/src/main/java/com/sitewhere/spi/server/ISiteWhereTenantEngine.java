@@ -17,6 +17,8 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.scheduling.IScheduleManagement;
+import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
@@ -48,6 +50,14 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public IAssetManagement getAssetManagement();
+
+	/**
+	 * Get the schedule management implementation.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IScheduleManagement getScheduleManagement() throws SiteWhereException;
 
 	/**
 	 * Get the configured device management cache provider implementation.
@@ -90,6 +100,14 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public ISearchProviderManager getSearchProviderManager();
+
+	/**
+	 * Get the schedule manager implementation.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IScheduleManager getScheduleManager() throws SiteWhereException;
 
 	/**
 	 * Get current runtime state of engine.

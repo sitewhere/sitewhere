@@ -7,11 +7,13 @@
  */
 package com.sitewhere.spi.scheduling;
 
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
+
 /**
  * Manages a list of schedules that are applied to system actions.
  * 
  * @author Derek
  */
-public interface IScheduleManager {
+public interface IScheduleManager extends ITenantLifecycleComponent {
 
 }

@@ -9,13 +9,14 @@ package com.sitewhere.spi.scheduling;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Management interface for persistent scheduling implementations.
  * 
  * @author Derek
  */
-public interface IScheduleManagement {
+public interface IScheduleManagement extends ITenantLifecycleComponent {
 
 	/**
 	 * Create a new schedule.

@@ -48,6 +48,8 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.IScheduleManagement;
+import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
@@ -290,6 +292,19 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getScheduleManagement(com.sitewhere.spi
+	 * .user.ITenant)
+	 */
+	@Override
+	public IScheduleManagement getScheduleManagement(ITenant tenant) throws SiteWhereException {
+		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
+		return engine.getScheduleManagement();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceCommunication(com.sitewhere.
 	 * spi.user.ITenant)
 	 */
@@ -351,6 +366,19 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException {
 		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
 		return engine.getSearchProviderManager();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getScheduleManager(com.sitewhere.spi.
+	 * user.ITenant)
+	 */
+	@Override
+	public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException {
+		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
+		return engine.getScheduleManager();
 	}
 
 	/**

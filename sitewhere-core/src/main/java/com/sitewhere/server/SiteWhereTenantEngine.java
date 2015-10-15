@@ -39,6 +39,7 @@ import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
 import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.scheduling.QuartzScheduleManager;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
 import com.sitewhere.server.tenant.TenantEngineCommand;
@@ -59,6 +60,8 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.IScheduleManagement;
+import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
@@ -100,6 +103,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** Interface to asset management implementation */
 	private IAssetManagement assetManagement;
 
+	/** Interface to schedule management implementation */
+	private IScheduleManagement scheduleManagement;
+
 	/** Interface to inbound event processor chain */
 	private IInboundEventProcessorChain inboundEventProcessorChain;
 
@@ -114,6 +120,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	/** Interface for the search provider manager */
 	private ISearchProviderManager searchProviderManager;
+
+	/** Interface for the schedule manager */
+	private IScheduleManager scheduleManager;
 
 	/** Threads used to issue engine commands */
 	private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
@@ -139,6 +148,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 		// Start device management.
 		startNestedComponent(getDeviceManagement(), "Device management startup failed.", true);
+
+		// Start device management.
+		startNestedComponent(getScheduleManagement(), "Schedule management startup failed.", true);
 
 		// Start device management cache provider if specificed.
 		if (getDeviceManagementCacheProvider() != null) {
@@ -171,6 +183,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 		// Start device communication subsystem.
 		startNestedComponent(getDeviceCommunication(), "Device communication subsystem startup failed.", true);
+
+		// Start schedule manager.
+		startNestedComponent(getScheduleManager(), "Schedule manager startup failed.", true);
 	}
 
 	/*
@@ -180,6 +195,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		// Stop scheduling new jobs.
+		getScheduleManager().lifecycleStop();
+		getScheduleManagement().lifecycleStop();
+
 		// Disable device communications.
 		getDeviceCommunication().lifecycleStop();
 		getInboundEventProcessorChain().lifecycleStop();
@@ -303,6 +322,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 			// Initialize asset management.
 			initializeAssetManagement();
+
+			// Initialize schedule management.
+			initializeScheduleManagement();
 
 			// Initialize search provider management.
 			initializeSearchProviderManagement();
@@ -451,6 +473,21 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 					(IAssetModuleManager) tenantContext.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No asset module manager implementation configured.");
+		}
+	}
+
+	/**
+	 * Verify and initialize schedule manager.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeScheduleManagement() throws SiteWhereException {
+		try {
+			scheduleManagement =
+					(IScheduleManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT);
+			scheduleManager = (IScheduleManager) new QuartzScheduleManager(scheduleManagement);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No schedule manager implementation configured.");
 		}
 	}
 
@@ -628,6 +665,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getScheduleManagement()
+	 */
+	public IScheduleManagement getScheduleManagement() {
+		return scheduleManagement;
+	}
+
+	public void setScheduleManagement(IScheduleManagement scheduleManagement) {
+		this.scheduleManagement = scheduleManagement;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getInboundEventProcessorChain()
 	 */
@@ -690,5 +740,18 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	public void setSearchProviderManager(ISearchProviderManager searchProviderManager) {
 		this.searchProviderManager = searchProviderManager;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getScheduleManager()
+	 */
+	public IScheduleManager getScheduleManager() {
+		return scheduleManager;
+	}
+
+	public void setScheduleManager(IScheduleManager scheduleManager) {
+		this.scheduleManager = scheduleManager;
 	}
 }

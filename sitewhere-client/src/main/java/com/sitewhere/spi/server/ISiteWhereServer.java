@@ -20,6 +20,8 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.scheduling.IScheduleManagement;
+import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
@@ -146,6 +148,15 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException;
 
 	/**
+	 * Get schedule management implementation for the given tenant.
+	 * 
+	 * @param tenant
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IScheduleManagement getScheduleManagement(ITenant tenant) throws SiteWhereException;
+
+	/**
 	 * Get device communication subsystem for the given tenant.
 	 * 
 	 * @param tenant
@@ -191,6 +202,15 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException;
+
+	/**
+	 * Get schedule manager for tenant.
+	 * 
+	 * @param tenant
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException;
 
 	/**
 	 * Get list of components that have registered to participate in the server component

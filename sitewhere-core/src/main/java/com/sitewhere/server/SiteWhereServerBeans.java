@@ -37,6 +37,9 @@ public interface SiteWhereServerBeans {
 	/** Bean id for asset management in server configuration */
 	public static final String BEAN_ASSET_MANAGEMENT = "assetManagement";
 
+	/** Bean id for schedule management in server configuration */
+	public static final String BEAN_SCHEDULE_MANAGEMENT = "scheduleManagement";
+
 	/** Bean id for asset module manager in server configuration */
 	public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";
 

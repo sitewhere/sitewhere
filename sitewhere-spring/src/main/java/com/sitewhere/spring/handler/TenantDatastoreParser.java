@@ -25,6 +25,7 @@ import com.sitewhere.hbase.asset.HBaseAssetManagement;
 import com.sitewhere.hbase.device.HBaseDeviceManagement;
 import com.sitewhere.mongodb.asset.MongoAssetManagement;
 import com.sitewhere.mongodb.device.MongoDeviceManagement;
+import com.sitewhere.mongodb.scheduling.MongoScheduleManagement;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.server.asset.DefaultAssetModuleInitializer;
 import com.sitewhere.server.device.DefaultDeviceModelInitializer;
@@ -123,6 +124,12 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		am.addPropertyReference("mongoClient", "mongo");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
 				am.getBeanDefinition());
+
+		// Register Mongo schedule management implementation.
+		BeanDefinitionBuilder sm = BeanDefinitionBuilder.rootBeanDefinition(MongoScheduleManagement.class);
+		sm.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT,
+				sm.getBeanDefinition());
 	}
 
 	/**

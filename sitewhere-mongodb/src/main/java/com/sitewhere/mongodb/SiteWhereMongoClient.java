@@ -35,7 +35,8 @@ import com.sitewhere.spi.user.ITenant;
  * @author dadams
  */
 public class SiteWhereMongoClient extends LifecycleComponent implements InitializingBean,
-		IUserManagementMongoClient, IDeviceManagementMongoClient, IAssetManagementMongoClient {
+		IUserManagementMongoClient, IDeviceManagementMongoClient, IAssetManagementMongoClient,
+		IScheduleManagementMongoClient {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereMongoClient.class);
@@ -131,6 +132,13 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 	/** Injected name used for assets collection */
 	private String assetsCollectionName = IAssetManagementMongoClient.DEFAULT_ASSETS_COLLECTION_NAME;
 
+	/** Injected name used for schedules collection */
+	private String schedulesCollectionName = IScheduleManagementMongoClient.DEFAULT_SCHEDULES_COLLECTION_NAME;
+
+	/** Injected name used for scheduled jobs collection */
+	private String scheduledJobsCollectionName =
+			IScheduleManagementMongoClient.DEFAULT_SCHEDULED_JOBS_COLLECTION_NAME;
+
 	public SiteWhereMongoClient() {
 		super(LifecycleComponentType.DataStore);
 	}
@@ -209,6 +217,12 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 			messages.add("----------------------");
 			messages.add("Asset categories collection name: " + getAssetCategoriesCollectionName());
 			messages.add("Assets collection name: " + getAssetsCollectionName());
+			messages.add("");
+			messages.add("-------------------------");
+			messages.add("-- Schedule Management --");
+			messages.add("-------------------------");
+			messages.add("Schedules collection name: " + getSchedulesCollectionName());
+			messages.add("Scheduled jobs collection name: " + getScheduledJobsCollectionName());
 			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		} catch (UnknownHostException e) {
@@ -453,6 +467,30 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 		return getTenantDatabase(tenant).getCollection(getAssetsCollectionName());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IScheduleManagementMongoClient#getSchedulesCollection(com
+	 * .sitewhere.spi.user.ITenant)
+	 */
+	@Override
+	public DBCollection getSchedulesCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getSchedulesCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IScheduleManagementMongoClient#getScheduledJobsCollection
+	 * (com.sitewhere.spi.user.ITenant)
+	 */
+	@Override
+	public DBCollection getScheduledJobsCollection(ITenant tenant) {
+		return getTenantDatabase(tenant).getCollection(getScheduledJobsCollectionName());
+	}
+
 	public String getHostname() {
 		return hostname;
 	}
@@ -635,5 +673,21 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	public void setAssetsCollectionName(String assetsCollectionName) {
 		this.assetsCollectionName = assetsCollectionName;
+	}
+
+	public String getSchedulesCollectionName() {
+		return schedulesCollectionName;
+	}
+
+	public void setSchedulesCollectionName(String schedulesCollectionName) {
+		this.schedulesCollectionName = schedulesCollectionName;
+	}
+
+	public String getScheduledJobsCollectionName() {
+		return scheduledJobsCollectionName;
+	}
+
+	public void setScheduledJobsCollectionName(String scheduledJobsCollectionName) {
+		this.scheduledJobsCollectionName = scheduledJobsCollectionName;
 	}
 }

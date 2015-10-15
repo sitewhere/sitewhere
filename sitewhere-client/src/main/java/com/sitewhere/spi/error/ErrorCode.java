@@ -128,6 +128,12 @@ public enum ErrorCode {
 	/** Attempting to create a tenant with an id already in use */
 	DuplicateTenantId(540, "Tenant id already in use."),
 
+	/** Invalid schedule token */
+	InvalidScheduleToken(530, "Schedule not found."),
+
+	/** Invalid scheduled job token */
+	InvalidScheduledJobToken(531, "Scheduled job not found."),
+
 	/******************
 	 * DEVICE COMMAND *
 	 ******************/
