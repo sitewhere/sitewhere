@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.scheduling;
 
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -16,4 +17,19 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  */
 public interface IScheduleManager extends ITenantLifecycleComponent {
 
+	/**
+	 * Adds a job to the scheduler.
+	 * 
+	 * @param job
+	 * @throws SiteWhereException
+	 */
+	public void scheduleJob(IScheduledJob job) throws SiteWhereException;
+
+	/**
+	 * Unschedules the given job if scheduled.
+	 * 
+	 * @param job
+	 * @throws SiteWhereException
+	 */
+	public void unscheduleJob(IScheduledJob job) throws SiteWhereException;
 }

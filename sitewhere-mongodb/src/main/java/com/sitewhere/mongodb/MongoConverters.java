@@ -33,6 +33,8 @@ import com.sitewhere.mongodb.device.MongoDeviceStream;
 import com.sitewhere.mongodb.device.MongoDeviceStreamData;
 import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
+import com.sitewhere.mongodb.scheduling.MongoSchedule;
+import com.sitewhere.mongodb.scheduling.MongoScheduledJob;
 import com.sitewhere.mongodb.user.MongoTenant;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -57,6 +59,8 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.scheduling.ISchedule;
+import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -100,6 +104,10 @@ public class MongoConverters implements IMongoConverterLookup {
 		CONVERTERS.put(IPersonAsset.class, new MongoPersonAsset());
 		CONVERTERS.put(ILocationAsset.class, new MongoLocationAsset());
 		CONVERTERS.put(IAsset.class, new MongoAsset());
+
+		// Converters for schedule management.
+		CONVERTERS.put(ISchedule.class, new MongoSchedule());
+		CONVERTERS.put(IScheduledJob.class, new MongoScheduledJob());
 	}
 
 	/*

@@ -13,6 +13,7 @@ import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
+import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -50,6 +51,27 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.scheduling.IScheduleManager#scheduleJob(com.sitewhere.spi.scheduling
+	 * .IScheduledJob)
+	 */
+	@Override
+	public void scheduleJob(IScheduledJob job) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.scheduling.IScheduleManager#unscheduleJob(com.sitewhere.spi.
+	 * scheduling.IScheduledJob)
+	 */
+	@Override
+	public void unscheduleJob(IScheduledJob job) throws SiteWhereException {
 	}
 
 	/*

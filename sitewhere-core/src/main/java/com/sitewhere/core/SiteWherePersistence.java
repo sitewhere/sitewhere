@@ -55,6 +55,7 @@ import com.sitewhere.rest.model.device.request.BatchOperationCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.scheduling.Schedule;
+import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
@@ -115,7 +116,9 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.util.DeviceSpecificationUtils;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
+import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.user.ITenant;
@@ -1753,6 +1756,70 @@ public class SiteWherePersistence {
 			schedule.getTriggerConfiguration().putAll(request.getTriggerConfiguration());
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(schedule);
+	}
+
+	/**
+	 * Handle common logic for creating a scheduled job.
+	 * 
+	 * @param request
+	 * @param token
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static ScheduledJob scheduledJobCreateLogic(IScheduledJobCreateRequest request, String token)
+			throws SiteWhereException {
+		ScheduledJob job = new ScheduledJob();
+
+		// Unique token is required.
+		if (token == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		job.setToken(token);
+
+		// Schedule token is required.
+		if (request.getScheduleToken() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		job.setScheduleToken(request.getScheduleToken());
+
+		// Job type is required.
+		if (request.getJobType() == null) {
+			throw new SiteWhereSystemException(ErrorCode.IncompleteData, ErrorLevel.ERROR);
+		}
+		job.setJobType(request.getJobType());
+		job.setJobConfiguration(request.getJobConfiguration());
+
+		job.setJobState(ScheduledJobState.Unsubmitted);
+
+		SiteWherePersistence.initializeEntityMetadata(job);
+		MetadataProvider.copy(request.getMetadata(), job);
+
+		return job;
+	}
+
+	/**
+	 * Handle common logic for updating a scheduled job.
+	 * 
+	 * @param job
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public static void scheduledJobUpdateLogic(ScheduledJob job, IScheduledJobCreateRequest request)
+			throws SiteWhereException {
+		if (request.getScheduleToken() != null) {
+			job.setScheduleToken(request.getScheduleToken());
+		}
+		if (request.getJobType() != null) {
+			job.setJobType(request.getJobType());
+		}
+		if (request.getJobConfiguration() != null) {
+			job.getJobConfiguration().clear();
+			job.getJobConfiguration().putAll(request.getJobConfiguration());
+		}
+		if (request.getJobState() != null) {
+			job.setJobState(request.getJobState());
+		}
+		SiteWherePersistence.setUpdatedEntityMetadata(job);
 	}
 
 	/**

@@ -5,19 +5,19 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.scheduling;
+package com.sitewhere.spi.scheduling.request;
 
-import java.io.Serializable;
 import java.util.Map;
 
-import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.scheduling.ScheduledJobState;
+import com.sitewhere.spi.scheduling.ScheduledJobType;
 
 /**
- * Unit of work that should be executed on a schedule.
+ * Includes values needed to create a scheduled job.
  * 
  * @author Derek
  */
-public interface IScheduledJob extends IMetadataProviderEntity, Serializable {
+public interface IScheduledJobCreateRequest {
 
 	/**
 	 * Get unique job token.
@@ -53,4 +53,11 @@ public interface IScheduledJob extends IMetadataProviderEntity, Serializable {
 	 * @return
 	 */
 	public ScheduledJobState getJobState();
+
+	/**
+	 * Get metadata values.
+	 * 
+	 * @return
+	 */
+	public Map<String, String> getMetadata();
 }
