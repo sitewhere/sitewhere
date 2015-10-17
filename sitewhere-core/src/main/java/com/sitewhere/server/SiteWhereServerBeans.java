@@ -79,4 +79,7 @@ public interface SiteWhereServerBeans {
 
 	/** Bean id for asset management data initializer in server configuration */
 	public static final String BEAN_ASSET_MODEL_INITIALIZER = "assetModelInitializer";
+
+	/** Bean id for schedule management data initializer in server configuration */
+	public static final String BEAN_SCHEDULE_MODEL_INITIALIZER = "scheduleModelInitializer";
 }

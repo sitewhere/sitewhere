@@ -8,7 +8,7 @@
 	<xsd:import schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
 		namespace="http://www.springframework.org/schema/beans">
 	</xsd:import>
-	<xsd:import schemaLocation="http://www.sitewhere.org/schema/sitewhere/ce/1.2.0/sitewhere.xsd"
+	<xsd:import schemaLocation="http://www.sitewhere.org/schema/sitewhere/ce/1.3.0/sitewhere.xsd"
 		namespace="http://www.sitewhere.com/schema/sitewhere/ce"></xsd:import>
 
 	<xsd:element name="tenant-configuration" type="tenantConfigurationType">

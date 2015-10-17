@@ -29,6 +29,7 @@ import com.sitewhere.mongodb.scheduling.MongoScheduleManagement;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.server.asset.DefaultAssetModuleInitializer;
 import com.sitewhere.server.device.DefaultDeviceModelInitializer;
+import com.sitewhere.server.scheduling.DefaultScheduleModelInitializer;
 
 /**
  * Parses configuration for tenant datastore entries.
@@ -87,6 +88,10 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 			}
 			case DefaultAssetModelInitializer: {
 				parseDefaultAssetModelInitializer(child, context);
+				break;
+			}
+			case DefaultScheduleModelInitializer: {
+				parseDefaultScheduleModelInitializer(child, context);
 				break;
 			}
 			}
@@ -250,6 +255,23 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse configuration for default schedule model initializer.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseDefaultScheduleModelInitializer(Element element, ParserContext context) {
+		BeanDefinitionBuilder init =
+				BeanDefinitionBuilder.rootBeanDefinition(DefaultScheduleModelInitializer.class);
+		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
+		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
+			init.addPropertyValue("initializeIfNoConsole", "true");
+		}
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_SCHEDULE_MODEL_INITIALIZER,
+				init.getBeanDefinition());
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -271,8 +293,11 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		/** Creates sample data if no device data is present */
 		DefaultDeviceModelInitializer("default-device-model-initializer"),
 
-		/** Creates sample data if no device data is present */
-		DefaultAssetModelInitializer("default-asset-model-initializer");
+		/** Creates sample data if no asset data is present */
+		DefaultAssetModelInitializer("default-asset-model-initializer"),
+
+		/** Creates sample data if no schedule data is present */
+		DefaultScheduleModelInitializer("default-schedule-model-initializer");
 
 		/** Event code */
 		private String localName;

@@ -8,7 +8,9 @@
 package com.sitewhere.server.scheduling;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
@@ -40,6 +42,13 @@ public class DefaultScheduleModelInitializer implements IScheduleModelInitialize
 	@Override
 	public void initialize(IScheduleManagement scheduleManagement) throws SiteWhereException {
 		this.scheduleManagement = scheduleManagement;
+
+		// Use the system account for logging "created by" on created elements.
+		SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
+
+		createDefaultSchedules();
+
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
 	/**
@@ -49,6 +58,21 @@ public class DefaultScheduleModelInitializer implements IScheduleModelInitialize
 	 */
 	protected void createDefaultSchedules() throws SiteWhereException {
 		LOGGER.info("Creating default schedule data.");
+		getScheduleManagement().createSchedule(
+				ScheduleHelper.createSimpleSchedule("95ff6a81-3d92-4b10-b8af-957c172ad97b",
+						"Every thirty seconds", null, null, new Long(30 * 1000), null));
+		getScheduleManagement().createSchedule(
+				ScheduleHelper.createSimpleSchedule("20f5e855-d8a2-431d-a68b-61f4549dbb80", "Every minute",
+						null, null, new Long(60 * 1000), null));
+		getScheduleManagement().createSchedule(
+				ScheduleHelper.createSimpleSchedule("2c82d6d5-6a0a-48be-99ab-7451a69e3ba7",
+						"Every 10 minutes", null, null, new Long(10 * 60 * 1000), null));
+		getScheduleManagement().createSchedule(
+				ScheduleHelper.createCronSchedule("ee23196c-5bc3-4685-8c9d-6dcbb3062ec2", "On the half hour",
+						null, null, "0 0/30 * 1/1 * ? *"));
+		getScheduleManagement().createSchedule(
+				ScheduleHelper.createCronSchedule("de305d54-75b4-431b-adb2-eb6b9e546014", "On the hour",
+						null, null, "0 0 0/1 1/1 * ? *"));
 	}
 
 	/*

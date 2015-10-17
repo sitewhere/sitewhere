@@ -23,10 +23,10 @@ public interface TriggerConstants {
 	public static interface SimpleTrigger {
 
 		/** Number of times trigger should repeat */
-		public static final String REPEAT_COUNT = "repeat.count";
+		public static final String REPEAT_COUNT = "repeatCount";
 
 		/** Interval (in milliseconds) trigger should repeat */
-		public static final String REPEAT_INTERVAL = "repeat.interval";
+		public static final String REPEAT_INTERVAL = "repeatInterval";
 	}
 
 	/**
@@ -37,6 +37,6 @@ public interface TriggerConstants {
 	public static interface CronTrigger {
 
 		/** Cron expression that defines trigger schedule */
-		public static final String CRON_EXPRESSION = "cron.expression";
+		public static final String CRON_EXPRESSION = "cronExpression";
 	}
 }

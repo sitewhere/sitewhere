@@ -55,4 +55,30 @@ public class ScheduleHelper {
 
 		return schedule;
 	}
+
+	/**
+	 * Build request for a cron schedule.
+	 * 
+	 * @param token
+	 * @param name
+	 * @param start
+	 * @param end
+	 * @param expression
+	 * @return
+	 */
+	public static IScheduleCreateRequest createCronSchedule(String token, String name, Date start, Date end,
+			String expression) {
+		ScheduleCreateRequest schedule = new ScheduleCreateRequest();
+		schedule.setToken(token);
+		schedule.setName(name);
+		schedule.setTriggerType(TriggerType.CronTrigger);
+		schedule.setStartDate(start);
+		schedule.setEndDate(end);
+
+		Map<String, String> config = new HashMap<String, String>();
+		config.put(TriggerConstants.CronTrigger.CRON_EXPRESSION, expression);
+		schedule.setTriggerConfiguration(config);
+
+		return schedule;
+	}
 }

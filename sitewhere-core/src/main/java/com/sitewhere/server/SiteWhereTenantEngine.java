@@ -60,6 +60,7 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
@@ -72,6 +73,7 @@ import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -151,6 +153,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 		// Start device management.
 		startNestedComponent(getScheduleManagement(), "Schedule management startup failed.", true);
+
+		// Populate schedule data if requested.
+		verifyScheduleModel();
 
 		// Start device management cache provider if specificed.
 		if (getDeviceManagementCacheProvider() != null) {
@@ -586,6 +591,41 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			return;
 		} catch (SiteWhereException e) {
 			LOGGER.warn("Unable to read from asset model.", e);
+		}
+	}
+
+	/**
+	 * Check whether schedule model is populated and offer to bootstrap system if not.
+	 */
+	protected void verifyScheduleModel() {
+		try {
+			IScheduleModelInitializer init =
+					(IScheduleModelInitializer) tenantContext.getBean(SiteWhereServerBeans.BEAN_SCHEDULE_MODEL_INITIALIZER);
+			ISearchResults<ISchedule> schedules =
+					getScheduleManagement().listSchedules(new SearchCriteria(1, 1));
+			if (schedules.getNumResults() == 0) {
+				List<String> messages = new ArrayList<String>();
+				messages.add("There are currently no schedules defined in the system. You have the option of "
+						+ "loading a default dataset for previewing system functionality. Would you like to load the "
+						+ "default schedule dataset?");
+				String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+				LOGGER.info("\n" + message + "\n");
+				System.out.println("Load default schedules? Yes/No (Default is Yes)");
+				String response = readLine();
+				if ((response == null) && (init.isInitializeIfNoConsole())) {
+					response = "Y";
+				} else if ((response == null) && (!init.isInitializeIfNoConsole())) {
+					response = "N";
+				}
+				if ((response.length() == 0) || (response.toLowerCase().startsWith("y"))) {
+					init.initialize(getScheduleManagement());
+				}
+			}
+		} catch (NoSuchBeanDefinitionException e) {
+			LOGGER.info("No schedule model initializer found in Spring bean configuration. Skipping.");
+			return;
+		} catch (SiteWhereException e) {
+			LOGGER.warn("Unable to read from schedule model.", e);
 		}
 	}
 
