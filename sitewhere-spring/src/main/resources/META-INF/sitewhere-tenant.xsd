@@ -105,6 +105,13 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" name="default-schedule-model-initializer" type="defaultScheduleModelInitializerType">
+				<xsd:annotation>
+					<xsd:documentation>
+						Initializes schedule model with data if database is empty.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:all>
 	</xsd:complexType>
 
@@ -262,6 +269,11 @@
 	
 	<!-- Creates default asset model data -->
 	<xsd:complexType name="defaultAssetModelInitializerType">
+		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- Creates default schedule model data -->
+	<xsd:complexType name="defaultScheduleModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
 	</xsd:complexType>
 

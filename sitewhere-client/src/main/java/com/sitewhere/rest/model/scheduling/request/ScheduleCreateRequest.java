@@ -5,37 +5,38 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.scheduling;
+package com.sitewhere.rest.model.scheduling.request;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
-import com.sitewhere.rest.model.common.MetadataProviderEntity;
-import com.sitewhere.spi.scheduling.ISchedule;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.scheduling.TriggerType;
+import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 
 /**
- * Model object for a schedule.
+ * Holds fields needed to create a new schedule.
  * 
- * @author Derek
+ * @author Derek Adams
  */
-public class Schedule extends MetadataProviderEntity implements ISchedule {
+@JsonInclude(Include.NON_NULL)
+public class ScheduleCreateRequest implements IScheduleCreateRequest {
 
 	/** Serial version UID */
-	private static final long serialVersionUID = -1316208751255296000L;
+	private static final long serialVersionUID = 1453554726838184776L;
 
 	/** Unique token */
 	private String token;
 
-	/** Schedule name */
+	/** Name */
 	private String name;
 
-	/** Type of trigger */
+	/** Trigger type */
 	private TriggerType triggerType;
 
-	/** Configuration of trigger */
-	private Map<String, String> triggerConfiguration = new HashMap<String, String>();
+	/** Trigger configuration */
+	private Map<String, String> triggerConfiguration;
 
 	/** Date schedule takes effect */
 	private Date startDate;
@@ -43,10 +44,13 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 	/** Date schedule is no longer in effect */
 	private Date endDate;
 
+	/** Metadata */
+	private Map<String, String> metadata;
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.scheduling.ISchedule#getToken()
+	 * @see com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getToken()
 	 */
 	public String getToken() {
 		return token;
@@ -59,7 +63,7 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.scheduling.ISchedule#getName()
+	 * @see com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getName()
 	 */
 	public String getName() {
 		return name;
@@ -72,7 +76,7 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.scheduling.ISchedule#getTriggerType()
+	 * @see com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getTriggerType()
 	 */
 	public TriggerType getTriggerType() {
 		return triggerType;
@@ -85,7 +89,9 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.scheduling.ISchedule#getTriggerConfiguration()
+	 * @see
+	 * com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getTriggerConfiguration
+	 * ()
 	 */
 	public Map<String, String> getTriggerConfiguration() {
 		return triggerConfiguration;
@@ -98,7 +104,7 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.scheduling.ISchedule#getStartDate()
+	 * @see com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getStartDate()
 	 */
 	public Date getStartDate() {
 		return startDate;
@@ -111,7 +117,7 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.scheduling.ISchedule#getEndDate()
+	 * @see com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getEndDate()
 	 */
 	public Date getEndDate() {
 		return endDate;
@@ -119,5 +125,18 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.scheduling.request.IScheduleCreateRequest#getMetadata()
+	 */
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }

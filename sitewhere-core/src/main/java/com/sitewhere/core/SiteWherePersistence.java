@@ -1730,6 +1730,9 @@ public class SiteWherePersistence {
 		schedule.setTriggerType(request.getTriggerType());
 		schedule.setTriggerConfiguration(request.getTriggerConfiguration());
 
+		schedule.setStartDate(request.getStartDate());
+		schedule.setEndDate(request.getEndDate());
+
 		SiteWherePersistence.initializeEntityMetadata(schedule);
 		MetadataProvider.copy(request.getMetadata(), schedule);
 
@@ -1755,6 +1758,15 @@ public class SiteWherePersistence {
 			schedule.getTriggerConfiguration().clear();
 			schedule.getTriggerConfiguration().putAll(request.getTriggerConfiguration());
 		}
+
+		// Dates can be changed but not removed.
+		if (schedule.getStartDate() != null) {
+			schedule.setStartDate(request.getStartDate());
+		}
+		if (schedule.getEndDate() != null) {
+			schedule.setEndDate(request.getEndDate());
+		}
+
 		SiteWherePersistence.setUpdatedEntityMetadata(schedule);
 	}
 

@@ -7,6 +7,7 @@
  */
 package com.sitewhere.spi.scheduling.request;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.sitewhere.spi.scheduling.ScheduledJobState;
@@ -17,7 +18,7 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
  * 
  * @author Derek
  */
-public interface IScheduledJobCreateRequest {
+public interface IScheduledJobCreateRequest extends Serializable {
 
 	/**
 	 * Get unique job token.

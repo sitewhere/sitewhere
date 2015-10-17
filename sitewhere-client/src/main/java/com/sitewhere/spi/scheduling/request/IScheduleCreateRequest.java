@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.scheduling.request;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 
 import com.sitewhere.spi.scheduling.TriggerType;
@@ -16,7 +18,7 @@ import com.sitewhere.spi.scheduling.TriggerType;
  * 
  * @author Derek
  */
-public interface IScheduleCreateRequest {
+public interface IScheduleCreateRequest extends Serializable {
 
 	/**
 	 * Unique token for schedule.
@@ -45,6 +47,20 @@ public interface IScheduleCreateRequest {
 	 * @return
 	 */
 	public Map<String, String> getTriggerConfiguration();
+
+	/**
+	 * Get date schedule takes effect.
+	 * 
+	 * @return
+	 */
+	public Date getStartDate();
+
+	/**
+	 * Get date schedule is no longer in effect.
+	 * 
+	 * @return
+	 */
+	public Date getEndDate();
 
 	/**
 	 * Get metadata values.

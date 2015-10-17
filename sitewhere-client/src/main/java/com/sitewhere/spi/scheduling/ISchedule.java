@@ -8,6 +8,7 @@
 package com.sitewhere.spi.scheduling;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 
 import com.sitewhere.spi.common.IMetadataProviderEntity;
@@ -46,4 +47,18 @@ public interface ISchedule extends IMetadataProviderEntity, Serializable {
 	 * @return
 	 */
 	public Map<String, String> getTriggerConfiguration();
+
+	/**
+	 * Get date schedule takes effect.
+	 * 
+	 * @return
+	 */
+	public Date getStartDate();
+
+	/**
+	 * Get date schedule is no longer in effect.
+	 * 
+	 * @return
+	 */
+	public Date getEndDate();
 }
