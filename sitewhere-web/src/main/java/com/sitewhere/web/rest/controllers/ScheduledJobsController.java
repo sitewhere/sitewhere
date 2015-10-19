@@ -104,7 +104,7 @@ public class ScheduledJobsController extends SiteWhereController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(method = RequestMethod.PUT)
+	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update existing scheduled job")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })

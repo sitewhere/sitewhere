@@ -110,7 +110,7 @@ public class SchedulesController extends SiteWhereController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(method = RequestMethod.PUT)
+	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update an existing schedule")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })

@@ -60,6 +60,7 @@ import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.user.AccountStatus;
@@ -1027,7 +1028,6 @@ public class ExampleData {
 			setCreatedDate(new Date());
 			setStartDate(request.getStartDate());
 			setEndDate(request.getEndDate());
-			setMetadata(null);
 		}
 	}
 
@@ -1045,7 +1045,6 @@ public class ExampleData {
 			setCreatedDate(new Date());
 			setStartDate(request.getStartDate());
 			setEndDate(request.getEndDate());
-			setMetadata(null);
 		}
 	}
 
@@ -1064,7 +1063,7 @@ public class ExampleData {
 			setScheduleToken(request.getScheduleToken());
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
-			setMetadata(null);
+			setJobState(ScheduledJobState.Active);
 		}
 	}
 }
