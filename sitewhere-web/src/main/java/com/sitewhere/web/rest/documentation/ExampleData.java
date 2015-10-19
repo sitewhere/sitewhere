@@ -38,10 +38,12 @@ import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
+import com.sitewhere.server.scheduling.ScheduleHelper;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -56,6 +58,7 @@ import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.group.GroupElementType;
+import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.user.AccountStatus;
 
 @SuppressWarnings("serial")
@@ -220,6 +223,12 @@ public class ExampleData {
 
 	/** Tenant */
 	public static Tenant_Merchant1 TENANT_MERCHANT1 = new Tenant_Merchant1();
+
+	/** Schedule */
+	public static Schedule_Simple1 SCHEDULE_SIMPLE1 = new Schedule_Simple1();
+
+	/** Schedule */
+	public static Schedule_Cron1 SCHEDULE_CRON1 = new Schedule_Cron1();
 
 	public static class Site_Construction extends Site {
 
@@ -941,7 +950,6 @@ public class ExampleData {
 	}
 
 	public static class User_John extends User {
-		
 
 		public User_John() {
 			setUsername("jdoe");
@@ -996,6 +1004,42 @@ public class ExampleData {
 			getAuthorizedUserIds().add("admin");
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
+		}
+	}
+
+	public static class Schedule_Simple1 extends Schedule {
+
+		public Schedule_Simple1() {
+			IScheduleCreateRequest request =
+					ScheduleHelper.createSimpleSchedule("95ff6a81-3d92-4b10-b8af-957c172ad97b",
+							"Every thirty seconds", new Date(), new Date(), (long) 10000, 100);
+			setToken(request.getToken());
+			setName(request.getName());
+			setTriggerType(request.getTriggerType());
+			setTriggerConfiguration(request.getTriggerConfiguration());
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			setStartDate(request.getStartDate());
+			setEndDate(request.getEndDate());
+			setMetadata(null);
+		}
+	}
+
+	public static class Schedule_Cron1 extends Schedule {
+
+		public Schedule_Cron1() {
+			IScheduleCreateRequest request =
+					ScheduleHelper.createCronSchedule("5e772533-9fd8-4daa-8da1-63aa6642cc30", "On the hour",
+							new Date(), new Date(), "0 0 0/1 1/1 * ? *");
+			setToken(request.getToken());
+			setName(request.getName());
+			setTriggerType(request.getTriggerType());
+			setTriggerConfiguration(request.getTriggerConfiguration());
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			setStartDate(request.getStartDate());
+			setEndDate(request.getEndDate());
+			setMetadata(null);
 		}
 	}
 }
