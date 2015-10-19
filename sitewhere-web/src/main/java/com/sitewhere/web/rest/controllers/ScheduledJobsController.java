@@ -109,8 +109,8 @@ public class ScheduledJobsController extends SiteWhereController {
 	@ApiOperation(value = "Update existing scheduled job")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Schedules.UpdateScheduleRequest.class, description = "updateScheduledJobRequest.md"),
-			@Example(stage = Stage.Response, json = Schedules.UpdateScheduleResponse.class, description = "updateScheduledJobResponse.md") })
+			@Example(stage = Stage.Request, json = Schedules.UpdateScheduledJobRequest.class, description = "updateScheduledJobRequest.md"),
+			@Example(stage = Stage.Response, json = Schedules.UpdateScheduledJobResponse.class, description = "updateScheduledJobResponse.md") })
 	public IScheduledJob updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -135,7 +135,7 @@ public class ScheduledJobsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "List scheduled jobs matching criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.ListSchedulesResponse.class, description = "listScheduledJobsResponse.md") })
+	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.ListScheduledjobsResponse.class, description = "listScheduledJobsResponse.md") })
 	public ISearchResults<IScheduledJob> listScheduledJobs(
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,

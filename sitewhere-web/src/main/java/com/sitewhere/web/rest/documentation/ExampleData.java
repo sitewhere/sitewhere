@@ -237,6 +237,9 @@ public class ExampleData {
 	/** Scheduled job */
 	public static ScheduledJob_Command1 JOB_COMMAND1 = new ScheduledJob_Command1();
 
+	/** Scheduled job */
+	public static ScheduledJob_Command2 JOB_COMMAND2 = new ScheduledJob_Command2();
+
 	public static class Site_Construction extends Site {
 
 		public Site_Construction() {
@@ -1057,6 +1060,25 @@ public class ExampleData {
 							ExampleData.INVOCATION_SET_RPT_INTV.getCommandToken(),
 							ExampleData.INVOCATION_SET_RPT_INTV.getParameterValues(),
 							ExampleData.SCHEDULE_CRON1.getToken());
+			setToken(request.getToken());
+			setJobType(request.getJobType());
+			setJobConfiguration(request.getJobConfiguration());
+			setScheduleToken(request.getScheduleToken());
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
+			setJobState(ScheduledJobState.Active);
+		}
+	}
+
+	public static class ScheduledJob_Command2 extends ScheduledJob {
+
+		public ScheduledJob_Command2() {
+			IScheduledJobCreateRequest request =
+					ScheduledJobHelper.createCommandInvocationJob("2fbb6229-4ca1-42d4-bdd7-49f09c757399",
+							ExampleData.TRACKER_TO_DEREK.getToken(),
+							ExampleData.INVOCATION_SET_RPT_INTV.getCommandToken(),
+							ExampleData.INVOCATION_SET_RPT_INTV.getParameterValues(),
+							ExampleData.SCHEDULE_SIMPLE1.getToken());
 			setToken(request.getToken());
 			setJobType(request.getJobType());
 			setJobConfiguration(request.getJobConfiguration());

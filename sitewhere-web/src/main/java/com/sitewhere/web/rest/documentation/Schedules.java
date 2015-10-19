@@ -15,7 +15,9 @@ import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
+import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.web.rest.documentation.ExampleData.Schedule_Simple1;
+import com.sitewhere.web.rest.documentation.ExampleData.ScheduledJob_Command1;
 
 /**
  * Examples of REST payloads for various schedule methods.
@@ -89,6 +91,34 @@ public class Schedules {
 
 		public Object generate() throws SiteWhereException {
 			return ExampleData.JOB_COMMAND1;
+		}
+	}
+
+	public static class UpdateScheduledJobRequest {
+
+		public Object generate() throws SiteWhereException {
+			ScheduledJobCreateRequest request = new ScheduledJobCreateRequest();
+			request.setScheduleToken(ExampleData.SCHEDULE_SIMPLE1.getToken());
+			return request;
+		}
+	}
+
+	public static class UpdateScheduledJobResponse {
+
+		public Object generate() throws SiteWhereException {
+			ScheduledJob_Command1 job = new ScheduledJob_Command1();
+			job.setScheduleToken(ExampleData.SCHEDULE_SIMPLE1.getToken());
+			return job;
+		}
+	}
+
+	public static class ListScheduledjobsResponse {
+
+		public Object generate() throws SiteWhereException {
+			List<IScheduledJob> list = new ArrayList<IScheduledJob>();
+			list.add(ExampleData.JOB_COMMAND1);
+			list.add(ExampleData.JOB_COMMAND2);
+			return new SearchResults<IScheduledJob>(list, 2);
 		}
 	}
 }

@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +58,7 @@ import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.server.scheduling.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -76,6 +78,8 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.IScheduledJob;
+import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.web.rest.annotations.Concerns;
@@ -85,6 +89,7 @@ import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
 import com.sitewhere.web.rest.annotations.Example.Stage;
 import com.sitewhere.web.rest.documentation.Assignments;
+import com.sitewhere.web.rest.documentation.Schedules;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -732,12 +737,6 @@ public class AssignmentsController extends SiteWhereController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createCommandInvocation", LOGGER);
 		try {
-			if (request.getInitiator() == null) {
-				throw new SiteWhereException("Command initiator is required.");
-			}
-			if (request.getTarget() == null) {
-				throw new SiteWhereException("Command target is required.");
-			}
 			IDeviceCommand command = assureDeviceCommand(request.getCommandToken(), servletRequest);
 			IDeviceCommandInvocation result =
 					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceCommandInvocation(
@@ -745,6 +744,30 @@ public class AssignmentsController extends SiteWhereController {
 			DeviceCommandInvocationMarshalHelper helper =
 					new DeviceCommandInvocationMarshalHelper(getTenant(servletRequest));
 			return helper.convert(result);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping(value = "/{token}/invocations/schedules/{scheduleToken}", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Schedule command invocation")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Assignments.CreateCommandInvocationRequest.class, description = "scheduleCommandInvocationRequest.md"),
+			@Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "scheduleCommandInvocationResponse.md") })
+	public IScheduledJob scheduleCommandInvocation(@RequestBody DeviceCommandInvocationCreateRequest request,
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			@ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
+			HttpServletRequest servletRequest) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "scheduleCommandInvocation", LOGGER);
+		try {
+			assureDeviceCommand(request.getCommandToken(), servletRequest);
+			IScheduledJobCreateRequest job =
+					ScheduledJobHelper.createCommandInvocationJob(UUID.randomUUID().toString(), token,
+							request.getCommandToken(), request.getParameterValues(), scheduleToken);
+			return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(
+					job);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
