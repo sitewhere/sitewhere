@@ -18,7 +18,6 @@ public interface TriggerConstants {
 	 * Fields used by a simple trigger.
 	 * 
 	 * @author Derek
-	 *
 	 */
 	public static interface SimpleTrigger {
 

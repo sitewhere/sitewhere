@@ -39,11 +39,13 @@ import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.scheduling.Schedule;
+import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.server.scheduling.ScheduleHelper;
+import com.sitewhere.server.scheduling.ScheduledJobHelper;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
@@ -59,6 +61,7 @@ import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
+import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.user.AccountStatus;
 
 @SuppressWarnings("serial")
@@ -229,6 +232,9 @@ public class ExampleData {
 
 	/** Schedule */
 	public static Schedule_Cron1 SCHEDULE_CRON1 = new Schedule_Cron1();
+
+	/** Scheduled job */
+	public static ScheduledJob_Command1 JOB_COMMAND1 = new ScheduledJob_Command1();
 
 	public static class Site_Construction extends Site {
 
@@ -1039,6 +1045,25 @@ public class ExampleData {
 			setCreatedDate(new Date());
 			setStartDate(request.getStartDate());
 			setEndDate(request.getEndDate());
+			setMetadata(null);
+		}
+	}
+
+	public static class ScheduledJob_Command1 extends ScheduledJob {
+
+		public ScheduledJob_Command1() {
+			IScheduledJobCreateRequest request =
+					ScheduledJobHelper.createCommandInvocationJob("be35c0fa-4201-4f0f-8998-63291b034872",
+							ExampleData.TRACKER_TO_DEREK.getToken(),
+							ExampleData.INVOCATION_SET_RPT_INTV.getCommandToken(),
+							ExampleData.INVOCATION_SET_RPT_INTV.getParameterValues(),
+							ExampleData.SCHEDULE_CRON1.getToken());
+			setToken(request.getToken());
+			setJobType(request.getJobType());
+			setJobConfiguration(request.getJobConfiguration());
+			setScheduleToken(request.getScheduleToken());
+			setCreatedBy("admin");
+			setCreatedDate(new Date());
 			setMetadata(null);
 		}
 	}

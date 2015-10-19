@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.rest.model.scheduling.request.ScheduleCreateRequest;
+import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.ISchedule;
@@ -69,6 +70,25 @@ public class Schedules {
 			list.add(ExampleData.SCHEDULE_SIMPLE1);
 			list.add(ExampleData.SCHEDULE_CRON1);
 			return new SearchResults<ISchedule>(list, 2);
+		}
+	}
+
+	public static class CreateScheduledJobRequest {
+
+		public Object generate() throws SiteWhereException {
+			ScheduledJobCreateRequest request = new ScheduledJobCreateRequest();
+			request.setToken(ExampleData.JOB_COMMAND1.getToken());
+			request.setJobType(ExampleData.JOB_COMMAND1.getJobType());
+			request.setJobConfiguration(ExampleData.JOB_COMMAND1.getJobConfiguration());
+			request.setScheduleToken(ExampleData.JOB_COMMAND1.getScheduleToken());
+			return request;
+		}
+	}
+
+	public static class CreateScheduledJobResponse {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.JOB_COMMAND1;
 		}
 	}
 }

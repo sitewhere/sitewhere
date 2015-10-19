@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.core.user.SitewhereRoles;
-import com.sitewhere.rest.model.scheduling.request.ScheduleCreateRequest;
+import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
+import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.web.rest.annotations.Concerns;
@@ -41,68 +41,62 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 /**
- * Controller for schedule operations.
+ * Controller for scheduled jobs.
  * 
  * @author Derek Adams
  */
 @Controller
-@RequestMapping(value = "/schedules")
-@Api(value = "schedules", description = "Operations related to SiteWhere schedules.")
-@DocumentedController(name = "Schedules")
-public class SchedulesController extends SiteWhereController {
+@RequestMapping(value = "/jobs")
+@Api(value = "jobs", description = "Operations related to SiteWhere scheduled jobs.")
+@DocumentedController(name = "Scheduled Jobs")
+public class ScheduledJobsController extends SiteWhereController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SchedulesController.class);
+	private static Logger LOGGER = Logger.getLogger(ScheduledJobsController.class);
 
 	/**
-	 * Create a schedule.
+	 * Create a new scheduled job.
 	 * 
 	 * @param request
-	 * @return
-	 */
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	@ApiOperation(value = "Create new schedule")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Schedules.CreateScheduleRequest.class, description = "createScheduleRequest.md"),
-			@Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "createScheduleResponse.md") })
-	public ISchedule createSchedule(@RequestBody ScheduleCreateRequest request,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "createSchedule", LOGGER);
-		try {
-			return getScheduleManagement(servletRequest).createSchedule(request);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * Get a schedule by token.
-	 * 
-	 * @param token
 	 * @param servletRequest
 	 * @return
 	 * @throws SiteWhereException
 	 */
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Create new scheduled job")
+	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = Schedules.CreateScheduledJobRequest.class, description = "createScheduledJobRequest.md"),
+			@Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "createScheduledJobResponse.md") })
+	public IScheduledJob createScheduledJob(@RequestBody ScheduledJobCreateRequest request,
+			HttpServletRequest servletRequest) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "createScheduledJob", LOGGER);
+		try {
+			return getScheduleManagement(servletRequest).createScheduledJob(request);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
 	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get schedule by token")
+	@ApiOperation(value = "Get scheduled job by token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "getScheduleByTokenResponse.md") })
-	public ISchedule getScheduleByToken(
+	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "getScheduledJobByTokenResponse.md") })
+	public IScheduledJob getScheduledJobByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getScheduleByToken", LOGGER);
+		Tracer.start(TracerCategory.RestApiCall, "getScheduledJobByToken", LOGGER);
 		try {
-			return getScheduleManagement(servletRequest).getScheduleByToken(token);
+			return getScheduleManagement(servletRequest).getScheduledJobByToken(token);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
 	}
 
 	/**
-	 * Update an existing schedule.
+	 * Update an existing scheduled job.
 	 * 
 	 * @param request
 	 * @param token
@@ -112,24 +106,24 @@ public class SchedulesController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.PUT)
 	@ResponseBody
-	@ApiOperation(value = "Update an existing schedule")
+	@ApiOperation(value = "Update existing scheduled job")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
 	@Documented(examples = {
-			@Example(stage = Stage.Request, json = Schedules.UpdateScheduleRequest.class, description = "updateScheduleRequest.md"),
-			@Example(stage = Stage.Response, json = Schedules.UpdateScheduleResponse.class, description = "updateScheduleResponse.md") })
-	public ISchedule updateSchedule(@RequestBody ScheduleCreateRequest request,
+			@Example(stage = Stage.Request, json = Schedules.UpdateScheduleRequest.class, description = "updateScheduledJobRequest.md"),
+			@Example(stage = Stage.Response, json = Schedules.UpdateScheduleResponse.class, description = "updateScheduledJobResponse.md") })
+	public IScheduledJob updateScheduledJob(@RequestBody ScheduledJobCreateRequest request,
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "updateSchedule", LOGGER);
+		Tracer.start(TracerCategory.RestApiCall, "updateScheduledJob", LOGGER);
 		try {
-			return getScheduleManagement(servletRequest).updateSchedule(token, request);
+			return getScheduleManagement(servletRequest).updateScheduledJob(token, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
 	}
 
 	/**
-	 * List schedules that match criteria.
+	 * List scheduled jobs that match the criteria.
 	 * 
 	 * @param page
 	 * @param pageSize
@@ -139,24 +133,24 @@ public class SchedulesController extends SiteWhereController {
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List schedules matching criteria")
+	@ApiOperation(value = "List scheduled jobs matching criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.ListSchedulesResponse.class, description = "listSchedulesResponse.md") })
-	public ISearchResults<ISchedule> listSchedules(
+	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.ListSchedulesResponse.class, description = "listScheduledJobsResponse.md") })
+	public ISearchResults<IScheduledJob> listScheduledJobs(
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "listSchedules", LOGGER);
+		Tracer.start(TracerCategory.RestApiCall, "listScheduledJobs", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return getScheduleManagement(servletRequest).listSchedules(criteria);
+			return getScheduleManagement(servletRequest).listScheduledJobs(criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
 	}
 
 	/**
-	 * Delete a schedule.
+	 * Delete an existing scheduled job.
 	 * 
 	 * @param token
 	 * @param force
@@ -166,16 +160,16 @@ public class SchedulesController extends SiteWhereController {
 	 */
 	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
 	@ResponseBody
-	@ApiOperation(value = "Delete a schedule")
+	@ApiOperation(value = "Delete scheduled job")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.CreateScheduleResponse.class, description = "deleteScheduleResponse.md") })
-	public ISchedule deleteSchedule(
+	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "deleteScheduledJobResponse.md") })
+	public IScheduledJob deleteScheduledJob(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
 			HttpServletRequest servletRequest) throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "deleteSchedule", LOGGER);
+		Tracer.start(TracerCategory.RestApiCall, "deleteScheduledJob", LOGGER);
 		try {
-			return getScheduleManagement(servletRequest).deleteSchedule(token, force);
+			return getScheduleManagement(servletRequest).deleteScheduledJob(token, force);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
