@@ -21,5 +21,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean class="com.sitewhere.web.swagger.SiteWhereSwaggerConfig"/>
 	
 	<!-- Enable Spring security annotations on loaded classes -->
-	<sec:global-method-security secured-annotations="enabled"/>
+	<sec:global-method-security secured-annotations="enabled"
+		pre-post-annotations="enabled"/>
 </beans>

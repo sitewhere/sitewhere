@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,7 +71,7 @@ public class AuthoritiesController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new authority")
-	@Secured({ SiteWhereRoles.REST })
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Authorities.CreateAuthorityRequest.class, description = "createUnassociatedRequest.md"),
 			@Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "createAssociatedResponse.md") })

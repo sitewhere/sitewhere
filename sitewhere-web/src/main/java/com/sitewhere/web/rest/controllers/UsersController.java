@@ -13,7 +13,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,7 +75,7 @@ public class UsersController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create new user")
-	@Secured({ SiteWhereRoles.REST })
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Users.CreateUserRequest.class, description = "createUserRequest.md"),
 			@Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "createUserResponse.md") })
@@ -106,7 +106,7 @@ public class UsersController extends SiteWhereController {
 	@RequestMapping(value = "/{username}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update existing user.")
-	@Secured({ SiteWhereRoles.REST })
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Users.UpdateUserRequest.class, description = "updateUserRequest.md"),
 			@Example(stage = Stage.Response, json = Users.UpdateUserResponse.class, description = "updateUserResponse.md") })
@@ -132,7 +132,7 @@ public class UsersController extends SiteWhereController {
 	@RequestMapping(value = "/{username}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get user by username")
-	@Secured({ SiteWhereRoles.REST })
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = { @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "getUserByUsernameResponse.md") })
 	public User getUserByUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
@@ -161,7 +161,7 @@ public class UsersController extends SiteWhereController {
 	@RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete user by username")
-	@Secured({ SiteWhereRoles.REST })
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = { @Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "deleteUserByUsernameResponse.md") })
 	public User deleteUserByUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
@@ -186,7 +186,7 @@ public class UsersController extends SiteWhereController {
 	@RequestMapping(value = "/{username}/authorities", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get authorities for user")
-	@Secured({ SiteWhereRoles.REST })
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = { @Example(stage = Stage.Response, json = Users.ListAuthoritiesForUserResponse.class, description = "getAuthoritiesForUsernameResponse.md") })
 	public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
@@ -214,7 +214,7 @@ public class UsersController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List users matching criteria")
-	@Secured({ SiteWhereRoles.REST })
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = { @Example(stage = Stage.Response, json = Users.ListUsersResponse.class, description = "listUsersResponse.md") })
 	public SearchResults<User> listUsers(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
@@ -246,7 +246,7 @@ public class UsersController extends SiteWhereController {
 	@RequestMapping(value = "/{username}/tenants", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List authorized tenants for user")
-	@Secured({ SiteWhereRoles.REST })
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
 	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "getTenantsForUsernameResponse.md") })
 	public List<ITenant> getTenantsForUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
