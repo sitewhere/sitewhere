@@ -24,15 +24,15 @@ public class Authorities {
 	public static class CreateAuthorityRequest extends GrantedAuthorityCreateRequest {
 
 		public CreateAuthorityRequest() throws SiteWhereException {
-			setAuthority(ExampleData.AUTH_ADMIN_SITES.getAuthority());
-			setDescription(ExampleData.AUTH_ADMIN_SITES.getDescription());
+			setAuthority(ExampleData.AUTH_ADMIN_REST.getAuthority());
+			setDescription(ExampleData.AUTH_ADMIN_REST.getDescription());
 		}
 	}
 
 	public static class CreateAuthorityResponse {
 
 		public Object generate() throws SiteWhereException {
-			return ExampleData.AUTH_ADMIN_SITES;
+			return ExampleData.AUTH_ADMIN_REST;
 		}
 	}
 
@@ -40,7 +40,7 @@ public class Authorities {
 
 		public Object generate() throws SiteWhereException {
 			List<IGrantedAuthority> auths = new ArrayList<IGrantedAuthority>();
-			auths.add(ExampleData.AUTH_ADMIN_SITES);
+			auths.add(ExampleData.AUTH_ADMIN_REST);
 			auths.add(ExampleData.AUTH_ADMIN_USERS);
 			return auths;
 		}

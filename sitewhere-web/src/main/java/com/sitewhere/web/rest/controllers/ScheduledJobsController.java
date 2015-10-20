@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
@@ -29,6 +28,7 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -65,7 +65,7 @@ public class ScheduledJobsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create new scheduled job")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Schedules.CreateScheduledJobRequest.class, description = "createScheduledJobRequest.md"),
 			@Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "createScheduledJobResponse.md") })
@@ -82,7 +82,7 @@ public class ScheduledJobsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get scheduled job by token")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "getScheduledJobByTokenResponse.md") })
 	public IScheduledJob getScheduledJobByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -107,7 +107,7 @@ public class ScheduledJobsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update existing scheduled job")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Schedules.UpdateScheduledJobRequest.class, description = "updateScheduledJobRequest.md"),
 			@Example(stage = Stage.Response, json = Schedules.UpdateScheduledJobResponse.class, description = "updateScheduledJobResponse.md") })
@@ -134,7 +134,7 @@ public class ScheduledJobsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List scheduled jobs matching criteria")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.ListScheduledjobsResponse.class, description = "listScheduledJobsResponse.md") })
 	public ISearchResults<IScheduledJob> listScheduledJobs(
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -161,7 +161,7 @@ public class ScheduledJobsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete scheduled job")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "deleteScheduledJobResponse.md") })
 	public IScheduledJob deleteScheduledJob(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,

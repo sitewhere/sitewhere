@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.communication.protobuf.SpecificationProtoBuilder;
 import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 import com.sitewhere.rest.model.device.command.DeviceCommandNamespace;
@@ -50,6 +49,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -84,7 +84,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create new device specification")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Specifications.CreateSpecificationRequest.class, description = "createDeviceSpecificationRequest.md"),
 			@Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "createDeviceSpecificationResponse.md") })
@@ -122,7 +122,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get specification by unique token")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "getDeviceSpecificationByTokenResponse.md") })
 	public IDeviceSpecification getDeviceSpecificationByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -150,7 +150,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/proto", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get specification GPB by unique token")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented()
 	public String getDeviceSpecificationProtoByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -177,7 +177,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/spec.proto", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get specification GPB file by unique token")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented()
 	public ResponseEntity<byte[]> getDeviceSpecificationProtoFileByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -210,7 +210,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update existing device specification")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Specifications.UpdateSpecificationRequest.class, description = "updateDeviceSpecificationRequest.md"),
 			@Example(stage = Stage.Response, json = Specifications.UpdateSpecificationResponse.class, description = "updateDeviceSpecificationResponse.md") })
@@ -246,7 +246,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List specifications that match criteria")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.ListSpecificationsResponse.class, description = "listDeviceSpecificationsResponse.md") })
 	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
@@ -290,7 +290,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete existing device specification")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "deleteDeviceSpecificationResponse.md") })
 	public IDeviceSpecification deleteDeviceSpecification(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -318,7 +318,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/commands", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create device command for specification.")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Specifications.CreateDeviceCommandRequest.class, description = "createDeviceCommandRequest.md"),
 			@Example(stage = Stage.Response, json = Specifications.CreateDeviceCommandResponse.class, description = "createDeviceCommandResponse.md") })
@@ -341,7 +341,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/commands", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List device commands for specification")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.ListDeviceCommandsResponse.class, description = "listDeviceCommandsResponse.md") })
 	public ISearchResults<IDeviceCommand> listDeviceCommands(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
@@ -377,7 +377,7 @@ public class SpecificationsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/namespaces", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List device commands by namespace")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Specifications.ListDeviceCommandsByNamespaceResponse.class, description = "listDeviceCommandsByNamespaceResponse.md") })
 	public ISearchResults<IDeviceCommandNamespace> listDeviceCommandsByNamespace(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,

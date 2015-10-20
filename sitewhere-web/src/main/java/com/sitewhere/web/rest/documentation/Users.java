@@ -70,7 +70,7 @@ public class Users {
 
 		public Object generate() throws SiteWhereException {
 			List<IGrantedAuthority> list = new ArrayList<IGrantedAuthority>();
-			list.add(ExampleData.AUTH_ADMIN_SITES);
+			list.add(ExampleData.AUTH_ADMIN_REST);
 			list.add(ExampleData.AUTH_ADMIN_USERS);
 			return new SearchResults<IGrantedAuthority>(list, 2);
 		}

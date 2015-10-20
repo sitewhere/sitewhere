@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -52,7 +52,7 @@ public class SystemController extends SiteWhereController {
 	@RequestMapping(value = "/version", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get version information")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = SystemInfo.GetVersionResponse.class, description = "getVersionResponse.md") })
 	public IVersion getVersion() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getVersion", LOGGER);
@@ -72,7 +72,7 @@ public class SystemController extends SiteWhereController {
 	@RequestMapping(value = "/state", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get server runtime state")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = SystemInfo.GetServerStateResponse.class, description = "getServerStateResponse.md") })
 	public ISiteWhereServerState getServerState() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getServerState", LOGGER);

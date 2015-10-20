@@ -27,4 +27,18 @@ public interface IGrantedAuthorityCreateRequest {
 	 * @return
 	 */
 	public String getDescription();
+
+	/**
+	 * Get parent authority.
+	 * 
+	 * @return
+	 */
+	public String getParent();
+
+	/**
+	 * Indicates if the authority is a group.
+	 * 
+	 * @return
+	 */
+	public boolean isGroup();
 }

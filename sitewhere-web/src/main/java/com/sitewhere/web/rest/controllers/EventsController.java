@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -55,7 +55,7 @@ public class EventsController extends SiteWhereController {
 	@RequestMapping(value = "/{eventId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get event by unique id")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "getEventByIdMeasurementsResponse.md"),
 			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentLocationResponse.class, description = "getEventByIdLocationResponse.md"),

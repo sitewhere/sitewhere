@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
 import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
@@ -48,6 +47,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -84,7 +84,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules/{assetModuleId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get an asset module by unique id")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssetModuleResponse.class, description = "assets/get-asset-module-response.md") })
 	public AssetModule getAssetModule(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
@@ -110,7 +110,7 @@ public class AssetsController extends SiteWhereController {
 	@ResponseBody
 	@ApiOperation(value = "Search for assets in an asset module")
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.SearchAssetModuleResponse.class, description = "assets/search-asset-module-response.md") })
 	public SearchResults<? extends IAsset> searchAssets(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
@@ -136,7 +136,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules/{assetModuleId}/assets/{assetId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get an asset by unique id")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Assets.GetAssetByIdPersonResponse.class, description = "getAssetByIdPersonResponse.md"),
 			@Example(stage = Stage.Response, json = Assets.GetAssetByIdHardwareResponse.class, description = "getAssetByIdHardwareResponse.md"),
@@ -168,7 +168,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules/{assetModuleId}/assets/{assetId}/assignments", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List assignments associated with an asset")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Concerns(values = { ConcernType.Paging })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssignmentsForAsset.class, description = "getAssignmentsForAsset.md") })
 	public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
@@ -202,7 +202,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List asset modules that match criteria")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.ListAssetModules.class, description = "listAssetModules.md") })
 	public List<AssetModule> listAssetModules(
 			@ApiParam(value = "Asset type", required = false) @RequestParam(required = false) String assetType,
@@ -235,7 +235,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/modules/refresh", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Refresh the list of asset modules")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.RefreshAssetModules.class, description = "refreshModules.md") })
 	public List<ICommandResponse> refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
@@ -256,7 +256,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new asset category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assets.CreateAssetCategoryRequest.class, description = "createAssetCategoryRequest.md") })
 	public IAssetCategory createAssetCategory(@RequestBody AssetCategoryCreateRequest request,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -280,7 +280,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update an existing asset category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assets.UpdateAssetCategoryRequest.class, description = "updateAssetCategoryRequest.md") })
 	public IAssetCategory updateAssetCategory(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -305,7 +305,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get an asset category by unique id")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssetCategoryByIdResponse.class, description = "getAssetCategoryByIdResponse.md") })
 	public IAssetCategory getAssetCategoryById(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -329,7 +329,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete an existing asset category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.GetAssetCategoryByIdResponse.class, description = "deleteAssetCategoryByIdResponse.md") })
 	public IAssetCategory deleteAssetCategory(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -354,7 +354,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List asset categories that match criteria")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.ListAssetCategories.class, description = "assets/listAssetCategoriesResponse.md") })
 	public ISearchResults<IAssetCategory> listAssetCategories(
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -382,7 +382,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/persons", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new person asset in category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assets.CreatePersonAssetInCategory.class, description = "createPersonAssetRequest.md") })
 	public IPersonAsset createPersonAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -409,7 +409,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/persons/{assetId}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update an existing person asset in category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assets.UpdatePersonAssetInCategory.class, description = "updatePersonAssetRequest.md") })
 	public IPersonAsset updatePersonAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -437,7 +437,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/hardware", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new hardware asset in category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assets.CreateHardwareAssetInCategory.class, description = "createHardwareAssetRequest.md") })
 	public IHardwareAsset createHardwareAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -464,7 +464,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/hardware/{assetId}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update an existing hardware asset in category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assets.UpdateHardwareAssetInCategory.class, description = "updateHardwareAssetRequest.md") })
 	public IHardwareAsset updateHardwareAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -492,7 +492,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/locations", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new location asset in category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assets.CreateLocationAssetInCategory.class, description = "createLocationAssetRequest.md") })
 	public ILocationAsset createLocationAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -519,7 +519,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/locations/{assetId}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update an existing location asset in category")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assets.UpdateLocationAssetInCategory.class, description = "updateLocationAssetRequest.md") })
 	public ILocationAsset updateLocationAsset(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,
@@ -546,7 +546,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/assets/{assetId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a category asset by unique id")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Assets.GetCategoryAssetPerson.class, description = "getCategoryAssetPersonResponse.md"),
 			@Example(stage = Stage.Response, json = Assets.GetCategoryAssetHardware.class, description = "getCategoryAssetHardwareResponse.md"),
@@ -575,7 +575,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/assets/{assetId}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete an existing category asset")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Assets.GetCategoryAssetPerson.class, description = "deleteCategoryAssetPersonResponse.md"),
 			@Example(stage = Stage.Response, json = Assets.GetCategoryAssetHardware.class, description = "deleteCategoryAssetHardwareResponse.md"),
@@ -605,7 +605,7 @@ public class AssetsController extends SiteWhereController {
 	@RequestMapping(value = "/categories/{categoryId}/assets", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List category assets that match criteria")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assets.ListCategoryAssets.class, description = "listCategoryAssetsResponse.md") })
 	public ISearchResults<IAsset> listCategoryAssets(
 			@ApiParam(value = "Unique category id", required = true) @PathVariable String categoryId,

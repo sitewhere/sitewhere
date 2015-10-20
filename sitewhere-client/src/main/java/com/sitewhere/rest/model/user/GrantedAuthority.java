@@ -22,6 +22,12 @@ public class GrantedAuthority implements IGrantedAuthority {
 	/** Description */
 	private String description;
 
+	/** Parent authority */
+	private String parent;
+
+	/** Indicates whether authority is a group */
+	private boolean group;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -48,6 +54,32 @@ public class GrantedAuthority implements IGrantedAuthority {
 		this.description = description;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.IGrantedAuthority#getParent()
+	 */
+	public String getParent() {
+		return parent;
+	}
+
+	public void setParent(String parent) {
+		this.parent = parent;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.IGrantedAuthority#isGroup()
+	 */
+	public boolean isGroup() {
+		return group;
+	}
+
+	public void setGroup(boolean group) {
+		this.group = group;
+	}
+
 	/**
 	 * Copy contents from the SPI class.
 	 * 
@@ -58,6 +90,8 @@ public class GrantedAuthority implements IGrantedAuthority {
 		GrantedAuthority result = new GrantedAuthority();
 		result.setAuthority(input.getAuthority());
 		result.setDescription(input.getDescription());
+		result.setParent(input.getParent());
+		result.setGroup(input.isGroup());
 		return result;
 	}
 }

@@ -775,22 +775,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 					(IUserModelInitializer) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER);
 			List<IUser> users = getUserManagement().listUsers(new UserSearchCriteria());
 			if (users.size() == 0) {
-				List<String> messages = new ArrayList<String>();
-				messages.add("User model is currently empty. A default user and permissions can be "
-						+ "created automatically so that the admin interface and web services can authenticate. "
-						+ "Create default user and permissions now?");
-				String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
-				LOGGER.info("\n" + message + "\n");
-				System.out.println("Initialize user model? Yes/No (Default is Yes)");
-				String response = readLine();
-				if ((response == null) && (init.isInitializeIfNoConsole())) {
-					response = "Y";
-				} else if ((response == null) && (!init.isInitializeIfNoConsole())) {
-					response = "N";
-				}
-				if ((response.length() == 0) || (response.toLowerCase().startsWith("y"))) {
-					init.initialize(getUserManagement());
-				}
+				init.initialize(getUserManagement());
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No user model initializer found in Spring bean configuration. Skipping.");

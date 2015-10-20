@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.batch.BatchUtils;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
@@ -40,6 +39,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -68,7 +68,7 @@ public class BatchOperationsController extends SiteWhereController {
 	@RequestMapping(value = "/{batchToken}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get batch operation by unique token")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "getBatchOperationByTokenResponse.md") })
 	public IBatchOperation getBatchOperationByToken(
 			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String batchToken,
@@ -90,7 +90,7 @@ public class BatchOperationsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List batch operations")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationsResponse.class, description = "listBatchOperationsResponse.md") })
 	public ISearchResults<IBatchOperation> listBatchOperations(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
@@ -116,7 +116,7 @@ public class BatchOperationsController extends SiteWhereController {
 	@RequestMapping(value = "/{operationToken}/elements", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List batch operation elements")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationElementsResponse.class, description = "listBatchOperationElementsResponse.md") })
 	public ISearchResults<IBatchElement> listBatchOperationElements(
 			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String operationToken,
@@ -138,7 +138,7 @@ public class BatchOperationsController extends SiteWhereController {
 	@RequestMapping(value = "/command", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create new batch command invocation")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationCreateRequest.class, description = "createBatchCommandInvocationRequest.md"),
 			@Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "createBatchCommandInvocationResponse.md") })
@@ -158,7 +158,7 @@ public class BatchOperationsController extends SiteWhereController {
 	@RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create batch command operation based on criteria")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaSpecRequest.class, description = "createBatchCommandByCriteriaSpecRequest.md"),
 			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaGroupRequest.class, description = "createBatchCommandByCriteriaGroupRequest.md"),

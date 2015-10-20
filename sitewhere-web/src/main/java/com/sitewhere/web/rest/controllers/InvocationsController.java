@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.view.DeviceCommandInvocationSummary;
@@ -29,6 +28,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -64,7 +64,7 @@ public class InvocationsController extends SiteWhereController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get command invocation by unique id.")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.CreateCommandInvocationResponse.class, description = "getDeviceCommandInvocationResponse.md") })
 	public IDeviceCommandInvocation getDeviceCommandInvocation(
 			@ApiParam(value = "Unique id", required = true) @PathVariable String id,
@@ -95,7 +95,7 @@ public class InvocationsController extends SiteWhereController {
 	@RequestMapping(value = "/{id}/summary", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get command invocation summary")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Invocations.GetDeviceCommandInvocationSummary.class, description = "getDeviceCommandInvocationSummaryResponse.md") })
 	public DeviceCommandInvocationSummary getDeviceCommandInvocationSummary(
 			@ApiParam(value = "Unique id", required = true) @PathVariable String id,
@@ -133,7 +133,7 @@ public class InvocationsController extends SiteWhereController {
 	@RequestMapping(value = "/{id}/responses", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List responses for command invocation")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Invocations.GetDeviceCommandInvocationResponsesResponse.class, description = "listCommandInvocationResponsesResponse.md") })
 	public ISearchResults<IDeviceCommandResponse> listCommandInvocationResponses(
 			@ApiParam(value = "Invocation id", required = true) @PathVariable String id,

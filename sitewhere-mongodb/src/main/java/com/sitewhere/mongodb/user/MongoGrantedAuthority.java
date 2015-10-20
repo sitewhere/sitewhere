@@ -25,6 +25,12 @@ public class MongoGrantedAuthority {
 	/** Property for authority description */
 	public static final String PROP_DESCRIPTION = "description";
 
+	/** Property for parent */
+	public static final String PROP_PARENT = "parent";
+
+	/** Property for group indicator */
+	public static final String PROP_GROUP = "group";
+
 	/**
 	 * Copy information from SPI into Mongo DBObject.
 	 * 
@@ -34,6 +40,8 @@ public class MongoGrantedAuthority {
 	public static void toDBObject(IGrantedAuthority source, BasicDBObject target) {
 		target.append(PROP_AUTHORITY, source.getAuthority());
 		target.append(PROP_DESCRIPTION, source.getDescription());
+		target.append(PROP_PARENT, source.getParent());
+		target.append(PROP_GROUP, source.isGroup());
 	}
 
 	/**
@@ -45,9 +53,15 @@ public class MongoGrantedAuthority {
 	public static void fromDBObject(DBObject source, GrantedAuthority target) {
 		String authority = (String) source.get(PROP_AUTHORITY);
 		String description = (String) source.get(PROP_DESCRIPTION);
+		String parent = (String) source.get(PROP_PARENT);
+		Boolean group = (Boolean) source.get(PROP_GROUP);
 
 		target.setAuthority(authority);
 		target.setDescription(description);
+		target.setParent(parent);
+		if (group != null) {
+			target.setGroup(group.booleanValue());
+		}
 	}
 
 	/**

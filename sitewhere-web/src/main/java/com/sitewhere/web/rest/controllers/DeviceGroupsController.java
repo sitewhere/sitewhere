@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.marshaling.DeviceGroupElementMarshalHelper;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
@@ -40,6 +39,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -74,7 +74,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create new device group")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = DeviceGroups.CreateDeviceGroupRequest.class, description = "createDeviceGroupRequest.md"),
 			@Example(stage = Stage.Response, json = DeviceGroups.CreateDeviceGroupResponse.class, description = "createDeviceGroupResponse.md") })
@@ -101,7 +101,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@RequestMapping(value = "/{groupToken}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get a device group by unique token")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = DeviceGroups.CreateDeviceGroupResponse.class, description = "getDeviceGroupByTokenResponse.md") })
 	public IDeviceGroup getDeviceGroupByToken(
 			@ApiParam(value = "Unique token that identifies group", required = true) @PathVariable String groupToken,
@@ -131,7 +131,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@RequestMapping(value = "/{groupToken}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update an existing device group")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = DeviceGroups.UpdateDeviceGroupRequest.class, description = "updateDeviceGroupRequest.md"),
 			@Example(stage = Stage.Response, json = DeviceGroups.UpdateDeviceGroupResponse.class, description = "updateDeviceGroupResponse.md") })
@@ -161,7 +161,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@RequestMapping(value = "/{groupToken}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete device group by unique token")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = DeviceGroups.CreateDeviceGroupResponse.class, description = "deleteDeviceGroupResponse.md") })
 	public IDeviceGroup deleteDeviceGroup(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
@@ -191,7 +191,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List device groups that match criteria")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = DeviceGroups.ListDeviceGroupResponse.class, description = "listDeviceGroupsResponse.md") })
 	public ISearchResults<IDeviceGroup> listDeviceGroups(
 			@ApiParam(value = "Role", required = false) @RequestParam(required = false) String role,
@@ -234,7 +234,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List elements in a device group")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = DeviceGroups.ListDeviceGroupElementsResponse.class, description = "listDeviceGroupElementsResponse.md") })
 	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(
 			@ApiParam(value = "Unique token that identifies device group", required = true) @PathVariable String groupToken,
@@ -273,7 +273,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Add elements to device group")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = DeviceGroups.AddGroupElementsRequest.class, description = "addDeviceGroupElementsRequest.md"),
 			@Example(stage = Stage.Response, json = DeviceGroups.ListDeviceGroupElementsResponse.class, description = "addDeviceGroupElementsResponse.md") })
@@ -313,7 +313,7 @@ public class DeviceGroupsController extends SiteWhereController {
 	@RequestMapping(value = "/{groupToken}/elements", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete elements from device group")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = DeviceGroups.DeleteGroupElementsRequest.class, description = "deleteDeviceGroupElementsRequest.md"),
 			@Example(stage = Stage.Response, json = DeviceGroups.DeleteGroupElementsResponse.class, description = "deleteDeviceGroupElementsResponse.md") })

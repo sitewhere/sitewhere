@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.external.SearchProvider;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -33,6 +32,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -59,7 +59,7 @@ public class SearchController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List available search providers")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Search.ListSearchProvidersResponse.class, description = "listSearchProvidersResponse.md") })
 	public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest)
 			throws SiteWhereException {
@@ -80,7 +80,7 @@ public class SearchController extends SiteWhereController {
 	@RequestMapping(value = "/{providerId}/events", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Search for events in provider")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Search.ListExternalEventsResponse.class, description = "searchDeviceEventsResponse.md") })
 	public List<IDeviceEvent> searchDeviceEvents(
 			@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,

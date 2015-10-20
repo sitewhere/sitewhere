@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.device.charting.ChartBuilder;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
@@ -82,6 +81,7 @@ import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -117,7 +117,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateUnassociatedRequest.class, description = "createUnassociatedRequest.md"),
 			@Example(stage = Stage.Request, json = Assignments.CreateAssociatedRequest.class, description = "createAssociatedRequest.md"),
@@ -165,7 +165,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get device assignment by token")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "getDeviceAssignmentResponse.md") })
 	public DeviceAssignment getDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -195,7 +195,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete an existing device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.CreateAssociatedResponse.class, description = "deleteDeviceAssignmentResponse.md") })
 	public DeviceAssignment deleteDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -227,7 +227,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/metadata", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update device assignment metadata")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Request, json = Assignments.UpdateAssignmentMetadataRequest.class, description = "updateAssignmentMetadataRequest.md") })
 	public DeviceAssignment updateDeviceAssignmentMetadata(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -264,7 +264,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/events", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List events for device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentEventsResponse.class, description = "listEventsResponse.md") })
 	public ISearchResults<IDeviceEvent> listEvents(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -294,7 +294,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/measurements", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List measurement events for device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsResponse.class, description = "listMeasurementsResponse.md") })
 	public ISearchResults<IDeviceMeasurements> listMeasurements(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -324,7 +324,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/measurements/series", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List assignment measurements as chart series")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentMeasurementsChartSeriesResponse.class, description = "listMeasurementsAsChartSeriesResponse.md") })
 	public List<IChartSeries<Double>> listMeasurementsAsChartSeries(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -360,7 +360,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/measurements", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create measurements event for device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateAssignmentMeasurementsRequest.class, description = "createMeasurementsRequest.md"),
 			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentMeasurementsResponse.class, description = "createMeasurementsResponse.md") })
@@ -388,7 +388,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/locations", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List location events for device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmentLocationsResponse.class, description = "listLocationsResponse.md") })
 	public ISearchResults<IDeviceLocation> listLocations(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -420,7 +420,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/locations", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create location event for device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateAssignmentLocationRequest.class, description = "createLocationRequest.md"),
 			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentLocationResponse.class, description = "createLocationResponse.md") })
@@ -448,7 +448,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/alerts", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List alert events for device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListAssignmenAlertsResponse.class, description = "listAlertsResponse.md") })
 	public ISearchResults<IDeviceAlert> listAlerts(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -480,7 +480,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/alerts", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create alert event for device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateAssignmentAlertRequest.class, description = "createAlertRequest.md"),
 			@Example(stage = Stage.Response, json = Assignments.CreateAssignmentAlertResponse.class, description = "createAlertResponse.md") })
@@ -509,7 +509,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/streams", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create data stream for a device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateDeviceStreamRequest.class, description = "createDeviceStreamRequest.md"),
 			@Example(stage = Stage.Response, json = Assignments.CreateDeviceStreamResponse.class, description = "createDeviceStreamResponse.md") })
@@ -530,7 +530,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/streams", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List data streams for device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListDeviceStreamsResponse.class, description = "listDeviceStreamsResponse.md") })
 	public ISearchResults<IDeviceStream> listDeviceStreams(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -567,7 +567,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	@ApiOperation(value = "Get device assignment data stream by id")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.GetDeviceStreamResponse.class, description = "getDeviceStreamResponse.md") })
 	public DeviceStream getDeviceStream(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -601,7 +601,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/streams/{streamId:.+}", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Add data to device assignment data stream")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented
 	public void addDeviceStreamData(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -653,7 +653,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/streams/{streamId:.+}/data/{sequenceNumber}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get data from device assignment data stream")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented
 	public void getDeviceStreamData(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -678,7 +678,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/streams/{streamId:.+}/data", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get all data from device assignment data stream")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented
 	public void listDeviceStreamData(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -727,7 +727,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/invocations", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create command invocation event for assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateCommandInvocationRequest.class, description = "createCommandInvocationRequest.md"),
 			@Example(stage = Stage.Response, json = Assignments.CreateCommandInvocationResponse.class, description = "createCommandInvocationResponse.md") })
@@ -752,7 +752,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/invocations/schedules/{scheduleToken}", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Schedule command invocation")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateCommandInvocationRequest.class, description = "scheduleCommandInvocationRequest.md"),
 			@Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "scheduleCommandInvocationResponse.md") })
@@ -783,7 +783,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/invocations", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List command invocation events for assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListCommandInvocationsResponse.class, description = "listCommandInvocationsResponse.md") })
 	public ISearchResults<IDeviceCommandInvocation> listCommandInvocations(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -824,7 +824,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/statechanges", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create an state change event for a device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	public DeviceStateChange createStateChange(@RequestBody DeviceStateChangeCreateRequest input,
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -849,7 +849,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/statechanges", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List state change events for a device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	public ISearchResults<IDeviceStateChange> listStateChanges(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -879,7 +879,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/responses", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create command response event for assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Assignments.CreateCommandResponseEventRequest.class, description = "createCommandResponseEventRequest.md"),
 			@Example(stage = Stage.Request, json = Assignments.CreateCommandResponseSimpleRequest.class, description = "createCommandResponseSimpleRequest.md"),
@@ -908,7 +908,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/responses", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List command response events for assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.ListCommandResponsesResponse.class, description = "listCommandResponsesResponse.md") })
 	public ISearchResults<IDeviceCommandResponse> listCommandResponses(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -938,7 +938,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/end", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Release an active device assignment")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.EndDeviceAssignmentResponse.class, description = "endDeviceAssignmentResponse.md") })
 	public DeviceAssignment endDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
@@ -970,7 +970,7 @@ public class AssignmentsController extends SiteWhereController {
 	@RequestMapping(value = "/{token}/missing", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Mark device assignment as missing")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Assignments.MissingDeviceAssignmentResponse.class, description = "missingDeviceAssignmentResponse.md") })
 	public DeviceAssignment missingDeviceAssignment(
 			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,

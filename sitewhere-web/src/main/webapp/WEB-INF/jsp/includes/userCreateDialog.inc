@@ -83,6 +83,9 @@
 	/** List of available authorities */
 	var authsDS;
 
+	/** Tree widget for authorities */
+	var authsTree;
+
 	/** Dropdown list of account statuses */
 	var ucStatusList;
 
@@ -119,26 +122,31 @@
 
 					/** Create AJAX datasource for authorities list */
 					authsDS =
-							new kendo.data.DataSource(
+							new kendo.data.HierarchicalDataSource(
 								{
 									transport : {
 										read : {
-											url : "${pageContext.request.contextPath}/api/authorities?tenantAuthToken=${tenant.authenticationToken}",
+											url : "${pageContext.request.contextPath}/api/authorities/hierarchy?tenantAuthToken=${tenant.authenticationToken}",
 											dataType : "json",
 										}
 									},
 									schema : {
-										data : "results",
-										total : "numResults"
-									},
-									pageSize : 100
+										model : {
+											id : "id",
+											hasChildren : "group",
+											children : "items",
+										}
+									}
 								});
 
-					/** Create the list of devices */
-					$("#uc-permissions").kendoListView({
+					/** Create the authorities tree */
+					authsTree = $("#uc-permissions").kendoTreeView({
+						loadOnDemand : false,
 						dataSource : authsDS,
-						template : kendo.template($("#tpl-user-authority-entry").html()),
-					});
+						checkboxes : {
+							checkChildren : true
+						},
+					}).data("kendoTreeView");
 
 					/** Handle dialog submit */
 					$('#uc-dialog-submit')
@@ -197,33 +205,36 @@
 					}
 				});
 
+	function checkedNodeIds(nodes, checkedNodes) {
+		for (var i = 0; i < nodes.length; i++) {
+			if (nodes[i].checked) {
+				checkedNodes.push(nodes[i].id);
+			}
+			if (nodes[i].hasChildren) {
+				checkedNodeIds(nodes[i].children.view(), checkedNodes);
+			}
+		}
+	}
+
 	/** Get a list of checked auths */
 	function ucGetCheckedAuths() {
-		var checked = [];
-		$('#uc-permissions input').each(function() {
-			if (this.checked == true) {
-				checked.push(this.value);
-			}
-		});
-		return checked;
+		var checkedNodes = [];
+		checkedNodeIds(authsDS.view(), checkedNodes);
+		return checkedNodes;
 	}
 
 	/** Reset authorities to unchecked */
 	function ucResetCheckedAuths() {
-		$('#uc-permissions input').each(function() {
-			this.checked = false;
-		});
 	}
 
 	/** Check the auths found in the given list */
 	function ucSetCheckedAuths(userAuths) {
-		$('#uc-permissions input').each(function() {
-			if ($.inArray(this.value, userAuths) != -1) {
-				this.checked = true;
-			} else {
-				this.checked = false;
+		for (var i = 0; i < userAuths.length; i++) {
+			var data = authsDS.get(userAuths[i]);
+			if (data) {
+				data.set("checked", true);
 			}
-		});
+		}
 	}
 
 	/** Validate for create mode */
@@ -290,8 +301,9 @@
 		// Indicates create vs update.
 		$('#uc-original-username').val("");
 
-		// Uncheck all auths.
-		ucResetCheckedAuths();
+		// Make sure authorities tree is expanded.
+		authsDS.read();
+		authsTree.expand(".k-item");
 
 		// Function called on submit.
 		ucSubmitCallback = callback;
@@ -325,7 +337,8 @@
 
 		// Check off granted authorities.
 		ucSetCheckedAuths(data.authorities);
-
+		authsTree.expand(".k-item");
+		
 		// Select correct status.
 		ucStatusList.value(data.status);
 

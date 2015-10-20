@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
@@ -33,6 +32,7 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -68,7 +68,7 @@ public class TenantsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create new tenant")
-	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Tenants.CreateTenantRequest.class, description = "createTenantRequest.md"),
 			@Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "createTenantResponse.md") })
@@ -92,7 +92,7 @@ public class TenantsController extends SiteWhereController {
 	@RequestMapping(value = "/{tenantId}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update an existing tenant.")
-	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Tenants.UpdateTenantRequest.class, description = "updateTenantRequest.md"),
 			@Example(stage = Stage.Response, json = Tenants.UpdateTenantResponse.class, description = "updateTenantResponse.md") })
@@ -117,7 +117,7 @@ public class TenantsController extends SiteWhereController {
 	@RequestMapping(value = "/{tenantId}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get tenant by unique id")
-	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByIdResponse.md") })
 	public ITenant getTenantById(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
@@ -141,7 +141,7 @@ public class TenantsController extends SiteWhereController {
 	@RequestMapping(value = "/{tenantId}/engine/{command}", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Send command to tenant engine")
-	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.IssueTenantEngineCommandResponse.class, description = "issueTenantEngineCommandResponse.md") })
 	public ICommandResponse issueTenantEngineCommand(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
@@ -169,7 +169,7 @@ public class TenantsController extends SiteWhereController {
 	@RequestMapping(value = "/{tenantId}/engine/configuration", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get tenant engine configuration")
-	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented
 	public String getTenantEngineConfiguration(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
@@ -197,7 +197,7 @@ public class TenantsController extends SiteWhereController {
 	@RequestMapping(value = "/authtoken/{authToken}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get tenant by authentication token")
-	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByAuthTokenResponse.md") })
 	public ITenant getTenantByAuthToken(
 			@ApiParam(value = "Authentication token", required = true) @PathVariable String authToken)
@@ -220,7 +220,7 @@ public class TenantsController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List tenants that match criteria")
-	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "listTenantsResponse.md") })
 	public ISearchResults<ITenant> listTenants(
 			@ApiParam(value = "Authorized user id", required = false) @RequestParam(required = false) String authUserId,
@@ -250,7 +250,7 @@ public class TenantsController extends SiteWhereController {
 	@RequestMapping(value = "/{tenantId}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete existing tenant")
-	@Secured({ SitewhereRoles.ROLE_ADMINISTER_USERS })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "deleteTenantByIdResponse.md") })
 	public ITenant deleteTenantById(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,

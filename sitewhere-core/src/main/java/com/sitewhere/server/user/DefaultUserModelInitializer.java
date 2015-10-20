@@ -14,7 +14,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.core.user.ISiteWhereAuthorities;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
@@ -25,6 +24,7 @@ import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUserManagement;
+import com.sitewhere.spi.user.SiteWhereAuthority;
 
 /**
  * Used to load a default user and granted authorities into an empty user model. This acts
@@ -83,49 +83,14 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 		// Use the system account for logging "created by" on created elements.
 		SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 
-		GrantedAuthorityCreateRequest gaReq = new GrantedAuthorityCreateRequest();
-
-		// Create authenticated user authority.
-		IGrantedAuthority authUser =
-				getUserManagement().getGrantedAuthorityByName(ISiteWhereAuthorities.AUTH_AUTHENTICATED_USER);
-		if (authUser == null) {
-			gaReq.setAuthority(ISiteWhereAuthorities.AUTH_AUTHENTICATED_USER);
-			gaReq.setDescription("Log in to the system and perform basic functions.");
-			authUser = getUserManagement().createGrantedAuthority(gaReq);
-			LOGGER.info(PREFIX_CREATE_AUTH + " " + ISiteWhereAuthorities.AUTH_AUTHENTICATED_USER);
-		}
-
-		// Create user administration authority.
-		IGrantedAuthority userAdmin =
-				getUserManagement().getGrantedAuthorityByName(ISiteWhereAuthorities.AUTH_ADMIN_USERS);
-		if (userAdmin == null) {
-			gaReq.setAuthority(ISiteWhereAuthorities.AUTH_ADMIN_USERS);
-			gaReq.setDescription("Create, Maintain, and delete user accounts.");
-			userAdmin = getUserManagement().createGrantedAuthority(gaReq);
-			LOGGER.info(PREFIX_CREATE_AUTH + " " + ISiteWhereAuthorities.AUTH_ADMIN_USERS);
-		}
-
-		// Create site administration authority.
-		IGrantedAuthority siteAdmin =
-				getUserManagement().getGrantedAuthorityByName(ISiteWhereAuthorities.AUTH_ADMIN_SITES);
-		if (siteAdmin == null) {
-			gaReq.setAuthority(ISiteWhereAuthorities.AUTH_ADMIN_SITES);
-			gaReq.setDescription("Create, Maintain, and delete site information.");
-			siteAdmin = getUserManagement().createGrantedAuthority(gaReq);
-			LOGGER.info(PREFIX_CREATE_AUTH + " " + ISiteWhereAuthorities.AUTH_ADMIN_SITES);
-		}
-
-		List<String> auths = new ArrayList<String>();
-		auths.add(authUser.getAuthority());
-		auths.add(userAdmin.getAuthority());
-		auths.add(siteAdmin.getAuthority());
+		List<String> all = createGrantedAuthorities();
 
 		UserCreateRequest ureq = new UserCreateRequest();
 		ureq.setFirstName("Admin");
 		ureq.setLastName("User");
 		ureq.setUsername(DEFAULT_USERNAME);
 		ureq.setPassword(DEFAULT_PASSWORD);
-		ureq.setAuthorities(auths);
+		ureq.setAuthorities(all);
 		ureq.setStatus(AccountStatus.Active);
 
 		getUserManagement().createUser(ureq);
@@ -144,6 +109,33 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 
 		SecurityContextHolder.getContext().setAuthentication(null);
 		LOGGER.info(PREFIX_CREATE_USER + " " + ureq.getUsername());
+	}
+
+	/**
+	 * Create any granted authorities that do not already exist.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected List<String> createGrantedAuthorities() throws SiteWhereException {
+		List<String> ids = new ArrayList<String>();
+		SiteWhereAuthority[] auths = SiteWhereAuthority.values();
+		for (SiteWhereAuthority auth : auths) {
+			IGrantedAuthority existing = getUserManagement().getGrantedAuthorityByName(auth.getName());
+			if (existing == null) {
+				GrantedAuthorityCreateRequest request = new GrantedAuthorityCreateRequest();
+				request.setAuthority(auth.getName());
+				request.setDescription(auth.getDescription());
+				request.setParent(auth.getParent());
+				request.setGroup(auth.isGroup());
+				existing = getUserManagement().createGrantedAuthority(request);
+				LOGGER.info(PREFIX_CREATE_AUTH + " " + auth.getName());
+			}
+			if (!auth.isGroup()) {
+				ids.add(auth.getName());
+			}
+		}
+		return ids;
 	}
 
 	/*

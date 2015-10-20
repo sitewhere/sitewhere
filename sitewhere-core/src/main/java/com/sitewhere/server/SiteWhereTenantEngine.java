@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
-import org.mule.util.StringMessageUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
@@ -534,22 +533,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 					(IDeviceModelInitializer) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER);
 			ISearchResults<ISite> sites = getDeviceManagement().listSites(new SearchCriteria(1, 1));
 			if (sites.getNumResults() == 0) {
-				List<String> messages = new ArrayList<String>();
-				messages.add("There are currently no sites defined in the system. You have the option of loading "
-						+ "a default dataset for previewing system functionality. Would you like to load the default "
-						+ "dataset?");
-				String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
-				LOGGER.info("\n" + message + "\n");
-				System.out.println("Load default dataset? Yes/No (Default is Yes)");
-				String response = readLine();
-				if ((response == null) && (init.isInitializeIfNoConsole())) {
-					response = "Y";
-				} else if ((response == null) && (!init.isInitializeIfNoConsole())) {
-					response = "N";
-				}
-				if ((response.length() == 0) || (response.toLowerCase().startsWith("y"))) {
-					init.initialize(getDeviceManagement(), getAssetModuleManager());
-				}
+				init.initialize(getDeviceManagement(), getAssetModuleManager());
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No device model initializer found in Spring bean configuration. Skipping.");
@@ -569,22 +553,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			ISearchResults<IAssetCategory> categories =
 					getAssetManagement().listAssetCategories(new SearchCriteria(1, 1));
 			if (categories.getNumResults() == 0) {
-				List<String> messages = new ArrayList<String>();
-				messages.add("There are currently no asset categories defined in the system. You have the option of "
-						+ "loading a default dataset for previewing system functionality. Would you like to load the "
-						+ "default asset dataset?");
-				String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
-				LOGGER.info("\n" + message + "\n");
-				System.out.println("Load default assets? Yes/No (Default is Yes)");
-				String response = readLine();
-				if ((response == null) && (init.isInitializeIfNoConsole())) {
-					response = "Y";
-				} else if ((response == null) && (!init.isInitializeIfNoConsole())) {
-					response = "N";
-				}
-				if ((response.length() == 0) || (response.toLowerCase().startsWith("y"))) {
-					init.initialize(getAssetManagement());
-				}
+				init.initialize(getAssetManagement());
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No asset model initializer found in Spring bean configuration. Skipping.");
@@ -604,22 +573,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			ISearchResults<ISchedule> schedules =
 					getScheduleManagement().listSchedules(new SearchCriteria(1, 1));
 			if (schedules.getNumResults() == 0) {
-				List<String> messages = new ArrayList<String>();
-				messages.add("There are currently no schedules defined in the system. You have the option of "
-						+ "loading a default dataset for previewing system functionality. Would you like to load the "
-						+ "default schedule dataset?");
-				String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
-				LOGGER.info("\n" + message + "\n");
-				System.out.println("Load default schedules? Yes/No (Default is Yes)");
-				String response = readLine();
-				if ((response == null) && (init.isInitializeIfNoConsole())) {
-					response = "Y";
-				} else if ((response == null) && (!init.isInitializeIfNoConsole())) {
-					response = "N";
-				}
-				if ((response.length() == 0) || (response.toLowerCase().startsWith("y"))) {
-					init.initialize(getScheduleManagement());
-				}
+				init.initialize(getScheduleManagement());
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No schedule model initializer found in Spring bean configuration. Skipping.");

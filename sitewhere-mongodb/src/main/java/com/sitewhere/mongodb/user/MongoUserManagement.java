@@ -297,10 +297,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 			throw new SiteWhereSystemException(ErrorCode.DuplicateAuthority, ErrorLevel.ERROR,
 					HttpServletResponse.SC_CONFLICT);
 		}
-		GrantedAuthority auth = new GrantedAuthority();
-		auth.setAuthority(request.getAuthority());
-		auth.setDescription(request.getDescription());
-
+		GrantedAuthority auth = SiteWherePersistence.grantedAuthorityCreateLogic(request);
 		DBCollection auths = getMongoClient().getAuthoritiesCollection();
 		DBObject created = MongoGrantedAuthority.toDBObject(auth);
 		MongoPersistence.insert(auths, created);

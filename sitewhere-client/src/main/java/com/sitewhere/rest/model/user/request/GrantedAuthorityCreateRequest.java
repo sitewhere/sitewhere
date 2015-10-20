@@ -22,6 +22,17 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
 	/** Authority description */
 	private String description;
 
+	/** Parent authority */
+	private String parent;
+
+	/** Indicates whether authority is a group */
+	private boolean group;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#getAuthority()
+	 */
 	public String getAuthority() {
 		return authority;
 	}
@@ -30,11 +41,42 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
 		this.authority = authority;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#getDescription()
+	 */
 	public String getDescription() {
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#getParent()
+	 */
+	public String getParent() {
+		return parent;
+	}
+
+	public void setParent(String parent) {
+		this.parent = parent;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest#isGroup()
+	 */
+	public boolean isGroup() {
+		return group;
+	}
+
+	public void setGroup(boolean group) {
+		this.group = group;
 	}
 }

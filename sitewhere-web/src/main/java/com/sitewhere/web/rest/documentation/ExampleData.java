@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sitewhere.core.user.ISiteWhereAuthorities;
 import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.asset.HardwareAsset;
@@ -64,6 +63,8 @@ import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.user.AccountStatus;
+import com.sitewhere.spi.user.SiteWhereAuthority;
+import com.sitewhere.spi.user.SiteWhereRoles;
 
 @SuppressWarnings("serial")
 public class ExampleData {
@@ -211,7 +212,7 @@ public class ExampleData {
 	public static Search_Solr SEARCH_SOLR = new Search_Solr();
 
 	/** Authority */
-	public static Auth_AdminSites AUTH_ADMIN_SITES = new Auth_AdminSites();
+	public static Auth_AdminRest AUTH_ADMIN_REST = new Auth_AdminRest();
 
 	/** Authority */
 	public static Auth_AdminUsers AUTH_ADMIN_USERS = new Auth_AdminUsers();
@@ -950,9 +951,9 @@ public class ExampleData {
 			setLastName("User");
 			setHashedPassword("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8");
 			setStatus(AccountStatus.Active);
-			getAuthorities().add(ISiteWhereAuthorities.AUTH_ADMIN_SITES);
-			getAuthorities().add(ISiteWhereAuthorities.AUTH_ADMIN_USERS);
-			getAuthorities().add(ISiteWhereAuthorities.AUTH_AUTHENTICATED_USER);
+			getAuthorities().add(SiteWhereRoles.REST);
+			getAuthorities().add(SiteWhereRoles.ADMIN_CONSOLE);
+			getAuthorities().add(SiteWhereRoles.ADMINISTER_USERS);
 			setCreatedBy("system");
 			setCreatedDate(new Date());
 			setLastLogin(new Date());
@@ -967,7 +968,7 @@ public class ExampleData {
 			setLastName("Doe");
 			setHashedPassword("5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8");
 			setStatus(AccountStatus.Locked);
-			getAuthorities().add(ISiteWhereAuthorities.AUTH_AUTHENTICATED_USER);
+			getAuthorities().add(SiteWhereRoles.REST);
 			setCreatedBy("admin");
 			setCreatedDate(new Date());
 			setLastLogin(new Date());
@@ -975,19 +976,23 @@ public class ExampleData {
 		}
 	}
 
-	public static class Auth_AdminSites extends GrantedAuthority {
+	public static class Auth_AdminRest extends GrantedAuthority {
 
-		public Auth_AdminSites() {
-			setAuthority(ISiteWhereAuthorities.AUTH_ADMIN_SITES);
-			setDescription("Administer sites");
+		public Auth_AdminRest() {
+			setAuthority(SiteWhereAuthority.REST.getName());
+			setDescription(SiteWhereAuthority.REST.getDescription());
+			setParent(SiteWhereAuthority.REST.getParent());
+			setGroup(SiteWhereAuthority.REST.isGroup());
 		}
 	}
 
 	public static class Auth_AdminUsers extends GrantedAuthority {
 
 		public Auth_AdminUsers() {
-			setAuthority(ISiteWhereAuthorities.AUTH_ADMIN_USERS);
-			setDescription("Administer users");
+			setAuthority(SiteWhereAuthority.AdminUsers.getName());
+			setDescription(SiteWhereAuthority.AdminUsers.getDescription());
+			setParent(SiteWhereAuthority.AdminUsers.getParent());
+			setGroup(SiteWhereAuthority.AdminUsers.isGroup());
 		}
 	}
 

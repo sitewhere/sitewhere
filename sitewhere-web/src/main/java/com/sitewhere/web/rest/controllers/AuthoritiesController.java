@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
-import com.sitewhere.core.user.SitewhereRoles;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
@@ -35,11 +34,14 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.IGrantedAuthority;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
 import com.sitewhere.web.rest.annotations.Example.Stage;
 import com.sitewhere.web.rest.documentation.Authorities;
+import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyBuilder;
+import com.sitewhere.web.rest.model.GrantedAuthorityHierarchyNode;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -68,7 +70,7 @@ public class AuthoritiesController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create a new authority")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Authorities.CreateAuthorityRequest.class, description = "createUnassociatedRequest.md"),
 			@Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "createAssociatedResponse.md") })
@@ -93,7 +95,7 @@ public class AuthoritiesController extends SiteWhereController {
 	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get authority by id")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "getAuthorityByNameResponse.md") })
 	public GrantedAuthority getAuthorityByName(
 			@ApiParam(value = "Authority name", required = true) @PathVariable String name)
@@ -121,7 +123,7 @@ public class AuthoritiesController extends SiteWhereController {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List authorities that match criteria")
-	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Authorities.ListAuthoritiesResponse.class, description = "listAuthoritiesResponse.md") })
 	public SearchResults<GrantedAuthority> listAuthorities(
 			@ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
@@ -136,6 +138,28 @@ public class AuthoritiesController extends SiteWhereController {
 				authsConv.add(GrantedAuthority.copy(auth));
 			}
 			return new SearchResults<GrantedAuthority>(authsConv);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get the hierarchy of granted authorities.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/hierarchy", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get authorities hierarchy")
+	@Secured({ SiteWhereRoles.REST })
+	public List<GrantedAuthorityHierarchyNode> getAuthoritiesHierarchy() throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesHierarchy", LOGGER);
+		try {
+			GrantedAuthoritySearchCriteria criteria = new GrantedAuthoritySearchCriteria();
+			List<IGrantedAuthority> auths =
+					SiteWhere.getServer().getUserManagement().listGrantedAuthorities(criteria);
+			return GrantedAuthorityHierarchyBuilder.build(auths);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

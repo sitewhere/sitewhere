@@ -1362,6 +1362,8 @@ public class SiteWherePersistence {
 		GrantedAuthority auth = new GrantedAuthority();
 		auth.setAuthority(source.getAuthority());
 		auth.setDescription(source.getDescription());
+		auth.setParent(source.getParent());
+		auth.setGroup(source.isGroup());
 		return auth;
 	}
 

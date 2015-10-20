@@ -25,7 +25,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<sec:intercept-url pattern="/admin" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/admin/" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 		<sec:intercept-url pattern="/admin/loginFailed.html" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<sec:intercept-url pattern="/admin/**" access="ROLE_AUTHENTICATED_USER"/>
+		<sec:intercept-url pattern="/admin/**" access="ROLE_ADMIN_CONSOLE"/>
 		<sec:form-login login-page='/admin/' default-target-url='/admin/tenant.html'
 			login-processing-url="/admin/login.html"
 			authentication-failure-url="/admin/loginFailed.html"/>
