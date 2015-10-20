@@ -205,6 +205,15 @@
 					}
 				});
 
+	function uncheckNodes(nodes) {
+		for (var i = 0; i < nodes.length; i++) {
+			nodes[i].set("checked", false);
+			if (nodes[i].hasChildren) {
+				uncheckNodes(nodes[i].children.data());
+			}
+		}
+	}
+	
 	function checkedNodeIds(nodes, checkedNodes) {
 		for (var i = 0; i < nodes.length; i++) {
 			if (nodes[i].checked) {
@@ -225,6 +234,7 @@
 
 	/** Reset authorities to unchecked */
 	function ucResetCheckedAuths() {
+		uncheckNodes(authsDS.data());
 	}
 
 	/** Check the auths found in the given list */
@@ -302,7 +312,7 @@
 		$('#uc-original-username').val("");
 
 		// Make sure authorities tree is expanded.
-		authsDS.read();
+		ucResetCheckedAuths();
 		authsTree.expand(".k-item");
 
 		// Function called on submit.
@@ -335,9 +345,10 @@
 		$('#uc-first-name').val(data.firstName);
 		$('#uc-last-name').val(data.lastName);
 
-		// Check off granted authorities.
-		ucSetCheckedAuths(data.authorities);
+		// Check current granted authorities.
+		ucResetCheckedAuths();
 		authsTree.expand(".k-item");
+		ucSetCheckedAuths(data.authorities);
 		
 		// Select correct status.
 		ucStatusList.value(data.status);
