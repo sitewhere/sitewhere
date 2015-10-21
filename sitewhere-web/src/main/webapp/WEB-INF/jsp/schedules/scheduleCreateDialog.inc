@@ -149,11 +149,13 @@
 
 	/** Create schedule data structure based on form input */
 	function scCreateScheduleData() {
-		var configData = scBuildConfig();
 		var triggerType = scGetTriggerType();
+		var triggerConfig = scBuildScheduleConfiguration();
 		var schedData = {
 			"name" : $('#sc-name').val(),
 			"triggerType" : triggerType,
+			"triggerConfiguration" : triggerConfig,
+			"metadata" : swMetadataAsLookup(scMetadataDS.data()),
 		}
 		return schedData;
 	}
@@ -186,18 +188,28 @@
 
 	/** Open the site create dialog */
 	function scOpen(e, callback) {
+		scClear();
 		$('#sc-dialog-header').html(i18next("schedules.create.title"));
 		$('#sc-dialog-submit').html(i18next("public.Create"));
 
 		$('#sched-token').val("");
-		scMetadataDS.data(new Array());
-		scTabs.select(0);
 
 		// Function called on submit.
 		scSubmitCallback = callback;
 
 		$.validity.clear();
 		$('#sc-dialog').modal('show');
+	}
+
+	/** Clear fields and reset UI */
+	function scClear() {
+		scMetadataDS.data(new Array());
+		scTabs.select(0);
+		$('#sc-name').val("");
+		$('#sc-simple-interval').val("");
+		$('#sc-simple-repeat').val("");
+		$('#sc-cron-expression').val("");
+		schedTypesDD.select(0);
 	}
 
 	/** Called to load the given schedule and open it for edit */
@@ -214,6 +226,7 @@
 
 	/** Called on successful schedule load request */
 	function suScheduleGetSuccess(data, status, jqXHR) {
+		scClear();
 		$('#sc-dialog-header').html(i18next("schedules.update.title"));
 		$('#sc-dialog-submit').html(i18next("public.Save"));
 
@@ -222,7 +235,6 @@
 		scMetadataDS.data(swLookupAsMetadata(data.metadata));
 		scSelectScheduleType(data);
 		scLoadScheduleFormFromMetadata(data);
-		scTabs.select(0);
 
 		$.validity.clear();
 		$('#sc-dialog').modal('show');
@@ -254,15 +266,16 @@
 
 	/** Pull data from map form and populate metadata */
 	function scBuildScheduleConfiguration() {
-		var metadata = {};
+		var config = {};
 		var scheduleType = scGetScheduleType();
 
 		if (scheduleType == "sc-simple") {
-			scAddMapMetadataEntry(metadata, 'centerLatitude', $('#mq-center-latitude').val());
+			config['repeatCount'] = $("#sc-simple-repeat").val();
+			config['repeatInterval'] = $("#sc-simple-interval").val();
 		} else if (scheduleType == "sc-cron") {
-			scAddMapMetadataEntry(metadata, 'geoserverBaseUrl', $('#gs-base-url').val());
+			config['cronExpression'] = $("#sc-cron-expression").val();
 		}
-		return metadata;
+		return config;
 	}
 
 	/** Select the given schedule type and show its associated panel */
@@ -275,6 +288,12 @@
 	/** Get the currently selected schedule type */
 	function scGetScheduleType() {
 		return $("#sc-schedule-type").val();
+	}
+
+	/** Get the currently selected schedule type */
+	function scGetTriggerType() {
+		var selected = $("#sc-schedule-type").val();
+		return (selected == 'sc-cron' ? "CronTrigger" : "SimpleTrigger");
 	}
 
 	/** Called when schedule type dropdown value changes */
