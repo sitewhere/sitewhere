@@ -52,8 +52,6 @@
 
 <%@ include file="../includes/templateUserEntry.inc"%>
 
-<%@ include file="../includes/templateUserAuthorityEntry.inc"%>
-
 <%@ include file="../includes/userCreateDialog.inc"%>
 
 <script>

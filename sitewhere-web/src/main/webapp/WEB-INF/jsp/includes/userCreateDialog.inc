@@ -89,24 +89,19 @@
 	/** Dropdown list of account statuses */
 	var ucStatusList;
 
-	/** Available map types shown in dropdown */
-	function getUcAccountStatuses() {
-		var ucAccountStatuses = [ {
-			text : i18next("includes.Active"),
-			status : "Active"
-		}, {
-			text : i18next("includes.Expired"),
-			status : "Expired"
-		}, {
-			text : i18next("includes.Locked"),
-			status : "Locked"
-		}, ];
-		return ucAccountStatuses;
-	}
-
 	$(document)
 			.ready(
 				function() {
+					var ucAccountStatuses = [ {
+						text : i18next("includes.Active"),
+						status : "Active"
+					}, {
+						text : i18next("includes.Expired"),
+						status : "Expired"
+					}, {
+						text : i18next("includes.Locked"),
+						status : "Locked"
+					}, ];
 
 					/** Create the tab strip */
 					ucTabs = $("#uc-tabs").kendoTabStrip({
@@ -117,7 +112,7 @@
 					ucStatusList = $("#uc-account-status").kendoDropDownList({
 						dataTextField : "text",
 						dataValueField : "status",
-						dataSource : getUcAccountStatuses(),
+						dataSource : ucAccountStatuses,
 					}).data("kendoDropDownList");
 
 					/** Create AJAX datasource for authorities list */
@@ -213,7 +208,7 @@
 			}
 		}
 	}
-	
+
 	function checkedNodeIds(nodes, checkedNodes) {
 		for (var i = 0; i < nodes.length; i++) {
 			if (nodes[i].checked) {
@@ -349,7 +344,7 @@
 		ucResetCheckedAuths();
 		authsTree.expand(".k-item");
 		ucSetCheckedAuths(data.authorities);
-		
+
 		// Select correct status.
 		ucStatusList.value(data.status);
 

@@ -42,7 +42,8 @@
 		var option = {
 			lng : lng,
 			resGetPath : '${pageContext.request.contextPath}/locales/__lng__/translation.json',
-			useLocalStorage : true,
+			useLocalStorage : false,
+			getAsync: false,
 			lowerCaseLng : true
 		};
 		i18n.init(option, function(t) {

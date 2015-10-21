@@ -706,6 +706,27 @@ public class SiteWhereController {
 	}
 
 	/**
+	 * Display the "list schedules" page.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/schedules/list")
+	public ModelAndView listSchedules(HttpServletRequest request) {
+		Tracer.start(TracerCategory.AdminUserInterface, "listSchedules", LOGGER);
+		try {
+			Map<String, Object> data = createBaseData(request);
+			return new ModelAndView("schedules/list", data);
+		} catch (NoTenantException e) {
+			return showTenantChoices(getUrl(request), request);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Show error message for exception.
 	 * 
 	 * @param e

@@ -122,6 +122,31 @@
 									data-i18n="public.Batch">Batch</a></li>
 							</c:otherwise>
 						</c:choose>
+						<c:choose>
+							<c:when test="${sitewhere_section == 'schedules'}">
+								<li class="active dropdown"><a class="dropdown-toggle"
+									style="background-color: #dc0000" href="javascript:void(0);"
+									data-i18n="[prepend]public.Schedules" data-toggle="dropdown"> <span class="caret"></span>
+								</a>
+									<ul class="dropdown-menu">
+										<li><a href="${pageContext.request.contextPath}/admin/schedules/list.html"
+											data-i18n="public.Schedules"></a></li>
+										<li><a href="${pageContext.request.contextPath}/admin/jobs/list.html"
+											data-i18n="public.ScheduledJobs"></a></li>
+									</ul></li>
+							</c:when>
+							<c:otherwise>
+								<li class="dropdown"><a class="dropdown-toggle" href="javascript:void(0);"
+									data-i18n="[prepend]public.Schedules" data-toggle="dropdown"> <span class="caret"></span>
+								</a>
+									<ul class="dropdown-menu">
+										<li><a href="${pageContext.request.contextPath}/admin/schedules/list.html"
+											data-i18n="public.Schedules"></a></li>
+										<li><a href="${pageContext.request.contextPath}/admin/jobs/list.html"
+											data-i18n="public.ScheduledJobs"></a></li>
+									</ul></li>
+							</c:otherwise>
+						</c:choose>
 					</ul>
 				</div>
 				<div class="sw-user-info">

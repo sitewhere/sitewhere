@@ -7,6 +7,7 @@
     "Save":"Save",
     "name":"name",
     "Name":"Name",
+    "Token":"Token",
     "User":"User",
     "Users":"$t(public.User)s",
     "username":"username",
@@ -97,6 +98,10 @@
     "Specifications":"$t(public.Specification)s",
     "Batch":"Batch",
     "Assets":"Assets",
+    "Schedule":"Schedule",
+    "Schedules":"$t(public.Schedule)s",
+    "ScheduledJob":"Scheduled Job",
+    "ScheduledJobs":"$t(public.ScheduledJob)s",
     "Failed":"Failed",
     "Asset":"Asset",
     "this":"this",
@@ -145,7 +150,7 @@
        "Zoom":"Zoom",
        "Comments":"Comments",
        "Missing":"Missing",
-       "DeviceDetails":"$t(public.device) $t(public.Details)",
+       "DeviceDetails":"$t(public.Device) $t(public.Details)",
        "CommandDetails":"$t(public.Command) $t(public.Details)",
        "CreateDevice":"$t(public.Create) $t(public.device)",
        "ElementDetails":"$t(public.Element) $t(public.Details)",
@@ -322,6 +327,14 @@
           "OperationCreated":"$t(batch.list.Operation) $t(public.Created)"
         }
   },
+  "schedules":{
+       "list":{
+          "title":"$t(public.Manage) $t(public.Schedules)",
+          "AddNewSchedule":"$t(public.Add) $t(public.New) $t(public.Schedule)",
+          "EditSchedule":"$t(public.Edit) $t(public.Schedule)",
+          "DeleteSchedule":"$t(public.Delete) $t(public.Schedule)"
+       }
+  },
   "assignments":{
        "Connected":"Connected",
        "detail":{
@@ -416,7 +429,7 @@
           "UTD":"$t(public.Unable) to $t(public.msg.delete) $t(public.assetCategory)."
       },
       "dialog":{
-          "PersonCreateTitle":"XCreate Person Asset",
+          "PersonCreateTitle":"Create Person Asset"
       }
   },
   "users":{
