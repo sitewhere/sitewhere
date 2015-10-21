@@ -122,26 +122,6 @@
 									data-i18n="public.Batch">Batch</a></li>
 							</c:otherwise>
 						</c:choose>
-						<c:choose>
-							<c:when test="${sitewhere_section == 'users'}">
-								<li class="active"><a href="${pageContext.request.contextPath}/admin/users/list.html"
-									data-i18n="public.Users">Users</a></li>
-							</c:when>
-							<c:otherwise>
-								<li><a href="${pageContext.request.contextPath}/admin/users/list.html"
-									data-i18n="public.Users">Users</a></li>
-							</c:otherwise>
-						</c:choose>
-						<c:choose>
-							<c:when test="${sitewhere_section == 'tenants'}">
-								<li class="active"><a href="${pageContext.request.contextPath}/admin/tenants/list.html"
-									data-i18n="public.Tenants">Tenants</a></li>
-							</c:when>
-							<c:otherwise>
-								<li><a href="${pageContext.request.contextPath}/admin/tenants/list.html"
-									data-i18n="public.Tenants">Tenants</a></li>
-							</c:otherwise>
-						</c:choose>
 					</ul>
 				</div>
 				<div class="sw-user-info">
@@ -155,6 +135,23 @@
 							</div> <span class="caret" style="margin-left: 4px"></span>
 						</a>
 						<ul class="dropdown-menu pull-right" style="text-align: left;">
+							<c:choose>
+								<c:when test="${authorities.administerUsers}">
+									<li><a href="${pageContext.request.contextPath}/admin/users/list.html">Manage
+											Users</a></li>
+								</c:when>
+							</c:choose>
+							<c:choose>
+								<c:when test="${authorities.administerTenants}">
+									<li><a href="${pageContext.request.contextPath}/admin/tenants/list.html">Manage
+											Tenants</a></li>
+								</c:when>
+							</c:choose>
+							<c:choose>
+								<c:when test="${authorities.administerUsers or authorities.administerTenants}">
+									<li class="divider"></li>
+								</c:when>
+							</c:choose>
 							<li><a tabindex="-1" href="<c:url value="/j_spring_security_logout"/>"
 								data-i18n="includes.top.LogOut"></a></li>
 						</ul>

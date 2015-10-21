@@ -66,6 +66,9 @@ public class SiteWhereController {
 	/** Current user information sent in request */
 	public static final String DATA_CURRENT_USER = "currentUser";
 
+	/** Granted authorities sent in request */
+	public static final String DATA_AUTHORITIES = "authorities";
+
 	/** Tenant information sent in request */
 	public static final String DATA_TENANT = "tenant";
 
@@ -745,6 +748,7 @@ public class SiteWhereController {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put(DATA_VERSION, VersionHelper.getVersion());
 		data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
+		data.put(DATA_AUTHORITIES, new AuthoritiesHelper(LoginManager.getCurrentlyLoggedInUser()));
 		data.put(DATA_TENANT, assureTenant(request));
 		return data;
 	}
