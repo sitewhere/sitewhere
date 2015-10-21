@@ -14,6 +14,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
@@ -23,6 +24,7 @@ import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
 
@@ -83,17 +85,35 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 		// Use the system account for logging "created by" on created elements.
 		SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 
+		// Create or update granted authorities whether users exist or not.
 		List<String> all = createGrantedAuthorities();
+
+		// Only execute logic if there are no system users.
+		List<IUser> users = getUserManagement().listUsers(new UserSearchCriteria());
+		if (users.size() == 0) {
+			intializeUserData(all);
+		}
+
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+
+	/**
+	 * Initialize user data.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void intializeUserData(List<String> grantedAuthIds) throws SiteWhereException {
 
 		UserCreateRequest ureq = new UserCreateRequest();
 		ureq.setFirstName("Admin");
 		ureq.setLastName("User");
 		ureq.setUsername(DEFAULT_USERNAME);
 		ureq.setPassword(DEFAULT_PASSWORD);
-		ureq.setAuthorities(all);
+		ureq.setAuthorities(grantedAuthIds);
 		ureq.setStatus(AccountStatus.Active);
 
 		getUserManagement().createUser(ureq);
+		LOGGER.info(PREFIX_CREATE_USER + " " + ureq.getUsername());
 
 		ITenant tenant = getUserManagement().getTenantById(DEFAULT_TENANT_ID);
 		if (tenant == null) {
@@ -106,9 +126,6 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 			tenant = getUserManagement().createTenant(treq);
 			LOGGER.info(PREFIX_CREATE_TENANT + " " + tenant.getId());
 		}
-
-		SecurityContextHolder.getContext().setAuthentication(null);
-		LOGGER.info(PREFIX_CREATE_USER + " " + ureq.getUsername());
 	}
 
 	/**

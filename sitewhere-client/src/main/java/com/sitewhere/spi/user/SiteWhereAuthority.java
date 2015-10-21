@@ -43,7 +43,18 @@ public enum SiteWhereAuthority {
 
 	/** Administer own tenant */
 	AdminOwnTenant(SiteWhereRoles.AUTH_ADMINISTER_TENANT_SELF, "Administer own tenant",
-			SiteWhereRoles.GRP_TENANTS, false);
+			SiteWhereRoles.GRP_TENANTS, false),
+
+	/** Group for all schedules */
+	Schedules(SiteWhereRoles.GRP_SCHEDULES, "Schedules", null, true),
+
+	/** Administer all schedules */
+	AdminSchedules(SiteWhereRoles.AUTH_ADMINISTER_SCHEDULES, "Administer schedules",
+			SiteWhereRoles.GRP_SCHEDULES, false),
+
+	/** Add scheduled job for batch or indivisual command invocation */
+	ScheduleCommands(SiteWhereRoles.AUTH_SCHEDULE_COMMANDS, "Schedule batch or individial commands",
+			SiteWhereRoles.GRP_SCHEDULES, false);
 
 	/** Authority name */
 	private String name;

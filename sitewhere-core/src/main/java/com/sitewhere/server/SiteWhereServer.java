@@ -30,7 +30,6 @@ import com.sitewhere.rest.model.server.SiteWhereServerState;
 import com.sitewhere.rest.model.server.SiteWhereServerState.GeneralInformation;
 import com.sitewhere.rest.model.server.SiteWhereServerState.JavaInformation;
 import com.sitewhere.rest.model.user.User;
-import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
@@ -64,7 +63,6 @@ import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.ITenant;
-import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.version.VersionHelper;
 
@@ -773,10 +771,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		try {
 			IUserModelInitializer init =
 					(IUserModelInitializer) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER);
-			List<IUser> users = getUserManagement().listUsers(new UserSearchCriteria());
-			if (users.size() == 0) {
-				init.initialize(getUserManagement());
-			}
+			init.initialize(getUserManagement());
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No user model initializer found in Spring bean configuration. Skipping.");
 			return;

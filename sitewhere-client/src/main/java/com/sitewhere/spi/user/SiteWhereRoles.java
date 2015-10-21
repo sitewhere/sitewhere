@@ -41,6 +41,15 @@ public interface SiteWhereRoles {
 	/** Authority to administer own tenant */
 	public static final String AUTH_ADMINISTER_TENANT_SELF = "ADMINISTER_TENANT_SELF";
 
+	/** Group for schedule authorities */
+	public static final String GRP_SCHEDULES = "GRP_SCHEDULES";
+
+	/** Authority to administer all system schedules */
+	public static final String AUTH_ADMINISTER_SCHEDULES = "ADMINISTER_SCHEDULES";
+
+	/** Authority to schedule commands */
+	public static final String AUTH_SCHEDULE_COMMANDS = "SCHEDULE_COMMANDS";
+
 	/********************
 	 * ROLE DEFINITIONS *
 	 ********************/
