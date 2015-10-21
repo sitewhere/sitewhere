@@ -7,6 +7,7 @@
     "Save":"Save",
     "name":"name",
     "Name":"Name",
+    "Token":"Token",
     "User":"User",
     "Users":"$t(public.User)s",
     "username":"username",
@@ -97,8 +98,10 @@
     "Specifications":"$t(public.Specification)s",
     "Batch":"Batch",
     "Assets":"Assets",
-    "Schedules":"Schedules",
-    "ScheduledJobs":"Scheduled Jobs",
+    "Schedule":"Schedule",
+    "Schedules":"$t(public.Schedule)s",
+    "ScheduledJob":"Scheduled Job",
+    "ScheduledJobs":"$t(public.ScheduledJob)s",
     "Failed":"Failed",
     "Asset":"Asset",
     "this":"this",
@@ -147,7 +150,7 @@
        "Zoom":"Zoom",
        "Comments":"Comments",
        "Missing":"Missing",
-       "DeviceDetails":"$t(public.device) $t(public.Details)",
+       "DeviceDetails":"$t(public.Device) $t(public.Details)",
        "CommandDetails":"$t(public.Command) $t(public.Details)",
        "CreateDevice":"$t(public.Create) $t(public.device)",
        "ElementDetails":"$t(public.Element) $t(public.Details)",
@@ -326,7 +329,20 @@
   },
   "schedules":{
        "list":{
-          "title":"$t(public.Manage) $t(public.Schedules)"
+          "title":"$t(public.Manage) $t(public.Schedules)",
+          "AddNewSchedule":"$t(public.Add) $t(public.New) $t(public.Schedule)",
+          "EditSchedule":"$t(public.Edit) $t(public.Schedule)",
+          "DeleteSchedule":"$t(public.Delete) $t(public.Schedule)"
+       },
+       "create":{
+          "title":"$t(public.Create) $t(public.Schedule)",
+          "detailsTab":"$t(public.Schedule) $t(public.Details)",
+          "simpleInterval":"Interval in milliseconds",
+          "simpleRepeat":"Repetitions",
+          "cronExpression":"Cron expression"
+       },
+       "update":{
+          "title":"$t(public.Update) $t(public.Schedule)"
        }
   },
   "assignments":{

@@ -47,6 +47,7 @@
 <div id="pager" class="k-pager-wrap"></div>
 
 <%@ include file="templateScheduleEntry.inc"%>
+<%@ include file="scheduleCreateDialog.inc"%>
 <%@ include file="../includes/commonFunctions.inc"%>
 
 <script>
@@ -55,6 +56,11 @@
 
 	/** Reference for batch operations datasource */
 	var schedDS;
+
+	/** Called after a new schedule has been created */
+	function onScheduleCreated() {
+		schedDS.read();
+	}
 
 	$(document)
 			.ready(
@@ -95,6 +101,11 @@
 					/** Pager for list */
 					$("#pager").kendoPager({
 						dataSource : schedDS
+					});
+
+					/** Handle add site functionality */
+					$('#btn-add-schedule').click(function(event) {
+						scOpen(event, onScheduleCreated);
 					});
 				});
 </script>

@@ -333,6 +333,16 @@
           "AddNewSchedule":"$t(public.Add) $t(public.New) $t(public.Schedule)",
           "EditSchedule":"$t(public.Edit) $t(public.Schedule)",
           "DeleteSchedule":"$t(public.Delete) $t(public.Schedule)"
+       },
+       "create":{
+          "title":"$t(public.Create) $t(public.Schedule)",
+          "detailsTab":"$t(public.Schedule) $t(public.Details)",
+          "simpleInterval":"Interval in milliseconds",
+          "simpleRepeat":"Repetitions",
+          "cronExpression":"Cron expression"
+       },
+       "update":{
+          "title":"$t(public.Update) $t(public.Schedule)"
        }
   },
   "assignments":{
