@@ -1,4 +1,15 @@
 <!-- Dialog for invoking a command -->
+<style>
+.fieldlist {
+	margin: 0 0 -1em;
+	padding: 0;
+}
+
+.fieldlist li {
+	list-style: none;
+	padding-bottom: 1em;
+}
+</style>
 <div id="ci-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -8,6 +19,7 @@
 		<div id="ci-tabs">
 			<ul>
 				<li class="k-state-active" data-i18n="includes.commandInvokeDialog.InvocationDetails"></li>
+				<li data-i18n="public.Schedule"></li>
 				<li data-i18n="public.Metadata"></li>
 			</ul>
 			<div>
@@ -20,6 +32,18 @@
 					</div>
 					<div id="ci-parameters"></div>
 				</form>
+			</div>
+			<div>
+				<div class="k-content" style="padding: 20px;">
+					<ul class="fieldlist">
+						<li><input type="radio" name="use-schedule" id="no-schedule" class="k-radio"
+							checked="checked"> <label class="k-radio-label" for="no-schedule">Invoke
+								command immediately</label></li>
+						<li><input type="radio" name="use-schedule" id="use-schedule" class="k-radio"> <label
+							class="k-radio-label" for="use-schedule">Invoke command on a schedule</label></li>
+					</ul>
+					<div id="schedule-list" class="hide">This only shows up from schedules.</div>
+				</div>
 			</div>
 			<div>
 				<div id="ci-metadata">
@@ -77,7 +101,16 @@
 				dataSource : ciCommandsDS,
 				change : onCommandChange,
 			}).data("kendoDropDownList");
-
+			
+			/** Show or hide schedule list based on radio selection */
+		    $("#no-schedule, #use-schedule").change(function () {
+		        if ($("#use-schedule").is(":checked")) {
+		            $('#schedule-list').show();
+		        } else {
+		            $('#schedule-list').hide();
+		        }
+		    });
+		    
 			/** Handle create dialog submit */
 			$('#ci-dialog-submit').click(
 				function(event) {

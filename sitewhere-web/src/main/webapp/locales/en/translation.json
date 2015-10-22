@@ -102,6 +102,7 @@
     "Schedule":"Schedule",
     "Schedules":"$t(public.Schedule)s",
     "DeleteSchedule":"$t(public.Delete) $t(public.Schedule)",
+    "scheduledJob":"scheduled job",
     "ScheduledJob":"Scheduled Job",
     "ScheduledJobs":"$t(public.ScheduledJob)s",
     "Failed":"Failed",
@@ -347,6 +348,14 @@
        },
        "update":{
           "title":"$t(public.Update) $t(public.Schedule)"
+       }
+  },
+  "jobs":{
+       "list":{
+          "title":"$t(public.Manage) $t(public.ScheduledJobs)",
+          "DeleteJob":"$t(public.Delete) $t(public.ScheduledJob)",
+          "AYSD":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) $t(public.scheduledJob)",
+          "UTD":"$t(public.Unable) to $t(public.msg.delete) $t(public.scheduledJob)."
        }
   },
   "assignments":{

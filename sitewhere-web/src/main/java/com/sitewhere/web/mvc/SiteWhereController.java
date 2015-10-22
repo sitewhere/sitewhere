@@ -727,6 +727,27 @@ public class SiteWhereController {
 	}
 
 	/**
+	 * Display the "list scheduled jobs" page.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/jobs/list")
+	public ModelAndView listScheduledjobs(HttpServletRequest request) {
+		Tracer.start(TracerCategory.AdminUserInterface, "listScheduledjobs", LOGGER);
+		try {
+			Map<String, Object> data = createBaseData(request);
+			return new ModelAndView("jobs/list", data);
+		} catch (NoTenantException e) {
+			return showTenantChoices(getUrl(request), request);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Show error message for exception.
 	 * 
 	 * @param e
