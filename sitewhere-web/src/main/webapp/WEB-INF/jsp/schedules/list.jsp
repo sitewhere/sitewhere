@@ -62,6 +62,37 @@
 		schedDS.read();
 	}
 
+	/** Called when edit button is clicked */
+	function onEditSchedule(token) {
+		suOpen(token, onEditSuccess);
+	}
+
+	/** Called on successful edit */
+	function onEditSuccess() {
+		schedDS.read();
+	}
+
+	/** Called when delete button is clicked */
+	function onDeleteSchedule(token) {
+		swConfirm(i18next("public.DeleteSchedule"), i18next("schedules.list.AYSDTS") + "?", function(result) {
+			if (result) {
+				$.deleteJSON("${pageContext.request.contextPath}/api/schedules/" + token
+						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
+					onDeleteFail);
+			}
+		});
+	}
+
+	/** Called on successful delete */
+	function onDeleteSuccess() {
+		schedDS.read();
+	}
+
+	/** Handle failed delete call */
+	function onDeleteFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, i18next("sites.list.UTDS"));
+	}
+
 	$(document)
 			.ready(
 				function() {

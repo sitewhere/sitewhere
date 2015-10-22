@@ -121,6 +121,7 @@
 													"${pageContext.request.contextPath}/api/schedules?tenantAuthToken=${tenant.authenticationToken}",
 													schedData, onSuccess, onCreateFail);
 									} else {
+										schedData.token = schedToken;
 										$.putJSON("${pageContext.request.contextPath}/api/schedules/"
 												+ schedToken
 												+ "?tenantAuthToken=${tenant.authenticationToken}",
@@ -192,7 +193,7 @@
 		$('#sc-dialog-header').html(i18next("schedules.create.title"));
 		$('#sc-dialog-submit').html(i18next("public.Create"));
 
-		$('#sched-token').val("");
+		$('#schedule-token').val("");
 
 		// Function called on submit.
 		scSubmitCallback = callback;
@@ -230,7 +231,7 @@
 		$('#sc-dialog-header').html(i18next("schedules.update.title"));
 		$('#sc-dialog-submit').html(i18next("public.Save"));
 
-		$('#sched-token').val(data.token);
+		$('#schedule-token').val(data.token);
 
 		scMetadataDS.data(swLookupAsMetadata(data.metadata));
 		scSelectScheduleType(data);
@@ -249,10 +250,12 @@
 	function scLoadScheduleFormFromMetadata(schedule) {
 		var config = schedule.triggerConfiguration;
 
+		$("#sc-name").val(schedule.name);
 		if (schedule.triggerType == "SimpleTrigger") {
-			$('#mq-center-latitude').val(scGetMetadataValue(lookup, 'centerLatitude'));
+			$("#sc-simple-repeat").val(config['repeatCount']);
+			$("#sc-simple-interval").val(config['repeatInterval']);
 		} else if (schedule.triggerType == "CronTrigger") {
-			$('#gs-base-url').val(scGetMetadataValue(lookup, 'geoserverBaseUrl'));
+			$("#sc-cron-expression").val(config['cronExpression']);
 		}
 	}
 
@@ -279,7 +282,7 @@
 	}
 
 	/** Select the given schedule type and show its associated panel */
-	function scSelectedScheduleType(schedule) {
+	function scSelectScheduleType(schedule) {
 		var type = (schedule.triggerType == 'CronTrigger' ? 'sc-cron' : 'sc-simple');
 		schedTypesDD.value(type);
 		scScheduleTypeChanged();
