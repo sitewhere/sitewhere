@@ -102,15 +102,15 @@
 
 					/** Create AJAX datasource for all asset modules */
 					acAssetModulesDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/assets/modules?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-								});
+							new kendo.data.DataSource({
+								transport : {
+									read : {
+										url : "${pageContext.request.contextPath}/api/assets/modules"
+												+ "?tenantAuthToken=${tenant.authenticationToken}",
+										dataType : "json",
+									}
+								},
+							});
 
 					/** Create asset modules dropdown */
 					acAssetModules = $("#ac-asset-module").kendoDropDownList({

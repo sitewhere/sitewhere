@@ -42,21 +42,22 @@
 						<li><input type="radio" name="use-schedule" id="use-schedule" class="k-radio"> <label
 							class="k-radio-label" for="use-schedule">Invoke command on a schedule</label></li>
 					</ul>
-					<div id="schedule-list" class="hide">This only shows up from schedules.</div>
+					<div id="schedule-list" class="hide" style="margin: 10px 20px;">
+						<input id="chosen-schedule">
+					</div>
 				</div>
 			</div>
-			<div>
-				<div id="ci-metadata">
-					<jsp:include page="../includes/metadata.jsp" flush="true">
-						<jsp:param name="uid" value="ci" />
-					</jsp:include>
-				</div>
+			<div id="ci-metadata">
+				<jsp:include page="../includes/metadata.jsp" flush="true">
+					<jsp:param name="uid" value="ci" />
+				</jsp:include>
 			</div>
 		</div>
-	</div>
-	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
-			id="ci-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Invoke"></a>
+		<div class="modal-footer">
+			<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
+				id="ci-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+				data-i18n="public.Invoke"></a>
+		</div>
 	</div>
 </div>
 
@@ -101,16 +102,41 @@
 				dataSource : ciCommandsDS,
 				change : onCommandChange,
 			}).data("kendoDropDownList");
-			
+
 			/** Show or hide schedule list based on radio selection */
-		    $("#no-schedule, #use-schedule").change(function () {
-		        if ($("#use-schedule").is(":checked")) {
-		            $('#schedule-list').show();
-		        } else {
-		            $('#schedule-list').hide();
-		        }
-		    });
-		    
+			$("#no-schedule, #use-schedule").change(function() {
+				if ($("#use-schedule").is(":checked")) {
+					$('#schedule-list').show();
+				} else {
+					$('#schedule-list').hide();
+				}
+			});
+
+			$("#chosen-schedule").kendoDropDownList(
+				{
+					dataTextField : "name",
+					dataValueField : "token",
+					dataSource : {
+						transport : {
+							read : {
+								url : "${pageContext.request.contextPath}/api/schedules"
+										+ "?tenantAuthToken=${tenant.authenticationToken}",
+								dataType : "json",
+							}
+						},
+						schema : {
+							data : "results",
+							total : "numResults",
+							parse : function(response) {
+								$.each(response.results, function(index, item) {
+									parseEntityData(item);
+								});
+								return response;
+							}
+						},
+					}
+				});
+
 			/** Handle create dialog submit */
 			$('#ci-dialog-submit').click(
 				function(event) {
@@ -118,6 +144,7 @@
 					if (!ciValidate()) {
 						return;
 					}
+
 					var invocationData = {
 						"initiator" : "REST",
 						"initiatorId" : "${currentUser.username}",
@@ -126,6 +153,7 @@
 						"status" : "Pending",
 						"metadata" : swMetadataAsLookup(ciMetadataDS.data()),
 					}
+
 					var params = {};
 					for (var i = 0; i < selectedCommand.parameters.length; i++) {
 						var param = selectedCommand.parameters[i];
@@ -136,9 +164,18 @@
 						params[param.name] = value;
 					}
 					invocationData.parameterValues = params;
-					$.postJSON("${pageContext.request.contextPath}/api/assignments/" + ciAssignmentToken
-							+ "/invocations?tenantAuthToken=${tenant.authenticationToken}", invocationData,
-						onCreateSuccess, onCreateFail);
+
+					if ($("#use-schedule").is(':checked')) {
+						var scheduleToken = $("#chosen-schedule").val();
+						$.postJSON("${pageContext.request.contextPath}/api/assignments/" + ciAssignmentToken
+								+ "/invocations/schedules/" + scheduleToken
+								+ "?tenantAuthToken=${tenant.authenticationToken}", invocationData,
+							onCreateSuccess, onCreateFail);
+					} else {
+						$.postJSON("${pageContext.request.contextPath}/api/assignments/" + ciAssignmentToken
+								+ "/invocations?tenantAuthToken=${tenant.authenticationToken}",
+							invocationData, onCreateSuccess, onCreateFail);
+					}
 				});
 
 			/** Called on successful create */
