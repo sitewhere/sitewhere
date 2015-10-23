@@ -344,6 +344,7 @@
           "detailsTab":"$t(public.Schedule) $t(public.Details)",
           "simpleInterval":"Interval in milliseconds",
           "simpleRepeat":"Repetitions",
+          "repeatIndefinitely":"Repeat indefinitely",
           "cronExpression":"Cron expression"
        },
        "update":{

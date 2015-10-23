@@ -1027,7 +1027,7 @@ public class ExampleData {
 		public Schedule_Simple1() {
 			IScheduleCreateRequest request =
 					ScheduleHelper.createSimpleSchedule("95ff6a81-3d92-4b10-b8af-957c172ad97b",
-							"Every thirty seconds", new Date(), new Date(), (long) 10000, 100);
+							"Every thirty seconds", new Date(), new Date(), (long) 30 * 1000, 0, true);
 			setToken(request.getToken());
 			setName(request.getName());
 			setTriggerType(request.getTriggerType());

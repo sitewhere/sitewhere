@@ -39,6 +39,7 @@ import com.sitewhere.rest.model.server.TenantEngineComponent;
 import com.sitewhere.server.asset.AssetManagementTriggers;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.server.scheduling.QuartzScheduleManager;
+import com.sitewhere.server.scheduling.ScheduleManagementTriggers;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
 import com.sitewhere.server.tenant.TenantEngineCommand;
@@ -487,8 +488,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected void initializeScheduleManagement() throws SiteWhereException {
 		try {
-			scheduleManagement =
+			IScheduleManagement implementation =
 					(IScheduleManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT);
+			scheduleManagement = new ScheduleManagementTriggers(implementation);
 			scheduleManager = (IScheduleManager) new QuartzScheduleManager(scheduleManagement);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No schedule manager implementation configured.");

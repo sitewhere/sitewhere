@@ -7,6 +7,7 @@
  */
 package com.sitewhere.server.scheduling;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
@@ -33,6 +34,7 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
 	@Override
 	public IScheduledJob createScheduledJob(IScheduledJobCreateRequest request) throws SiteWhereException {
 		IScheduledJob job = super.createScheduledJob(request);
+		SiteWhere.getServer().getScheduleManager(getTenant()).scheduleJob(job);
 		return job;
 	}
 
@@ -45,6 +47,8 @@ public class ScheduleManagementTriggers extends ScheduleManagementDecorator {
 	 */
 	@Override
 	public IScheduledJob deleteScheduledJob(String token, boolean force) throws SiteWhereException {
-		return super.deleteScheduledJob(token, force);
+		IScheduledJob job = super.deleteScheduledJob(token, force);
+		SiteWhere.getServer().getScheduleManager(getTenant()).unscheduleJob(job);
+		return job;
 	}
 }

@@ -22,4 +22,7 @@ public enum CommandInitiator {
 
 	/** Command initiated by script */
 	Script,
+
+	/** Command initiated by scheduler */
+	Scheduler,
 }

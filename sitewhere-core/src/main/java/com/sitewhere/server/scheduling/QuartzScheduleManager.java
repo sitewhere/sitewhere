@@ -7,18 +7,28 @@
  */
 package com.sitewhere.server.scheduling;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
+import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import org.quartz.impl.DirectSchedulerFactory;
 import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;
 
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.scheduling.jobs.QuartzBuilder;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.scheduling.IScheduledJob;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.ITenant;
 
@@ -44,6 +54,9 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 
 	/** Number of threads used for processing */
 	private int numProcessingThreads = DEFAULT_THREAD_COUNT;
+
+	/** Cache schedules by token */
+	private Map<String, ISchedule> schedulesByToken = new HashMap<String, ISchedule>();
 
 	public QuartzScheduleManager(IScheduleManagement scheduleManagement) {
 		super(LifecycleComponentType.ScheduleManager);
@@ -77,8 +90,37 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	public void start() throws SiteWhereException {
 		try {
 			getScheduler().start();
+			cacheSchedules();
+			scheduleJobs();
 		} catch (SchedulerException e) {
 			throw new SiteWhereException("Unable to start scheduler instance.", e);
+		}
+	}
+
+	/**
+	 * Cache the list of schedules by unique token.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void cacheSchedules() throws SiteWhereException {
+		getSchedulesByToken().clear();
+		ISearchResults<ISchedule> schedules = getScheduleManagement().listSchedules(new SearchCriteria(1, 0));
+		for (ISchedule schedule : schedules.getResults()) {
+			getSchedulesByToken().put(schedule.getToken(), schedule);
+		}
+		LOGGER.info("Cached " + getSchedulesByToken().size() + " schedules.");
+	}
+
+	/**
+	 * Schedule all jobs registered in the system.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void scheduleJobs() throws SiteWhereException {
+		ISearchResults<IScheduledJob> jobs =
+				getScheduleManagement().listScheduledJobs(new SearchCriteria(1, 0));
+		for (IScheduledJob job : jobs.getResults()) {
+			scheduleJob(job);
 		}
 	}
 
@@ -105,6 +147,19 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public void scheduleJob(IScheduledJob job) throws SiteWhereException {
+		JobDetail detail = QuartzBuilder.buildJobDetail(job);
+		ISchedule schedule = getSchedulesByToken().get(job.getScheduleToken());
+		if (schedule == null) {
+			throw new SiteWhereException("Job references unknown schedule: " + job.getScheduleToken());
+		}
+
+		LOGGER.info("Scheduling job " + job.getToken() + " for '" + schedule.getName() + "'.");
+		Trigger trigger = QuartzBuilder.buildTrigger(job, schedule);
+		try {
+			getScheduler().scheduleJob(detail, trigger);
+		} catch (SchedulerException e) {
+			throw new SiteWhereException("Unable to schedule job.", e);
+		}
 	}
 
 	/*
@@ -115,6 +170,11 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public void unscheduleJob(IScheduledJob job) throws SiteWhereException {
+		try {
+			getScheduler().unscheduleJob(new TriggerKey(job.getToken()));
+		} catch (SchedulerException e) {
+			throw new SiteWhereException("Unable to unschedule job.", e);
+		}
 	}
 
 	/*
@@ -155,5 +215,13 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 
 	public void setNumProcessingThreads(int numProcessingThreads) {
 		this.numProcessingThreads = numProcessingThreads;
+	}
+
+	public Map<String, ISchedule> getSchedulesByToken() {
+		return schedulesByToken;
+	}
+
+	public void setSchedulesByToken(Map<String, ISchedule> schedulesByToken) {
+		this.schedulesByToken = schedulesByToken;
 	}
 }
