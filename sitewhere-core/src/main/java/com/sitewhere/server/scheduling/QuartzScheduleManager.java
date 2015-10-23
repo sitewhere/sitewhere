@@ -8,6 +8,11 @@
 package com.sitewhere.server.scheduling;
 
 import org.apache.log4j.Logger;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.DirectSchedulerFactory;
+import org.quartz.simpl.RAMJobStore;
+import org.quartz.simpl.SimpleThreadPool;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -15,6 +20,7 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Implementation of {@link IScheduleManager} that uses Quartz to handle schedule
@@ -27,8 +33,17 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(QuartzScheduleManager.class);
 
+	/** Instance id common to all schedulers */
+	private static final String INSTANCE_ID = "sitewhere";
+
+	/** Default number of threads used to process scheduled tasks */
+	private static final int DEFAULT_THREAD_COUNT = 5;
+
 	/** Schedule management implementation */
 	private IScheduleManagement scheduleManagement;
+
+	/** Number of threads used for processing */
+	private int numProcessingThreads = DEFAULT_THREAD_COUNT;
 
 	public QuartzScheduleManager(IScheduleManagement scheduleManagement) {
 		super(LifecycleComponentType.ScheduleManager);
@@ -38,10 +53,33 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.server.lifecycle.TenantLifecycleComponent#setTenant(com.sitewhere
+	 * .spi.user.ITenant)
+	 */
+	@Override
+	public void setTenant(ITenant tenant) {
+		super.setTenant(tenant);
+		try {
+			DirectSchedulerFactory.getInstance().createScheduler(getTenant().getId(), INSTANCE_ID,
+					new SimpleThreadPool(getNumProcessingThreads(), Thread.NORM_PRIORITY), new RAMJobStore());
+		} catch (SchedulerException e) {
+			throw new RuntimeException("Unable to create Quartz scheduler for schedule manager.", e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		try {
+			getScheduler().start();
+		} catch (SchedulerException e) {
+			throw new SiteWhereException("Unable to start scheduler instance.", e);
+		}
 	}
 
 	/*
@@ -51,6 +89,11 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		try {
+			getScheduler().shutdown();
+		} catch (SchedulerException e) {
+			throw new SiteWhereException("Unable to start scheduler instance.", e);
+		}
 	}
 
 	/*
@@ -84,11 +127,33 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 		return LOGGER;
 	}
 
+	/**
+	 * Get scheduler instance for this tenant.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public Scheduler getScheduler() throws SiteWhereException {
+		try {
+			return DirectSchedulerFactory.getInstance().getScheduler(getTenant().getId());
+		} catch (SchedulerException e) {
+			throw new SiteWhereException("Unable to get scheduler instance.", e);
+		}
+	}
+
 	public IScheduleManagement getScheduleManagement() {
 		return scheduleManagement;
 	}
 
 	public void setScheduleManagement(IScheduleManagement scheduleManagement) {
 		this.scheduleManagement = scheduleManagement;
+	}
+
+	public int getNumProcessingThreads() {
+		return numProcessingThreads;
+	}
+
+	public void setNumProcessingThreads(int numProcessingThreads) {
+		this.numProcessingThreads = numProcessingThreads;
 	}
 }
