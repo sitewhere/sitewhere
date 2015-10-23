@@ -29,7 +29,7 @@
     "Updated":"$t(public.Update)d",
     "Composition":"Composition",
     "Refresh":"Refresh",
-    "Properties":"XProperties",
+    "Properties":"Properties",
     "Command":"Command",
     "Location":"Location",
     "Locations":"$t(public.Location)s",

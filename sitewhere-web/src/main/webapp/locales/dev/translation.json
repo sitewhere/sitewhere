@@ -29,7 +29,7 @@
     "Updated":"$t(public.Update)d",
     "Composition":"Composition",
     "Refresh":"Refresh",
-    "Properties":"XProperties",
+    "Properties":"Properties",
     "Command":"Command",
     "Location":"Location",
     "Locations":"$t(public.Location)s",
@@ -98,8 +98,11 @@
     "Specifications":"$t(public.Specification)s",
     "Batch":"Batch",
     "Assets":"Assets",
+    "schedule":"schedule",
     "Schedule":"Schedule",
     "Schedules":"$t(public.Schedule)s",
+    "DeleteSchedule":"$t(public.Delete) $t(public.Schedule)",
+    "scheduledJob":"scheduled job",
     "ScheduledJob":"Scheduled Job",
     "ScheduledJobs":"$t(public.ScheduledJob)s",
     "Failed":"Failed",
@@ -332,7 +335,9 @@
           "title":"$t(public.Manage) $t(public.Schedules)",
           "AddNewSchedule":"$t(public.Add) $t(public.New) $t(public.Schedule)",
           "EditSchedule":"$t(public.Edit) $t(public.Schedule)",
-          "DeleteSchedule":"$t(public.Delete) $t(public.Schedule)"
+          "DeleteSchedule":"$t(public.Delete) $t(public.Schedule)",
+          "AYSDTS":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) $t(public.schedule)",
+          "UTDS":"$t(public.Unable) to $t(public.msg.delete) $t(public.schedule)."
        },
        "create":{
           "title":"$t(public.Create) $t(public.Schedule)",
@@ -343,6 +348,14 @@
        },
        "update":{
           "title":"$t(public.Update) $t(public.Schedule)"
+       }
+  },
+  "jobs":{
+       "list":{
+          "title":"$t(public.Manage) $t(public.ScheduledJobs)",
+          "DeleteJob":"$t(public.Delete) $t(public.ScheduledJob)",
+          "AYSD":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.this) $t(public.scheduledJob)",
+          "UTD":"$t(public.Unable) to $t(public.msg.delete) $t(public.scheduledJob)."
        }
   },
   "assignments":{
