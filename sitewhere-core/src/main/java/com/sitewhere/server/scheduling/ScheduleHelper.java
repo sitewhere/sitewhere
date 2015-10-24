@@ -36,7 +36,7 @@ public class ScheduleHelper {
 	 * @return
 	 */
 	public static IScheduleCreateRequest createSimpleSchedule(String token, String name, Date start,
-			Date end, Long interval, Integer count, Boolean repeatIndefinitely) {
+			Date end, Long interval, Integer count) {
 		ScheduleCreateRequest schedule = new ScheduleCreateRequest();
 		schedule.setToken(token);
 		schedule.setName(name);
@@ -50,9 +50,6 @@ public class ScheduleHelper {
 		}
 		if (count != null) {
 			config.put(TriggerConstants.SimpleTrigger.REPEAT_COUNT, String.valueOf(count));
-		}
-		if (repeatIndefinitely != null) {
-			config.put(TriggerConstants.SimpleTrigger.REPEAT_INDEFINITELY, Boolean.toString(true));
 		}
 		schedule.setTriggerConfiguration(config);
 

@@ -26,9 +26,6 @@ public interface TriggerConstants {
 
 		/** Interval (in milliseconds) trigger should repeat */
 		public static final String REPEAT_INTERVAL = "repeatInterval";
-
-		/** If set to 'true', trigger will repeat indefinitely */
-		public static final String REPEAT_INDEFINITELY = "repeatIndefinitely";
 	}
 
 	/**

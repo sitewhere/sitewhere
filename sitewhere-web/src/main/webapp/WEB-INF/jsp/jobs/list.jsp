@@ -67,7 +67,7 @@
 
 	/** Called on successful delete */
 	function onDeleteSuccess() {
-		schedDS.read();
+		jobsDS.read();
 	}
 
 	/** Handle failed delete call */

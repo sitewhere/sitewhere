@@ -40,13 +40,6 @@
 									<input type="text" id="sc-simple-repeat" class="input-large">
 								</div>
 							</div>
-							<div class="control-group">
-								<label class="control-label" for="sc-repeat-indefinitely"
-									data-i18n="schedules.create.repeatIndefinitely"></label>
-								<div class="controls">
-									<input type="checkbox" id="sc-repeat-indefinitely">
-								</div>
-							</div>
 						</div>
 						<div id="sc-cron" class="hide">
 							<div class="control-group">
@@ -216,7 +209,6 @@
 		$('#sc-name').val("");
 		$('#sc-simple-interval').val("");
 		$('#sc-simple-repeat').val("");
-		$('#sc-repeat-indefinitely').attr('checked', false);
 		$('#sc-cron-expression').val("");
 		schedTypesDD.select(0);
 	}
@@ -262,11 +254,6 @@
 		if (schedule.triggerType == "SimpleTrigger") {
 			$("#sc-simple-repeat").val(config['repeatCount']);
 			$("#sc-simple-interval").val(config['repeatInterval']);
-			if (config['repeatIndefinitely'] == 'true') {
-				$('#sc-repeat-indefinitely').attr('checked', true);
-			} else {
-				$('#sc-repeat-indefinitely').attr('checked', false);
-			}
 		} else if (schedule.triggerType == "CronTrigger") {
 			$("#sc-cron-expression").val(config['cronExpression']);
 		}
@@ -291,9 +278,6 @@
 			}
 			if ($("#sc-simple-interval").val() != "") {
 				config['repeatInterval'] = $("#sc-simple-interval").val();
-			}
-			if ($('#sc-repeat-indefinitely').is(":checked")) {
-				config['repeatIndefinitely'] = "true";
 			}
 		} else if (scheduleType == "sc-cron") {
 			config['cronExpression'] = $("#sc-cron-expression").val();
