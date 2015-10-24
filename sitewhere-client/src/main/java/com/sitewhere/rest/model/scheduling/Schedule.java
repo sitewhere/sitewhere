@@ -11,7 +11,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.TriggerType;
 
@@ -100,6 +102,7 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 	 * 
 	 * @see com.sitewhere.spi.scheduling.ISchedule#getStartDate()
 	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -113,6 +116,7 @@ public class Schedule extends MetadataProviderEntity implements ISchedule {
 	 * 
 	 * @see com.sitewhere.spi.scheduling.ISchedule#getEndDate()
 	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getEndDate() {
 		return endDate;
 	}

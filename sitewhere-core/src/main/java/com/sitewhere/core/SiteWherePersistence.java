@@ -1742,7 +1742,7 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Handle common logic for updating a location asset.
+	 * Handle common logic for updating a schedule.
 	 * 
 	 * @param location
 	 * @param request
@@ -1761,13 +1761,8 @@ public class SiteWherePersistence {
 			schedule.getTriggerConfiguration().putAll(request.getTriggerConfiguration());
 		}
 
-		// Dates can be changed but not removed.
-		if (schedule.getStartDate() != null) {
-			schedule.setStartDate(request.getStartDate());
-		}
-		if (schedule.getEndDate() != null) {
-			schedule.setEndDate(request.getEndDate());
-		}
+		schedule.setStartDate(request.getStartDate());
+		schedule.setEndDate(request.getEndDate());
 
 		SiteWherePersistence.setUpdatedEntityMetadata(schedule);
 	}

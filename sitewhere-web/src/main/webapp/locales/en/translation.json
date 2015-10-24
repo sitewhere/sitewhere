@@ -142,6 +142,8 @@
     "Processing":"Processing",
     "ProcessingStarted":"$t(public.Processing) Started",
     "ProcessingFinished":"$t(public.Processing) Finished",
+    "StartDate":"Start date",
+    "EndDate":"End date",
     "msg":{
        "areyousure":"Are you sure you want to",
        "delete":"delete"

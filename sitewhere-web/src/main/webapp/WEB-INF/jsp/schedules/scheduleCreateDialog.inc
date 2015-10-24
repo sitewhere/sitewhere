@@ -18,6 +18,18 @@
 							<input type="text" id="sc-name" class="input-xlarge" title="Schedule name">
 						</div>
 					</div>
+					<div class="control-group">
+						<label class="control-label" for="sc-start-date" data-i18n="public.StartDate"></label>
+						<div class="controls">
+							<input type="text" id="sc-start-date" title="Start date">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="sc-end-date" data-i18n="public.EndDate"></label>
+						<div class="controls">
+							<input type="text" id="sc-end-date" title="End date">
+						</div>
+					</div>
 					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
 						<label class="control-label" for="sc-schedule-type" data-i18n="public.Type"></label>
 						<div class="controls">
@@ -89,6 +101,9 @@
 	/** Schedule types dropdown */
 	var schedTypesDD;
 
+	/** Schedule start and end date widgets */
+	var startDate, endDate;
+
 	$(document)
 			.ready(
 				function() {
@@ -104,6 +119,14 @@
 						index : 0,
 						change : scScheduleTypeChanged
 					}).data("kendoDropDownList");
+
+					startDate = $("#sc-start-date").kendoDateTimePicker({
+						value : null
+					}).data("kendoDateTimePicker");
+
+					endDate = $("#sc-end-date").kendoDateTimePicker({
+						value : null
+					}).data("kendoDateTimePicker");
 
 					/** Handle dialog submit */
 					$('#sc-dialog-submit')
@@ -158,6 +181,16 @@
 			"triggerConfiguration" : triggerConfig,
 			"metadata" : swMetadataAsLookup(scMetadataDS.data()),
 		}
+		var startDateStr = $('#sc-start-date').val();
+		if (startDateStr != "") {
+			var startDate = kendo.parseDate(startDateStr);
+			schedData.startDate = startDate.toISOString();
+		}
+		var endDateStr = $('#sc-end-date').val();
+		if (endDateStr != "") {
+			var endDate = kendo.parseDate(endDateStr);
+			schedData.endDate = endDate.toISOString();
+		}
 		return schedData;
 	}
 
@@ -207,6 +240,8 @@
 		scMetadataDS.data(new Array());
 		scTabs.select(0);
 		$('#sc-name').val("");
+		$('#sc-start-date').val("");
+		$('#sc-end-date').val("");
 		$('#sc-simple-interval').val("");
 		$('#sc-simple-repeat').val("");
 		$('#sc-cron-expression').val("");
@@ -231,7 +266,14 @@
 		$('#sc-dialog-header').html(i18next("schedules.update.title"));
 		$('#sc-dialog-submit').html(i18next("public.Save"));
 
+		parseScheduleData(data);
 		$('#schedule-token').val(data.token);
+		if (data.startDate) {
+			startDate.value(data.startDate);
+		}
+		if (data.endDate) {
+			endDate.value(data.endDate);
+		}
 
 		scMetadataDS.data(swLookupAsMetadata(data.metadata));
 		scSelectScheduleType(data);

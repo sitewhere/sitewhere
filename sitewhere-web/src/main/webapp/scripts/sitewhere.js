@@ -138,32 +138,17 @@ function parseEntityData(item) {
 
 /** Converts fields that need to be parsed in a site */
 function parseSiteData(item) {
-	if (item.createdDate && typeof item.createdDate === "string") {
-		item.createdDate = kendo.parseDate(item.createdDate);
-	}
-	if (item.updatedDate && typeof item.updatedDate === "string") {
-		item.updatedDate = kendo.parseDate(item.updatedDate);
-	}
+	parseEntityData(item);
 }
 
 /** Converts fields that need to be parsed in a device specification */
 function parseSpecificationData(item) {
-	if (item.createdDate && typeof item.createdDate === "string") {
-		item.createdDate = kendo.parseDate(item.createdDate);
-	}
-	if (item.updatedDate && typeof item.updatedDate === "string") {
-		item.updatedDate = kendo.parseDate(item.updatedDate);
-	}
+	parseEntityData(item);
 }
 
 /** Converts fields that need to be parsed in a device */
 function parseDeviceData(item) {
-	if (item.createdDate && typeof item.createdDate === "string") {
-		item.createdDate = kendo.parseDate(item.createdDate);
-	}
-	if (item.updatedDate && typeof item.updatedDate === "string") {
-		item.updatedDate = kendo.parseDate(item.updatedDate);
-	}
+	parseEntityData(item);
 	if (item.assignment) {
 		if (item.assignment.activeDate && typeof item.assignment.activeDate === "string") {
 			item.assignment.activeDate = kendo.parseDate(item.assignment.activeDate);
@@ -173,12 +158,7 @@ function parseDeviceData(item) {
 
 /** Converts fields that need to be parsed in a device group */
 function parseDeviceGroupData(item) {
-	if (item.createdDate && typeof item.createdDate === "string") {
-		item.createdDate = kendo.parseDate(item.createdDate);
-	}
-	if (item.updatedDate && typeof item.updatedDate === "string") {
-		item.updatedDate = kendo.parseDate(item.updatedDate);
-	}
+	parseEntityData(item);
 	if (item.roles) {
 		item.cdRoles = swArrayAsCommaDelimited(item.roles);
 	}
@@ -186,12 +166,7 @@ function parseDeviceGroupData(item) {
 
 /** Converts fields that need to be parsed in an assignment */
 function parseAssignmentData(item) {
-	if (item.createdDate && typeof item.createdDate === "string") {
-		item.createdDate = kendo.parseDate(item.createdDate);
-	}
-	if (item.updatedDate && typeof item.updatedDate === "string") {
-		item.updatedDate = kendo.parseDate(item.updatedDate);
-	}
+	parseEntityData(item);
 	if (item.activeDate && typeof item.activeDate === "string") {
 		item.activeDate = kendo.parseDate(item.activeDate);
 	}
@@ -212,22 +187,12 @@ function parseEventData(item) {
 
 /** Converts fields that need to be parsed in a zone */
 function parseZoneData(item) {
-	if (item.createdDate && typeof item.createdDate === "string") {
-		item.createdDate = kendo.parseDate(item.createdDate);
-	}
-	if (item.updatedDate && typeof item.updatedDate === "string") {
-		item.updatedDate = kendo.parseDate(item.updatedDate);
-	}
+	parseEntityData(item);
 }
 
 /** Converts fields that need to be parsed in a batch operation */
 function parseBatchOperationData(item) {
-	if (item.createdDate && typeof item.createdDate === "string") {
-		item.createdDate = kendo.parseDate(item.createdDate);
-	}
-	if (item.updatedDate && typeof item.updatedDate === "string") {
-		item.updatedDate = kendo.parseDate(item.updatedDate);
-	}
+	parseEntityData(item);
 	if (item.processingStartedDate && typeof item.processingStartedDate === "string") {
 		item.processingStartedDate = kendo.parseDate(item.processingStartedDate);
 	}
@@ -245,14 +210,20 @@ function parseBatchElementData(item) {
 
 /** Converts fields that need to be parsed in a user */
 function parseUserData(item) {
-	if (item.createdDate && typeof item.createdDate === "string") {
-		item.createdDate = kendo.parseDate(item.createdDate);
-	}
-	if (item.updatedDate && typeof item.updatedDate === "string") {
-		item.updatedDate = kendo.parseDate(item.updatedDate);
-	}
+	parseEntityData(item);
 	if (item.lastLogin && typeof item.lastLogin === "string") {
 		item.lastLogin = kendo.parseDate(item.lastLogin);
+	}
+}
+
+/** Converts fields that need to be parsed in a SiteWhere entity */
+function parseScheduleData(item) {
+	parseEntityData(item);
+	if (item.startDate && typeof item.startDate === "string") {
+		item.startDate = kendo.parseDate(item.startDate);
+	}
+	if (item.endDate && typeof item.endDate === "string") {
+		item.endDate = kendo.parseDate(item.endDate);
 	}
 }
 

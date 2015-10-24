@@ -7,6 +7,8 @@
  */
 package com.sitewhere.mongodb.scheduling;
 
+import java.util.Date;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
@@ -34,6 +36,12 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
 
 	/** Property for trigger configuration */
 	public static final String PROP_TRIGGER_CONFIGURATION = "config";
+
+	/** Property for start date */
+	public static final String PROP_START_DATE = "start";
+
+	/** Property for end date */
+	public static final String PROP_END_DATE = "end";
 
 	/*
 	 * (non-Javadoc)
@@ -64,6 +72,8 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
 	public static void toDBObject(ISchedule source, BasicDBObject target) {
 		target.append(PROP_TOKEN, source.getToken());
 		target.append(PROP_NAME, source.getName());
+		target.append(PROP_START_DATE, source.getStartDate());
+		target.append(PROP_END_DATE, source.getEndDate());
 		target.append(PROP_TRIGGER_TYPE, source.getTriggerType().name());
 
 		BasicDBObject config = new BasicDBObject();
@@ -86,9 +96,13 @@ public class MongoSchedule implements MongoConverter<ISchedule> {
 		String token = (String) source.get(PROP_TOKEN);
 		String name = (String) source.get(PROP_NAME);
 		String type = (String) source.get(PROP_TRIGGER_TYPE);
+		Date startDate = (Date) source.get(PROP_START_DATE);
+		Date endDate = (Date) source.get(PROP_END_DATE);
 
 		target.setToken(token);
 		target.setName(name);
+		target.setStartDate(startDate);
+		target.setEndDate(endDate);
 		target.setTriggerType(TriggerType.valueOf(type));
 
 		DBObject config = (DBObject) source.get(PROP_TRIGGER_CONFIGURATION);
