@@ -42,6 +42,11 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
+import com.sitewhere.web.rest.annotations.Documented;
+import com.sitewhere.web.rest.annotations.DocumentedController;
+import com.sitewhere.web.rest.annotations.Example;
+import com.sitewhere.web.rest.annotations.Example.Stage;
+import com.sitewhere.web.rest.documentation.BatchOperations;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -54,6 +59,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Controller
 @RequestMapping(value = "/batch")
 @Api(value = "batch", description = "Operations related to SiteWhere batch operations.")
+@DocumentedController(name = "Batch Operations")
 public class BatchOperationsController extends SiteWhereController {
 
 	/** Static logger instance */
@@ -61,8 +67,9 @@ public class BatchOperationsController extends SiteWhereController {
 
 	@RequestMapping(value = "/{batchToken}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get a batch operation by unique token")
+	@ApiOperation(value = "Get batch operation by unique token")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "getBatchOperationByTokenResponse.md") })
 	public IBatchOperation getBatchOperationByToken(
 			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String batchToken,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -82,8 +89,9 @@ public class BatchOperationsController extends SiteWhereController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List all batch operations")
+	@ApiOperation(value = "List batch operations")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationsResponse.class, description = "listBatchOperationsResponse.md") })
 	public ISearchResults<IBatchOperation> listBatchOperations(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -107,8 +115,9 @@ public class BatchOperationsController extends SiteWhereController {
 
 	@RequestMapping(value = "/{operationToken}/elements", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "List elements from a batch operation")
+	@ApiOperation(value = "List batch operation elements")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationElementsResponse.class, description = "listBatchOperationElementsResponse.md") })
 	public ISearchResults<IBatchElement> listBatchOperationElements(
 			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String operationToken,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
@@ -128,8 +137,11 @@ public class BatchOperationsController extends SiteWhereController {
 
 	@RequestMapping(value = "/command", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new batch command invocation")
+	@ApiOperation(value = "Create new batch command invocation")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationCreateRequest.class, description = "createBatchCommandInvocationRequest.md"),
+			@Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "createBatchCommandInvocationResponse.md") })
 	public IBatchOperation createBatchCommandInvocation(@RequestBody BatchCommandInvocationRequest request,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createBatchCommandInvocation", LOGGER);
@@ -145,8 +157,13 @@ public class BatchOperationsController extends SiteWhereController {
 
 	@RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
 	@ResponseBody
-	@ApiOperation(value = "Create a new batch command invocation based on criteria")
+	@ApiOperation(value = "Create batch command operation based on criteria")
 	@Secured({ SitewhereRoles.ROLE_AUTHENTICATED_USER })
+	@Documented(examples = {
+			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaSpecRequest.class, description = "createBatchCommandByCriteriaSpecRequest.md"),
+			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaGroupRequest.class, description = "createBatchCommandByCriteriaGroupRequest.md"),
+			@Example(stage = Stage.Request, json = BatchOperations.BatchCommandInvocationByCriteriaGroupRoleRequest.class, description = "createBatchCommandByCriteriaGroupRoleRequest.md"),
+			@Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "createBatchCommandByCriteriaResponse.md") })
 	public IBatchOperation createBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createBatchCommandByCriteria", LOGGER);

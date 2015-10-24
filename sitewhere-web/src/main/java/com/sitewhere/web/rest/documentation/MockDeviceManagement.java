@@ -107,6 +107,18 @@ public class MockDeviceManagement extends DeviceManagementDecorator {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.device.DeviceManagementDecorator#getCurrentDeviceAssignment(com.sitewhere
+	 * .spi.device.IDevice)
+	 */
+	@Override
+	public IDeviceAssignment getCurrentDeviceAssignment(IDevice device) throws SiteWhereException {
+		return getDeviceAssignmentByToken(device.getAssignmentToken());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.device.DeviceManagementDecorator#getDeviceForAssignment(com.sitewhere
 	 * .spi.device.IDeviceAssignment)
 	 */

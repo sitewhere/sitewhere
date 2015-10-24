@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
@@ -22,6 +24,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateRequest implements
 		IDeviceCommandInvocationCreateRequest, Serializable {
 

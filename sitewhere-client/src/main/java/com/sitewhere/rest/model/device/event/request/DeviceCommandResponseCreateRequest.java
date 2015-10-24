@@ -9,6 +9,8 @@ package com.sitewhere.rest.model.device.event.request;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 
@@ -17,6 +19,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceCommandResponseCreateRequest extends DeviceEventCreateRequest implements
 		IDeviceCommandResponseCreateRequest, Serializable {
 

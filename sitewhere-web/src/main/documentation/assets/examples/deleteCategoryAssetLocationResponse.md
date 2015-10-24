@@ -1,0 +1,1 @@
+If the asset deleted was a location asset, the response will resemble the output below:

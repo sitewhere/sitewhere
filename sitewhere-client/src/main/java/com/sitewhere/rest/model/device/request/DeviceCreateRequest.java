@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.spi.device.DeviceStatus;
 import com.sitewhere.spi.device.IDeviceElementMapping;
@@ -21,6 +23,7 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
  * 
  * @author Derek Adams
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 
 	/** Serialization version identifier */
@@ -39,7 +42,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	private String parentHardwareId;
 
 	/** Indicates whether parent hardware id should be removed */
-	private boolean removeParentHardwareId = false;
+	private Boolean removeParentHardwareId;
 
 	/** List of device element mappings */
 	private List<DeviceElementMapping> deviceElementMappings;
@@ -111,11 +114,11 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 	 * @see
 	 * com.sitewhere.spi.device.request.IDeviceCreateRequest#isRemoveParentHardwareId()
 	 */
-	public boolean isRemoveParentHardwareId() {
+	public Boolean isRemoveParentHardwareId() {
 		return removeParentHardwareId;
 	}
 
-	public void setRemoveParentHardwareId(boolean removeParentHardwareId) {
+	public void setRemoveParentHardwareId(Boolean removeParentHardwareId) {
 		this.removeParentHardwareId = removeParentHardwareId;
 	}
 

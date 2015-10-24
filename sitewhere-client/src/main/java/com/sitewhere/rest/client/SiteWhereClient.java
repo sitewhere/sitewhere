@@ -596,12 +596,17 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 * int)
 	 */
 	@Override
-	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken, int maxCount)
+	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken, DateRangeSearchCriteria searchCriteria)
 			throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("token", assignmentToken);
-		vars.put("count", String.valueOf(maxCount));
-		String url = getBaseUrl() + "assignments/{token}/measurements?count={count}";
+		addSearchCriteria(vars, searchCriteria);
+                          
+		String url = getBaseUrl() + "assignments/{token}/measurements?";
+                if (searchCriteria != null) {
+                    url += getSearchCriteriaFields(searchCriteria);
+		}
+                
 		return sendRest(url, HttpMethod.GET, null, DeviceMeasurementsSearchResults.class, vars);
 	}
 

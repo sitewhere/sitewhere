@@ -409,7 +409,7 @@ public class SiteWherePersistence {
 		if (request.getSpecificationToken() != null) {
 			target.setSpecificationToken(request.getSpecificationToken());
 		}
-		if (request.isRemoveParentHardwareId()) {
+		if (request.isRemoveParentHardwareId() == Boolean.TRUE) {
 			target.setParentHardwareId(null);
 		}
 		if (request.getParentHardwareId() != null) {

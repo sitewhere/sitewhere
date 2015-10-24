@@ -30,6 +30,7 @@ public class MockAssetModuleManager extends AssetModuleManager {
 		assets.put(ExampleData.ASSET_DEREK.getId(), ExampleData.ASSET_DEREK);
 		assets.put(ExampleData.ASSET_MARTIN.getId(), ExampleData.ASSET_MARTIN);
 		assets.put(ExampleData.ASSET_CATERPILLAR.getId(), ExampleData.ASSET_CATERPILLAR);
+		assets.put(ExampleData.ASSET_MEITRACK.getId(), ExampleData.ASSET_MEITRACK);
 	}
 
 	/*

@@ -53,7 +53,7 @@ public interface IDeviceCreateRequest {
 	 * 
 	 * @return
 	 */
-	public boolean isRemoveParentHardwareId();
+	public Boolean isRemoveParentHardwareId();
 
 	/**
 	 * Get the list of device element mappings.

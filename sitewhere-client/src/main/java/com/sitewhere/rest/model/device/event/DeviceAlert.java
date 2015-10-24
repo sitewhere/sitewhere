@@ -9,6 +9,8 @@ package com.sitewhere.rest.model.device.event;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
@@ -20,6 +22,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
  * 
  * @author dadams
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceAlert extends DeviceEvent implements IDeviceAlert, Serializable {
 
 	/** For Java serialization */

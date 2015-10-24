@@ -8,18 +8,20 @@
 package com.sitewhere.web.rest.documentation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.AssetModule;
 import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
+import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
+import com.sitewhere.rest.model.asset.request.LocationAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
+import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.device.IDeviceAssignment;
 
@@ -145,12 +147,13 @@ public class Assets {
 
 		public Object generate() throws SiteWhereException {
 			PersonAssetCreateRequest request = new PersonAssetCreateRequest();
-			request.setId("john");
-			request.setName("John Doe");
-			request.setUserName("jdoe");
-			request.setEmailAddress("jdoe@example.com");
-			request.setImageUrl("http://example.com/joe.jpg");
-			request.setRoles(Arrays.asList(new String[] { "developer" }));
+			request.setId(ExampleData.ASSET_DEREK.getId());
+			request.setName(ExampleData.ASSET_DEREK.getName());
+			request.setUserName(ExampleData.ASSET_DEREK.getUserName());
+			request.setEmailAddress(ExampleData.ASSET_DEREK.getEmailAddress());
+			request.setImageUrl(ExampleData.ASSET_DEREK.getImageUrl());
+			request.setRoles(ExampleData.ASSET_DEREK.getRoles());
+			request.setProperties(ExampleData.ASSET_DEREK.getProperties());
 			return request;
 		}
 	}
@@ -159,12 +162,100 @@ public class Assets {
 
 		public Object generate() throws SiteWhereException {
 			PersonAssetCreateRequest request = new PersonAssetCreateRequest();
-			request.setName("John Doe");
-			request.setUserName("jdoe");
-			request.setEmailAddress("jdoe@example.com");
-			request.setImageUrl("http://example.com/joe.jpg");
-			request.setRoles(Arrays.asList(new String[] { "developer" }));
+			request.setName(ExampleData.ASSET_DEREK.getName());
+			request.setUserName(ExampleData.ASSET_DEREK.getUserName());
+			request.setEmailAddress(ExampleData.ASSET_DEREK.getEmailAddress());
+			request.setImageUrl(ExampleData.ASSET_DEREK.getImageUrl());
+			request.setRoles(ExampleData.ASSET_DEREK.getRoles());
+			request.setProperties(ExampleData.ASSET_DEREK.getProperties());
 			return request;
+		}
+	}
+
+	public static class CreateHardwareAssetInCategory {
+
+		public Object generate() throws SiteWhereException {
+			HardwareAssetCreateRequest request = new HardwareAssetCreateRequest();
+			request.setId(ExampleData.ASSET_CATERPILLAR.getId());
+			request.setName(ExampleData.ASSET_CATERPILLAR.getName());
+			request.setSku(ExampleData.ASSET_CATERPILLAR.getSku());
+			request.setDescription(ExampleData.ASSET_CATERPILLAR.getDescription());
+			request.setImageUrl(ExampleData.ASSET_CATERPILLAR.getImageUrl());
+			request.setProperties(ExampleData.ASSET_CATERPILLAR.getProperties());
+			return request;
+		}
+	}
+
+	public static class UpdateHardwareAssetInCategory {
+
+		public Object generate() throws SiteWhereException {
+			HardwareAssetCreateRequest request = new HardwareAssetCreateRequest();
+			request.setName(ExampleData.ASSET_CATERPILLAR.getName());
+			request.setSku(ExampleData.ASSET_CATERPILLAR.getSku());
+			request.setDescription(ExampleData.ASSET_CATERPILLAR.getDescription());
+			request.setImageUrl(ExampleData.ASSET_CATERPILLAR.getImageUrl());
+			request.setProperties(ExampleData.ASSET_CATERPILLAR.getProperties());
+			return request;
+		}
+	}
+
+	public static class CreateLocationAssetInCategory {
+
+		public Object generate() throws SiteWhereException {
+			LocationAssetCreateRequest request = new LocationAssetCreateRequest();
+			request.setId(ExampleData.ASSET_TRAILER.getId());
+			request.setName(ExampleData.ASSET_TRAILER.getName());
+			request.setLatitude(ExampleData.ASSET_TRAILER.getLatitude());
+			request.setLongitude(ExampleData.ASSET_TRAILER.getLongitude());
+			request.setElevation(ExampleData.ASSET_TRAILER.getElevation());
+			request.setImageUrl(ExampleData.ASSET_TRAILER.getImageUrl());
+			request.setProperties(ExampleData.ASSET_TRAILER.getProperties());
+			return request;
+		}
+	}
+
+	public static class UpdateLocationAssetInCategory {
+
+		public Object generate() throws SiteWhereException {
+			LocationAssetCreateRequest request = new LocationAssetCreateRequest();
+			request.setName(ExampleData.ASSET_TRAILER.getName());
+			request.setLatitude(ExampleData.ASSET_TRAILER.getLatitude());
+			request.setLongitude(ExampleData.ASSET_TRAILER.getLongitude());
+			request.setElevation(ExampleData.ASSET_TRAILER.getElevation());
+			request.setImageUrl(ExampleData.ASSET_TRAILER.getImageUrl());
+			request.setProperties(ExampleData.ASSET_TRAILER.getProperties());
+			return request;
+		}
+	}
+
+	public static class GetCategoryAssetPerson {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.ASSET_DEREK;
+		}
+	}
+
+	public static class GetCategoryAssetHardware {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.ASSET_CATERPILLAR;
+		}
+	}
+
+	public static class GetCategoryAssetLocation {
+
+		public Object generate() throws SiteWhereException {
+			return ExampleData.ASSET_TRAILER;
+		}
+	}
+
+	public static class ListCategoryAssets {
+
+		public Object generate() throws SiteWhereException {
+			List<IAsset> assets = new ArrayList<IAsset>();
+			assets.add(ExampleData.ASSET_DEREK);
+			assets.add(ExampleData.ASSET_MARTIN);
+			return new SearchResults<IAsset>(assets, 2);
 		}
 	}
 }
