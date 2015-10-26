@@ -577,6 +577,23 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+
+	<!-- Dweet.io outbound event processor -->
+	<xsd:element name="dweet-io-event-processor" type="dweetIoEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends events to the Dweet.io cloud service where they can be viewed
+				and integrated with other services.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="dweetIoEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
 	<!-- Siddhi CEP outbound event processor -->
 	<xsd:element name="siddhi-event-processor" type="siddhiEventProcessorType"

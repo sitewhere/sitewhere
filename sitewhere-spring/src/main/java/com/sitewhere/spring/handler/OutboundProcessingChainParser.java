@@ -20,6 +20,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.azure.device.communication.EventHubOutboundEventProcessor;
+import com.sitewhere.cloud.providers.dweetio.DweetIoEventProcessor;
 import com.sitewhere.cloud.providers.initialstate.InitialStateEventProcessor;
 import com.sitewhere.device.communication.DeviceCommandEventProcessor;
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
@@ -87,6 +88,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 			case InitialStateEventProcessor: {
 				processors.add(parseInitialStateEventProcessor(child, context));
+				break;
+			}
+			case DweetIoEventProcessor: {
+				processors.add(parseDweetIoEventProcessor(child, context));
 				break;
 			}
 			case ProvisioningEventProcessor: {
@@ -284,6 +289,20 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parse configuration for event processor that delivers events to dweet.io.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseDweetIoEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(DweetIoEventProcessor.class);
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
 	 * Parse configuration for event processor that routes commands to communication
 	 * subsystem.
 	 * 
@@ -429,6 +448,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		/** Sends outbound events to InitialState.com */
 		InitialStateEventProcessor("initial-state-event-processor"),
+
+		/** Sends outbound events to dweet.io */
+		DweetIoEventProcessor("dweet-io-event-processor"),
 
 		/** DEPRECATED: Use 'command-delivery-event-processor' */
 		ProvisioningEventProcessor("provisioning-event-processor"),
