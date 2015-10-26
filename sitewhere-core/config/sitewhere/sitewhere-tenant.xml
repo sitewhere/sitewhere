@@ -219,8 +219,10 @@
 			<sw:initial-state-event-processor streamingAccessKey="your_access_key"/>
 			 -->
 			 
-			 <!-- Sends events to dweet.io -->
-			 <sw:dweet-io-event-processor/>
+			<!-- Sends events to dweet.io -->
+			<!-- 
+			<sw:dweet-io-event-processor/>
+			 -->
 
 			<!-- Processes event streams using Siddhi for complex event processing -->
 			<!-- 
