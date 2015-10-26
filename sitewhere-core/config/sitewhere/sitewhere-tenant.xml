@@ -199,7 +199,9 @@
 			 -->
 			
 			<!-- Send outbound device events over Hazelcast -->
+			<!-- 
 			<sw:hazelcast-event-processor/>
+			 -->
 			
 			<!-- Index outbound device events in Solr -->
 			<!-- 
