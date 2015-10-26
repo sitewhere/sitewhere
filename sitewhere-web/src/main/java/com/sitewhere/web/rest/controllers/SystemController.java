@@ -77,7 +77,7 @@ public class SystemController extends SiteWhereController {
 	public ISiteWhereServerState getServerState() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getServerState", LOGGER);
 		try {
-			return SiteWhere.getServer().getServerState();
+			return SiteWhere.getServer().getServerState(true);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

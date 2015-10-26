@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="sitewhere_title" value="Server Information" />
 <c:set var="sitewhere_section" value="server" />
+<c:set var="use_dataviz" value="true" />
 <%@ include file="../includes/top.inc"%>
 
 <style>
@@ -17,6 +18,13 @@
 	font-weight: bold;
 	display: inline-block;
 	min-width: 300px;
+}
+
+.littlegraph {
+	width: 400px;
+	height: 23px;
+	float: right;
+	border: 1px solid #ccc;
 }
 </style>
 
@@ -63,10 +71,12 @@
 					<span class="panel-item-label">JVM Max Memory</span><span id="jvm-max-memory"></span>
 				</div>
 				<div class="panel-item panel-item-odd">
-					<span class="panel-item-label">JVM Total Memory</span><span id="jvm-total-memory"></span>
+					<span class="panel-item-label">JVM Total Memory</span><span id="jvm-total-memory"></span> <span
+						class="littlegraph" id="jvm-total-mem-history"></span>
 				</div>
 				<div class="panel-item panel-item-even">
-					<span class="panel-item-label">JVM Free Memory</span><span id="jvm-free-memory"></span>
+					<span class="panel-item-label">JVM Free Memory</span><span id="jvm-free-memory"></span> <span
+						class="littlegraph" id="jvm-free-mem-history"></span>
 				</div>
 			</div>
 		</li>
@@ -76,11 +86,39 @@
 	/** Panel bar handle */
 	var panelBar;
 
+	/** JVM total memory history */
+	var jvmTotalMemHistory;
+
+	/** JVM free memory history */
+	var jvmFreeMemHistory;
+
 	$(document).ready(function() {
 		panelBar = $("#panelbar").kendoPanelBar({
 			expandMode : "multiple",
-			animation: false
+			animation : false
 		}).data("kendoPanelBar");
+
+		jvmTotalMemHistory = $("#jvm-total-mem-history").kendoSparkline({
+			type : "area",
+			tooltip : {
+				visible : false
+			},
+			series : [ {
+				data : [],
+				color : "#333",
+			} ],
+		}).data("kendoSparkline");
+
+		jvmFreeMemHistory = $("#jvm-free-mem-history").kendoSparkline({
+			type : "area",
+			tooltip : {
+				visible : false
+			},
+			series : [ {
+				data : [],
+				color : "#333",
+			} ],
+		}).data("kendoSparkline");
 
 		/** Handle add site functionality */
 		$('#btn-refresh-data').click(function(event) {
@@ -112,6 +150,11 @@
 		$('#jvm-max-memory').text(Math.floor(data.java.jvmMaxMemory / (1024 * 1024)) + " MB");
 		$('#jvm-total-memory').text(Math.floor(data.java.jvmTotalMemory / (1024 * 1024)) + " MB");
 		$('#jvm-free-memory').text(Math.floor(data.java.jvmFreeMemory / (1024 * 1024)) + " MB");
+
+		jvmTotalMemHistory.options.series[0].data = data.java.jvmTotalMemoryHistory;
+		jvmTotalMemHistory.refresh();
+		jvmFreeMemHistory.options.series[0].data = data.java.jvmFreeMemoryHistory;
+		jvmFreeMemHistory.refresh();
 	}
 
 	/** Handle error on getting assignment data */

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.mule.util.StringMessageUtils;
@@ -33,6 +35,7 @@ import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
+import com.sitewhere.server.jvm.JvmHistoryMonitor;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.server.user.UserManagementTriggers;
 import com.sitewhere.spi.ServerStartupException;
@@ -120,6 +123,12 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/** Timestamp when server was started */
 	private Long uptime;
 
+	/** Records historical values for JVM */
+	private JvmHistoryMonitor jvmHistory = new JvmHistoryMonitor(this);
+
+	/** Thread for executing JVM history monitor */
+	private ExecutorService executor;
+
 	public SiteWhereServer() {
 		super(LifecycleComponentType.System);
 	}
@@ -145,10 +154,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState()
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState(boolean)
 	 */
-	public ISiteWhereServerState getServerState() throws SiteWhereException {
-		this.serverState = computeServerState();
+	public ISiteWhereServerState getServerState(boolean includeHistorical) throws SiteWhereException {
+		this.serverState = computeServerState(includeHistorical);
 		return serverState;
 	}
 
@@ -496,6 +505,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		// Set uptime timestamp.
 		this.uptime = System.currentTimeMillis();
+
+		// Schedule JVM monitor.
+		executor = Executors.newSingleThreadExecutor();
+		executor.execute(jvmHistory);
 	}
 
 	/**
@@ -571,6 +584,11 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		if (executor != null) {
+			executor.shutdownNow();
+			executor = null;
+		}
+
 		// Stop tenant engines.
 		for (ISiteWhereTenantEngine engine : tenantEnginesById.values()) {
 			if (engine.getLifecycleStatus() == LifecycleStatus.Started) {
@@ -592,7 +610,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected ISiteWhereServerState computeServerState() throws SiteWhereException {
+	protected ISiteWhereServerState computeServerState(boolean includeHistorical) throws SiteWhereException {
 		SiteWhereServerState state = new SiteWhereServerState();
 
 		String osName = System.getProperty("os.name");
@@ -619,6 +637,11 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		java.setJvmFreeMemory(runtime.freeMemory());
 		java.setJvmTotalMemory(runtime.totalMemory());
 		java.setJvmMaxMemory(runtime.maxMemory());
+
+		if (includeHistorical) {
+			java.setJvmTotalMemoryHistory(jvmHistory.getTotalMemory());
+			java.setJvmFreeMemoryHistory(jvmHistory.getFreeMemory());
+		}
 
 		return state;
 	}

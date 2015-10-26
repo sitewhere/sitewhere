@@ -5,6 +5,9 @@
 <script src="${pageContext.request.contextPath}/scripts/jquery-1.10.2.min.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/kendo.web.min.js"></script>
+<c:if test="${use_dataviz == true}">
+<script src="${pageContext.request.contextPath}/scripts/kendo.dataviz.min.js"></script>
+</c:if>
 <script src="${pageContext.request.contextPath}/scripts/modernizr.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/sitewhere.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/timeago.js"></script>

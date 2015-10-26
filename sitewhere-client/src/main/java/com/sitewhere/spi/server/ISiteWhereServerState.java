@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.server;
 
+import java.util.List;
+
 /**
  * Holds information about current state of SiteWhere server.
  * 
@@ -90,10 +92,39 @@ public interface ISiteWhereServerState {
 		 */
 		public String getJvmVersion();
 
+		/**
+		 * Get total memory allocated to JVM.
+		 * 
+		 * @return
+		 */
 		public Long getJvmTotalMemory();
 
+		/**
+		 * Get recent historical values for JVM total memory.
+		 * 
+		 * @return
+		 */
+		public List<Long> getJvmTotalMemoryHistory();
+
+		/**
+		 * Get free memory available to JVM.
+		 * 
+		 * @return
+		 */
 		public Long getJvmFreeMemory();
 
+		/**
+		 * Get recent historical values for JVM free memory.
+		 * 
+		 * @return
+		 */
+		public List<Long> getJvmFreeMemoryHistory();
+
+		/**
+		 * Get max memory available to JVM.
+		 * 
+		 * @return
+		 */
 		public Long getJvmMaxMemory();
 	}
 }

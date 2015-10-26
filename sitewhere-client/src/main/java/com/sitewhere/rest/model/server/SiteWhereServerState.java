@@ -7,6 +7,8 @@
  */
 package com.sitewhere.rest.model.server;
 
+import java.util.List;
+
 import com.sitewhere.spi.server.ISiteWhereServerState;
 
 /**
@@ -120,7 +122,11 @@ public class SiteWhereServerState implements ISiteWhereServerState {
 
 		private Long jvmFreeMemory;
 
+		private List<Long> jvmFreeMemoryHistory;
+
 		private Long jvmTotalMemory;
+
+		private List<Long> jvmTotalMemoryHistory;
 
 		private Long jvmMaxMemory;
 
@@ -148,12 +154,28 @@ public class SiteWhereServerState implements ISiteWhereServerState {
 			this.jvmFreeMemory = jvmFreeMemory;
 		}
 
+		public List<Long> getJvmFreeMemoryHistory() {
+			return jvmFreeMemoryHistory;
+		}
+
+		public void setJvmFreeMemoryHistory(List<Long> jvmFreeMemoryHistory) {
+			this.jvmFreeMemoryHistory = jvmFreeMemoryHistory;
+		}
+
 		public Long getJvmTotalMemory() {
 			return jvmTotalMemory;
 		}
 
 		public void setJvmTotalMemory(Long jvmTotalMemory) {
 			this.jvmTotalMemory = jvmTotalMemory;
+		}
+
+		public List<Long> getJvmTotalMemoryHistory() {
+			return jvmTotalMemoryHistory;
+		}
+
+		public void setJvmTotalMemoryHistory(List<Long> jvmTotalMemoryHistory) {
+			this.jvmTotalMemoryHistory = jvmTotalMemoryHistory;
 		}
 
 		public Long getJvmMaxMemory() {
