@@ -227,23 +227,25 @@
 	/** Called when selected asset module changes */
 	function spcAssetModuleChanged() {
 		var assetModuleId = spcGetSelectedAssetModuleId();
-		var criteria = $('#spc-hardware-search').val();
-		spcHardwareDS =
-				new kendo.data.DataSource({
-					transport : {
-						read : {
-							url : "${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
-									+ "/assets?criteria=" + criteria
-									+ "&tenantAuthToken=${tenant.authenticationToken}",
-							dataType : "json",
-						}
-					},
-					schema : {
-						data : "results",
-						total : "numResults",
-					},
-				});
-		spcHardwareMatches.setDataSource(spcHardwareDS);
+		if (assetModuleId) {
+			var criteria = $('#spc-hardware-search').val();
+			spcHardwareDS =
+					new kendo.data.DataSource({
+						transport : {
+							read : {
+								url : "${pageContext.request.contextPath}/api/assets/modules/"
+										+ assetModuleId + "/assets?criteria=" + criteria
+										+ "&tenantAuthToken=${tenant.authenticationToken}",
+								dataType : "json",
+							}
+						},
+						schema : {
+							data : "results",
+							total : "numResults",
+						},
+					});
+			spcHardwareMatches.setDataSource(spcHardwareDS);
+		}
 	}
 
 	/** Gets the currently selected asset module id */
