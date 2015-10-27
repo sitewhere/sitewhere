@@ -7,7 +7,13 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +28,7 @@ import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
+import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.command.ICommandResponse;
@@ -259,6 +266,38 @@ public class TenantsController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "deleteTenantById", LOGGER);
 		try {
 			return SiteWhere.getServer().getUserManagement().deleteTenant(tenantId, force);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Lists all tenants that contain a device with the given hardware id.
+	 * 
+	 * @param hardwareId
+	 * @param servletRequest
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/device/{hardwareId}", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List tenants that contain a device")
+	@Secured({ SiteWhereRoles.REST })
+	public List<ITenant> listTenantsForDevice(
+			@ApiParam(value = "Hardware id", required = true) @PathVariable String hardwareId,
+			HttpServletRequest servletRequest) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listTenantsForDevice", LOGGER);
+		try {
+			List<ITenant> tenants =
+					SiteWhere.getServer().getAuthorizedTenants(
+							LoginManager.getCurrentlyLoggedInUser().getUsername());
+			List<ITenant> matches = new ArrayList<ITenant>();
+			for (ITenant tenant : tenants) {
+				if (SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId) != null) {
+					matches.add(tenant);
+				}
+			}
+			return matches;
 		} finally {
 			Tracer.stop(LOGGER);
 		}
