@@ -7,6 +7,9 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -23,6 +26,8 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
+import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.scheduling.marshaling.ScheduledJobMarshalHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;
@@ -125,6 +130,7 @@ public class ScheduledJobsController extends SiteWhereController {
 	/**
 	 * List scheduled jobs that match the criteria.
 	 * 
+	 * @param includeContext
 	 * @param page
 	 * @param pageSize
 	 * @param servletRequest
@@ -137,13 +143,26 @@ public class ScheduledJobsController extends SiteWhereController {
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.ListScheduledjobsResponse.class, description = "listScheduledJobsResponse.md") })
 	public ISearchResults<IScheduledJob> listScheduledJobs(
+			@ApiParam(value = "Include context information", required = false) @RequestParam(defaultValue = "false") boolean includeContext,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listScheduledJobs", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return getScheduleManagement(servletRequest).listScheduledJobs(criteria);
+			ISearchResults<IScheduledJob> results =
+					getScheduleManagement(servletRequest).listScheduledJobs(criteria);
+			if (!includeContext) {
+				return results;
+			} else {
+				List<IScheduledJob> converted = new ArrayList<IScheduledJob>();
+				ScheduledJobMarshalHelper helper =
+						new ScheduledJobMarshalHelper(getTenant(servletRequest), true);
+				for (IScheduledJob job : results.getResults()) {
+					converted.add(helper.convert(job));
+				}
+				return new SearchResults<IScheduledJob>(converted, results.getNumResults());
+			}
 		} finally {
 			Tracer.stop(LOGGER);
 		}

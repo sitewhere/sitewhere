@@ -81,7 +81,11 @@ public class DeviceAssignmentMarshalHelper {
 		}
 		if (source.getAssignmentType() != DeviceAssignmentType.Unassociated) {
 			IAsset asset = manager.getAssetById(source.getAssetModuleId(), source.getAssetId());
-			if (isIncludeAsset() || (asset == null)) {
+			if (asset != null) {
+				result.setAssetName(asset.getName());
+				result.setAssetImageUrl(asset.getImageUrl());
+			}
+			if (isIncludeAsset()) {
 				if (asset instanceof HardwareAsset) {
 					result.setAssociatedHardware((HardwareAsset) asset);
 				} else if (asset instanceof PersonAsset) {
@@ -89,9 +93,6 @@ public class DeviceAssignmentMarshalHelper {
 				} else if (asset instanceof LocationAsset) {
 					result.setAssociatedLocation((LocationAsset) asset);
 				}
-			} else {
-				result.setAssetName(asset.getName());
-				result.setAssetImageUrl(asset.getImageUrl());
 			}
 		}
 		result.setSiteToken(source.getSiteToken());

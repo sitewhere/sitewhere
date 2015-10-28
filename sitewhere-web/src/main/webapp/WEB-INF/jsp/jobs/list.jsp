@@ -7,6 +7,10 @@
 .sw-schedules-list {
 	border: 0px;
 }
+
+table#jobs tr td {
+	vertical-align: top;
+}
 </style>
 
 <!-- Title Bar -->
@@ -75,47 +79,46 @@
 		handleError(jqXHR, i18next("jobs.list.UTD"));
 	}
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					jobsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/jobs?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseEntityData(item);
-											});
-											return response;
-										}
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 50,
+			jobsDS =
+					new kendo.data.DataSource({
+						transport : {
+							read : {
+								url : "${pageContext.request.contextPath}/api/jobs?includeContext=true&"
+										+ "tenantAuthToken=${tenant.authenticationToken}",
+								dataType : "json",
+							}
+						},
+						schema : {
+							data : "results",
+							total : "numResults",
+							parse : function(response) {
+								$.each(response.results, function(index, item) {
+									parseEntityData(item);
 								});
-
-					/** Create the list */
-					$("#jobs").kendoGrid({
-						dataSource : jobsDS,
-						rowTemplate : kendo.template($("#tpl-scheduled-job-entry").html()),
-						scrollable : true,
-						height : 400,
+								return response;
+							}
+						},
+						serverPaging : true,
+						serverSorting : true,
+						pageSize : 50,
 					});
 
-					/** Pager for list */
-					$("#pager").kendoPager({
-						dataSource : jobsDS
-					});
-				});
+			/** Create the list */
+			$("#jobs").kendoGrid({
+				dataSource : jobsDS,
+				rowTemplate : kendo.template($("#tpl-scheduled-job-entry").html()),
+				scrollable : true,
+				height : 400,
+			});
+
+			/** Pager for list */
+			$("#pager").kendoPager({
+				dataSource : jobsDS
+			});
+		});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

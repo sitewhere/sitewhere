@@ -1,9 +1,18 @@
 <!-- Template for scheduled job row -->
 <script type="text/x-kendo-tmpl" id="tpl-scheduled-job-entry">
 	<tr class="sw-list-entry row-gradient">
-		<td>#:jobType#</td>
+# if (data.jobType == 'CommandInvocation') { #
+		<td>Invoke Command</td>
+		<td>Invoke #= context['invocationHtml'] # for <a href="../devices/#:context['assignment'].deviceHardwareId#.html">#= context['assignment'].device.assetName #</a> assigned to <a href="../assignments/#:context['assignment'].token#.html">#= context['assignment'].assetName #</a>.</td>
+# } else { #
+		<td>Job</td>
 		<td>#:token#</td>
+# } #
+# if (data.context['schedule']) { #
+		<td>#= context['schedule'].name #</td>
+# } else { #
 		<td>#:scheduleToken#</td>
+# } #
 		<td>#= formattedDate(createdDate) #</td>
 		<td>
 			<div style="width: 100%; text-align: center">

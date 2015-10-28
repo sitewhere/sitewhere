@@ -281,11 +281,12 @@
 	font-weight: bold;
 }
 
+/*
 .sw-list-entry:hover .sw-spec-command-name {
 	cursor: pointer;
 	border-bottom: 1px solid #060;
 }
-
+*/
 .sw-spec-command-param-name {
 	color: #333;
 }

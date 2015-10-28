@@ -10,6 +10,8 @@ package com.sitewhere.rest.model.scheduling;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
@@ -20,6 +22,7 @@ import com.sitewhere.spi.scheduling.ScheduledJobType;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class ScheduledJob extends MetadataProviderEntity implements IScheduledJob {
 
 	/** Serial version UID */
@@ -39,6 +42,11 @@ public class ScheduledJob extends MetadataProviderEntity implements IScheduledJo
 
 	/** Job state */
 	private ScheduledJobState jobState;
+
+	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+
+	/** Extra context information based on job type */
+	private Map<String, Object> context;
 
 	/*
 	 * (non-Javadoc)
@@ -103,5 +111,13 @@ public class ScheduledJob extends MetadataProviderEntity implements IScheduledJo
 
 	public void setJobState(ScheduledJobState jobState) {
 		this.jobState = jobState;
+	}
+
+	public Map<String, Object> getContext() {
+		return context;
+	}
+
+	public void setContext(Map<String, Object> context) {
+		this.context = context;
 	}
 }
