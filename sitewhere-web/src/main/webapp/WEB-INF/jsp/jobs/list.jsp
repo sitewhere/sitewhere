@@ -25,8 +25,8 @@ table#jobs tr td {
 </div>
 <table id="jobs">
 	<colgroup>
-		<col style="width: 25%;" />
-		<col style="width: 25%;" />
+		<col style="width: 20%;" />
+		<col style="width: 30%;" />
 		<col style="width: 25%;" />
 		<col style="width: 20%;" />
 		<col style="width: 5%;" />
@@ -34,7 +34,7 @@ table#jobs tr td {
 	<thead>
 		<tr>
 			<th data-i18n="public.Type">Type</th>
-			<th data-i18n="public.Token">Token</th>
+			<th data-i18n="public.Token">Details</th>
 			<th data-i18n="public.Schedule">Schedule</th>
 			<th data-i18n="public.CreatedDate">Created Date</th>
 			<th></th>

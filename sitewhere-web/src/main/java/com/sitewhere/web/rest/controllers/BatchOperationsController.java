@@ -9,6 +9,7 @@ package com.sitewhere.web.rest.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -31,12 +32,16 @@ import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
+import com.sitewhere.server.scheduling.ScheduledJobHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.batch.IBatchElement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.scheduling.IScheduledJob;
+import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
@@ -155,6 +160,15 @@ public class BatchOperationsController extends SiteWhereController {
 		}
 	}
 
+	/**
+	 * Create a batch operation that invokes a command for all devices that match the
+	 * given criteria.
+	 * 
+	 * @param request
+	 * @param servletRequest
+	 * @return
+	 * @throws SiteWhereException
+	 */
 	@RequestMapping(value = "/command/criteria", method = RequestMethod.POST)
 	@ResponseBody
 	@ApiOperation(value = "Create batch command operation based on criteria")
@@ -185,5 +199,55 @@ public class BatchOperationsController extends SiteWhereController {
 		} finally {
 			Tracer.stop(LOGGER);
 		}
+	}
+
+	/**
+	 * Schedule job that will create a new batch command invocation based on the given
+	 * criteria.
+	 * 
+	 * @param request
+	 * @param scheduleToken
+	 * @param servletRequest
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/command/criteria/schedules/{scheduleToken}", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Schedule batch command operation based on criteria")
+	@Secured({ SiteWhereRoles.REST })
+	@Documented
+	public IScheduledJob scheduleBatchCommandByCriteria(@RequestBody BatchCommandForCriteriaRequest request,
+			@ApiParam(value = "Schedule token", required = true) @PathVariable String scheduleToken,
+			HttpServletRequest servletRequest) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "scheduleBatchCommandByCriteria", LOGGER);
+		try {
+			assureDeviceCommand(request.getCommandToken(), servletRequest);
+			IScheduledJobCreateRequest job =
+					ScheduledJobHelper.createBatchCommandInvocationJobByCriteria(
+							UUID.randomUUID().toString(), request, scheduleToken);
+			return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(
+					job);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get a device command by unique token. Throw an exception if not found.
+	 * 
+	 * @param token
+	 * @param servletRequest
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IDeviceCommand assureDeviceCommand(String token, HttpServletRequest servletRequest)
+			throws SiteWhereException {
+		IDeviceCommand command =
+				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceCommandByToken(
+						token);
+		if (command == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidDeviceCommandToken, ErrorLevel.ERROR);
+		}
+		return command;
 	}
 }

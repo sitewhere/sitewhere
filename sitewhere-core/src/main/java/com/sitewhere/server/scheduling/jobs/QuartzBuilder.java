@@ -45,6 +45,14 @@ public class QuartzBuilder {
 			}
 			return builder.build();
 		}
+		case BatchCommandInvocation: {
+			JobBuilder builder =
+					JobBuilder.newJob(BatchCommandInvocationJob.class).withIdentity(job.getToken());
+			for (String key : job.getJobConfiguration().keySet()) {
+				builder.usingJobData(key, job.getJobConfiguration().get(key));
+			}
+			return builder.build();
+		}
 		default: {
 			throw new SiteWhereException("Unhandled job type: " + job.getJobType());
 		}

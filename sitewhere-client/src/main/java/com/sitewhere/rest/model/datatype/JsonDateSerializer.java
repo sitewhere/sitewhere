@@ -27,12 +27,22 @@ public class JsonDateSerializer extends JsonSerializer<Date> {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object,
-	 * com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
+	 * com.fasterxml.jackson.core.JsonGenerator,
+	 * com.fasterxml.jackson.databind.SerializerProvider)
 	 */
 	public void serialize(Date value, JsonGenerator gen, SerializerProvider arg2) throws IOException,
 			JsonProcessingException {
+		gen.writeString(JsonDateSerializer.serialize(value));
+	}
+
+	/**
+	 * Serialize a date in ISO 8601 format.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static final String serialize(Date value) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-		String formattedDate = formatter.format(value);
-		gen.writeString(formattedDate);
+		return formatter.format(value);
 	}
 }

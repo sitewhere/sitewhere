@@ -170,7 +170,7 @@
 						$.postJSON("${pageContext.request.contextPath}/api/assignments/" + ciAssignmentToken
 								+ "/invocations/schedules/" + scheduleToken
 								+ "?tenantAuthToken=${tenant.authenticationToken}", invocationData,
-							onCreateSuccess, onCreateFail);
+							onCreateSuccess, onScheduleFail);
 					} else {
 						$.postJSON("${pageContext.request.contextPath}/api/assignments/" + ciAssignmentToken
 								+ "/invocations?tenantAuthToken=${tenant.authenticationToken}",
@@ -186,7 +186,10 @@
 				}
 			}
 
-			/** Handle failed call to invoke device command */
+			function onScheduleFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to schedule device command.");
+			}
+
 			function onCreateFail(jqXHR, textStatus, errorThrown) {
 				handleError(jqXHR, "Unable to invoke device command.");
 			}

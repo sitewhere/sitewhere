@@ -30,4 +30,30 @@ public interface JobConstants {
 		/** Prefix for command parameter values */
 		public static final String PARAMETER_PREFIX = "param_";
 	}
+
+	/**
+	 * Constants used for batch command invocations.
+	 * 
+	 * @author Derek
+	 */
+	public static interface BatchCommandInvocation {
+
+		/** Indicates if results should be narrowed by device specification */
+		public static final String SPECIFICATION_TOKEN = "specificationToken";
+
+		/** Flag that excludes assigned devices */
+		public static final String EXCLUDE_ASSIGNED = "excludeAssigned";
+
+		/** Indicates if results should be narrowed by group */
+		public static final String GROUP_TOKEN = "groupToken";
+
+		/** Indicates if results should be narrowed by groups that have a given role */
+		public static final String GROUP_ROLE = "groupRole";
+
+		/** Indicates if results should be narrowed by devices created on or after a date */
+		public static final String START_DATE = "startDate";
+
+		/** Indicates if results should be narrowed by devices created on or before a date */
+		public static final String END_DATE = "endDate";
+	}
 }
