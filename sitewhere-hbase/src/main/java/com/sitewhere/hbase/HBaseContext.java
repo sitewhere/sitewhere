@@ -11,6 +11,7 @@ import com.sitewhere.hbase.asset.IAssetIdManager;
 import com.sitewhere.hbase.device.IDeviceEventBuffer;
 import com.sitewhere.hbase.device.IDeviceIdManager;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
+import com.sitewhere.hbase.scheduling.IScheduleIdManager;
 import com.sitewhere.hbase.user.IUserIdManager;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.user.ITenant;
@@ -42,6 +43,9 @@ public class HBaseContext implements IHBaseContext {
 
 	/** Asset id manager */
 	private IAssetIdManager assetIdManager;
+
+	/** Schedule id manager */
+	private IScheduleIdManager scheduleIdManager;
 
 	/** User id manager */
 	private IUserIdManager userIdManager;
@@ -100,6 +104,14 @@ public class HBaseContext implements IHBaseContext {
 
 	public void setAssetIdManager(IAssetIdManager assetIdManager) {
 		this.assetIdManager = assetIdManager;
+	}
+
+	public IScheduleIdManager getScheduleIdManager() {
+		return scheduleIdManager;
+	}
+
+	public void setScheduleIdManager(IScheduleIdManager scheduleIdManager) {
+		this.scheduleIdManager = scheduleIdManager;
 	}
 
 	public IUserIdManager getUserIdManager() {

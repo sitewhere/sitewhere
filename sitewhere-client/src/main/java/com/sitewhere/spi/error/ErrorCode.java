@@ -134,6 +134,12 @@ public enum ErrorCode {
 	/** Invalid scheduled job token */
 	InvalidScheduledJobToken(531, "Scheduled job not found."),
 
+	/** Invalid schedule token */
+	DuplicateScheduleToken(535, "Schedule token already in use."),
+
+	/** Invalid scheduled job token */
+	DuplicateScheduledJobToken(536, "Scheduled job token already in use."),
+
 	/******************
 	 * DEVICE COMMAND *
 	 ******************/

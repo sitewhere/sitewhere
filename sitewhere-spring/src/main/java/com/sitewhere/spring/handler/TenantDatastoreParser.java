@@ -23,6 +23,7 @@ import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.hbase.asset.HBaseAssetManagement;
 import com.sitewhere.hbase.device.HBaseDeviceManagement;
+import com.sitewhere.hbase.scheduling.HBaseScheduleManagement;
 import com.sitewhere.mongodb.asset.MongoAssetManagement;
 import com.sitewhere.mongodb.device.MongoDeviceManagement;
 import com.sitewhere.mongodb.scheduling.MongoScheduleManagement;
@@ -150,11 +151,17 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
 				dm.getBeanDefinition());
 
-		// Register Mongo asset management implementation.
+		// Register HBase asset management implementation.
 		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(HBaseAssetManagement.class);
 		am.addPropertyReference("client", "hbase");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
 				am.getBeanDefinition());
+
+		// Register HBase schedule management implementation.
+		BeanDefinitionBuilder sm = BeanDefinitionBuilder.rootBeanDefinition(HBaseScheduleManagement.class);
+		sm.addPropertyReference("client", "hbase");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT,
+				sm.getBeanDefinition());
 	}
 
 	/**

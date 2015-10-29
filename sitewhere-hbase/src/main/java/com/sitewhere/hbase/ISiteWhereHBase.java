@@ -41,6 +41,9 @@ public interface ISiteWhereHBase {
 	/** Assets table name */
 	public static final byte[] ASSETS_TABLE_NAME = Bytes.toBytes("assets");
 
+	/** Schedules table name */
+	public static final byte[] SCHEDULES_TABLE_NAME = Bytes.toBytes("schedules");
+
 	/*******************
 	 * COLUMN FAMILIES *
 	 *******************/

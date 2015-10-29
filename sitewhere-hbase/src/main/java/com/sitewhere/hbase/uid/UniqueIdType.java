@@ -45,7 +45,13 @@ public enum UniqueIdType {
 	TenantKey((byte) 0x11), TenantValue((byte) 0x12),
 
 	/** Key and value for asset UUIDs */
-	AssetKey((byte) 0x01), AssetValue((byte) 0x02);
+	AssetKey((byte) 0x01), AssetValue((byte) 0x02),
+
+	/** Key and value for schedule UUIDs */
+	ScheduleKey((byte) 0x01), ScheduleValue((byte) 0x02),
+
+	/** Key and value for scheduled job UUIDs */
+	ScheduledJobKey((byte) 0x03), ScheduledJobValue((byte) 0x04);
 
 	/** Type indicator */
 	private byte indicator;
