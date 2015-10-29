@@ -11,9 +11,9 @@
 }
 
 .sw-site-list-entry-heading {
-	font-size: 14pt;
-	font-weight: bold;
+	font-size: 24px;
 	line-height: 1;
+	margin-bottom: 4px;
 }
 
 .sw-site-list-entry-label {

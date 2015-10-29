@@ -11,10 +11,9 @@
 }
 
 .sw-spec-list-entry-heading {
-	font-size: 14pt;
-	font-weight: bold;
+	font-size: 24px;
 	line-height: 1;
-	margin-bottom: 5px;
+	margin: 0px;
 }
 
 .sw-spec-list-entry-subhead {
