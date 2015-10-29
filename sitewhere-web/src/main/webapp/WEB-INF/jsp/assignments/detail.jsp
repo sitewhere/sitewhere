@@ -7,6 +7,10 @@
 .event-pager {
 	margin-top: 10px;
 }
+
+table#invocations tr td {
+	vertical-align: top;
+}
 </style>
 
 <!-- Title Bar -->
@@ -149,11 +153,11 @@
 		</div>
 		<table id="invocations">
 			<colgroup>
-				<col style="width: 32%;" />
+				<col style="width: 30%;" />
+				<col style="width: 33%;" />
 				<col style="width: 15%;" />
-				<col style="width: 12%;" />
-				<col style="width: 20%;" />
-				<col style="width: 8%;" />
+				<col style="width: 15%;" />
+				<col style="width: 7%;" />
 			</colgroup>
 			<thead>
 				<tr>
