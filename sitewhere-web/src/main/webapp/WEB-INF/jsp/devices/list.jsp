@@ -22,7 +22,7 @@
 		<a id="btn-filter-results" class="btn" href="javascript:void(0)"> <i
 			class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
 				Results</span>
-		</a> <a id="btn-batch-command" class="btn hide" href="javascript:void(0)"> <i
+		</a> <a id="btn-batch-command" class="btn" href="javascript:void(0)"> <i
 			class="fa fa-bolt sw-button-icon"></i> <span data-i18n="devices.list.BatchCommand">Batch
 				Command</span>
 		</a> <a id="btn-add-device" class="btn" href="javascript:void(0)"> <i
@@ -316,8 +316,8 @@
 		});
 
 		// Only show batch command button if specification is chosen.
-		if (rqSpecificationToken) {
-			$('#btn-batch-command').show();
+		if (!rqSpecificationToken) {
+			$('#btn-batch-command').hide();
 		}
 
 		/** Create the list of devices */
