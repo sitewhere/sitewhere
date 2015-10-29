@@ -116,6 +116,7 @@ public class QuartzBuilder {
 		}
 		TriggerBuilder<?> builder =
 				TriggerBuilder.newTrigger().withIdentity(job.getToken()).withSchedule(simple);
+		addCommonFields(job, schedule, builder);
 		return builder.build();
 	}
 
@@ -140,6 +141,25 @@ public class QuartzBuilder {
 		CronScheduleBuilder cron = CronScheduleBuilder.cronSchedule(expression);
 		TriggerBuilder<?> builder =
 				TriggerBuilder.newTrigger().withIdentity(job.getToken()).withSchedule(cron);
+		addCommonFields(job, schedule, builder);
 		return builder.build();
+	}
+
+	/**
+	 * Add fields common to all schedules.
+	 * 
+	 * @param job
+	 * @param schedule
+	 * @param builder
+	 * @throws SiteWhereException
+	 */
+	protected static void addCommonFields(IScheduledJob job, ISchedule schedule, TriggerBuilder<?> builder)
+			throws SiteWhereException {
+		if (schedule.getStartDate() != null) {
+			builder.startAt(schedule.getStartDate());
+		}
+		if (schedule.getEndDate() != null) {
+			builder.endAt(schedule.getEndDate());
+		}
 	}
 }

@@ -103,12 +103,13 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 	 * @throws SiteWhereException
 	 */
 	protected void cacheSchedules() throws SiteWhereException {
-		getSchedulesByToken().clear();
+		Map<String, ISchedule> updated = new HashMap<String, ISchedule>();
 		ISearchResults<ISchedule> schedules = getScheduleManagement().listSchedules(new SearchCriteria(1, 0));
 		for (ISchedule schedule : schedules.getResults()) {
-			getSchedulesByToken().put(schedule.getToken(), schedule);
+			updated.put(schedule.getToken(), schedule);
 		}
-		LOGGER.info("Cached " + getSchedulesByToken().size() + " schedules.");
+		this.schedulesByToken = updated;
+		LOGGER.info("Updated cache with " + getSchedulesByToken().size() + " schedules.");
 	}
 
 	/**
@@ -136,6 +137,29 @@ public class QuartzScheduleManager extends TenantLifecycleComponent implements I
 		} catch (SchedulerException e) {
 			throw new SiteWhereException("Unable to start scheduler instance.", e);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.scheduling.IScheduleManager#scheduleAdded(com.sitewhere.spi.
+	 * scheduling.ISchedule)
+	 */
+	@Override
+	public void scheduleAdded(ISchedule schedule) throws SiteWhereException {
+		cacheSchedules();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.scheduling.IScheduleManager#scheduleRemoved(com.sitewhere.spi
+	 * .scheduling.ISchedule)
+	 */
+	@Override
+	public void scheduleRemoved(ISchedule schedule) throws SiteWhereException {
+		cacheSchedules();
 	}
 
 	/*
