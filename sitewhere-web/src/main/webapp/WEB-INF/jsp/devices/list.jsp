@@ -316,7 +316,7 @@
 		});
 
 		// Only show batch command button if specification is chosen.
-		if (!rqSpecificationToken) {
+		if ((!rqSpecificationToken) || ("true" == rqExcludeAssigned)) {
 			$('#btn-batch-command').hide();
 		}
 

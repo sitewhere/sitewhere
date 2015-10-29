@@ -85,15 +85,9 @@ public class CommandHtmlHelper {
 			throw new SiteWhereException("Invalid specification reference: "
 					+ criteria.getSpecificationToken());
 		}
-		String html = "";
-		if (criteria.isExcludeAssigned()) {
-			html += "all unassigned devices with ";
-		} else {
-			html += "all devices with ";
-		}
-		html +=
-				"specification <a href=\"" + relativePath + "/specifications/" + specification.getToken()
-						+ ".html\">" + specification.getName() + "</a>";
+		String html =
+				"all devices with specification <a href=\"" + relativePath + "/specifications/"
+						+ specification.getToken() + ".html\">" + specification.getName() + "</a>";
 		if (!StringUtils.isEmpty(criteria.getGroupToken())) {
 			IDeviceGroup group = devices.getDeviceGroup(criteria.getGroupToken());
 			if (group == null) {

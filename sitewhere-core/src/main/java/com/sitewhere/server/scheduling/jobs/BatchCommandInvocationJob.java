@@ -96,7 +96,6 @@ public class BatchCommandInvocationJob implements Job {
 	public static BatchCommandForCriteriaRequest parse(Map<String, String> data) throws JobExecutionException {
 
 		String specificationToken = null;
-		boolean excludeAssigned = false;
 		String groupToken = null;
 		String groupRole = null;
 		String commandToken = null;
@@ -106,8 +105,6 @@ public class BatchCommandInvocationJob implements Job {
 			String value = data.get(key);
 			if (JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN.equals(key)) {
 				specificationToken = value;
-			} else if (JobConstants.BatchCommandInvocation.EXCLUDE_ASSIGNED.equals(key)) {
-				excludeAssigned = "true".equalsIgnoreCase(value);
 			} else if (JobConstants.BatchCommandInvocation.GROUP_TOKEN.equals(key)) {
 				groupToken = value;
 			} else if (JobConstants.BatchCommandInvocation.GROUP_ROLE.equals(key)) {
@@ -124,7 +121,6 @@ public class BatchCommandInvocationJob implements Job {
 		request.setCommandToken(commandToken);
 		request.setParameterValues(parameters);
 		request.setSpecificationToken(specificationToken);
-		request.setExcludeAssigned(excludeAssigned);
 		request.setGroupToken(groupToken);
 		request.setGroupsWithRole(groupRole);
 		return request;

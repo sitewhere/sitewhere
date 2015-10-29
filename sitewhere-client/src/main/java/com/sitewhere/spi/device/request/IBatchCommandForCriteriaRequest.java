@@ -47,13 +47,6 @@ public interface IBatchCommandForCriteriaRequest {
 	public String getSpecificationToken();
 
 	/**
-	 * Indicates whether assigned devices should be excluded.
-	 * 
-	 * @return
-	 */
-	public boolean isExcludeAssigned();
-
-	/**
 	 * If set, only devices in the given group will be sent the command.
 	 * 
 	 * @return

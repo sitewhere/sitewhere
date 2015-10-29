@@ -238,10 +238,11 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 						element.getBatchOperationToken(), element.getIndex(), request);
 
 				request = new BatchElementUpdateRequest();
+				ElementProcessingStatus status = ElementProcessingStatus.Succeeded;
 				try {
 					switch (operation.getOperationType()) {
 					case InvokeCommand: {
-						processBatchCommandInvocationElement(operation, element, request);
+						status = processBatchCommandInvocationElement(operation, element, request);
 						break;
 					}
 					case UpdateFirmware: {
@@ -249,7 +250,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 					}
 					}
 					// Indicate element succeeded in processing.
-					request.setProcessingStatus(ElementProcessingStatus.Succeeded);
+					request.setProcessingStatus(status);
 					request.setProcessedDate(new Date());
 				} catch (SiteWhereException t) {
 					// Indicate element failed in processing.
@@ -273,8 +274,8 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 		 * @param updated
 		 * @throws SiteWhereException
 		 */
-		protected void processBatchCommandInvocationElement(IBatchOperation operation, IBatchElement element,
-				BatchElementUpdateRequest updated) throws SiteWhereException {
+		protected ElementProcessingStatus processBatchCommandInvocationElement(IBatchOperation operation,
+				IBatchElement element, BatchElementUpdateRequest updated) throws SiteWhereException {
 			LOGGER.info("Processing command invocation: " + element.getHardwareId());
 
 			// Find information about the command to be executed.
@@ -302,7 +303,8 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 			IDeviceAssignment assignment =
 					SiteWhere.getServer().getDeviceManagement(getTenant()).getCurrentDeviceAssignment(device);
 			if (assignment == null) {
-				throw new SiteWhereException("Device is not currently assigned. Command can not be invoked.");
+				LOGGER.info("Device is not currently assigned. Skipping command invocation.");
+				return ElementProcessingStatus.Failed;
 			}
 
 			// Create the request.
@@ -324,6 +326,8 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 			metadata = new HashMap<String, String>();
 			metadata.put(IBatchCommandInvocationRequest.META_INVOCATION_EVENT_ID, invocation.getId());
 			updated.setMetadata(metadata);
+
+			return ElementProcessingStatus.Succeeded;
 		}
 	}
 

@@ -42,9 +42,6 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	/** Specification token to limit by */
 	private String specificationToken;
 
-	/** Indicates whether to exclude assigned devices */
-	private boolean excludeAssigned;
-
 	/** Group token to limit by */
 	private String groupToken;
 
@@ -87,14 +84,6 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 
 	public void setSpecificationToken(String specificationToken) {
 		this.specificationToken = specificationToken;
-	}
-
-	public boolean isExcludeAssigned() {
-		return excludeAssigned;
-	}
-
-	public void setExcludeAssigned(boolean excludeAssigned) {
-		this.excludeAssigned = excludeAssigned;
 	}
 
 	public String getGroupToken() {

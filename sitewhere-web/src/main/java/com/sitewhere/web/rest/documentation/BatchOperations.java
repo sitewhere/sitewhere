@@ -94,7 +94,6 @@ public class BatchOperations {
 			request.getParameterValues().put("reboot", "true");
 
 			request.setGroupToken(ExampleData.DEVICEGROUP_SOUTHEAST.getToken());
-			request.setExcludeAssigned(true);
 			return request;
 		}
 	}

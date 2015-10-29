@@ -57,7 +57,7 @@ public class BatchUtils {
 
 		IDeviceSearchCriteria deviceSearch =
 				DeviceSearchCriteria.createDeviceBySpecificationSearch(criteria.getSpecificationToken(), 1,
-						0, criteria.getStartDate(), criteria.getEndDate(), criteria.isExcludeAssigned());
+						0, criteria.getStartDate(), criteria.getEndDate(), false);
 
 		Collection<IDevice> matches;
 		if (hasGroup) {

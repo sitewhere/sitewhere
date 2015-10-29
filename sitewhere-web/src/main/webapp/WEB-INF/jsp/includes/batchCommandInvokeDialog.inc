@@ -153,7 +153,6 @@
 						"specificationToken" : bciCriteria.specification,
 						"groupToken" : bciCriteria.group,
 						"groupsWithRole" : bciCriteria.groupsWithRole,
-						"excludeAssigned" : bciCriteria.excludeAssigned,
 					//				"metadata": swMetadataAsLookup(bciMetadataDS.data()),
 					}
 					var params = {};

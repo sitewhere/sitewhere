@@ -41,9 +41,6 @@ public interface JobConstants {
 		/** Indicates if results should be narrowed by device specification */
 		public static final String SPECIFICATION_TOKEN = "specificationToken";
 
-		/** Flag that excludes assigned devices */
-		public static final String EXCLUDE_ASSIGNED = "excludeAssigned";
-
 		/** Indicates if results should be narrowed by group */
 		public static final String GROUP_TOKEN = "groupToken";
 
