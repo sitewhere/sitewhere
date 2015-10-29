@@ -38,24 +38,6 @@ public class BatchCommandInvocationJob implements Job {
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(BatchCommandInvocationJob.class);
 
-	/** Specification token */
-	private String specificationToken;
-
-	/** Filter for excluding assigned devices */
-	private boolean excludeAssigned;
-
-	/** Group token if filtering by group */
-	private String groupToken;
-
-	/** Role if filtering by groups with role */
-	private String groupRole;
-
-	/** Command token */
-	private String commandToken;
-
-	/** Command parameters */
-	private Map<String, String> parameters = new HashMap<String, String>();
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -63,11 +45,18 @@ public class BatchCommandInvocationJob implements Job {
 	 */
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		parse(context);
-		if (getSpecificationToken() == null) {
+		Map<String, String> data = new HashMap<String, String>();
+		JobDataMap jobData = context.getJobDetail().getJobDataMap();
+		for (String key : jobData.keySet()) {
+			String value = jobData.getString(key);
+			data.put(key, value);
+		}
+
+		BatchCommandForCriteriaRequest criteria = BatchCommandInvocationJob.parse(data);
+		if (criteria.getSpecificationToken() == null) {
 			throw new JobExecutionException("Specification token not provided.");
 		}
-		if (getCommandToken() == null) {
+		if (criteria.getCommandToken() == null) {
 			throw new JobExecutionException("Command token not provided.");
 		}
 		try {
@@ -76,19 +65,12 @@ public class BatchCommandInvocationJob implements Job {
 							context.getScheduler().getSchedulerName());
 
 			// Resolve hardware ids for devices matching criteria.
-			BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
-			request.setCommandToken(getCommandToken());
-			request.setParameterValues(getParameters());
-			request.setSpecificationToken(getSpecificationToken());
-			request.setExcludeAssigned(isExcludeAssigned());
-			request.setGroupToken(getGroupToken());
-			request.setGroupsWithRole(getGroupRole());
-			List<String> hardwareIds = BatchUtils.getHardwareIds(request, tenant);
+			List<String> hardwareIds = BatchUtils.getHardwareIds(criteria, tenant);
 
 			// Create batch command invocation.
 			BatchCommandInvocationRequest invoke = new BatchCommandInvocationRequest();
-			invoke.setCommandToken(request.getCommandToken());
-			invoke.setParameterValues(request.getParameterValues());
+			invoke.setCommandToken(criteria.getCommandToken());
+			invoke.setParameterValues(criteria.getParameterValues());
 			invoke.setHardwareIds(hardwareIds);
 
 			// Use the system account for logging "created by" on created elements.
@@ -108,75 +90,43 @@ public class BatchCommandInvocationJob implements Job {
 	/**
 	 * Parse configuration data.
 	 * 
-	 * @param context
+	 * @param data
 	 * @throws JobExecutionException
 	 */
-	protected void parse(JobExecutionContext context) throws JobExecutionException {
-		JobDataMap data = context.getJobDetail().getJobDataMap();
+	public static BatchCommandForCriteriaRequest parse(Map<String, String> data) throws JobExecutionException {
+
+		String specificationToken = null;
+		boolean excludeAssigned = false;
+		String groupToken = null;
+		String groupRole = null;
+		String commandToken = null;
+		Map<String, String> parameters = new HashMap<String, String>();
+
 		for (String key : data.keySet()) {
-			String value = data.getString(key);
+			String value = data.get(key);
 			if (JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN.equals(key)) {
-				this.specificationToken = value;
+				specificationToken = value;
 			} else if (JobConstants.BatchCommandInvocation.EXCLUDE_ASSIGNED.equals(key)) {
-				this.excludeAssigned = Boolean.getBoolean(value);
+				excludeAssigned = "true".equalsIgnoreCase(value);
 			} else if (JobConstants.BatchCommandInvocation.GROUP_TOKEN.equals(key)) {
-				this.groupToken = value;
+				groupToken = value;
 			} else if (JobConstants.BatchCommandInvocation.GROUP_ROLE.equals(key)) {
-				this.groupRole = value;
+				groupRole = value;
 			} else if (JobConstants.CommandInvocation.COMMAND_TOKEN.equals(key)) {
-				this.commandToken = value;
+				commandToken = value;
 			} else if (key.startsWith(JobConstants.CommandInvocation.PARAMETER_PREFIX)) {
 				String paramKey = key.substring(JobConstants.CommandInvocation.PARAMETER_PREFIX.length());
-				getParameters().put(paramKey, value);
+				parameters.put(paramKey, value);
 			}
 		}
-	}
 
-	public String getSpecificationToken() {
-		return specificationToken;
-	}
-
-	public void setSpecificationToken(String specificationToken) {
-		this.specificationToken = specificationToken;
-	}
-
-	public boolean isExcludeAssigned() {
-		return excludeAssigned;
-	}
-
-	public void setExcludeAssigned(boolean excludeAssigned) {
-		this.excludeAssigned = excludeAssigned;
-	}
-
-	public String getGroupToken() {
-		return groupToken;
-	}
-
-	public void setGroupToken(String groupToken) {
-		this.groupToken = groupToken;
-	}
-
-	public String getGroupRole() {
-		return groupRole;
-	}
-
-	public void setGroupRole(String groupRole) {
-		this.groupRole = groupRole;
-	}
-
-	public String getCommandToken() {
-		return commandToken;
-	}
-
-	public void setCommandToken(String commandToken) {
-		this.commandToken = commandToken;
-	}
-
-	public Map<String, String> getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(Map<String, String> parameters) {
-		this.parameters = parameters;
+		BatchCommandForCriteriaRequest request = new BatchCommandForCriteriaRequest();
+		request.setCommandToken(commandToken);
+		request.setParameterValues(parameters);
+		request.setSpecificationToken(specificationToken);
+		request.setExcludeAssigned(excludeAssigned);
+		request.setGroupToken(groupToken);
+		request.setGroupsWithRole(groupRole);
+		return request;
 	}
 }

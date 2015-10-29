@@ -253,6 +253,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 					request.setProcessedDate(new Date());
 				} catch (SiteWhereException t) {
 					// Indicate element failed in processing.
+					LOGGER.error("Error processing batch invocation element.", t);
 					request.setProcessingStatus(ElementProcessingStatus.Failed);
 				} finally {
 					IBatchElement updated =

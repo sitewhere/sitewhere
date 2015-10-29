@@ -7,10 +7,16 @@
  */
 package com.sitewhere.device.marshaling;
 
+import org.apache.cxf.common.util.StringUtils;
+
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
+import com.sitewhere.spi.device.group.IDeviceGroup;
 
 /**
  * Helper class that creates an HTML version of a command for display in the user
@@ -56,6 +62,51 @@ public class CommandHtmlHelper {
 			}
 		}
 		html += ")";
+		return html;
+	}
+
+	/**
+	 * Get HTML that indicates critieria used to determine which devices are included in a
+	 * batch command invocation request.
+	 * 
+	 * @param criteria
+	 * @param relativePath
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static String getHtml(BatchCommandForCriteriaRequest criteria, IDeviceManagement devices,
+			String relativePath) throws SiteWhereException {
+		if (StringUtils.isEmpty(criteria.getSpecificationToken())) {
+			throw new SiteWhereException("Specification token must be populated to generate HTML.");
+		}
+		IDeviceSpecification specification =
+				devices.getDeviceSpecificationByToken(criteria.getSpecificationToken());
+		if (specification == null) {
+			throw new SiteWhereException("Invalid specification reference: "
+					+ criteria.getSpecificationToken());
+		}
+		String html = "";
+		if (criteria.isExcludeAssigned()) {
+			html += "all unassigned devices with ";
+		} else {
+			html += "all devices with ";
+		}
+		html +=
+				"specification <a href=\"" + relativePath + "/specifications/" + specification.getToken()
+						+ ".html\">" + specification.getName() + "</a>";
+		if (!StringUtils.isEmpty(criteria.getGroupToken())) {
+			IDeviceGroup group = devices.getDeviceGroup(criteria.getGroupToken());
+			if (group == null) {
+				throw new SiteWhereException("Invalid group reference: " + criteria.getGroupToken());
+			}
+			html +=
+					" and belonging to group <a href=\"" + relativePath + "/groups/" + group.getToken()
+							+ ".html\">" + group.getName() + "</a>";
+		} else if (!StringUtils.isEmpty(criteria.getGroupsWithRole())) {
+			html +=
+					" and belonging to groups with role <strong>" + criteria.getGroupsWithRole()
+							+ "</strong>";
+		}
 		return html;
 	}
 }

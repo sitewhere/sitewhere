@@ -27,7 +27,7 @@ import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.scheduling.request.ScheduledJobCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.scheduling.marshaling.ScheduledJobMarshalHelper;
+import com.sitewhere.server.scheduling.ScheduledJobMarshalHelper;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduledJob;

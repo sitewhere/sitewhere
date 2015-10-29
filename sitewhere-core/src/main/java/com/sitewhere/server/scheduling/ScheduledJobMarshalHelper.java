@@ -5,24 +5,29 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.scheduling.marshaling;
+package com.sitewhere.server.scheduling;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.quartz.JobExecutionException;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.marshaling.CommandHtmlHelper;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.device.marshaling.DeviceSpecificationMarshalHelper;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
+import com.sitewhere.server.scheduling.jobs.BatchCommandInvocationJob;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -51,6 +56,9 @@ public class ScheduledJobMarshalHelper {
 	/** Used for marshaling device assignment info */
 	private DeviceAssignmentMarshalHelper assignmentHelper;
 
+	/** Used for marshaling device specification info */
+	private DeviceSpecificationMarshalHelper specificationHelper;
+
 	public ScheduledJobMarshalHelper(ITenant tenant) {
 		this(tenant, false);
 	}
@@ -60,6 +68,7 @@ public class ScheduledJobMarshalHelper {
 		this.includeContextInfo = includeContextInfo;
 		this.assignmentHelper =
 				new DeviceAssignmentMarshalHelper(tenant).setIncludeDevice(true).setIncludeAsset(false);
+		this.specificationHelper = new DeviceSpecificationMarshalHelper(tenant).setIncludeAsset(false);
 	}
 
 	/**
@@ -90,6 +99,10 @@ public class ScheduledJobMarshalHelper {
 				includeCommandInvocationContext(job);
 				break;
 			}
+			case BatchCommandInvocation: {
+				includeBatchCommandInvocationContext(job);
+				break;
+			}
 			default: {
 			}
 			}
@@ -116,6 +129,57 @@ public class ScheduledJobMarshalHelper {
 						getAssignmentHelper().convert(assignment, getAssetModuleManager(getTenant())));
 			}
 		}
+		if (commandToken != null) {
+			IDeviceCommand command = getDeviceManagement(getTenant()).getDeviceCommandByToken(commandToken);
+			if (command != null) {
+				Map<String, String> paramValues = new HashMap<String, String>();
+				for (String key : job.getJobConfiguration().keySet()) {
+					if (key.startsWith(JobConstants.CommandInvocation.PARAMETER_PREFIX)) {
+						String paramKey =
+								key.substring(JobConstants.CommandInvocation.PARAMETER_PREFIX.length());
+						paramValues.put(paramKey, job.getJobConfiguration().get(key));
+					}
+				}
+
+				// Emulate an invocation to produce sample html.
+				DeviceCommandInvocation invocation = new DeviceCommandInvocation();
+				invocation.setCommand(DeviceCommand.copy(command));
+				invocation.setParameterValues(paramValues);
+				String html = CommandHtmlHelper.getHtml(invocation);
+
+				job.getContext().put("command", command);
+				job.getContext().put("invocationHtml", html);
+			}
+		}
+	}
+
+	/**
+	 * Includes contextual information specific to a batch command invocation. This data
+	 * is useful for displaying the job in a user interface.
+	 * 
+	 * @param job
+	 * @throws SiteWhereException
+	 */
+	protected void includeBatchCommandInvocationContext(ScheduledJob job) throws SiteWhereException {
+		String specToken =
+				job.getJobConfiguration().get(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN);
+		if (specToken != null) {
+			IDeviceSpecification specification =
+					getDeviceManagement(getTenant()).getDeviceSpecificationByToken(specToken);
+			if (specification != null) {
+				job.getContext().put("specification",
+						getSpecificationHelper().convert(specification, getAssetModuleManager(getTenant())));
+			}
+			try {
+				BatchCommandForCriteriaRequest criteria =
+						BatchCommandInvocationJob.parse(job.getJobConfiguration());
+				String html = CommandHtmlHelper.getHtml(criteria, getDeviceManagement(getTenant()), "..");
+				job.getContext().put("criteriaHtml", html);
+			} catch (JobExecutionException e) {
+				throw new SiteWhereException("Unable to parse batch command criteria.");
+			}
+		}
+		String commandToken = job.getJobConfiguration().get(JobConstants.CommandInvocation.COMMAND_TOKEN);
 		if (commandToken != null) {
 			IDeviceCommand command = getDeviceManagement(getTenant()).getDeviceCommandByToken(commandToken);
 			if (command != null) {
@@ -180,6 +244,15 @@ public class ScheduledJobMarshalHelper {
 	 */
 	protected DeviceAssignmentMarshalHelper getAssignmentHelper() {
 		return assignmentHelper;
+	}
+
+	/**
+	 * Get helper class for marshaling device specification information.
+	 * 
+	 * @return
+	 */
+	protected DeviceSpecificationMarshalHelper getSpecificationHelper() {
+		return specificationHelper;
 	}
 
 	public ITenant getTenant() {
