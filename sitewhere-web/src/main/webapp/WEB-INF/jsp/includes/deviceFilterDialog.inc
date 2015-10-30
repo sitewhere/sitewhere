@@ -17,6 +17,15 @@
 		<div class="ellipsis">#:description#</div>
 	</div>
 </script>
+<script type="text/x-kendo-tmpl" id="dfl-site-template">
+	<div class="asset-entry gradient-bg" id="dfl-site-#:token#">
+		<div class="asset-entry-logowrapper">
+			<img class="asset-entry-logo" src="#:imageUrl#"/>
+		</div>
+		<div class="ellipsis"><b>#:name#</b></div>
+		<div class="ellipsis">#:description#</div>
+	</div>
+</script>
 <div id="dfl-dialog" class="modal hide">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -27,6 +36,7 @@
 			<ul>
 				<li class="k-state-active">Specifications</li>
 				<li>Groups</li>
+				<li>Sites</li>
 				<li>Created Date</li>
 				<li>Other Options</li>
 			</ul>
@@ -84,6 +94,31 @@
 							<label class="control-label" for="dfl-groups-role-text">Enter Role</label>
 							<div class="controls">
 								<input type="text" id="dfl-groups-role-text" title="Role" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div>
+				<form id="dfl-sites-form" class="form-horizontal" style="padding-top: 15px;">
+					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
+						<label class="control-label" for="dfl-site-filter-type">Site Filter</label>
+						<div class="controls">
+							<input id="dfl-site-filter-type" style="width: 300px;" />
+						</div>
+					</div>
+				</form>
+				<div id="dfl-sites-forms">
+					<form id="dfl-site-all" class="form-horizontal">
+						<div class="sw-info-text">This filter will choose all devices without regard to which
+							site they belong to.</div>
+					</form>
+					<form id="dfl-site-choice" class="form-horizontal hide">
+						<div class="control-group">
+							<label class="control-label" for="dfl-chosen-site-token">Choose Site</label>
+							<div class="controls">
+								<div id="dfl-sites" class="sw-form-search-results"></div>
+								<input type="hidden" id="dfl-chosen-site-token" title="Site" />
 							</div>
 						</div>
 					</form>
@@ -202,6 +237,18 @@
 	/** Group filter type dropdown */
 	var dflGroupFilterType;
 
+	/** Available site filter types shown in dropdown */
+	var dflSiteFilterTypes = [ {
+		text : "No site filter",
+		value : "dfl-site-all"
+	}, {
+		text : "Include devices from a given site",
+		value : "dfl-site-choice"
+	} ];
+
+	/** Site filter type dropdown */
+	var dflSiteFilterType;
+
 	/** Create date range type */
 	var dflCdateType;
 
@@ -216,6 +263,12 @@
 
 	/** Device groups list */
 	var dflDeviceGroups;
+	
+	/** Datasource for sites */
+	var dflSitesDS;
+	
+	/** Sites list */
+	var dflSites;
 
 	/** Date pickers for various filter types */
 	var dflDateBefore, dflDateAfter, dflDateBetweenStart, dflDateBetweenEnd;
@@ -319,6 +372,36 @@
 						change : dflDeviceGroupChosen
 					}).data("kendoListView");
 
+					dflSiteFilterType = $("#dfl-site-filter-type").kendoDropDownList({
+						dataTextField : "text",
+						dataValueField : "value",
+						dataSource : dflSiteFilterTypes,
+						index : 0,
+						change : dflSiteFilterTypeChanged
+					}).data("kendoDropDownList");
+
+					dflSitesDS =
+							new kendo.data.DataSource({
+								transport : {
+									read : {
+										url : "${pageContext.request.contextPath}/api/sites"
+												+ "?tenantAuthToken=${tenant.authenticationToken}",
+										dataType : "json",
+									}
+								},
+								schema : {
+									data : "results",
+									total : "numResults",
+								},
+							});
+
+					dflSites = $("#dfl-sites").kendoListView({
+						dataSource : dflSitesDS,
+						selectable : "single",
+						template : kendo.template($("#dfl-site-template").html()),
+						change : dflSiteChosen
+					}).data("kendoListView");
+
 					/** Create dropdown list for choosing create date range */
 					dflCdateType = $("#dfl-cdate-type").kendoDropDownList({
 						dataTextField : "text",
@@ -358,6 +441,7 @@
 	function createFilterCriteria() {
 		var specFilterType = dflGetSpecFilterType();
 		var groupFilterType = dflGetGroupFilterType();
+		var siteFilterType = dflGetSiteFilterType();
 		var dateRangeType = dflGetCreateDateType();
 		var criteria = {};
 
@@ -370,6 +454,11 @@
 			criteria.group = $("#dfl-chosen-group-token").val();
 		} else if ("dfl-groups-by-role" == groupFilterType) {
 			criteria.groupsWithRole = $("#dfl-groups-role-text").val();
+		}
+
+		// Handle site filter.
+		if ("dfl-site-choice" == siteFilterType) {
+			criteria.site = $("#dfl-chosen-site-token").val();
 		}
 
 		// Handle date range types.
@@ -433,6 +522,23 @@
 		});
 	}
 
+	/** Get the currently selected site filter type */
+	function dflGetSiteFilterType() {
+		return $("#dfl-site-filter-type").val();
+	}
+
+	/** Called when group filter type dropdown value changes */
+	function dflSiteFilterTypeChanged() {
+		var selected = dflGetSiteFilterType();
+		$("#dfl-sites-forms").children().each(function(i) {
+			if (selected == $(this).attr("id")) {
+				$(this).removeClass("hide");
+			} else if (!$(this).hasClass("hide")) {
+				$(this).addClass("hide");
+			}
+		});
+	}
+
 	/** Get the currently selected create date range type */
 	function dflGetCreateDateType() {
 		return $("#dfl-cdate-type").val();
@@ -478,6 +584,20 @@
 		}
 	}
 
+	/** Called when a site is chosen */
+	function dflSiteChosen() {
+		var listView = dflSitesDS.view();
+		var selected = $.map(this.select(), function(item) {
+			return listView[$(item).index()];
+		});
+
+		if (selected.length > 0) {
+			$('#dfl-chosen-site-token').val(selected[0].token);
+		} else {
+			$('#dfl-chosen-site-token').val("");
+		}
+	}
+
 	/** Validate everything */
 	function dflValidate() {
 		$.validity.setup({
@@ -520,6 +640,15 @@
 		}
 		dflGroupFilterType.value(groupFilter);
 		dflGroupFilterTypeChanged();
+
+		// Set site filter type dropdown choice.
+		var siteFilter = "dfl-site-all";
+		if (criteria.site) {
+			siteFilter = "dfl-site-choice";
+			dflSites.select($('#dfl-site-' + criteria.site).get(0));
+		}
+		dflSiteFilterType.value(siteFilter);
+		dflSiteFilterTypeChanged();
 
 		// Set date range type dropdown choice.
 		var rangeChoice = "dfl-cdate-any";

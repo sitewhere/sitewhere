@@ -59,6 +59,9 @@
 	/** Role specified in 'groups with role' request parameters */
 	var rqGroupsWithRole = '<c:out value="${groupsWithRole}"/>';
 
+	/** Site token specified in request parameters */
+	var rqSiteToken = '<c:out value="${site.token}"/>';
+
 	/** Date range type specified in request parameters */
 	var rqDateRange = '<c:out value="${dateRange}"/>';
 
@@ -156,6 +159,7 @@
 			"specification" : rqSpecificationToken,
 			"group" : rqGroupToken,
 			"groupsWithRole" : rqGroupsWithRole,
+			"site" : rqSiteToken,
 			"dateRange" : rqDateRange,
 			"afterDate" : rqAfterDate,
 			"beforeDate" : rqBeforeDate,
@@ -179,29 +183,28 @@
 				"<span style='width: 90%; display: block;'><i class='fa fa-filter sw-button-icon'></i> Displaying";
 
 		if ("true" == rqExcludeAssigned) {
-			criteriaDesc += " <strong>unassigned</strong>";
+			criteriaDesc += " <strong>unassigned</strong> devices";
 			showCriteria = true;
+		} else {
+			criteriaDesc += " devices";
 		}
 
 		if (rqSpecificationToken) {
-			criteriaDesc += " devices of specification <strong>${specification.name}</strong>";
+			criteriaDesc += " of specification <strong>${specification.name}</strong>";
 			showCriteria = true;
 		}
 
-		if (rqGroupToken && rqSpecificationToken) {
+		if (rqSiteToken) {
+			criteriaDesc += " belonging to site <strong>${site.name}</strong>";
+			showCriteria = true;
+		}
+
+		if (rqGroupToken) {
 			criteriaDesc += " belonging to group <strong>${group.name}</strong>";
 			showCriteria = true;
-		} else if (rqGroupToken) {
-			criteriaDesc += " devices belonging to group <strong>${group.name}</strong>";
+		} else if (rqGroupsWithRole) {
+			criteriaDesc += " in groups with role <strong>${groupsWithRole}</strong>";
 			showCriteria = true;
-		} else if (rqGroupsWithRole && rqSpecificationToken) {
-			criteriaDesc += " belonging to groups with role <strong>${groupsWithRole}</strong>";
-			showCriteria = true;
-		} else if (rqGroupsWithRole && !rqSpecificationToken) {
-			criteriaDesc += " devices in groups with role <strong>${groupsWithRole}</strong>";
-			showCriteria = true;
-		} else if (!rqGroupToken && !rqSpecificationToken) {
-			criteriaDesc += " devices"
 		}
 
 		if (rqDateRange == "hour") {

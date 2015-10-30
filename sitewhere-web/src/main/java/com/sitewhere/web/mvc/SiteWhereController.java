@@ -398,7 +398,7 @@ public class SiteWhereController {
 	public ModelAndView listDevices(@RequestParam(required = false) String specification,
 			@RequestParam(required = false) String group,
 			@RequestParam(required = false) String groupsWithRole,
-			@RequestParam(required = false) String dateRange,
+			@RequestParam(required = false) String site, @RequestParam(required = false) String dateRange,
 			@RequestParam(required = false) String beforeDate,
 			@RequestParam(required = false) String afterDate,
 			@RequestParam(required = false) boolean excludeAssigned, HttpServletRequest request) {
@@ -429,6 +429,15 @@ public class SiteWhereController {
 
 			if (groupsWithRole != null) {
 				data.put("groupsWithRole", groupsWithRole);
+			}
+
+			// Look up device group that will be used for filtering.
+			if (site != null) {
+				ISite found = SiteWhere.getServer().getDeviceManagement(tenant).getSiteByToken(site);
+				if (found == null) {
+					throw new SiteWhereException("Site token was not valid.");
+				}
+				data.put("site", found);
 			}
 
 			data.put("dateRange", dateRange);
