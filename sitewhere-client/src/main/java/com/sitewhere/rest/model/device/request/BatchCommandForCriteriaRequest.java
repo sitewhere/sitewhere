@@ -48,6 +48,9 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 	/** Groups with role to limit by */
 	private String groupsWithRole;
 
+	/** Site token to limit by */
+	private String siteToken;
+
 	/** Start date for create date window */
 	private Date startDate;
 
@@ -100,6 +103,14 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 
 	public void setGroupsWithRole(String groupsWithRole) {
 		this.groupsWithRole = groupsWithRole;
+	}
+
+	public String getSiteToken() {
+		return siteToken;
+	}
+
+	public void setSiteToken(String siteToken) {
+		this.siteToken = siteToken;
 	}
 
 	@JsonSerialize(using = JsonDateSerializer.class, include = Inclusion.NON_NULL)

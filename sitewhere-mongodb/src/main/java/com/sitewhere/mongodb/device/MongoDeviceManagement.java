@@ -650,21 +650,17 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 			dbCriteria.put(MongoDevice.PROP_ASSIGNMENT_TOKEN, null);
 		}
 		MongoPersistence.addDateSearchCriteria(dbCriteria, MongoSiteWhereEntity.PROP_CREATED_DATE, criteria);
-		switch (criteria.getSearchType()) {
-		case All: {
-			break;
+
+		// Add specification filter if specified.
+		if (criteria.getSpecificationToken() != null) {
+			dbCriteria.put(MongoDevice.PROP_SPECIFICATION_TOKEN, criteria.getSpecificationToken());
 		}
-		case UsesSpecification: {
-			if (criteria.getDeviceBySpecificationParameters() != null) {
-				String token = criteria.getDeviceBySpecificationParameters().getSpecificationToken();
-				if (token == null) {
-					throw new SiteWhereException("Invalid device search. No specification token passed.");
-				}
-				dbCriteria.put(MongoDevice.PROP_SPECIFICATION_TOKEN, token);
-			}
-			break;
+
+		// Add site filter if specified.
+		if (criteria.getSiteToken() != null) {
+			dbCriteria.put(MongoDevice.PROP_SITE_TOKEN, criteria.getSiteToken());
 		}
-		}
+
 		BasicDBObject sort = new BasicDBObject(MongoSiteWhereEntity.PROP_CREATED_DATE, -1);
 		return MongoPersistence.search(IDevice.class, devices, dbCriteria, sort, criteria);
 	}

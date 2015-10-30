@@ -41,6 +41,9 @@ public interface JobConstants {
 		/** Indicates if results should be narrowed by device specification */
 		public static final String SPECIFICATION_TOKEN = "specificationToken";
 
+		/** Indicates if results should be narrowed by site */
+		public static final String SITE_TOKEN = "siteToken";
+
 		/** Indicates if results should be narrowed by group */
 		public static final String GROUP_TOKEN = "groupToken";
 

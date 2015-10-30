@@ -45,8 +45,6 @@ import com.sitewhere.spi.device.request.IDeviceCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchCriteria;
-import com.sitewhere.spi.search.device.DeviceSearchType;
-import com.sitewhere.spi.search.device.IDeviceBySpecificationParameters;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.debug.TracerCategory;
 
@@ -158,19 +156,6 @@ public class HBaseDevice {
 		HTableInterface devices = null;
 		ResultScanner scanner = null;
 
-		String specificationToken = null;
-		if (criteria.getSearchType() == DeviceSearchType.UsesSpecification) {
-			IDeviceBySpecificationParameters params = criteria.getDeviceBySpecificationParameters();
-			if (params == null) {
-				throw new SiteWhereException(
-						"Querying devices by specification token, but parameters were not passed.");
-			}
-			specificationToken = params.getSpecificationToken();
-			if (specificationToken == null) {
-				throw new SiteWhereException("No specification token passed for device query.");
-			}
-		}
-
 		try {
 			devices = getDeviceTableInterface(context);
 			Scan scan = new Scan();
@@ -194,16 +179,21 @@ public class HBaseDevice {
 
 				if ((shouldAdd) && (payload != null)) {
 					Device device = context.getPayloadMarshaler().decodeDevice(payload);
-					switch (criteria.getSearchType()) {
-					case All: {
-						break;
-					}
-					case UsesSpecification: {
-						if (!specificationToken.equals(device.getSpecificationToken())) {
+
+					// Filter by specification.
+					if (criteria.getSpecificationToken() != null) {
+						if (!criteria.getSpecificationToken().equals(device.getSpecificationToken())) {
 							continue;
 						}
 					}
+
+					// Filter by site.
+					if (criteria.getSiteToken() != null) {
+						if (!criteria.getSiteToken().equals(device.getSiteToken())) {
+							continue;
+						}
 					}
+
 					pager.process(device);
 				}
 			}

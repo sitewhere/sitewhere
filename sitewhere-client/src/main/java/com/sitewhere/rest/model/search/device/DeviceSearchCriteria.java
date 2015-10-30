@@ -10,8 +10,6 @@ package com.sitewhere.rest.model.search.device;
 import java.util.Date;
 
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
-import com.sitewhere.spi.search.device.DeviceSearchType;
-import com.sitewhere.spi.search.device.IDeviceBySpecificationParameters;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 
 /**
@@ -21,59 +19,51 @@ import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
  */
 public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDeviceSearchCriteria {
 
+	/** Specification to match in filter */
+	private String specificationToken;
+
+	/** Site to match in filter */
+	private String siteToken;
+
 	/** Indicates if assigned devices should be excluded */
 	private boolean excludeAssigned = true;
 
-	/** Type of search to execute */
-	private DeviceSearchType searchType;
-
-	/** Parameters for search for devices using a given specification */
-	private IDeviceBySpecificationParameters deviceBySpecificationParameters;
-
-	public DeviceSearchCriteria(int pageNumber, int pageSize, Date startDate, Date endDate,
-			boolean excludeAssigned) {
+	public DeviceSearchCriteria(int pageNumber, int pageSize, Date startDate, Date endDate) {
 		super(pageNumber, pageSize, startDate, endDate);
+	}
+
+	public DeviceSearchCriteria(String specToken, String siteToken, boolean excludeAssigned, int pageNumber,
+			int pageSize, Date startDate, Date endDate) {
+		super(pageNumber, pageSize, startDate, endDate);
+		this.specificationToken = specToken;
+		this.siteToken = siteToken;
 		this.excludeAssigned = excludeAssigned;
 	}
 
-	/**
-	 * Create search criteria for matching all devices.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param pageNumber
-	 * @param pageSize
-	 * @param startDate
-	 * @param endDate
-	 * @param excludeAssigned
-	 * @return
+	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#getSpecificationToken()
 	 */
-	public static IDeviceSearchCriteria createDefaultSearch(int pageNumber, int pageSize, Date startDate,
-			Date endDate, boolean excludeAssigned) {
-		DeviceSearchCriteria criteria =
-				new DeviceSearchCriteria(pageNumber, pageSize, startDate, endDate, excludeAssigned);
-		criteria.setSearchType(DeviceSearchType.All);
-		return criteria;
+	public String getSpecificationToken() {
+		return specificationToken;
 	}
 
-	/**
-	 * Create search criteria for all devices that use a given specification.
+	public void setSpecificationToken(String specificationToken) {
+		this.specificationToken = specificationToken;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param specificationToken
-	 * @param pageNumber
-	 * @param pageSize
-	 * @param startDate
-	 * @param endDate
-	 * @param excludeAssigned
-	 * @return
+	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#getSiteToken()
 	 */
-	public static IDeviceSearchCriteria createDeviceBySpecificationSearch(String specificationToken,
-			int pageNumber, int pageSize, Date startDate, Date endDate, boolean excludeAssigned) {
-		DeviceSearchCriteria criteria =
-				new DeviceSearchCriteria(pageNumber, pageSize, startDate, endDate, excludeAssigned);
-		criteria.setSearchType(DeviceSearchType.UsesSpecification);
-		DeviceBySpecificationParameters params = new DeviceBySpecificationParameters();
-		params.setSpecificationToken(specificationToken);
-		criteria.setDeviceBySpecificationParameters(params);
-		return criteria;
+	public String getSiteToken() {
+		return siteToken;
+	}
+
+	public void setSiteToken(String siteToken) {
+		this.siteToken = siteToken;
 	}
 
 	/*
@@ -87,33 +77,5 @@ public class DeviceSearchCriteria extends DateRangeSearchCriteria implements IDe
 
 	public void setExcludeAssigned(boolean excludeAssigned) {
 		this.excludeAssigned = excludeAssigned;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#getSearchType()
-	 */
-	public DeviceSearchType getSearchType() {
-		return searchType;
-	}
-
-	public void setSearchType(DeviceSearchType searchType) {
-		this.searchType = searchType;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.search.device.IDeviceSearchCriteria#
-	 * getDeviceBySpecificationParameters()
-	 */
-	public IDeviceBySpecificationParameters getDeviceBySpecificationParameters() {
-		return deviceBySpecificationParameters;
-	}
-
-	public void setDeviceBySpecificationParameters(
-			IDeviceBySpecificationParameters deviceBySpecificationParameters) {
-		this.deviceBySpecificationParameters = deviceBySpecificationParameters;
 	}
 }

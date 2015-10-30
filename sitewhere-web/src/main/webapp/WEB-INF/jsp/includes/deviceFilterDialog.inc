@@ -34,12 +34,37 @@
 	<div class="modal-body">
 		<div id="dfl-tabs">
 			<ul>
-				<li class="k-state-active">Specifications</li>
+				<li class="k-state-active">Sites</li>
+				<li>Specifications</li>
 				<li>Groups</li>
-				<li>Sites</li>
 				<li>Created Date</li>
 				<li>Other Options</li>
 			</ul>
+			<div>
+				<form id="dfl-sites-form" class="form-horizontal" style="padding-top: 15px;">
+					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
+						<label class="control-label" for="dfl-site-filter-type">Site Filter</label>
+						<div class="controls">
+							<input id="dfl-site-filter-type" style="width: 300px;" />
+						</div>
+					</div>
+				</form>
+				<div id="dfl-sites-forms">
+					<form id="dfl-site-all" class="form-horizontal">
+						<div class="sw-info-text">This filter will choose all devices without regard to which
+							site they belong to.</div>
+					</form>
+					<form id="dfl-site-choice" class="form-horizontal hide">
+						<div class="control-group">
+							<label class="control-label" for="dfl-chosen-site-token">Choose Site</label>
+							<div class="controls">
+								<div id="dfl-sites" class="sw-form-search-results"></div>
+								<input type="hidden" id="dfl-chosen-site-token" title="Site" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
 			<div>
 				<form id="dfl-spec-form" class="form-horizontal" style="padding-top: 15px;">
 					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
@@ -94,31 +119,6 @@
 							<label class="control-label" for="dfl-groups-role-text">Enter Role</label>
 							<div class="controls">
 								<input type="text" id="dfl-groups-role-text" title="Role" />
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-			<div>
-				<form id="dfl-sites-form" class="form-horizontal" style="padding-top: 15px;">
-					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-						<label class="control-label" for="dfl-site-filter-type">Site Filter</label>
-						<div class="controls">
-							<input id="dfl-site-filter-type" style="width: 300px;" />
-						</div>
-					</div>
-				</form>
-				<div id="dfl-sites-forms">
-					<form id="dfl-site-all" class="form-horizontal">
-						<div class="sw-info-text">This filter will choose all devices without regard to which
-							site they belong to.</div>
-					</form>
-					<form id="dfl-site-choice" class="form-horizontal hide">
-						<div class="control-group">
-							<label class="control-label" for="dfl-chosen-site-token">Choose Site</label>
-							<div class="controls">
-								<div id="dfl-sites" class="sw-form-search-results"></div>
-								<input type="hidden" id="dfl-chosen-site-token" title="Site" />
 							</div>
 						</div>
 					</form>

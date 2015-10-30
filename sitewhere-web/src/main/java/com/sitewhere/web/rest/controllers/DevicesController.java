@@ -359,6 +359,8 @@ public class DevicesController extends SiteWhereController {
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDevicesForCriteriaResponse.class, description = "listDevicesResponse.md") })
 	public ISearchResults<IDevice> listDevices(
+			@ApiParam(value = "Specification filter", required = false) @RequestParam(required = false) String specification,
+			@ApiParam(value = "Site filter", required = false) @RequestParam(required = false) String site,
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
@@ -371,8 +373,8 @@ public class DevicesController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "listDevices", LOGGER);
 		try {
 			IDeviceSearchCriteria criteria =
-					DeviceSearchCriteria.createDefaultSearch(page, pageSize, startDate, endDate,
-							excludeAssigned);
+					new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize, startDate,
+							endDate);
 			ISearchResults<IDevice> results =
 					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDevices(
 							includeDeleted, criteria);
@@ -391,13 +393,15 @@ public class DevicesController extends SiteWhereController {
 		}
 	}
 
-	@RequestMapping(value = "/specification/{specificationToken}", method = RequestMethod.GET)
+	@Deprecated
+	@RequestMapping(value = "/specification/{token}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List devices using a given specification")
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForSpecificationResponse.md") })
 	public ISearchResults<IDevice> listDevicesForSpecification(
-			@ApiParam(value = "Specification token", required = true) @PathVariable String specificationToken,
+			@ApiParam(value = "Specification token", required = true) @PathVariable String token,
+			@ApiParam(value = "Site filter", required = false) @RequestParam(required = false) String site,
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
@@ -410,8 +414,7 @@ public class DevicesController extends SiteWhereController {
 		Tracer.start(TracerCategory.RestApiCall, "listDevices", LOGGER);
 		try {
 			IDeviceSearchCriteria criteria =
-					DeviceSearchCriteria.createDeviceBySpecificationSearch(specificationToken, page,
-							pageSize, startDate, endDate, excludeAssigned);
+					new DeviceSearchCriteria(token, site, excludeAssigned, page, pageSize, startDate, endDate);
 			ISearchResults<IDevice> results =
 					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDevices(
 							includeDeleted, criteria);
@@ -437,7 +440,8 @@ public class DevicesController extends SiteWhereController {
 	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForGroupResponse.md") })
 	public ISearchResults<IDevice> listDevicesForGroup(
 			@ApiParam(value = "Group token", required = true) @PathVariable String groupToken,
-			@ApiParam(value = "Specification token", required = false) @RequestParam(required = false) String specification,
+			@ApiParam(value = "Specification filter", required = false) @RequestParam(required = false) String specification,
+			@ApiParam(value = "Site filter", required = false) @RequestParam(required = false) String site,
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
@@ -449,16 +453,9 @@ public class DevicesController extends SiteWhereController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDevicesForGroup", LOGGER);
 		try {
-			IDeviceSearchCriteria criteria;
-			if (specification == null) {
-				criteria =
-						DeviceSearchCriteria.createDefaultSearch(page, pageSize, startDate, endDate,
-								excludeAssigned);
-			} else {
-				criteria =
-						DeviceSearchCriteria.createDeviceBySpecificationSearch(specification, page, pageSize,
-								startDate, endDate, excludeAssigned);
-			}
+			IDeviceSearchCriteria criteria =
+					new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize, startDate,
+							endDate);
 			List<IDevice> matches =
 					DeviceGroupUtils.getDevicesInGroup(groupToken, criteria, getTenant(servletRequest));
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));
@@ -483,7 +480,8 @@ public class DevicesController extends SiteWhereController {
 	@Documented(examples = { @Example(stage = Stage.Response, json = Devices.ListDevicesForSpecificationResponse.class, description = "listDevicesForGroupsWithRoleResponse.md") })
 	public ISearchResults<IDevice> listDevicesForGroupsWithRole(
 			@ApiParam(value = "Group role", required = true) @PathVariable String role,
-			@ApiParam(value = "Specification token", required = false) @RequestParam(required = false) String specification,
+			@ApiParam(value = "Specification filter", required = false) @RequestParam(required = false) String specification,
+			@ApiParam(value = "Site filter", required = false) @RequestParam(required = false) String site,
 			@ApiParam(value = "Include deleted devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Exclude assigned devices", required = false) @RequestParam(required = false, defaultValue = "false") boolean excludeAssigned,
 			@ApiParam(value = "Include specification information", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeSpecification,
@@ -495,16 +493,9 @@ public class DevicesController extends SiteWhereController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDevicesForGroupsWithRole", LOGGER);
 		try {
-			IDeviceSearchCriteria criteria;
-			if (specification == null) {
-				criteria =
-						DeviceSearchCriteria.createDefaultSearch(page, pageSize, startDate, endDate,
-								excludeAssigned);
-			} else {
-				criteria =
-						DeviceSearchCriteria.createDeviceBySpecificationSearch(specification, page, pageSize,
-								startDate, endDate, excludeAssigned);
-			}
+			IDeviceSearchCriteria criteria =
+					new DeviceSearchCriteria(specification, site, excludeAssigned, page, pageSize, startDate,
+							endDate);
 			Collection<IDevice> matches =
 					DeviceGroupUtils.getDevicesInGroupsWithRole(role, criteria, getTenant(servletRequest));
 			DeviceMarshalHelper helper = new DeviceMarshalHelper(getTenant(servletRequest));

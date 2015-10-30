@@ -84,6 +84,9 @@ public class ScheduledJobHelper {
 
 		// Store criteria information.
 		config.put(JobConstants.BatchCommandInvocation.SPECIFICATION_TOKEN, request.getSpecificationToken());
+		if (!StringUtils.isEmpty(request.getSiteToken())) {
+			config.put(JobConstants.BatchCommandInvocation.SITE_TOKEN, request.getSiteToken());
+		}
 		if (!StringUtils.isEmpty(request.getGroupToken())) {
 			config.put(JobConstants.BatchCommandInvocation.GROUP_TOKEN, request.getGroupToken());
 		}

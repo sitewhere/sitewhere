@@ -15,6 +15,7 @@ import com.sitewhere.rest.model.device.request.BatchCommandForCriteriaRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 
@@ -85,8 +86,18 @@ public class CommandHtmlHelper {
 			throw new SiteWhereException("Invalid specification reference: "
 					+ criteria.getSpecificationToken());
 		}
-		String html =
-				"all devices with specification <a href=\"" + relativePath + "/specifications/"
+		String html = "all devices";
+		if (!StringUtils.isEmpty(criteria.getSiteToken())) {
+			ISite site = devices.getSiteByToken(criteria.getSiteToken());
+			if (site == null) {
+				throw new SiteWhereException("Invalid site reference: " + criteria.getGroupToken());
+			}
+			html +=
+					" belonging to site <a href=\"" + relativePath + "/sites/" + site.getToken() + ".html\">"
+							+ site.getName() + "</a>";
+		}
+		html +=
+				" with specification <a href=\"" + relativePath + "/specifications/"
 						+ specification.getToken() + ".html\">" + specification.getName() + "</a>";
 		if (!StringUtils.isEmpty(criteria.getGroupToken())) {
 			IDeviceGroup group = devices.getDeviceGroup(criteria.getGroupToken());

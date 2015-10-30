@@ -252,12 +252,8 @@
 	$(document).ready(function() {
 		var dsUrl = "${pageContext.request.contextPath}/api/";
 
-		// Handle specification filter.
-		if (rqSpecificationToken && !rqGroupToken && !rqGroupsWithRole) {
-			dsUrl += "devices/specification/${specification.token}";
-		}
 		// Handle group filter.
-		else if (rqGroupToken) {
+		if (rqGroupToken) {
 			dsUrl += "devices/group/${group.token}";
 		}
 		// Handle groups with role filter.
@@ -269,8 +265,11 @@
 			dsUrl += "devices";
 		}
 		dsUrl += "?includeSpecification=true&includeAssignment=true";
-		if (rqSpecificationToken && (rqGroupToken || rqGroupsWithRole)) {
+		if (rqSpecificationToken) {
 			dsUrl += "&specification=${specification.token}";
+		}
+		if (rqSiteToken) {
+			dsUrl += "&site=${site.token}";
 		}
 
 		// Handle date ranges.

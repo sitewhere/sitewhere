@@ -150,6 +150,7 @@
 						"commandToken" : selectedCommand.token,
 						"startDate" : bciCriteria.afterDate,
 						"endDate" : bciCriteria.beforeDate,
+						"siteToken" : bciCriteria.site,
 						"specificationToken" : bciCriteria.specification,
 						"groupToken" : bciCriteria.group,
 						"groupsWithRole" : bciCriteria.groupsWithRole,

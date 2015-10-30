@@ -45,17 +45,22 @@ public class DeviceGroupUtils {
 		Collection<IDevice> devices = getDevicesInGroup(groupToken, tenant);
 		List<IDevice> matches = new ArrayList<IDevice>();
 		for (IDevice device : devices) {
-			switch (criteria.getSearchType()) {
-			case All: {
-				break;
-			}
-			case UsesSpecification: {
-				if (!device.getSpecificationToken().equals(
-						criteria.getDeviceBySpecificationParameters().getSpecificationToken())) {
+
+			// Handle filter by specification.
+			if (criteria.getSpecificationToken() != null) {
+				if (!device.getSpecificationToken().equals(criteria.getSpecificationToken())) {
 					continue;
 				}
 			}
+
+			// Handle filter by site.
+			if (criteria.getSiteToken() != null) {
+				if (!device.getSiteToken().equals(criteria.getSiteToken())) {
+					continue;
+				}
 			}
+
+			// Handle exclude assigned.
 			if (criteria.isExcludeAssigned() && (device.getAssignmentToken() != null)) {
 				continue;
 			}
