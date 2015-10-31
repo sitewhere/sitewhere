@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.sitewhere.rest.ISiteWhereWebConstants;
 import com.sitewhere.rest.model.common.MetadataProvider;
+import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.DeviceSpecification;
@@ -909,7 +910,11 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 * @return
 	 */
 	protected String getSearchCriteriaFields(SearchCriteria criteria) {
-		return "page={page}&pageSize={pageSize}";
+		String result = "page={page}&pageSize={pageSize}";
+		if (criteria instanceof DateRangeSearchCriteria) {
+			result += "&startDate={startDate}&endDate={endDate}";
+		}
+		return result;
 	}
 
 	/**
@@ -919,16 +924,24 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 * @param criteria
 	 */
 	protected void addSearchCriteria(Map<String, String> vars, SearchCriteria criteria) {
-		if ((criteria == null) || (criteria.getPageNumber() == null)) {
-			vars.put("page", "1");
-		} else {
-			vars.put("page", String.valueOf(criteria.getPageNumber()));
-		}
+		if (criteria != null) {
+			if (criteria.getPageNumber() != null) {
+				vars.put("page", String.valueOf(criteria.getPageNumber()));
+			}
 
-		if ((criteria == null) || (criteria.getPageSize() == null)) {
-			vars.put("pageSize", "100");
-		} else {
-			vars.put("pageSize", String.valueOf(criteria.getPageSize()));
+			if (criteria.getPageSize() != null) {
+				vars.put("pageSize", String.valueOf(criteria.getPageSize()));
+			}
+		}
+		if (criteria instanceof DateRangeSearchCriteria) {
+			DateRangeSearchCriteria dates = (DateRangeSearchCriteria) criteria;
+			if (dates.getStartDate() != null) {
+				vars.put("startDate", JsonDateSerializer.serialize(dates.getStartDate()));
+			}
+
+			if (dates.getEndDate() != null) {
+				vars.put("endDate", JsonDateSerializer.serialize(dates.getEndDate()));
+			}
 		}
 	}
 

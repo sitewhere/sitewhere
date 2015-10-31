@@ -8,6 +8,7 @@
 package com.sitewhere.test;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -233,7 +234,10 @@ public class ApiTests {
 	@Test
 	public void testListDevices() throws SiteWhereException {
 		SiteWhereClient client = new SiteWhereClient();
-		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 100, null, null);
+		Calendar cal = Calendar.getInstance();
+		cal.roll(Calendar.MONTH, -1);
+		Date monthAgo = cal.getTime();
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 100, monthAgo, new Date());
 		SearchResults<Device> devices = client.listDevices(false, false, true, true, criteria);
 		System.out.println("Found " + devices.getNumResults() + " devices.");
 	}
