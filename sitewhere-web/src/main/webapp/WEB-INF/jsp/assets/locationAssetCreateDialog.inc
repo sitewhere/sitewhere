@@ -109,6 +109,10 @@
 
 	/** Properties list */
 	var acProperties;
+	
+	var acLatitude;
+	var acLongitude;
+	var acElevation;
 
 	/** Add a new property */
 	function acAddProperty() {
@@ -177,18 +181,18 @@
 				height : 400,
 			}).data("kendoListView");
 
-			$("#ac-asset-latitude").kendoNumericTextBox({
+			acLatitude = $("#ac-asset-latitude").kendoNumericTextBox({
 				format : "n6",
 				decimals : 6
-			});
-			$("#ac-asset-longitude").kendoNumericTextBox({
+			}).data("kendoNumericTextBox");
+			acLongitude = $("#ac-asset-longitude").kendoNumericTextBox({
 				format : "n6",
 				decimals : 6
-			});
-			$("#ac-asset-elevation").kendoNumericTextBox({
+			}).data("kendoNumericTextBox");
+			acElevation = $("#ac-asset-elevation").kendoNumericTextBox({
 				format : "n6",
 				decimals : 6
-			});
+			}).data("kendoNumericTextBox");
 
 			/** Handle create dialog submit */
 			$('#ac-dialog-submit').click(
@@ -249,8 +253,8 @@
 		$("#ac-asset-id").require();
 		$("#ac-asset-name").require();
 		$("#ac-asset-image").require();
-		$("#ac-asset-username").require();
-		$("#ac-asset-email").require();
+		$("#ac-asset-latitude").require();
+		$("#ac-asset-longitude").require();
 
 		$('#ac-asset-id').match(/^[\w\-]+$/, "Ids are alphanumeric with dashes or underscores.");
 
@@ -271,9 +275,9 @@
 
 		$('#ac-asset-id').val("");
 		$('#ac-asset-name').val("");
-		$('#ac-asset-latitude').val("");
-		$('#ac-asset-longitude').val("");
-		$('#ac-asset-elevation').val("");
+		acLatitude.value("");
+		acLongitude.value("");
+		acElevation.value("");
 		$('#ac-asset-image').val("");
 
 		acPropertiesDS.data(new Array());
