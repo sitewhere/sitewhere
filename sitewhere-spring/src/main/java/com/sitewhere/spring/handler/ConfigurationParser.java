@@ -10,11 +10,16 @@ package com.sitewhere.spring.handler;
 import java.util.List;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+
+import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.version.VersionChecker;
 
 /**
  * Parses the top-level element for SiteWhere Spring configuration.
@@ -32,6 +37,14 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 	 */
 	@Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+		// Add version checker bean if enabled.
+		Attr enableVersionCheck = element.getAttributeNode("enableVersionCheck");
+		if ((enableVersionCheck != null) && ("true".equals(enableVersionCheck.getValue()))) {
+			BeanDefinitionBuilder vc = BeanDefinitionBuilder.rootBeanDefinition(VersionChecker.class);
+			context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_VERSION_CHECK,
+					vc.getBeanDefinition());
+		}
+
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_COMMUNITY_NS.equals(child.getNamespaceURI())) {

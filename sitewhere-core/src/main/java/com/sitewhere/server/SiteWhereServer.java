@@ -64,10 +64,10 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.system.IVersionChecker;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUserManagement;
-import com.sitewhere.version.VersionChecker;
 import com.sitewhere.version.VersionHelper;
 
 /**
@@ -85,6 +85,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** Contains version information */
 	private IVersion version;
+
+	/** Version checker implementation */
+	private IVersionChecker versionChecker;
 
 	/** Contains runtime information about the server */
 	private ISiteWhereServerState serverState;
@@ -130,9 +133,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/** Thread for executing JVM history monitor */
 	private ExecutorService executor;
 
-	/** Flag indicating if version checking is enabled */
-	private boolean latestVersionCheckEnabled = true;
-
 	public SiteWhereServer() {
 		super(LifecycleComponentType.System);
 	}
@@ -153,19 +153,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public IVersion getVersion() {
 		return version;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#isLatestVersionCheckEnabled()
-	 */
-	public boolean isLatestVersionCheckEnabled() {
-		return latestVersionCheckEnabled;
-	}
-
-	public void setLatestVersionCheckEnabled(boolean latestVersionCheckEnabled) {
-		this.latestVersionCheckEnabled = latestVersionCheckEnabled;
 	}
 
 	/*
@@ -527,10 +514,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		executor = Executors.newFixedThreadPool(2);
 		executor.execute(jvmHistory);
 
-		// If version checking is enabled, perform in a separate thread.
-		if (isLatestVersionCheckEnabled()) {
-			VersionChecker checker = new VersionChecker();
-			executor.execute(checker);
+		// If version checker configured, perform in a separate thread.
+		if (versionChecker != null) {
+			executor.execute(versionChecker);
 		}
 	}
 
@@ -680,6 +666,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Initialize Spring.
 		initializeSpringContext();
 
+		// Initialize version checker.
+		initializeVersionChecker();
+
 		// Initialize tracer.
 		initializeTracer();
 
@@ -730,6 +719,20 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			SERVER_SPRING_CONTEXT = resolver.resolveSiteWhereContext(getVersion());
 		} else {
 			SERVER_SPRING_CONTEXT = getConfigurationResolver().resolveSiteWhereContext(getVersion());
+		}
+	}
+
+	/**
+	 * Initialize debug tracing implementation.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeVersionChecker() throws SiteWhereException {
+		try {
+			this.versionChecker =
+					(IVersionChecker) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_VERSION_CHECK);
+		} catch (NoSuchBeanDefinitionException e) {
+			LOGGER.info("Version checking not enabled.");
 		}
 	}
 

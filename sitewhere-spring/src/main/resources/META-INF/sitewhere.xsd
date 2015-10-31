@@ -33,6 +33,14 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:all>
+		<xsd:attribute name="enableVersionCheck" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation>Enables version checking mechanism which requests latest version
+					information from the internet and logs a message if the currently running version is
+					out of date.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="datastoreType">

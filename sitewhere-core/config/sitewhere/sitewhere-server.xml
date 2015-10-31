@@ -14,7 +14,7 @@
 	<!-- ########################### -->
 	<!-- # SITEWHERE CONFIGURATION # -->
 	<!-- ########################### -->
-	<sw:configuration>
+	<sw:configuration enableVersionCheck="true">
 
 		<!-- ################################# -->
 		<!-- # GLOBAL SERVICES CONFIGURATION # -->

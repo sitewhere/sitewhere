@@ -7,20 +7,26 @@
  */
 package com.sitewhere.version;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.spi.system.IVersionChecker;
 
 /**
  * Attempts to connect to a website to check for information about the latest version of
@@ -28,10 +34,13 @@ import com.sitewhere.spi.system.IVersion;
  * 
  * @author Derek
  */
-public class VersionChecker implements Runnable {
+public class VersionChecker implements IVersionChecker {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(VersionChecker.class);
+
+	/** URL accessed for latest version information */
+	private static final String VERSION_URL = "http://www.sitewhere.org/version.php";
 
 	/** Type for server product */
 	private static final String TYPE_SERVER = "server";
@@ -48,6 +57,7 @@ public class VersionChecker implements Runnable {
 		converters.add(new MappingJackson2HttpMessageConverter());
 		converters.add(new StringHttpMessageConverter());
 		client.setMessageConverters(converters);
+		client.setErrorHandler(new VersionCheckErrorHandler());
 	}
 
 	/*
@@ -59,9 +69,8 @@ public class VersionChecker implements Runnable {
 	public void run() {
 		try {
 			LOGGER.info("Checking for SiteWhere version updates...");
-			String url = "http://www.sitewhere.org/version.php";
 			IVersion current = VersionHelper.getVersion();
-			ResponseEntity<String> response = getClient().postForEntity(url, current, String.class);
+			ResponseEntity<String> response = getClient().postForEntity(VERSION_URL, current, String.class);
 			String body = response.getBody();
 			LOGGER.debug("Received:\n" + body);
 			LatestVersion latest = MarshalUtils.unmarshalJson(body.getBytes(), LatestVersion.class);
@@ -78,9 +87,9 @@ public class VersionChecker implements Runnable {
 			}
 			LOGGER.info("SiteWhere version is up to date.");
 		} catch (ResourceAccessException e) {
-			LOGGER.warn("Attempt to check latest version failed. " + e.getMessage());
+			LOGGER.debug("Attempt to check latest version failed. " + e.getMessage());
 		} catch (SiteWhereException e) {
-			LOGGER.warn("Attempt to check latest version failed. " + e.getMessage());
+			LOGGER.debug("Attempt to check latest version failed. " + e.getMessage());
 		}
 	}
 
@@ -140,5 +149,45 @@ public class VersionChecker implements Runnable {
 
 	public void setClient(RestTemplate client) {
 		this.client = client;
+	}
+
+	/**
+	 * Writes a message to the log if the remote site for checking latest version is not
+	 * available.
+	 * 
+	 * @author Derek
+	 */
+	protected static class VersionCheckErrorHandler implements ResponseErrorHandler {
+
+		/** Delegate to default error handler */
+		private ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.springframework.web.client.ResponseErrorHandler#handleError(org.springframework
+		 * .http.client.ClientHttpResponse)
+		 */
+		@Override
+		public void handleError(ClientHttpResponse response) throws IOException {
+			try {
+				errorHandler.handleError(response);
+			} catch (RestClientException e) {
+				LOGGER.warn("Unable to contact site to check for latest version.");
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.springframework.web.client.ResponseErrorHandler#hasError(org.springframework
+		 * .http.client.ClientHttpResponse)
+		 */
+		@Override
+		public boolean hasError(ClientHttpResponse response) throws IOException {
+			return errorHandler.hasError(response);
+		}
 	}
 }

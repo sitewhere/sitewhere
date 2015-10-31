@@ -44,13 +44,6 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IVersion getVersion();
 
 	/**
-	 * Indicates if latest version checking is enabled.
-	 * 
-	 * @return
-	 */
-	public boolean isLatestVersionCheckEnabled();
-
-	/**
 	 * Gets runtime information about the server.
 	 * 
 	 * @param includeHistorical
