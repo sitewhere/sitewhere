@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
@@ -652,12 +653,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 		MongoPersistence.addDateSearchCriteria(dbCriteria, MongoSiteWhereEntity.PROP_CREATED_DATE, criteria);
 
 		// Add specification filter if specified.
-		if (criteria.getSpecificationToken() != null) {
+		if (!StringUtils.isEmpty(criteria.getSpecificationToken())) {
 			dbCriteria.put(MongoDevice.PROP_SPECIFICATION_TOKEN, criteria.getSpecificationToken());
 		}
 
 		// Add site filter if specified.
-		if (criteria.getSiteToken() != null) {
+		if (!StringUtils.isEmpty(criteria.getSiteToken())) {
 			dbCriteria.put(MongoDevice.PROP_SITE_TOKEN, criteria.getSiteToken());
 		}
 
