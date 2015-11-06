@@ -28,7 +28,6 @@ import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
-import com.sitewhere.messagebroker.BrokerOutboundEventProcessor;
 import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.siddhi.GroovyStreamProcessor;
 import com.sitewhere.siddhi.SiddhiEventProcessor;
@@ -102,10 +101,6 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 				processors.add(parseSiddhiEventProcessor(child, context));
 				break;
 			}
-                        case MessageBrokerEventProcessor: {
-                                processors.add(parseMessageBrokerProcessor(child, context));
-				break;
-                        }
 			}
 		}
 		chain.addPropertyValue("processors", processors);
@@ -324,30 +319,11 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		List<Element> queryElements = DomUtils.getChildElementsByTagName(element, "siddhi-query");
 		for (Element queryElement : queryElements) {
 			queries.add(parseSiddhiQuery(queryElement, context));
-		} 
+		}
 		processor.addPropertyValue("queries", queries);
 
 		return processor.getBeanDefinition();
 	}
-        
-        protected AbstractBeanDefinition parseMessageBrokerProcessor(Element element, ParserContext context) {
-            BeanDefinitionBuilder processor =
-				BeanDefinitionBuilder.rootBeanDefinition(BrokerOutboundEventProcessor.class); 
-            
-            Attr hostname = element.getAttributeNode("hostname");
-            if (hostname == null) {
-		throw new RuntimeException("Hostname key required for Message Broker event processor.");
-            }
-            processor.addPropertyValue("hostname", hostname.getValue());
-            
-            Attr port = element.getAttributeNode("port");
-            if (port == null) {
-		throw new RuntimeException("Port key required for Message Broker event processor.");
-            }
-            processor.addPropertyValue("port", port.getValue());
-            
-            return processor.getBeanDefinition();
-        }
 
 	/**
 	 * Parse a single {@link SiddhiQuery}.
@@ -461,11 +437,8 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		CommandDeliveryEventProcessor("command-delivery-event-processor"),
 
 		/** Outbound event processor that uses Siddhi for complex event processing */
-		SiddhiEventProcessor("siddhi-event-processor"),
+		SiddhiEventProcessor("siddhi-event-processor");
 
-                /** Sends outbound events to a Message Broker */
-                MessageBrokerEventProcessor("message-broker-event-processor");
-                
 		/** Event code */
 		private String localName;
 

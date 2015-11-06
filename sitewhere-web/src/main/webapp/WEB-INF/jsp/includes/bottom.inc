@@ -4,7 +4,7 @@
 			<span style="position: absolute; right: 10px; color: #999;">
 				${version.versionIdentifier}.${version.buildTimestamp} (${version.editionIdentifier})
 			</span>
-			Copyright &copy; 2014-2015 Steeplechase Networks.
+			Copyright © 2009-2015 SiteWhere, LLC.
 		</div>
 	</div>
 <script src="${pageContext.request.contextPath}/scripts/bootstrap.min.js"></script>

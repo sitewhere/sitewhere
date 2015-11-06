@@ -327,7 +327,5 @@
 			</plugin>
 		</plugins>
 	</build>
-    <modules>
-        <module>sitewhere-messagebroker</module>
-    </modules>
+
 </project>

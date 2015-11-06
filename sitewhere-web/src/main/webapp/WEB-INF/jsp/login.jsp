@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html class="sw-body">
 <head>
-<title>OfficerGuardian - Login</title>
+<title>SiteWhere - Login</title>
 <script src="${pageContext.request.contextPath}/scripts/jquery.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/kendo.web.js"></script>
@@ -93,16 +93,16 @@ sitewhere_i18next.sitewhere_title = "login.title";
 					</form>
 				</div>
 			</div>
-			<!--<div class="alert alert-info" style="width: 550px; margin-left: auto; margin-right: auto; text-align: center; margin-top: 10px;">
+			<div class="alert alert-info" style="width: 550px; margin-left: auto; margin-right: auto; text-align: center; margin-top: 10px;">
 				 <font data-i18n="login.msg"></font><b> admin</b>:<b>password</b>.
-			</div>-->
+			</div>
 		</div>
 		<div style="height: 10px;"></div>
 		<div class="sw-footer">
 			<span style="position: absolute; right: 10px; color: #999;">
 				${version.versionIdentifier}.${version.buildTimestamp} (${version.editionIdentifier})
 			</span>
-			Copyright &copy; 2014-2015 Steeplechase Networks.
+			Copyright � 2009-2014 SiteWhere, LLC.
 		</div>
 	</div>
 </body>

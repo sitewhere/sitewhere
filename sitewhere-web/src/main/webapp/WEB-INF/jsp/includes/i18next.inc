@@ -15,7 +15,7 @@
 		"i18n_titleProperties" : function() {
 			var title = i18next(this.sitewhere_title);
 			if ((title != null) && (title.length > 0)) {
-				$("title").html("OfficerGuardian - " + title);
+				$("title").html("SiteWhere - " + title);
 			}
 		},
 		"i18n" : function() {
