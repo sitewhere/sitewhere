@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>SiteWhere - Swagger UI</title>
+<title>OfficerGuardian - Swagger UI</title>
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet'
 	type='text/css' />
 <link href='css/hightlight.default.css' media='screen' rel='stylesheet' type='text/css' />

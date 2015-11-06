@@ -22,3 +22,5 @@
 /sitewhere-wso2/target
 /deploy
 /target
+/SitewhereMessageBrokerIntegration/target/
+/sitewhere-messagebroker/target/
