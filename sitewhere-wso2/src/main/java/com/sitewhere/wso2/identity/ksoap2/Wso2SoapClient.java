@@ -27,6 +27,9 @@ import org.ksoap2.transport.ServiceConnection;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.sitewhere.spi.SiteWhereException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Client for WSO2 remote user store manager service using ksoap2 for lightweight SOAP
@@ -78,6 +81,13 @@ public class Wso2SoapClient {
 		Object response = send("urn:authenticate", body);
 		return getPrimitiveBoolean(response);
 	}
+        
+        public List<String> getRoleListOfUser(String username) throws SiteWhereException {
+            SoapObject body = new SoapObject(CARBON_NAMESPACE, "getRoleListOfUser");
+            body.addProperty("userName", username);
+            Object response = send("urn:getRoleListOfUser", body);
+            return getPrimitiveStringList(response);
+        }
 
 	/**
 	 * Send a SOAP message.
@@ -142,6 +152,29 @@ public class Wso2SoapClient {
 		}
 		throw new SiteWhereException("Invalid response from SOAP service.");
 	}
+        
+        /**
+	 * Parse out a primitive String or a primitive String List response.
+	 * 
+	 * @param response
+	 * @return
+	 * @throws SiteWhereException
+	 */
+        protected List<String> getPrimitiveStringList(Object response) throws SiteWhereException {
+            LinkedList<String> values = new LinkedList<String>();
+            
+            if ((response != null) && (response instanceof SoapPrimitive)) {
+                String value = (String) ((SoapPrimitive) response).getValue();
+                values.add(value);
+            } else if ((response != null) && (response instanceof List)) {
+                List<SoapPrimitive> primitiveValues = (List<SoapPrimitive>)response;
+                for (SoapPrimitive primitiveValue : primitiveValues) {
+                    values.add((String)primitiveValue.getValue());
+                }
+            }
+            
+            return values;
+        }
 
 	/**
 	 * Call to turn off SSL certificate checking. This should only be done for testing!
