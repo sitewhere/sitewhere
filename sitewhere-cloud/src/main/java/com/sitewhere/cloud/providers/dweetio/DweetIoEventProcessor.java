@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import com.sitewhere.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -27,7 +27,7 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
  * 
  * @author Derek
  */
-public class DweetIoEventProcessor extends OutboundEventProcessor {
+public class DweetIoEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DweetIoEventProcessor.class);
@@ -45,39 +45,31 @@ public class DweetIoEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		// Required for filters.
+		super.start();
+
 		this.client = new RestTemplate();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
-	public void stop() throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onMeasurements(com.
-	 * sitewhere.spi.device.event.IDeviceMeasurements)
-	 */
-	@Override
-	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
 		sendDweet(measurements);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onLocation(com.sitewhere
-	 * .spi.device.event.IDeviceLocation)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
-	public void onLocation(IDeviceLocation location) throws SiteWhereException {
+	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
 		sendDweet(location);
 	}
 
@@ -85,11 +77,11 @@ public class DweetIoEventProcessor extends OutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onAlert(com.sitewhere
-	 * .spi.device.event.IDeviceAlert)
+	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
+	 * (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
-	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
 		sendDweet(alert);
 	}
 

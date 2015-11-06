@@ -22,7 +22,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.spi.SiteWhereException;
@@ -39,7 +39,7 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
  * 
  * @author Derek
  */
-public class InitialStateEventProcessor extends OutboundEventProcessor {
+public class InitialStateEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(InitialStateEventProcessor.class);
@@ -69,27 +69,20 @@ public class InitialStateEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		// Required for filters.
+		super.start();
+
 		this.client = new RestTemplate();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
-	public void stop() throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onMeasurements(com.
-	 * sitewhere.spi.device.event.IDeviceMeasurements)
-	 */
-	@Override
-	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
 		Map<String, Double> mx = measurements.getMeasurements();
 		List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 		for (String name : mx.keySet()) {
@@ -106,12 +99,11 @@ public class InitialStateEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onLocation(com.sitewhere
-	 * .spi.device.event.IDeviceLocation)
+	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
-	public void onLocation(IDeviceLocation location) throws SiteWhereException {
+	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
 		List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 
 		EventCreateRequest event = new EventCreateRequest();
@@ -127,12 +119,11 @@ public class InitialStateEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onAlert(com.sitewhere
-	 * .spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * onAlertNotFiltered(com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
-	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
 		List<EventCreateRequest> events = new ArrayList<EventCreateRequest>();
 
 		EventCreateRequest event = new EventCreateRequest();

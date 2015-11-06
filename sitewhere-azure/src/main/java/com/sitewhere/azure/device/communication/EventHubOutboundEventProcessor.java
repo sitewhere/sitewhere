@@ -28,7 +28,7 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -44,7 +44,7 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
  * 
  * @author Derek
  */
-public class EventHubOutboundEventProcessor extends OutboundEventProcessor {
+public class EventHubOutboundEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(EventHubOutboundEventProcessor.class);
@@ -75,6 +75,9 @@ public class EventHubOutboundEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		// Required for filters.
+		super.start();
+
 		try {
 			String key = URLEncoder.encode(getSasKey(), "UTF8");
 			String connectionString = "amqps://" + getSasName() + ":" + key + "@" + getServiceBusName();
@@ -113,6 +116,7 @@ public class EventHubOutboundEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		super.stop();
 		if (sender != null) {
 			try {
 				sender.close();
@@ -139,24 +143,22 @@ public class EventHubOutboundEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onMeasurements(com.
-	 * sitewhere.spi.device.event.IDeviceMeasurements)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
-	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
 		sendEvent(measurements);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onLocation(com.sitewhere
-	 * .spi.device.event.IDeviceLocation)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
-	public void onLocation(IDeviceLocation location) throws SiteWhereException {
+	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
 		sendEvent(location);
 	}
 
@@ -164,35 +166,34 @@ public class EventHubOutboundEventProcessor extends OutboundEventProcessor {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onAlert(com.sitewhere
-	 * .spi.device.event.IDeviceAlert)
+	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
+	 * (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
-	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
 		sendEvent(alert);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onCommandInvocation
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onCommandInvocationNotFiltered
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		sendEvent(invocation);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onCommandResponse(com
-	 * .sitewhere.spi.device.event.IDeviceCommandResponse)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onCommandResponseNotFiltered(com.sitewhere.spi.device.event.IDeviceCommandResponse)
 	 */
 	@Override
-	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException {
+	public void onCommandResponseNotFiltered(IDeviceCommandResponse response) throws SiteWhereException {
 		sendEvent(response);
 	}
 

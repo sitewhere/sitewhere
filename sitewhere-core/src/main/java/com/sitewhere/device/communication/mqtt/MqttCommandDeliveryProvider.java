@@ -102,6 +102,7 @@ public class MqttCommandDeliveryProvider extends TenantLifecycleComponent implem
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		/** TODO: Copy shutdown code here */
 	}
 
 	/*

@@ -8,7 +8,7 @@
 	<xsd:import schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
 		namespace="http://www.springframework.org/schema/beans">
 	</xsd:import>
-	<xsd:import schemaLocation="http://www.sitewhere.org/schema/sitewhere/ce/1.3.0/sitewhere.xsd"
+	<xsd:import schemaLocation="http://www.sitewhere.org/schema/sitewhere/ce/current/sitewhere.xsd"
 		namespace="http://www.sitewhere.com/schema/sitewhere/ce"></xsd:import>
 
 	<xsd:element name="tenant-configuration" type="tenantConfigurationType">
@@ -380,6 +380,41 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for outbound processor filter elements to allow substitutionGroups -->
+	<xsd:element name="abstract-outbound-processor-filter" abstract="true"
+		type="abstractOutboundProcessorFilterType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound processor filter elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common outbound processor filter element information -->
+	<xsd:complexType name="abstractOutboundProcessorFilterType"/>
+	
+	<!-- Filters outbound events associated with a site -->
+	<xsd:element name="site-filter" type="siteFilterType" substitutionGroup="abstract-outbound-processor-filter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Filters out events for devices associated with the given site.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="siteFilterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorFilterType">
+				<xsd:attribute name="siteToken" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique token for the site to be filtered.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Used as a placeholder for outbound processor elements to allow substitutionGroups -->
 	<xsd:element name="abstract-outbound-processor" abstract="true"
 		type="abstractOutboundProcessorType">
@@ -392,6 +427,30 @@
 	
 	<!-- Common outbound processor element information -->
 	<xsd:complexType name="abstractOutboundProcessorType"/>
+
+	<!-- Element that contains a list of outbound processor filters -->
+	<xsd:complexType name="outboundProcessorFilterList">
+		<xsd:sequence>
+			<xsd:element ref="abstract-outbound-processor-filter"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Adds ability to add nested filters for outbound processors -->
+	<xsd:complexType name="filteredOutboundProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element name="filters" type="outboundProcessorFilterList" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								List of filters that will be applied to outbound traffic.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<xsd:complexType name="outboundProcessingChainType">
 		<xsd:sequence>
@@ -421,6 +480,7 @@
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
+	
 	<!-- Command delivery outbound event processor -->
 	<xsd:element name="command-delivery-event-processor" type="commandDeliveryEventProcessorType"
 		substitutionGroup="abstract-outbound-processor">
@@ -434,7 +494,7 @@
 	</xsd:element>
 	<xsd:complexType name="commandDeliveryEventProcessorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundProcessorType">
+			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:attribute name="numThreads" type="xsd:int" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -460,7 +520,7 @@
 	</xsd:element>
 	<xsd:complexType name="zoneTestOutboundEventProcessorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundProcessorType">
+			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:sequence>
 					<xsd:element name="zone-test" type="zoneTestType" maxOccurs="unbounded">
 						<xsd:annotation>
@@ -471,6 +531,23 @@
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- MQTT outbound event processor -->
+	<xsd:element name="mqtt-event-processor" type="mqttEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to an MQTT topic.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="mqttEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attributeGroup ref="mqtt-inbound-attributes"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -487,7 +564,7 @@
 	</xsd:element>
 	<xsd:complexType name="hazelcastEventProcessorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundProcessorType">
+			<xsd:extension base="filteredOutboundProcessorType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -503,7 +580,7 @@
 	</xsd:element>
 	<xsd:complexType name="solrEventProcessorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundProcessorType">
+			<xsd:extension base="filteredOutboundProcessorType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -519,7 +596,7 @@
 	</xsd:element>
 	<xsd:complexType name="azureEventHubEventProcessorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundProcessorType">
+			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:attribute name="sasName" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -565,7 +642,7 @@
 	</xsd:element>
 	<xsd:complexType name="initialStateEventProcessorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundProcessorType">
+			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:attribute name="streamingAccessKey" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -590,7 +667,7 @@
 	</xsd:element>
 	<xsd:complexType name="dweetIoEventProcessorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundProcessorType">
+			<xsd:extension base="filteredOutboundProcessorType">
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -607,7 +684,7 @@
 	</xsd:element>
 	<xsd:complexType name="siddhiEventProcessorType">
 		<xsd:complexContent>
-			<xsd:extension base="abstractOutboundProcessorType">
+			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="unbounded" name="siddhi-query"
 						type="siddhiQueryType">

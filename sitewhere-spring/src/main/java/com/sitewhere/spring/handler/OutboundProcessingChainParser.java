@@ -14,6 +14,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
+import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
@@ -23,7 +24,9 @@ import com.sitewhere.azure.device.communication.EventHubOutboundEventProcessor;
 import com.sitewhere.cloud.providers.dweetio.DweetIoEventProcessor;
 import com.sitewhere.cloud.providers.initialstate.InitialStateEventProcessor;
 import com.sitewhere.device.communication.DeviceCommandEventProcessor;
+import com.sitewhere.device.communication.mqtt.MqttOutboundEventProcessor;
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
+import com.sitewhere.device.event.processor.filter.SiteFilter;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -72,6 +75,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 			case ZoneTestEventProcessor: {
 				processors.add(parseZoneTestEventProcessor(child, context));
+				break;
+			}
+			case MqttEventProcessor: {
+				processors.add(parseMqttEventProcessor(child, context));
 				break;
 			}
 			case HazelcastEventProcessor: {
@@ -182,6 +189,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			tests.add(test);
 		}
 		processor.addPropertyValue("zoneTests", tests);
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
+
 		return processor.getBeanDefinition();
 	}
 
@@ -202,6 +213,39 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parse configuration for event processor that delivers events to an MQTT topic.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseMqttEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(MqttOutboundEventProcessor.class);
+
+		Attr hostname = element.getAttributeNode("hostname");
+		if (hostname != null) {
+			processor.addPropertyValue("hostname", hostname.getValue());
+		}
+
+		Attr port = element.getAttributeNode("port");
+		if (port != null) {
+			processor.addPropertyValue("port", port.getValue());
+		}
+
+		Attr topic = element.getAttributeNode("topic");
+		if (topic == null) {
+			throw new RuntimeException("Topic value required for outbound MQTT event processor.");
+		}
+		processor.addPropertyValue("topic", topic.getValue());
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
 	 * Parse configuration for Hazelcast outbound event processor.
 	 * 
 	 * @param element
@@ -213,6 +257,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 				BeanDefinitionBuilder.rootBeanDefinition(HazelcastEventProcessor.class);
 		processor.addPropertyReference("configuration",
 				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
+
 		return processor.getBeanDefinition();
 	}
 
@@ -227,6 +275,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(SolrDeviceEventProcessor.class);
 		processor.addPropertyReference("solr", SiteWhereSolrConfiguration.SOLR_CONFIGURATION_BEAN);
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
+
 		return processor.getBeanDefinition();
 	}
 
@@ -265,6 +317,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		}
 		processor.addPropertyValue("eventHubName", eventHubName.getValue());
 
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
+
 		return processor.getBeanDefinition();
 	}
 
@@ -285,6 +340,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		}
 		processor.addPropertyValue("streamingAccessKey", streamingAccessKey.getValue());
 
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
+
 		return processor.getBeanDefinition();
 	}
 
@@ -298,6 +356,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	protected AbstractBeanDefinition parseDweetIoEventProcessor(Element element, ParserContext context) {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(DweetIoEventProcessor.class);
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
 
 		return processor.getBeanDefinition();
 	}
@@ -318,6 +379,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		if (numThreads != null) {
 			processor.addPropertyValue("numThreads", Integer.parseInt(numThreads.getValue()));
 		}
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
 
 		return processor.getBeanDefinition();
 	}
@@ -340,6 +404,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			queries.add(parseSiddhiQuery(queryElement, context));
 		}
 		processor.addPropertyValue("queries", queries);
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
 
 		return processor.getBeanDefinition();
 	}
@@ -425,6 +492,69 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	}
 
 	/**
+	 * Parse filters associated with an outbound processor.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected ManagedList<?> parseFilters(Element element, ParserContext context) {
+		ManagedList<Object> result = new ManagedList<Object>();
+
+		// Look for a 'filters' element.
+		Element filters = DomUtils.getChildElementByTagName(element, "filters");
+		if (filters != null) {
+			// Process the list of filters.
+			List<Element> children = DomUtils.getChildElements(filters);
+			for (Element child : children) {
+				if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
+					NamespaceHandler nested =
+							context.getReaderContext().getNamespaceHandlerResolver().resolve(
+									child.getNamespaceURI());
+					if (nested != null) {
+						nested.parse(child, context);
+						continue;
+					} else {
+						throw new RuntimeException("Invalid nested element found in 'filters' section: "
+								+ child.toString());
+					}
+				}
+				Filters type = Filters.getByLocalName(child.getLocalName());
+				if (type == null) {
+					throw new RuntimeException("Unknown filter element: " + child.getLocalName());
+				}
+				switch (type) {
+				case SiteFilter: {
+					result.add(parseSiteFilter(child, context));
+					break;
+				}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Parse a site filter element.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseSiteFilter(Element element, ParserContext context) {
+		BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(SiteFilter.class);
+
+		Attr siteToken = element.getAttributeNode("siteToken");
+		if (siteToken == null) {
+			throw new RuntimeException("Attribute 'siteToken' is required for site-filter.");
+		}
+		filter.addPropertyValue("siteToken", siteToken.getValue());
+
+		return filter.getBeanDefinition();
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -436,6 +566,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		/** Tests location values against zones */
 		ZoneTestEventProcessor("zone-test-event-processor"),
+
+		/** Sends outbound events to an MQTT topic */
+		MqttEventProcessor("mqtt-event-processor"),
 
 		/** Sends outbound events over Hazelcast topics */
 		HazelcastEventProcessor("hazelcast-event-processor"),
@@ -470,6 +603,41 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		public static Elements getByLocalName(String localName) {
 			for (Elements value : Elements.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
+
+	/**
+	 * Expected filter elements.
+	 * 
+	 * @author Derek
+	 */
+	public static enum Filters {
+
+		/** Filters events for a site */
+		SiteFilter("site-filter");
+
+		/** Event code */
+		private String localName;
+
+		private Filters(String localName) {
+			this.localName = localName;
+		}
+
+		public static Filters getByLocalName(String localName) {
+			for (Filters value : Filters.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}

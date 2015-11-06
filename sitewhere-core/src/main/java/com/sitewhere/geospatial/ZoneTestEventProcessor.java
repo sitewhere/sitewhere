@@ -16,7 +16,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IZone;
@@ -31,7 +31,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  * @author Derek
  */
-public class ZoneTestEventProcessor extends OutboundEventProcessor {
+public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ZoneTestEventProcessor.class);
@@ -49,6 +49,9 @@ public class ZoneTestEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		// Required for filters.
+		super.start();
+
 		LOGGER.info("Starting zone test processor with " + zoneTests.size() + " tests.");
 	}
 
@@ -65,21 +68,11 @@ public class ZoneTestEventProcessor extends OutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
-	public void stop() throws SiteWhereException {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#onLocation
-	 * (com.sitewhere.spi.device.event.IDeviceLocation)
-	 */
-	@Override
-	public void onLocation(IDeviceLocation location) throws SiteWhereException {
+	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
 		for (ZoneTest test : zoneTests) {
 			Polygon poly = getZonePolygon(test.getZoneToken());
 			ZoneContainment containment =

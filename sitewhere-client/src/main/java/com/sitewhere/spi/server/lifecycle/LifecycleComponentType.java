@@ -44,6 +44,9 @@ public enum LifecycleComponentType {
 	/** Outbound event processor */
 	OutboundEventProcessor,
 
+	/** Outbound event processor filter */
+	OutboundEventProcessorFilter,
+
 	/** Inbound processor chain */
 	InboundProcessorChain,
 

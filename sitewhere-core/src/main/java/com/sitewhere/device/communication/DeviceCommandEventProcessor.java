@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -26,7 +26,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
  * 
  * @author Derek
  */
-public class DeviceCommandEventProcessor extends OutboundEventProcessor {
+public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DeviceCommandEventProcessor.class);
@@ -47,6 +47,9 @@ public class DeviceCommandEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		// Required for filters.
+		super.start();
+
 		LOGGER.info("Command event processor using " + getNumThreads() + " threads to process requests.");
 		executor = Executors.newFixedThreadPool(getNumThreads(), new ProcessorsThreadFactory());
 	}
@@ -68,17 +71,19 @@ public class DeviceCommandEventProcessor extends OutboundEventProcessor {
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		super.stop();
 		executor.shutdownNow();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.rest.model.device.event.processor.OutboundEventProcessor#
-	 * onCommandInvocation(com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onCommandInvocationNotFiltered
+	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
 		executor.execute(new CommandInvocationProcessor(invocation));
 	}
 

@@ -15,7 +15,7 @@ import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.stream.input.InputHandler;
 import org.wso2.siddhi.core.stream.output.StreamCallback;
 
-import com.sitewhere.device.event.processor.OutboundEventProcessor;
+import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
@@ -28,7 +28,7 @@ import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
  * 
  * @author Derek
  */
-public class SiddhiEventProcessor extends OutboundEventProcessor implements IOutboundEventProcessor {
+public class SiddhiEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiddhiEventProcessor.class);
@@ -70,6 +70,9 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		// Required for filters.
+		super.start();
+
 		manager = new SiddhiManager();
 		createStreams();
 		registerQueries();
@@ -103,12 +106,11 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onMeasurements(com.
-	 * sitewhere.spi.device.event.IDeviceMeasurements)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onMeasurementsNotFiltered(com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
-	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
+	public void onMeasurementsNotFiltered(IDeviceMeasurements measurements) throws SiteWhereException {
 		for (String mxname : measurements.getMeasurements().keySet()) {
 			Double mxvalue = measurements.getMeasurement(mxname);
 			try {
@@ -132,12 +134,11 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onLocation(com.sitewhere
-	 * .spi.device.event.IDeviceLocation)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onLocationNotFiltered(com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	@Override
-	public void onLocation(IDeviceLocation location) throws SiteWhereException {
+	public void onLocationNotFiltered(IDeviceLocation location) throws SiteWhereException {
 		try {
 			getLocationInputHandler().send(
 					new Object[] {
@@ -159,11 +160,11 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onAlert(com.sitewhere
-	 * .spi.device.event.IDeviceAlert)
+	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
+	 * (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
-	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
+	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
 		try {
 			getAlertInputHandler().send(
 					new Object[] {
@@ -189,6 +190,7 @@ public class SiddhiEventProcessor extends OutboundEventProcessor implements IOut
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		super.stop();
 		if (manager != null) {
 			manager.shutdown();
 			manager = null;
