@@ -357,11 +357,11 @@ public interface ISiteWhereClient {
 	 * Get most recent device measurements for a given assignment.
 	 * 
 	 * @param assignmentToken
-	 * @param maxCount
+         * @param searchCriteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken, int maxCount)
+	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken, DateRangeSearchCriteria searchCriteria)
 			throws SiteWhereException;
 
 	/**
