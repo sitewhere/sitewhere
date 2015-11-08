@@ -1,4 +1,4 @@
-[![Build Status](https://drone.io/github.com/sitewhere/sitewhere/status.png)](https://drone.io/github.com/sitewhere/sitewhere/latest)
+[![Build Status](https://travis-ci.org/sitewhere/sitewhere.svg?branch=sitewhere-1.4.0)](https://travis-ci.org/sitewhere/sitewhere)
 
 ![SiteWhere] (http://www.sitewhere.org/wp-content/uploads/2015/07/sitewhere-small.png)
 
