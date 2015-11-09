@@ -404,7 +404,7 @@
 	<xsd:complexType name="siteFilterType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractOutboundProcessorFilterType">
-				<xsd:attribute name="siteToken" type="xsd:string" use="required">
+				<xsd:attribute name="site" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
 							Unique token for the site to be filtered.
@@ -413,6 +413,64 @@
 				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Element that contains a list of outbound processor filters -->
+	<xsd:complexType name="outboundProcessorFilterList">
+		<xsd:sequence>
+			<xsd:element ref="abstract-outbound-processor-filter"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for outbound multicaster elements to allow substitutionGroups -->
+	<xsd:element name="abstract-outbound-multicaster" abstract="true"
+		type="abstractOutboundMulticasterType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound multicaster elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common multicaster element information -->
+	<xsd:complexType name="abstractOutboundMulticasterType"/>
+	
+	<!-- Multicasts events to all devices that use a given specification -->
+	<xsd:element name="all-with-specification-multicaster" type="allWithSpecificationMulticasterType"
+		substitutionGroup="abstract-outbound-multicaster">
+		<xsd:annotation>
+			<xsd:documentation>
+				Multicasts to all devices that use a given specification.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="allWithSpecificationMulticasterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundMulticasterType">
+				<xsd:attribute name="specification" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique token for device specification.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="filterScriptPath" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that returns a true if event should be
+							filtered for device, false if not.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Element that contains an outbound multicaster -->
+	<xsd:complexType name="outboundMulticasterType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-outbound-multicaster"/>
+		</xsd:sequence>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for outbound processor elements to allow substitutionGroups -->
@@ -427,13 +485,6 @@
 	
 	<!-- Common outbound processor element information -->
 	<xsd:complexType name="abstractOutboundProcessorType"/>
-
-	<!-- Element that contains a list of outbound processor filters -->
-	<xsd:complexType name="outboundProcessorFilterList">
-		<xsd:sequence>
-			<xsd:element ref="abstract-outbound-processor-filter"/>
-		</xsd:sequence>
-	</xsd:complexType>
 
 	<!-- Adds ability to add nested filters for outbound processors -->
 	<xsd:complexType name="filteredOutboundProcessorType">
@@ -547,6 +598,16 @@
 	<xsd:complexType name="mqttEventProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element name="multicaster" type="outboundMulticasterType" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Allows a multicaster to be configured so that events can be
+								broadcast to many different topics.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
 				<xsd:attributeGroup ref="mqtt-inbound-attributes"/>
 			</xsd:extension>
 		</xsd:complexContent>

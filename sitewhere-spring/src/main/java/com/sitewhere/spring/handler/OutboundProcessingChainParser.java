@@ -30,6 +30,7 @@ import com.sitewhere.device.event.processor.filter.SiteFilter;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.device.communication.multicaster.AllWithSpecificationStringMulticaster;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.server.SiteWhereServerBeans;
@@ -234,13 +235,15 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		}
 
 		Attr topic = element.getAttributeNode("topic");
-		if (topic == null) {
-			throw new RuntimeException("Topic value required for outbound MQTT event processor.");
+		if (topic != null) {
+			processor.addPropertyValue("topic", topic.getValue());
 		}
-		processor.addPropertyValue("topic", topic.getValue());
 
 		// Parse nested filters.
 		processor.addPropertyValue("filters", parseFilters(element, context));
+
+		// Parse multicaster.
+		processor.addPropertyValue("multicaster", parseMulticaster(element, context));
 
 		return processor.getBeanDefinition();
 	}
@@ -545,13 +548,82 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	protected AbstractBeanDefinition parseSiteFilter(Element element, ParserContext context) {
 		BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(SiteFilter.class);
 
-		Attr siteToken = element.getAttributeNode("siteToken");
-		if (siteToken == null) {
-			throw new RuntimeException("Attribute 'siteToken' is required for site-filter.");
+		Attr site = element.getAttributeNode("site");
+		if (site == null) {
+			throw new RuntimeException("Attribute 'site' is required for site-filter.");
 		}
-		filter.addPropertyValue("siteToken", siteToken.getValue());
+		filter.addPropertyValue("siteToken", site.getValue());
 
 		return filter.getBeanDefinition();
+	}
+
+	/**
+	 * Parse a multicaster if defined.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseMulticaster(Element element, ParserContext context) {
+		// Look for a 'multicaster' element.
+		Element multicaster = DomUtils.getChildElementByTagName(element, "multicaster");
+		if (multicaster != null) {
+			// Process the list of filters.
+			List<Element> children = DomUtils.getChildElements(multicaster);
+			for (Element child : children) {
+				if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
+					NamespaceHandler nested =
+							context.getReaderContext().getNamespaceHandlerResolver().resolve(
+									child.getNamespaceURI());
+					if (nested != null) {
+						nested.parse(child, context);
+						continue;
+					} else {
+						throw new RuntimeException("Invalid nested element found in 'multicaster' section: "
+								+ child.toString());
+					}
+				}
+				Multicasters type = Multicasters.getByLocalName(child.getLocalName());
+				if (type == null) {
+					throw new RuntimeException("Unknown multicaster element: " + child.getLocalName());
+				}
+				switch (type) {
+				case AllWithSpecificationMulticaster: {
+					return parseAllWithSpecificationMulticaster(child, context);
+				}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Parse the "all with specification" multicaster.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseAllWithSpecificationMulticaster(Element element,
+			ParserContext context) {
+		BeanDefinitionBuilder multicaster =
+				BeanDefinitionBuilder.rootBeanDefinition(AllWithSpecificationStringMulticaster.class);
+		multicaster.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr specification = element.getAttributeNode("specification");
+		if (specification == null) {
+			throw new RuntimeException(
+					"Attribute 'specification' is required for all-with-specification-multicaster.");
+		}
+		multicaster.addPropertyValue("specificationToken", specification.getValue());
+
+		Attr filterScriptPath = element.getAttributeNode("filterScriptPath");
+		if (filterScriptPath != null) {
+			multicaster.addPropertyValue("filterScriptPath", filterScriptPath.getValue());
+		}
+
+		return multicaster.getBeanDefinition();
 	}
 
 	/**
@@ -638,6 +710,41 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		public static Filters getByLocalName(String localName) {
 			for (Filters value : Filters.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
+
+	/**
+	 * Expected multicaster elements.
+	 * 
+	 * @author Derek
+	 */
+	public static enum Multicasters {
+
+		/** Multicasts to all devices with a given specification */
+		AllWithSpecificationMulticaster("all-with-specification-multicaster");
+
+		/** Event code */
+		private String localName;
+
+		private Multicasters(String localName) {
+			this.localName = localName;
+		}
+
+		public static Multicasters getByLocalName(String localName) {
+			for (Multicasters value : Multicasters.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}

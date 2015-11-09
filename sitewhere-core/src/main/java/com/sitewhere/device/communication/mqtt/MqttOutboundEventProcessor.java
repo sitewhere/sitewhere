@@ -8,6 +8,7 @@
 package com.sitewhere.device.communication.mqtt;
 
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -19,19 +20,25 @@ import org.fusesource.mqtt.client.QoS;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor;
+import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
+import com.sitewhere.spi.device.event.processor.multicast.IDeviceRouteBuilder;
+import com.sitewhere.spi.device.event.processor.multicast.IRoute;
 
 /**
  * Outbound event processor that sends events to an MQTT topic.
  * 
  * @author Derek
  */
-public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor {
+public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor implements
+		IMulticastingOutboundEventProcessor<String> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttOutboundEventProcessor.class);
@@ -60,6 +67,24 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	/** Shared MQTT connection */
 	private FutureConnection connection;
 
+	/** Multicaster for events */
+	private IDeviceEventMulticaster<String> multicaster;
+
+	/** Route builder for generating topics */
+	private IDeviceRouteBuilder<String> routeBuilder = new IDeviceRouteBuilder<String>() {
+
+		@Override
+		public IRoute<String> build(final IDevice device) throws SiteWhereException {
+			return new IRoute<String>() {
+
+				@Override
+				public String getRoute() {
+					return "/devices/" + device.getHardwareId();
+				}
+			};
+		}
+	};
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -67,12 +92,18 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		if (topic == null) {
-			throw new SiteWhereException("No topic specified for MQTT outbound event processor.");
+		if ((topic == null) && (multicaster == null)) {
+			throw new SiteWhereException(
+					"No topic or multicaster specified for MQTT outbound event processor.");
 		}
 
 		// Required for filters.
 		super.start();
+
+		// Start the multicaster implementation.
+		if (multicaster != null) {
+			startNestedComponent(multicaster, true);
+		}
 
 		this.mqtt = new MQTT();
 		try {
@@ -173,7 +204,25 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	 * @throws SiteWhereException
 	 */
 	protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
-		connection.publish(getTopic(), MarshalUtils.marshalJson(event), QoS.AT_LEAST_ONCE, false);
+		if (getMulticaster() != null) {
+			List<String> routes = getMulticaster().calculateRoutes(event, getRouteBuilder());
+			for (String route : routes) {
+				publish(event, route);
+			}
+		} else {
+			publish(event, getTopic());
+		}
+	}
+
+	/**
+	 * Publish an event to an MQTT topic.
+	 * 
+	 * @param event
+	 * @throws SiteWhereException
+	 */
+	protected void publish(IDeviceEvent event, String topic) throws SiteWhereException {
+		connection.publish(topic, MarshalUtils.marshalJson(event), QoS.AT_LEAST_ONCE, false);
+		LOGGER.info("Publishing event " + event.getId() + " to route: " + topic);
 	}
 
 	/*
@@ -184,6 +233,34 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor {
 	@Override
 	public Logger getLogger() {
 		return LOGGER;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor#
+	 * getMulticaster()
+	 */
+	public IDeviceEventMulticaster<String> getMulticaster() {
+		return multicaster;
+	}
+
+	public void setMulticaster(IDeviceEventMulticaster<String> multicaster) {
+		this.multicaster = multicaster;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor#
+	 * getRouteBuilder()
+	 */
+	public IDeviceRouteBuilder<String> getRouteBuilder() {
+		return routeBuilder;
+	}
+
+	public void setRouteBuilder(IDeviceRouteBuilder<String> routeBuilder) {
+		this.routeBuilder = routeBuilder;
 	}
 
 	public String getHostname() {
