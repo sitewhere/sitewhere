@@ -13,14 +13,14 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
- * Includes or excludes events for devices associated with a given site.
+ * Includes or excludes events for devices using a given specification.
  * 
  * @author Derek
  */
-public class SiteFilter extends DeviceEventFilter {
+public class SpecificationFilter extends DeviceEventFilter {
 
-	/** Site token to allow */
-	private String siteToken;
+	/** Specification token to match */
+	private String specificationToken;
 
 	/** Operation filter performs */
 	private FilterOperation operation = FilterOperation.Include;
@@ -36,18 +36,18 @@ public class SiteFilter extends DeviceEventFilter {
 	@Override
 	public boolean isFiltered(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
 			throws SiteWhereException {
-		if (getSiteToken().equals(device.getSiteToken())) {
+		if (getSpecificationToken().equals(device.getSpecificationToken())) {
 			return (getOperation() != FilterOperation.Include);
 		}
 		return (getOperation() == FilterOperation.Include);
 	}
 
-	public String getSiteToken() {
-		return siteToken;
+	public String getSpecificationToken() {
+		return specificationToken;
 	}
 
-	public void setSiteToken(String siteToken) {
-		this.siteToken = siteToken;
+	public void setSpecificationToken(String specificationToken) {
+		this.specificationToken = specificationToken;
 	}
 
 	public FilterOperation getOperation() {

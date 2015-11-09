@@ -83,7 +83,7 @@
 	<!-- Contains global configuration elements -->
 	<xsd:complexType name="globalsType">
 		<xsd:sequence>
-			<xsd:element ref="sw:abstract-global" maxOccurs="unbounded"/>
+			<xsd:element ref="sw:abstract-global" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -392,12 +392,21 @@
 	
 	<!-- Common outbound processor filter element information -->
 	<xsd:complexType name="abstractOutboundProcessorFilterType"/>
+
+	<!-- Filter operation type -->
+	<xsd:simpleType name="filterOperationType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="include"/>
+			<xsd:enumeration value="exclude"/>
+		</xsd:restriction>
+	</xsd:simpleType>
 	
 	<!-- Filters outbound events associated with a site -->
 	<xsd:element name="site-filter" type="siteFilterType" substitutionGroup="abstract-outbound-processor-filter">
 		<xsd:annotation>
 			<xsd:documentation>
-				Filters out events for devices associated with the given site.
+				Includes or excludes device events depending on whether the device
+				is associated with a given site.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -411,6 +420,46 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="operation" type="filterOperationType" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Indicates whether matches should be included or excluded from the
+							result set.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Filters outbound events associated with a device specification -->
+	<xsd:element name="specification-filter" type="specificationFilterType"
+		substitutionGroup="abstract-outbound-processor-filter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Includes or excludes device events depending on whether the device
+				is based on a given specififation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="specificationFilterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorFilterType">
+				<xsd:attribute name="specification" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique token for the specification to be filtered.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="operation" type="filterOperationType" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Indicates whether matches should be included or excluded from the
+							result set.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -418,7 +467,7 @@
 	<!-- Element that contains a list of outbound processor filters -->
 	<xsd:complexType name="outboundProcessorFilterList">
 		<xsd:sequence>
-			<xsd:element ref="abstract-outbound-processor-filter"/>
+			<xsd:element ref="abstract-outbound-processor-filter" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
 

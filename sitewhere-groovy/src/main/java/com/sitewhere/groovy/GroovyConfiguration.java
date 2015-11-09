@@ -86,6 +86,7 @@ public class GroovyConfiguration extends TenantLifecycleComponent implements Ini
 			groovyScriptEngine.getConfig().setDebug(isDebug());
 			LOGGER.info("Groovy script engine configured with (verbose:" + isVerbose() + ") (debug:"
 					+ isDebug() + ").");
+			LOGGER.warn("I AM " + this);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to configure Groovy script engine.", e);
 		}

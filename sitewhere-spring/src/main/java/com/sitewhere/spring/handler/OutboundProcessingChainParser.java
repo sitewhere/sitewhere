@@ -26,7 +26,9 @@ import com.sitewhere.cloud.providers.initialstate.InitialStateEventProcessor;
 import com.sitewhere.device.communication.DeviceCommandEventProcessor;
 import com.sitewhere.device.communication.mqtt.MqttOutboundEventProcessor;
 import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
+import com.sitewhere.device.event.processor.filter.FilterOperation;
 import com.sitewhere.device.event.processor.filter.SiteFilter;
+import com.sitewhere.device.event.processor.filter.SpecificationFilter;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
@@ -531,6 +533,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 					result.add(parseSiteFilter(child, context));
 					break;
 				}
+				case SpecificationFilter: {
+					result.add(parseSpecificationFilter(child, context));
+					break;
+				}
 				}
 			}
 		}
@@ -553,6 +559,41 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			throw new RuntimeException("Attribute 'site' is required for site-filter.");
 		}
 		filter.addPropertyValue("siteToken", site.getValue());
+
+		Attr operation = element.getAttributeNode("operation");
+		if (operation != null) {
+			FilterOperation op =
+					"include".equals(operation.getValue()) ? FilterOperation.Include
+							: FilterOperation.Exclude;
+			filter.addPropertyValue("operation", op);
+		}
+
+		return filter.getBeanDefinition();
+	}
+
+	/**
+	 * Parse a specification filter element.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseSpecificationFilter(Element element, ParserContext context) {
+		BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(SpecificationFilter.class);
+
+		Attr specification = element.getAttributeNode("specification");
+		if (specification == null) {
+			throw new RuntimeException("Attribute 'specification' is required for specification-filter.");
+		}
+		filter.addPropertyValue("specificationToken", specification.getValue());
+
+		Attr operation = element.getAttributeNode("operation");
+		if (operation != null) {
+			FilterOperation op =
+					"include".equals(operation.getValue()) ? FilterOperation.Include
+							: FilterOperation.Exclude;
+			filter.addPropertyValue("operation", op);
+		}
 
 		return filter.getBeanDefinition();
 	}
@@ -698,8 +739,11 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	 */
 	public static enum Filters {
 
-		/** Filters events for a site */
-		SiteFilter("site-filter");
+		/** Include or exclude events for a site */
+		SiteFilter("site-filter"),
+
+		/** Include or exclude events for a specification */
+		SpecificationFilter("specification-filter");
 
 		/** Event code */
 		private String localName;

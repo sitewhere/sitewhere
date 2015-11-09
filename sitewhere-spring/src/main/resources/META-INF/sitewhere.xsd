@@ -169,7 +169,7 @@
 	<!-- Contains global configuration elements -->
 	<xsd:complexType name="globalsType">
 		<xsd:sequence>
-			<xsd:element ref="abstract-global" maxOccurs="unbounded"/>
+			<xsd:element ref="abstract-global" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	

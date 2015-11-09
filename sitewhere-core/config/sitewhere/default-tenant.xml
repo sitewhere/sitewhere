@@ -23,7 +23,9 @@
 		<!-- # GLOBAL OVERRIDES # -->
 		<!-- #################### -->
 		<sw:globals>
+			<!--  
 			<global:groovy-configuration debug="true" verbose="true"/>
+			-->
 		</sw:globals>
 		
 		<!-- ########################### -->
@@ -204,17 +206,18 @@
 			 -->
 
 			<!-- Send matching events to the given MQTT topic -->
-			<!--  
+			<!-- 
 			<sw:mqtt-event-processor hostname="localhost" port="1883">
 				<sw:filters>
-					<sw:site-filter site="bb105f8d-3150-41f5-b9d1-db04965668d3"/>
+					<sw:site-filter operation="include" site="bb105f8d-3150-41f5-b9d1-db04965668d3"/>
+					<sw:specification-filter operation="exclude" specification="417b36a8-21ef-4196-a8fe-cc756f994d0b"/>
 				</sw:filters>
 				<sw:multicaster>
 					<sw:all-with-specification-multicaster
 						specification="d2604433-e4eb-419b-97c7-88efe9b2cd41" filterScriptPath="filter.groovy"/>
 				</sw:multicaster>
 			</sw:mqtt-event-processor>
-			-->
+			 -->
 			
 			<!-- Index outbound device events in Solr -->
 			<!-- 

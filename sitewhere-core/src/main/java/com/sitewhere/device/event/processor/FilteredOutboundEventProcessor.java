@@ -10,7 +10,11 @@ package com.sitewhere.device.event.processor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -31,6 +35,9 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	/** List of filters in order they should be applied */
 	private List<IDeviceEventFilter> filters = new ArrayList<IDeviceEventFilter>();
 
+	/** Device management implementation */
+	private IDeviceManagement deviceManagement;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -38,6 +45,8 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		this.deviceManagement = SiteWhere.getServer().getDeviceManagement(getTenant());
+
 		getLifecycleComponents().clear();
 		for (IDeviceEventFilter filter : filters) {
 			startNestedComponent(filter, true);
@@ -185,8 +194,17 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	 * @throws SiteWhereException
 	 */
 	protected boolean isFiltered(IDeviceEvent event) throws SiteWhereException {
+		IDeviceAssignment assignment =
+				deviceManagement.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+		if (assignment == null) {
+			throw new SiteWhereException("Device assignment for event not found.");
+		}
+		IDevice device = deviceManagement.getDeviceByHardwareId(assignment.getDeviceHardwareId());
+		if (device == null) {
+			throw new SiteWhereException("Device assignment references unknown device.");
+		}
 		for (IDeviceEventFilter filter : filters) {
-			if (filter.isFiltered(event)) {
+			if (filter.isFiltered(event, device, assignment)) {
 				return true;
 			}
 		}
