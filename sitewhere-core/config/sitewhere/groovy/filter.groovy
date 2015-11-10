@@ -1,9 +1,16 @@
-if (assignment != null) {
-	if (assignment.metadata['serialNumber'] == '59eb6c97-9fe6-4020-ad56-b11d4cc6f78f') {
-		logger.warn("Not gonna send this one!");
-		return true;
-	}
-	return false;
-} else {
+import com.sitewhere.spi.device.event.*;
+
+// Allow alerts from any device.
+if (event.eventType == DeviceEventType.valueOf("Alert")) {
 	return true;
 }
+
+// Allow devices in a comma-delimited list.
+def ogDetailDevices = targetAssignment?.metadata['og-device-detail']?.split(',');
+for (hwid in ogDetailDevices) {
+	if (eventDevice.hardwareId.equals(hwid)) {
+		logger.info('Event in devices include list. Allowing');
+		return true;
+	}
+}
+return false;

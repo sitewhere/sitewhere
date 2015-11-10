@@ -32,6 +32,7 @@ import com.sitewhere.device.event.processor.filter.SpecificationFilter;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.device.communication.event.processor.filter.GroovyFilter;
 import com.sitewhere.groovy.device.communication.multicaster.AllWithSpecificationStringMulticaster;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
@@ -537,6 +538,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 					result.add(parseSpecificationFilter(child, context));
 					break;
 				}
+				case GroovyFilter: {
+					result.add(parseGroovyFilter(child, context));
+					break;
+				}
 				}
 			}
 		}
@@ -594,6 +599,26 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 							: FilterOperation.Exclude;
 			filter.addPropertyValue("operation", op);
 		}
+
+		return filter.getBeanDefinition();
+	}
+
+	/**
+	 * Parse configuration for Groovy filter.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseGroovyFilter(Element element, ParserContext context) {
+		BeanDefinitionBuilder filter = BeanDefinitionBuilder.rootBeanDefinition(GroovyFilter.class);
+		filter.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath == null) {
+			throw new RuntimeException("Attribute 'scriptPath' is required for groovy-filter.");
+		}
+		filter.addPropertyValue("scriptPath", scriptPath.getValue());
 
 		return filter.getBeanDefinition();
 	}
@@ -743,7 +768,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		SiteFilter("site-filter"),
 
 		/** Include or exclude events for a specification */
-		SpecificationFilter("specification-filter");
+		SpecificationFilter("specification-filter"),
+
+		/** Include or exclude events based on running a script */
+		GroovyFilter("groovy-filter");
 
 		/** Event code */
 		private String localName;

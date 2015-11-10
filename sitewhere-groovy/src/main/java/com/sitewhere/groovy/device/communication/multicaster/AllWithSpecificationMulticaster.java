@@ -24,6 +24,7 @@ import com.sitewhere.rest.model.search.device.DeviceSearchCriteria;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
@@ -109,10 +110,17 @@ public class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
 					Binding binding = new Binding();
 					binding.setVariable("logger", getLogger());
 					binding.setVariable("event", event);
-					binding.setVariable("device", device);
+					IDeviceAssignment eventAssignment =
+							dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+					binding.setVariable("eventAssignment", eventAssignment);
+					binding.setVariable("eventDevice",
+							dm.getDeviceByHardwareId(eventAssignment.getDeviceHardwareId()));
 					if (device.getAssignmentToken() != null) {
-						binding.setVariable("assignment",
-								dm.getDeviceAssignmentByToken(device.getAssignmentToken()));
+						IDeviceAssignment assignment =
+								dm.getDeviceAssignmentByToken(device.getAssignmentToken());
+						binding.setVariable("targetAssignment", assignment);
+						binding.setVariable("targetDevice",
+								dm.getDeviceByHardwareId(assignment.getDeviceHardwareId()));
 					}
 					try {
 						Object result =
@@ -122,7 +130,7 @@ public class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
 							return routes;
 						}
 						// Script result indicated event should be filtered for device.
-						if (((Boolean) result).booleanValue()) {
+						if (!((Boolean) result).booleanValue()) {
 							continue;
 						}
 					} catch (ResourceException e) {
@@ -171,7 +179,6 @@ public class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
 	}
 
 	public void setConfiguration(GroovyConfiguration configuration) {
-		LOGGER.warn("GROOVY CONFIGURATION SET!! " + configuration);
 		this.configuration = configuration;
 	}
 
@@ -193,7 +200,7 @@ public class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
 					ISearchResults<IDevice> results =
 							SiteWhere.getServer().getDeviceManagement(tenant).listDevices(false, criteria);
 					matches = results.getResults();
-					LOGGER.info("Found " + matches.size() + " matches for routing.");
+					LOGGER.debug("Found " + matches.size() + " matches for routing.");
 				} catch (SiteWhereException e) {
 					LOGGER.error("Unable to list devices for specification.", e);
 				}

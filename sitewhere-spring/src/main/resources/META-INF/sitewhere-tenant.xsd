@@ -463,11 +463,38 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
+	<!-- Chooses events to filter based on a Groovy script -->
+	<xsd:element name="groovy-filter" type="groovyFilterType" substitutionGroup="abstract-outbound-processor-filter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Executes a Groovy script which should return a boolean result. True
+				indicates the event is to be included in the result set, false indicates it should be
+				filtered.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyFilterType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessorFilterType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Script that determines whether events are included or filtered.
+							The script should return true if the event is to be included or false if the event
+							is to be filtered.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<!-- Element that contains a list of outbound processor filters -->
 	<xsd:complexType name="outboundProcessorFilterList">
 		<xsd:sequence>
-			<xsd:element ref="abstract-outbound-processor-filter" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="abstract-outbound-processor-filter" minOccurs="0"
+				maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
