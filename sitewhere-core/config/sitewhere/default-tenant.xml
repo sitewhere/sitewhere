@@ -206,13 +206,14 @@
 			 -->
 
 			<!-- Send matching events to the given MQTT topic -->
-			<sw:mqtt-event-processor hostname="localhost" port="1883" topic="/test/1234">
+			<sw:mqtt-event-processor hostname="localhost" port="1883">
 				<sw:filters>
 					<sw:site-filter operation="include" site="bb105f8d-3150-41f5-b9d1-db04965668d3"/>
 					<sw:specification-filter operation="exclude"
 						specification="417b36a8-21ef-4196-a8fe-cc756f994d0b"/>
 					<sw:groovy-filter scriptPath="filter.groovy"/>
 				</sw:filters>
+				<sw:groovy-route-builder scriptPath="route.groovy"/>
 			</sw:mqtt-event-processor>
 			
 			<!-- Index outbound device events in Solr -->

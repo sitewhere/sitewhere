@@ -10,6 +10,8 @@ package com.sitewhere.spi.device.event.processor.multicast;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
@@ -24,10 +26,11 @@ public interface IDeviceEventMulticaster<T> extends ITenantLifecycleComponent {
 	 * Calculates the list of routes to which an event should be sent.
 	 * 
 	 * @param event
-	 * @param builder
+	 * @param deivice
+	 * @param assignment
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<T> calculateRoutes(IDeviceEvent event, IDeviceRouteBuilder<T> builder)
+	public List<T> calculateRoutes(IDeviceEvent event, IDevice deivice, IDeviceAssignment assignment)
 			throws SiteWhereException;
 }

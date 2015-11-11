@@ -530,11 +530,11 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="filterScriptPath" type="xsd:string" use="optional">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="optional">
 					<xsd:annotation>
 						<xsd:documentation>
-							Path to a Groovy script that returns a true if event should be
-							filtered for device, false if not.
+							Path to a Groovy script that returns a String value indicating
+							the calculated route or null if event should not be routed.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -542,11 +542,41 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Element that contains an outbound multicaster -->
-	<xsd:complexType name="outboundMulticasterType">
-		<xsd:sequence>
-			<xsd:element ref="abstract-outbound-multicaster"/>
-		</xsd:sequence>
+	<!-- Used as a placeholder for outbound route builder elements to allow substitutionGroups -->
+	<xsd:element name="abstract-outbound-route-builder" abstract="true"
+		type="abstractOutboundRouteBuilderType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound route builder elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common route builder element information -->
+	<xsd:complexType name="abstractOutboundRouteBuilderType"/>
+	
+	<!-- Routes events based on results from a Groovy script -->
+	<xsd:element name="groovy-route-builder" type="groovyRouteBuilderType"
+		substitutionGroup="abstract-outbound-route-builder">
+		<xsd:annotation>
+			<xsd:documentation>
+				Uses Groovy script to build outbound route.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyRouteBuilderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundRouteBuilderType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that returns a String value indicating
+							the calculated route.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for outbound processor elements to allow substitutionGroups -->
@@ -675,11 +705,18 @@
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundProcessorType">
 				<xsd:sequence>
-					<xsd:element name="multicaster" type="outboundMulticasterType" minOccurs="0">
+					<xsd:element ref="abstract-outbound-multicaster" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>
 								Allows a multicaster to be configured so that events can be
 								broadcast to many different topics.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element ref="abstract-outbound-route-builder" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Allows customization of route building logic.
 							</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>

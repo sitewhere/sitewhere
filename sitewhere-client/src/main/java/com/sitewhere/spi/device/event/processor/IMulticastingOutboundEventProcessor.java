@@ -8,7 +8,7 @@
 package com.sitewhere.spi.device.event.processor;
 
 import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
-import com.sitewhere.spi.device.event.processor.multicast.IDeviceRouteBuilder;
+import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
 
 /**
  * Extends {@link IOutboundEventProcessor} with routing capabilities.
@@ -29,5 +29,5 @@ public interface IMulticastingOutboundEventProcessor<T> extends IOutboundEventPr
 	 * 
 	 * @return
 	 */
-	public IDeviceRouteBuilder<T> getRouteBuilder();
+	public IRouteBuilder<T> getRouteBuilder();
 }

@@ -32,8 +32,9 @@ import com.sitewhere.device.event.processor.filter.SpecificationFilter;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
-import com.sitewhere.groovy.device.communication.event.processor.filter.GroovyFilter;
-import com.sitewhere.groovy.device.communication.multicaster.AllWithSpecificationStringMulticaster;
+import com.sitewhere.groovy.device.event.processor.filter.GroovyFilter;
+import com.sitewhere.groovy.device.event.processor.multicast.AllWithSpecificationStringMulticaster;
+import com.sitewhere.groovy.device.event.processor.routing.GroovyRouteBuilder;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.server.SiteWhereServerBeans;
@@ -247,6 +248,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		// Parse multicaster.
 		processor.addPropertyValue("multicaster", parseMulticaster(element, context));
+
+		// Parse route builder.
+		processor.addPropertyValue("routeBuilder", parseRouteBuilder(element, context));
 
 		return processor.getBeanDefinition();
 	}
@@ -631,28 +635,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseMulticaster(Element element, ParserContext context) {
-		// Look for a 'multicaster' element.
-		Element multicaster = DomUtils.getChildElementByTagName(element, "multicaster");
-		if (multicaster != null) {
-			// Process the list of filters.
-			List<Element> children = DomUtils.getChildElements(multicaster);
-			for (Element child : children) {
-				if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-					NamespaceHandler nested =
-							context.getReaderContext().getNamespaceHandlerResolver().resolve(
-									child.getNamespaceURI());
-					if (nested != null) {
-						nested.parse(child, context);
-						continue;
-					} else {
-						throw new RuntimeException("Invalid nested element found in 'multicaster' section: "
-								+ child.toString());
-					}
-				}
-				Multicasters type = Multicasters.getByLocalName(child.getLocalName());
-				if (type == null) {
-					throw new RuntimeException("Unknown multicaster element: " + child.getLocalName());
-				}
+		List<Element> children = DomUtils.getChildElements(element);
+		for (Element child : children) {
+			Multicasters type = Multicasters.getByLocalName(child.getLocalName());
+			if (type != null) {
 				switch (type) {
 				case AllWithSpecificationMulticaster: {
 					return parseAllWithSpecificationMulticaster(child, context);
@@ -684,12 +670,54 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		}
 		multicaster.addPropertyValue("specificationToken", specification.getValue());
 
-		Attr filterScriptPath = element.getAttributeNode("filterScriptPath");
-		if (filterScriptPath != null) {
-			multicaster.addPropertyValue("filterScriptPath", filterScriptPath.getValue());
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			multicaster.addPropertyValue("scriptPath", scriptPath.getValue());
 		}
 
 		return multicaster.getBeanDefinition();
+	}
+
+	/**
+	 * Parse a route builder if defined.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseRouteBuilder(Element element, ParserContext context) {
+		List<Element> children = DomUtils.getChildElements(element);
+		for (Element child : children) {
+			RouteBuilders type = RouteBuilders.getByLocalName(child.getLocalName());
+			if (type != null) {
+				switch (type) {
+				case GroovyRouteBuilder: {
+					return parseGroovyRouteBuilder(child, context);
+				}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Parse the Groovy route builder.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseGroovyRouteBuilder(Element element, ParserContext context) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyRouteBuilder.class);
+		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			builder.addPropertyValue("scriptPath", scriptPath.getValue());
+		}
+
+		return builder.getBeanDefinition();
 	}
 
 	/**
@@ -817,6 +845,41 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		public static Multicasters getByLocalName(String localName) {
 			for (Multicasters value : Multicasters.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
+
+	/**
+	 * Expected multicaster elements.
+	 * 
+	 * @author Derek
+	 */
+	public static enum RouteBuilders {
+
+		/** Uses Groovy script to build routes */
+		GroovyRouteBuilder("groovy-route-builder");
+
+		/** Event code */
+		private String localName;
+
+		private RouteBuilders(String localName) {
+			this.localName = localName;
+		}
+
+		public static RouteBuilders getByLocalName(String localName) {
+			for (RouteBuilders value : RouteBuilders.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}

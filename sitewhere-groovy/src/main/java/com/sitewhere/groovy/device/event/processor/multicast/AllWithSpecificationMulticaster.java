@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.groovy.device.communication.multicaster;
+package com.sitewhere.groovy.device.event.processor.multicast;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
@@ -28,7 +28,6 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
-import com.sitewhere.spi.device.event.processor.multicast.IDeviceRouteBuilder;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.ITenant;
@@ -41,7 +40,7 @@ import com.sitewhere.spi.user.ITenant;
  *
  * @param <T>
  */
-public class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent implements
+public abstract class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent implements
 		IDeviceEventMulticaster<T> {
 
 	/** Static logger instance */
@@ -57,7 +56,7 @@ public class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
 	private String specificationToken;
 
 	/** Path to filtering script */
-	private String filterScriptPath;
+	private String scriptPath;
 
 	/** Executor for refresh thread */
 	private ExecutorService executor;
@@ -96,57 +95,50 @@ public class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster#
-	 * calculateRoutes(com.sitewhere.spi.device.event.IDeviceEvent,
-	 * com.sitewhere.spi.device.event.processor.multicast.IDeviceRouteBuilder)
+	 * calculateRoutes(com.sitewhere.spi.device.event.IDeviceEvent)
 	 */
 	@Override
-	public List<T> calculateRoutes(IDeviceEvent event, IDeviceRouteBuilder<T> builder)
+	public List<T> calculateRoutes(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
 			throws SiteWhereException {
 		List<T> routes = new ArrayList<T>();
 		IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
-		for (IDevice device : matches) {
-			if (getFilterScriptPath() != null) {
+		for (IDevice targetDevice : matches) {
+			if (getScriptPath() != null) {
+				IDeviceAssignment targetAssignment =
+						dm.getDeviceAssignmentByToken(targetDevice.getAssignmentToken());
+				Binding binding = new Binding();
+				binding.setVariable("logger", getLogger());
+				binding.setVariable("event", event);
+				binding.setVariable("device", device);
+				binding.setVariable("assignment", assignment);
+				if (device.getAssignmentToken() != null) {
+					binding.setVariable("targetAssignment", targetAssignment);
+					binding.setVariable("targetDevice", targetDevice);
+				}
 				try {
-					Binding binding = new Binding();
-					binding.setVariable("logger", getLogger());
-					binding.setVariable("event", event);
-					IDeviceAssignment eventAssignment =
-							dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
-					binding.setVariable("eventAssignment", eventAssignment);
-					binding.setVariable("eventDevice",
-							dm.getDeviceByHardwareId(eventAssignment.getDeviceHardwareId()));
-					if (device.getAssignmentToken() != null) {
-						IDeviceAssignment assignment =
-								dm.getDeviceAssignmentByToken(device.getAssignmentToken());
-						binding.setVariable("targetAssignment", assignment);
-						binding.setVariable("targetDevice",
-								dm.getDeviceByHardwareId(assignment.getDeviceHardwareId()));
+					Object result = getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
+					if (result != null) {
+						routes.add(convertRoute(result));
 					}
-					try {
-						Object result =
-								getConfiguration().getGroovyScriptEngine().run(getFilterScriptPath(), binding);
-						if (!(result instanceof Boolean)) {
-							LOGGER.error("Groovy script returned non-boolean result.");
-							return routes;
-						}
-						// Script result indicated event should be filtered for device.
-						if (!((Boolean) result).booleanValue()) {
-							continue;
-						}
-					} catch (ResourceException e) {
-						LOGGER.error("Unable to access Groovy decoder script.", e);
-					} catch (ScriptException e) {
-						LOGGER.error("Unable to run Groovy decoder script.", e);
-					}
-				} catch (SiteWhereException e) {
-					LOGGER.error("Unable to process event.", e);
+				} catch (ResourceException e) {
+					LOGGER.error("Unable to access Groovy decoder script.", e);
+				} catch (ScriptException e) {
+					LOGGER.error("Unable to run Groovy decoder script.", e);
 				}
 			}
 
-			routes.add(builder.build(device).getRoute());
 		}
 		return routes;
 	}
+
+	/**
+	 * Converts script response into route.
+	 * 
+	 * @param scriptResult
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public abstract T convertRoute(Object scriptResult) throws SiteWhereException;
 
 	/*
 	 * (non-Javadoc)
@@ -166,12 +158,12 @@ public class AllWithSpecificationMulticaster<T> extends TenantLifecycleComponent
 		this.specificationToken = specificationToken;
 	}
 
-	public String getFilterScriptPath() {
-		return filterScriptPath;
+	public String getScriptPath() {
+		return scriptPath;
 	}
 
-	public void setFilterScriptPath(String filterScriptPath) {
-		this.filterScriptPath = filterScriptPath;
+	public void setScriptPath(String scriptPath) {
+		this.scriptPath = scriptPath;
 	}
 
 	public GroovyConfiguration getConfiguration() {

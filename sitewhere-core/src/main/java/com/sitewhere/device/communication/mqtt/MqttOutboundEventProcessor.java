@@ -17,10 +17,13 @@ import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -29,8 +32,7 @@ import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor;
 import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
-import com.sitewhere.spi.device.event.processor.multicast.IDeviceRouteBuilder;
-import com.sitewhere.spi.device.event.processor.multicast.IRoute;
+import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
 
 /**
  * Outbound event processor that sends events to an MQTT topic.
@@ -71,19 +73,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 	private IDeviceEventMulticaster<String> multicaster;
 
 	/** Route builder for generating topics */
-	private IDeviceRouteBuilder<String> routeBuilder = new IDeviceRouteBuilder<String>() {
-
-		@Override
-		public IRoute<String> build(final IDevice device) throws SiteWhereException {
-			return new IRoute<String>() {
-
-				@Override
-				public String getRoute() {
-					return "/devices/" + device.getHardwareId();
-				}
-			};
-		}
-	};
+	private IRouteBuilder<String> routeBuilder;
 
 	/*
 	 * (non-Javadoc)
@@ -92,9 +82,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		if ((topic == null) && (multicaster == null)) {
-			throw new SiteWhereException(
-					"No topic or multicaster specified for MQTT outbound event processor.");
+		if ((topic == null) && ((multicaster == null) && (routeBuilder == null))) {
+			throw new SiteWhereException("No topic specified and no multicaster or route builder configured.");
 		}
 
 		// Required for filters.
@@ -204,13 +193,20 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 	 * @throws SiteWhereException
 	 */
 	protected void sendEvent(IDeviceEvent event) throws SiteWhereException {
+		IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
+		IDeviceAssignment assignment = dm.getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+		IDevice device = dm.getDeviceByHardwareId(assignment.getDeviceHardwareId());
 		if (getMulticaster() != null) {
-			List<String> routes = getMulticaster().calculateRoutes(event, getRouteBuilder());
+			List<String> routes = getMulticaster().calculateRoutes(event, device, assignment);
 			for (String route : routes) {
 				publish(event, route);
 			}
 		} else {
-			publish(event, getTopic());
+			if (getRouteBuilder() != null) {
+				publish(event, getRouteBuilder().build(event, device, assignment));
+			} else {
+				publish(event, getTopic());
+			}
 		}
 	}
 
@@ -255,11 +251,11 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 	 * @see com.sitewhere.spi.device.event.processor.IMulticastingOutboundEventProcessor#
 	 * getRouteBuilder()
 	 */
-	public IDeviceRouteBuilder<String> getRouteBuilder() {
+	public IRouteBuilder<String> getRouteBuilder() {
 		return routeBuilder;
 	}
 
-	public void setRouteBuilder(IDeviceRouteBuilder<String> routeBuilder) {
+	public void setRouteBuilder(IRouteBuilder<String> routeBuilder) {
 		this.routeBuilder = routeBuilder;
 	}
 

@@ -5,10 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.device.event.processor.multicast;
+package com.sitewhere.spi.device.event.processor.routing;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.event.IDeviceEvent;
 
 /**
  * Builds routes of a given type.
@@ -17,14 +19,17 @@ import com.sitewhere.spi.device.IDevice;
  *
  * @param <T>
  */
-public interface IDeviceRouteBuilder<T> {
+public interface IRouteBuilder<T> {
 
 	/**
-	 * Build route for a given device.
+	 * Build a route based on information about a device event.
 	 * 
+	 * @param event
 	 * @param device
+	 * @param assignment
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IRoute<T> build(IDevice device) throws SiteWhereException;
+	public T build(IDeviceEvent event, IDevice device, IDeviceAssignment assignment)
+			throws SiteWhereException;
 }
