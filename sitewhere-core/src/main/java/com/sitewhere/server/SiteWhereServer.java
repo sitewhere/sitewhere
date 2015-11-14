@@ -45,6 +45,7 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.configuration.IConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
@@ -284,6 +285,20 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
 		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
 		return engine.getDeviceManagement();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceManagementCacheProvider(com.
+	 * sitewhere.spi.user.ITenant)
+	 */
+	@Override
+	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant)
+			throws SiteWhereException {
+		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
+		return engine.getDeviceManagementCacheProvider();
 	}
 
 	/*
@@ -787,15 +802,42 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
-		SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
-		engine.setConfigurationResolver(getConfigurationResolver());
+		ISiteWhereTenantEngine engine =
+				createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
 		if (!engine.initialize()) {
 			LOGGER.error("Tenant engine initialization for '" + tenant.getName() + "' failed.",
 					engine.getLifecycleError());
 		}
+		registerTenant(tenant, engine);
+		return engine;
+	}
+
+	/**
+	 * Create a tenant engine.
+	 * 
+	 * @param tenant
+	 * @param parent
+	 * @param resolver
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ISiteWhereTenantEngine createTenantEngine(ITenant tenant, ApplicationContext parent,
+			IConfigurationResolver resolver) throws SiteWhereException {
+		SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
+		engine.setConfigurationResolver(resolver);
+		return engine;
+	}
+
+	/**
+	 * Registers an initialized tenant engine with the server.
+	 * 
+	 * @param tenant
+	 * @param engine
+	 * @throws SiteWhereException
+	 */
+	protected void registerTenant(ITenant tenant, ISiteWhereTenantEngine engine) throws SiteWhereException {
 		tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
 		tenantEnginesById.put(tenant.getId(), engine);
-		return engine;
 	}
 
 	/**

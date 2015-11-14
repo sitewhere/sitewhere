@@ -41,6 +41,7 @@ import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -60,7 +61,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/users")
 @Api(value = "users", description = "Operations related to SiteWhere users.")
 @DocumentedController(name = "Users")
-public class UsersController extends SiteWhereController {
+public class UsersController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(UsersController.class);

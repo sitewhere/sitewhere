@@ -40,6 +40,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -60,7 +61,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/devicegroups")
 @Api(value = "devicegroups", description = "Operations related to SiteWhere device groups.")
 @DocumentedController(name = "Device Groups")
-public class DeviceGroupsController extends SiteWhereController {
+public class DeviceGroupsController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DeviceGroupsController.class);

@@ -33,6 +33,7 @@ import com.sitewhere.spi.search.external.IDeviceEventSearchProvider;
 import com.sitewhere.spi.search.external.ISearchProvider;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -51,7 +52,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/search")
 @Api(value = "search", description = "Operations related to external search providers.")
 @DocumentedController(name = "External Search")
-public class SearchController extends SiteWhereController {
+public class SearchController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SearchController.class);

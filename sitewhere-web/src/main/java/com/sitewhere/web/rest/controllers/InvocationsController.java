@@ -29,6 +29,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -49,7 +50,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/invocations")
 @Api(value = "invocations", description = "Operations related to SiteWhere command invocations.")
 @DocumentedController(name = "Device Command Invocations")
-public class InvocationsController extends SiteWhereController {
+public class InvocationsController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(InvocationsController.class);

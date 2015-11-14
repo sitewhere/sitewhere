@@ -34,6 +34,7 @@ import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -54,7 +55,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/jobs")
 @Api(value = "jobs", description = "Operations related to SiteWhere scheduled jobs.")
 @DocumentedController(name = "Scheduled Jobs")
-public class ScheduledJobsController extends SiteWhereController {
+public class ScheduledJobsController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ScheduledJobsController.class);

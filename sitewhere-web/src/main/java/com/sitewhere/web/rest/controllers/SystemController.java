@@ -21,6 +21,7 @@ import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -38,7 +39,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @RequestMapping(value = "/system")
 @Api(value = "system", description = "Operations related to SiteWhere CE system management.")
 @DocumentedController(name = "System Information")
-public class SystemController extends SiteWhereController {
+public class SystemController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SystemController.class);

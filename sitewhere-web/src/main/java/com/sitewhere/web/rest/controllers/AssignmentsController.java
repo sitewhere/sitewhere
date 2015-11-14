@@ -82,6 +82,7 @@ import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -103,7 +104,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/assignments")
 @Api(value = "assignments", description = "Operations related to SiteWhere device assignments.")
 @DocumentedController(name = "Device Assignments")
-public class AssignmentsController extends SiteWhereController {
+public class AssignmentsController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(AssignmentsController.class);

@@ -85,7 +85,7 @@ import com.sitewhere.spi.user.ITenant;
 public class SiteWhereTenantEngine extends TenantLifecycleComponent implements ISiteWhereTenantEngine {
 
 	/** Private logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereServer.class);
+	private static Logger LOGGER = Logger.getLogger(SiteWhereTenantEngine.class);
 
 	/** Spring context for tenant */
 	private ApplicationContext tenantContext;
@@ -306,10 +306,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		}
 	}
 
-	/**
-	 * Initialize components from Spring beans.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#initialize()
 	 */
 	public boolean initialize() {
 		try {

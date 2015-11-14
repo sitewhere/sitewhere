@@ -36,6 +36,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -56,7 +57,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/authorities")
 @Api(value = "authorities", description = "Operations related to SiteWhere authorities.")
 @DocumentedController(name = "Granted Authorities")
-public class AuthoritiesController extends SiteWhereController {
+public class AuthoritiesController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(AuthoritiesController.class);

@@ -50,6 +50,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -70,7 +71,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/specifications")
 @Api(value = "specifications", description = "Operations related to SiteWhere device specifications.")
 @DocumentedController(name = "Device Specifications")
-public class SpecificationsController extends SiteWhereController {
+public class SpecificationsController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SpecificationsController.class);

@@ -117,6 +117,14 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	public ISiteWhereTenantEngineState getEngineState();
 
 	/**
+	 * Initialize the engine.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public boolean initialize() throws SiteWhereException;
+
+	/**
 	 * Issue a command to the tenant engine.
 	 * 
 	 * @param command

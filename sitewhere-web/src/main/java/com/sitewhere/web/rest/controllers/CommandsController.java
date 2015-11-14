@@ -30,6 +30,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Documented;
 import com.sitewhere.web.rest.annotations.DocumentedController;
 import com.sitewhere.web.rest.annotations.Example;
@@ -48,7 +49,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/commands")
 @Api(value = "commands", description = "Operations related to SiteWhere device commands.")
 @DocumentedController(name = "Device Commands")
-public class CommandsController extends SiteWhereController {
+public class CommandsController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(CommandsController.class);

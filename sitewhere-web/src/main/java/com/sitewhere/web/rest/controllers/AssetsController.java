@@ -48,6 +48,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -68,7 +69,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping(value = "/assets")
 @Api(value = "assets", description = "Operations related to SiteWhere assets.")
 @DocumentedController(name = "Asset Management")
-public class AssetsController extends SiteWhereController {
+public class AssetsController extends RestController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(AssetsController.class);

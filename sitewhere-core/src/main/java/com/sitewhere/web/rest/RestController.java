@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.rest.controllers;
+package com.sitewhere.web.rest;
 
 import java.io.IOException;
 
@@ -29,14 +29,14 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.ITenant;
 
 /**
- * Base class for common controller functionality.
+ * Base class for common REST controller functionality.
  * 
  * @author Derek Adams
  */
-public class SiteWhereController {
+public class RestController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereController.class);
+	private static Logger LOGGER = Logger.getLogger(RestController.class);
 
 	/**
 	 * Get a tenant based on the authentication token passed.
