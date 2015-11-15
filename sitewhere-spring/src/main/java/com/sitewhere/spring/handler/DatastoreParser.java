@@ -95,6 +95,25 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		BeanDefinitionBuilder client =
 				docker ? BeanDefinitionBuilder.rootBeanDefinition(DockerMongoClient.class)
 						: BeanDefinitionBuilder.rootBeanDefinition(SiteWhereMongoClient.class);
+		parseMongoAttributes(element, context, client);
+		context.getRegistry().registerBeanDefinition("mongo", client.getBeanDefinition());
+
+		// Register Mongo user management implementation.
+		BeanDefinitionBuilder um = BeanDefinitionBuilder.rootBeanDefinition(MongoUserManagement.class);
+		um.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
+				um.getBeanDefinition());
+	}
+
+	/**
+	 * Common parser logic for MongoDB attributes.
+	 * 
+	 * @param element
+	 * @param context
+	 * @param client
+	 */
+	public static void parseMongoAttributes(Element element, ParserContext context,
+			BeanDefinitionBuilder client) {
 		Attr hostname = element.getAttributeNode("hostname");
 		if (hostname != null) {
 			client.addPropertyValue("hostname", hostname.getValue());
@@ -107,7 +126,6 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		if (databaseName != null) {
 			client.addPropertyValue("databaseName", databaseName.getValue());
 		}
-		context.getRegistry().registerBeanDefinition("mongo", client.getBeanDefinition());
 
 		// Determine if username and password are supplied.
 		Attr username = element.getAttributeNode("username");
@@ -124,13 +142,6 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 			client.addPropertyValue("username", username.getValue());
 			client.addPropertyValue("password", password.getValue());
 		}
-		context.getRegistry().registerBeanDefinition("mongo", client.getBeanDefinition());
-
-		// Register Mongo user management implementation.
-		BeanDefinitionBuilder um = BeanDefinitionBuilder.rootBeanDefinition(MongoUserManagement.class);
-		um.addPropertyReference("mongoClient", "mongo");
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
-				um.getBeanDefinition());
 	}
 
 	/**
@@ -142,6 +153,25 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	protected void parseHBaseDatasource(Element element, ParserContext context) {
 		// Register client bean.
 		BeanDefinitionBuilder client = BeanDefinitionBuilder.rootBeanDefinition(DefaultHBaseClient.class);
+		parseHBaseAttributes(element, context, client);
+		context.getRegistry().registerBeanDefinition("hbase", client.getBeanDefinition());
+
+		// Register HBase user management implementation.
+		BeanDefinitionBuilder um = BeanDefinitionBuilder.rootBeanDefinition(HBaseUserManagement.class);
+		um.addPropertyReference("client", "hbase");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
+				um.getBeanDefinition());
+	}
+
+	/**
+	 * Common parser logic for HBase attributes.
+	 * 
+	 * @param element
+	 * @param context
+	 * @param client
+	 */
+	public static void parseHBaseAttributes(Element element, ParserContext context,
+			BeanDefinitionBuilder client) {
 		Attr quorum = element.getAttributeNode("quorum");
 		if (quorum != null) {
 			client.addPropertyValue("quorum", quorum.getValue());
@@ -161,14 +191,6 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		if (zookeeperZnodeRootServer != null) {
 			client.addPropertyValue("zookeeperZnodeRootServer", zookeeperZnodeRootServer.getValue());
 		}
-
-		context.getRegistry().registerBeanDefinition("hbase", client.getBeanDefinition());
-
-		// Register HBase user management implementation.
-		BeanDefinitionBuilder um = BeanDefinitionBuilder.rootBeanDefinition(HBaseUserManagement.class);
-		um.addPropertyReference("client", "hbase");
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
-				um.getBeanDefinition());
 	}
 
 	/**
