@@ -20,6 +20,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.IUserManagement;
 
 /**
  * Spring authentication provider backed by Atlas.
@@ -39,13 +40,12 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 			if (input instanceof UsernamePasswordAuthenticationToken) {
 				String username = (String) input.getPrincipal();
 				String password = (String) input.getCredentials();
-				if ((SiteWhere.getServer() == null) || (SiteWhere.getServer().getUserManagement() == null)) {
+				if (getUserManagement() == null) {
 					throw new AuthenticationServiceException(
-							"SiteWhere server not available for authentication. Check logs for details.");
+							"User management not available. Check logs for details.");
 				}
-				IUser user = SiteWhere.getServer().getUserManagement().authenticate(username, password);
-				List<IGrantedAuthority> auths =
-						SiteWhere.getServer().getUserManagement().getGrantedAuthorities(user.getUsername());
+				IUser user = getUserManagement().authenticate(username, password);
+				List<IGrantedAuthority> auths = getUserManagement().getGrantedAuthorities(user.getUsername());
 				SitewhereUserDetails details = new SitewhereUserDetails(user, auths);
 				return new SitewhereAuthentication(details, password);
 			} else if (input instanceof SitewhereAuthentication) {
@@ -57,6 +57,19 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 		} catch (SiteWhereException e) {
 			throw new BadCredentialsException("Unable to authenticate.", e);
 		}
+	}
+
+	/**
+	 * Get the {@link IUserManagement} implementation.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IUserManagement getUserManagement() throws SiteWhereException {
+		if (SiteWhere.getServer() != null) {
+			return SiteWhere.getServer().getUserManagement();
+		}
+		return null;
 	}
 
 	/*
