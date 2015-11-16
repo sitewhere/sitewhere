@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.mule.util.StringMessageUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.mongodb.DB;
@@ -24,6 +23,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
 import com.sitewhere.SiteWhere;
+import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -223,7 +223,7 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 			messages.add("-------------------------");
 			messages.add("Schedules collection name: " + getSchedulesCollectionName());
 			messages.add("Scheduled jobs collection name: " + getScheduledJobsCollectionName());
-			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+			String message = Boilerplate.boilerplate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		} catch (UnknownHostException e) {
 			throw new SiteWhereException("Unable to contact host for MongoDB instance. "

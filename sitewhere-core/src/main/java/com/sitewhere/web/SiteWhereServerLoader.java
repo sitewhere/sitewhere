@@ -14,9 +14,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
-import org.mule.util.StringMessageUtils;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.core.Boilerplate;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -52,7 +52,7 @@ public class SiteWhereServerLoader extends HttpServlet {
 			messages.add("");
 			messages.add("Component: " + e.getDescription());
 			messages.add("Error: " + e.getComponent().getLifecycleError().getMessage());
-			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+			String message = Boilerplate.boilerplate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		} catch (SiteWhereException e) {
 			LOGGER.error("Exception on server startup.", e);
@@ -60,7 +60,7 @@ public class SiteWhereServerLoader extends HttpServlet {
 			messages.add("!!!! SiteWhere Server Failed to Start !!!!");
 			messages.add("");
 			messages.add("Error: " + e.getMessage());
-			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+			String message = Boilerplate.boilerplate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		} catch (Throwable e) {
 			LOGGER.error("Unhandled exception in server startup.", e);
@@ -68,7 +68,7 @@ public class SiteWhereServerLoader extends HttpServlet {
 			messages.add("!!!! Unhandled Exception !!!!");
 			messages.add("");
 			messages.add("Error: " + e.getMessage());
-			String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+			String message = Boilerplate.boilerplate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		}
 	}

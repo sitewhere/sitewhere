@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.mule.util.StringMessageUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
@@ -27,6 +26,7 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ExternalConfigurationResolver;
 import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.core.Boilerplate;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerState;
 import com.sitewhere.rest.model.server.SiteWhereServerState.GeneralInformation;
@@ -705,12 +705,13 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server " + version.getEdition());
 		messages.add("");
+		addBannerMessages(messages);
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
 		messages.add("Operating System: " + os);
 		messages.add("Java Runtime: " + java);
 		messages.add("");
 		messages.add("Copyright (c) 2009-2015 SiteWhere, LLC");
-		String message = StringMessageUtils.getBoilerPlate(messages, '*', 60);
+		String message = Boilerplate.boilerplate(messages, '*', 60);
 		LOGGER.info("\n" + message + "\n");
 	}
 

@@ -9,8 +9,7 @@ package com.sitewhere.server.lifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.mule.util.UUID;
+import java.util.UUID;
 
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
@@ -26,7 +25,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 public abstract class LifecycleComponent implements ILifecycleComponent {
 
 	/** Unique component id */
-	private String componentId = UUID.getUUID().toString();
+	private String componentId = UUID.randomUUID().toString();
 
 	/** Component type */
 	private LifecycleComponentType componentType;

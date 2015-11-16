@@ -15,7 +15,6 @@
 	<classpathentry kind="src" path="sitewhere-magento/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/test"/>
-	<classpathentry kind="src" path="sitewhere-mule/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-protobuf/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-protobuf/src/test/java"/>
 	<classpathentry kind="src" path="sitewhere-siddhi/src/main/java"/>
@@ -36,7 +35,6 @@
 	<classpathentry exported="true" kind="var" path="M2_REPO/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/log4j/log4j/1.2.15/log4j-1.2.15.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/apache/solr/solr-solrj/4.6.0/solr-solrj-4.6.0.jar"/>
-	<classpathentry exported="true" kind="var" path="M2_REPO/org/mule/mule-core/3.4.0/mule-core-3.4.0.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/springframework/security/spring-security-core/3.1.1.RELEASE/spring-security-core-3.1.1.RELEASE.jar" sourcepath="/SITEWHERE_ROOT/Source/spring-security-core-3.1.1.RELEASE-sources.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/fusesource/hawtbuf/hawtbuf/1.9/hawtbuf-1.9.jar"/>

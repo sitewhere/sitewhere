@@ -35,7 +35,6 @@
 				<module>sitewhere-groovy</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
-				<module>sitewhere-mule</module>
 				<module>sitewhere-protobuf</module>
 				<module>sitewhere-siddhi</module>
 				<module>sitewhere-solr</module>
@@ -59,7 +58,6 @@
 				<module>sitewhere-groovy</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
-				<module>sitewhere-mule</module>
 				<module>sitewhere-protobuf</module>
 				<module>sitewhere-siddhi</module>
 				<module>sitewhere-solr</module>
@@ -208,7 +206,6 @@
 		<sitewhere.version>1.4.0</sitewhere.version>
 		<hbase.version>0.98.4-hadoop2</hbase.version>
 		<hadoop.version>2.6.0</hadoop.version>
-		<mule.version>3.6.0</mule.version>
 		<junit.version>4.9</junit.version>
 		<log4j.version>1.2.15</log4j.version>
 		<spring.version>3.2.10.RELEASE</spring.version>
