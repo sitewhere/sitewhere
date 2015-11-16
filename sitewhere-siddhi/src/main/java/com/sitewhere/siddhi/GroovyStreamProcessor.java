@@ -20,13 +20,15 @@ import com.sitewhere.device.DeviceActions;
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.server.ITenantAware;
+import com.sitewhere.spi.user.ITenant;
 
 /**
  * Implementation of {@link StreamCallback} that hands off processing to a groovy script.
  * 
  * @author Derek
  */
-public class GroovyStreamProcessor extends StreamCallback {
+public class GroovyStreamProcessor extends StreamCallback implements ITenantAware {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GroovyStreamProcessor.class);
@@ -46,6 +48,9 @@ public class GroovyStreamProcessor extends StreamCallback {
 	/** Injected global Groovy configuration */
 	private GroovyConfiguration configuration;
 
+	/** Tenant set by event processor */
+	private ITenant tenant;
+
 	/** Path to script used for decoder */
 	private String scriptPath;
 
@@ -61,7 +66,7 @@ public class GroovyStreamProcessor extends StreamCallback {
 		LOGGER.debug("About to process '" + getScriptPath() + "' with " + events.length + " events.");
 		for (Event event : events) {
 			try {
-				IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(configuration.getTenant());
+				IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
 				DeviceActions actions = new DeviceActions(dm);
 				Binding binding = new Binding();
 				binding.setVariable(VAR_EVENT, event);
@@ -79,6 +84,25 @@ public class GroovyStreamProcessor extends StreamCallback {
 				LOGGER.error("Unable to process event.", e);
 			}
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ITenantAware#getTenant()
+	 */
+	public ITenant getTenant() {
+		return tenant;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ITenantAware#setTenant(com.sitewhere.spi.user.ITenant)
+	 */
+	public void setTenant(ITenant tenant) {
+		this.tenant = tenant;
 	}
 
 	public GroovyConfiguration getConfiguration() {

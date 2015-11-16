@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
+import com.sitewhere.spi.server.ITenantAware;
 
 /**
  * Implementation of {@link IOutboundEventProcessor} that injects events into Siddhi for
@@ -98,6 +99,9 @@ public class SiddhiEventProcessor extends FilteredOutboundEventProcessor {
 		for (SiddhiQuery query : queries) {
 			getManager().addQuery(query.getSelector());
 			for (StreamCallback callback : query.getCallbacks()) {
+				if ((callback instanceof ITenantAware)) {
+					((ITenantAware) callback).setTenant(getTenant());
+				}
 				getManager().addCallback(callback.getStreamId(), callback);
 			}
 		}
