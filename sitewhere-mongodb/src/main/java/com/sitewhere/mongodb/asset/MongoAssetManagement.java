@@ -16,7 +16,6 @@ import com.mongodb.MongoTimeoutException;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IAssetManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.mongodb.device.MongoDeviceManagement;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.asset.AssetCategory;
 import com.sitewhere.rest.model.asset.HardwareAsset;
@@ -50,7 +49,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 public class MongoAssetManagement extends TenantLifecycleComponent implements IAssetManagement {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(MongoDeviceManagement.class);
+	private static Logger LOGGER = Logger.getLogger(MongoAssetManagement.class);
 
 	/** Injected with global SiteWhere Mongo client */
 	private IAssetManagementMongoClient mongoClient;

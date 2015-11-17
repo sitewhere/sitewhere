@@ -16,6 +16,12 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
+/**
+ * Wraps instance of {@link ILifecycleComponent} to add functionality around
+ * implementation.
+ * 
+ * @author Derek
+ */
 public class LifecycleComponentDecorator implements ILifecycleComponent {
 
 	/** Delegate instance */

@@ -704,7 +704,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Print version information.
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server " + version.getEdition());
-		messages.add("");
 		addBannerMessages(messages);
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
 		messages.add("Operating System: " + os);
@@ -721,6 +720,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @param messages
 	 */
 	protected void addBannerMessages(List<String> messages) {
+		messages.add("");
 	}
 
 	/**
