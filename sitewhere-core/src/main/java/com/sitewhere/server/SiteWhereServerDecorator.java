@@ -26,6 +26,7 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
+import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.ITracer;
@@ -63,11 +64,22 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState()
+	 */
+	@Override
+	public ISiteWhereServerState getServerState() {
+		return server.getServerState();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState(boolean)
 	 */
 	@Override
-	public ISiteWhereServerState getServerState(boolean includeHistorical) throws SiteWhereException {
-		return server.getServerState(includeHistorical);
+	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical)
+			throws SiteWhereException {
+		return server.getServerRuntimeInformation(includeHistorical);
 	}
 
 	/*

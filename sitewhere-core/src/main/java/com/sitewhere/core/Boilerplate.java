@@ -35,7 +35,7 @@ public class Boilerplate {
 				internal += " ";
 			}
 		}
-		String result = line + "\n";
+		String result = "\n" + line + "\n";
 		for (String message : messages) {
 			result += (boilerplate(message, internal) + "\n");
 		}

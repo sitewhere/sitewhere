@@ -158,7 +158,31 @@ public class ExternalConfigurationResolver implements IConfigurationResolver {
 	 */
 	@Override
 	public File getConfigurationRoot() throws SiteWhereException {
-		return TomcatConfigurationResolver.getSiteWhereConfigFolder();
+		throw new SiteWhereException("Not implemented.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.configuration.IConfigurationResolver#resolveServerState(com.sitewhere
+	 * .spi.system.IVersion)
+	 */
+	@Override
+	public byte[] resolveServerState(IVersion version) throws SiteWhereException {
+		throw new SiteWhereException("Not implemented.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.configuration.IConfigurationResolver#storeServerState(com.sitewhere
+	 * .spi.system.IVersion, byte[])
+	 */
+	@Override
+	public void storeServerState(IVersion version, byte[] data) throws SiteWhereException {
+		throw new SiteWhereException("Not implemented.");
 	}
 
 	public String getRemoteConfigUrl() {

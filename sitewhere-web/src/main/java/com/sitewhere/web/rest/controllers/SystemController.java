@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.ISiteWhereServerState;
+import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.SiteWhereRoles;
@@ -70,15 +70,15 @@ public class SystemController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/state", method = RequestMethod.GET)
+	@RequestMapping(value = "/runtime", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get server runtime state")
+	@ApiOperation(value = "Get server runtime information")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = SystemInfo.GetServerStateResponse.class, description = "getServerStateResponse.md") })
-	public ISiteWhereServerState getServerState() throws SiteWhereException {
-		Tracer.start(TracerCategory.RestApiCall, "getServerState", LOGGER);
+	@Documented(examples = { @Example(stage = Stage.Response, json = SystemInfo.GetServerRuntimeResponse.class, description = "getServerStateResponse.md") })
+	public ISiteWhereServerRuntime getServerRuntimeInformation() throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getServerRuntimeInformation", LOGGER);
 		try {
-			return SiteWhere.getServer().getServerState(true);
+			return SiteWhere.getServer().getServerRuntimeInformation(true);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

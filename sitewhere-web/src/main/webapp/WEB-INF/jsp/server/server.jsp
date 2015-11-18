@@ -133,7 +133,7 @@
 
 	/** Reload server runtime data */
 	function reloadData() {
-		$.getJSON("${pageContext.request.contextPath}/api/system//state", loadGetSuccess, loadGetFailed);
+		$.getJSON("${pageContext.request.contextPath}/api/system/runtime", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful assignment load request */

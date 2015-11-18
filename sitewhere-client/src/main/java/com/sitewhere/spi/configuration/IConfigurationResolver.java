@@ -61,4 +61,22 @@ public interface IConfigurationResolver {
 	 */
 	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version, ApplicationContext parent)
 			throws SiteWhereException;
+
+	/**
+	 * Get binary form of server state information.
+	 * 
+	 * @param version
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] resolveServerState(IVersion version) throws SiteWhereException;
+
+	/**
+	 * Store information about server state.
+	 * 
+	 * @param version
+	 * @param data
+	 * @throws SiteWhereException
+	 */
+	public void storeServerState(IVersion version, byte[] data) throws SiteWhereException;
 }

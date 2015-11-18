@@ -7,9 +7,9 @@
  */
 package com.sitewhere.web.rest.documentation;
 
-import com.sitewhere.rest.model.server.SiteWhereServerState;
-import com.sitewhere.rest.model.server.SiteWhereServerState.GeneralInformation;
-import com.sitewhere.rest.model.server.SiteWhereServerState.JavaInformation;
+import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
+import com.sitewhere.rest.model.server.SiteWhereServerRuntime.GeneralInformation;
+import com.sitewhere.rest.model.server.SiteWhereServerRuntime.JavaInformation;
 import com.sitewhere.rest.model.system.Version;
 import com.sitewhere.spi.SiteWhereException;
 
@@ -32,10 +32,10 @@ public class SystemInfo {
 		}
 	}
 
-	public static class GetServerStateResponse {
+	public static class GetServerRuntimeResponse {
 
 		public Object generate() throws SiteWhereException {
-			SiteWhereServerState state = new SiteWhereServerState();
+			SiteWhereServerRuntime state = new SiteWhereServerRuntime();
 
 			GeneralInformation general = new GeneralInformation();
 			general.setVersionIdentifier("1.3.0");

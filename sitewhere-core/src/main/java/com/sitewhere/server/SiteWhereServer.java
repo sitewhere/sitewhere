@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,13 +25,15 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ExternalConfigurationResolver;
 import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
+import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
+import com.sitewhere.rest.model.server.SiteWhereServerRuntime.GeneralInformation;
+import com.sitewhere.rest.model.server.SiteWhereServerRuntime.JavaInformation;
 import com.sitewhere.rest.model.server.SiteWhereServerState;
-import com.sitewhere.rest.model.server.SiteWhereServerState.GeneralInformation;
-import com.sitewhere.rest.model.server.SiteWhereServerState.JavaInformation;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.security.SitewhereUserDetails;
@@ -57,6 +60,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServerEnvironment;
+import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.ITracer;
@@ -90,8 +94,11 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/** Version checker implementation */
 	private IVersionChecker versionChecker;
 
-	/** Contains runtime information about the server */
+	/** Persistent server state information */
 	private ISiteWhereServerState serverState;
+
+	/** Contains runtime information about the server */
+	private ISiteWhereServerRuntime serverRuntime;
 
 	/** Server startup error */
 	private ServerStartupException serverStartupError;
@@ -159,11 +166,22 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState()
+	 */
+	@Override
+	public ISiteWhereServerState getServerState() {
+		return serverState;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState(boolean)
 	 */
-	public ISiteWhereServerState getServerState(boolean includeHistorical) throws SiteWhereException {
-		this.serverState = computeServerState(includeHistorical);
-		return serverState;
+	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical)
+			throws SiteWhereException {
+		this.serverRuntime = computeServerRuntime(includeHistorical);
+		return serverRuntime;
 	}
 
 	/*
@@ -634,8 +652,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected ISiteWhereServerState computeServerState(boolean includeHistorical) throws SiteWhereException {
-		SiteWhereServerState state = new SiteWhereServerState();
+	protected ISiteWhereServerRuntime computeServerRuntime(boolean includeHistorical)
+			throws SiteWhereException {
+		SiteWhereServerRuntime state = new SiteWhereServerRuntime();
 
 		String osName = System.getProperty("os.name");
 		String osVersion = System.getProperty("os.version");
@@ -678,6 +697,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public void initialize() throws SiteWhereException {
 		this.version = VersionHelper.getVersion();
 
+		// Initialize persistent state.
+		initializeServerState();
+
 		// Initialize Spring.
 		initializeSpringContext();
 
@@ -704,8 +726,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Print version information.
 		List<String> messages = new ArrayList<String>();
 		messages.add("SiteWhere Server " + version.getEdition());
-		addBannerMessages(messages);
 		messages.add("Version: " + version.getVersionIdentifier() + "." + version.getBuildTimestamp());
+		messages.add("Node id: " + serverState.getNodeId());
+		addBannerMessages(messages);
 		messages.add("Operating System: " + os);
 		messages.add("Java Runtime: " + java);
 		messages.add("");
@@ -721,6 +744,24 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void addBannerMessages(List<String> messages) {
 		messages.add("");
+	}
+
+	/**
+	 * Initialize the server state information.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeServerState() throws SiteWhereException {
+		byte[] stateData = getConfigurationResolver().resolveServerState(getVersion());
+		SiteWhereServerState state = null;
+		if (stateData == null) {
+			state = new SiteWhereServerState();
+			state.setNodeId(UUID.randomUUID().toString());
+			getConfigurationResolver().storeServerState(version, MarshalUtils.marshalJson(state));
+		} else {
+			state = MarshalUtils.unmarshalJson(stateData, SiteWhereServerState.class);
+		}
+		this.serverState = state;
 	}
 
 	/**

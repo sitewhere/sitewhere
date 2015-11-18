@@ -45,13 +45,21 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IVersion getVersion();
 
 	/**
+	 * Get persistent server state information.
+	 * 
+	 * @return
+	 */
+	public ISiteWhereServerState getServerState();
+
+	/**
 	 * Gets runtime information about the server.
 	 * 
 	 * @param includeHistorical
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISiteWhereServerState getServerState(boolean includeHistorical) throws SiteWhereException;
+	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical)
+			throws SiteWhereException;
 
 	/**
 	 * Initialize the server.

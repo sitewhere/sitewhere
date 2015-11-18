@@ -7,124 +7,17 @@
  */
 package com.sitewhere.spi.server;
 
-import java.util.List;
-
 /**
- * Holds information about current state of SiteWhere server.
+ * Holds persistent state information for a SiteWhere Server node.
  * 
  * @author Derek
  */
 public interface ISiteWhereServerState {
 
-	public IGeneralInformation getGeneral();
-
-	public IJavaInformation getJava();
-
 	/**
-	 * General server information.
+	 * Get the unique node id.
+	 * 
+	 * @return
 	 */
-	public static interface IGeneralInformation {
-
-		/**
-		 * Get full edition name.
-		 */
-		public String getEdition();
-
-		/**
-		 * Get the short identifier for edition.
-		 * 
-		 * @return
-		 */
-		public String getEditionIdentifier();
-
-		/**
-		 * Gets the Maven version identifier.
-		 * 
-		 * @return
-		 */
-		public String getVersionIdentifier();
-
-		/**
-		 * Gets the build timestamp.
-		 * 
-		 * @return
-		 */
-		public String getBuildTimestamp();
-
-		/**
-		 * Get the amount of time in milliseconds the server has been up.
-		 * 
-		 * @return
-		 */
-		public Long getUptime();
-
-		/**
-		 * Get operating system name.
-		 * 
-		 * @return
-		 */
-		public String getOperatingSystemName();
-
-		/**
-		 * Get operating system version.
-		 * 
-		 * @return
-		 */
-		public String getOperatingSystemVersion();
-	}
-
-	/**
-	 * Get information about Java VM.
-	 */
-	public static interface IJavaInformation {
-
-		/**
-		 * Get the JVM vendor.
-		 * 
-		 * @return
-		 */
-		public String getJvmVendor();
-
-		/**
-		 * Get the JVM version.
-		 * 
-		 * @return
-		 */
-		public String getJvmVersion();
-
-		/**
-		 * Get total memory allocated to JVM.
-		 * 
-		 * @return
-		 */
-		public Long getJvmTotalMemory();
-
-		/**
-		 * Get recent historical values for JVM total memory.
-		 * 
-		 * @return
-		 */
-		public List<Long> getJvmTotalMemoryHistory();
-
-		/**
-		 * Get free memory available to JVM.
-		 * 
-		 * @return
-		 */
-		public Long getJvmFreeMemory();
-
-		/**
-		 * Get recent historical values for JVM free memory.
-		 * 
-		 * @return
-		 */
-		public List<Long> getJvmFreeMemoryHistory();
-
-		/**
-		 * Get max memory available to JVM.
-		 * 
-		 * @return
-		 */
-		public Long getJvmMaxMemory();
-	}
+	public String getNodeId();
 }

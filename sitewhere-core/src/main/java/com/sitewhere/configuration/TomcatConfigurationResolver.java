@@ -46,6 +46,9 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 	/** File name for SiteWhere default tenant config file */
 	public static final String TENANT_CONFIG_FILE_NAME = "sitewhere-tenant.xml";
 
+	/** File name for SiteWhere state information in JSON format */
+	public static final String STATE_FILE_NAME = "sitewhere-state.json";
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -210,6 +213,64 @@ public class TomcatConfigurationResolver implements IConfigurationResolver {
 			IOUtils.closeQuietly(out);
 		} catch (IOException e) {
 			LOGGER.error("Unable to copy tenant configuration file: " + tenantPropsFile.getAbsolutePath(), e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.configuration.IConfigurationResolver#resolveServerState(com.sitewhere
+	 * .spi.system.IVersion)
+	 */
+	@Override
+	public byte[] resolveServerState(IVersion version) throws SiteWhereException {
+		File stateFile = new File(getConfigurationRoot(), STATE_FILE_NAME);
+		if (!stateFile.exists()) {
+			return null;
+		}
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			FileInputStream in = new FileInputStream(stateFile);
+			IOUtils.copy(in, out);
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+			return out.toByteArray();
+		} catch (FileNotFoundException e) {
+			throw new SiteWhereException(e);
+		} catch (IOException e) {
+			throw new SiteWhereException(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.configuration.IConfigurationResolver#storeServerState(com.sitewhere
+	 * .spi.system.IVersion, byte[])
+	 */
+	@Override
+	public void storeServerState(IVersion version, byte[] data) throws SiteWhereException {
+		File stateFile = new File(getConfigurationRoot(), STATE_FILE_NAME);
+		if (!stateFile.exists()) {
+			try {
+				if (!stateFile.createNewFile()) {
+					throw new SiteWhereException("Unable to create file for storing server state.");
+				}
+			} catch (IOException e) {
+				throw new SiteWhereException("Unable to create file for storing server state: "
+						+ stateFile.getAbsolutePath(), e);
+			}
+		}
+		try {
+			ByteArrayInputStream in = new ByteArrayInputStream(data);
+			FileOutputStream out = new FileOutputStream(stateFile);
+			IOUtils.copy(in, out);
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to save server state: " + stateFile.getAbsolutePath(), e);
 		}
 	}
 

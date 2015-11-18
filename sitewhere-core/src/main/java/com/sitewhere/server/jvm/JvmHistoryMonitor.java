@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereServer;
-import com.sitewhere.spi.server.ISiteWhereServerState;
+import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 
 /**
  * Monitors JVM history values over time.
@@ -55,16 +55,16 @@ public class JvmHistoryMonitor implements Runnable {
 		while (true) {
 			try {
 				// Get current server state.
-				ISiteWhereServerState state = getServer().getServerState(false);
+				ISiteWhereServerRuntime runtime = getServer().getServerRuntimeInformation(false);
 
 				// Store the latest entry and remove oldest if at limit.
-				totalMemory.addLast(state.getJava().getJvmTotalMemory());
+				totalMemory.addLast(runtime.getJava().getJvmTotalMemory());
 				if (totalMemory.size() > HISTORY_LENGTH) {
 					totalMemory.removeFirst();
 				}
 
 				// Store the latest entry and remove oldest if at limit.
-				freeMemory.addLast(state.getJava().getJvmFreeMemory());
+				freeMemory.addLast(runtime.getJava().getJvmFreeMemory());
 				if (freeMemory.size() > HISTORY_LENGTH) {
 					freeMemory.removeFirst();
 				}
