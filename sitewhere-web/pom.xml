@@ -29,19 +29,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-api</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
 			<artifactId>sitewhere-azure</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-client</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
 		</dependency>

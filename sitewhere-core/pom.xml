@@ -15,7 +15,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-client</artifactId>
+			<artifactId>sitewhere-core-api</artifactId>
+			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sitewhere</groupId>
+			<artifactId>sitewhere-server-api</artifactId>
 			<version>${sitewhere.version}</version>
 			<scope>compile</scope>
 		</dependency>

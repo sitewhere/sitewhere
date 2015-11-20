@@ -28,9 +28,9 @@ public class SiteWhere {
 	 * @throws SiteWhereException
 	 */
 	public static void start() throws SiteWhereException {
-		Class<? extends ISiteWhereServer> clazz = VersionHelper.getVersion().getServerClass();
+		Class<?> clazz = VersionHelper.getVersion().getServerClass();
 		try {
-			SERVER = clazz.newInstance();
+			SERVER = (ISiteWhereServer) clazz.newInstance();
 			SERVER.initialize();
 			SERVER.lifecycleStart();
 

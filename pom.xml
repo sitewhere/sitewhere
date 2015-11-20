@@ -25,11 +25,11 @@
 			</activation>
 			<modules>
 				<module>sitewhere-activemq</module>
-				<module>sitewhere-api</module>
 				<module>sitewhere-azure</module>
 				<module>sitewhere-client</module>
 				<module>sitewhere-cloud</module>
 				<module>sitewhere-core</module>
+				<module>sitewhere-core-api</module>
 				<module>sitewhere-ehcache</module>
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
@@ -37,6 +37,7 @@
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-protobuf</module>
+				<module>sitewhere-server-api</module>
 				<module>sitewhere-siddhi</module>
 				<module>sitewhere-solr</module>
 				<module>sitewhere-spring</module>
@@ -49,11 +50,11 @@
 			<id>withdocs</id>
 			<modules>
 				<module>sitewhere-activemq</module>
-				<module>sitewhere-api</module>
 				<module>sitewhere-azure</module>
 				<module>sitewhere-client</module>
 				<module>sitewhere-cloud</module>
 				<module>sitewhere-core</module>
+				<module>sitewhere-core-api</module>
 				<module>sitewhere-ehcache</module>
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
@@ -61,6 +62,7 @@
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-protobuf</module>
+				<module>sitewhere-server-api</module>
 				<module>sitewhere-siddhi</module>
 				<module>sitewhere-solr</module>
 				<module>sitewhere-spring</module>

@@ -8,7 +8,6 @@
 package com.sitewhere.spi.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sitewhere.spi.server.ISiteWhereServer;
 
 /**
  * Interface for getting version information.
@@ -46,10 +45,10 @@ public interface IVersion {
 	public String getBuildTimestamp();
 
 	/**
-	 * Get edition-specific server class that implements {@link ISiteWhereServer}.
+	 * Get edition-specific server class.
 	 * 
 	 * @return
 	 */
 	@JsonIgnore
-	public Class<? extends ISiteWhereServer> getServerClass();
+	public Class<?> getServerClass();
 }

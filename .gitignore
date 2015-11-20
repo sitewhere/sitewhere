@@ -1,10 +1,10 @@
 /bin
 /sitewhere-activemq/target
-/sitewhere-api/target
 /sitewhere-azure/target
 /sitewhere-client/target
 /sitewhere-cloud/target
 /sitewhere-core/target
+/sitewhere-core-api/target
 /sitewhere-documentation/target
 /sitewhere-ehcache/target
 /sitewhere-gnuhealth/target
@@ -15,6 +15,7 @@
 /sitewhere-mongodb/target
 /sitewhere-mule/target
 /sitewhere-protobuf/target
+/sitewhere-server-api/target
 /sitewhere-siddhi/target
 /sitewhere-solr/target
 /sitewhere-spring/target

@@ -7,7 +7,6 @@
  */
 package com.sitewhere.rest.model.system;
 
-import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.system.IVersion;
 
 /**
@@ -30,7 +29,7 @@ public class Version implements IVersion {
 	private String buildTimestamp;
 
 	/** Server implementation class */
-	private Class<? extends ISiteWhereServer> serverClass;
+	private Class<?> serverClass;
 
 	public Version() {
 	}
@@ -92,11 +91,11 @@ public class Version implements IVersion {
 	 * 
 	 * @see com.sitewhere.spi.system.IVersion#getServerClass()
 	 */
-	public Class<? extends ISiteWhereServer> getServerClass() {
+	public Class<?> getServerClass() {
 		return serverClass;
 	}
 
-	public void setServerClass(Class<? extends ISiteWhereServer> serverClass) {
+	public void setServerClass(Class<?> serverClass) {
 		this.serverClass = serverClass;
 	}
 }
