@@ -9,7 +9,6 @@ package com.sitewhere.device;
 
 import java.util.List;
 
-import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.LifecycleComponentDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
@@ -534,7 +533,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public SearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
+	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
 			ISearchCriteria criteria) throws SiteWhereException {
 		return delegate.listDeviceGroupElements(groupToken, criteria);
 	}
@@ -573,7 +572,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public SearchResults<IBatchElement> listBatchElements(String batchToken,
+	public ISearchResults<IBatchElement> listBatchElements(String batchToken,
 			IBatchElementSearchCriteria criteria) throws SiteWhereException {
 		return delegate.listBatchElements(batchToken, criteria);
 	}

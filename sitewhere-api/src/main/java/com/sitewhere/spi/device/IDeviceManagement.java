@@ -9,8 +9,6 @@ package com.sitewhere.spi.device;
 
 import java.util.List;
 
-import com.sitewhere.rest.model.device.batch.BatchOperation;
-import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.batch.IBatchElement;
@@ -885,7 +883,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public SearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
+	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
 			ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
@@ -947,7 +945,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public SearchResults<IBatchElement> listBatchElements(String batchToken,
+	public ISearchResults<IBatchElement> listBatchElements(String batchToken,
 			IBatchElementSearchCriteria criteria) throws SiteWhereException;
 
 	/**
@@ -963,7 +961,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 			IBatchElementUpdateRequest request) throws SiteWhereException;
 
 	/**
-	 * Creates a {@link BatchOperation} that will invoke a command on multiple devices.
+	 * Creates an {@link ISearchResults} that will invoke a command on multiple devices.
 	 * 
 	 * @param request
 	 * @return

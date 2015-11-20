@@ -15,7 +15,6 @@ import java.util.Map;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.group.IDeviceGroup;
@@ -88,7 +87,7 @@ public class DeviceGroupUtils {
 			throws SiteWhereException {
 		Map<String, IDevice> devices = new HashMap<String, IDevice>();
 		ISearchCriteria criteria = new SearchCriteria(1, 0);
-		SearchResults<IDeviceGroupElement> elements =
+		ISearchResults<IDeviceGroupElement> elements =
 				SiteWhere.getServer().getDeviceManagement(tenant).listDeviceGroupElements(groupToken,
 						criteria);
 		for (IDeviceGroupElement element : elements.getResults()) {

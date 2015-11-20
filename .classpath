@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="sitewhere-activemq/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-api/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-azure/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-azure/src/test/java"/>
 	<classpathentry kind="src" path="sitewhere-client/src/main/java"/>

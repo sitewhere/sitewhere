@@ -9,10 +9,8 @@ package com.sitewhere.spi.device.event;
 
 import java.util.List;
 
-import com.sitewhere.rest.model.device.event.DeviceEventBatch;
-
 /**
- * Response generated when a {@link DeviceEventBatch} has been processed.
+ * Response generated when a batch of events has been processed.
  * 
  * @author Derek
  */

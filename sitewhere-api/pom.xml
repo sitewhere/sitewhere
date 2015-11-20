@@ -8,17 +8,11 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>sitewhere-client</artifactId>
+	<artifactId>sitewhere-api</artifactId>
 	<packaging>jar</packaging>
-	<name>SiteWhere Client</name>
+	<name>SiteWhere API</name>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-api</artifactId>
-			<version>${sitewhere.version}</version>
-			<scope>compile</scope>
-		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
@@ -38,17 +32,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.1</version>
-		</dependency>
-		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 			<version>3.1.0</version>
@@ -57,12 +40,6 @@
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-healthchecks</artifactId>
 			<version>3.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-all</artifactId>
-			<version>5.10.0</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

@@ -25,6 +25,7 @@
 			</activation>
 			<modules>
 				<module>sitewhere-activemq</module>
+				<module>sitewhere-api</module>
 				<module>sitewhere-azure</module>
 				<module>sitewhere-client</module>
 				<module>sitewhere-cloud</module>
@@ -48,6 +49,7 @@
 			<id>withdocs</id>
 			<modules>
 				<module>sitewhere-activemq</module>
+				<module>sitewhere-api</module>
 				<module>sitewhere-azure</module>
 				<module>sitewhere-client</module>
 				<module>sitewhere-cloud</module>

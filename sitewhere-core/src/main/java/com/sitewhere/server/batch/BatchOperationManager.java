@@ -24,7 +24,6 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.request.BatchElementUpdateRequest;
 import com.sitewhere.rest.model.device.request.BatchOperationUpdateRequest;
-import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.device.BatchElementSearchCriteria;
 import com.sitewhere.security.SitewhereAuthentication;
 import com.sitewhere.server.SiteWhereServer;
@@ -43,6 +42,7 @@ import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
@@ -173,7 +173,7 @@ public class BatchOperationManager extends TenantLifecycleComponent implements I
 
 				// Process all batch elements.
 				IBatchElementSearchCriteria criteria = new BatchElementSearchCriteria(1, 0);
-				SearchResults<IBatchElement> matches =
+				ISearchResults<IBatchElement> matches =
 						SiteWhere.getServer().getDeviceManagement(getTenant()).listBatchElements(
 								operation.getToken(), criteria);
 				BatchProcessingResults result = processBatchElements(operation, matches.getResults());

@@ -1,5 +1,6 @@
 /bin
 /sitewhere-activemq/target
+/sitewhere-api/target
 /sitewhere-azure/target
 /sitewhere-client/target
 /sitewhere-cloud/target

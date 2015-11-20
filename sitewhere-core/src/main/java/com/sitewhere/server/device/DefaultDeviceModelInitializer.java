@@ -42,7 +42,6 @@ import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
-import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.asset.filesystem.FileSystemDeviceAssetModule;
 import com.sitewhere.server.asset.filesystem.FileSystemHardwareAssetModule;
@@ -75,6 +74,7 @@ import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
 import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -294,7 +294,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * @throws SiteWhereException
 	 */
 	protected void testListAndRemoveNetworkElements(IDeviceGroup group) throws SiteWhereException {
-		SearchResults<IDeviceGroupElement> groupElements =
+		ISearchResults<IDeviceGroupElement> groupElements =
 				getDeviceManagement().listDeviceGroupElements(group.getToken(), new SearchCriteria(0, 10));
 		LOGGER.info("Matched " + groupElements.getResults().size() + " group elements.");
 
