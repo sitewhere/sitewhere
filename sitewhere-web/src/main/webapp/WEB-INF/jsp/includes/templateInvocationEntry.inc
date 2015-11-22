@@ -29,7 +29,7 @@
 		<td>#= formattedDate(eventDate) #</td>
 		<td>
 			<div style="width: 100%; text-align: left">
-				<i class="fa fa-info-sign sw-action-glyph sw-edit-glyph" title="#= i18next("includes.templateInvocationEntry.ViewInvocation") #"
+				<i class="fa fa-info-circle sw-action-glyph sw-edit-glyph" title="#= i18next("includes.templateInvocationEntry.ViewInvocation") #"
 					onclick="onViewInvocation('#:id#')"></i>
 			</div>
 		</td>
