@@ -262,6 +262,11 @@
 			</sw:siddhi-event-processor>
 			-->
 
+			<!-- Stream data to an external WSO2 CEP instance -->
+			<!-- 
+			<sw:wso2-cep-event-processor/>
+			 -->
+
 		</sw:outbound-processing-chain>
 		
 		<!-- #################### -->

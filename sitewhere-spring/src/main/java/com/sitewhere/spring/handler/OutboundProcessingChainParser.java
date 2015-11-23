@@ -42,6 +42,7 @@ import com.sitewhere.siddhi.GroovyStreamProcessor;
 import com.sitewhere.siddhi.SiddhiEventProcessor;
 import com.sitewhere.siddhi.SiddhiQuery;
 import com.sitewhere.siddhi.StreamDebugger;
+import com.sitewhere.siddhi.Wso2CepEventProcessor;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 import com.sitewhere.solr.SolrDeviceEventProcessor;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -116,6 +117,10 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 			case SiddhiEventProcessor: {
 				processors.add(parseSiddhiEventProcessor(child, context));
+				break;
+			}
+			case Wso2CepEventProcessor: {
+				processors.add(parseWso2CepEventProcessor(child, context));
 				break;
 			}
 			}
@@ -392,6 +397,41 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		// Parse nested filters.
 		processor.addPropertyValue("filters", parseFilters(element, context));
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
+	 * Parse configuration for event processor that publishes SiteWhere events to an
+	 * external WSO2 CEP engine.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseWso2CepEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(Wso2CepEventProcessor.class);
+
+		Attr hostname = element.getAttributeNode("hostname");
+		if (hostname != null) {
+			processor.addPropertyValue("siddhiHost", hostname.getValue());
+		}
+
+		Attr port = element.getAttributeNode("port");
+		if (port != null) {
+			processor.addPropertyValue("siddhiPort", port.getValue());
+		}
+
+		Attr username = element.getAttributeNode("username");
+		if (username != null) {
+			processor.addPropertyValue("siddhiUsername", username.getValue());
+		}
+
+		Attr password = element.getAttributeNode("password");
+		if (password != null) {
+			processor.addPropertyValue("siddhiPassword", password.getValue());
+		}
 
 		return processor.getBeanDefinition();
 	}
@@ -756,6 +796,9 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 
 		/** Outbound event processor that delivers commands via communication subsystem */
 		CommandDeliveryEventProcessor("command-delivery-event-processor"),
+
+		/** Outbound event processor that delivers event to external WSO2 CEP instance */
+		Wso2CepEventProcessor("wso2-cep-event-processor"),
 
 		/** Outbound event processor that uses Siddhi for complex event processing */
 		SiddhiEventProcessor("siddhi-event-processor");

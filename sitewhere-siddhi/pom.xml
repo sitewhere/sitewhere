@@ -12,6 +12,13 @@
 	<packaging>jar</packaging>
 	<name>SiteWhere Siddhi CEP Integration</name>
 
+	<repositories>
+		<repository>
+			<id>org.wso2.carbon</id>
+			<url>http://dist.wso2.org/maven2/</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
@@ -51,6 +58,42 @@
 			<version>2.1.0wso2v1</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/siddhi-query_2.1.0.wso2v1.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
+			<version>4.2.3</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.osgi</groupId>
+					<artifactId>org.eclipse.osgi</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.eclipse.osgi</groupId>
+					<artifactId>org.eclipse.osgi.services</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.httpcomponents.wso2</groupId>
+					<artifactId>httpclient</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>slf4j.wso2</groupId>
+					<artifactId>slf4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.databridge.commons</artifactId>
+			<version>4.2.3</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.wso2.carbon</groupId>
+					<artifactId>org.wso2.carbon.logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>

@@ -845,6 +845,51 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+
+	<!-- WSO2 CEP event processor -->
+	<xsd:element name="wso2-cep-event-processor" type="wso2CepEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends events to streams on an external WSO2 CEP instance for
+				processing.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="wso2CepEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="hostname" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Hostname for external WSO2 CEP instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="port" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Port number for external WSO2 CEP instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="username" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Username for external WSO2 CEP instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="password" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Password for external WSO2 CEP instance.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
 	<!-- Siddhi CEP outbound event processor -->
 	<xsd:element name="siddhi-event-processor" type="siddhiEventProcessorType"

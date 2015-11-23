@@ -67,9 +67,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/zookeeper/zookeeper/3.4.6/zookeeper-3.4.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy/2.4.3/groovy-2.4.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/mongodb/mongo-java-driver/2.13.0/mongo-java-driver-2.13.0.jar"/>
-	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-api_2.1.0.wso2v1.jar"/>
-	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-core_2.1.0.wso2v1.jar"/>
-	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-query_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/glassfish/tyrus/tyrus-server/1.10/tyrus-server-1.10.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/glassfish/tyrus/tyrus-container-grizzly-server/1.10/tyrus-container-grizzly-server-1.10.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-beans/3.2.10.RELEASE/spring-beans-3.2.10.RELEASE.jar"/>
@@ -81,7 +78,6 @@
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.1.5/jackson-core-2.1.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.1.5/jackson-databind-2.1.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-annotations/1.3.5/swagger-annotations-1.3.5.jar"/>
-	<classpathentry kind="lib" path="sitewhere-azure/lib/qpid-amqp-1-0-client-all-mod.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-rt-rs-client/3.0.2/cxf-rt-rs-client-3.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-core/3.0.2/cxf-core-3.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-tx/3.2.10.RELEASE/spring-tx-3.2.10.RELEASE.jar"/>
@@ -105,5 +101,11 @@
 	<classpathentry kind="var" path="M2_REPO/org/pegdown/pegdown/1.5.0/pegdown-1.5.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/thoughtworks/paranamer/paranamer/2.8/paranamer-2.8.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/quartz-scheduler/quartz/2.2.2/quartz-2.2.2.jar"/>
+	<classpathentry kind="lib" path="sitewhere-azure/lib/qpid-amqp-1-0-client-all-mod.jar"/>
+	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-api_2.1.0.wso2v1.jar"/>
+	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-core_2.1.0.wso2v1.jar"/>
+	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-query_2.1.0.wso2v1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.agent.thrift/4.2.0/org.wso2.carbon.databridge.agent.thrift-4.2.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.commons/4.2.0/org.wso2.carbon.databridge.commons-4.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
