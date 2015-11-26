@@ -65,6 +65,16 @@
 					port="1883" topic="SiteWhere/input/protobuf">
 					<sw:protobuf-event-decoder/>
 				</sw:mqtt-event-source>
+				
+				<!-- Example of secured MQTT over TLS -->
+				<!--  
+				<sw:mqtt-event-source sourceId="protobuf" protocol="tls"
+					hostname="localhost" port="8883" topic="SiteWhere/input/protobuf"
+					trustStorePath="/path/to/truststore.jks"
+					trustStorePassword="password">
+					<sw:protobuf-event-decoder/>
+				</sw:mqtt-event-source>
+				-->
 
 				<!-- Event source for JSON messages over MQTT -->
 				<sw:mqtt-event-source sourceId="json" hostname="localhost" port="1883"

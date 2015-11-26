@@ -7,12 +7,18 @@
  */
 package com.sitewhere.device.communication.mqtt;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URISyntaxException;
+import java.security.KeyStore;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.log4j.Logger;
 import org.fusesource.hawtdispatch.internal.DispatcherConfig;
@@ -40,6 +46,9 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
 
+	/** Default protocol if not set via Spring */
+	public static final String DEFAULT_PROTOCOL = "tcp";
+
 	/** Default hostname if not set via Spring */
 	public static final String DEFAULT_HOSTNAME = "localhost";
 
@@ -55,6 +64,8 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	/** Parent event source */
 	private IInboundEventSource<byte[]> eventSource;
 
+	private String protocol = DEFAULT_PROTOCOL;
+
 	/** Host name */
 	private String hostname = DEFAULT_HOSTNAME;
 
@@ -63,6 +74,12 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 
 	/** Topic name */
 	private String topic = DEFAULT_TOPIC;
+
+	/** TrustStore path */
+	private String trustStorePath;
+
+	/** TrustStore password */
+	private String trustStorePassword;
 
 	/** MQTT client */
 	private MQTT mqtt;
@@ -86,12 +103,30 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	public void start() throws SiteWhereException {
 		this.executor = Executors.newSingleThreadExecutor(new SubscribersThreadFactory());
 		this.mqtt = new MQTT();
+		if ((getProtocol().startsWith("ssl")) || (getProtocol().startsWith("tls"))) {
+			if ((getTrustStorePath() != null) && (getTrustStorePassword() != null)) {
+				try {
+					SSLContext sslContext = SSLContext.getInstance("TLS");
+					TrustManagerFactory tmf =
+							TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+					KeyStore ks = KeyStore.getInstance("JKS");
+					File trustFile = new File(getTrustStorePath());
+					ks.load(new FileInputStream(trustFile), getTrustStorePassword().toCharArray());
+					tmf.init(ks);
+					sslContext.init(null, tmf.getTrustManagers(), null);
+					mqtt.setSslContext(sslContext);
+					LOGGER.info("Created SSL context for MQTT receiver.");
+				} catch (Exception e) {
+					throw new SiteWhereException("Unable to load SSL context.", e);
+				}
+			}
+		}
 		try {
-			mqtt.setHost(getHostname(), getPort());
+			mqtt.setHost(getProtocol() + "://" + getHostname() + ":" + getPort());
 		} catch (URISyntaxException e) {
 			throw new SiteWhereException("Invalid hostname for MQTT server.", e);
 		}
-		LOGGER.info("Receiver connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
+		LOGGER.info("Receiver connecting to MQTT broker at '" + mqtt.getHost() + "'...");
 		connection = mqtt.futureConnection();
 		try {
 			Future<Void> future = connection.connect();
@@ -134,7 +169,7 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 	 */
 	@Override
 	public String getDisplayName() {
-		return getHostname() + ":" + getPort() + "/" + getTopic();
+		return getProtocol() + "://" + getHostname() + ":" + getPort() + "/" + getTopic();
 	}
 
 	/** Used for naming consumer threads */
@@ -227,6 +262,14 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 		this.eventSource = eventSource;
 	}
 
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
 	public String getHostname() {
 		return hostname;
 	}
@@ -249,5 +292,21 @@ public class MqttInboundEventReceiver extends LifecycleComponent implements IInb
 
 	public void setTopic(String topic) {
 		this.topic = topic;
+	}
+
+	public String getTrustStorePath() {
+		return trustStorePath;
+	}
+
+	public void setTrustStorePath(String trustStorePath) {
+		this.trustStorePath = trustStorePath;
+	}
+
+	public String getTrustStorePassword() {
+		return trustStorePassword;
+	}
+
+	public void setTrustStorePassword(String trustStorePassword) {
+		this.trustStorePassword = trustStorePassword;
 	}
 }

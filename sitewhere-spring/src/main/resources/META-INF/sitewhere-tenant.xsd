@@ -1296,14 +1296,21 @@
 	
 	<!-- Attributes used for inbound MQTT processing -->
 	<xsd:attributeGroup name="mqtt-inbound-attributes">
-		<xsd:attribute name="hostname" type="xsd:string">
+		<xsd:attribute name="protocol" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					MQTT protocol (defaults to tcp).
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="hostname" type="xsd:string" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker hostname.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="port" type="sw:substitutableInt">
+		<xsd:attribute name="port" type="sw:substitutableInt" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT broker port.
@@ -1314,6 +1321,22 @@
 			<xsd:annotation>
 				<xsd:documentation>
 					MQTT topic used to deliver inbound events.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="trustStorePath" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the full path to the Java
+					TrustStore used for the secure connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="trustStorePassword" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					For secured connections. Provides the password to the Java
+					TrustStore used for the secure connection.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
