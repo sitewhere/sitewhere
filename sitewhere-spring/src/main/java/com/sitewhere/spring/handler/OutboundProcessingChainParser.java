@@ -233,14 +233,31 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(MqttOutboundEventProcessor.class);
 
-		Attr hostname = element.getAttributeNode("hostname");
-		if (hostname != null) {
-			processor.addPropertyValue("hostname", hostname.getValue());
+		Attr protocol = element.getAttributeNode("protocol");
+		if (protocol != null) {
+			processor.addPropertyValue("protocol", protocol.getValue());
 		}
 
+		Attr hostname = element.getAttributeNode("hostname");
+		if (hostname == null) {
+			throw new RuntimeException("MQTT hostname attribute not provided.");
+		}
+		processor.addPropertyValue("hostname", hostname.getValue());
+
 		Attr port = element.getAttributeNode("port");
-		if (port != null) {
-			processor.addPropertyValue("port", port.getValue());
+		if (port == null) {
+			throw new RuntimeException("MQTT port attribute not provided.");
+		}
+		processor.addPropertyValue("port", port.getValue());
+
+		Attr trustStorePath = element.getAttributeNode("trustStorePath");
+		if (trustStorePath != null) {
+			processor.addPropertyValue("trustStorePath", trustStorePath.getValue());
+		}
+
+		Attr trustStorePassword = element.getAttributeNode("trustStorePassword");
+		if (trustStorePassword != null) {
+			processor.addPropertyValue("trustStorePassword", trustStorePassword.getValue());
 		}
 
 		Attr topic = element.getAttributeNode("topic");
