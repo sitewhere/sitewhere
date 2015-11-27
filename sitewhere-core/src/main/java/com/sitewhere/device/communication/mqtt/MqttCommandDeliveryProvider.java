@@ -7,16 +7,10 @@
  */
 package com.sitewhere.device.communication.mqtt;
 
-import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.log4j.Logger;
-import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
-import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceNestingContext;
@@ -30,29 +24,11 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MqttCommandDeliveryProvider extends TenantLifecycleComponent implements
+public class MqttCommandDeliveryProvider extends MqttLifecycleComponent implements
 		ICommandDeliveryProvider<byte[], MqttParameters> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttCommandDeliveryProvider.class);
-
-	/** Default hostname if not set via Spring */
-	public static final String DEFAULT_HOSTNAME = "localhost";
-
-	/** Default port if not set from Spring */
-	public static final int DEFAULT_PORT = 1883;
-
-	/** Default connection timeout in seconds */
-	public static final long DEFAULT_CONNECT_TIMEOUT_SECS = 5;
-
-	/** Host name */
-	private String hostname = DEFAULT_HOSTNAME;
-
-	/** Port */
-	private int port = DEFAULT_PORT;
-
-	/** MQTT client */
-	private MQTT mqtt;
 
 	/** Shared MQTT connection */
 	private FutureConnection connection;
@@ -68,20 +44,10 @@ public class MqttCommandDeliveryProvider extends TenantLifecycleComponent implem
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		this.mqtt = new MQTT();
-		try {
-			mqtt.setHost(getHostname(), getPort());
-		} catch (URISyntaxException e) {
-			throw new SiteWhereException("Invalid hostname for MQTT server.", e);
-		}
+		super.start();
+
 		LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
-		connection = mqtt.futureConnection();
-		try {
-			Future<Void> future = connection.connect();
-			future.await(DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
-		} catch (Exception e) {
-			throw new SiteWhereException("Unable to connect to MQTT broker.", e);
-		}
+		connection = getConnection();
 		LOGGER.info("Connected to MQTT broker.");
 	}
 
@@ -110,6 +76,7 @@ public class MqttCommandDeliveryProvider extends TenantLifecycleComponent implem
 				LOGGER.error("Error shutting down MQTT device event receiver.", e);
 			}
 		}
+		super.stop();
 	}
 
 	/*
@@ -152,21 +119,5 @@ public class MqttCommandDeliveryProvider extends TenantLifecycleComponent implem
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to publish command to MQTT topic.", e);
 		}
-	}
-
-	public String getHostname() {
-		return hostname;
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 }

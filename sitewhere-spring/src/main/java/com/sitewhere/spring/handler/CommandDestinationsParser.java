@@ -134,6 +134,11 @@ public class CommandDestinationsParser {
 		BeanDefinitionBuilder mqtt =
 				BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDeliveryProvider.class);
 
+		Attr protocol = element.getAttributeNode("protocol");
+		if (protocol != null) {
+			mqtt.addPropertyValue("protocol", protocol.getValue());
+		}
+
 		Attr hostname = element.getAttributeNode("hostname");
 		if (hostname == null) {
 			throw new RuntimeException("MQTT hostname attribute not provided.");
@@ -145,6 +150,16 @@ public class CommandDestinationsParser {
 			throw new RuntimeException("MQTT port attribute not provided.");
 		}
 		mqtt.addPropertyValue("port", port.getValue());
+
+		Attr trustStorePath = element.getAttributeNode("trustStorePath");
+		if (trustStorePath != null) {
+			mqtt.addPropertyValue("trustStorePath", trustStorePath.getValue());
+		}
+
+		Attr trustStorePassword = element.getAttributeNode("trustStorePassword");
+		if (trustStorePassword != null) {
+			mqtt.addPropertyValue("trustStorePassword", trustStorePassword.getValue());
+		}
 
 		return mqtt.getBeanDefinition();
 	}

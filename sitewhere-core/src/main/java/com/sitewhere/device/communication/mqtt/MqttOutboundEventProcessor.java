@@ -7,7 +7,6 @@
  */
 package com.sitewhere.device.communication.mqtt;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -40,25 +39,24 @@ import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
  * @author Derek
  */
 public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor implements
-		IMulticastingOutboundEventProcessor<String> {
+		IMulticastingOutboundEventProcessor<String>, IMqttComponent {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttOutboundEventProcessor.class);
 
-	/** Default hostname if not set via Spring */
-	public static final String DEFAULT_HOSTNAME = "localhost";
-
-	/** Default port if not set from Spring */
-	public static final int DEFAULT_PORT = 1883;
-
-	/** Default connection timeout in seconds */
-	public static final long DEFAULT_CONNECT_TIMEOUT_SECS = 5;
+	private String protocol = MqttLifecycleComponent.DEFAULT_PROTOCOL;
 
 	/** Host name */
-	private String hostname = DEFAULT_HOSTNAME;
+	private String hostname = MqttLifecycleComponent.DEFAULT_HOSTNAME;
 
 	/** Port */
-	private int port = DEFAULT_PORT;
+	private int port = MqttLifecycleComponent.DEFAULT_PORT;
+
+	/** TrustStore path */
+	private String trustStorePath;
+
+	/** TrustStore password */
+	private String trustStorePassword;
 
 	/** Topic events are posted to */
 	private String topic;
@@ -94,17 +92,14 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 			startNestedComponent(multicaster, true);
 		}
 
-		this.mqtt = new MQTT();
-		try {
-			mqtt.setHost(getHostname(), getPort());
-		} catch (URISyntaxException e) {
-			throw new SiteWhereException("Invalid hostname for MQTT broker.", e);
-		}
+		// Use common MQTT configuration setup.
+		this.mqtt = MqttLifecycleComponent.configure(this);
+
 		LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
 		connection = mqtt.futureConnection();
 		try {
 			Future<Void> future = connection.connect();
-			future.await(DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
+			future.await(MqttLifecycleComponent.DEFAULT_CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to connect to MQTT broker.", e);
 		}
@@ -259,6 +254,24 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 		this.routeBuilder = routeBuilder;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getProtocol()
+	 */
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getHostname()
+	 */
 	public String getHostname() {
 		return hostname;
 	}
@@ -267,12 +280,43 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 		this.hostname = hostname;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPort()
+	 */
 	public int getPort() {
 		return port;
 	}
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePath()
+	 */
+	public String getTrustStorePath() {
+		return trustStorePath;
+	}
+
+	public void setTrustStorePath(String trustStorePath) {
+		this.trustStorePath = trustStorePath;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getTrustStorePassword()
+	 */
+	public String getTrustStorePassword() {
+		return trustStorePassword;
+	}
+
+	public void setTrustStorePassword(String trustStorePassword) {
+		this.trustStorePassword = trustStorePassword;
 	}
 
 	public String getTopic() {

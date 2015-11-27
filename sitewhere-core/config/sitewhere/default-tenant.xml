@@ -151,7 +151,8 @@
 
 				<!-- Delivers commands via MQTT -->
 				<sw:mqtt-command-destination destinationId="default"
-					hostname="localhost" port="1883">
+					protocol="tls" hostname="localhost" port="8883" trustStorePath="/path/to/truststore.jks"
+					trustStorePassword="password">
 					<sw:protobuf-command-encoder/>
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
 						systemTopicExpr="SiteWhere/system/%s"/>
