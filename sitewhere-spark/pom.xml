@@ -20,20 +20,20 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.sitewhere</groupId>
-			<artifactId>sitewhere-core</artifactId>
+			<artifactId>sitewhere-core-api</artifactId>
 			<version>${sitewhere.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-client</artifactId>
+			<version>${hazelcast.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-streaming_2.10</artifactId>
 			<version>1.5.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast-client</artifactId>
-			<version>${hazelcast.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
