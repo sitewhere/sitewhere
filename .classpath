@@ -21,6 +21,7 @@
 	<classpathentry kind="src" path="sitewhere-server-api/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-siddhi/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-solr/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-spark/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-spring/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-twilio/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-web/src/main/java"/>
@@ -107,5 +108,9 @@
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-query_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.agent.thrift/4.2.0/org.wso2.carbon.databridge.agent.thrift-4.2.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.commons/4.2.0/org.wso2.carbon.databridge.commons-4.2.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-streaming_2.10/1.5.2/spark-streaming_2.10-1.5.2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-core_2.10/1.5.2/spark-core_2.10-1.5.2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast-client/3.5.3/hazelcast-client-3.5.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -14,65 +14,34 @@
 	<packaging>pom</packaging>
 	<version>1.4.0</version>
 	<name>SiteWhere</name>
-	<description>SiteWhere Open Source Framework for the Internet of Things</description>
+	<description>SiteWhere: The Open Platform for the Internet of Things</description>
 	<url>http://www.sitewhere.com/</url>
 
-	<profiles>
-		<profile>
-			<id>nodocs</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>sitewhere-activemq</module>
-				<module>sitewhere-azure</module>
-				<module>sitewhere-client</module>
-				<module>sitewhere-cloud</module>
-				<module>sitewhere-core</module>
-				<module>sitewhere-core-api</module>
-				<module>sitewhere-ehcache</module>
-				<module>sitewhere-hbase</module>
-				<module>sitewhere-gnuhealth</module>
-				<module>sitewhere-groovy</module>
-				<module>sitewhere-magento</module>
-				<module>sitewhere-mongodb</module>
-				<module>sitewhere-protobuf</module>
-				<module>sitewhere-server-api</module>
-				<module>sitewhere-siddhi</module>
-				<module>sitewhere-solr</module>
-				<module>sitewhere-spring</module>
-				<module>sitewhere-twilio</module>
-				<module>sitewhere-web</module>
-				<module>sitewhere-wso2</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>withdocs</id>
-			<modules>
-				<module>sitewhere-activemq</module>
-				<module>sitewhere-azure</module>
-				<module>sitewhere-client</module>
-				<module>sitewhere-cloud</module>
-				<module>sitewhere-core</module>
-				<module>sitewhere-core-api</module>
-				<module>sitewhere-ehcache</module>
-				<module>sitewhere-hbase</module>
-				<module>sitewhere-gnuhealth</module>
-				<module>sitewhere-groovy</module>
-				<module>sitewhere-magento</module>
-				<module>sitewhere-mongodb</module>
-				<module>sitewhere-protobuf</module>
-				<module>sitewhere-server-api</module>
-				<module>sitewhere-siddhi</module>
-				<module>sitewhere-solr</module>
-				<module>sitewhere-spring</module>
-				<module>sitewhere-twilio</module>
-				<module>sitewhere-documentation</module>
-				<module>sitewhere-web</module>
-				<module>sitewhere-wso2</module>
-			</modules>
-		</profile>
+	<modules>
+		<module>sitewhere-activemq</module>
+		<module>sitewhere-azure</module>
+		<module>sitewhere-client</module>
+		<module>sitewhere-cloud</module>
+		<module>sitewhere-core</module>
+		<module>sitewhere-core-api</module>
+		<module>sitewhere-ehcache</module>
+		<module>sitewhere-hbase</module>
+		<module>sitewhere-gnuhealth</module>
+		<module>sitewhere-groovy</module>
+		<module>sitewhere-magento</module>
+		<module>sitewhere-mongodb</module>
+		<module>sitewhere-protobuf</module>
+		<module>sitewhere-server-api</module>
+		<module>sitewhere-siddhi</module>
+		<module>sitewhere-solr</module>
+		<module>sitewhere-spark</module>
+		<module>sitewhere-spring</module>
+		<module>sitewhere-twilio</module>
+		<module>sitewhere-web</module>
+		<module>sitewhere-wso2</module>
+	</modules>
 
+	<profiles>
 		<profile>
 			<id>release</id>
 			<build>
