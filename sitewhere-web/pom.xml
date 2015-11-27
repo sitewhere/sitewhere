@@ -290,6 +290,7 @@
 						<resource>
 							<directory>${project.build.directory}/systemlib</directory>
 							<includes>
+								<include>qpid-amqp*.jar</include>
 								<include>**/siddhi*.jar</include>
 							</includes>
 							<targetPath>WEB-INF/lib</targetPath>
