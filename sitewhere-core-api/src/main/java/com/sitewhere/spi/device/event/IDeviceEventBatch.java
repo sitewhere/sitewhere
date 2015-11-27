@@ -28,13 +28,6 @@ public interface IDeviceEventBatch {
 	public String getHardwareId();
 
 	/**
-	 * Get information about where responses for this batch should be sent.
-	 * 
-	 * @return
-	 */
-	public String getReplyTo();
-
-	/**
 	 * Get a list of device measurements create requests.
 	 * 
 	 * @return

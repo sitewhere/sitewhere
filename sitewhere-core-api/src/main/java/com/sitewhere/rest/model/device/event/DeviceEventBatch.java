@@ -30,13 +30,10 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 public class DeviceEventBatch implements IDeviceEventBatch, Serializable {
 
 	/** Serialization version identifier */
-	private static final long serialVersionUID = 2155872474513987030L;
+	private static final long serialVersionUID = -6779882564394545114L;
 
 	/** Device hardware id */
 	private String hardwareId;
-
-	/** Contains information about sending responses */
-	private String replyTo;
 
 	/** List of measurements requests */
 	private List<DeviceMeasurementsCreateRequest> measurements =
@@ -59,19 +56,6 @@ public class DeviceEventBatch implements IDeviceEventBatch, Serializable {
 
 	public void setHardwareId(String hardwareId) {
 		this.hardwareId = hardwareId;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceEventBatch#getReplyTo()
-	 */
-	public String getReplyTo() {
-		return replyTo;
-	}
-
-	public void setReplyTo(String replyTo) {
-		this.replyTo = replyTo;
 	}
 
 	/*
