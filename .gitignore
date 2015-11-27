@@ -18,6 +18,7 @@
 /sitewhere-server-api/target
 /sitewhere-siddhi/target
 /sitewhere-solr/target
+/sitewhere-spark/target
 /sitewhere-spring/target
 /sitewhere-twilio/target
 /sitewhere-web/target
