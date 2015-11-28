@@ -9,6 +9,8 @@ package com.sitewhere.spark;
 
 import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.receiver.Receiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -32,6 +34,9 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
 
 	/** Serial version UID */
 	private static final long serialVersionUID = 5103117471275649264L;
+
+	/** Static logger instance */
+	private static final Logger LOGGER = LoggerFactory.getLogger(SiteWhereReceiver.class);
 
 	/** Number of milliseconds to wait for Hazelcast to connect */
 	private static final int HAZELCAST_CONNECTION_TIMEOUT = 10000;
@@ -86,20 +91,24 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
 			clientConfig.getNetworkConfig().setSmartRouting(true);
 
 			this.hazelcast = HazelcastClient.newHazelcastClient(clientConfig);
+			LOGGER.info("Connected to SiteWhere via Hazelcast on: " + getHazelcastAddress());
 
 			// Subscribe to measurements and process them.
 			this.measurements = hazelcast.getTopic(ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
 			measurements.addMessageListener(new MeasurementsEventListener());
+			LOGGER.info("Listening for measurements on: " + ISiteWhereHazelcast.TOPIC_MEASUREMENTS_ADDED);
 
 			// Subscribe to locations and process them.
 			this.locations = hazelcast.getTopic(ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
 			locations.addMessageListener(new LocationsEventListener());
+			LOGGER.info("Listening for locations on: " + ISiteWhereHazelcast.TOPIC_LOCATION_ADDED);
 
 			// Subscribe to alerts and process them.
 			this.alerts = hazelcast.getTopic(ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
 			alerts.addMessageListener(new AlertsEventListener());
+			LOGGER.info("Listening for alerts on: " + ISiteWhereHazelcast.TOPIC_ALERT_ADDED);
 		} catch (Exception e) {
-			reportError("Unable to start SiteWhere receiver.", e);
+			stop("Unable to start SiteWhere receiver.", e);
 		}
 	}
 
@@ -132,6 +141,7 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
 			try {
 				DeviceMeasurements mx = message.getMessageObject();
 				SiteWhereReceiver.this.store(mx);
+				LOGGER.debug("Stored a measurements event.");
 			} catch (Exception e) {
 				SiteWhereReceiver.this.reportError("Error receiving SiteWhere measurements.", e);
 			}
@@ -155,6 +165,7 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
 			try {
 				DeviceLocation location = message.getMessageObject();
 				SiteWhereReceiver.this.store(location);
+				LOGGER.debug("Stored a location event.");
 			} catch (Exception e) {
 				SiteWhereReceiver.this.reportError("Error receiving SiteWhere location.", e);
 			}
@@ -178,6 +189,7 @@ public class SiteWhereReceiver extends Receiver<IDeviceEvent> {
 			try {
 				DeviceAlert alert = message.getMessageObject();
 				SiteWhereReceiver.this.store(alert);
+				LOGGER.debug("Stored an alert event.");
 			} catch (Exception e) {
 				SiteWhereReceiver.this.reportError("Error receiving SiteWhere alert.", e);
 			}
