@@ -151,12 +151,22 @@
 
 				<!-- Delivers commands via MQTT -->
 				<sw:mqtt-command-destination destinationId="default"
+					hostname="localhost" port="1883">
+					<sw:protobuf-command-encoder/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
+				
+				<!-- Delivers commands via MQTT -->
+				<!--  
+				<sw:mqtt-command-destination destinationId="default"
 					protocol="tls" hostname="localhost" port="8883" trustStorePath="/path/to/truststore.jks"
 					trustStorePassword="password">
 					<sw:protobuf-command-encoder/>
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>
+				-->
 
 				<!-- Used for devices that expect hybrid protobuf/Java invocations -->
 				<sw:mqtt-command-destination destinationId="hybrid"
@@ -203,17 +213,15 @@
 			<!-- Routes commands for outbound processing -->
 			<sw:command-delivery-event-processor/>
 			
+			<!-- Send outbound device events over Hazelcast -->
+			<sw:hazelcast-event-processor/>
+			
 			<!-- Performs zone checking for locations -->
 			<!-- 
 			<sw:zone-test-event-processor>
 				<sw:zone-test zoneToken="777fa4e5-bc2f-458b-9968-b598b2e2d2ca" condition="outside"
 					alertLevel="error" alertType="off.site" alertMessage="Asset has left the worksite."/>
 			</sw:zone-test-event-processor>
-			 -->
-			
-			<!-- Send outbound device events over Hazelcast -->
-			<!-- 
-			<sw:hazelcast-event-processor/>
 			 -->
 
 			<!-- Send matching events to the given MQTT topic -->
