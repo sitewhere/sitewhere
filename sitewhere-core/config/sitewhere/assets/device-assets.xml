@@ -116,4 +116,16 @@
 		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/laipac/laipac-s-911bl.png</image-url>
 		<property name="manufacturer" value="Laipac"/>
 	</hardware-asset>
+	
+	<!-- Apple iOS -->
+	<hardware-asset id="400" name="Apple iPhone" sku="AAPL-IPHONE6S" device="true">
+		<description>The only thing that's changed is everything. The moment you use iPhone 6s, you know you've never felt anything like it. With just a single press, 3D Touch lets you do more than ever. Live Photos brings your memories to life in a powerfully vivid way. And that's just the beginning. Take a deeper look at iPhone 6s, and you'll find innovation on every level.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/iphone6.jpg</image-url>
+		<property name="manufacturer" value="Apple"/>
+	</hardware-asset>
+	<hardware-asset id="405" name="Apple iPad" sku="AAPL-IPAD" device="true">
+		<description>Even with its 12.9-inch Retina display, the largest and most capable iPad ever is only 6.9mm thin and weighs just 1.57 lbs. It has a powerful A9X chip with 64-bit desktop-class architecture, four speaker audio, advanced iSight and FaceTime HD cameras, Wi-Fi and LTE connectivity, iCloud, the breakthrough Touch ID fingerprint sensor, and up to 10 hours of battery life.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/ipad.jpg</image-url>
+		<property name="manufacturer" value="Apple"/>
+	</hardware-asset>
 </hardware-assets>

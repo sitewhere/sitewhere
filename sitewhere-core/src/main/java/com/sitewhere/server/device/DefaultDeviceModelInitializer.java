@@ -117,7 +117,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final int NUM_DEVICE_GROUPS = 3;
 
 	/** Number of devices/assignments to create */
-	public static final int ASSIGNMENTS_PER_SITE = 40;
+	public static final int ASSIGNMENTS_PER_SITE = 50;
 
 	/** Number of events per assignment */
 	public static final int EVENTS_PER_ASSIGNMENT = 75;
@@ -162,6 +162,12 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Specification token for Laipac S-911 BL */
 	public static final String LAIPAC_S911_SPEC_TOKEN = "fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910";
 
+	/** Specification token for Apple iPhone */
+	public static final String IPHONE_SPEC_TOKEN = "9f2426bd-46de-49d6-833e-385784a9dc1a";
+
+	/** Specification token for Apple iPad */
+	public static final String IPAD_SPEC_TOKEN = "cfe831ea-20ca-47f6-b0d7-809d26e45b5b";
+
 	/** Specification token for MeiTrack device */
 	public static final String MEITRACK_SPEC_TOKEN = "82043707-9e3d-441f-bdcc-33cf0f4f7260";
 
@@ -201,7 +207,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 							"75126a52-0607-4cca-b995-df40e73a707b", TOOLS),
 					new SpecificationDetails("190", "openHAB", OPENHAB_SPEC_TOKEN, TOOLS),
 					new SpecificationDetails("300", "Laipac Health Bracelet", LAIPAC_S911_SPEC_TOKEN,
-							PERSONNEL) };
+							PERSONNEL),
+					new SpecificationDetails("400", "Apple iPhone", IPHONE_SPEC_TOKEN, PERSONNEL),
+					new SpecificationDetails("405", "Apple iPad", IPAD_SPEC_TOKEN, PERSONNEL) };
 
 	/** Available device specifications */
 	protected IDeviceSpecification[] deviceSpecifications;
