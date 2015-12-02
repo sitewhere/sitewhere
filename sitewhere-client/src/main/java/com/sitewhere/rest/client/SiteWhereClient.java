@@ -102,7 +102,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	public static final int DEFAULT_CONNECT_TIMEOUT = 3 * 1000;
 
 	/** Indicates whether to write debug information to the console */
-	public static final boolean DEBUG_ENABLED = true;
+	public static final boolean DEBUG_ENABLED = false;
 
 	/** Use CXF web client to send requests */
 	private RestTemplate client;
