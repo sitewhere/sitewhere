@@ -46,7 +46,6 @@
 	<classpathentry exported="true" kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/net/sf/ehcache/ehcache/2.8.1/ehcache-2.8.1.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/apache/solr/solr-core/4.6.0/solr-core-4.6.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast/3.1.5/hazelcast-3.1.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/twilio/sdk/twilio-java-sdk/3.4.5/twilio-java-sdk-3.4.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpcore/4.3/httpcore-4.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/mangofactory/swagger-springmvc/0.9.0/swagger-springmvc-0.9.0.jar"/>
@@ -83,11 +82,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-core/3.0.2/cxf-core-3.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-tx/3.2.10.RELEASE/spring-tx-3.2.10.RELEASE.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-rt-frontend-simple/3.0.2/cxf-rt-frontend-simple-3.0.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/zalando/maven/plugins/swagger-codegen-maven-plugin/0.4.1/swagger-codegen-maven-plugin-0.4.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-codegen/2.1.2-M1/swagger-codegen-2.1.2-M1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/wordnik/swagger-models/1.5.2-M1/swagger-models-1.5.2-M1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/zalando/stups/swagger-codegen-common/0.4.1/swagger-codegen-common-0.4.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/io/swagger/swagger-parser/1.0.1/swagger-parser-1.0.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtdispatch/hawtdispatch/1.19/hawtdispatch-1.19.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/fusesource/hawtdispatch/hawtdispatch-transport/1.19/hawtdispatch-transport-1.19.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/cxf-rt-transports-http/3.0.2/cxf-rt-transports-http-3.0.2.jar"/>
@@ -106,11 +100,12 @@
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-api_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-core_2.1.0.wso2v1.jar"/>
 	<classpathentry kind="lib" path="sitewhere-siddhi/lib/siddhi-query_2.1.0.wso2v1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.agent.thrift/4.2.0/org.wso2.carbon.databridge.agent.thrift-4.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.commons/4.2.0/org.wso2.carbon.databridge.commons-4.2.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-streaming_2.10/1.5.2/spark-streaming_2.10-1.5.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/scala-lang/scala-library/2.10.4/scala-library-2.10.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/spark/spark-core_2.10/1.5.2/spark-core_2.10-1.5.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast-client/3.5.3/hazelcast-client-3.5.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast/3.5.3/hazelcast-3.5.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.agent.thrift/4.2.3/org.wso2.carbon.databridge.agent.thrift-4.2.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.commons/4.2.3/org.wso2.carbon.databridge.commons-4.2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
