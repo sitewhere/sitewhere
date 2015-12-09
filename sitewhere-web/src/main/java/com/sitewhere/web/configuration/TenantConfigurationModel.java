@@ -23,6 +23,7 @@ import com.sitewhere.web.configuration.model.ElementRole;
 public class TenantConfigurationModel extends ConfigurationModel {
 
 	public TenantConfigurationModel() {
+		setLocalName("tenant-configuration");
 		setName("Tenant Configuration");
 		setDescription("Provides a model for all aspects of tenant configuration.");
 		getElements().add(createDatastoreContainer());

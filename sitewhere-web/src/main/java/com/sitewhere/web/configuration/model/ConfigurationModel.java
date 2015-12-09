@@ -12,5 +12,5 @@ package com.sitewhere.web.configuration.model;
  * 
  * @author Derek
  */
-public class ConfigurationModel extends ContainerNode {
+public class ConfigurationModel extends ElementNode {
 }

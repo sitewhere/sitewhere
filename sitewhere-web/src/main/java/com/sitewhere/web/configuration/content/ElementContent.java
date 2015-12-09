@@ -8,6 +8,7 @@
 package com.sitewhere.web.configuration.content;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -20,11 +21,22 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class ElementContent extends XmlContent {
 
+	/** Create a random UUID for the element */
+	private String id = UUID.randomUUID().toString();
+
 	/** List of children for this element */
 	private List<ElementContent> children;
 
 	/** List of attributes for this element */
 	private List<AttributeContent> attributes;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public List<ElementContent> getChildren() {
 		return children;

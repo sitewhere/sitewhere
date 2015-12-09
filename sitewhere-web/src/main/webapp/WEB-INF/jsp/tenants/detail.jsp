@@ -2,6 +2,7 @@
 <c:set var="sitewhere_title" value="View Tenant" />
 <c:set var="sitewhere_section" value="tenants" />
 <c:set var="use_highlight" value="true" />
+<c:set var="use_bxslider" value="true" />
 <%@ include file="../includes/top.inc"%>
 
 <!-- Title Bar -->
@@ -19,15 +20,11 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Engine Details<font data-i18n="tenants.detail.EngineDetails"></font></li>
-		<li>Visual Configuration<font data-i18n="tenants.detail.VisualConfiguration"></font></li>
-		<li>XML Configuration<font data-i18n="tenants.detail.XmlConfiguration"></font></li>
+		<li class="k-state-active"><font data-i18n="tenants.detail.EngineDetails"></font></li>
+		<li><font data-i18n="tenants.detail.XmlConfiguration"></font></li>
 	</ul>
 	<div>
 		<div id="detail-content"></div>
-	</div>
-	<div>
-		<div id="visual-config"></div>
 	</div>
 	<div>
 		<div style="max-height: 500px; overflow-y: scroll;">
@@ -41,6 +38,7 @@
 <form id="view-tenant-list" method="get"></form>
 
 <%@ include file="tenantCreateDialog.inc"%>
+<%@ include file="tenantConfigEditorDialog.inc"%>
 <%@ include file="tenantEntry.inc"%>
 
 <!-- Details panel shown for a started engine -->
@@ -72,7 +70,10 @@
 	var configModel = <c:out value="${configModel}" escapeXml="false"/>;
 
 	/** Tenant configuration */
-	var config = <c:out value="${config}" escapeXml="false"/>;
+	var config;
+
+	/** Slider for configuration editor */
+	var slider;
 
 	/** Tenant information */
 	var tenant;
@@ -101,6 +102,15 @@
 	/** Handle failed delete call */
 	function onDeleteFail(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to delete tenant.");
+	}
+	
+	/** Called when config button is clicked */
+	function onConfigClicked() {
+		tveOpen(tenantId, onConfigSuccess);
+	}
+
+	/** Called on successful config */
+	function onConfigSuccess() {
 	}
 
 	/** Called when edit button is clicked */
@@ -140,6 +150,12 @@
 	}
 
 	$(document).ready(function() {
+
+		/** Initialize visual configuration slider */
+		slider = $('.bxslider').bxSlider({
+			mode : 'horizontal'
+		});
+
 		/** Handle refresh button */
 		$('#btn-refresh-tenant').click(function(event) {
 			loadTenant();
@@ -176,7 +192,6 @@
 				template = kendo.template($("#tpl-engine-started").html());
 				$('#detail-content').html(template(data));
 				loadEngineHierarchy(data);
-				loadEngineConfiguration();
 			} else if (data.engineState.lifecycleStatus == 'Stopped') {
 				$('#tenant-power-off').hide();
 				$('#tenant-power-on').show();
@@ -192,6 +207,7 @@
 				template = kendo.template($("#tpl-engine-not-running").html());
 				$('#detail-content').html(template(data));
 			}
+			loadEngineConfiguration();
 		} else {
 			$('#tenant-power-off').hide();
 			$('#tenant-power-on').show();

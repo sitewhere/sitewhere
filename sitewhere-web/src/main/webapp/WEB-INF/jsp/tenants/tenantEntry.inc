@@ -98,6 +98,9 @@
 		<div class="sw-tenant-list-entry-logowrapper" style="background-image: url(#:logoUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 		</div>
 		<div class="sw-tenant-list-entry-actions">
+			<a id="tenant-configure" class="btn btn-large" title="Configure Tenant Engine" style="color: \\#009; font-size: 25px;" href="javascript:void(0)" onclick="onConfigClicked()">
+				<i class="fa fa-gear fa-white"></i>
+			</a>
 # if (!data.inDetailView) { #
 			<a class="btn btn-large sw-action-glyph sw-primary-glyph" title="View Tenant" style="color: \\#090; font-size: 25px;" href="javascript:void(0)" onclick="onTenantOpenClicked(event, '#:id#')">
 				<i class="fa fa-chevron-right fa-white"></i>

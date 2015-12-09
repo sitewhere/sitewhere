@@ -40,6 +40,8 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.configuration.ConfigurationContentParser;
+import com.sitewhere.web.configuration.content.ElementContent;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
@@ -185,6 +187,30 @@ public class TenantsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 		try {
 			return TenantUtils.getTenantConfiguration(tenantId);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get the current configuration for a tenant engine formatted as JSON.
+	 * 
+	 * @param tenantId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{tenantId}/engine/configuration/json", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get tenant engine configuration as JSON")
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
+	@Documented
+	public ElementContent getTenantEngineConfigurationAsJson(
+			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
+		try {
+			String config = TenantUtils.getTenantConfiguration(tenantId);
+			return ConfigurationContentParser.parse(config);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

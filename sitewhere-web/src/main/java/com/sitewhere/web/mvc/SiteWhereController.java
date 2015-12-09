@@ -26,7 +26,6 @@ import com.sitewhere.Tracer;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.security.LoginManager;
-import com.sitewhere.server.tenant.TenantUtils;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -45,8 +44,6 @@ import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.version.VersionHelper;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
-import com.sitewhere.web.configuration.ConfigurationContentParser;
-import com.sitewhere.web.configuration.content.ElementContent;
 
 /**
  * Spring MVC controller for SiteWhere web application.
@@ -692,12 +689,6 @@ public class SiteWhereController extends MvcController {
 				showError("Invalid tenant id.");
 			}
 			data.put("selected", tenant);
-
-			// Pass JSON representation of configuration content.
-			String strConfig = TenantUtils.getTenantConfiguration(tenantId);
-			ElementContent elmConfig = ConfigurationContentParser.parse(strConfig);
-			String config = MarshalUtils.marshalJsonAsString(elmConfig);
-			data.put("config", config);
 
 			return new ModelAndView("tenants/detail", data);
 		} catch (NoTenantException e) {
