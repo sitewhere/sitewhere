@@ -19,11 +19,15 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">Engine Details<font data-i18n="tenant.detail.EngineDetails"></font></li>
-		<li>Engine Configuration<font data-i18n="tenant.detail.EngineConfiguration"></font></li>
+		<li class="k-state-active">Engine Details<font data-i18n="tenants.detail.EngineDetails"></font></li>
+		<li>Visual Configuration<font data-i18n="tenants.detail.VisualConfiguration"></font></li>
+		<li>XML Configuration<font data-i18n="tenants.detail.XmlConfiguration"></font></li>
 	</ul>
 	<div>
 		<div id="detail-content"></div>
+	</div>
+	<div>
+		<div id="visual-config"></div>
 	</div>
 	<div>
 		<div style="max-height: 500px; overflow-y: scroll;">
@@ -61,7 +65,14 @@
 </script>
 
 <script>
+	/** Selected tenant id */
 	var tenantId = '<c:out value="${selected.id}"/>';
+
+	/** Tenant configuration model */
+	var configModel = <c:out value="${configModel}" escapeXml="false"/>;
+
+	/** Tenant configuration */
+	var config = <c:out value="${config}" escapeXml="false"/>;
 
 	/** Tenant information */
 	var tenant;

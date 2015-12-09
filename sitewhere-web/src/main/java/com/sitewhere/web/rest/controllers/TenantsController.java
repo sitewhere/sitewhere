@@ -29,6 +29,7 @@ import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.security.LoginManager;
+import com.sitewhere.server.tenant.TenantUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.command.ICommandResponse;
@@ -37,7 +38,6 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
-import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
@@ -184,12 +184,7 @@ public class TenantsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 		try {
-			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
-			if (engine == null) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
-			}
-			IVersion version = SiteWhere.getServer().getVersion();
-			return engine.getConfigurationResolver().getTenantConfiguration(engine.getTenant(), version);
+			return TenantUtils.getTenantConfiguration(tenantId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
