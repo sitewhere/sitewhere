@@ -22,7 +22,6 @@ docker run -p 80:8080 -p 61623:61623 sitewhere/standalone:1.4.0
 The image will start HiveMQ, wait for MongoDB to become available, then will start
 the SiteWhere instance. The instance is configured to load sample data
 automatically.
-```
 
 ## Open the Administrative Application
 Once SiteWhere has started, navigate to the following URL to open the
