@@ -72,9 +72,6 @@
 	/** Tenant configuration */
 	var config;
 
-	/** Slider for configuration editor */
-	var slider;
-
 	/** Tenant information */
 	var tenant;
 
@@ -150,11 +147,6 @@
 	}
 
 	$(document).ready(function() {
-
-		/** Initialize visual configuration slider */
-		slider = $('.bxslider').bxSlider({
-			mode : 'horizontal'
-		});
 
 		/** Handle refresh button */
 		$('#btn-refresh-tenant').click(function(event) {

@@ -43,10 +43,6 @@
 <c:if test="${use_js_cookie == true}">
 	<script src="${pageContext.request.contextPath}/scripts/js.cookie.js"></script>
 </c:if>
-<c:if test="${use_bxslider == true}">
-	<script src="${pageContext.request.contextPath}/scripts/jquery.bxslider.min.js"></script>
-	<link href="${pageContext.request.contextPath}/css/jquery.bxslider.css" rel="stylesheet" />
-</c:if>
 <%@ include file="i18next.inc"%>
 </head>
 <body class="sw-body">
