@@ -16,7 +16,7 @@ After downloading the dependencies, an image will be created in your
 local repository. To run the image from the command line execute:
 
 ```
-docker run -p 80:8080 -p 61623:61623 sitewhere/standalone:1.4.0
+docker run -p 80:8080 -p 1883:1883 -p 61623:61623 sitewhere/standalone:1.4.0
 ```
 
 The image will start HiveMQ, wait for MongoDB to become available, then will start
