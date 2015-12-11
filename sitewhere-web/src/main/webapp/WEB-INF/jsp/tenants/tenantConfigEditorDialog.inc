@@ -63,17 +63,22 @@ div.bx-wrapper {
 
 	/** Add new panel for a given element */
 	function addPanelFor(configNode, modelNode) {
-		var panel =
-				"<div class='item active'><h1>" + modelNode.name + "</h1>" + modelNode.description + "</div>";
-		var context = {
-			"config" : configNode,
-			"model" : modelNode,
-			"panel" : panel
-		};
-		contexts.push(context);
+		var panel = "<div class='item active'>";
+		panel += "<h1>" + modelNode.name + "</h1>";
+		panel += "<h2>" + modelNode.description + "</h2>";
 
-		panel = "<div class='item'>THIS IS THE SECOND ONE!!!!</div>";
-		context = {
+		// If model node has attributes, add form.
+		if (modelNode.attributes) {
+			panel += addAttributesForm(configNode, modelNode);
+		}
+
+		/** If model node has children, add navigation */
+		if (modelNode.elements) {
+			panel += addChildElements(configNode, modelNode);
+		}
+
+		panel += "</div>";
+		var context = {
 			"config" : configNode,
 			"model" : modelNode,
 			"panel" : panel
@@ -85,6 +90,26 @@ div.bx-wrapper {
 			allPanels += contexts[i].panel;
 		}
 		$('#tve-config-pages').html(allPanels);
+	}
+
+	/** Add attributes form for panel */
+	function addAttributesForm(configNode, modelNode) {
+		var section = "";
+		for (var i = 0; i < modelNode.attributes.length; i++) {
+			var attr = modelNode.attributes[i];
+			section += "<div><h3>" + attr.name + " : " + attr.type + "</h3></div>";
+		}
+		return section;
+	}
+
+	/** Add child element navigation for panel */
+	function addChildElements(configNode, modelNode) {
+		var section = "";
+		for (var i = 0; i < modelNode.elements.length; i++) {
+			var child = modelNode.elements[i];
+			section += "<div><h1>" + child.name + "</h1></div>"
+		}
+		return section;
 	}
 
 	/** Find closest element with the given localName */
