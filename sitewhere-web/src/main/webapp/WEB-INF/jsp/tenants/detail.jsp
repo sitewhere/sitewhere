@@ -6,15 +6,6 @@
 <%@ include file="../includes/top.inc"%>
 
 <style>
-div.bx-wrapper {
-	margin: 25px 20px;
-}
-
-#tve-config-editor div.bx-viewport {
-	box-shadow: none;
-	background-color: #eee;
-}
-
 div.wz-header {
 	border: 1px solid #aaa;
 	background-color: #eee;
@@ -81,6 +72,10 @@ div.wz-divider {
 	margin-top: 10px;
 	border-top: 1px solid #eee;
 }
+
+div.wz-button-bar {
+	padding: 7px 0px;
+}
 </style>
 
 <!-- Title Bar -->
@@ -104,14 +99,17 @@ div.wz-divider {
 	<div>
 		<div>
 			<div>
-				<div id="tve-config-editor" class="carousel slide" data-interval="false">
-					<div id="tve-config-pages" class="carousel-inner" role="listbox"></div>
+				<div id="tve-config-editor">
+					<div id="tve-config-page"></div>
 				</div>
 			</div>
 		</div>
-		<div>
-			<a id="tve-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
-				data-i18n="tenant.editor.stage">Stage Updates</a>
+		<div class="wz-button-bar">
+			<div style="float: right;">
+				<a id="tve-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+					data-i18n="tenant.editor.stage">Stage Updates</a>
+			</div>
+			<div style="clear: both;"></div>
 		</div>
 	</div>
 	<div>
@@ -246,8 +244,8 @@ div.wz-divider {
 	}
 
 	/** Add new panel for a given element */
-	function addPanelFor(configNode, modelNode, active) {
-		var panel = "<div class='item" + (active ? " active" : "") + "'>";
+	function addPanelFor(configNode, modelNode) {
+		var panel = "<div>";
 		panel += "<div class='wz-header'>";
 		panel += "<i class='wz-header-icon fa fa-" + modelNode.icon + " fa-white'></i>";
 		panel += "<h1>" + modelNode.name + "</h1>";
@@ -280,11 +278,7 @@ div.wz-divider {
 		};
 		editorContexts.push(context);
 
-		var allPanels = "";
-		for (var i = 0; i < editorContexts.length; i++) {
-			allPanels += editorContexts[i].panel;
-		}
-		$('#tve-config-pages').html(allPanels);
+		$('#tve-config-page').html(panel);
 	}
 
 	/** Add attributes form for panel */
@@ -329,8 +323,7 @@ div.wz-divider {
 		}
 		if (childModel) {
 			var childConfig = {};
-			addPanelFor(childConfig, childModel, false);
-			$("#tve-config-editor").carousel("next");
+			addPanelFor(childConfig, childModel);
 		}
 	}
 
@@ -383,11 +376,6 @@ div.wz-divider {
 		tabs = $("#tabs").kendoTabStrip({
 			animation : false,
 		}).data("kendoTabStrip");
-
-		/** Pause after slide animation */
-		$('#tve-config-editor').on('slid', function() {
-			$("#tve-config-editor").carousel("pause");
-		});
 
 		loadTenant();
 	});

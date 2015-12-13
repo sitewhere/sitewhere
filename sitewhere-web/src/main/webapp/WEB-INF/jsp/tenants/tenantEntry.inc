@@ -21,11 +21,9 @@
 }
 
 .sw-tenant-list-state-icon {
-	font-size: 35px;
+	font-size: 50px;
 	position: absolute;
-	padding: 18px 10px 0px 10px;
-	background-color: #efe;
-	border: 1px solid #393;
+	padding: 2px 7px;
 	width: 50px;
 	text-align: center;
 }
@@ -46,7 +44,7 @@
 	text-align: center;
 	vertical-align: middle;
 	display: inline-block;
-	left: 97px;
+	left: 92px;
 	position: absolute;
 	border: 1px solid #DDD;
 }
@@ -72,27 +70,26 @@
 
 <!-- Template for tenant row -->
 <script type="text/x-kendo-tmpl" id="tpl-tenant-entry">
-	<div class="sw-tenant-list-entry sw-list-entry gradient-bg">
 # if (!data.engineState) { #
-		<div class="sw-tenant-list-state-icon" style="background-color: \\#fee; border: 1px solid \\#933;">
+	<div class="sw-tenant-list-entry sw-list-entry" style="background-color: \\#fee; border: 1px solid \\#933;">
+		<div class="sw-tenant-list-state-icon">
 			<i class="fa fa-remove" title="Uninitialized" style="color: \\#c00;"></i>
-			<div class="sw-tenant-list-state-label" style="	background-color: \\#933; color: \\#fff;">Not Init</div>
 # } else if (data.engineState.lifecycleStatus == 'Started') { #
-		<div class="sw-tenant-list-state-icon" style="background-color: \\#efe; border: 1px solid \\#393;">
+	<div class="sw-tenant-list-entry sw-list-entry" style="background-color: \\#efe; border: 1px solid \\#393;">
+		<div class="sw-tenant-list-state-icon">
 			<i class="fa fa-check-square" title="Started" style="color: \\#090;"></i>
-			<div class="sw-tenant-list-state-label" style="	background-color: \\#393; color: \\#fff;">Started</div>
 # } else if (data.engineState.lifecycleStatus == 'Stopped') { #
-		<div class="sw-tenant-list-state-icon" style="background-color: \\#eee; border: 1px solid \\#999;">
+	<div class="sw-tenant-list-entry sw-list-entry" style="background-color: \\#eee; border: 1px solid \\#999;">
+		<div class="sw-tenant-list-state-icon">
 			<i class="fa fa-power-off" title="Stopped" style="color: \\#ccc;"></i>
-			<div class="sw-tenant-list-state-label" style="	background-color: \\#999; color: \\#fff;">Stopped</div>
 # } else if (data.engineState.lifecycleStatus == 'Error') { #
-		<div class="sw-tenant-list-state-icon" style="background-color: \\#fee; border: 1px solid \\#933;">
+	<div class="sw-tenant-list-entry sw-list-entry" style="background-color: \\#fee; border: 1px solid \\#933;">
+		<div class="sw-tenant-list-state-icon">
 			<i class="fa fa-warning-sign" title="Error" style="color: \\#c00;"></i>
-			<div class="sw-tenant-list-state-label" style="	background-color: \\#933; color: \\#fff;">Error</div>
 # } else { #
-		<div class="sw-tenant-list-state-icon" style="background-color: \\#fee; border: 1px solid \\#933;">
+	<div class="sw-tenant-list-entry sw-list-entry" style="background-color: \\#fee; border: 1px solid \\#933;">
+		<div class="sw-tenant-list-state-icon">
 			<i class="fa fa-time" title="In progress" style="color: \\#c00;"></i>
-			<div class="sw-tenant-list-state-label" style="	background-color: \\#933; color: \\#fff;">Unknown</div>
 # } #
 		</div>
 		<div class="sw-tenant-list-entry-logowrapper" style="background-image: url(#:logoUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
