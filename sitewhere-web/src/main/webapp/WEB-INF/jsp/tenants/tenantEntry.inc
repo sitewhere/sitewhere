@@ -103,9 +103,6 @@
 				<i class="fa fa-chevron-right fa-white"></i>
 			</a>
 # } else { #
-			<a id="tenant-configure" class="btn btn-large" title="Configure Tenant Engine" style="color: \\#009; font-size: 25px;" href="javascript:void(0)" onclick="onConfigClicked()">
-				<i class="fa fa-gear fa-white"></i>
-			</a>
 			<a id="tenant-edit" class="btn btn-large" title="Edit Tenant" style="color: \\#009; font-size: 25px;" href="javascript:void(0)" onclick="onEditClicked()">
 				<i class="fa fa-edit fa-white"></i>
 			</a>

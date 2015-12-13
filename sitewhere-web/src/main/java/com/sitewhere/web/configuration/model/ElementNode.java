@@ -63,10 +63,11 @@ public class ElementNode extends XmlNode {
 
 		private ElementNode element;
 
-		public Builder(String name, String localName, ElementRole role) {
+		public Builder(String name, String localName, String icon, ElementRole role) {
 			this.element = new ElementNode();
 			element.setName(name);
 			element.setLocalName(localName);
+			element.setIcon(icon);
 			element.setRole(role);
 		}
 

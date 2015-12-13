@@ -491,10 +491,9 @@
       "list":{
       },
       "detail":{
-         "EngineDetails":"Engine Details",
-         "VisualConfiguration":"Visual Configuration",
-         "XmlConfiguration":"XML Configuration"
-      }
+         "EngineState":"Engine State",
+         "EngineConfiguration":"Engine Configuration"
+       }
   },
   "noserver":{
       "title":"Server Startup $t(public.Failed)",

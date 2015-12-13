@@ -5,6 +5,84 @@
 <c:set var="use_bxslider" value="true" />
 <%@ include file="../includes/top.inc"%>
 
+<style>
+div.bx-wrapper {
+	margin: 25px 20px;
+}
+
+#tve-config-editor div.bx-viewport {
+	box-shadow: none;
+	background-color: #eee;
+}
+
+div.wz-header {
+	border: 1px solid #aaa;
+	background-color: #eee;
+	padding: 13px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	-webkit-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
+	-moz-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
+	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
+}
+
+div.wz-header h1 {
+	font-size: 26px;
+	line-height: 1em;
+	vertical-align: top;
+	margin: 1px;
+	display: inline;
+}
+
+div.wz-header h2 {
+	font-size: 16px;
+	margin: 0;
+	margin-top: 15px;
+	line-height: 1.1em;
+	font-weight: normal;
+	clear: both;
+	line-height: 1.1em;
+}
+
+.wz-header-icon {
+	float: left;
+	padding-right: 10px;
+	font-size: 26px;
+}
+
+div.wz-child {
+	border: 1px solid #ccc;
+	background-color: #eee;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+div.wz-child .wz-child-icon {
+	float: left;
+	padding: 8px 10px;
+	font-size: 22px;
+}
+
+div.wz-child .wz-child-name {
+	display: inline;
+	font-size: 20px;
+	padding: 0;
+	margin: 0;
+}
+
+div.wz-child .wz-child-nav {
+	float: right;
+	padding: 10px;
+}
+
+div.wz-divider {
+	clear: both;
+	padding-top: 10px;
+	margin-top: 10px;
+	border-top: 1px solid #eee;
+}
+</style>
+
 <!-- Title Bar -->
 <div class="sw-title-bar content k-header" style="margin-bottom: 15px;">
 	<h1 class="ellipsis" data-i18n="tenant.detail.title">View Tenant</h1>
@@ -20,25 +98,30 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active"><font data-i18n="tenants.detail.EngineDetails"></font></li>
-		<li><font data-i18n="tenants.detail.XmlConfiguration"></font></li>
+		<li class="k-state-active"><font data-i18n="tenants.detail.EngineConfiguration"></font></li>
+		<li><font data-i18n="tenants.detail.EngineState"></font></li>
 	</ul>
 	<div>
-		<div id="detail-content"></div>
+		<div>
+			<div>
+				<div id="tve-config-editor" class="carousel slide" data-interval="false">
+					<div id="tve-config-pages" class="carousel-inner" role="listbox"></div>
+				</div>
+			</div>
+		</div>
+		<div>
+			<a id="tve-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+				data-i18n="tenant.editor.stage">Stage Updates</a>
+		</div>
 	</div>
 	<div>
-		<div style="max-height: 500px; overflow-y: scroll;">
-			<pre class="language-markup" style="background-color: #fff;">
-				<code id="config-content"></code>
-			</pre>
-		</div>
+		<div id="detail-content"></div>
 	</div>
 </div>
 
 <form id="view-tenant-list" method="get"></form>
 
 <%@ include file="tenantCreateDialog.inc"%>
-<%@ include file="tenantConfigEditorDialog.inc"%>
 <%@ include file="tenantEntry.inc"%>
 
 <!-- Details panel shown for a started engine -->
@@ -69,7 +152,7 @@
 	/** Tenant configuration model */
 	var configModel = <c:out value="${configModel}" escapeXml="false"/>;
 
-	/** Tenant configuration */
+	/** Configuration being edited */
 	var config;
 
 	/** Tenant information */
@@ -77,6 +160,9 @@
 
 	/** Tabs */
 	var tabs;
+
+	/** Context stack for editor */
+	var editorContexts = [];
 
 	/** Called when delete button is clicked */
 	function onDeleteClicked() {
@@ -100,7 +186,7 @@
 	function onDeleteFail(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to delete tenant.");
 	}
-	
+
 	/** Called when config button is clicked */
 	function onConfigClicked() {
 		tveOpen(tenantId, onConfigSuccess);
@@ -146,6 +232,146 @@
 		handleError(jqXHR, "Unable to process engine start command.");
 	}
 
+	/** Reset the wizard */
+	function resetWizard() {
+		editorContexts = [];
+		addRootPanel();
+	}
+
+	/** Add the root panel */
+	function addRootPanel() {
+		var configNode = findConfigNodeByName(config, "tenant-configuration");
+		var modelNode = findModelNodeByName(configModel, "tenant-configuration");
+		addPanelFor(configNode, modelNode, true);
+	}
+
+	/** Add new panel for a given element */
+	function addPanelFor(configNode, modelNode, active) {
+		var panel = "<div class='item" + (active ? " active" : "") + "'>";
+		panel += "<div class='wz-header'>";
+		panel += "<i class='wz-header-icon fa fa-" + modelNode.icon + " fa-white'></i>";
+		panel += "<h1>" + modelNode.name + "</h1>";
+		panel += "<div style='float: right;'><a id='btn-add-element' class='btn' href='javascript:void(0)'>";
+		panel +=
+				" <i class='fa fa-plus sw-button-icon'></i> <span data-i18n='public.Add'>Add Component</span>";
+		panel += "</a></div>"
+		panel += "<h2>" + modelNode.description + "</h2>";
+		panel += "</div>";
+
+		panel += "<div class='wz-divider'>";
+
+		// If model node has attributes, add form.
+		if (modelNode.attributes) {
+			panel += addAttributesForm(configNode, modelNode);
+		}
+
+		/** If model node has children, add navigation */
+		if (modelNode.elements) {
+			panel += addChildElements(configNode, modelNode);
+		}
+
+		panel += "</div>";
+		panel += "</div>";
+
+		var context = {
+			"config" : configNode,
+			"model" : modelNode,
+			"panel" : panel
+		};
+		editorContexts.push(context);
+
+		var allPanels = "";
+		for (var i = 0; i < editorContexts.length; i++) {
+			allPanels += editorContexts[i].panel;
+		}
+		$('#tve-config-pages').html(allPanels);
+	}
+
+	/** Add attributes form for panel */
+	function addAttributesForm(configNode, modelNode) {
+		var section = "";
+		for (var i = 0; i < modelNode.attributes.length; i++) {
+			var attr = modelNode.attributes[i];
+			section += "<div><h3>" + attr.name + " : " + attr.type + "</h3></div>";
+		}
+		return section;
+	}
+
+	/** Add child element navigation for panel */
+	function addChildElements(configNode, modelNode) {
+		var section = "";
+		for (var i = 0; i < modelNode.elements.length; i++) {
+			var child = modelNode.elements[i];
+			section += "<div class='wz-child'>";
+			section += "<i class='wz-child-icon fa fa-" + child.icon + " fa-white'></i>";
+			section += "<h1 class='wz-child-name'>" + child.name + "</h1>";
+			section += "<a class='wz-child-nav btn' title='Open' ";
+			section += "  style='color: #060;' href='javascript:void(0)' ";
+			section +=
+					"  onclick='onChildOpenClicked(event, \"" + modelNode.localName + "\", \""
+							+ child.localName + "\")'>";
+			section += "  <i class='fa fa-chevron-right fa-white'></i>";
+			section += "</a>";
+			section += "</div>";
+		}
+		return section;
+	}
+
+	/** Open a child page in the wizard */
+	function onChildOpenClicked(event, parentName, childName) {
+		var top = editorContexts[editorContexts.length - 1];
+		var topModel = top["model"];
+		var childModel;
+		for (var i = 0; i < topModel.elements.length; i++) {
+			if (topModel.elements[i].localName == childName) {
+				childModel = topModel.elements[i];
+			}
+		}
+		if (childModel) {
+			var childConfig = {};
+			addPanelFor(childConfig, childModel, false);
+			$("#tve-config-editor").carousel("next");
+		}
+	}
+
+	/** Find closest element with the given localName */
+	function findConfigNodeByName(root, name) {
+		if (root.name == name) {
+			return root;
+		} else {
+			var found;
+			if (root.children) {
+				for (var i = 0; i < root.children.length; i++) {
+					found = findModelNodeByName(root.children[i], name);
+					if (found) {
+						return found;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/** Find closest element with the given localName */
+	function findModelNodeByName(root, name) {
+		if (root.nodeType == 'Element') {
+			if (root.localName == name) {
+				return root;
+			} else {
+				var found;
+				if (root.elements) {
+					for (var i = 0; i < root.elements.length; i++) {
+						found = findConfigNodeByName(root.elements[i], name);
+						if (found) {
+							return found;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	$(document).ready(function() {
 
 		/** Handle refresh button */
@@ -157,6 +383,11 @@
 		tabs = $("#tabs").kendoTabStrip({
 			animation : false,
 		}).data("kendoTabStrip");
+
+		/** Pause after slide animation */
+		$('#tve-config-editor').on('slid', function() {
+			$("#tve-config-editor").carousel("pause");
+		});
 
 		loadTenant();
 	});
@@ -246,22 +477,22 @@
 		});
 	}
 
-	/** Load the running engine configuration */
+	/** Load the running engine configuration as JSON */
 	function loadEngineConfiguration() {
 		$.getJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-				+ "/engine/configuration?tenantAuthToken=${tenant.authenticationToken}", configGetSuccess,
-			configGetFailed);
+				+ "/engine/configuration/json?tenantAuthToken=${tenant.authenticationToken}",
+			jsonConfigGetSuccess, jsonConfigGetFailed);
 	}
 
 	/** Called on successful configuration load request */
-	function configGetSuccess(data, status, jqXHR) {
-		$("#config-content").text(data);
-		Prism.highlightElement(document.getElementById('config-content'));
+	function jsonConfigGetSuccess(data, status, jqXHR) {
+		config = data;
+		resetWizard();
 	}
 
 	/** Handle error on getting configuration data */
-	function configGetFailed(jqXHR, textStatus, errorThrown) {
-		handleError(jqXHR, "Unable to load tenant configuration.");
+	function jsonConfigGetFailed(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to load tenant configuration as JSON.");
 	}
 </script>
 

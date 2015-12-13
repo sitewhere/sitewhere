@@ -26,7 +26,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		setLocalName("tenant-configuration");
 		setName("Tenant Configuration");
 		setDescription("Provides a model for all aspects of tenant configuration.");
-		getElements().add(createDatastoreContainer());
+		getElements().add(createPersistenceContainer());
 	}
 
 	/**
@@ -34,10 +34,10 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 * 
 	 * @return
 	 */
-	protected ElementNode createDatastoreContainer() {
+	protected ElementNode createPersistenceContainer() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Datastore Configuration",
-						TenantConfigurationParser.Elements.TenantDatastore.getLocalName(),
+				new ElementNode.Builder("Persistence Configuration",
+						TenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
 						ElementRole.Top_Persistence);
 		builder.setDescription("Configure the datastore and related aspects such as caching and "
 				+ "data model initialization.");
@@ -56,7 +56,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	protected ElementNode createMongoTenantDatastoreElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Tenant Datastore (MongoDB)",
-						TenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(),
+						TenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
 						ElementRole.Persistence_Datastore);
 		builder.addAttribute((new AttributeNode.Builder("Use bulk inserts", "useBulkEventInserts",
 				AttributeType.Boolean).setDescription("Use the MongoDB bulk insert API to add "
@@ -75,7 +75,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	protected ElementNode createHBaseTenantDatastoreElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Tenant Datastore (HBase)",
-						TenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(),
+						TenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
 						ElementRole.Persistence_Datastore);
 		return builder.build();
 	}
@@ -89,7 +89,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Caching (EHCache)",
 						TenantDatastoreParser.Elements.EHCacheDeviceManagementCache.getLocalName(),
-						ElementRole.Persistence_CacheProvider);
+						"folder-open-o", ElementRole.Persistence_CacheProvider);
 		return builder.build();
 	}
 
@@ -101,7 +101,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	protected ElementNode createHazelcastCacheElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Caching (Hazelcast)",
-						TenantDatastoreParser.Elements.HazelcastCache.getLocalName(),
+						TenantDatastoreParser.Elements.HazelcastCache.getLocalName(), "folder-open-o",
 						ElementRole.Persistence_CacheProvider);
 		return builder.build();
 	}
