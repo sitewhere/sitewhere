@@ -14,12 +14,27 @@ package com.sitewhere.web.configuration.model;
  */
 public enum ElementRole {
 
-	/** Top level. Persistence configuration. */
-	Top_Persistence,
+	/** Top level. Globals configuration. */
+	Top_Globals,
 
-	/** Persistence container. Datastore configuration. */
-	Persistence_Datastore,
+	/** Top level. Data management configuration. */
+	Top_DataManagement,
 
-	/** Persistence container. Cache provider configuration. */
-	Persistence_CacheProvider;
+	/** Data management container. Datastore configuration. */
+	DataManagement_Datastore,
+
+	/** Data management container. Cache provider configuration. */
+	DataManagement_CacheProvider,
+
+	/** Top level. Device communication configuration. */
+	Top_DeviceCommunication,
+
+	/** Top level. Inbound processing chain configuration. */
+	Top_InboundProcessingChain,
+
+	/** Top level. Outbound processing chain configuration. */
+	Top_OutboundProcessingChain,
+
+	/** Top level. Asset management configuration. */
+	Top_AssetManagement,
 }

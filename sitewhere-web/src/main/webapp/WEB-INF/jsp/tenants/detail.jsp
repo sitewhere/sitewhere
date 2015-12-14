@@ -251,7 +251,7 @@ div.wz-button-bar {
 	function addRootPanel() {
 		var configNode = findConfigNodeByName(config, "tenant-configuration");
 		var modelNode = findModelNodeByName(configModel, "tenant-configuration");
-		addPanelFor(configNode, modelNode, true);
+		addPanelFor(configNode, modelNode);
 	}
 
 	/** Add new panel for a given element */
@@ -259,7 +259,6 @@ div.wz-button-bar {
 		var context = {
 			"config" : configNode,
 			"model" : modelNode,
-			"panel" : panel
 		};
 		editorContexts.push(context);
 
@@ -324,19 +323,26 @@ div.wz-button-bar {
 	/** Add child element navigation for panel */
 	function addChildElements(configNode, modelNode) {
 		var section = "";
-		for (var i = 0; i < modelNode.elements.length; i++) {
-			var child = modelNode.elements[i];
-			section += "<div class='wz-child'>";
-			section += "<i class='wz-child-icon fa fa-" + child.icon + " fa-white'></i>";
-			section += "<h1 class='wz-child-name'>" + child.name + "</h1>";
-			section += "<a class='wz-child-nav btn' title='Open' ";
-			section += "  style='color: #060;' href='javascript:void(0)' ";
-			section +=
-					"  onclick='onChildOpenClicked(event, \"" + modelNode.localName + "\", \""
-							+ child.localName + "\")'>";
-			section += "  <i class='fa fa-chevron-right fa-white'></i>";
-			section += "</a>";
-			section += "</div>";
+		for (var i = 0; i < configNode.children.length; i++) {
+			var child = configNode.children[i];
+			var childModel = findModelNodeByName(modelNode, child.name);
+			if (childModel) {
+				section += "<div class='wz-child'>";
+				section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
+				section += "<h1 class='wz-child-name'>" + childModel.name + "</h1>";
+				section += "<a class='wz-child-nav btn' title='Open' ";
+				section += "  style='color: #060;' href='javascript:void(0)' ";
+				section +=
+						"  onclick='onChildOpenClicked(event, \"" + modelNode.localName + "\", \""
+								+ childModel.localName + "\")'>";
+				section += "  <i class='fa fa-chevron-right fa-white'></i>";
+				section += "</a>";
+				section += "</div>";
+			} else {
+				section += "<div class='wz-child'>";
+				section += "<h1>Unknown model element: " + child.name + "</h1>";
+				section += "</div>";
+			}
 		}
 		return section;
 	}
@@ -345,14 +351,10 @@ div.wz-button-bar {
 	function onChildOpenClicked(event, parentName, childName) {
 		var top = editorContexts[editorContexts.length - 1];
 		var topModel = top["model"];
-		var childModel;
-		for (var i = 0; i < topModel.elements.length; i++) {
-			if (topModel.elements[i].localName == childName) {
-				childModel = topModel.elements[i];
-			}
-		}
-		if (childModel) {
-			var childConfig = {};
+		var topConfig = top["config"];
+		var childModel = findModelNodeByName(topModel, childName);
+		var childConfig = findConfigNodeByName(topConfig, childName);
+		if (childModel && childConfig) {
 			addPanelFor(childConfig, childModel);
 		}
 	}
@@ -365,7 +367,7 @@ div.wz-button-bar {
 			var found;
 			if (root.children) {
 				for (var i = 0; i < root.children.length; i++) {
-					found = findModelNodeByName(root.children[i], name);
+					found = findConfigNodeByName(root.children[i], name);
 					if (found) {
 						return found;
 					}
@@ -384,7 +386,7 @@ div.wz-button-bar {
 				var found;
 				if (root.elements) {
 					for (var i = 0; i < root.elements.length; i++) {
-						found = findConfigNodeByName(root.elements[i], name);
+						found = findModelNodeByName(root.elements[i], name);
 						if (found) {
 							return found;
 						}

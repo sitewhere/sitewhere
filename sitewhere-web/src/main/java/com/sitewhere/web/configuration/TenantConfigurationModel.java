@@ -26,7 +26,27 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		setLocalName("tenant-configuration");
 		setName("Tenant Configuration");
 		setDescription("Provides a model for all aspects of tenant configuration.");
-		getElements().add(createPersistenceContainer());
+		getElements().add(createGlobals());
+		getElements().add(createDataManagement());
+		getElements().add(createDeviceCommunication());
+		getElements().add(createInboundProcessingChain());
+		getElements().add(createOutboundProcessingChain());
+		getElements().add(createAssetManagement());
+	}
+
+	/**
+	 * Create the container for global overrides information.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createGlobals() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Global Overrides",
+						TenantConfigurationParser.Elements.Globals.getLocalName(), "cogs",
+						ElementRole.Top_Globals);
+		builder.setDescription("Global overrides provide the ability to make "
+				+ "tenant-specific changes to global configuration elements.");
+		return builder.build();
 	}
 
 	/**
@@ -34,17 +54,74 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 * 
 	 * @return
 	 */
-	protected ElementNode createPersistenceContainer() {
+	protected ElementNode createDataManagement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Persistence Configuration",
+				new ElementNode.Builder("Data Management",
 						TenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
-						ElementRole.Top_Persistence);
+						ElementRole.Top_DataManagement);
 		builder.setDescription("Configure the datastore and related aspects such as caching and "
 				+ "data model initialization.");
 		builder.addElement(createMongoTenantDatastoreElement());
 		builder.addElement(createHBaseTenantDatastoreElement());
 		builder.addElement(createEHCacheElement());
 		builder.addElement(createHazelcastCacheElement());
+		return builder.build();
+	}
+
+	/**
+	 * Create the container for device communication information.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDeviceCommunication() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Device Communication",
+						TenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
+						ElementRole.Top_DeviceCommunication);
+		builder.setDescription("Configures how information is received from devices, how data is queued "
+				+ "for processing, and how commands are sent to devices.");
+		return builder.build();
+	}
+
+	/**
+	 * Create the container for inbound processing chain configuration.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createInboundProcessingChain() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Inbound Processors",
+						TenantConfigurationParser.Elements.InboundProcessingChain.getLocalName(), "sign-in",
+						ElementRole.Top_InboundProcessingChain);
+		builder.setDescription("Configures a chain of processing steps that are applied to inbound data.");
+		return builder.build();
+	}
+
+	/**
+	 * Create the container for outbound processing chain configuration.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createOutboundProcessingChain() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Outbound Processors",
+						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
+						"sign-out", ElementRole.Top_OutboundProcessingChain);
+		builder.setDescription("Configures a chain of processing steps that are applied to outbound data.");
+		return builder.build();
+	}
+
+	/**
+	 * Create the container for asset management configuration.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createAssetManagement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Asset Management",
+						TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
+						ElementRole.Top_AssetManagement);
+		builder.setDescription("Configures asset management features.");
 		return builder.build();
 	}
 
@@ -57,7 +134,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Tenant Datastore (MongoDB)",
 						TenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
-						ElementRole.Persistence_Datastore);
+						ElementRole.DataManagement_Datastore);
 		builder.addAttribute((new AttributeNode.Builder("Use bulk inserts", "useBulkEventInserts",
 				AttributeType.Boolean).setDescription("Use the MongoDB bulk insert API to add "
 				+ "events in groups and improve performance.").build()));
@@ -76,7 +153,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Tenant Datastore (HBase)",
 						TenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
-						ElementRole.Persistence_Datastore);
+						ElementRole.DataManagement_Datastore);
 		return builder.build();
 	}
 
@@ -89,7 +166,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Caching (EHCache)",
 						TenantDatastoreParser.Elements.EHCacheDeviceManagementCache.getLocalName(),
-						"folder-open-o", ElementRole.Persistence_CacheProvider);
+						"folder-open-o", ElementRole.DataManagement_CacheProvider);
 		return builder.build();
 	}
 
@@ -102,7 +179,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Caching (Hazelcast)",
 						TenantDatastoreParser.Elements.HazelcastCache.getLocalName(), "folder-open-o",
-						ElementRole.Persistence_CacheProvider);
+						ElementRole.DataManagement_CacheProvider);
 		return builder.build();
 	}
 }
