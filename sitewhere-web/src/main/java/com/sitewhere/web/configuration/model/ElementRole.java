@@ -26,6 +26,15 @@ public enum ElementRole {
 	/** Data management container. Cache provider configuration. */
 	DataManagement_CacheProvider,
 
+	/** Data management container. Device model initializer configuration. */
+	DataManagement_DeviceModelInitializer,
+
+	/** Data management container. Asset model initializer configuration. */
+	DataManagement_AssetModelInitializer,
+
+	/** Data management container. Schedule model initializer configuration. */
+	DataManagement_ScheduleModelInitializer,
+
 	/** Top level. Device communication configuration. */
 	Top_DeviceCommunication,
 

@@ -44,8 +44,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Global Overrides",
 						TenantConfigurationParser.Elements.Globals.getLocalName(), "cogs",
 						ElementRole.Top_Globals);
-		builder.setDescription("Global overrides provide the ability to make "
-				+ "tenant-specific changes to global configuration elements.");
+		builder.setDescription("Allow tenant-specific changes to global configuration elements.");
 		return builder.build();
 	}
 
@@ -65,6 +64,9 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.addElement(createHBaseTenantDatastoreElement());
 		builder.addElement(createEHCacheElement());
 		builder.addElement(createHazelcastCacheElement());
+		builder.addElement(createDefaultDeviceModelInitializerElement());
+		builder.addElement(createDefaultAssetModelInitializerElement());
+		builder.addElement(createDefaultScheduleModelInitializerElement());
 		return builder.build();
 	}
 
@@ -78,7 +80,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Device Communication",
 						TenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
 						ElementRole.Top_DeviceCommunication);
-		builder.setDescription("Configures how information is received from devices, how data is queued "
+		builder.setDescription("Configure how information is received from devices, how data is queued "
 				+ "for processing, and how commands are sent to devices.");
 		return builder.build();
 	}
@@ -93,7 +95,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Inbound Processors",
 						TenantConfigurationParser.Elements.InboundProcessingChain.getLocalName(), "sign-in",
 						ElementRole.Top_InboundProcessingChain);
-		builder.setDescription("Configures a chain of processing steps that are applied to inbound data.");
+		builder.setDescription("Configure a chain of processing steps that are applied to inbound data.");
 		return builder.build();
 	}
 
@@ -107,7 +109,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Outbound Processors",
 						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
 						"sign-out", ElementRole.Top_OutboundProcessingChain);
-		builder.setDescription("Configures a chain of processing steps that are applied to outbound data.");
+		builder.setDescription("Configure a chain of processing steps that are applied to outbound data.");
 		return builder.build();
 	}
 
@@ -121,7 +123,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Asset Management",
 						TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
 						ElementRole.Top_AssetManagement);
-		builder.setDescription("Configures asset management features.");
+		builder.setDescription("Configure asset management features.");
 		return builder.build();
 	}
 
@@ -132,9 +134,11 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createMongoTenantDatastoreElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Tenant Datastore (MongoDB)",
+				new ElementNode.Builder("MongoDB Tenant Datastore",
 						TenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
 						ElementRole.DataManagement_Datastore);
+
+		builder.setDescription("Store tenant data using a MongoDB database.");
 		builder.addAttribute((new AttributeNode.Builder("Use bulk inserts", "useBulkEventInserts",
 				AttributeType.Boolean).setDescription("Use the MongoDB bulk insert API to add "
 				+ "events in groups and improve performance.").build()));
@@ -151,9 +155,10 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createHBaseTenantDatastoreElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Tenant Datastore (HBase)",
+				new ElementNode.Builder("HBase Tenant Datastore",
 						TenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
 						ElementRole.DataManagement_Datastore);
+		builder.setDescription("Store tenant data using tables in an HBase instance.");
 		return builder.build();
 	}
 
@@ -164,7 +169,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createEHCacheElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Caching (EHCache)",
+				new ElementNode.Builder("EHCache Cache Provider",
 						TenantDatastoreParser.Elements.EHCacheDeviceManagementCache.getLocalName(),
 						"folder-open-o", ElementRole.DataManagement_CacheProvider);
 		return builder.build();
@@ -177,9 +182,48 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createHazelcastCacheElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Caching (Hazelcast)",
+				new ElementNode.Builder("Hazelcast Distributed Cache Provider",
 						TenantDatastoreParser.Elements.HazelcastCache.getLocalName(), "folder-open-o",
 						ElementRole.DataManagement_CacheProvider);
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for device model initializer.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDefaultDeviceModelInitializerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Device Model Initializer",
+						TenantDatastoreParser.Elements.DefaultDeviceModelInitializer.getLocalName(), "flash",
+						ElementRole.DataManagement_DeviceModelInitializer);
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for device model initializer.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDefaultAssetModelInitializerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Asset Model Initializer",
+						TenantDatastoreParser.Elements.DefaultAssetModelInitializer.getLocalName(), "flash",
+						ElementRole.DataManagement_AssetModelInitializer);
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for device model initializer.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDefaultScheduleModelInitializerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Schedule Model Initializer",
+						TenantDatastoreParser.Elements.DefaultScheduleModelInitializer.getLocalName(),
+						"flash", ElementRole.DataManagement_ScheduleModelInitializer);
 		return builder.build();
 	}
 }
