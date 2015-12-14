@@ -11,7 +11,6 @@ div.wz-header {
 	background-color: #eee;
 	padding: 13px;
 	margin-bottom: 10px;
-	margin-top: 10px;
 	-webkit-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
 	-moz-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
 	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
@@ -71,6 +70,18 @@ div.wz-divider {
 	padding-top: 10px;
 	margin-top: 10px;
 	border-top: 1px solid #eee;
+}
+
+ol.wz-breadcrumb {
+	margin-top: 8px;
+	margin-bottom: -2px;
+	margin-right: 6px;
+	margin-left: 6px;
+	padding: 2px 8px;
+	border: 1px solid #eee;
+	border-radius: 0px;
+	font-size: 12px;
+	background-color: #f9f9f9;
 }
 
 div.wz-button-bar {
@@ -245,7 +256,15 @@ div.wz-button-bar {
 
 	/** Add new panel for a given element */
 	function addPanelFor(configNode, modelNode) {
+		var context = {
+			"config" : configNode,
+			"model" : modelNode,
+			"panel" : panel
+		};
+		editorContexts.push(context);
+
 		var panel = "<div>";
+		panel += addBreadcrumbs();
 		panel += "<div class='wz-header'>";
 		panel += "<i class='wz-header-icon fa fa-" + modelNode.icon + " fa-white'></i>";
 		panel += "<h1>" + modelNode.name + "</h1>";
@@ -271,14 +290,25 @@ div.wz-button-bar {
 		panel += "</div>";
 		panel += "</div>";
 
-		var context = {
-			"config" : configNode,
-			"model" : modelNode,
-			"panel" : panel
-		};
-		editorContexts.push(context);
-
 		$('#tve-config-page').html(panel);
+	}
+
+	/** Add breadcrumbs to all access to parent nodes */
+	function addBreadcrumbs() {
+		var bc = "<ol class='breadcrumb wz-breadcrumb' style='margin-top: 8px;' role='group'>";
+		for (var i = 0; i < editorContexts.length; i++) {
+			var modelNode = editorContexts[i]["model"];
+			var active = (i == (editorContexts.length - 1));
+			if (active) {
+				bc += "<li class='active'>" + modelNode.name + "</li>";
+			} else {
+				bc +=
+						"<li><a href='javacsript:void(0);'>" + modelNode.name
+								+ "</a><span class='divider'>/</span></li>";
+			}
+		}
+		bc += "</ol>";
+		return bc;
 	}
 
 	/** Add attributes form for panel */
