@@ -172,6 +172,8 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("EHCache Cache Provider",
 						TenantDatastoreParser.Elements.EHCacheDeviceManagementCache.getLocalName(),
 						"folder-open-o", ElementRole.DataManagement_CacheProvider);
+		builder.setDescription("Cache device management data using EHCache. Note that this "
+				+ "cache is not intended for use on clustered installations.");
 		return builder.build();
 	}
 
@@ -185,6 +187,8 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Hazelcast Distributed Cache Provider",
 						TenantDatastoreParser.Elements.HazelcastCache.getLocalName(), "folder-open-o",
 						ElementRole.DataManagement_CacheProvider);
+		builder.setDescription("Cache device management data using Hazelcast distributed maps. "
+				+ "This cache allows data to be shared between clustered SiteWhere instances.");
 		return builder.build();
 	}
 
@@ -198,6 +202,9 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Device Model Initializer",
 						TenantDatastoreParser.Elements.DefaultDeviceModelInitializer.getLocalName(), "flash",
 						ElementRole.DataManagement_DeviceModelInitializer);
+		builder.setDescription("This component creates sample data when no existing device data "
+				+ "is detected in the datastore. A site with device specifications, devices, "
+				+ "assignments, events and other example data is created on instance startup.");
 		return builder.build();
 	}
 

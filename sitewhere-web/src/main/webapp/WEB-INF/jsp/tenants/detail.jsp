@@ -84,6 +84,18 @@ ol.wz-breadcrumb {
 	background-color: #f9f9f9;
 }
 
+label.sw-control-label {
+	font-weight: bold;
+	font-size: 17px;
+	width: 250px;
+}
+
+div.sw-controls {
+	margin-left: 290px;
+	font-size: 17px;
+	line-height: 1.7em;
+}
+
 div.wz-button-bar {
 	padding: 7px 0px;
 }
@@ -334,36 +346,53 @@ div.wz-button-bar {
 
 	/** Add attributes form for panel */
 	function addAttributesForm(configNode, modelNode) {
-		var section = "";
-		for (var i = 0; i < modelNode.attributes.length; i++) {
-			var attr = modelNode.attributes[i];
-			section += "<div><h3>" + attr.name + " : " + attr.type + "</h3></div>";
+		if (configNode.attributes) {
+			var section = "<form class='form-horizontal'>";
+			var valuesByName = [];
+			for (var i = 0; i < configNode.attributes.length; i++) {
+				valuesByName[configNode.attributes[i].name] = configNode.attributes[i].value;
+			}
+			for (var i = 0; i < modelNode.attributes.length; i++) {
+				var attr = modelNode.attributes[i];
+				section += "<div class='control-group'>";
+				section +=
+						"  <label class='control-label sw-control-label' style='width: 275px;' for='tc-" + attr.localName + "'>"
+								+ attr.name + "</label>";
+				section += "  <div class='controls sw-controls' style='margin-left: 300px;'>";
+				section += "    " + valuesByName[attr.localName];
+				section += "  </div>";
+				section += "</div>";
+			}
+			section += "</form>";
+			return section;
 		}
-		return section;
+		return "";
 	}
 
 	/** Add child element navigation for panel */
 	function addChildElements(configNode, modelNode) {
 		var section = "";
-		for (var i = 0; i < configNode.children.length; i++) {
-			var child = configNode.children[i];
-			var childModel = findModelNodeByName(modelNode, child.name);
-			if (childModel) {
-				section += "<div class='wz-child'>";
-				section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
-				section += "<h1 class='wz-child-name'>" + childModel.name + "</h1>";
-				section += "<a class='wz-child-nav btn' title='Open' ";
-				section += "  style='color: #060;' href='javascript:void(0)' ";
-				section +=
-						"  onclick='onChildOpenClicked(event, \"" + modelNode.localName + "\", \""
-								+ childModel.localName + "\")'>";
-				section += "  <i class='fa fa-chevron-right fa-white'></i>";
-				section += "</a>";
-				section += "</div>";
-			} else {
-				section += "<div class='wz-child'>";
-				section += "<h1>Unknown model element: " + child.name + "</h1>";
-				section += "</div>";
+		if (configNode.children) {
+			for (var i = 0; i < configNode.children.length; i++) {
+				var child = configNode.children[i];
+				var childModel = findModelNodeByName(modelNode, child.name);
+				if (childModel) {
+					section += "<div class='wz-child'>";
+					section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
+					section += "<h1 class='wz-child-name'>" + childModel.name + "</h1>";
+					section += "<a class='wz-child-nav btn' title='Open' ";
+					section += "  style='color: #060;' href='javascript:void(0)' ";
+					section +=
+							"  onclick='onChildOpenClicked(event, \"" + modelNode.localName + "\", \""
+									+ childModel.localName + "\")'>";
+					section += "  <i class='fa fa-chevron-right fa-white'></i>";
+					section += "</a>";
+					section += "</div>";
+				} else {
+					section += "<div class='wz-child'>";
+					section += "<h1>Unknown model element: " + child.name + "</h1>";
+					section += "</div>";
+				}
 			}
 		}
 		return section;
@@ -377,8 +406,7 @@ div.wz-button-bar {
 		var childModel = findModelNodeByName(topModel, childName);
 		var childConfig = findConfigNodeByName(topConfig, childName);
 		if (childModel && childConfig) {
-			var context = pushContext(childConfig, childModel);
-			showPanelFor(context);
+			pushContext(childConfig, childModel);
 		}
 	}
 
