@@ -69,7 +69,7 @@ div.wz-divider {
 	clear: both;
 	padding-top: 10px;
 	margin-top: 10px;
-	border-top: 1px solid #eee;
+	border-top: 1px solid #ddd;
 }
 
 ol.wz-breadcrumb {
@@ -97,7 +97,9 @@ div.sw-controls {
 }
 
 div.wz-button-bar {
-	padding: 7px 0px;
+	padding: 10px 0px;
+	margin-top: 10px;
+	border-top: 1px solid #ddd;
 }
 </style>
 
@@ -290,6 +292,15 @@ div.wz-button-bar {
 		}
 	}
 
+	/** Pop up one level */
+	function popOne() {
+		if (editorContexts.length > 1) {
+			var context = editorContexts[editorContexts.length - 2];
+			var config = context["config"];
+			popToContext(config.name);
+		}
+	}
+
 	/** Show panel for a given context */
 	function showPanelFor(context) {
 		var configNode = context["config"];
@@ -300,10 +311,25 @@ div.wz-button-bar {
 		panel += "<div class='wz-header'>";
 		panel += "<i class='wz-header-icon fa fa-" + modelNode.icon + " fa-white'></i>";
 		panel += "<h1>" + modelNode.name + "</h1>";
-		panel += "<div style='float: right;'><a id='btn-add-element' class='btn' href='javascript:void(0)'>";
-		panel +=
-				" <i class='fa fa-plus sw-button-icon'></i> <span data-i18n='public.Add'>Add Component</span>";
-		panel += "</a></div>"
+		if (editorContexts.length > 1) {
+			panel += "<div style='float: right;' class='btn-group'>";
+			panel += "<a onclick='popOne()' title='Up One Level' class='btn' href='javascript:void(0)'>";
+			panel += "<i class='fa fa-arrow-up sw-button-icon'></i>";
+			panel += "</a>";
+			panel +=
+					"<a onclick='tcAddChild()' title='Add Child Component' class='btn' href='javascript:void(0)'>";
+			panel += "<i class='fa fa-plus sw-button-icon'></i>";
+			panel += "</a>";
+			panel +=
+					"<a onclick='tcConfigure()' title='Configure Component' class='btn' href='javascript:void(0)'>";
+			panel += "<i class='fa fa-gear sw-button-icon'></i>";
+			panel += "</a>";
+			panel +=
+					"<a onclick='tcDelete()' style='color: #900;' title='Delete Component' class='btn' href='javascript:void(0)'>";
+			panel += "<i class='fa fa-times sw-button-icon'></i>";
+			panel += "</a>";
+			panel += "</div>"
+		}
 		panel += "<h2>" + modelNode.description + "</h2>";
 		panel += "</div>";
 
