@@ -251,16 +251,37 @@ div.wz-button-bar {
 	function addRootPanel() {
 		var configNode = findConfigNodeByName(config, "tenant-configuration");
 		var modelNode = findModelNodeByName(configModel, "tenant-configuration");
-		addPanelFor(configNode, modelNode);
+		pushContext(configNode, modelNode);
 	}
 
-	/** Add new panel for a given element */
-	function addPanelFor(configNode, modelNode) {
+	/** Push context on the stack */
+	function pushContext(configNode, modelNode) {
 		var context = {
 			"config" : configNode,
 			"model" : modelNode,
 		};
 		editorContexts.push(context);
+		showPanelFor(context);
+		return context;
+	}
+
+	/** Pop elements off the stack until the given element name is found */
+	function popToContext(elementName) {
+		var context = editorContexts[editorContexts.length - 1];
+		var config = context["config"];
+		if ((config.name == elementName) || (editorContexts.length == 1)) {
+			showPanelFor(context);
+		} else {
+			// Pop the top item and recurse.
+			editorContexts.pop();
+			popToContext(elementName);
+		}
+	}
+
+	/** Show panel for a given context */
+	function showPanelFor(context) {
+		var configNode = context["config"];
+		var modelNode = context["model"];
 
 		var panel = "<div>";
 		panel += addBreadcrumbs();
@@ -297,13 +318,14 @@ div.wz-button-bar {
 		var bc = "<ol class='breadcrumb wz-breadcrumb' style='margin-top: 8px;' role='group'>";
 		for (var i = 0; i < editorContexts.length; i++) {
 			var modelNode = editorContexts[i]["model"];
+			var configNode = editorContexts[i]["config"];
 			var active = (i == (editorContexts.length - 1));
 			if (active) {
 				bc += "<li class='active'>" + modelNode.name + "</li>";
 			} else {
 				bc +=
-						"<li><a href='javacsript:void(0);'>" + modelNode.name
-								+ "</a><span class='divider'>/</span></li>";
+						"<li><a href='javacsript:void(0);' onclick='popToContext(\"" + configNode.name
+								+ "\")'>" + modelNode.name + "</a><span class='divider'>/</span></li>";
 			}
 		}
 		bc += "</ol>";
@@ -355,7 +377,8 @@ div.wz-button-bar {
 		var childModel = findModelNodeByName(topModel, childName);
 		var childConfig = findConfigNodeByName(topConfig, childName);
 		if (childModel && childConfig) {
-			addPanelFor(childConfig, childModel);
+			var context = pushContext(childConfig, childModel);
+			showPanelFor(context);
 		}
 	}
 
