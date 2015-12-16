@@ -7,6 +7,7 @@
  */
 package com.sitewhere.web.configuration;
 
+import com.sitewhere.spring.handler.DeviceCommunicationParser;
 import com.sitewhere.spring.handler.TenantConfigurationParser;
 import com.sitewhere.spring.handler.TenantDatastoreParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
@@ -82,6 +83,12 @@ public class TenantConfigurationModel extends ConfigurationModel {
 						ElementRole.Top_DeviceCommunication);
 		builder.setDescription("Configure how information is received from devices, how data is queued "
 				+ "for processing, and how commands are sent to devices.");
+		builder.addElement(createEventSourcesElement());
+		builder.addElement(createInboundProcessingStrategyElement());
+		builder.addElement(createRegistrationElement());
+		builder.addElement(createBatchOperationsElement());
+		builder.addElement(createCommandRoutingElement());
+		builder.addElement(createCommandDestinationsElement());
 		return builder.build();
 	}
 
@@ -218,6 +225,9 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Asset Model Initializer",
 						TenantDatastoreParser.Elements.DefaultAssetModelInitializer.getLocalName(), "flash",
 						ElementRole.DataManagement_AssetModelInitializer);
+		builder.setDescription("This component creates sample data when no existing asset data "
+				+ "is detected in the datastore. If using the <strong>device model initializer</strong> "
+				+ "this component should be used as well so that assets in the sample data can be resolved.");
 		return builder.build();
 	}
 
@@ -231,6 +241,107 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder("Schedule Model Initializer",
 						TenantDatastoreParser.Elements.DefaultScheduleModelInitializer.getLocalName(),
 						"flash", ElementRole.DataManagement_ScheduleModelInitializer);
+		builder.setDescription("This component creates sample data when no existing schedule data "
+				+ "is detected in the datastore. It provides examples of both simple and cron-based "
+				+ "schedules that are commonly used.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for event sources.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createEventSourcesElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Event Sources",
+						DeviceCommunicationParser.Elements.EventSources.getLocalName(), "sign-in",
+						ElementRole.DeviceCommunication_EventSources);
+
+		builder.setDescription("Event sources are responsible for bringing data into SiteWhere. They "
+				+ "listen for incoming messages, convert them to a unified format, then forward them "
+				+ "to the inbound processing strategy implementation to be processed.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for event sources.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createInboundProcessingStrategyElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Inbound Processing Strategy",
+						DeviceCommunicationParser.Elements.InboundProcessingStrategy.getLocalName(), "cogs",
+						ElementRole.DeviceCommunication_InboundProcessingStrategy);
+
+		builder.setDescription("The inbound processing strategy is responsible for moving events from event "
+				+ "sources into the inbound processing chain. It is responsible for handling threading and "
+				+ "reliably delivering events for processing.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for device registration.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createRegistrationElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Device Registration Management",
+						DeviceCommunicationParser.Elements.Registration.getLocalName(), "key",
+						ElementRole.DeviceCommunication_Registration);
+
+		builder.setDescription("Manages how new devices are registered with the system.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for batch operations.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createBatchOperationsElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Batch Operation Management",
+						DeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "server",
+						ElementRole.DeviceCommunication_BatchOperations);
+
+		builder.setDescription("Manages how batch operations are processed. Batch operations are "
+				+ "actions that are executed asynchronously for many devices with the ability to monitor "
+				+ "progress at both the batch and element level.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for command routing.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createCommandRoutingElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Device Command Routing",
+						DeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap fa-rotate-270",
+						ElementRole.DeviceCommunication_CommandRouting);
+
+		builder.setDescription("Determines how commands are routed to command destinations.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for command routing.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createCommandDestinationsElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Device Command Destinations",
+						DeviceCommunicationParser.Elements.CommandDestinations.getLocalName(), "sign-out",
+						ElementRole.DeviceCommunication_CommandDestinations);
+
+		builder.setDescription("Command destinations provide the information SiteWhere needs "
+				+ "to route commands to devices. This includes information about how to encode the "
+				+ "command and how to deliver the command via the underlying transport.");
 		return builder.build();
 	}
 }

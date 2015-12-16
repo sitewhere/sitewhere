@@ -38,6 +38,24 @@ public enum ElementRole {
 	/** Top level. Device communication configuration. */
 	Top_DeviceCommunication,
 
+	/** Device communication container. Event sources configuration. */
+	DeviceCommunication_EventSources,
+
+	/** Device communication container. Inbound processing strategy configuration. */
+	DeviceCommunication_InboundProcessingStrategy,
+
+	/** Device communication container. Registration configuration. */
+	DeviceCommunication_Registration,
+
+	/** Device communication container. Batch operations configuration. */
+	DeviceCommunication_BatchOperations,
+
+	/** Device communication container. Command routing configuration. */
+	DeviceCommunication_CommandRouting,
+
+	/** Device communication container. Command destinations configuration. */
+	DeviceCommunication_CommandDestinations,
+
 	/** Top level. Inbound processing chain configuration. */
 	Top_InboundProcessingChain,
 

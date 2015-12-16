@@ -43,8 +43,8 @@ div.wz-header h2 {
 div.wz-child {
 	border: 1px solid #ccc;
 	background-color: #eee;
-	padding: 10px;
-	margin-bottom: 10px;
+	padding: 5px;
+	margin-bottom: 5px;
 }
 
 div.wz-child .wz-child-icon {
