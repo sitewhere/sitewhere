@@ -8,6 +8,7 @@
 package com.sitewhere.web.configuration;
 
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
+import com.sitewhere.spring.handler.EventSourcesParser;
 import com.sitewhere.spring.handler.TenantConfigurationParser;
 import com.sitewhere.spring.handler.TenantDatastoreParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
@@ -261,6 +262,33 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.setDescription("Event sources are responsible for bringing data into SiteWhere. They "
 				+ "listen for incoming messages, convert them to a unified format, then forward them "
 				+ "to the inbound processing strategy implementation to be processed.");
+		builder.addElement(createMqttEventSourceElement());
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for MQTT event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createMqttEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("MQTT Event Source",
+						EventSourcesParser.Elements.MqttEventSource.getLocalName(), "sign-in",
+						ElementRole.EventSources_MqttEventSource);
+
+		builder.setDescription("Listen for events on an MQTT topic.");
+		builder.addAttribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).setDescription(
+				"Unique id used for referencing this event source.").makeIndex().build()));
+		builder.addAttribute((new AttributeNode.Builder("MQTT broker hostname", "hostname",
+				AttributeType.String).setDescription("Hostname used for creating the MQTT broker"
+				+ "connection.").build()));
+		builder.addAttribute((new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).setDescription("Port number used for creating the MQTT broker connection.").build()));
+		builder.addAttribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).setDescription("MQTT topic event source uses for inbound messages.").build()));
+		builder.addAttribute((new AttributeNode.Builder("Trust store path", "trustStorePath",
+				AttributeType.String).setDescription("Fully-qualified path to trust store for secured connections.").build()));
+		builder.addAttribute((new AttributeNode.Builder("Trust store password", "trustStorePassword",
+				AttributeType.String).setDescription("Password used to authenticate with trust store.").build()));
 		return builder.build();
 	}
 
@@ -321,8 +349,8 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	protected ElementNode createCommandRoutingElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Command Routing",
-						DeviceCommunicationParser.Elements.CommandRouting.getLocalName(), "sitemap fa-rotate-270",
-						ElementRole.DeviceCommunication_CommandRouting);
+						DeviceCommunicationParser.Elements.CommandRouting.getLocalName(),
+						"sitemap fa-rotate-270", ElementRole.DeviceCommunication_CommandRouting);
 
 		builder.setDescription("Determines how commands are routed to command destinations.");
 		return builder.build();

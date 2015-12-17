@@ -10,11 +10,15 @@ package com.sitewhere.web.configuration.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Configuration node associated with an XML element.
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class ElementNode extends XmlNode {
 
 	/** List of attribute nodes */
@@ -52,6 +56,20 @@ public class ElementNode extends XmlNode {
 
 	public void setRole(ElementRole role) {
 		this.role = role;
+	}
+
+	/**
+	 * If an attribute is used as an index, return the name.
+	 * 
+	 * @return
+	 */
+	public String getIndexAttribute() {
+		for (AttributeNode attribute : attributes) {
+			if (attribute.isIndex()) {
+				return attribute.getLocalName();
+			}
+		}
+		return null;
 	}
 
 	/**

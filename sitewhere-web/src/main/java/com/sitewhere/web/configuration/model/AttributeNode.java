@@ -20,6 +20,9 @@ public class AttributeNode extends XmlNode {
 	/** Indicates if attribute is required */
 	private boolean required;
 
+	/** Indicates if field is the unique index */
+	private boolean index;
+
 	public AttributeNode() {
 		super(NodeType.Attribute);
 	}
@@ -38,6 +41,14 @@ public class AttributeNode extends XmlNode {
 
 	public void setRequired(boolean required) {
 		this.required = required;
+	}
+
+	public boolean isIndex() {
+		return index;
+	}
+
+	public void setIndex(boolean index) {
+		this.index = index;
 	}
 
 	/**
@@ -63,6 +74,11 @@ public class AttributeNode extends XmlNode {
 
 		public Builder makeRequired() {
 			attribute.setRequired(true);
+			return this;
+		}
+
+		public Builder makeIndex() {
+			attribute.setIndex(true);
 			return this;
 		}
 

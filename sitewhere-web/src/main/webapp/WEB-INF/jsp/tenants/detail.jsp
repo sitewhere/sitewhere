@@ -405,12 +405,25 @@ div.wz-button-bar {
 				if (childModel) {
 					section += "<div class='wz-child'>";
 					section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
-					section += "<h1 class='wz-child-name'>" + childModel.name + "</h1>";
+					section += "<h1 class='wz-child-name'>" + childModel.name;
+
+					// Show index value if specified.
+					if (childModel.indexAttribute) {
+						for (var ai = 0; ai < child.attributes.length; ai++) {
+							var attrName = child.attributes[ai].name;
+							if (childModel.indexAttribute == attrName) {
+								section += " (" + child.attributes[ai].value + ")";
+							}
+						}
+					}
+					
+					section += "</h1>";
+					
 					section += "<a class='wz-child-nav btn' title='Open' ";
 					section += "  style='color: #060;' href='javascript:void(0)' ";
 					section +=
-							"  onclick='onChildOpenClicked(event, \"" + modelNode.localName + "\", \""
-									+ childModel.localName + "\")'>";
+							"  onclick='onChildOpenClicked(\"" + child.name + "\", \""
+									+ child.id + "\")'>";
 					section += "  <i class='fa fa-chevron-right fa-white'></i>";
 					section += "</a>";
 					section += "</div>";
@@ -425,12 +438,12 @@ div.wz-button-bar {
 	}
 
 	/** Open a child page in the wizard */
-	function onChildOpenClicked(event, parentName, childName) {
+	function onChildOpenClicked(childName, childId) {
 		var top = editorContexts[editorContexts.length - 1];
 		var topModel = top["model"];
 		var topConfig = top["config"];
 		var childModel = findModelNodeByName(topModel, childName);
-		var childConfig = findConfigNodeByName(topConfig, childName);
+		var childConfig = findConfigNodeById(topConfig, childId);
 		if (childModel && childConfig) {
 			pushContext(childConfig, childModel);
 		}
@@ -445,6 +458,24 @@ div.wz-button-bar {
 			if (root.children) {
 				for (var i = 0; i < root.children.length; i++) {
 					found = findConfigNodeByName(root.children[i], name);
+					if (found) {
+						return found;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/** Find closest element with the given uuid */
+	function findConfigNodeById(root, uuid) {
+		if (root.id == uuid) {
+			return root;
+		} else {
+			var found;
+			if (root.children) {
+				for (var i = 0; i < root.children.length; i++) {
+					found = findConfigNodeById(root.children[i], uuid);
 					if (found) {
 						return found;
 					}
