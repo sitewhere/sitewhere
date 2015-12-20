@@ -9,6 +9,8 @@ package com.sitewhere.web.configuration;
 
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
 import com.sitewhere.spring.handler.EventSourcesParser;
+import com.sitewhere.spring.handler.InboundProcessingStrategyParser;
+import com.sitewhere.spring.handler.RegistrationParser;
 import com.sitewhere.spring.handler.TenantConfigurationParser;
 import com.sitewhere.spring.handler.TenantDatastoreParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
@@ -280,6 +282,9 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.setDescription("Listen for events on an MQTT topic.");
 		builder.addAttribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).setDescription(
 				"Unique id used for referencing this event source.").makeIndex().build()));
+		builder.addAttribute((new AttributeNode.Builder("Transport protocol", "protocol",
+				AttributeType.String).setDescription("Protocol used for establishing MQTT connection").setDefaultValue(
+				"tcp").addChoice("tcp").addChoice("tls").build()));
 		builder.addAttribute((new AttributeNode.Builder("MQTT broker hostname", "hostname",
 				AttributeType.String).setDescription("Hostname used for creating the MQTT broker"
 				+ "connection.").build()));
@@ -289,6 +294,41 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				AttributeType.String).setDescription("Fully-qualified path to trust store for secured connections.").build()));
 		builder.addAttribute((new AttributeNode.Builder("Trust store password", "trustStorePassword",
 				AttributeType.String).setDescription("Password used to authenticate with trust store.").build()));
+		builder.addElement(createProtobufEventDecoderElement());
+		builder.addElement(createJsonEventDecoderElement());
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for protobuf event decoder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createProtobufEventDecoderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Google Protocol Buffers Event Decoder",
+						EventSourcesParser.BinaryDecoders.ProtobufDecoder.getLocalName(), "cogs",
+						ElementRole.EventSources_EventDecoder);
+
+		builder.setDescription("Event decoder that takes binary messages from an underlying transport "
+				+ "and decodes them using the standard SiteWhere Google Protocol Buffers format. This is "
+				+ "the default binary format used by the various SDKs.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for JSON event decoder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createJsonEventDecoderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("JSON Event Decoder",
+						EventSourcesParser.BinaryDecoders.JsonDecoder.getLocalName(), "cogs",
+						ElementRole.EventSources_EventDecoder);
+
+		builder.setDescription("Event decoder that takes binary messages from an underlying transport "
+				+ "and parses them as the JSON representation of a SiteWhere device event batch.");
 		return builder.build();
 	}
 
@@ -306,6 +346,33 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.setDescription("The inbound processing strategy is responsible for moving events from event "
 				+ "sources into the inbound processing chain. It is responsible for handling threading and "
 				+ "reliably delivering events for processing.");
+		builder.addElement(createBlockingQueueInboundStrategyElement());
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for MQTT event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createBlockingQueueInboundStrategyElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder(
+						"Blocking Queue Strategy",
+						InboundProcessingStrategyParser.Elements.DefaultInboundProcessingStrategy.getLocalName(),
+						"cogs", ElementRole.InboundProcessingStrategy_BlockingQueue);
+
+		builder.setDescription("Send decoded messages into the processing pipeline by first adding them "
+				+ "to a fixed-length queue, then using multiple threads to move events from the queue into "
+				+ "the pipeline. The number of threads used very directly affects system performance since "
+				+ "it determines how many events can be processed in parallel.");
+		builder.addAttribute((new AttributeNode.Builder("Number of processing threads",
+				"numEventProcessorThreads", AttributeType.Integer).setDescription(
+				"Number of threads used to process incoming events in parallel").setDefaultValue("100").build()));
+		builder.addAttribute((new AttributeNode.Builder("Enable monitoring", "enableMonitoring",
+				AttributeType.Boolean).setDescription("Enable logging of monitoring statistics at an interval").build()));
+		builder.addAttribute((new AttributeNode.Builder("Monitoring interval in seconds",
+				"monitoringIntervalSec", AttributeType.Integer).setDescription("Number of seconds to wait between logging monitoring statistics.").build()));
 		return builder.build();
 	}
 
@@ -321,6 +388,32 @@ public class TenantConfigurationModel extends ConfigurationModel {
 						ElementRole.DeviceCommunication_Registration);
 
 		builder.setDescription("Manages how new devices are registered with the system.");
+		builder.addElement(createDefaultRegistrationManagerElement());
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for default registration manager.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDefaultRegistrationManagerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Registration Manager",
+						RegistrationParser.Elements.DefaultRegistrationManager.getLocalName(), "key",
+						ElementRole.Registration_RegistrationManager);
+
+		builder.setDescription("Provides device registration management functionality.");
+		builder.addAttribute((new AttributeNode.Builder("Allow registration of new devices",
+				"allowNewDevices", AttributeType.Boolean).setDescription(
+				"Indicates whether new devices should be allowed to register with the system").setDefaultValue(
+				"true").build()));
+		builder.addAttribute((new AttributeNode.Builder("Automatically assign site", "autoAssignSite",
+				AttributeType.Boolean).setDescription("Indicates if a site should automatically be assigned if no site token is "
+				+ "passed in registration request.").build()));
+		builder.addAttribute((new AttributeNode.Builder("Site token", "autoAssignSiteToken",
+				AttributeType.String).setDescription("Site token used for registering new devices if auto-assign is enabled "
+				+ "and no site token is passed.").build()));
 		return builder.build();
 	}
 

@@ -385,7 +385,11 @@ div.wz-button-bar {
 						"  <label class='control-label sw-control-label' style='width: 275px;' for='tc-" + attr.localName + "'>"
 								+ attr.name + "</label>";
 				section += "  <div class='controls sw-controls' style='margin-left: 300px;'>";
-				section += "    " + valuesByName[attr.localName];
+				if (valuesByName[attr.localName]) {
+					section += "    " + valuesByName[attr.localName];
+				} else if (attr.defaultValue) {
+					section += "    (defaulted to '" + attr.defaultValue + "')";
+				}
 				section += "  </div>";
 				section += "</div>";
 			}
@@ -416,14 +420,13 @@ div.wz-button-bar {
 							}
 						}
 					}
-					
+
 					section += "</h1>";
-					
+
 					section += "<a class='wz-child-nav btn' title='Open' ";
 					section += "  style='color: #060;' href='javascript:void(0)' ";
 					section +=
-							"  onclick='onChildOpenClicked(\"" + child.name + "\", \""
-									+ child.id + "\")'>";
+							"  onclick='onChildOpenClicked(\"" + child.name + "\", \"" + child.id + "\")'>";
 					section += "  <i class='fa fa-chevron-right fa-white'></i>";
 					section += "</a>";
 					section += "</div>";

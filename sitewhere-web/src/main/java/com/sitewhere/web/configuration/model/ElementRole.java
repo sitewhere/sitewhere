@@ -44,11 +44,20 @@ public enum ElementRole {
 	/** Event sources container. MQTT event source. */
 	EventSources_MqttEventSource,
 
+	/** Event sources container. Event decoder. */
+	EventSources_EventDecoder,
+
 	/** Device communication container. Inbound processing strategy configuration. */
 	DeviceCommunication_InboundProcessingStrategy,
 
+	/** Inbound processing strategy container. Blocking queue strategy. */
+	InboundProcessingStrategy_BlockingQueue,
+
 	/** Device communication container. Registration configuration. */
 	DeviceCommunication_Registration,
+
+	/** Registration container. Registration manager configuration. */
+	Registration_RegistrationManager,
 
 	/** Device communication container. Batch operations configuration. */
 	DeviceCommunication_BatchOperations,
