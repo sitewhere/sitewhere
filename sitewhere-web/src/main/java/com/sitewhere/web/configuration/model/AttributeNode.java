@@ -23,9 +23,6 @@ public class AttributeNode extends XmlNode {
 	/** Default value */
 	private String defaultValue;
 
-	/** Indicates if attribute is required */
-	private boolean required;
-
 	/** Indicates if field is the unique index */
 	private boolean index;
 
@@ -50,14 +47,6 @@ public class AttributeNode extends XmlNode {
 
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
-	}
-
-	public boolean isRequired() {
-		return required;
-	}
-
-	public void setRequired(boolean required) {
-		this.required = required;
 	}
 
 	public boolean isIndex() {

@@ -47,20 +47,23 @@ public enum ElementRole {
 	/** Event sources container. Event decoder. */
 	EventSources_EventDecoder,
 
-	/** Device communication container. Inbound processing strategy configuration. */
+	/** Device communication container. Inbound processing strategy. */
 	DeviceCommunication_InboundProcessingStrategy,
 
 	/** Inbound processing strategy container. Blocking queue strategy. */
 	InboundProcessingStrategy_BlockingQueue,
 
-	/** Device communication container. Registration configuration. */
+	/** Device communication container. Registration. */
 	DeviceCommunication_Registration,
 
-	/** Registration container. Registration manager configuration. */
+	/** Registration container. Registration manager. */
 	Registration_RegistrationManager,
 
-	/** Device communication container. Batch operations configuration. */
+	/** Device communication container. Batch operations. */
 	DeviceCommunication_BatchOperations,
+
+	/** Batch operations container. Batch operation manager. */
+	BatchOperations_BatchOperationManager,
 
 	/** Device communication container. Command routing configuration. */
 	DeviceCommunication_CommandRouting,

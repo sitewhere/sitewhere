@@ -90,6 +90,14 @@ label.sw-control-label {
 	width: 250px;
 }
 
+label.sw-control-label i {
+	color: #ccc;
+	padding-left: 5px;
+	margin-top: 2px;
+	vertical-align: top;
+	font-size: 10px;
+}
+
 div.sw-controls {
 	margin-left: 290px;
 	font-size: 17px;
@@ -324,10 +332,14 @@ div.wz-button-bar {
 					"<a onclick='tcConfigure()' title='Configure Component' class='btn' href='javascript:void(0)'>";
 			panel += "<i class='fa fa-gear sw-button-icon'></i>";
 			panel += "</a>";
-			panel +=
-					"<a onclick='tcDelete()' style='color: #900;' title='Delete Component' class='btn' href='javascript:void(0)'>";
-			panel += "<i class='fa fa-times sw-button-icon'></i>";
-			panel += "</a>";
+
+			// Do not allow required elements to be deleted.
+			if (!modelNode.required) {
+				panel +=
+						"<a onclick='tcDelete()' style='color: #900;' title='Delete Component' class='btn' href='javascript:void(0)'>";
+				panel += "<i class='fa fa-times sw-button-icon'></i>";
+				panel += "</a>";
+			}
 			panel += "</div>"
 		}
 		panel += "<h2>" + modelNode.description + "</h2>";
@@ -383,7 +395,8 @@ div.wz-button-bar {
 				section += "<div class='control-group'>";
 				section +=
 						"  <label class='control-label sw-control-label' style='width: 275px;' for='tc-" + attr.localName + "'>"
-								+ attr.name + "</label>";
+								+ attr.name
+								+ "<i class='fa fa-info-circle fa-white' title='" + attr.description + "'></i></label>";
 				section += "  <div class='controls sw-controls' style='margin-left: 300px;'>";
 				if (valuesByName[attr.localName]) {
 					section += "    " + valuesByName[attr.localName];

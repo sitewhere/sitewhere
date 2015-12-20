@@ -7,6 +7,7 @@
  */
 package com.sitewhere.web.configuration;
 
+import com.sitewhere.spring.handler.BatchOperationsParser;
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
 import com.sitewhere.spring.handler.EventSourcesParser;
 import com.sitewhere.spring.handler.InboundProcessingStrategyParser;
@@ -61,7 +62,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Data Management",
 						TenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
-						ElementRole.Top_DataManagement);
+						ElementRole.Top_DataManagement).setRequired(true);
 		builder.setDescription("Configure the datastore and related aspects such as caching and "
 				+ "data model initialization.");
 		builder.addElement(createMongoTenantDatastoreElement());
@@ -83,7 +84,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Communication",
 						TenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
-						ElementRole.Top_DeviceCommunication);
+						ElementRole.Top_DeviceCommunication).setRequired(true);
 		builder.setDescription("Configure how information is received from devices, how data is queued "
 				+ "for processing, and how commands are sent to devices.");
 		builder.addElement(createEventSourcesElement());
@@ -104,7 +105,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Inbound Processors",
 						TenantConfigurationParser.Elements.InboundProcessingChain.getLocalName(), "sign-in",
-						ElementRole.Top_InboundProcessingChain);
+						ElementRole.Top_InboundProcessingChain).setRequired(true);
 		builder.setDescription("Configure a chain of processing steps that are applied to inbound data.");
 		return builder.build();
 	}
@@ -118,7 +119,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Outbound Processors",
 						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
-						"sign-out", ElementRole.Top_OutboundProcessingChain);
+						"sign-out", ElementRole.Top_OutboundProcessingChain).setRequired(true);
 		builder.setDescription("Configure a chain of processing steps that are applied to outbound data.");
 		return builder.build();
 	}
@@ -132,7 +133,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Asset Management",
 						TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
-						ElementRole.Top_AssetManagement);
+						ElementRole.Top_AssetManagement).setRequired(true);
 		builder.setDescription("Configure asset management features.");
 		return builder.build();
 	}
@@ -286,8 +287,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				AttributeType.String).setDescription("Protocol used for establishing MQTT connection").setDefaultValue(
 				"tcp").addChoice("tcp").addChoice("tls").build()));
 		builder.addAttribute((new AttributeNode.Builder("MQTT broker hostname", "hostname",
-				AttributeType.String).setDescription("Hostname used for creating the MQTT broker"
-				+ "connection.").build()));
+				AttributeType.String).setDescription("Hostname used for creating the MQTT broker connection.").build()));
 		builder.addAttribute((new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).setDescription("Port number used for creating the MQTT broker connection.").build()));
 		builder.addAttribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).setDescription("MQTT topic event source uses for inbound messages.").build()));
 		builder.addAttribute((new AttributeNode.Builder("Trust store path", "trustStorePath",
@@ -341,7 +341,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Inbound Processing Strategy",
 						DeviceCommunicationParser.Elements.InboundProcessingStrategy.getLocalName(), "cogs",
-						ElementRole.DeviceCommunication_InboundProcessingStrategy);
+						ElementRole.DeviceCommunication_InboundProcessingStrategy).setRequired(true);
 
 		builder.setDescription("The inbound processing strategy is responsible for moving events from event "
 				+ "sources into the inbound processing chain. It is responsible for handling threading and "
@@ -385,7 +385,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Registration Management",
 						DeviceCommunicationParser.Elements.Registration.getLocalName(), "key",
-						ElementRole.DeviceCommunication_Registration);
+						ElementRole.DeviceCommunication_Registration).setRequired(true);
 
 		builder.setDescription("Manages how new devices are registered with the system.");
 		builder.addElement(createDefaultRegistrationManagerElement());
@@ -426,11 +426,32 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Batch Operation Management",
 						DeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "server",
-						ElementRole.DeviceCommunication_BatchOperations);
+						ElementRole.DeviceCommunication_BatchOperations).setRequired(true);
 
 		builder.setDescription("Manages how batch operations are processed. Batch operations are "
 				+ "actions that are executed asynchronously for many devices with the ability to monitor "
 				+ "progress at both the batch and element level.");
+		builder.addElement(createBatchOperationManagerElement());
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for batch operation manager.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createBatchOperationManagerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Batch Operation Manager",
+						BatchOperationsParser.Elements.DefaultBatchOperationManager.getLocalName(), "server",
+						ElementRole.BatchOperations_BatchOperationManager);
+
+		builder.setDescription("Manages how batch operations are processed.");
+		builder.addAttribute((new AttributeNode.Builder("Throttle delay (ms)", "throttleDelayMs",
+				AttributeType.Integer).setDescription(
+				"Number of milliseconds to wait between processing elements in a "
+						+ "batch operation. This throttles the output to prevent overloading the system.").setDefaultValue(
+				"0").build()));
 		return builder.build();
 	}
 
@@ -443,7 +464,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Command Routing",
 						DeviceCommunicationParser.Elements.CommandRouting.getLocalName(),
-						"sitemap fa-rotate-270", ElementRole.DeviceCommunication_CommandRouting);
+						"sitemap fa-rotate-270", ElementRole.DeviceCommunication_CommandRouting).setRequired(true);
 
 		builder.setDescription("Determines how commands are routed to command destinations.");
 		return builder.build();

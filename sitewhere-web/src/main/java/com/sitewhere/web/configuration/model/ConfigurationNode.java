@@ -26,6 +26,9 @@ public class ConfigurationNode {
 	/** Node type */
 	private NodeType nodeType;
 
+	/** Indicates if node is required */
+	private boolean required;
+
 	public ConfigurationNode(NodeType nodeType) {
 		this.nodeType = nodeType;
 	}
@@ -60,5 +63,13 @@ public class ConfigurationNode {
 
 	public void setNodeType(NodeType nodeType) {
 		this.nodeType = nodeType;
+	}
+
+	public boolean isRequired() {
+		return required;
+	}
+
+	public void setRequired(boolean required) {
+		this.required = required;
 	}
 }
