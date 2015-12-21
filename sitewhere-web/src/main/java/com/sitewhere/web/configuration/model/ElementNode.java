@@ -22,10 +22,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class ElementNode extends XmlNode {
 
 	/** List of attribute nodes */
-	private List<AttributeNode> attributes = new ArrayList<AttributeNode>();
+	private List<AttributeNode> attributes;
 
 	/** List of contained elements */
-	private List<ElementNode> elements = new ArrayList<ElementNode>();
+	private List<ElementNode> elements;
 
 	/** Element role */
 	private ElementRole role;
@@ -64,9 +64,11 @@ public class ElementNode extends XmlNode {
 	 * @return
 	 */
 	public String getIndexAttribute() {
-		for (AttributeNode attribute : attributes) {
-			if (attribute.isIndex()) {
-				return attribute.getLocalName();
+		if (attributes != null) {
+			for (AttributeNode attribute : attributes) {
+				if (attribute.isIndex()) {
+					return attribute.getLocalName();
+				}
 			}
 		}
 		return null;
@@ -95,11 +97,17 @@ public class ElementNode extends XmlNode {
 		}
 
 		public Builder addAttribute(AttributeNode attribute) {
+			if (element.getAttributes() == null) {
+				element.setAttributes(new ArrayList<AttributeNode>());
+			}
 			element.getAttributes().add(attribute);
 			return this;
 		}
 
 		public Builder addElement(ElementNode child) {
+			if (element.getElements() == null) {
+				element.setElements(new ArrayList<ElementNode>());
+			}
 			element.getElements().add(child);
 			return this;
 		}

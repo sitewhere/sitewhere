@@ -68,6 +68,12 @@ public enum ElementRole {
 	/** Device communication container. Command routing configuration. */
 	DeviceCommunication_CommandRouting,
 
+	/** Command routing container. Command router implementation. */
+	CommandRouting_CommandRouter,
+
+	/** Specification mapping router. Mapping. */
+	CommandRouting_SpecificationMappingRouter_Mapping,
+
 	/** Device communication container. Command destinations configuration. */
 	DeviceCommunication_CommandDestinations,
 

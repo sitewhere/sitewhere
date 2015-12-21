@@ -7,7 +7,10 @@
  */
 package com.sitewhere.web.configuration;
 
+import java.util.ArrayList;
+
 import com.sitewhere.spring.handler.BatchOperationsParser;
+import com.sitewhere.spring.handler.CommandRoutingParser;
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
 import com.sitewhere.spring.handler.EventSourcesParser;
 import com.sitewhere.spring.handler.InboundProcessingStrategyParser;
@@ -31,6 +34,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		setLocalName("tenant-configuration");
 		setName("Tenant Configuration");
 		setDescription("Provides a model for all aspects of tenant configuration.");
+		setElements(new ArrayList<ElementNode>());
 		getElements().add(createGlobals());
 		getElements().add(createDataManagement());
 		getElements().add(createDeviceCommunication());
@@ -467,6 +471,45 @@ public class TenantConfigurationModel extends ConfigurationModel {
 						"sitemap fa-rotate-270", ElementRole.DeviceCommunication_CommandRouting).setRequired(true);
 
 		builder.setDescription("Determines how commands are routed to command destinations.");
+		builder.addElement(createSpecificationMappingRouterElement());
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for specification mapping command router.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSpecificationMappingRouterElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Specification Mapping Router",
+						CommandRoutingParser.Elements.SpecificationMappingRouter.getLocalName(),
+						"sitemap fa-rotate-270", ElementRole.CommandRouting_CommandRouter);
+
+		builder.setDescription("Routes commands based on a direct mapping from device specification token "
+				+ "to a command desitination. Commands for specifications not in the mapping list are routed to "
+				+ "the default destination.");
+		builder.addAttribute((new AttributeNode.Builder("Default desintation", "defaultDestination",
+				AttributeType.String).setDescription("Identifier for default destination commands should be routed to if no mapping is found.").build()));
+		builder.addElement(createSpecificationMappingRouterMappingElement());
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for specification mapping command router.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSpecificationMappingRouterMappingElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Specification Mapping", "mapping", "arrows-h",
+						ElementRole.CommandRouting_SpecificationMappingRouter_Mapping);
+
+		builder.setDescription("Maps a specification token to a command destination that should process it.");
+		builder.addAttribute((new AttributeNode.Builder("Specification token", "specification",
+				AttributeType.String).setDescription(
+				"Unique token that identifies specification for the mapping.").makeIndex().build()));
+		builder.addAttribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String).setDescription("Unique id of command desintation for the mapping.").build()));
 		return builder.build();
 	}
 

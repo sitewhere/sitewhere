@@ -324,19 +324,27 @@ div.wz-button-bar {
 			panel += "<a onclick='popOne()' title='Up One Level' class='btn' href='javascript:void(0)'>";
 			panel += "<i class='fa fa-arrow-up sw-button-icon'></i>";
 			panel += "</a>";
-			panel +=
-					"<a onclick='tcAddChild()' title='Add Child Component' class='btn' href='javascript:void(0)'>";
-			panel += "<i class='fa fa-plus sw-button-icon'></i>";
-			panel += "</a>";
-			panel +=
-					"<a onclick='tcConfigure()' title='Configure Component' class='btn' href='javascript:void(0)'>";
-			panel += "<i class='fa fa-gear sw-button-icon'></i>";
-			panel += "</a>";
+			if (modelNode.elements) {
+				panel +=
+						"<a onclick='tcAddChild()' title='Add Child Component' class='btn' href='javascript:void(0)'>";
+				panel += "<i class='fa fa-plus sw-button-icon'></i>";
+				panel += "</a>";
+			}
+
+			// Only allow configuration if there are configurable attributes.
+			if (modelNode.attributes) {
+				panel +=
+						"<a onclick='tcConfigure()' title='Configure " + modelNode.name
+								+ "' class='btn' href='javascript:void(0)'>";
+				panel += "<i class='fa fa-gear sw-button-icon'></i>";
+				panel += "</a>";
+			}
 
 			// Do not allow required elements to be deleted.
 			if (!modelNode.required) {
 				panel +=
-						"<a onclick='tcDelete()' style='color: #900;' title='Delete Component' class='btn' href='javascript:void(0)'>";
+						"<a onclick='tcDelete()' style='color: #900;' title='Delete " + modelNode.name
+								+ "' class='btn' href='javascript:void(0)'>";
 				panel += "<i class='fa fa-times sw-button-icon'></i>";
 				panel += "</a>";
 			}
@@ -352,8 +360,8 @@ div.wz-button-bar {
 			panel += addAttributesForm(configNode, modelNode);
 		}
 
-		/** If model node has children, add navigation */
-		if (modelNode.elements) {
+		/** If children are configured, add navigation */
+		if (configNode.children) {
 			panel += addChildElements(configNode, modelNode);
 		}
 
@@ -384,70 +392,66 @@ div.wz-button-bar {
 
 	/** Add attributes form for panel */
 	function addAttributesForm(configNode, modelNode) {
+		var section = "<form class='form-horizontal'>";
+		var valuesByName = [];
 		if (configNode.attributes) {
-			var section = "<form class='form-horizontal'>";
-			var valuesByName = [];
 			for (var i = 0; i < configNode.attributes.length; i++) {
 				valuesByName[configNode.attributes[i].name] = configNode.attributes[i].value;
 			}
-			for (var i = 0; i < modelNode.attributes.length; i++) {
-				var attr = modelNode.attributes[i];
-				section += "<div class='control-group'>";
-				section +=
-						"  <label class='control-label sw-control-label' style='width: 275px;' for='tc-" + attr.localName + "'>"
-								+ attr.name
-								+ "<i class='fa fa-info-circle fa-white' title='" + attr.description + "'></i></label>";
-				section += "  <div class='controls sw-controls' style='margin-left: 300px;'>";
-				if (valuesByName[attr.localName]) {
-					section += "    " + valuesByName[attr.localName];
-				} else if (attr.defaultValue) {
-					section += "    (defaulted to '" + attr.defaultValue + "')";
-				}
-				section += "  </div>";
-				section += "</div>";
-			}
-			section += "</form>";
-			return section;
 		}
-		return "";
+		for (var i = 0; i < modelNode.attributes.length; i++) {
+			var attr = modelNode.attributes[i];
+			section += "<div class='control-group'>";
+			section +=
+					"  <label class='control-label sw-control-label' style='width: 275px;' for='tc-" + attr.localName + "'>"
+							+ attr.name
+							+ "<i class='fa fa-info-circle fa-white' title='" + attr.description + "'></i></label>";
+			section += "  <div class='controls sw-controls' style='margin-left: 300px;'>";
+			if (valuesByName[attr.localName]) {
+				section += "    " + valuesByName[attr.localName];
+			} else if (attr.defaultValue) {
+				section += "    (defaulted to '" + attr.defaultValue + "')";
+			}
+			section += "  </div>";
+			section += "</div>";
+		}
+		section += "</form>";
+		return section;
 	}
 
 	/** Add child element navigation for panel */
 	function addChildElements(configNode, modelNode) {
 		var section = "";
-		if (configNode.children) {
-			for (var i = 0; i < configNode.children.length; i++) {
-				var child = configNode.children[i];
-				var childModel = findModelNodeByName(modelNode, child.name);
-				if (childModel) {
-					section += "<div class='wz-child'>";
-					section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
-					section += "<h1 class='wz-child-name'>" + childModel.name;
+		for (var i = 0; i < configNode.children.length; i++) {
+			var child = configNode.children[i];
+			var childModel = findModelNodeByName(modelNode, child.name);
+			if (childModel) {
+				section += "<div class='wz-child'>";
+				section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
+				section += "<h1 class='wz-child-name'>" + childModel.name;
 
-					// Show index value if specified.
-					if (childModel.indexAttribute) {
-						for (var ai = 0; ai < child.attributes.length; ai++) {
-							var attrName = child.attributes[ai].name;
-							if (childModel.indexAttribute == attrName) {
-								section += " (" + child.attributes[ai].value + ")";
-							}
+				// Show index value if specified.
+				if (childModel.indexAttribute) {
+					for (var ai = 0; ai < child.attributes.length; ai++) {
+						var attrName = child.attributes[ai].name;
+						if (childModel.indexAttribute == attrName) {
+							section += " (" + child.attributes[ai].value + ")";
 						}
 					}
-
-					section += "</h1>";
-
-					section += "<a class='wz-child-nav btn' title='Open' ";
-					section += "  style='color: #060;' href='javascript:void(0)' ";
-					section +=
-							"  onclick='onChildOpenClicked(\"" + child.name + "\", \"" + child.id + "\")'>";
-					section += "  <i class='fa fa-chevron-right fa-white'></i>";
-					section += "</a>";
-					section += "</div>";
-				} else {
-					section += "<div class='wz-child'>";
-					section += "<h1>Unknown model element: " + child.name + "</h1>";
-					section += "</div>";
 				}
+
+				section += "</h1>";
+
+				section += "<a class='wz-child-nav btn' title='Open' ";
+				section += "  style='color: #060;' href='javascript:void(0)' ";
+				section += "  onclick='onChildOpenClicked(\"" + child.name + "\", \"" + child.id + "\")'>";
+				section += "  <i class='fa fa-chevron-right fa-white'></i>";
+				section += "</a>";
+				section += "</div>";
+			} else {
+				section += "<div class='wz-child'>";
+				section += "<h1>Unknown model element: " + child.name + "</h1>";
+				section += "</div>";
 			}
 		}
 		return section;
