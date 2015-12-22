@@ -30,6 +30,9 @@ public class ElementNode extends XmlNode {
 	/** Element role */
 	private ElementRole role;
 
+	/** Message shown to warn users before deleting element */
+	private String onDeleteWarning;
+
 	public ElementNode() {
 		super(NodeType.Element);
 	}
@@ -56,6 +59,14 @@ public class ElementNode extends XmlNode {
 
 	public void setRole(ElementRole role) {
 		this.role = role;
+	}
+
+	public String getOnDeleteWarning() {
+		return onDeleteWarning;
+	}
+
+	public void setOnDeleteWarning(String onDeleteWarning) {
+		this.onDeleteWarning = onDeleteWarning;
 	}
 
 	/**
@@ -114,6 +125,11 @@ public class ElementNode extends XmlNode {
 
 		public Builder setRequired(boolean required) {
 			element.setRequired(required);
+			return this;
+		}
+
+		public Builder warnOnDelete(String warning) {
+			element.setOnDeleteWarning(warning);
 			return this;
 		}
 

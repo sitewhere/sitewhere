@@ -14,6 +14,7 @@ import com.sitewhere.spring.handler.CommandDestinationsParser;
 import com.sitewhere.spring.handler.CommandRoutingParser;
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
 import com.sitewhere.spring.handler.EventSourcesParser;
+import com.sitewhere.spring.handler.InboundProcessingChainParser;
 import com.sitewhere.spring.handler.InboundProcessingStrategyParser;
 import com.sitewhere.spring.handler.RegistrationParser;
 import com.sitewhere.spring.handler.TenantConfigurationParser;
@@ -53,7 +54,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Global Overrides",
 						TenantConfigurationParser.Elements.Globals.getLocalName(), "cogs",
-						ElementRole.Top_Globals);
+						ElementRole.Top_Level);
 		builder.setDescription("Allow tenant-specific changes to global configuration elements.");
 		return builder.build();
 	}
@@ -67,7 +68,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Data Management",
 						TenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
-						ElementRole.Top_DataManagement).setRequired(true);
+						ElementRole.Top_Level).setRequired(true);
 		builder.setDescription("Configure the datastore and related aspects such as caching and "
 				+ "data model initialization.");
 		builder.addElement(createMongoTenantDatastoreElement());
@@ -89,7 +90,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Communication",
 						TenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
-						ElementRole.Top_DeviceCommunication).setRequired(true);
+						ElementRole.Top_Level).setRequired(true);
 		builder.setDescription("Configure how information is received from devices, how data is queued "
 				+ "for processing, and how commands are sent to devices.");
 		builder.addElement(createEventSourcesElement());
@@ -98,48 +99,6 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.addElement(createBatchOperationsElement());
 		builder.addElement(createCommandRoutingElement());
 		builder.addElement(createCommandDestinationsElement());
-		return builder.build();
-	}
-
-	/**
-	 * Create the container for inbound processing chain configuration.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createInboundProcessingChain() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder("Inbound Processors",
-						TenantConfigurationParser.Elements.InboundProcessingChain.getLocalName(), "sign-in",
-						ElementRole.Top_InboundProcessingChain).setRequired(true);
-		builder.setDescription("Configure a chain of processing steps that are applied to inbound data.");
-		return builder.build();
-	}
-
-	/**
-	 * Create the container for outbound processing chain configuration.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createOutboundProcessingChain() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder("Outbound Processors",
-						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
-						"sign-out", ElementRole.Top_OutboundProcessingChain).setRequired(true);
-		builder.setDescription("Configure a chain of processing steps that are applied to outbound data.");
-		return builder.build();
-	}
-
-	/**
-	 * Create the container for asset management configuration.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createAssetManagement() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder("Asset Management",
-						TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
-						ElementRole.Top_AssetManagement).setRequired(true);
-		builder.setDescription("Configure asset management features.");
 		return builder.build();
 	}
 
@@ -283,7 +242,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("MQTT Event Source",
 						EventSourcesParser.Elements.MqttEventSource.getLocalName(), "sign-in",
-						ElementRole.EventSources_MqttEventSource);
+						ElementRole.EventSources_EventSource);
 
 		builder.setDescription("Listen for events on an MQTT topic.");
 		builder.addAttribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).setDescription(
@@ -325,7 +284,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Google Protocol Buffers Event Decoder",
 						EventSourcesParser.BinaryDecoders.ProtobufDecoder.getLocalName(), "cogs",
-						ElementRole.EventSources_EventDecoder);
+						ElementRole.EventSources_BinaryEventDecoder);
 
 		builder.setDescription("Event decoder that takes binary messages from an underlying transport "
 				+ "and decodes them using the standard SiteWhere Google Protocol Buffers format. This is "
@@ -342,7 +301,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("JSON Event Decoder",
 						EventSourcesParser.BinaryDecoders.JsonDecoder.getLocalName(), "cogs",
-						ElementRole.EventSources_EventDecoder);
+						ElementRole.EventSources_BinaryEventDecoder);
 
 		builder.setDescription("Event decoder that takes binary messages from an underlying transport "
 				+ "and parses them as the JSON representation of a SiteWhere device event batch.");
@@ -377,7 +336,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				new ElementNode.Builder(
 						"Blocking Queue Strategy",
 						InboundProcessingStrategyParser.Elements.DefaultInboundProcessingStrategy.getLocalName(),
-						"cogs", ElementRole.InboundProcessingStrategy_BlockingQueue);
+						"cogs", ElementRole.InboundProcessingStrategy_Strategy);
 
 		builder.setDescription("Send decoded messages into the processing pipeline by first adding them "
 				+ "to a fixed-length queue, then using multiple threads to move events from the queue into "
@@ -619,6 +578,107 @@ public class TenantConfigurationModel extends ConfigurationModel {
 				AttributeType.String).setDescription("Expression for building topic name to which system commands are sent. "
 				+ "Add a '%s' where the hardware id should be inserted.").build()));
 
+		return builder.build();
+	}
+
+	/**
+	 * Create the container for inbound processing chain configuration.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createInboundProcessingChain() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Inbound Processors",
+						TenantConfigurationParser.Elements.InboundProcessingChain.getLocalName(), "sign-in",
+						ElementRole.Top_Level).setRequired(true);
+		builder.setDescription("Configure a chain of processing steps that are applied to inbound data.");
+
+		builder.addElement(createEventStorageProcessorElement());
+		builder.addElement(createRegistrationProcessorElement());
+		builder.addElement(createDeviceStreamProcessorElement());
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration event storage processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createEventStorageProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Event Storage Processor",
+						InboundProcessingChainParser.Elements.EventStorageProcessor.getLocalName(),
+						"database", ElementRole.InboundProcessingChain_EventProcessor);
+
+		builder.setDescription("Persists incoming events into the datastore. If this processor is removed, "
+				+ "events will not be stored and outbound processing will not be triggered for the events.");
+		builder.warnOnDelete("Deleting this component will prevent events from being persisted!");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for registration processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createRegistrationProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Registration Processor",
+						InboundProcessingChainParser.Elements.RegistrationProcessor.getLocalName(), "key",
+						ElementRole.InboundProcessingChain_EventProcessor);
+
+		builder.setDescription("Passes registration events to the registration manager. "
+				+ "If this processor is removed, device registration events will be ignored.");
+		builder.warnOnDelete("Deleting this component will cause registration events to be ignored!");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for device stream.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDeviceStreamProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Device Stream Processor",
+						InboundProcessingChainParser.Elements.DeviceStreamProcessor.getLocalName(),
+						"exchange", ElementRole.InboundProcessingChain_EventProcessor);
+
+		builder.setDescription("Passes device stream events to the device stream manager. "
+				+ "If this processor is removed, device streaming events will be ignored.");
+		builder.warnOnDelete("Deleting this component will cause device stream events to be ignored!");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create the container for outbound processing chain configuration.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createOutboundProcessingChain() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Outbound Processors",
+						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
+						"sign-out", ElementRole.Top_Level).setRequired(true);
+		builder.setDescription("Configure a chain of processing steps that are applied to outbound data.");
+		return builder.build();
+	}
+
+	/**
+	 * Create the container for asset management configuration.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createAssetManagement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Asset Management",
+						TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
+						ElementRole.Top_Level).setRequired(true);
+		builder.setDescription("Configure asset management features.");
 		return builder.build();
 	}
 }

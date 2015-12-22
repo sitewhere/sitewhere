@@ -14,84 +14,126 @@ package com.sitewhere.web.configuration.model;
  */
 public enum ElementRole {
 
-	/** Top level. Globals configuration. */
-	Top_Globals,
+	/** Top level element. */
+	Top_Level(null, false, true, false),
 
-	/** Top level. Data management configuration. */
-	Top_DataManagement,
+	/** Top level element. */
+	Globals_Global("Global", true, true, true),
 
 	/** Data management container. Datastore configuration. */
-	DataManagement_Datastore,
+	DataManagement_Datastore("Datastore", false, false, false),
 
 	/** Data management container. Cache provider configuration. */
-	DataManagement_CacheProvider,
+	DataManagement_CacheProvider("Cache Provider", true, false, false),
 
 	/** Data management container. Device model initializer configuration. */
-	DataManagement_DeviceModelInitializer,
+	DataManagement_DeviceModelInitializer("Device Model Initializer", true, false, false),
 
 	/** Data management container. Asset model initializer configuration. */
-	DataManagement_AssetModelInitializer,
+	DataManagement_AssetModelInitializer("Asset Model Initializer", true, false, false),
 
 	/** Data management container. Schedule model initializer configuration. */
-	DataManagement_ScheduleModelInitializer,
-
-	/** Top level. Device communication configuration. */
-	Top_DeviceCommunication,
+	DataManagement_ScheduleModelInitializer("Schedule Model Initializer", true, false, false),
 
 	/** Device communication container. Event sources configuration. */
-	DeviceCommunication_EventSources,
+	DeviceCommunication_EventSources(null, false, false, false),
 
-	/** Event sources container. MQTT event source. */
-	EventSources_MqttEventSource,
+	/** Event sources container. Event source. */
+	EventSources_EventSource("Event Source", true, true, true),
 
-	/** Event sources container. Event decoder. */
-	EventSources_EventDecoder,
+	/** Event source. Binary event decoder. */
+	EventSources_BinaryEventDecoder("Binary Event Decoder", true, false, false),
 
 	/** Device communication container. Inbound processing strategy. */
-	DeviceCommunication_InboundProcessingStrategy,
+	DeviceCommunication_InboundProcessingStrategy(null, false, false, false),
 
 	/** Inbound processing strategy container. Blocking queue strategy. */
-	InboundProcessingStrategy_BlockingQueue,
+	InboundProcessingStrategy_Strategy("Strategy", false, false, false),
 
 	/** Device communication container. Registration. */
-	DeviceCommunication_Registration,
+	DeviceCommunication_Registration(null, false, false, false),
 
 	/** Registration container. Registration manager. */
-	Registration_RegistrationManager,
+	Registration_RegistrationManager("Registration Manager", false, false, false),
 
 	/** Device communication container. Batch operations. */
-	DeviceCommunication_BatchOperations,
+	DeviceCommunication_BatchOperations(null, false, false, false),
 
 	/** Batch operations container. Batch operation manager. */
-	BatchOperations_BatchOperationManager,
+	BatchOperations_BatchOperationManager("Batch Operation Manager", false, false, false),
 
 	/** Device communication container. Command routing configuration. */
-	DeviceCommunication_CommandRouting,
+	DeviceCommunication_CommandRouting(null, false, false, false),
 
 	/** Command routing container. Command router implementation. */
-	CommandRouting_CommandRouter,
+	CommandRouting_CommandRouter("Command Router", false, false, false),
 
 	/** Specification mapping router. Mapping. */
-	CommandRouting_SpecificationMappingRouter_Mapping,
+	CommandRouting_SpecificationMappingRouter_Mapping("Mapping", true, true, true),
 
 	/** Device communication container. Command destinations configuration. */
-	DeviceCommunication_CommandDestinations,
+	DeviceCommunication_CommandDestinations(null, false, false, false),
 
 	/** Command destinations. Command destination. */
-	CommandDestinations_CommandDestination,
+	CommandDestinations_CommandDestination("Command Destination", true, true, true),
 
 	/** Command destination. Binary command encoder. */
-	CommandDestinations_BinaryCommandEncoder,
+	CommandDestinations_BinaryCommandEncoder("Binary Command Encoder", false, false, false),
 
 	/** Command destination. Paramter extractor. */
-	CommandDestinations_ParameterExtractor,
+	CommandDestinations_ParameterExtractor("Parameter Extractor", false, false, false),
 
-	/** Top level. Inbound processing chain configuration. */
-	Top_InboundProcessingChain,
+	/** Inbound processing chain. Event processor. */
+	InboundProcessingChain_EventProcessor("Event Processor", true, true, true);
 
-	/** Top level. Outbound processing chain configuration. */
-	Top_OutboundProcessingChain,
+	/** Role name */
+	private String name;
 
-	/** Top level. Asset management configuration. */
-	Top_AssetManagement,
+	/** Indicates if role is optional */
+	private boolean optional;
+
+	/** Indicates if multiple elements in role are allowed */
+	private boolean multiple;
+
+	/** Indicates if elements in role can be reordered */
+	private boolean reorderable;
+
+	private ElementRole(String name, boolean optional, boolean multiple, boolean reorderable) {
+		this.name = name;
+		this.optional = optional;
+		this.multiple = multiple;
+		this.reorderable = reorderable;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean isOptional() {
+		return optional;
+	}
+
+	public void setOptional(boolean optional) {
+		this.optional = optional;
+	}
+
+	public boolean isMultiple() {
+		return multiple;
+	}
+
+	public void setMultiple(boolean multiple) {
+		this.multiple = multiple;
+	}
+
+	public boolean isReorderable() {
+		return reorderable;
+	}
+
+	public void setReorderable(boolean reorderable) {
+		this.reorderable = reorderable;
+	}
 }
