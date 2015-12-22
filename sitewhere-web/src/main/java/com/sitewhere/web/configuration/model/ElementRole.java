@@ -77,6 +77,15 @@ public enum ElementRole {
 	/** Device communication container. Command destinations configuration. */
 	DeviceCommunication_CommandDestinations,
 
+	/** Command destinations. Command destination. */
+	CommandDestinations_CommandDestination,
+
+	/** Command destination. Binary command encoder. */
+	CommandDestinations_BinaryCommandEncoder,
+
+	/** Command destination. Paramter extractor. */
+	CommandDestinations_ParameterExtractor,
+
 	/** Top level. Inbound processing chain configuration. */
 	Top_InboundProcessingChain,
 

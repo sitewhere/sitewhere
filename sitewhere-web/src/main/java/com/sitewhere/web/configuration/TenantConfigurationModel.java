@@ -10,6 +10,7 @@ package com.sitewhere.web.configuration;
 import java.util.ArrayList;
 
 import com.sitewhere.spring.handler.BatchOperationsParser;
+import com.sitewhere.spring.handler.CommandDestinationsParser;
 import com.sitewhere.spring.handler.CommandRoutingParser;
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
 import com.sitewhere.spring.handler.EventSourcesParser;
@@ -287,20 +288,32 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.setDescription("Listen for events on an MQTT topic.");
 		builder.addAttribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).setDescription(
 				"Unique id used for referencing this event source.").makeIndex().build()));
+
+		// Add common MQTT connectivity attributes.
+		addMqttConnectivityAttributes(builder);
+		builder.addAttribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).setDescription("MQTT topic event source uses for inbound messages.").build()));
+
+		builder.addElement(createProtobufEventDecoderElement());
+		builder.addElement(createJsonEventDecoderElement());
+		return builder.build();
+	}
+
+	/**
+	 * Adds common MQTT connectivity attributes.
+	 * 
+	 * @param builder
+	 */
+	protected void addMqttConnectivityAttributes(ElementNode.Builder builder) {
 		builder.addAttribute((new AttributeNode.Builder("Transport protocol", "protocol",
 				AttributeType.String).setDescription("Protocol used for establishing MQTT connection").setDefaultValue(
 				"tcp").addChoice("tcp").addChoice("tls").build()));
 		builder.addAttribute((new AttributeNode.Builder("MQTT broker hostname", "hostname",
 				AttributeType.String).setDescription("Hostname used for creating the MQTT broker connection.").build()));
 		builder.addAttribute((new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).setDescription("Port number used for creating the MQTT broker connection.").build()));
-		builder.addAttribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).setDescription("MQTT topic event source uses for inbound messages.").build()));
 		builder.addAttribute((new AttributeNode.Builder("Trust store path", "trustStorePath",
 				AttributeType.String).setDescription("Fully-qualified path to trust store for secured connections.").build()));
 		builder.addAttribute((new AttributeNode.Builder("Trust store password", "trustStorePassword",
 				AttributeType.String).setDescription("Password used to authenticate with trust store.").build()));
-		builder.addElement(createProtobufEventDecoderElement());
-		builder.addElement(createJsonEventDecoderElement());
-		return builder.build();
 	}
 
 	/**
@@ -489,7 +502,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.setDescription("Routes commands based on a direct mapping from device specification token "
 				+ "to a command desitination. Commands for specifications not in the mapping list are routed to "
 				+ "the default destination.");
-		builder.addAttribute((new AttributeNode.Builder("Default desintation", "defaultDestination",
+		builder.addAttribute((new AttributeNode.Builder("Default destination", "defaultDestination",
 				AttributeType.String).setDescription("Identifier for default destination commands should be routed to if no mapping is found.").build()));
 		builder.addElement(createSpecificationMappingRouterMappingElement());
 		return builder.build();
@@ -527,6 +540,85 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.setDescription("Command destinations provide the information SiteWhere needs "
 				+ "to route commands to devices. This includes information about how to encode the "
 				+ "command and how to deliver the command via the underlying transport.");
+		builder.addElement(createMqttCommandDestinationElement());
+		return builder.build();
+	}
+
+	/**
+	 * Add attributes common to all command destinations.
+	 * 
+	 * @param builder
+	 */
+	protected void addCommandDestinationAttributes(ElementNode.Builder builder) {
+		builder.addAttribute((new AttributeNode.Builder("Destination id", "destinationId",
+				AttributeType.String).setDescription("Unique identifier for command destination.").makeIndex().build()));
+	}
+
+	/**
+	 * Create element configuration for MQTT command destination.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createMqttCommandDestinationElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("MQTT Command Destination",
+						CommandDestinationsParser.Elements.MqttCommandDestination.getLocalName(), "sign-out",
+						ElementRole.CommandDestinations_CommandDestination);
+
+		builder.setDescription("Sends commands to remote devices using the MQTT protocol. Commands are first encoded "
+				+ "using a binary encoder, then a parameter extractor is used to determine the topic used "
+				+ "to deliver the payload to the subscriber.");
+
+		// Add common command destination attributes.
+		addCommandDestinationAttributes(builder);
+
+		// Add common MQTT connectivity attributes.
+		addMqttConnectivityAttributes(builder);
+
+		builder.addElement(createProtobufCommandEncoderElement());
+		builder.addElement(createHardwareIdParameterExtractorElement());
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for GPB command encoder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createProtobufCommandEncoderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Google Protocol Buffers Command Encoder",
+						CommandDestinationsParser.BinaryCommandEncoders.ProtobufEncoder.getLocalName(),
+						"cogs", ElementRole.CommandDestinations_BinaryCommandEncoder);
+
+		builder.setDescription("Encodes a command using the default Google Protocol Buffers representation. "
+				+ "The proto file for the representation can be found in the <strong>code generation</strong> "
+				+ "page for the device specification.");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for hardware id parameter extractor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createHardwareIdParameterExtractorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Hardware Id Topic Extractor", "hardware-id-topic-extractor", "cogs",
+						ElementRole.CommandDestinations_ParameterExtractor);
+
+		builder.setDescription("Calculates MQTT topic for publishing commands by substituting the device "
+				+ "hardware id into parameterized strings. The resulting values are used by the command "
+				+ "destination to send the encoded command payload to the device.");
+		builder.addAttribute((new AttributeNode.Builder("Command topic expression", "commandTopicExpr",
+				AttributeType.String).setDescription("Expression for building topic name to which custom commands are sent. "
+				+ "Add a '%s' where the hardware id should be inserted.").build()));
+		builder.addAttribute((new AttributeNode.Builder("System topic expression", "systemTopicExpr",
+				AttributeType.String).setDescription("Expression for building topic name to which system commands are sent. "
+				+ "Add a '%s' where the hardware id should be inserted.").build()));
+
 		return builder.build();
 	}
 }
