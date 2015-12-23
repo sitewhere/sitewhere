@@ -28,7 +28,7 @@ public enum ElementRole {
 	Globals_Global("Global", true, true, true),
 
 	/** Globals element. */
-	Globals(null, false, true, false, new ElementRole[] { Globals_Global }),
+	Globals(null, false, false, false, new ElementRole[] { Globals_Global }),
 
 	/** Data management container. Datastore configuration. */
 	DataManagement_Datastore("Datastore", false, false, false),
@@ -46,7 +46,7 @@ public enum ElementRole {
 	DataManagement_ScheduleModelInitializer("Schedule Model Initializer", true, false, false),
 
 	/** Data management. */
-	DataManagement(null, false, true, false, new ElementRole[] {
+	DataManagement(null, false, false, false, new ElementRole[] {
 			DataManagement_Datastore,
 			DataManagement_CacheProvider,
 			DataManagement_DeviceModelInitializer,
@@ -57,7 +57,7 @@ public enum ElementRole {
 	EventSource_BinaryEventDecoder("Binary Event Decoder", true, false, false),
 
 	/** Event sources container. Event source. */
-	EventSources_EventSource("Event Source", true, true, true,
+	EventSources_EventSource("Event Sources", true, true, true,
 			new ElementRole[] { EventSource_BinaryEventDecoder }),
 
 	/** Device communication container. Event sources configuration. */
@@ -89,7 +89,7 @@ public enum ElementRole {
 	CommandRouting_CommandRouter("Command Router", false, false, false),
 
 	/** Specification mapping router. Mapping. */
-	CommandRouting_SpecificationMappingRouter_Mapping("Mapping", true, true, true),
+	CommandRouting_SpecificationMappingRouter_Mapping("Mappings", true, true, true),
 
 	/** Device communication container. Command routing configuration. */
 	DeviceCommunication_CommandRouting(null, false, false, false,
@@ -102,7 +102,7 @@ public enum ElementRole {
 	CommandDestinations_ParameterExtractor("Parameter Extractor", false, false, false),
 
 	/** Command destinations. Command destination. */
-	CommandDestinations_CommandDestination("Command Destination", true, true, true, new ElementRole[] {
+	CommandDestinations_CommandDestination("Command Destinations", true, true, true, new ElementRole[] {
 			CommandDestinations_BinaryCommandEncoder,
 			CommandDestinations_ParameterExtractor }),
 
@@ -111,7 +111,7 @@ public enum ElementRole {
 			new ElementRole[] { CommandDestinations_CommandDestination }),
 
 	/** Device communication element. */
-	DeviceCommunication(null, false, true, false, new ElementRole[] {
+	DeviceCommunication(null, false, false, false, new ElementRole[] {
 			DeviceCommunication_EventSources,
 			DeviceCommunication_InboundProcessingStrategy,
 			DeviceCommunication_Registration,
@@ -120,20 +120,20 @@ public enum ElementRole {
 			DeviceCommunication_CommandDestinations }),
 
 	/** Inbound processing chain. Event processor. */
-	InboundProcessingChain_EventProcessor("Event Processor", true, true, true),
+	InboundProcessingChain_EventProcessor("Event Processors", true, true, true),
 
 	/** Inbound processing chain element. */
-	InboundProcessingChain(null, false, true, false,
+	InboundProcessingChain(null, false, false, false,
 			new ElementRole[] { InboundProcessingChain_EventProcessor }),
 
 	/** Outbound processing chain element. */
-	OutboundProcessingChain(null, false, true, false, new ElementRole[] {}),
+	OutboundProcessingChain(null, false, false, false, new ElementRole[] {}),
 
 	/** Asset Management element. */
-	AssetManagment(null, false, true, false, new ElementRole[] {}),
+	AssetManagment(null, false, false, false, new ElementRole[] {}),
 
 	/** Top level element. */
-	Root(null, false, true, false, new ElementRole[] {
+	Root(null, false, false, false, new ElementRole[] {
 			Globals,
 			DataManagement,
 			DeviceCommunication,

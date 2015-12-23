@@ -40,6 +40,34 @@ div.wz-header h2 {
 	font-size: 26px;
 }
 
+.wz-drag-icon {
+	padding: 10px 10px 10px 5px;
+	font-size: 20px;
+	color: #ccc;
+	cursor: move;
+	float: left;
+	border-right: 1px solid #ccc;
+}
+
+div.wz-role {
+	border: 1px solid #999;
+	padding: 15px 10px 10px;
+	position: relative;
+	margin-top: 10px;
+	margin-bottom: 25px;
+	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
+}
+
+div.wz-role-label {
+	position: absolute;
+	top: -10px;
+	left: 5px;
+	font-size: 12px;
+	background-color: #999;
+	color: #fff;
+	padding: 1px 5px;
+}
+
 div.wz-child {
 	border: 1px solid #ccc;
 	background-color: #eee;
@@ -452,12 +480,20 @@ div.wz-button-bar {
 			var childrenWithRole = childrenByRole[childRoleName];
 
 			// Loop through children in role.
+			if (childRole.name) {
+				section += "<div class='wz-role'><div class='wz-role-label'>" + childRole.name + "</div>";
+			}
 			for (var j = 0; j < childrenWithRole.length; j++) {
 				var childContext = childrenWithRole[j];
 				var childModel = childContext["model"];
 				var childConfig = childContext["config"];
 
-				section += "<div class='wz-child'>";
+				section +=
+						"<div class='wz-child'" + (childRole.multiple ? " draggable='true'" : "")
+								+ ">";
+				if (childRole.multiple) {
+					section += "<i class='wz-drag-icon fa fa-bars fa-white'></i>";
+				}
 				section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
 				section += "<h1 class='wz-child-name'>" + childModel.name;
 
@@ -475,9 +511,14 @@ div.wz-button-bar {
 
 				section += "<a class='wz-child-nav btn' title='Open' ";
 				section += "  style='color: #060;' href='javascript:void(0)' ";
-				section += "  onclick='onChildOpenClicked(\"" + childConfig.name + "\", \"" + childConfig.id + "\")'>";
+				section +=
+						"  onclick='onChildOpenClicked(\"" + childConfig.name + "\", \"" + childConfig.id
+								+ "\")'>";
 				section += "  <i class='fa fa-chevron-right fa-white'></i>";
 				section += "</a>";
+				section += "</div>";
+			}
+			if (childRole.name) {
 				section += "</div>";
 			}
 		}

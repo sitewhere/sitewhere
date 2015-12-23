@@ -155,7 +155,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createDefaultDeviceModelInitializerElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Device Model Initializer",
+				new ElementNode.Builder("Default Device Model Initializer",
 						TenantDatastoreParser.Elements.DefaultDeviceModelInitializer.getLocalName(), "flash",
 						ElementRole.DataManagement_DeviceModelInitializer);
 		builder.setDescription("This component creates sample data when no existing device data "
@@ -171,7 +171,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createDefaultAssetModelInitializerElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Asset Model Initializer",
+				new ElementNode.Builder("Default Asset Model Initializer",
 						TenantDatastoreParser.Elements.DefaultAssetModelInitializer.getLocalName(), "flash",
 						ElementRole.DataManagement_AssetModelInitializer);
 		builder.setDescription("This component creates sample data when no existing asset data "
@@ -187,7 +187,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createDefaultScheduleModelInitializerElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Schedule Model Initializer",
+				new ElementNode.Builder("Default Schedule Model Initializer",
 						TenantDatastoreParser.Elements.DefaultScheduleModelInitializer.getLocalName(),
 						"flash", ElementRole.DataManagement_ScheduleModelInitializer);
 		builder.setDescription("This component creates sample data when no existing schedule data "
