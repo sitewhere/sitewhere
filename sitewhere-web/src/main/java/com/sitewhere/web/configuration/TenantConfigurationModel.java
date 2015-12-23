@@ -43,6 +43,8 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		getElements().add(createInboundProcessingChain());
 		getElements().add(createOutboundProcessingChain());
 		getElements().add(createAssetManagement());
+		setRole(ElementRole.Root.name());
+		setRequired(true);
 	}
 
 	/**

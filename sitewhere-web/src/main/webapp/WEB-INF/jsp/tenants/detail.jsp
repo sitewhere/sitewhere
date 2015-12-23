@@ -318,10 +318,42 @@ div.wz-button-bar {
 		var modelNode = context["model"];
 
 		var panel = "<div>";
+
+		// Add breadcrumbs for quickly navigating to parent nodes.
 		panel += addBreadcrumbs();
+
 		panel += "<div class='wz-header'>";
 		panel += "<i class='wz-header-icon fa fa-" + modelNode.icon + " fa-white'></i>";
 		panel += "<h1>" + modelNode.name + "</h1>";
+
+		// Create buttons for various node actions.
+		panel += createActionButtons(modelNode, configNode);
+
+		panel += "<h2>" + modelNode.description + "</h2>";
+		panel += "</div>";
+		panel += "<div class='wz-divider'>";
+
+		// If model node has attributes, add form.
+		if (modelNode.attributes) {
+			panel += addAttributesForm(configNode, modelNode);
+		}
+
+		/** If children are configured, add navigation */
+		if (configNode.children) {
+			panel += addChildElements(configNode, modelNode);
+		}
+
+		panel += "</div>";
+		panel += "</div>";
+
+		$('#tve-config-page').html(panel);
+	}
+
+	/** Add buttons that allow actions to be taken on the current node */
+	function createActionButtons(modelNode, configNode) {
+		var panel = "";
+
+		// Do not allow actions at the root level.
 		if (editorContexts.length > 1) {
 			panel += "<div style='float: right;' class='btn-group'>";
 			panel += "<a onclick='popOne()' title='Up One Level' class='btn' href='javascript:void(0)'>";
@@ -353,25 +385,7 @@ div.wz-button-bar {
 			}
 			panel += "</div>"
 		}
-		panel += "<h2>" + modelNode.description + "</h2>";
-		panel += "</div>";
-
-		panel += "<div class='wz-divider'>";
-
-		// If model node has attributes, add form.
-		if (modelNode.attributes) {
-			panel += addAttributesForm(configNode, modelNode);
-		}
-
-		/** If children are configured, add navigation */
-		if (configNode.children) {
-			panel += addChildElements(configNode, modelNode);
-		}
-
-		panel += "</div>";
-		panel += "</div>";
-
-		$('#tve-config-page').html(panel);
+		return panel;
 	}
 
 	/** Add breadcrumbs to all access to parent nodes */
@@ -425,20 +439,34 @@ div.wz-button-bar {
 	/** Add child element navigation for panel */
 	function addChildElements(configNode, modelNode) {
 		var section = "";
-		for (var i = 0; i < configNode.children.length; i++) {
-			var child = configNode.children[i];
-			var childModel = findModelNodeByName(modelNode, child.name);
-			if (childModel) {
+		var childrenByRole = getConfigChildrenByRole(modelNode, configNode);
+		var role = roles[modelNode.role];
+		if (!role) {
+			return section;
+		}
+
+		// Loop through role children in order.
+		for (var i = 0; i < role.children.length; i++) {
+			var childRoleName = role.children[i];
+			var childRole = roles[childRoleName];
+			var childrenWithRole = childrenByRole[childRoleName];
+
+			// Loop through children in role.
+			for (var j = 0; j < childrenWithRole.length; j++) {
+				var childContext = childrenWithRole[j];
+				var childModel = childContext["model"];
+				var childConfig = childContext["config"];
+
 				section += "<div class='wz-child'>";
 				section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
 				section += "<h1 class='wz-child-name'>" + childModel.name;
 
 				// Show index value if specified.
 				if (childModel.indexAttribute) {
-					for (var ai = 0; ai < child.attributes.length; ai++) {
-						var attrName = child.attributes[ai].name;
+					for (var ai = 0; ai < childConfig.attributes.length; ai++) {
+						var attrName = childConfig.attributes[ai].name;
 						if (childModel.indexAttribute == attrName) {
-							section += " (" + child.attributes[ai].value + ")";
+							section += " (" + childConfig.attributes[ai].value + ")";
 						}
 					}
 				}
@@ -447,15 +475,19 @@ div.wz-button-bar {
 
 				section += "<a class='wz-child-nav btn' title='Open' ";
 				section += "  style='color: #060;' href='javascript:void(0)' ";
-				section += "  onclick='onChildOpenClicked(\"" + child.name + "\", \"" + child.id + "\")'>";
+				section += "  onclick='onChildOpenClicked(\"" + childConfig.name + "\", \"" + childConfig.id + "\")'>";
 				section += "  <i class='fa fa-chevron-right fa-white'></i>";
 				section += "</a>";
 				section += "</div>";
-			} else {
-				section += "<div class='wz-child'>";
-				section += "<h1>Unknown model element: " + child.name + "</h1>";
-				section += "</div>";
 			}
+		}
+
+		// Show children that do not have a model.
+		var noModel = childrenByRole["?"];
+		for (var i = 0; i < noModel.length; i++) {
+			section += "<div class='wz-child'>";
+			section += "<h1>Unknown model element: " + noModel[i] + "</h1>";
+			section += "</div>";
 		}
 		return section;
 	}
@@ -470,6 +502,38 @@ div.wz-button-bar {
 		if (childModel && childConfig) {
 			pushContext(childConfig, childModel);
 		}
+	}
+
+	/** Get configuration children grouped by role */
+	function getConfigChildrenByRole(modelNode, configNode) {
+		var role = roles[modelNode.role];
+		if (!role) {
+			return {};
+		}
+		var result = {};
+		var childRoles = role.children;
+		var modelNotFound = [];
+		for (var i = 0; i < childRoles.length; i++) {
+			var childRole = childRoles[i];
+			var matches = [];
+			result[childRole] = matches;
+			for (var j = 0; j < configNode.children.length; j++) {
+				var childConfig = configNode.children[j];
+				if (modelNotFound.indexOf(childConfig.name) == -1) {
+					var childModel = findModelNodeByName(modelNode, childConfig.name);
+					if (!childModel) {
+						modelNotFound.push(childConfig.name);
+					} else if (childModel.role == childRole) {
+						var childContext = {};
+						childContext["model"] = childModel;
+						childContext["config"] = childConfig;
+						matches.push(childContext);
+					}
+				}
+			}
+		}
+		result["?"] = modelNotFound;
+		return result;
 	}
 
 	/** Find closest element with the given localName */
