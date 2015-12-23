@@ -54,7 +54,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Global Overrides",
 						TenantConfigurationParser.Elements.Globals.getLocalName(), "cogs",
-						ElementRole.Top_Level);
+						ElementRole.Globals);
 		builder.setDescription("Allow tenant-specific changes to global configuration elements.");
 		return builder.build();
 	}
@@ -68,7 +68,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Data Management",
 						TenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
-						ElementRole.Top_Level).setRequired(true);
+						ElementRole.DataManagement).setRequired(true);
 		builder.setDescription("Configure the datastore and related aspects such as caching and "
 				+ "data model initialization.");
 		builder.addElement(createMongoTenantDatastoreElement());
@@ -78,27 +78,6 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.addElement(createDefaultDeviceModelInitializerElement());
 		builder.addElement(createDefaultAssetModelInitializerElement());
 		builder.addElement(createDefaultScheduleModelInitializerElement());
-		return builder.build();
-	}
-
-	/**
-	 * Create the container for device communication information.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createDeviceCommunication() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder("Device Communication",
-						TenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
-						ElementRole.Top_Level).setRequired(true);
-		builder.setDescription("Configure how information is received from devices, how data is queued "
-				+ "for processing, and how commands are sent to devices.");
-		builder.addElement(createEventSourcesElement());
-		builder.addElement(createInboundProcessingStrategyElement());
-		builder.addElement(createRegistrationElement());
-		builder.addElement(createBatchOperationsElement());
-		builder.addElement(createCommandRoutingElement());
-		builder.addElement(createCommandDestinationsElement());
 		return builder.build();
 	}
 
@@ -216,6 +195,27 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	}
 
 	/**
+	 * Create the container for device communication information.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDeviceCommunication() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Device Communication",
+						TenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
+						ElementRole.DeviceCommunication).setRequired(true);
+		builder.setDescription("Configure how information is received from devices, how data is queued "
+				+ "for processing, and how commands are sent to devices.");
+		builder.addElement(createEventSourcesElement());
+		builder.addElement(createInboundProcessingStrategyElement());
+		builder.addElement(createRegistrationElement());
+		builder.addElement(createBatchOperationsElement());
+		builder.addElement(createCommandRoutingElement());
+		builder.addElement(createCommandDestinationsElement());
+		return builder.build();
+	}
+
+	/**
 	 * Create element configuration for event sources.
 	 * 
 	 * @return
@@ -284,7 +284,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Google Protocol Buffers Event Decoder",
 						EventSourcesParser.BinaryDecoders.ProtobufDecoder.getLocalName(), "cogs",
-						ElementRole.EventSources_BinaryEventDecoder);
+						ElementRole.EventSource_BinaryEventDecoder);
 
 		builder.setDescription("Event decoder that takes binary messages from an underlying transport "
 				+ "and decodes them using the standard SiteWhere Google Protocol Buffers format. This is "
@@ -301,7 +301,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("JSON Event Decoder",
 						EventSourcesParser.BinaryDecoders.JsonDecoder.getLocalName(), "cogs",
-						ElementRole.EventSources_BinaryEventDecoder);
+						ElementRole.EventSource_BinaryEventDecoder);
 
 		builder.setDescription("Event decoder that takes binary messages from an underlying transport "
 				+ "and parses them as the JSON representation of a SiteWhere device event batch.");
@@ -481,7 +481,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		builder.addAttribute((new AttributeNode.Builder("Specification token", "specification",
 				AttributeType.String).setDescription(
 				"Unique token that identifies specification for the mapping.").makeIndex().build()));
-		builder.addAttribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String).setDescription("Unique id of command desintation for the mapping.").build()));
+		builder.addAttribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String).setDescription("Unique id of command destination for the mapping.").build()));
 		return builder.build();
 	}
 
@@ -590,7 +590,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Inbound Processors",
 						TenantConfigurationParser.Elements.InboundProcessingChain.getLocalName(), "sign-in",
-						ElementRole.Top_Level).setRequired(true);
+						ElementRole.InboundProcessingChain).setRequired(true);
 		builder.setDescription("Configure a chain of processing steps that are applied to inbound data.");
 
 		builder.addElement(createEventStorageProcessorElement());
@@ -663,7 +663,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Outbound Processors",
 						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
-						"sign-out", ElementRole.Top_Level).setRequired(true);
+						"sign-out", ElementRole.OutboundProcessingChain).setRequired(true);
 		builder.setDescription("Configure a chain of processing steps that are applied to outbound data.");
 		return builder.build();
 	}
@@ -677,7 +677,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Asset Management",
 						TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
-						ElementRole.Top_Level).setRequired(true);
+						ElementRole.AssetManagment).setRequired(true);
 		builder.setDescription("Configure asset management features.");
 		return builder.build();
 	}

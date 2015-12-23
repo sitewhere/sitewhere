@@ -183,6 +183,9 @@ div.wz-button-bar {
 	/** Tenant configuration model */
 	var configModel = <c:out value="${configModel}" escapeXml="false"/>;
 
+	/** Configuration element roles */
+	var roles = <c:out value="${roles}" escapeXml="false"/>;
+
 	/** Configuration being edited */
 	var config;
 

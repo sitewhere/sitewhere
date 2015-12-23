@@ -28,7 +28,7 @@ public class ElementNode extends XmlNode {
 	private List<ElementNode> elements;
 
 	/** Element role */
-	private ElementRole role;
+	private String role;
 
 	/** Message shown to warn users before deleting element */
 	private String onDeleteWarning;
@@ -53,11 +53,11 @@ public class ElementNode extends XmlNode {
 		this.elements = elements;
 	}
 
-	public ElementRole getRole() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(ElementRole role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 
@@ -99,7 +99,7 @@ public class ElementNode extends XmlNode {
 			element.setName(name);
 			element.setLocalName(localName);
 			element.setIcon(icon);
-			element.setRole(role);
+			element.setRole(role.name());
 		}
 
 		public Builder setDescription(String description) {

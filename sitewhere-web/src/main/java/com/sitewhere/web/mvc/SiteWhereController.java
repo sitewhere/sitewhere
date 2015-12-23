@@ -44,6 +44,7 @@ import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.version.VersionHelper;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
+import com.sitewhere.web.configuration.model.ElementRole;
 
 /**
  * Spring MVC controller for SiteWhere web application.
@@ -683,6 +684,15 @@ public class SiteWhereController extends MvcController {
 			TenantConfigurationModel configModel = new TenantConfigurationModel();
 			String strConfigModel = MarshalUtils.marshalJsonAsString(configModel);
 			data.put("configModel", strConfigModel);
+
+			// Pass JSON representation of component roles.
+			ElementRole[] roles = ElementRole.values();
+			Map<String, ElementRole> rolesById = new HashMap<String, ElementRole>();
+			for (ElementRole role : roles) {
+				rolesById.put(role.name(), role);
+			}
+			String strRoles = MarshalUtils.marshalJsonAsString(rolesById);
+			data.put("roles", strRoles);
 
 			ITenant tenant = SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
 			if (tenant == null) {
