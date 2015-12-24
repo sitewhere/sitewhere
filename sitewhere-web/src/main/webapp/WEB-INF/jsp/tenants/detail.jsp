@@ -521,6 +521,20 @@ div.wz-button-bar {
 
 	/** Called when drag-and-drop sorting is done */
 	function childOrderChanged(roleName) {
+		var ids = [];
+		$('.wz-child').each(function() {
+			ids.push($(this).attr("id"));
+		});
+		var context = editorContexts[editorContexts.length - 1];
+		var config = context["config"];
+		var reordered = [];
+		for (var i = 0; i < ids.length; i++) {
+			var child = findConfigNodeById(config, ids[i]);
+			if (child) {
+				reordered.push(child);
+			}
+		}
+		config.children = reordered;
 	}
 
 	/** Add html for child icon and name */
@@ -560,7 +574,7 @@ div.wz-button-bar {
 			var childModel = childContext["model"];
 			var childConfig = childContext["config"];
 
-			section += "<div class='wz-child'>";
+			section += "<div class='wz-child' id='" + childConfig.id + "'>";
 
 			// Adds icon, name, and navigation.
 			section += addChildFields(childModel, childConfig);
@@ -582,7 +596,7 @@ div.wz-button-bar {
 			var childModel = childContext["model"];
 			var childConfig = childContext["config"];
 
-			section += "<li class='wz-child' draggable='true'>";
+			section += "<li class='wz-child' draggable='true' id='" + childConfig.id + "'>";
 			section += "<i class='wz-drag-icon fa fa-bars fa-white'></i>";
 
 			// Adds icon, name, and navigation.
