@@ -2,7 +2,8 @@
 <html class="sw-body">
 <head>
 <title>SiteWhere - <c:out value="${sitewhere_title}" /></title>
-<script src="${pageContext.request.contextPath}/scripts/jquery-1.10.2.min.js"></script>
+<script src="${pageContext.request.contextPath}/scripts/jquery-1.11.3.min.js"></script>
+<script src="${pageContext.request.contextPath}/scripts/jquery-ui.min.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/kendo.web.min.js"></script>
 <c:if test="${use_dataviz == true}">

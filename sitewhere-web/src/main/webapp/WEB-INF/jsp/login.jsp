@@ -3,7 +3,7 @@
 <html class="sw-body">
 <head>
 <title>SiteWhere - Login</title>
-<script src="${pageContext.request.contextPath}/scripts/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/scripts/jquery-1.11.3.min.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/kendo.web.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/sitewhere.js"></script>
