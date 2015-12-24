@@ -49,7 +49,7 @@ div.wz-header h2 {
 	border-right: 1px solid #ccc;
 }
 
-div.wz-role {
+.wz-role {
 	border: 1px solid #999;
 	padding: 15px 10px 10px;
 	position: relative;
@@ -58,7 +58,7 @@ div.wz-role {
 	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
 }
 
-div.wz-role-label {
+.wz-role-label {
 	position: absolute;
 	top: -10px;
 	left: 5px;
@@ -68,29 +68,42 @@ div.wz-role-label {
 	padding: 1px 5px;
 }
 
-div.wz-child {
+.wz-child {
 	border: 1px solid #ccc;
 	background-color: #eee;
 	padding: 5px;
 	margin-bottom: 5px;
+	list-style-type: none;
+	list-style-position: inside;
 }
 
-div.wz-child .wz-child-icon {
+.wz-child .wz-child-icon {
 	float: left;
 	padding: 8px 10px;
 	font-size: 22px;
 }
 
-div.wz-child .wz-child-name {
+.wz-child .wz-child-name {
 	display: inline;
 	font-size: 20px;
 	padding: 0;
 	margin: 0;
 }
 
-div.wz-child .wz-child-nav {
+.wz-child .wz-child-nav {
 	float: right;
 	padding: 10px;
+}
+
+.wz-sortable-placeholder {
+	min-height: 40px;
+	border: 2px dashed #aaa;
+	background-color: #ccc;
+	padding: 5px;
+	margin-bottom: 5px;
+	list-style-type: none;
+	list-style-position: inside;
+	border: 2px dashed #aaa;
 }
 
 div.wz-divider {
@@ -479,47 +492,11 @@ div.wz-button-bar {
 			var childRole = roles[childRoleName];
 			var childrenWithRole = childrenByRole[childRoleName];
 
-			// Loop through children in role.
-			if (childRole.name) {
-				section += "<div class='wz-role'><div class='wz-role-label'>" + childRole.name + "</div>";
-			}
-			for (var j = 0; j < childrenWithRole.length; j++) {
-				var childContext = childrenWithRole[j];
-				var childModel = childContext["model"];
-				var childConfig = childContext["config"];
-
-				section +=
-						"<div class='wz-child'" + (childRole.multiple ? " draggable='true'" : "")
-								+ ">";
-				if (childRole.multiple) {
-					section += "<i class='wz-drag-icon fa fa-bars fa-white'></i>";
-				}
-				section += "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
-				section += "<h1 class='wz-child-name'>" + childModel.name;
-
-				// Show index value if specified.
-				if (childModel.indexAttribute) {
-					for (var ai = 0; ai < childConfig.attributes.length; ai++) {
-						var attrName = childConfig.attributes[ai].name;
-						if (childModel.indexAttribute == attrName) {
-							section += " (" + childConfig.attributes[ai].value + ")";
-						}
-					}
-				}
-
-				section += "</h1>";
-
-				section += "<a class='wz-child-nav btn' title='Open' ";
-				section += "  style='color: #060;' href='javascript:void(0)' ";
-				section +=
-						"  onclick='onChildOpenClicked(\"" + childConfig.name + "\", \"" + childConfig.id
-								+ "\")'>";
-				section += "  <i class='fa fa-chevron-right fa-white'></i>";
-				section += "</a>";
-				section += "</div>";
-			}
-			if (childRole.name) {
-				section += "</div>";
+			// Add children.
+			if (childRole.multiple) {
+				section += addSortableRoleChildren(childRole, childrenWithRole);
+			} else {
+				section += addNonSortableRoleChildren(childRole, childrenWithRole);
 			}
 		}
 
@@ -530,6 +507,90 @@ div.wz-button-bar {
 			section += "<h1>Unknown model element: " + noModel[i] + "</h1>";
 			section += "</div>";
 		}
+
+		// Add script that allows drag-and-drop sorting.
+		section += "<scr" + "ipt>";
+		section += "$('.wz-sortable').sortable({";
+		section += "  placeholder: 'wz-sortable-placeholder', ";
+		section += "  stop: function(event,ui) { childOrderChanged('" + childRoleName + "'); }";
+		section += "});";
+		section += "</scr" + "ipt>";
+
+		return section;
+	}
+
+	/** Called when drag-and-drop sorting is done */
+	function childOrderChanged(roleName) {
+	}
+
+	/** Add html for child icon and name */
+	function addChildFields(childModel, childConfig) {
+		var section = "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
+		section += "<h1 class='wz-child-name'>" + childModel.name;
+
+		// Show index value if specified.
+		if (childModel.indexAttribute) {
+			for (var ai = 0; ai < childConfig.attributes.length; ai++) {
+				var attrName = childConfig.attributes[ai].name;
+				if (childModel.indexAttribute == attrName) {
+					section += " (" + childConfig.attributes[ai].value + ")";
+				}
+			}
+		}
+
+		section += "</h1>";
+
+		section += "<a class='wz-child-nav btn' title='Open' ";
+		section += "  style='color: #060;' href='javascript:void(0)' ";
+		section +=
+				"  onclick='onChildOpenClicked(\"" + childConfig.name + "\", \"" + childConfig.id + "\")'>";
+		section += "  <i class='fa fa-chevron-right fa-white'></i>";
+		section += "</a>";
+		return section;
+	}
+
+	/** Add children that are in a fixed format */
+	function addNonSortableRoleChildren(childRole, childrenWithRole) {
+		var section = "";
+		if (childRole.name) {
+			section += "<div class='wz-role'><div class='wz-role-label'>" + childRole.name + "</div>";
+		}
+		for (var j = 0; j < childrenWithRole.length; j++) {
+			var childContext = childrenWithRole[j];
+			var childModel = childContext["model"];
+			var childConfig = childContext["config"];
+
+			section += "<div class='wz-child'>";
+
+			// Adds icon, name, and navigation.
+			section += addChildFields(childModel, childConfig);
+
+			section += "</div>";
+		}
+		if (childRole.name) {
+			section += "</div>";
+		}
+		return section;
+	}
+
+	/** Add children that are in a sortable format */
+	function addSortableRoleChildren(childRole, childrenWithRole) {
+		var section =
+				"<ul class='wz-role wz-sortable'><div class='wz-role-label'>" + childRole.name + "</div>";
+		for (var j = 0; j < childrenWithRole.length; j++) {
+			var childContext = childrenWithRole[j];
+			var childModel = childContext["model"];
+			var childConfig = childContext["config"];
+
+			section += "<li class='wz-child' draggable='true'>";
+			section += "<i class='wz-drag-icon fa fa-bars fa-white'></i>";
+
+			// Adds icon, name, and navigation.
+			section += addChildFields(childModel, childConfig);
+
+			section += "</li>";
+		}
+		section += "</ul>";
 		return section;
 	}
 
