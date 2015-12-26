@@ -161,7 +161,10 @@ public class ConfigurationContentParser {
 		parent.appendChild(created);
 		if (content.getAttributes() != null) {
 			for (AttributeContent attribute : content.getAttributes()) {
-				created.setAttributeNS(attribute.getNamespace(), attribute.getName(), attribute.getValue());
+				if (!"http://www.w3.org/2000/xmlns/".equals(attribute.getNamespace())) {
+					created.setAttributeNS(attribute.getNamespace(), attribute.getName(),
+							attribute.getValue());
+				}
 			}
 		}
 		if (content.getChildren() != null) {

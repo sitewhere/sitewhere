@@ -53,4 +53,22 @@ public class TenantUtils {
 		IVersion version = SiteWhere.getServer().getVersion();
 		return engine.getConfigurationResolver().getStagedTenantConfiguration(engine.getTenant(), version);
 	}
+
+	/**
+	 * Stage a new configuration for the given tenant.
+	 * 
+	 * @param tenantId
+	 * @param configuration
+	 * @throws SiteWhereException
+	 */
+	public static void stageTenantConfiguration(String tenantId, String configuration)
+			throws SiteWhereException {
+		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
+		if (engine == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
+		}
+		IVersion version = SiteWhere.getServer().getVersion();
+		engine.getConfigurationResolver().stageTenantConfiguration(configuration.getBytes(),
+				engine.getTenant(), version);
+	}
 }

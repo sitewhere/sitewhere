@@ -247,10 +247,10 @@ public class TenantsController extends RestController {
 			}
 			byteData.close();
 			ElementContent content = MarshalUtils.unmarshalJson(byteData.toByteArray(), ElementContent.class);
-			Document xml = ConfigurationContentParser.buildXml(content);
-			String result = ConfigurationContentParser.format(xml);
-			LOGGER.info("XML result: \n\n" + result);
-			return result;
+			Document document = ConfigurationContentParser.buildXml(content);
+			String xml = ConfigurationContentParser.format(document);
+			TenantUtils.stageTenantConfiguration(tenantId, xml);
+			return xml;
 		} catch (IOException e) {
 			throw new SiteWhereException("Error staging tenant configuration.", e);
 		} finally {
