@@ -129,6 +129,14 @@ public class ConfigurationContentParser {
 	protected static void buildXml(Document document, ElementContent content) throws SiteWhereException {
 		Element created = document.createElementNS(content.getNamespace(), content.getName());
 		document.appendChild(created);
+		if (content.getAttributes() != null) {
+			for (AttributeContent attribute : content.getAttributes()) {
+				if (attribute.getName().equals("schemaLocation")) {
+					created.setAttributeNS(attribute.getNamespace(), "xsi:schemaLocation",
+							attribute.getValue());
+				}
+			}
+		}
 		if (content.getChildren() != null) {
 			for (ElementContent childContent : content.getChildren()) {
 				buildXml(document, document.getDocumentElement(), childContent);
@@ -146,7 +154,10 @@ public class ConfigurationContentParser {
 	 */
 	protected static void buildXml(Document document, Element parent, ElementContent content)
 			throws SiteWhereException {
-		Element created = document.createElementNS(content.getNamespace(), content.getName());
+		Element created =
+				(content.getNamespace() == null) ? document.createElementNS(
+						"http://www.sitewhere.com/schema/sitewhere/ce/tenant", "sw:" + content.getName())
+						: document.createElementNS(content.getNamespace(), content.getName());
 		parent.appendChild(created);
 		if (content.getAttributes() != null) {
 			for (AttributeContent attribute : content.getAttributes()) {
