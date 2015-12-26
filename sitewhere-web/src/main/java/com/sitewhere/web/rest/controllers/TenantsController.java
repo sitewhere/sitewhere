@@ -7,10 +7,14 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
@@ -22,9 +26,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.w3c.dom.Document;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
@@ -211,6 +217,42 @@ public class TenantsController extends RestController {
 		try {
 			byte[] config = TenantUtils.getActiveTenantConfiguration(tenantId);
 			return ConfigurationContentParser.parse(config);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Stages a new tenant configuration based on a JSON representation of the
+	 * configuration. Returns the XML configuration that was staged.
+	 * 
+	 * @param tenantId
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{tenantId}/engine/configuration/json", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Stage tenant engine configuration from JSON")
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
+	@Documented
+	public String stageTenantEngineConfiguration(
+			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+			HttpServletRequest svtRequest, HttpServletResponse svtResponse) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "stageTenantEngineConfiguration", LOGGER);
+		try {
+			ServletInputStream inData = svtRequest.getInputStream();
+			ByteArrayOutputStream byteData = new ByteArrayOutputStream();
+			int data;
+			while ((data = inData.read()) != -1) {
+				byteData.write(data);
+			}
+			byteData.close();
+			ElementContent content = MarshalUtils.unmarshalJson(byteData.toByteArray(), ElementContent.class);
+			Document xml = ConfigurationContentParser.buildXml(content);
+			String result = ConfigurationContentParser.format(xml);
+			LOGGER.info("XML result: \n\n" + result);
+			return result;
+		} catch (IOException e) {
+			throw new SiteWhereException("Error staging tenant configuration.", e);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

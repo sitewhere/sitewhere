@@ -8,11 +8,18 @@
 package com.sitewhere.web.configuration;
 
 import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Document;
@@ -90,5 +97,87 @@ public class ConfigurationContentParser {
 			econ.setChildren(econs);
 		}
 		return econ;
+	}
+
+	/**
+	 * Build an XML configuration file from the JSON content.
+	 * 
+	 * @param content
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static Document buildXml(ElementContent content) throws SiteWhereException {
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setNamespaceAware(true);
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.newDocument();
+			buildXml(document, content);
+			return document;
+		} catch (Exception e) {
+			throw new SiteWhereException("Unable to parse configuration content.", e);
+		}
+	}
+
+	/**
+	 * Create top-level element, then pass off to recursive function.
+	 * 
+	 * @param document
+	 * @param content
+	 * @throws SiteWhereException
+	 */
+	protected static void buildXml(Document document, ElementContent content) throws SiteWhereException {
+		Element created = document.createElementNS(content.getNamespace(), content.getName());
+		document.appendChild(created);
+		if (content.getChildren() != null) {
+			for (ElementContent childContent : content.getChildren()) {
+				buildXml(document, document.getDocumentElement(), childContent);
+			}
+		}
+	}
+
+	/**
+	 * Recursively create DOM from JSON model.
+	 * 
+	 * @param document
+	 * @param parent
+	 * @param content
+	 * @throws SiteWhereException
+	 */
+	protected static void buildXml(Document document, Element parent, ElementContent content)
+			throws SiteWhereException {
+		Element created = document.createElementNS(content.getNamespace(), content.getName());
+		parent.appendChild(created);
+		if (content.getAttributes() != null) {
+			for (AttributeContent attribute : content.getAttributes()) {
+				created.setAttributeNS(attribute.getNamespace(), attribute.getName(), attribute.getValue());
+			}
+		}
+		if (content.getChildren() != null) {
+			for (ElementContent childContent : content.getChildren()) {
+				buildXml(document, created, childContent);
+			}
+		}
+	}
+
+	/**
+	 * Format XML.
+	 * 
+	 * @param xml
+	 * @return
+	 * @throws Exception
+	 */
+	public static String format(Document xml) throws SiteWhereException {
+		try {
+			Transformer tf = TransformerFactory.newInstance().newTransformer();
+			tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			tf.setOutputProperty(OutputKeys.INDENT, "yes");
+			tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+			Writer out = new StringWriter();
+			tf.transform(new DOMSource(xml), new StreamResult(out));
+			return out.toString();
+		} catch (Exception e) {
+			throw new SiteWhereException("Unable to format XML document.", e);
+		}
 	}
 }

@@ -180,7 +180,7 @@ div.wz-button-bar {
 		</div>
 		<div class="wz-button-bar">
 			<div style="float: right;">
-				<a id="tve-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+				<a id="btn-stage-updates" href="javascript:void(0)" class="btn btn-primary"
 					data-i18n="tenant.editor.stage">Stage Updates</a>
 			</div>
 			<div style="clear: both;"></div>
@@ -715,6 +715,11 @@ div.wz-button-bar {
 			loadTenant();
 		});
 
+		/** Handle 'stage updates' button */
+		$('#btn-stage-updates').click(function(event) {
+			stageUpdates();
+		});
+
 		/** Create the tab strip */
 		tabs = $("#tabs").kendoTabStrip({
 			animation : false,
@@ -775,6 +780,27 @@ div.wz-button-bar {
 	/** Handle error on getting tenant data */
 	function loadGetFailed(jqXHR, textStatus, errorThrown) {
 		handleError(jqXHR, "Unable to load tenant data.");
+	}
+
+	/** Stage updated configuration */
+	function stageUpdates() {
+		swConfirm("Stage Configuration", "Are you sure you want to stage the updated tenant configuration?",
+			function(result) {
+				if (result) {
+					$.postJSON("${pageContext.request.contextPath}/api/tenants/" + tenant.id
+							+ "/engine/configuration/json?tenantAuthToken=${tenant.authenticationToken}",
+						config, stageSuccess, stageFail);
+				}
+			});
+	}
+
+	/** Called on successful create */
+	function stageSuccess() {
+	}
+
+	/** Handle failed call to create tenant */
+	function stageFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to stage tenant configuration.");
 	}
 
 	/** Load engine hierarchy into tree */
