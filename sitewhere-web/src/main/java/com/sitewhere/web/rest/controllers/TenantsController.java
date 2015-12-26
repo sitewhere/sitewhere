@@ -186,7 +186,7 @@ public class TenantsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 		try {
-			return TenantUtils.getTenantConfiguration(tenantId);
+			return new String(TenantUtils.getActiveTenantConfiguration(tenantId));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -209,7 +209,7 @@ public class TenantsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
 		try {
-			String config = TenantUtils.getTenantConfiguration(tenantId);
+			byte[] config = TenantUtils.getActiveTenantConfiguration(tenantId);
 			return ConfigurationContentParser.parse(config);
 		} finally {
 			Tracer.stop(LOGGER);

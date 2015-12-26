@@ -9,6 +9,7 @@ package com.sitewhere.siddhi;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -88,12 +89,13 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 		super.start();
 
 		try {
-			File root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
-			if (!root.exists()) {
+			URI rootUri = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
+			File rootFolder = new File(rootUri.getPath());
+			if (!rootFolder.exists()) {
 				throw new SiteWhereException("Configuration root does not exist.");
 			}
 
-			File security = new File(root, "security");
+			File security = new File(rootFolder, "security");
 			if (!security.exists()) {
 				throw new SiteWhereException("Security folder does not exist: " + security.getAbsolutePath());
 			}

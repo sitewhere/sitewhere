@@ -7,7 +7,7 @@
  */
 package com.sitewhere.web.configuration;
 
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,18 +34,18 @@ import com.sitewhere.web.configuration.content.ElementContent;
 public class ConfigurationContentParser {
 
 	/**
-	 * Parse a String containing SiteWhere XML configuration for JSON representation.
+	 * Parse a byte[] containing SiteWhere XML configuration for JSON representation.
 	 * 
 	 * @param config
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static ElementContent parse(String config) throws SiteWhereException {
+	public static ElementContent parse(byte[] config) throws SiteWhereException {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			factory.setNamespaceAware(true);
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse(new InputSource(new StringReader(config)));
+			Document document = builder.parse(new InputSource(new ByteArrayInputStream(config)));
 			Element element = document.getDocumentElement();
 			return parse(element);
 		} catch (Exception e) {

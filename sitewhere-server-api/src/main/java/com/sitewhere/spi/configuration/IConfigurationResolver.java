@@ -7,9 +7,7 @@
  */
 package com.sitewhere.spi.configuration;
 
-import java.io.File;
-
-import org.springframework.context.ApplicationContext;
+import java.net.URI;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
@@ -24,42 +22,76 @@ import com.sitewhere.spi.user.ITenant;
 public interface IConfigurationResolver {
 
 	/**
-	 * Gets the root {@link File} where SiteWhere configuration files are stored.
+	 * Get the base configuration URL.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public File getConfigurationRoot() throws SiteWhereException;
+	public URI getConfigurationRoot() throws SiteWhereException;
 
 	/**
-	 * Resolves the SiteWhere Spring configuration context.
+	 * Get the global configuration.
 	 * 
 	 * @param version
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ApplicationContext resolveSiteWhereContext(IVersion version) throws SiteWhereException;
+	public byte[] getGlobalConfiguration(IVersion version) throws SiteWhereException;
 
 	/**
-	 * Gets the current Spring configuration content for a tenant.
+	 * Gets the active configuration for a given tenant.
 	 * 
 	 * @param tenant
 	 * @param version
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public String getTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException;
+	public byte[] getActiveTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException;
 
 	/**
-	 * Resolve the Spring configuration context for a tenant.
+	 * Create a default configuration for a new tenant.
 	 * 
 	 * @param tenant
 	 * @param version
-	 * @param parent
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ApplicationContext resolveTenantContext(ITenant tenant, IVersion version, ApplicationContext parent)
+	public byte[] createDefaultTenantConfiguration(ITenant tenant, IVersion version)
+			throws SiteWhereException;
+
+	/**
+	 * Gets the staged configuration for a given tenant. Returns null if no configuration
+	 * is staged.
+	 * 
+	 * @param tenant
+	 * @param version
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] getStagedTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException;
+
+	/**
+	 * Stage a new tenant configuration. This stores the new configuration separately from
+	 * the active configuration. The staged configuration will be made active the next
+	 * time the tenant is restarted.
+	 * 
+	 * @param configuration
+	 * @param tenant
+	 * @param version
+	 * @throws SiteWhereException
+	 */
+	public void stageTenantConfiguration(byte[] configuration, ITenant tenant, IVersion version)
+			throws SiteWhereException;
+
+	/**
+	 * Transition the staged tenant configuration to the active tenant configuration,
+	 * backing up the active configuration in the process.
+	 * 
+	 * @param tenant
+	 * @param version
+	 * @throws SiteWhereException
+	 */
+	public void transitionStagedToActiveTenantConfiguration(ITenant tenant, IVersion version)
 			throws SiteWhereException;
 
 	/**

@@ -11,6 +11,7 @@ import groovy.util.GroovyScriptEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -73,8 +74,9 @@ public class GroovyConfiguration extends TenantLifecycleComponent implements Ini
 				groovyScriptEngine = new GroovyScriptEngine(getExternalScriptRoot());
 				LOGGER.info("Groovy will load scripts relative to external URL: " + getExternalScriptRoot());
 			} else {
-				File root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
-				File scriptPath = new File(root, GROOVY_REL_SCRIPT_PATH);
+				URI rootUri = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
+				File rootFolder = new File(rootUri.getPath());
+				File scriptPath = new File(rootFolder, GROOVY_REL_SCRIPT_PATH);
 				if (!scriptPath.exists()) {
 					throw new SiteWhereException("Groovy configured, but scripts path does not exist.");
 				}

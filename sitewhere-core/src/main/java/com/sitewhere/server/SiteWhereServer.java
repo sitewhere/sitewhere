@@ -26,7 +26,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.ExternalConfigurationResolver;
+import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
@@ -59,7 +59,6 @@ import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
-import com.sitewhere.spi.server.ISiteWhereServerEnvironment;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
@@ -770,13 +769,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		String extConfig = System.getenv(ISiteWhereServerEnvironment.ENV_EXTERNAL_CONFIGURATION_URL);
-		if (extConfig != null) {
-			IConfigurationResolver resolver = new ExternalConfigurationResolver(extConfig);
-			SERVER_SPRING_CONTEXT = resolver.resolveSiteWhereContext(getVersion());
-		} else {
-			SERVER_SPRING_CONTEXT = getConfigurationResolver().resolveSiteWhereContext(getVersion());
-		}
+		byte[] global = getConfigurationResolver().getGlobalConfiguration(getVersion());
+		SERVER_SPRING_CONTEXT = ConfigurationUtils.buildGlobalContext(global, getVersion());
 	}
 
 	/**

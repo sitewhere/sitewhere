@@ -24,6 +24,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.device.communication.DeviceCommandEventProcessor;
 import com.sitewhere.device.event.processor.DefaultEventStorageProcessor;
@@ -74,6 +75,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
+import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -350,14 +352,34 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Verifies and loads the Spring configuration file.
+	 * Loads the tenant configuration file. If a new configuration is staged, it is
+	 * transitioned into the active configuration.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
+		IVersion version = SiteWhere.getServer().getVersion();
+
+		// Handle staged configuration if available.
+		LOGGER.info("Checking for staged tenant configuration.");
+		byte[] config = getConfigurationResolver().getStagedTenantConfiguration(getTenant(), version);
+		if (config != null) {
+			LOGGER.info("Staged tenant configuration found for '" + getTenant().getName()
+					+ "'. Transitioning to active.");
+			getConfigurationResolver().transitionStagedToActiveTenantConfiguration(getTenant(), version);
+		} else {
+			LOGGER.info("No staged tenant configuration found.");
+		}
+
+		// Load the active configuration and copy the default if necessary.
+		LOGGER.info("Loading active tenant configuration for '" + getTenant().getName() + "'.");
+		config = getConfigurationResolver().getActiveTenantConfiguration(getTenant(), version);
+		if (config == null) {
+			LOGGER.info("No active configuration found. Copying default configuration.");
+			config = getConfigurationResolver().createDefaultTenantConfiguration(getTenant(), version);
+		}
 		this.tenantContext =
-				getConfigurationResolver().resolveTenantContext(getTenant(),
-						SiteWhere.getServer().getVersion(), globalContext);
+				ConfigurationUtils.buildTenantContext(config, getTenant(), version, globalContext);
 	}
 
 	/**

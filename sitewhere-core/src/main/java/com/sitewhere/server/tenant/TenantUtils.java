@@ -23,18 +23,34 @@ import com.sitewhere.spi.system.IVersion;
 public class TenantUtils {
 
 	/**
-	 * Get String representation of the configuration for a tenant.
+	 * Get byte[] representation of the active configuration for a tenant.
 	 * 
 	 * @param tenantId
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static String getTenantConfiguration(String tenantId) throws SiteWhereException {
+	public static byte[] getActiveTenantConfiguration(String tenantId) throws SiteWhereException {
 		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
 		if (engine == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 		}
 		IVersion version = SiteWhere.getServer().getVersion();
-		return engine.getConfigurationResolver().getTenantConfiguration(engine.getTenant(), version);
+		return engine.getConfigurationResolver().getActiveTenantConfiguration(engine.getTenant(), version);
+	}
+
+	/**
+	 * Get byte[] representation of the staged configuration for a tenant.
+	 * 
+	 * @param tenantId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static byte[] getStagedTenantConfiguration(String tenantId) throws SiteWhereException {
+		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
+		if (engine == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
+		}
+		IVersion version = SiteWhere.getServer().getVersion();
+		return engine.getConfigurationResolver().getStagedTenantConfiguration(engine.getTenant(), version);
 	}
 }
