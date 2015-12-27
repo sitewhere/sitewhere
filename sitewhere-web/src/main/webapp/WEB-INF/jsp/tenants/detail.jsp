@@ -81,8 +81,12 @@ div.wz-header h2 {
 	background-color: #ffe;
 }
 
+.wz-role-missing-optional {
+	border: 1px solid #eee;
+	box-shadow: none;
+}
+
 .wz-role-label-missing {
-	
 }
 
 .wz-child {
@@ -118,7 +122,7 @@ div.wz-header h2 {
 
 .wz-child .wz-child-nav {
 	float: right;
-	padding: 10px;
+	padding: 9px;
 }
 
 .wz-sortable-placeholder {
@@ -600,6 +604,7 @@ div.wz-button-bar {
 		var roleLabelClasses = "wz-role-label";
 		var childClasses = "wz-child";
 		var missingRequired = false;
+		var missingOptional = false;
 		if (!childRole.optional) {
 			if (childrenWithRole.length == 0) {
 				missingRequired = true;
@@ -610,13 +615,23 @@ div.wz-button-bar {
 				roleLabelClasses += " wz-role-label-required";
 				childClasses += " wz-child-required";
 			}
+		} else {
+			if (childrenWithRole.length == 0) {
+				missingOptional = true;
+				roleClasses += " wz-role-missing-optional";
+			}
 		}
 		if (!childRole.permanent) {
 			section +=
 					"<div class='" + roleClasses + "'><div class='" + roleLabelClasses + "'>"
 							+ childRole.name + "</div>";
 		}
-		if (!missingRequired) {
+
+		if (missingRequired) {
+			section += addMissingRequired(childRoleName, childRole);
+		} else if (missingOptional) {
+			section += addMissingOptional(childRoleName, childRole);
+		} else {
 			for (var j = 0; j < childrenWithRole.length; j++) {
 				var childContext = childrenWithRole[j];
 				var childModel = childContext["model"];
@@ -629,8 +644,6 @@ div.wz-button-bar {
 
 				section += "</div>";
 			}
-		} else {
-			section += addMissingRequired(childRoleName, childRole);
 		}
 		if (!childRole.permanent) {
 			section += "</div>";
@@ -646,6 +659,36 @@ div.wz-button-bar {
 		section += "<div class='wz-child wz-child-missing'>";
 		section += "<i class='wz-child-icon fa fa-warning fa-white'></i>";
 		section += "<h1 class='wz-child-name'>" + role.name + " is Required</h1>";
+
+		section +=
+				"<div class='wz-child-nav btn-group dropup' style='padding: 0; margin-top: 5px; margin-right: 5px;'>";
+		section += "<a class='btn dropdown-toggle' title='Add Component' data-toggle='dropdown'>";
+		section += "Add Component<span class='caret'style='margin-left: 5px'></span></a>";
+		section += "<ul class='dropdown-menu pull-right'>";
+
+		// Add item in dropdown for each component in the given role.
+		for (var i = 0; i < modelsForRole.length; i++) {
+			var roleModel = modelsForRole[i];
+			section +=
+					"<li><a href='#' onclick='onAddChildInRole(\"" + roleModel.role + "\")'>"
+							+ roleModel.name + "</a></li>";
+		}
+
+		section += "</ul>";
+		section += "</div>";
+
+		section += "</div>";
+		return section;
+	}
+
+	/** Add placeholder for missing optional field */
+	function addMissingOptional(roleName, role) {
+		var modelsForRole = findModelChildrenInRole(roleName);
+
+		var section = "";
+		section += "<div class='wz-child wz-child-missing'>";
+		section += "<i class='wz-child-icon fa fa-plus fa-white'></i>";
+		section += "<h1 class='wz-child-name'>Add " + role.name + "</h1>";
 
 		section +=
 				"<div class='wz-child-nav btn-group dropup' style='padding: 0; margin-top: 5px; margin-right: 5px;'>";
@@ -710,10 +753,11 @@ div.wz-button-bar {
 		var topConfig = top["config"];
 		var childModel = findModelNodeByName(topModel, childName);
 		var childConfig = findConfigNodeById(topConfig, childId);
+		var childRole = roles[childModel.role];
 
 		var dialogTitle = "Delete Component?";
 		var dialogMessage = "Are you sure that you want to delete '" + childModel.name + "'?";
-		if (!childModel.role.optional) {
+		if (!childRole.optional) {
 			dialogTitle = "Delete Required Component?";
 			dialogMessage =
 					"Are you sure that you want to delete '" + childModel.name + "'? "
