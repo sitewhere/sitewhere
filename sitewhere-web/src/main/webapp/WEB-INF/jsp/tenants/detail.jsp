@@ -82,6 +82,7 @@ div.wz-header h2 {
 }
 
 .wz-role-label-missing {
+	
 }
 
 .wz-child {
@@ -513,9 +514,9 @@ div.wz-button-bar {
 
 			// Add children.
 			if (childRole.multiple) {
-				section += addSortableRoleChildren(childRole, childrenWithRole);
+				section += addSortableRoleChildren(childRoleName, childRole, childrenWithRole);
 			} else {
-				section += addNonSortableRoleChildren(childRole, childrenWithRole);
+				section += addNonSortableRoleChildren(childRoleName, childRole, childrenWithRole);
 			}
 		}
 
@@ -593,7 +594,7 @@ div.wz-button-bar {
 	}
 
 	/** Add children that are in a fixed format */
-	function addNonSortableRoleChildren(childRole, childrenWithRole) {
+	function addNonSortableRoleChildren(childRoleName, childRole, childrenWithRole) {
 		var section = "";
 		var roleClasses = "wz-role";
 		var roleLabelClasses = "wz-role-label";
@@ -629,7 +630,7 @@ div.wz-button-bar {
 				section += "</div>";
 			}
 		} else {
-			section += addMissingRequired(childRole);
+			section += addMissingRequired(childRoleName, childRole);
 		}
 		if (!childRole.permanent) {
 			section += "</div>";
@@ -638,24 +639,51 @@ div.wz-button-bar {
 	}
 
 	/** Add placeholder for missing required field */
-	function addMissingRequired(role) {
+	function addMissingRequired(roleName, role) {
+		var modelsForRole = findModelChildrenInRole(roleName);
+
 		var section = "";
 		section += "<div class='wz-child wz-child-missing'>";
 		section += "<i class='wz-child-icon fa fa-warning fa-white'></i>";
 		section += "<h1 class='wz-child-name'>" + role.name + " is Required</h1>";
 
-		section += "<a class='wz-child-nav btn' title='Add Component' ";
-		section += "  style='color: #060;' href='javascript:void(0)' ";
-		section += "  onclick='onAddChildInRole(\"" + role.name + "\")'>";
-		section += "  <i class='fa fa-plus fa-white'></i>";
-		section += "</a>";
+		section +=
+				"<div class='wz-child-nav btn-group dropup' style='padding: 0; margin-top: 5px; margin-right: 5px;'>";
+		section += "<a class='btn dropdown-toggle' title='Add Component' data-toggle='dropdown'>";
+		section += "Add Component<span class='caret'style='margin-left: 5px'></span></a>";
+		section += "<ul class='dropdown-menu pull-right'>";
+
+		// Add item in dropdown for each component in the given role.
+		for (var i = 0; i < modelsForRole.length; i++) {
+			var roleModel = modelsForRole[i];
+			section +=
+					"<li><a href='#' onclick='onAddChildInRole(\"" + roleModel.role + "\")'>"
+							+ roleModel.name + "</a></li>";
+		}
+
+		section += "</ul>";
+		section += "</div>";
 
 		section += "</div>";
 		return section;
 	}
 
+	/** Find children of a model node with the given role */
+	function findModelChildrenInRole(roleName) {
+		var context = editorContexts[editorContexts.length - 1];
+		var model = context["model"];
+		var matches = [];
+		for (var i = 0; i < model.elements.length; i++) {
+			var childModel = model.elements[i];
+			if (childModel.role == roleName) {
+				matches.push(childModel);
+			}
+		}
+		return matches;
+	}
+
 	/** Add children that are in a sortable format */
-	function addSortableRoleChildren(childRole, childrenWithRole) {
+	function addSortableRoleChildren(childRoleName, childRole, childrenWithRole) {
 		var section =
 				"<ul class='wz-role wz-sortable'><div class='wz-role-label'>" + childRole.name + "</div>";
 		for (var j = 0; j < childrenWithRole.length; j++) {
