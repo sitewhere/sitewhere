@@ -28,7 +28,7 @@ public enum ElementRole {
 	Globals_Global("Global", true, true, true),
 
 	/** Globals element. */
-	Globals(null, false, false, false, new ElementRole[] { Globals_Global }),
+	Globals(null, false, false, false, new ElementRole[] { Globals_Global }, true),
 
 	/** Data management container. Datastore configuration. */
 	DataManagement_Datastore("Datastore", false, false, false),
@@ -51,7 +51,7 @@ public enum ElementRole {
 			DataManagement_CacheProvider,
 			DataManagement_DeviceModelInitializer,
 			DataManagement_AssetModelInitializer,
-			DataManagement_ScheduleModelInitializer }),
+			DataManagement_ScheduleModelInitializer }, true),
 
 	/** Event source. Binary event decoder. */
 	EventSource_BinaryEventDecoder("Binary Event Decoder", true, false, false),
@@ -62,28 +62,28 @@ public enum ElementRole {
 
 	/** Device communication container. Event sources configuration. */
 	DeviceCommunication_EventSources(null, false, false, false,
-			new ElementRole[] { EventSources_EventSource }),
+			new ElementRole[] { EventSources_EventSource }, true),
 
 	/** Inbound processing strategy container. Blocking queue strategy. */
 	InboundProcessingStrategy_Strategy("Strategy", false, false, false),
 
 	/** Device communication container. Inbound processing strategy. */
 	DeviceCommunication_InboundProcessingStrategy(null, false, false, false,
-			new ElementRole[] { InboundProcessingStrategy_Strategy }),
+			new ElementRole[] { InboundProcessingStrategy_Strategy }, true),
 
 	/** Registration container. Registration manager. */
 	Registration_RegistrationManager("Registration Manager", false, false, false),
 
 	/** Device communication container. Registration. */
 	DeviceCommunication_Registration(null, false, false, false,
-			new ElementRole[] { Registration_RegistrationManager }),
+			new ElementRole[] { Registration_RegistrationManager }, true),
 
 	/** Batch operations container. Batch operation manager. */
 	BatchOperations_BatchOperationManager("Batch Operation Manager", false, false, false),
 
 	/** Device communication container. Batch operations. */
 	DeviceCommunication_BatchOperations(null, false, false, false,
-			new ElementRole[] { BatchOperations_BatchOperationManager }),
+			new ElementRole[] { BatchOperations_BatchOperationManager }, true),
 
 	/** Command routing container. Command router implementation. */
 	CommandRouting_CommandRouter("Command Router", false, false, false),
@@ -93,7 +93,7 @@ public enum ElementRole {
 
 	/** Device communication container. Command routing configuration. */
 	DeviceCommunication_CommandRouting(null, false, false, false,
-			new ElementRole[] { CommandRouting_CommandRouter }),
+			new ElementRole[] { CommandRouting_CommandRouter }, true),
 
 	/** Command destination. Binary command encoder. */
 	CommandDestinations_BinaryCommandEncoder("Binary Command Encoder", false, false, false),
@@ -108,7 +108,7 @@ public enum ElementRole {
 
 	/** Device communication container. Command destinations configuration. */
 	DeviceCommunication_CommandDestinations(null, false, false, false,
-			new ElementRole[] { CommandDestinations_CommandDestination }),
+			new ElementRole[] { CommandDestinations_CommandDestination }, true),
 
 	/** Device communication element. */
 	DeviceCommunication(null, false, false, false, new ElementRole[] {
@@ -117,20 +117,20 @@ public enum ElementRole {
 			DeviceCommunication_Registration,
 			DeviceCommunication_BatchOperations,
 			DeviceCommunication_CommandRouting,
-			DeviceCommunication_CommandDestinations }),
+			DeviceCommunication_CommandDestinations }, true),
 
 	/** Inbound processing chain. Event processor. */
 	InboundProcessingChain_EventProcessor("Event Processors", true, true, true),
 
 	/** Inbound processing chain element. */
 	InboundProcessingChain(null, false, false, false,
-			new ElementRole[] { InboundProcessingChain_EventProcessor }),
+			new ElementRole[] { InboundProcessingChain_EventProcessor }, true),
 
 	/** Outbound processing chain element. */
-	OutboundProcessingChain(null, false, false, false, new ElementRole[] {}),
+	OutboundProcessingChain(null, false, false, false, new ElementRole[] {}, true),
 
 	/** Asset Management element. */
-	AssetManagment(null, false, false, false, new ElementRole[] {}),
+	AssetManagment(null, false, false, false, new ElementRole[] {}, true),
 
 	/** Top level element. */
 	Root(null, false, false, false, new ElementRole[] {
@@ -153,6 +153,9 @@ public enum ElementRole {
 	/** Indicates if elements in role can be reordered */
 	private boolean reorderable;
 
+	/** Indicates if element is permanent */
+	private boolean permanent;
+
 	/** Child roles in the order they should appear */
 	private ElementRole[] children;
 
@@ -162,11 +165,17 @@ public enum ElementRole {
 
 	private ElementRole(String name, boolean optional, boolean multiple, boolean reorderable,
 			ElementRole[] children) {
+		this(name, optional, multiple, reorderable, children, false);
+	}
+
+	private ElementRole(String name, boolean optional, boolean multiple, boolean reorderable,
+			ElementRole[] children, boolean permanent) {
 		this.name = name;
 		this.optional = optional;
 		this.multiple = multiple;
 		this.reorderable = reorderable;
 		this.children = children;
+		this.permanent = permanent;
 	}
 
 	public String getName() {
@@ -201,6 +210,14 @@ public enum ElementRole {
 		this.reorderable = reorderable;
 	}
 
+	public boolean isPermanent() {
+		return permanent;
+	}
+
+	public void setPermanent(boolean permanent) {
+		this.permanent = permanent;
+	}
+
 	public ElementRole[] getChildren() {
 		return children;
 	}
@@ -222,6 +239,8 @@ public enum ElementRole {
 			generator.writeBoolean(value.isMultiple());
 			generator.writeFieldName("reorderable");
 			generator.writeBoolean(value.isReorderable());
+			generator.writeFieldName("permanent");
+			generator.writeBoolean(value.isPermanent());
 
 			if ((value.getChildren() != null) && (value.getChildren().length > 0)) {
 				generator.writeArrayFieldStart("children");

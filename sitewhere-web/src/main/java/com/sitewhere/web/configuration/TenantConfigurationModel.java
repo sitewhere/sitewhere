@@ -44,7 +44,6 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		getElements().add(createOutboundProcessingChain());
 		getElements().add(createAssetManagement());
 		setRole(ElementRole.Root.name());
-		setRequired(true);
 	}
 
 	/**
@@ -70,7 +69,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Data Management",
 						TenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
-						ElementRole.DataManagement).setRequired(true);
+						ElementRole.DataManagement);
 		builder.setDescription("Configure the datastore and related aspects such as caching and "
 				+ "data model initialization.");
 		builder.addElement(createMongoTenantDatastoreElement());
@@ -205,7 +204,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Communication",
 						TenantConfigurationParser.Elements.DeviceCommunication.getLocalName(), "exchange",
-						ElementRole.DeviceCommunication).setRequired(true);
+						ElementRole.DeviceCommunication);
 		builder.setDescription("Configure how information is received from devices, how data is queued "
 				+ "for processing, and how commands are sent to devices.");
 		builder.addElement(createEventSourcesElement());
@@ -319,7 +318,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Inbound Processing Strategy",
 						DeviceCommunicationParser.Elements.InboundProcessingStrategy.getLocalName(), "cogs",
-						ElementRole.DeviceCommunication_InboundProcessingStrategy).setRequired(true);
+						ElementRole.DeviceCommunication_InboundProcessingStrategy);
 
 		builder.setDescription("The inbound processing strategy is responsible for moving events from event "
 				+ "sources into the inbound processing chain. It is responsible for handling threading and "
@@ -363,7 +362,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Registration Management",
 						DeviceCommunicationParser.Elements.Registration.getLocalName(), "key",
-						ElementRole.DeviceCommunication_Registration).setRequired(true);
+						ElementRole.DeviceCommunication_Registration);
 
 		builder.setDescription("Manages how new devices are registered with the system.");
 		builder.addElement(createDefaultRegistrationManagerElement());
@@ -404,7 +403,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Batch Operation Management",
 						DeviceCommunicationParser.Elements.BatchOperations.getLocalName(), "server",
-						ElementRole.DeviceCommunication_BatchOperations).setRequired(true);
+						ElementRole.DeviceCommunication_BatchOperations);
 
 		builder.setDescription("Manages how batch operations are processed. Batch operations are "
 				+ "actions that are executed asynchronously for many devices with the ability to monitor "
@@ -442,7 +441,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Command Routing",
 						DeviceCommunicationParser.Elements.CommandRouting.getLocalName(),
-						"sitemap fa-rotate-270", ElementRole.DeviceCommunication_CommandRouting).setRequired(true);
+						"sitemap fa-rotate-270", ElementRole.DeviceCommunication_CommandRouting);
 
 		builder.setDescription("Determines how commands are routed to command destinations.");
 		builder.addElement(createSpecificationMappingRouterElement());
@@ -592,7 +591,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Inbound Processors",
 						TenantConfigurationParser.Elements.InboundProcessingChain.getLocalName(), "sign-in",
-						ElementRole.InboundProcessingChain).setRequired(true);
+						ElementRole.InboundProcessingChain);
 		builder.setDescription("Configure a chain of processing steps that are applied to inbound data.");
 
 		builder.addElement(createEventStorageProcessorElement());
@@ -665,7 +664,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Outbound Processors",
 						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
-						"sign-out", ElementRole.OutboundProcessingChain).setRequired(true);
+						"sign-out", ElementRole.OutboundProcessingChain);
 		builder.setDescription("Configure a chain of processing steps that are applied to outbound data.");
 		return builder.build();
 	}
@@ -679,7 +678,7 @@ public class TenantConfigurationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Asset Management",
 						TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
-						ElementRole.AssetManagment).setRequired(true);
+						ElementRole.AssetManagment);
 		builder.setDescription("Configure asset management features.");
 		return builder.build();
 	}

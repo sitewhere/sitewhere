@@ -29,6 +29,9 @@ public class AttributeNode extends XmlNode {
 	/** Choices available for attribute */
 	private List<String> choices;
 
+	/** Indicates if attribute is required */
+	private boolean required;
+
 	public AttributeNode() {
 		super(NodeType.Attribute);
 	}
@@ -63,6 +66,14 @@ public class AttributeNode extends XmlNode {
 
 	public void setChoices(List<String> choices) {
 		this.choices = choices;
+	}
+
+	public boolean isRequired() {
+		return required;
+	}
+
+	public void setRequired(boolean required) {
+		this.required = required;
 	}
 
 	/**

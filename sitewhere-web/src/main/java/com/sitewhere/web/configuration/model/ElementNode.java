@@ -123,11 +123,6 @@ public class ElementNode extends XmlNode {
 			return this;
 		}
 
-		public Builder setRequired(boolean required) {
-			element.setRequired(required);
-			return this;
-		}
-
 		public Builder warnOnDelete(String warning) {
 			element.setOnDeleteWarning(warning);
 			return this;

@@ -7,13 +7,13 @@
 
 <style>
 div.wz-header {
-	border: 1px solid #aaa;
+	border: 1px solid #666;
 	background-color: #eee;
 	padding: 13px;
 	margin-bottom: 10px;
-	-webkit-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
-	-moz-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
-	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
+	-webkit-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.5);
+	-moz-box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.5);
+	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.5);
 }
 
 div.wz-header h1 {
@@ -68,6 +68,22 @@ div.wz-header h2 {
 	padding: 1px 5px;
 }
 
+.wz-role-required {
+	border-width: 2px;
+}
+
+.wz-role-label-required {
+	background-color: #666;
+}
+
+.wz-role-missing {
+	border: 1px solid #cc3;
+	background-color: #ffe;
+}
+
+.wz-role-label-missing {
+}
+
 .wz-child {
 	border: 1px solid #ccc;
 	background-color: #eee;
@@ -75,6 +91,15 @@ div.wz-header h2 {
 	margin-bottom: 5px;
 	list-style-type: none;
 	list-style-position: inside;
+}
+
+.wz-child-required {
+	border-width: 2px;
+}
+
+.wz-child-missing {
+	border-style: dashed;
+	border-color: #999;
 }
 
 .wz-child .wz-child-icon {
@@ -400,12 +425,6 @@ div.wz-button-bar {
 			panel += "<a onclick='popOne()' title='Up One Level' class='btn' href='javascript:void(0)'>";
 			panel += "<i class='fa fa-arrow-up sw-button-icon'></i>";
 			panel += "</a>";
-			if (modelNode.elements) {
-				panel +=
-						"<a onclick='tcAddChild()' title='Add Child Component' class='btn' href='javascript:void(0)'>";
-				panel += "<i class='fa fa-plus sw-button-icon'></i>";
-				panel += "</a>";
-			}
 
 			// Only allow configuration if there are configurable attributes.
 			if (modelNode.attributes) {
@@ -416,8 +435,8 @@ div.wz-button-bar {
 				panel += "</a>";
 			}
 
-			// Do not allow required elements to be deleted.
-			if (!modelNode.required) {
+			// Only allow optional elements to be deleted.
+			if (modelNode.role.optional) {
 				panel +=
 						"<a onclick='tcDelete()' style='color: #900;' title='Delete " + modelNode.name
 								+ "' class='btn' href='javascript:void(0)'>";
@@ -538,7 +557,7 @@ div.wz-button-bar {
 	}
 
 	/** Add html for child icon and name */
-	function addChildFields(childModel, childConfig) {
+	function addChildFields(childModel, childConfig, childRole) {
 		var section = "<i class='wz-child-icon fa fa-" + childModel.icon + " fa-white'></i>";
 		section += "<h1 class='wz-child-name'>" + childModel.name;
 
@@ -560,30 +579,78 @@ div.wz-button-bar {
 				"  onclick='onChildOpenClicked(\"" + childConfig.name + "\", \"" + childConfig.id + "\")'>";
 		section += "  <i class='fa fa-chevron-right fa-white'></i>";
 		section += "</a>";
+
+		if (!childRole.permanent) {
+			section += "<a class='wz-child-nav btn' title='Delete' ";
+			section += "  style='color: #900;' href='javascript:void(0)' ";
+			section +=
+					"  onclick='onChildDeleteClicked(\"" + childConfig.name + "\", \"" + childConfig.id
+							+ "\")'>";
+			section += "  <i class='fa fa-times fa-white'></i>";
+			section += "</a>";
+		}
 		return section;
 	}
 
 	/** Add children that are in a fixed format */
 	function addNonSortableRoleChildren(childRole, childrenWithRole) {
 		var section = "";
-		if (childRole.name) {
-			section += "<div class='wz-role'><div class='wz-role-label'>" + childRole.name + "</div>";
+		var roleClasses = "wz-role";
+		var roleLabelClasses = "wz-role-label";
+		var childClasses = "wz-child";
+		var missingRequired = false;
+		if (!childRole.optional) {
+			if (childrenWithRole.length == 0) {
+				missingRequired = true;
+				roleClasses += " wz-role-missing";
+				roleLabelClasses += " wz-role-label-required";
+			} else {
+				roleClasses += " wz-role-required";
+				roleLabelClasses += " wz-role-label-required";
+				childClasses += " wz-child-required";
+			}
 		}
-		for (var j = 0; j < childrenWithRole.length; j++) {
-			var childContext = childrenWithRole[j];
-			var childModel = childContext["model"];
-			var childConfig = childContext["config"];
+		if (!childRole.permanent) {
+			section +=
+					"<div class='" + roleClasses + "'><div class='" + roleLabelClasses + "'>"
+							+ childRole.name + "</div>";
+		}
+		if (!missingRequired) {
+			for (var j = 0; j < childrenWithRole.length; j++) {
+				var childContext = childrenWithRole[j];
+				var childModel = childContext["model"];
+				var childConfig = childContext["config"];
 
-			section += "<div class='wz-child' id='" + childConfig.id + "'>";
+				section += "<div class='" + childClasses + "' id='" + childConfig.id + "'>";
 
-			// Adds icon, name, and navigation.
-			section += addChildFields(childModel, childConfig);
+				// Adds icon, name, and navigation.
+				section += addChildFields(childModel, childConfig, childRole);
 
+				section += "</div>";
+			}
+		} else {
+			section += addMissingRequired(childRole);
+		}
+		if (!childRole.permanent) {
 			section += "</div>";
 		}
-		if (childRole.name) {
-			section += "</div>";
-		}
+		return section;
+	}
+
+	/** Add placeholder for missing required field */
+	function addMissingRequired(role) {
+		var section = "";
+		section += "<div class='wz-child wz-child-missing'>";
+		section += "<i class='wz-child-icon fa fa-warning fa-white'></i>";
+		section += "<h1 class='wz-child-name'>" + role.name + " is Required</h1>";
+
+		section += "<a class='wz-child-nav btn' title='Add Component' ";
+		section += "  style='color: #060;' href='javascript:void(0)' ";
+		section += "  onclick='onAddChildInRole(\"" + role.name + "\")'>";
+		section += "  <i class='fa fa-plus fa-white'></i>";
+		section += "</a>";
+
+		section += "</div>";
 		return section;
 	}
 
@@ -600,12 +667,43 @@ div.wz-button-bar {
 			section += "<i class='wz-drag-icon fa fa-bars fa-white'></i>";
 
 			// Adds icon, name, and navigation.
-			section += addChildFields(childModel, childConfig);
+			section += addChildFields(childModel, childConfig, childRole);
 
 			section += "</li>";
 		}
 		section += "</ul>";
 		return section;
+	}
+
+	/** Delete the given element */
+	function onChildDeleteClicked(childName, childId) {
+		var top = editorContexts[editorContexts.length - 1];
+		var topModel = top["model"];
+		var topConfig = top["config"];
+		var childModel = findModelNodeByName(topModel, childName);
+		var childConfig = findConfigNodeById(topConfig, childId);
+
+		var dialogTitle = "Delete Component?";
+		var dialogMessage = "Are you sure that you want to delete '" + childModel.name + "'?";
+		if (!childModel.role.optional) {
+			dialogTitle = "Delete Required Component?";
+			dialogMessage =
+					"Are you sure that you want to delete '" + childModel.name + "'? "
+							+ "This component is required by '" + topModel.name + "'.";
+		}
+
+		// Confirm delete, then remove the element and reload the panel.
+		swConfirm(dialogTitle, dialogMessage, function(result) {
+			if (result) {
+				for (var i = 0; i < topConfig.children.length; i++) {
+					if (topConfig.children[i].id == childConfig.id) {
+						topConfig.children.splice(i, 1);
+						break;
+					}
+				}
+				showPanelFor(editorContexts[editorContexts.length - 1]);
+			}
+		});
 	}
 
 	/** Open a child page in the wizard */
