@@ -166,7 +166,9 @@
 			}
 		}
 
-		field += "<input type='checkbox' id='tc-" + attr.localName + "' " + (value ? "checked" : "") + ">";
+		field +=
+				"<input type='checkbox' id='tc-" + attr.localName + "' "
+						+ ((value == "true") ? "checked" : "") + ">";
 		return field;
 	}
 
@@ -180,6 +182,27 @@
 		/** Handle dialog submit */
 		$('#ce-dialog-submit').click(function(event) {
 			event.preventDefault();
+
+			// Copy updated attributes into configuration element.
+			var cattrs = [];
+			for (var i = 0; i < ceModel.attributes.length; i++) {
+				var attr = ceModel.attributes[i];
+				var entered = $('#tc-' + attr.localName).val();
+				if (attr.type == 'Boolean') {
+					entered = '' + $('#tc-' + attr.localName).is(':checked')
+				}
+				if (entered && (entered.length > 0)) {
+					var cattr = {
+						'name' : attr.localName,
+						'value' : entered
+					};
+					if (attr.namespace) {
+						cattr.namespace = attr.namespace;
+					}
+					cattrs.push(cattr);
+				}
+			}
+			ceConfig.attributes = cattrs;
 
 			$('#ce-dialog').modal('hide');
 			if (ceSubmitCallback != null) {
