@@ -87,6 +87,7 @@ div.wz-header h2 {
 }
 
 .wz-role-label-missing {
+	
 }
 
 .wz-child {
@@ -224,6 +225,7 @@ div.wz-button-bar {
 <form id="view-tenant-list" method="get"></form>
 
 <%@ include file="tenantCreateDialog.inc"%>
+<%@ include file="configEditDialog.inc"%>
 <%@ include file="tenantEntry.inc"%>
 
 <!-- Details panel shown for a started engine -->
@@ -420,6 +422,11 @@ div.wz-button-bar {
 		$('#tve-config-page').html(panel);
 	}
 
+	/** Refresh contents of current panel */
+	function refresh() {
+		showPanelFor(editorContexts[editorContexts.length - 1]);
+	}
+
 	/** Add buttons that allow actions to be taken on the current node */
 	function createActionButtons(modelNode, configNode) {
 		var panel = "";
@@ -434,7 +441,7 @@ div.wz-button-bar {
 			// Only allow configuration if there are configurable attributes.
 			if (modelNode.attributes) {
 				panel +=
-						"<a onclick='tcConfigure()' title='Configure " + modelNode.name
+						"<a onclick='configureCurrent()' title='Configure " + modelNode.name
 								+ "' class='btn' href='javascript:void(0)'>";
 				panel += "<i class='fa fa-gear sw-button-icon'></i>";
 				panel += "</a>";
@@ -443,7 +450,7 @@ div.wz-button-bar {
 			// Only allow optional elements to be deleted.
 			if (modelNode.role.optional) {
 				panel +=
-						"<a onclick='tcDelete()' style='color: #900;' title='Delete " + modelNode.name
+						"<a onclick='deleteCurrent()' style='color: #900;' title='Delete " + modelNode.name
 								+ "' class='btn' href='javascript:void(0)'>";
 				panel += "<i class='fa fa-times sw-button-icon'></i>";
 				panel += "</a>";
@@ -451,6 +458,24 @@ div.wz-button-bar {
 			panel += "</div>"
 		}
 		return panel;
+	}
+
+	/** Configure the current element */
+	function configureCurrent() {
+		var top = editorContexts[editorContexts.length - 1];
+		var topModel = top["model"];
+		var topConfig = top["config"];
+		ceEdit(topModel, topConfig, onCurrentEdited)
+	}
+
+	/** Called after editing is complete */
+	function onCurrentEdited() {
+		refresh();
+	}
+
+	/** Delete the current element */
+	function deleteCurrent() {
+
 	}
 
 	/** Add breadcrumbs to all access to parent nodes */
@@ -773,7 +798,7 @@ div.wz-button-bar {
 						break;
 					}
 				}
-				showPanelFor(editorContexts[editorContexts.length - 1]);
+				refresh();
 			}
 		});
 	}

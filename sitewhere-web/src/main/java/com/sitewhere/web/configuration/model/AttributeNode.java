@@ -10,11 +10,15 @@ package com.sitewhere.web.configuration.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Configuration node associated with an XML element attribute.
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class AttributeNode extends XmlNode {
 
 	/** Attribute type */
