@@ -248,7 +248,7 @@
 	function onDeleteAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentDelete(token, onDeleteAssignmentComplete);
+		swAssignmentDelete(token, '${tenant.authenticationToken}', onDeleteAssignmentComplete);
 	}
 
 	/** Called after successful delete assignment */
