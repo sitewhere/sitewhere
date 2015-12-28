@@ -206,7 +206,7 @@
 
 			$('#ce-dialog').modal('hide');
 			if (ceSubmitCallback != null) {
-				ceSubmitCallback();
+				ceSubmitCallback(ceConfig);
 			}
 		});
 	});

@@ -469,13 +469,12 @@ div.wz-button-bar {
 	}
 
 	/** Called after editing is complete */
-	function onCurrentEdited() {
+	function onCurrentEdited(updated) {
 		refresh();
 	}
 
 	/** Delete the current element */
 	function deleteCurrent() {
-
 	}
 
 	/** Add breadcrumbs to all access to parent nodes */
@@ -695,7 +694,7 @@ div.wz-button-bar {
 		for (var i = 0; i < modelsForRole.length; i++) {
 			var roleModel = modelsForRole[i];
 			section +=
-					"<li><a href='#' onclick='onAddChildInRole(\"" + roleModel.role + "\")'>"
+					"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName + "\")'>"
 							+ roleModel.name + "</a></li>";
 		}
 
@@ -725,7 +724,7 @@ div.wz-button-bar {
 		for (var i = 0; i < modelsForRole.length; i++) {
 			var roleModel = modelsForRole[i];
 			section +=
-					"<li><a href='#' onclick='onAddChildInRole(\"" + roleModel.role + "\")'>"
+					"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName + "\")'>"
 							+ roleModel.name + "</a></li>";
 		}
 
@@ -734,6 +733,75 @@ div.wz-button-bar {
 
 		section += "</div>";
 		return section;
+	}
+
+	/** Add child of **/
+	function onAddChild(event, name) {
+		event.preventDefault();
+
+		var context = editorContexts[editorContexts.length - 1];
+		var model = context["model"];
+
+		// Create new config element based on selected model.
+		var childModel = findModelNodeByName(model, name);
+		var childConfig = {
+			'name' : childModel.localName,
+			'id' : generateUniqueId()
+		};
+		if (childModel.namespace) {
+			childConfig.namespace = childModel.namespace;
+		}
+
+		// If the new model element has no attributes, there is nothing to configure.
+		if (childModel.attributes) {
+			ceEdit(childModel, childConfig, onChildAdded);
+		} else {
+			onChildAdded(childConfig);
+		}
+	}
+
+	/** Generate a unique id */
+	function generateUniqueId() {
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+			function(c) {
+				var r = crypto.getRandomValues(new Uint8Array(1))[0] % 16 | 0, v =
+						c == 'x' ? r : (r & 0x3 | 0x8);
+				return v.toString(16);
+			});
+	}
+
+	/** Add newly created config element */
+	function onChildAdded(newConfig) {
+		var context = editorContexts[editorContexts.length - 1];
+		var topModel = context["model"];
+		var topConfig = context["config"];
+		if (!topConfig.children) {
+			topConfig.children = [];
+		}
+		topConfig.children.push(newConfig);
+		fixChildOrder(topModel, topConfig);
+		refresh();
+	}
+
+	/** Fix order of children to match model */
+	function fixChildOrder(modelNode, configNode) {
+		var childrenByRole = getConfigChildrenByRole(modelNode, configNode);
+		var role = roles[modelNode.role];
+		var childRoles = role.children;
+
+		var updated = [];
+		if (childRoles) {
+			for (var i = 0; i < childRoles.length; i++) {
+				var childrenInRole = childrenByRole[childRoles[i]];
+				if (childrenInRole) {
+					for (var j = 0; j < childrenInRole.length; j++) {
+						var childConfig = childrenInRole[j].config;
+						updated.push(childConfig);
+					}
+				}
+			}
+		}
+		configNode.children = updated;
 	}
 
 	/** Find children of a model node with the given role */
