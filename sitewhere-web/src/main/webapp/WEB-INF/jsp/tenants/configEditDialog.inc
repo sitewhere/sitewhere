@@ -45,9 +45,17 @@
 				valuesByName[ceConfig.attributes[i].name] = ceConfig.attributes[i].value;
 			}
 		}
+		var lastGroup;
 		var fields = "";
 		for (var i = 0; i < ceModel.attributes.length; i++) {
 			var attr = ceModel.attributes[i];
+			if (attr.group != lastGroup) {
+				if (lastGroup) {
+					fields += "</div>";
+				}
+				fields += "<div class='sw-attribute-group'><h1>" + attr.group + "</h1>";
+				lastGroup = attr.group;
+			}
 			fields += "<div class='control-group'>";
 			fields +=
 					"  <label class='control-label sw-control-label' style='width: 275px;' for='tc-" + attr.localName + "'>"
@@ -66,6 +74,9 @@
 			}
 
 			fields += "  </div>";
+			fields += "</div>";
+		}
+		if (lastGroup) {
 			fields += "</div>";
 		}
 		$('#ce-form').html(fields);
@@ -225,7 +236,7 @@
 	}
 
 	/** Create new */
-	function ceCreate(model, config, callback) {
+	function ceComponentCreate(model, config, callback) {
 
 		// Store context.
 		ceModel = model;
@@ -245,7 +256,7 @@
 	}
 
 	/** Edit existing */
-	function ceEdit(model, config, callback) {
+	function ceComponentEdit(model, config, callback) {
 
 		// Store context.
 		ceModel = model;

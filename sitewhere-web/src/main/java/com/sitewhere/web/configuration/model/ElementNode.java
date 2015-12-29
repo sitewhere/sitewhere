@@ -24,9 +24,6 @@ public class ElementNode extends XmlNode {
 	/** List of attribute nodes */
 	private List<AttributeNode> attributes;
 
-	/** List of contained elements */
-	private List<ElementNode> elements;
-
 	/** Element role */
 	private String role;
 
@@ -43,14 +40,6 @@ public class ElementNode extends XmlNode {
 
 	public void setAttributes(List<AttributeNode> attributes) {
 		this.attributes = attributes;
-	}
-
-	public List<ElementNode> getElements() {
-		return elements;
-	}
-
-	public void setElements(List<ElementNode> elements) {
-		this.elements = elements;
 	}
 
 	public String getRole() {
@@ -112,14 +101,6 @@ public class ElementNode extends XmlNode {
 				element.setAttributes(new ArrayList<AttributeNode>());
 			}
 			element.getAttributes().add(attribute);
-			return this;
-		}
-
-		public Builder addElement(ElementNode child) {
-			if (element.getElements() == null) {
-				element.setElements(new ArrayList<ElementNode>());
-			}
-			element.getElements().add(child);
 			return this;
 		}
 

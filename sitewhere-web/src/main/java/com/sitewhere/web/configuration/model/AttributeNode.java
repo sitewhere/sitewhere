@@ -36,6 +36,9 @@ public class AttributeNode extends XmlNode {
 	/** Indicates if attribute is required */
 	private boolean required;
 
+	/** Name for grouping related attributes */
+	private String group;
+
 	public AttributeNode() {
 		super(NodeType.Attribute);
 	}
@@ -80,6 +83,14 @@ public class AttributeNode extends XmlNode {
 		this.required = required;
 	}
 
+	public String getGroup() {
+		return group;
+	}
+
+	public void setGroup(String group) {
+		this.group = group;
+	}
+
 	/**
 	 * Builder for creating attribute nodes.
 	 * 
@@ -121,6 +132,11 @@ public class AttributeNode extends XmlNode {
 				attribute.setChoices(new ArrayList<String>());
 			}
 			attribute.getChoices().add(choice);
+			return this;
+		}
+
+		public Builder setGroup(String group) {
+			attribute.setGroup(group);
 			return this;
 		}
 

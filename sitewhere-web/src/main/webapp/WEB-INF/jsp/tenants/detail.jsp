@@ -156,6 +156,19 @@ ol.wz-breadcrumb {
 	background-color: #f9f9f9;
 }
 
+.sw-attribute-group {
+	border: 1px solid #ccc;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+.sw-attribute-group h1 {
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	line-height: 1em;
+}
+
 label.sw-control-label {
 	font-weight: bold;
 	font-size: 17px;
@@ -465,7 +478,7 @@ div.wz-button-bar {
 		var top = editorContexts[editorContexts.length - 1];
 		var topModel = top["model"];
 		var topConfig = top["config"];
-		ceEdit(topModel, topConfig, onCurrentEdited)
+		ceComponentEdit(topModel, topConfig, onCurrentEdited)
 	}
 
 	/** Called after editing is complete */
@@ -505,8 +518,16 @@ div.wz-button-bar {
 				valuesByName[configNode.attributes[i].name] = configNode.attributes[i].value;
 			}
 		}
+		var lastGroup;
 		for (var i = 0; i < modelNode.attributes.length; i++) {
 			var attr = modelNode.attributes[i];
+			if (attr.group != lastGroup) {
+				if (lastGroup) {
+					section += "</div>";
+				}
+				section += "<div class='sw-attribute-group'><h1>" + attr.group + "</h1>";
+				lastGroup = attr.group;
+			}
 			section += "<div class='control-group'>";
 			section +=
 					"  <label class='control-label sw-control-label' style='width: 275px;' for='tc-" + attr.localName + "'>"
@@ -519,6 +540,9 @@ div.wz-button-bar {
 				section += "    (defaulted to '" + attr.defaultValue + "')";
 			}
 			section += "  </div>";
+			section += "</div>";
+		}
+		if (lastGroup) {
 			section += "</div>";
 		}
 		section += "</form>";
@@ -754,7 +778,7 @@ div.wz-button-bar {
 
 		// If the new model element has no attributes, there is nothing to configure.
 		if (childModel.attributes) {
-			ceEdit(childModel, childConfig, onChildAdded);
+			ceComponentCreate(childModel, childConfig, onChildAdded);
 		} else {
 			onChildAdded(childConfig);
 		}
@@ -806,16 +830,7 @@ div.wz-button-bar {
 
 	/** Find children of a model node with the given role */
 	function findModelChildrenInRole(roleName) {
-		var context = editorContexts[editorContexts.length - 1];
-		var model = context["model"];
-		var matches = [];
-		for (var i = 0; i < model.elements.length; i++) {
-			var childModel = model.elements[i];
-			if (childModel.role == roleName) {
-				matches.push(childModel);
-			}
-		}
-		return matches;
+		return configModel.elementsByRole[roleName];
 	}
 
 	/** Add children that are in a sortable format */
@@ -951,18 +966,23 @@ div.wz-button-bar {
 		return null;
 	}
 
-	/** Find closest element with the given localName */
-	function findModelNodeByName(root, name) {
-		if (root.nodeType == 'Element') {
-			if (root.localName == name) {
-				return root;
-			} else {
-				var found;
-				if (root.elements) {
-					for (var i = 0; i < root.elements.length; i++) {
-						found = findModelNodeByName(root.elements[i], name);
-						if (found) {
-							return found;
+	/** Find a child model based on config element name */
+	function findModelNodeByName(model, name) {
+		if (model.localName == name) {
+			return model;
+		} else {
+			var role = roles[model.role];
+			var childRoles = role.children;
+
+			// Loop through all possible child roles for model.
+			for (var i = 0; i < childRoles.length; i++) {
+
+				//  Loop through all potential elements for child role.
+				var potential = configModel.elementsByRole[childRoles[i]];
+				if (potential) {
+					for (var j = 0; j < potential.length; j++) {
+						if (name == potential[j].localName) {
+							return potential[j];
 						}
 					}
 				}
