@@ -246,7 +246,7 @@ public enum ElementRole {
 			generator.writeFieldName("permanent");
 			generator.writeBoolean(value.isPermanent());
 
-			if ((value.getChildren() != null) && (value.getChildren().length > 0)) {
+			if (value.getChildren() != null) {
 				generator.writeArrayFieldStart("children");
 				for (ElementRole child : value.getChildren()) {
 					generator.writeString(child.name());

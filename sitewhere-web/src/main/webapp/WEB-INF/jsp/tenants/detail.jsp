@@ -428,9 +428,7 @@ div.wz-button-bar {
 		}
 
 		/** If children are configured, add navigation */
-		if (configNode.children) {
-			panel += addChildElements(configNode, modelNode);
-		}
+		panel += addChildElements(configNode, modelNode);
 
 		panel += "</div>";
 		panel += "</div>";
@@ -942,17 +940,19 @@ div.wz-button-bar {
 			var childRole = childRoles[i];
 			var matches = [];
 			result[childRole] = matches;
-			for (var j = 0; j < configNode.children.length; j++) {
-				var childConfig = configNode.children[j];
-				if (modelNotFound.indexOf(childConfig.name) == -1) {
-					var childModel = findModelNodeByName(modelNode, childConfig.name);
-					if (!childModel) {
-						modelNotFound.push(childConfig.name);
-					} else if (childModel.role == childRole) {
-						var childContext = {};
-						childContext["model"] = childModel;
-						childContext["config"] = childConfig;
-						matches.push(childContext);
+			if (configNode.children) {
+				for (var j = 0; j < configNode.children.length; j++) {
+					var childConfig = configNode.children[j];
+					if (modelNotFound.indexOf(childConfig.name) == -1) {
+						var childModel = findModelNodeByName(modelNode, childConfig.name);
+						if (!childModel) {
+							modelNotFound.push(childConfig.name);
+						} else if (childModel.role == childRole) {
+							var childContext = {};
+							childContext["model"] = childModel;
+							childContext["config"] = childConfig;
+							matches.push(childContext);
+						}
 					}
 				}
 			}

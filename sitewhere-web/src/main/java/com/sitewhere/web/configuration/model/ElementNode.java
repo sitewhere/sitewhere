@@ -96,6 +96,11 @@ public class ElementNode extends XmlNode {
 			return this;
 		}
 
+		public Builder setNamespace(String namespace) {
+			element.setNamespace(namespace);
+			return this;
+		}
+
 		public Builder addAttribute(AttributeNode attribute) {
 			if (element.getAttributes() == null) {
 				element.setAttributes(new ArrayList<AttributeNode>());
