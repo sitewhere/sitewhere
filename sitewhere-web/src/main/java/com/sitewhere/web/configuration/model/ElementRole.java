@@ -126,8 +126,12 @@ public enum ElementRole {
 	InboundProcessingChain(null, false, false, false,
 			new ElementRole[] { InboundProcessingChain_EventProcessor }, true),
 
+	/** Outbound processing chain. Event processor. */
+	OutboundProcessingChain_EventProcessor("Event Processors", true, true, true),
+
 	/** Outbound processing chain element. */
-	OutboundProcessingChain(null, false, false, false, new ElementRole[] {}, true),
+	OutboundProcessingChain(null, false, false, false,
+			new ElementRole[] { OutboundProcessingChain_EventProcessor }, true),
 
 	/** Asset Management element. */
 	AssetManagment(null, false, false, false, new ElementRole[] {}, true),

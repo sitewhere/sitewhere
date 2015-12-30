@@ -7,7 +7,10 @@
  */
 package com.sitewhere.web.configuration;
 
+import com.sitewhere.spring.handler.OutboundProcessingChainParser;
 import com.sitewhere.spring.handler.TenantConfigurationParser;
+import com.sitewhere.web.configuration.model.AttributeNode;
+import com.sitewhere.web.configuration.model.AttributeType;
 import com.sitewhere.web.configuration.model.ConfigurationModel;
 import com.sitewhere.web.configuration.model.ElementNode;
 import com.sitewhere.web.configuration.model.ElementRole;
@@ -21,6 +24,8 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 
 	public OutboundProcessingChainModel() {
 		addElement(createOutboundProcessingChain());
+		addElement(createCommandDeliveryEventProcessorElement());
+		addElement(createHazelcastEventProcessorElement());
 	}
 
 	/**
@@ -34,6 +39,40 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain);
 		builder.setDescription("Configure a chain of processing steps that are applied to outbound data.");
+		return builder.build();
+	}
+
+	/**
+	 * Create a command delivery event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createCommandDeliveryEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Command Delivery Processor",
+						OutboundProcessingChainParser.Elements.CommandDeliveryEventProcessor.getLocalName(),
+						"sign-out", ElementRole.OutboundProcessingChain_EventProcessor);
+		builder.setDescription("Hands off outbound device command events to the device communication subsystem. "
+				+ "If this event processor is not configured, no commands will be sent to devices.");
+		builder.warnOnDelete("Deleting this component will prevent commands from being sent!");
+		builder.addAttribute((new AttributeNode.Builder("Number of processing threads", "numThreads",
+				AttributeType.Integer).setDescription(
+				"Sets the number of threads used to process provisioning commands. Increase for situations "
+						+ "where the load of device commands is high.").setDefaultValue("5").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a Hazelcast event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createHazelcastEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Hazelcast Processor",
+						OutboundProcessingChainParser.Elements.HazelcastEventProcessor.getLocalName(),
+						"sign-out", ElementRole.OutboundProcessingChain_EventProcessor);
+		builder.setDescription("Sends outbound events to Hazelcast topics for processing by external consumers.");
 		return builder.build();
 	}
 }

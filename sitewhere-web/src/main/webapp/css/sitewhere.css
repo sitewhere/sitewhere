@@ -2,6 +2,7 @@
 	height: 100%;
 	font-family: "Calibri", "Khmer UI", arial;
 	color: #333333;
+	overflow: auto;
 }
 
 .sw-container {

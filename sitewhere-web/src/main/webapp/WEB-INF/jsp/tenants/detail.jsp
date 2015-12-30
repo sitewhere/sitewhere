@@ -53,8 +53,7 @@ div.wz-header h2 {
 	border: 1px solid #999;
 	padding: 15px 10px 10px;
 	position: relative;
-	margin-top: 10px;
-	margin-bottom: 25px;
+	margin: 10px 0px 25px;
 	box-shadow: 4px 4px 4px 0px rgba(192, 192, 192, 0.3);
 }
 
@@ -135,6 +134,10 @@ div.wz-header h2 {
 	list-style-type: none;
 	list-style-position: inside;
 	border: 2px dashed #aaa;
+}
+
+.wz-sortable-item {
+	
 }
 
 div.wz-divider {
@@ -584,7 +587,8 @@ div.wz-button-bar {
 		section += "<scr" + "ipt>";
 		section += "$('.wz-sortable').sortable({";
 		section += "  placeholder: 'wz-sortable-placeholder', ";
-		section += "  stop: function(event,ui) { childOrderChanged('" + childRoleName + "'); }";
+		section += "  stop: function(event,ui) { childOrderChanged('" + childRoleName + "'); }, ";
+		section += "  items : 'li.wz-sortable-item' ";
 		section += "});";
 		section += "</scr" + "ipt>";
 
@@ -835,6 +839,8 @@ div.wz-button-bar {
 
 	/** Add children that are in a sortable format */
 	function addSortableRoleChildren(childRoleName, childRole, childrenWithRole) {
+		var modelsForRole = findModelChildrenInRole(childRoleName);
+
 		var section =
 				"<ul class='wz-role wz-sortable'><div class='wz-role-label'>" + childRole.name + "</div>";
 		for (var j = 0; j < childrenWithRole.length; j++) {
@@ -842,7 +848,7 @@ div.wz-button-bar {
 			var childModel = childContext["model"];
 			var childConfig = childContext["config"];
 
-			section += "<li class='wz-child' draggable='true' id='" + childConfig.id + "'>";
+			section += "<li class='wz-child wz-sortable-item' draggable='true' id='" + childConfig.id + "'>";
 			section += "<i class='wz-drag-icon fa fa-bars fa-white'></i>";
 
 			// Adds icon, name, and navigation.
@@ -850,6 +856,31 @@ div.wz-button-bar {
 
 			section += "</li>";
 		}
+
+		// Non-draggable item for creating new children.
+		section +=
+				"<li style='padding-bottom: 10px; border-bottom: 1px dashed #aaa; margin-bottom: 10px; ";
+		section += "margin-left: 20px; margin-right: 20px; list-style-type: none; list-style-position: inside;'></li>";
+		section += "<li class='wz-child'><i class='wz-child-icon fa fa-plus fa-white'></i>";
+		section += "<h1 class='wz-child-name'>Add New " + childRole.name + "</h1>";
+		section +=
+				"<div class='wz-child-nav btn-group dropup' style='padding: 0; margin-top: 5px; margin-right: 5px;'>";
+		section += "<a class='btn dropdown-toggle' title='Add Component' data-toggle='dropdown'>";
+		section += "Add Component<span class='caret'style='margin-left: 5px'></span></a>";
+		section += "<ul class='dropdown-menu pull-right'>";
+
+		// Add item in dropdown for each component in the given role.
+		for (var i = 0; i < modelsForRole.length; i++) {
+			var roleModel = modelsForRole[i];
+			section +=
+					"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName + "\")'>"
+							+ roleModel.name + "</a></li>";
+		}
+
+		section += "</ul>";
+		section += "</div>";
+		section += "</li>";
+
 		section += "</ul>";
 		return section;
 	}
