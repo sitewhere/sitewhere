@@ -558,10 +558,11 @@ div.wz-button-bar {
 		if (!role) {
 			return section;
 		}
+		var childRoles = getSpecializedRoleChildren(role, modelNode);
 
 		// Loop through role children in order.
-		for (var i = 0; i < role.children.length; i++) {
-			var childRoleName = role.children[i];
+		for (var i = 0; i < childRoles.length; i++) {
+			var childRoleName = childRoles[i];
 			var childRole = roles[childRoleName];
 			var childrenWithRole = childrenByRole[childRoleName];
 
@@ -813,7 +814,7 @@ div.wz-button-bar {
 	function fixChildOrder(modelNode, configNode) {
 		var childrenByRole = getConfigChildrenByRole(modelNode, configNode);
 		var role = roles[modelNode.role];
-		var childRoles = role.children;
+		var childRoles = getSpecializedRoleChildren(role, modelNode);
 
 		var updated = [];
 		if (childRoles) {
@@ -934,7 +935,7 @@ div.wz-button-bar {
 			return {};
 		}
 		var result = {};
-		var childRoles = role.children;
+		var childRoles = getSpecializedRoleChildren(role, modelNode);
 		var modelNotFound = [];
 		for (var i = 0; i < childRoles.length; i++) {
 			var childRole = childRoles[i];
@@ -959,6 +960,26 @@ div.wz-button-bar {
 		}
 		result["?"] = modelNotFound;
 		return result;
+	}
+
+	/** Get child roles, taking into account model specializations */
+	function getSpecializedRoleChildren(role, modelNode) {
+		var specialized = [];
+		var childRoles = role.children;
+		for (var i = 0; i < childRoles.length; i++) {
+			var childRole = childRoles[i];
+			if (modelNode.specializes) {
+				var match = modelNode.specializes[childRole];
+				if (match) {
+					specialized.push(match);
+				} else {
+					specialized.push(childRole);
+				}
+			} else {
+				specialized.push(childRole);
+			}
+		}
+		return specialized;
 	}
 
 	/** Find closest element with the given localName */
@@ -1003,7 +1024,7 @@ div.wz-button-bar {
 			return model;
 		} else {
 			var role = roles[model.role];
-			var childRoles = role.children;
+			var childRoles = getSpecializedRoleChildren(role, model);
 
 			// Loop through all possible child roles for model.
 			for (var i = 0; i < childRoles.length; i++) {

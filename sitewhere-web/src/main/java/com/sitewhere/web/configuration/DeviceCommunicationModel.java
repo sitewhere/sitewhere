@@ -110,6 +110,9 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		builder.addAttribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).setDescription(
 				"Unique id used for referencing this event source.").makeIndex().build()));
 
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
 		// Add common MQTT connectivity attributes.
 		addMqttConnectivityAttributes(builder);
 		builder.addAttribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).setDescription("MQTT topic event source uses for inbound messages.").build()));

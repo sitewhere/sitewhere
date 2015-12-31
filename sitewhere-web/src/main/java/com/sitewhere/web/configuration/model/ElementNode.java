@@ -8,7 +8,9 @@
 package com.sitewhere.web.configuration.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -29,6 +31,9 @@ public class ElementNode extends XmlNode {
 
 	/** Message shown to warn users before deleting element */
 	private String onDeleteWarning;
+
+	/** Indicates roles that require specific subtypes */
+	private Map<String, String> specializes;
 
 	public ElementNode() {
 		super(NodeType.Element);
@@ -56,6 +61,14 @@ public class ElementNode extends XmlNode {
 
 	public void setOnDeleteWarning(String onDeleteWarning) {
 		this.onDeleteWarning = onDeleteWarning;
+	}
+
+	public Map<String, String> getSpecializes() {
+		return specializes;
+	}
+
+	public void setSpecializes(Map<String, String> specializes) {
+		this.specializes = specializes;
 	}
 
 	/**
@@ -106,6 +119,14 @@ public class ElementNode extends XmlNode {
 				element.setAttributes(new ArrayList<AttributeNode>());
 			}
 			element.getAttributes().add(attribute);
+			return this;
+		}
+
+		public Builder specializes(ElementRole type, ElementRole subtype) {
+			if (element.getSpecializes() == null) {
+				element.setSpecializes(new HashMap<String, String>());
+			}
+			element.getSpecializes().put(type.name(), subtype.name());
 			return this;
 		}
 
