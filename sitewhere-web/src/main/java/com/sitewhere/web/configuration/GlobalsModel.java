@@ -25,7 +25,6 @@ public class GlobalsModel extends ConfigurationModel {
 
 	public GlobalsModel() {
 		addElement(createGlobals());
-		addElement(createHazelcastConfigurationElement());
 		addElement(createSolrConfigurationElement());
 		addElement(createGroovyConfigurationElement());
 	}
@@ -40,29 +39,7 @@ public class GlobalsModel extends ConfigurationModel {
 				new ElementNode.Builder("Global Overrides",
 						TenantConfigurationParser.Elements.Globals.getLocalName(), "cogs",
 						ElementRole.Globals);
-		builder.setDescription("Allow tenant-specific changes to global configuration elements.");
-		return builder.build();
-	}
-
-	/**
-	 * Create element overriding Hazelcast configuration.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createHazelcastConfigurationElement() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder("Override Hazelcast Configuration",
-						GlobalsParser.Elements.HazelcastConfiguration.getLocalName(), "cogs",
-						ElementRole.Globals_Global);
-
-		builder.setNamespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
-		builder.setDescription("Overrides global Hazelcast settings for a tenant.");
-		builder.addAttribute((new AttributeNode.Builder("Configuration file location", "configFileLocation",
-				AttributeType.String).setDescription("Path to Hazelcast configuration file.").build()));
-		builder.addAttribute((new AttributeNode.Builder("Group name", "groupName", AttributeType.String).setDescription("Overrides group name from configuration file if present.").build()));
-		builder.addAttribute((new AttributeNode.Builder("Group password", "groupPassword",
-				AttributeType.String).setDescription("Overrides group password from configuration file if present.").build()));
-
+		builder.description("Allow tenant-specific changes to global configuration elements.");
 		return builder.build();
 	}
 
@@ -77,9 +54,9 @@ public class GlobalsModel extends ConfigurationModel {
 						GlobalsParser.Elements.SolrConfiguration.getLocalName(), "cogs",
 						ElementRole.Globals_Global);
 
-		builder.setNamespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
-		builder.setDescription("Overrides global Solr settings for a tenant.");
-		builder.addAttribute((new AttributeNode.Builder("Solr server URL", "solrServerUrl",
+		builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
+		builder.description("Overrides global Solr settings for a tenant.");
+		builder.attribute((new AttributeNode.Builder("Solr server URL", "solrServerUrl",
 				AttributeType.String).setDescription("URL used by Solr client to access server.").build()));
 
 		return builder.build();
@@ -96,12 +73,12 @@ public class GlobalsModel extends ConfigurationModel {
 						GlobalsParser.Elements.GroovyConfiguration.getLocalName(), "cogs",
 						ElementRole.Globals_Global);
 
-		builder.setNamespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
-		builder.setDescription("Overrides global Groovy settings for a tenant.");
-		builder.addAttribute((new AttributeNode.Builder("Enable debugging", "debug", AttributeType.Boolean).setDescription("Turns on Groovy script engine debugging if true.").build()));
-		builder.addAttribute((new AttributeNode.Builder("Enable verbose mode", "verbose",
+		builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
+		builder.description("Overrides global Groovy settings for a tenant.");
+		builder.attribute((new AttributeNode.Builder("Enable debugging", "debug", AttributeType.Boolean).setDescription("Turns on Groovy script engine debugging if true.").build()));
+		builder.attribute((new AttributeNode.Builder("Enable verbose mode", "verbose",
 				AttributeType.Boolean).setDescription("Turns on Groovy script engine verbose flag if true.").build()));
-		builder.addAttribute((new AttributeNode.Builder("External script root", "externalScriptRoot",
+		builder.attribute((new AttributeNode.Builder("External script root", "externalScriptRoot",
 				AttributeType.String).setDescription("Sets script root to an external URL rathen than using the default filesystem path.").build()));
 
 		return builder.build();

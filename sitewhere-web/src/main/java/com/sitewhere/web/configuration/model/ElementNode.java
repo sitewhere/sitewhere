@@ -35,6 +35,9 @@ public class ElementNode extends XmlNode {
 	/** Indicates roles that require specific subtypes */
 	private Map<String, String> specializes;
 
+	/** Maps attribute group names to titles */
+	private Map<String, String> attributeGroups;
+
 	public ElementNode() {
 		super(NodeType.Element);
 	}
@@ -71,6 +74,14 @@ public class ElementNode extends XmlNode {
 		this.specializes = specializes;
 	}
 
+	public Map<String, String> getAttributeGroups() {
+		return attributeGroups;
+	}
+
+	public void setAttributeGroups(Map<String, String> attributeGroups) {
+		this.attributeGroups = attributeGroups;
+	}
+
 	/**
 	 * If an attribute is used as an index, return the name.
 	 * 
@@ -104,17 +115,17 @@ public class ElementNode extends XmlNode {
 			element.setRole(role.name());
 		}
 
-		public Builder setDescription(String description) {
+		public Builder description(String description) {
 			element.setDescription(description);
 			return this;
 		}
 
-		public Builder setNamespace(String namespace) {
+		public Builder namespace(String namespace) {
 			element.setNamespace(namespace);
 			return this;
 		}
 
-		public Builder addAttribute(AttributeNode attribute) {
+		public Builder attribute(AttributeNode attribute) {
 			if (element.getAttributes() == null) {
 				element.setAttributes(new ArrayList<AttributeNode>());
 			}
@@ -127,6 +138,14 @@ public class ElementNode extends XmlNode {
 				element.setSpecializes(new HashMap<String, String>());
 			}
 			element.getSpecializes().put(type.name(), subtype.name());
+			return this;
+		}
+
+		public Builder attributeGroup(String id, String name) {
+			if (element.getAttributeGroups() == null) {
+				element.setAttributeGroups(new HashMap<String, String>());
+			}
+			element.getAttributeGroups().put(id, name);
 			return this;
 		}
 

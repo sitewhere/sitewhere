@@ -38,7 +38,7 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 				new ElementNode.Builder("Outbound Processors",
 						TenantConfigurationParser.Elements.OutboundProcessingChain.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain);
-		builder.setDescription("Configure a chain of processing steps that are applied to outbound data.");
+		builder.description("Configure a chain of processing steps that are applied to outbound data.");
 		return builder.build();
 	}
 
@@ -52,10 +52,10 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 				new ElementNode.Builder("Command Delivery Processor",
 						OutboundProcessingChainParser.Elements.CommandDeliveryEventProcessor.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain_EventProcessor);
-		builder.setDescription("Hands off outbound device command events to the device communication subsystem. "
+		builder.description("Hands off outbound device command events to the device communication subsystem. "
 				+ "If this event processor is not configured, no commands will be sent to devices.");
 		builder.warnOnDelete("Deleting this component will prevent commands from being sent!");
-		builder.addAttribute((new AttributeNode.Builder("Number of processing threads", "numThreads",
+		builder.attribute((new AttributeNode.Builder("Number of processing threads", "numThreads",
 				AttributeType.Integer).setDescription(
 				"Sets the number of threads used to process provisioning commands. Increase for situations "
 						+ "where the load of device commands is high.").setDefaultValue("5").build()));
@@ -72,7 +72,7 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 				new ElementNode.Builder("Hazelcast Processor",
 						OutboundProcessingChainParser.Elements.HazelcastEventProcessor.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain_EventProcessor);
-		builder.setDescription("Sends outbound events to Hazelcast topics for processing by external consumers.");
+		builder.description("Sends outbound events to Hazelcast topics for processing by external consumers.");
 		return builder.build();
 	}
 }

@@ -33,7 +33,7 @@ public class AssetManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("Asset Management",
 						TenantConfigurationParser.Elements.AssetManagement.getLocalName(), "tag",
 						ElementRole.AssetManagment);
-		builder.setDescription("Configure asset management features.");
+		builder.description("Configure asset management features.");
 		return builder.build();
 	}
 }

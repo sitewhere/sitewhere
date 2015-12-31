@@ -50,10 +50,11 @@
 		for (var i = 0; i < ceModel.attributes.length; i++) {
 			var attr = ceModel.attributes[i];
 			if (attr.group != lastGroup) {
+				var groupName = ceModel.attributeGroups[attr.group];
 				if (lastGroup) {
 					fields += "</div>";
 				}
-				fields += "<div class='sw-attribute-group'><h1>" + attr.group + "</h1>";
+				fields += "<div class='sw-attribute-group'><h1>" + groupName + "</h1>";
 				lastGroup = attr.group;
 			}
 			fields += "<div class='control-group'>";

@@ -49,7 +49,7 @@ public class DataManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("Data Management",
 						TenantConfigurationParser.Elements.TenantDatastore.getLocalName(), "database",
 						ElementRole.DataManagement);
-		builder.setDescription("Configure the datastore and related aspects such as caching and "
+		builder.description("Configure the datastore and related aspects such as caching and "
 				+ "data model initialization.");
 		return builder.build();
 	}
@@ -65,12 +65,12 @@ public class DataManagementModel extends ConfigurationModel {
 						TenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
 						ElementRole.DataManagement_Datastore);
 
-		builder.setDescription("Store tenant data using a MongoDB database.");
-		builder.addAttribute((new AttributeNode.Builder("Use bulk inserts", "useBulkEventInserts",
+		builder.description("Store tenant data using a MongoDB database.");
+		builder.attribute((new AttributeNode.Builder("Use bulk inserts", "useBulkEventInserts",
 				AttributeType.Boolean).setDescription("Use the MongoDB bulk insert API to add "
 				+ "events in groups and improve performance.").build()));
-		builder.addAttribute((new AttributeNode.Builder("Bulk insert max chunk size",
-				"bulkInsertMaxChunkSize", AttributeType.Integer).setDescription("Maximum number of records to send "
+		builder.attribute((new AttributeNode.Builder("Bulk insert max chunk size", "bulkInsertMaxChunkSize",
+				AttributeType.Integer).setDescription("Maximum number of records to send "
 				+ "in a single bulk insert (if bulk inserts are enabled).").build()));
 		return builder.build();
 	}
@@ -85,7 +85,7 @@ public class DataManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("HBase Tenant Datastore",
 						TenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
 						ElementRole.DataManagement_Datastore);
-		builder.setDescription("Store tenant data using tables in an HBase instance.");
+		builder.description("Store tenant data using tables in an HBase instance.");
 		return builder.build();
 	}
 
@@ -99,7 +99,7 @@ public class DataManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("Hazelcast Distributed Cache Provider",
 						TenantDatastoreParser.Elements.HazelcastCache.getLocalName(), "folder-open-o",
 						ElementRole.DataManagement_CacheProvider);
-		builder.setDescription("Cache device management data using Hazelcast distributed maps. "
+		builder.description("Cache device management data using Hazelcast distributed maps. "
 				+ "This cache allows data to be shared between clustered SiteWhere instances.");
 		return builder.build();
 	}
@@ -114,37 +114,39 @@ public class DataManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("EHCache Cache Provider",
 						TenantDatastoreParser.Elements.EHCacheDeviceManagementCache.getLocalName(),
 						"folder-open-o", ElementRole.DataManagement_CacheProvider);
-		builder.setDescription("Cache device management data using EHCache. Note that this "
+		builder.description("Cache device management data using EHCache. Note that this "
 				+ "cache is not intended for use on clustered installations.");
-		builder.addAttribute((new AttributeNode.Builder("Site cache max entries", "siteCacheMaxEntries",
+		builder.attributeGroup("max", "Max Entries in Cache");
+		builder.attributeGroup("ttl", "Cache Entry Time to Live");
+
+		builder.attribute((new AttributeNode.Builder("Site cache max entries", "siteCacheMaxEntries",
 				AttributeType.Integer).setDescription("Maximum number entries in site cache.").setDefaultValue(
-				"1000").setGroup("Cache Max Entries").build()));
-		builder.addAttribute((new AttributeNode.Builder("Specification cache max entries",
+				"1000").setGroup("max").build()));
+		builder.attribute((new AttributeNode.Builder("Specification cache max entries",
 				"deviceSpecificationCacheMaxEntries", AttributeType.Integer).setDescription(
 				"Maximum number entries in device specification cache.").setDefaultValue("1000").setGroup(
-				"Cache Max Entries").build()));
-		builder.addAttribute((new AttributeNode.Builder("Device cache max entries", "deviceCacheMaxEntries",
+				"max").build()));
+		builder.attribute((new AttributeNode.Builder("Device cache max entries", "deviceCacheMaxEntries",
 				AttributeType.Integer).setDescription("Maximum number entries in device cache.").setDefaultValue(
-				"10000").setGroup("Cache Max Entries").build()));
-		builder.addAttribute((new AttributeNode.Builder("Assignment cache max entries",
+				"10000").setGroup("max").build()));
+		builder.attribute((new AttributeNode.Builder("Assignment cache max entries",
 				"deviceAssignmentCacheMaxEntries", AttributeType.Integer).setDescription(
-				"Maximum number entries in device assignment cache.").setDefaultValue("10000").setGroup(
-				"Cache Max Entries").build()));
+				"Maximum number entries in device assignment cache.").setDefaultValue("10000").setGroup("max").build()));
 
-		builder.addAttribute((new AttributeNode.Builder("Site cache TTL seconds", "siteCacheTtl",
+		builder.attribute((new AttributeNode.Builder("Site cache TTL seconds", "siteCacheTtl",
 				AttributeType.Integer).setDescription("Maximum time to live (in seconds) for site cache.").setDefaultValue(
-				"6000").setGroup("Cache Time to Live").build()));
-		builder.addAttribute((new AttributeNode.Builder("Specification cache TTL seconds",
+				"6000").setGroup("ttl").build()));
+		builder.attribute((new AttributeNode.Builder("Specification cache TTL seconds",
 				"deviceSpecificationCacheTtl", AttributeType.Integer).setDescription(
 				"Maximum time to live (in seconds) for device specification cache.").setDefaultValue("6000").setGroup(
-				"Cache Time to Live").build()));
-		builder.addAttribute((new AttributeNode.Builder("Device cache TTL seconds", "deviceCacheTtl",
+				"ttl").build()));
+		builder.attribute((new AttributeNode.Builder("Device cache TTL seconds", "deviceCacheTtl",
 				AttributeType.Integer).setDescription("Maximum time to live (in seconds) for device cache.").setDefaultValue(
-				"600").setGroup("Cache Time to Live").build()));
-		builder.addAttribute((new AttributeNode.Builder("Assignment cache TTL seconds",
+				"600").setGroup("ttl").build()));
+		builder.attribute((new AttributeNode.Builder("Assignment cache TTL seconds",
 				"deviceAssignmentCacheTtl", AttributeType.Integer).setDescription(
 				"Maximum time to live (in seconds) for device assignment cache.").setDefaultValue("600").setGroup(
-				"Cache Time to Live").build()));
+				"ttl").build()));
 		return builder.build();
 	}
 
@@ -158,7 +160,7 @@ public class DataManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("Default Device Model Initializer",
 						TenantDatastoreParser.Elements.DefaultDeviceModelInitializer.getLocalName(), "flash",
 						ElementRole.DataManagement_DeviceModelInitializer);
-		builder.setDescription("This component creates sample data when no existing device data "
+		builder.description("This component creates sample data when no existing device data "
 				+ "is detected in the datastore. A site with device specifications, devices, "
 				+ "assignments, events and other example data is created on instance startup.");
 		return builder.build();
@@ -174,7 +176,7 @@ public class DataManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("Default Asset Model Initializer",
 						TenantDatastoreParser.Elements.DefaultAssetModelInitializer.getLocalName(), "flash",
 						ElementRole.DataManagement_AssetModelInitializer);
-		builder.setDescription("This component creates sample data when no existing asset data "
+		builder.description("This component creates sample data when no existing asset data "
 				+ "is detected in the datastore. If using the <strong>device model initializer</strong> "
 				+ "this component should be used as well so that assets in the sample data can be resolved.");
 		return builder.build();
@@ -190,7 +192,7 @@ public class DataManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("Default Schedule Model Initializer",
 						TenantDatastoreParser.Elements.DefaultScheduleModelInitializer.getLocalName(),
 						"flash", ElementRole.DataManagement_ScheduleModelInitializer);
-		builder.setDescription("This component creates sample data when no existing schedule data "
+		builder.description("This component creates sample data when no existing schedule data "
 				+ "is detected in the datastore. It provides examples of both simple and cron-based "
 				+ "schedules that are commonly used.");
 		return builder.build();

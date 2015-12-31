@@ -37,7 +37,7 @@ public class InboundProcessingChainModel extends ConfigurationModel {
 				new ElementNode.Builder("Inbound Processors",
 						TenantConfigurationParser.Elements.InboundProcessingChain.getLocalName(), "sign-in",
 						ElementRole.InboundProcessingChain);
-		builder.setDescription("Configure a chain of processing steps that are applied to inbound data.");
+		builder.description("Configure a chain of processing steps that are applied to inbound data.");
 
 		return builder.build();
 	}
@@ -53,7 +53,7 @@ public class InboundProcessingChainModel extends ConfigurationModel {
 						InboundProcessingChainParser.Elements.EventStorageProcessor.getLocalName(),
 						"database", ElementRole.InboundProcessingChain_EventProcessor);
 
-		builder.setDescription("Persists incoming events into the datastore. If this processor is removed, "
+		builder.description("Persists incoming events into the datastore. If this processor is removed, "
 				+ "events will not be stored and outbound processing will not be triggered for the events.");
 		builder.warnOnDelete("Deleting this component will prevent events from being persisted!");
 
@@ -71,7 +71,7 @@ public class InboundProcessingChainModel extends ConfigurationModel {
 						InboundProcessingChainParser.Elements.RegistrationProcessor.getLocalName(), "key",
 						ElementRole.InboundProcessingChain_EventProcessor);
 
-		builder.setDescription("Passes registration events to the registration manager. "
+		builder.description("Passes registration events to the registration manager. "
 				+ "If this processor is removed, device registration events will be ignored.");
 		builder.warnOnDelete("Deleting this component will cause registration events to be ignored!");
 
@@ -89,7 +89,7 @@ public class InboundProcessingChainModel extends ConfigurationModel {
 						InboundProcessingChainParser.Elements.DeviceStreamProcessor.getLocalName(),
 						"exchange", ElementRole.InboundProcessingChain_EventProcessor);
 
-		builder.setDescription("Passes device stream events to the device stream manager. "
+		builder.description("Passes device stream events to the device stream manager. "
 				+ "If this processor is removed, device streaming events will be ignored.");
 		builder.warnOnDelete("Deleting this component will cause device stream events to be ignored!");
 

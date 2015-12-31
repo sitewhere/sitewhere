@@ -161,15 +161,21 @@ ol.wz-breadcrumb {
 
 .sw-attribute-group {
 	border: 1px solid #ccc;
-	padding: 5px;
-	margin-bottom: 10px;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	margin-top: 5px;
 }
 
 .sw-attribute-group h1 {
 	margin: 0;
-	padding: 0;
+	padding: 2px 5px;
 	font-size: 12px;
 	line-height: 1em;
+	position: absolute;
+	background-color: #666;
+	color: #fff;
+	top: -9px;
 }
 
 label.sw-control-label {
@@ -523,10 +529,11 @@ div.wz-button-bar {
 		for (var i = 0; i < modelNode.attributes.length; i++) {
 			var attr = modelNode.attributes[i];
 			if (attr.group != lastGroup) {
+				var groupName = modelNode.attributeGroups[attr.group];
 				if (lastGroup) {
 					section += "</div>";
 				}
-				section += "<div class='sw-attribute-group'><h1>" + attr.group + "</h1>";
+				section += "<div class='sw-attribute-group'><h1>" + groupName + "</h1>";
 				lastGroup = attr.group;
 			}
 			section += "<div class='control-group'>";
