@@ -107,7 +107,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 						ElementRole.EventSources_EventSource);
 
 		builder.description("Listen for events on an MQTT topic.");
-		builder.attribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).setDescription(
+		builder.attribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).description(
 				"Unique id used for referencing this event source.").makeIndex().build()));
 
 		// Only accept binary event decoders.
@@ -115,7 +115,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 		// Add common MQTT connectivity attributes.
 		addMqttConnectivityAttributes(builder);
-		builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).setDescription("MQTT topic event source uses for inbound messages.").build()));
+		builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).description("MQTT topic event source uses for inbound messages.").build()));
 
 		return builder.build();
 	}
@@ -127,15 +127,15 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	 */
 	protected void addMqttConnectivityAttributes(ElementNode.Builder builder) {
 		builder.attribute((new AttributeNode.Builder("Transport protocol", "protocol",
-				AttributeType.String).setDescription("Protocol used for establishing MQTT connection").setDefaultValue(
-				"tcp").addChoice("tcp").addChoice("tls").build()));
+				AttributeType.String).description("Protocol used for establishing MQTT connection").defaultValue(
+				"tcp").choice("tcp").choice("tls").build()));
 		builder.attribute((new AttributeNode.Builder("MQTT broker hostname", "hostname",
-				AttributeType.String).setDescription("Hostname used for creating the MQTT broker connection.").build()));
-		builder.attribute((new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).setDescription("Port number used for creating the MQTT broker connection.").build()));
+				AttributeType.String).description("Hostname used for creating the MQTT broker connection.").build()));
+		builder.attribute((new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).description("Port number used for creating the MQTT broker connection.").build()));
 		builder.attribute((new AttributeNode.Builder("Trust store path", "trustStorePath",
-				AttributeType.String).setDescription("Fully-qualified path to trust store for secured connections.").build()));
+				AttributeType.String).description("Fully-qualified path to trust store for secured connections.").build()));
 		builder.attribute((new AttributeNode.Builder("Trust store password", "trustStorePassword",
-				AttributeType.String).setDescription("Password used to authenticate with trust store.").build()));
+				AttributeType.String).description("Password used to authenticate with trust store.").build()));
 	}
 
 	/**
@@ -205,12 +205,12 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				+ "the pipeline. The number of threads used very directly affects system performance since "
 				+ "it determines how many events can be processed in parallel.");
 		builder.attribute((new AttributeNode.Builder("Number of processing threads",
-				"numEventProcessorThreads", AttributeType.Integer).setDescription(
-				"Number of threads used to process incoming events in parallel").setDefaultValue("100").build()));
+				"numEventProcessorThreads", AttributeType.Integer).description(
+				"Number of threads used to process incoming events in parallel").defaultValue("100").build()));
 		builder.attribute((new AttributeNode.Builder("Enable monitoring", "enableMonitoring",
-				AttributeType.Boolean).setDescription("Enable logging of monitoring statistics at an interval").build()));
+				AttributeType.Boolean).description("Enable logging of monitoring statistics at an interval").build()));
 		builder.attribute((new AttributeNode.Builder("Monitoring interval in seconds",
-				"monitoringIntervalSec", AttributeType.Integer).setDescription("Number of seconds to wait between logging monitoring statistics.").build()));
+				"monitoringIntervalSec", AttributeType.Integer).description("Number of seconds to wait between logging monitoring statistics.").build()));
 		return builder.build();
 	}
 
@@ -242,14 +242,14 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 		builder.description("Provides device registration management functionality.");
 		builder.attribute((new AttributeNode.Builder("Allow registration of new devices",
-				"allowNewDevices", AttributeType.Boolean).setDescription(
-				"Indicates whether new devices should be allowed to register with the system").setDefaultValue(
+				"allowNewDevices", AttributeType.Boolean).description(
+				"Indicates whether new devices should be allowed to register with the system").defaultValue(
 				"true").build()));
 		builder.attribute((new AttributeNode.Builder("Automatically assign site", "autoAssignSite",
-				AttributeType.Boolean).setDescription("Indicates if a site should automatically be assigned if no site token is "
+				AttributeType.Boolean).description("Indicates if a site should automatically be assigned if no site token is "
 				+ "passed in registration request.").build()));
 		builder.attribute((new AttributeNode.Builder("Site token", "autoAssignSiteToken",
-				AttributeType.String).setDescription("Site token used for registering new devices if auto-assign is enabled "
+				AttributeType.String).description("Site token used for registering new devices if auto-assign is enabled "
 				+ "and no site token is passed.").build()));
 		return builder.build();
 	}
@@ -284,9 +284,9 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 		builder.description("Manages how batch operations are processed.");
 		builder.attribute((new AttributeNode.Builder("Throttle delay (ms)", "throttleDelayMs",
-				AttributeType.Integer).setDescription(
+				AttributeType.Integer).description(
 				"Number of milliseconds to wait between processing elements in a "
-						+ "batch operation. This throttles the output to prevent overloading the system.").setDefaultValue(
+						+ "batch operation. This throttles the output to prevent overloading the system.").defaultValue(
 				"0").build()));
 		return builder.build();
 	}
@@ -321,7 +321,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				+ "to a command desitination. Commands for specifications not in the mapping list are routed to "
 				+ "the default destination.");
 		builder.attribute((new AttributeNode.Builder("Default destination", "defaultDestination",
-				AttributeType.String).setDescription("Identifier for default destination commands should be routed to if no mapping is found.").build()));
+				AttributeType.String).description("Identifier for default destination commands should be routed to if no mapping is found.").build()));
 		return builder.build();
 	}
 
@@ -337,9 +337,9 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 		builder.description("Maps a specification token to a command destination that should process it.");
 		builder.attribute((new AttributeNode.Builder("Specification token", "specification",
-				AttributeType.String).setDescription(
+				AttributeType.String).description(
 				"Unique token that identifies specification for the mapping.").makeIndex().build()));
-		builder.attribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String).setDescription("Unique id of command destination for the mapping.").build()));
+		builder.attribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String).description("Unique id of command destination for the mapping.").build()));
 		return builder.build();
 	}
 
@@ -367,7 +367,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	 */
 	protected void addCommandDestinationAttributes(ElementNode.Builder builder) {
 		builder.attribute((new AttributeNode.Builder("Destination id", "destinationId",
-				AttributeType.String).setDescription("Unique identifier for command destination.").makeIndex().build()));
+				AttributeType.String).description("Unique identifier for command destination.").makeIndex().build()));
 	}
 
 	/**
@@ -426,10 +426,10 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				+ "hardware id into parameterized strings. The resulting values are used by the command "
 				+ "destination to send the encoded command payload to the device.");
 		builder.attribute((new AttributeNode.Builder("Command topic expression", "commandTopicExpr",
-				AttributeType.String).setDescription("Expression for building topic name to which custom commands are sent. "
+				AttributeType.String).description("Expression for building topic name to which custom commands are sent. "
 				+ "Add a '%s' where the hardware id should be inserted.").build()));
 		builder.attribute((new AttributeNode.Builder("System topic expression", "systemTopicExpr",
-				AttributeType.String).setDescription("Expression for building topic name to which system commands are sent. "
+				AttributeType.String).description("Expression for building topic name to which system commands are sent. "
 				+ "Add a '%s' where the hardware id should be inserted.").build()));
 
 		return builder.build();

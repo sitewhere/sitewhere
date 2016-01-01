@@ -51,14 +51,14 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Command Delivery Processor",
 						OutboundProcessingChainParser.Elements.CommandDeliveryEventProcessor.getLocalName(),
-						"sign-out", ElementRole.OutboundProcessingChain_EventProcessor);
+						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 		builder.description("Hands off outbound device command events to the device communication subsystem. "
 				+ "If this event processor is not configured, no commands will be sent to devices.");
 		builder.warnOnDelete("Deleting this component will prevent commands from being sent!");
 		builder.attribute((new AttributeNode.Builder("Number of processing threads", "numThreads",
-				AttributeType.Integer).setDescription(
+				AttributeType.Integer).description(
 				"Sets the number of threads used to process provisioning commands. Increase for situations "
-						+ "where the load of device commands is high.").setDefaultValue("5").build()));
+						+ "where the load of device commands is high.").defaultValue("5").build()));
 		return builder.build();
 	}
 
@@ -71,7 +71,7 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Hazelcast Processor",
 						OutboundProcessingChainParser.Elements.HazelcastEventProcessor.getLocalName(),
-						"sign-out", ElementRole.OutboundProcessingChain_EventProcessor);
+						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 		builder.description("Sends outbound events to Hazelcast topics for processing by external consumers.");
 		return builder.build();
 	}

@@ -56,8 +56,9 @@ public class GlobalsModel extends ConfigurationModel {
 
 		builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
 		builder.description("Overrides global Solr settings for a tenant.");
-		builder.attribute((new AttributeNode.Builder("Solr server URL", "solrServerUrl",
-				AttributeType.String).setDescription("URL used by Solr client to access server.").build()));
+		builder.attributeGroup("instance", "Solr Instance Information");
+		builder.attribute((new AttributeNode.Builder("Solr server URL", "solrServerUrl", AttributeType.String).description(
+				"URL used by Solr client to access server.").group("instance").build()));
 
 		return builder.build();
 	}
@@ -75,11 +76,16 @@ public class GlobalsModel extends ConfigurationModel {
 
 		builder.namespace(IConfigurationElements.SITEWHERE_COMMUNITY_NS);
 		builder.description("Overrides global Groovy settings for a tenant.");
-		builder.attribute((new AttributeNode.Builder("Enable debugging", "debug", AttributeType.Boolean).setDescription("Turns on Groovy script engine debugging if true.").build()));
-		builder.attribute((new AttributeNode.Builder("Enable verbose mode", "verbose",
-				AttributeType.Boolean).setDescription("Turns on Groovy script engine verbose flag if true.").build()));
+		builder.attributeGroup("flags", "Groovy Engine Flags");
+		builder.attributeGroup("location", "Script Location");
+		builder.attribute((new AttributeNode.Builder("Enable debugging", "debug", AttributeType.Boolean).description(
+				"Turns on Groovy script engine debugging if true.").group("flags").build()));
+		builder.attribute((new AttributeNode.Builder("Enable verbose mode", "verbose", AttributeType.Boolean).description(
+				"Turns on Groovy script engine verbose flag if true.").group("flags").build()));
 		builder.attribute((new AttributeNode.Builder("External script root", "externalScriptRoot",
-				AttributeType.String).setDescription("Sets script root to an external URL rathen than using the default filesystem path.").build()));
+				AttributeType.String).description(
+				"Sets script root to an external URL rathen than using the default filesystem path.").group(
+				"location").build()));
 
 		return builder.build();
 	}

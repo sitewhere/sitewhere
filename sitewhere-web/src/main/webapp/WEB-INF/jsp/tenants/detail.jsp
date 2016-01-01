@@ -161,7 +161,7 @@ ol.wz-breadcrumb {
 
 .sw-attribute-group {
 	border: 1px solid #ccc;
-	padding: 10px;
+	padding: 25px 10px 10px;
 	margin-bottom: 20px;
 	position: relative;
 	margin-top: 5px;
@@ -838,11 +838,6 @@ div.wz-button-bar {
 		configNode.children = updated;
 	}
 
-	/** Find children of a model node with the given role */
-	function findModelChildrenInRole(roleName) {
-		return configModel.elementsByRole[roleName];
-	}
-
 	/** Add children that are in a sortable format */
 	function addSortableRoleChildren(childRoleName, childRole, childrenWithRole) {
 		var modelsForRole = findModelChildrenInRole(childRoleName);
@@ -863,12 +858,16 @@ div.wz-button-bar {
 			section += "</li>";
 		}
 
+		// Separator.
+		if (childrenWithRole.length > 0) {
+			section +=
+					"<li style='padding-bottom: 10px; border-bottom: 1px dashed #aaa; margin-bottom: 10px; ";
+			section += "margin-left: 20px; margin-right: 20px; list-style-type: none; list-style-position: inside;'></li>";
+		}
+
 		// Non-draggable item for creating new children.
-		section +=
-				"<li style='padding-bottom: 10px; border-bottom: 1px dashed #aaa; margin-bottom: 10px; ";
-		section += "margin-left: 20px; margin-right: 20px; list-style-type: none; list-style-position: inside;'></li>";
 		section += "<li class='wz-child'><i class='wz-child-icon fa fa-plus fa-white'></i>";
-		section += "<h1 class='wz-child-name'>Add New " + childRole.name + "</h1>";
+		section += "<h1 class='wz-child-name'>Add " + childRole.name + "</h1>";
 		section +=
 				"<div class='wz-child-nav btn-group dropup' style='padding: 0; margin-top: 5px; margin-right: 5px;'>";
 		section += "<a class='btn dropdown-toggle' title='Add Component' data-toggle='dropdown'>";
@@ -876,11 +875,13 @@ div.wz-button-bar {
 		section += "<ul class='dropdown-menu pull-right'>";
 
 		// Add item in dropdown for each component in the given role.
-		for (var i = 0; i < modelsForRole.length; i++) {
-			var roleModel = modelsForRole[i];
-			section +=
-					"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName + "\")'>"
-							+ roleModel.name + "</a></li>";
+		if (modelsForRole) {
+			for (var i = 0; i < modelsForRole.length; i++) {
+				var roleModel = modelsForRole[i];
+				section +=
+						"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName + "\")'>"
+								+ roleModel.name + "</a></li>";
+			}
 		}
 
 		section += "</ul>";
@@ -935,19 +936,42 @@ div.wz-button-bar {
 		}
 	}
 
+	/** Find children of a model node with the given role */
+	function findModelChildrenInRole(roleName) {
+		var role = roles[roleName];
+		var all = [];
+		all.push.apply(all, configModel.elementsByRole[roleName]);
+
+		// Also matches of subtypes.
+		if (role.subtypes) {
+			for (var i = 0; i < role.subtypes.length; i++) {
+				var subtypeName = role.subtypes[i];
+				all.push.apply(all, configModel.elementsByRole[subtypeName]);
+			}
+		}
+
+		return all;
+	}
+
 	/** Get configuration children grouped by role */
 	function getConfigChildrenByRole(modelNode, configNode) {
 		var role = roles[modelNode.role];
-		if (!role) {
-			return {};
-		}
 		var result = {};
+
+		// Get child roles with constraints.
 		var childRoles = getSpecializedRoleChildren(role, modelNode);
 		var modelNotFound = [];
 		for (var i = 0; i < childRoles.length; i++) {
-			var childRole = childRoles[i];
+			var childRoleName = childRoles[i];
+			var childRole = roles[childRoleName];
+			var roleSubtypes = [];
+			roleSubtypes.push(childRoleName);
+			if (childRole.subtypes) {
+				roleSubtypes.push.apply(roleSubtypes, childRole.subtypes);
+			}
+
 			var matches = [];
-			result[childRole] = matches;
+			result[childRoleName] = matches;
 			if (configNode.children) {
 				for (var j = 0; j < configNode.children.length; j++) {
 					var childConfig = configNode.children[j];
@@ -955,7 +979,7 @@ div.wz-button-bar {
 						var childModel = findModelNodeByName(modelNode, childConfig.name);
 						if (!childModel) {
 							modelNotFound.push(childConfig.name);
-						} else if (childModel.role == childRole) {
+						} else if (roleSubtypes.indexOf(childModel.role) != -1) {
 							var childContext = {};
 							childContext["model"] = childModel;
 							childContext["config"] = childConfig;
@@ -1035,9 +1059,7 @@ div.wz-button-bar {
 
 			// Loop through all possible child roles for model.
 			for (var i = 0; i < childRoles.length; i++) {
-
-				//  Loop through all potential elements for child role.
-				var potential = configModel.elementsByRole[childRoles[i]];
+				var potential = findModelChildrenInRole(childRoles[i]);
 				if (potential) {
 					for (var j = 0; j < potential.length; j++) {
 						if (name == potential[j].localName) {

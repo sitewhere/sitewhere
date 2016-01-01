@@ -65,13 +65,18 @@ public class DataManagementModel extends ConfigurationModel {
 						TenantDatastoreParser.Elements.MongoTenantDatastore.getLocalName(), "database",
 						ElementRole.DataManagement_Datastore);
 
-		builder.description("Store tenant data using a MongoDB database.");
+		builder.description("Store tenant data using a MongoDB database. Note that the "
+				+ "global datastore must be configured to use MongoDB if this tenant datastore is to "
+				+ "be used. Most core MongoDB settings are configured at the global level.");
+		builder.attributeGroup("bulk", "Bulk Insert for Events");
 		builder.attribute((new AttributeNode.Builder("Use bulk inserts", "useBulkEventInserts",
-				AttributeType.Boolean).setDescription("Use the MongoDB bulk insert API to add "
-				+ "events in groups and improve performance.").build()));
+				AttributeType.Boolean).description(
+				"Use the MongoDB bulk insert API to add " + "events in groups and improve performance.").group(
+				"bulk").build()));
 		builder.attribute((new AttributeNode.Builder("Bulk insert max chunk size", "bulkInsertMaxChunkSize",
-				AttributeType.Integer).setDescription("Maximum number of records to send "
-				+ "in a single bulk insert (if bulk inserts are enabled).").build()));
+				AttributeType.Integer).description(
+				"Maximum number of records to send "
+						+ "in a single bulk insert (if bulk inserts are enabled).").group("bulk").build()));
 		return builder.build();
 	}
 
@@ -85,7 +90,9 @@ public class DataManagementModel extends ConfigurationModel {
 				new ElementNode.Builder("HBase Tenant Datastore",
 						TenantDatastoreParser.Elements.HBaseTenantDatastore.getLocalName(), "database",
 						ElementRole.DataManagement_Datastore);
-		builder.description("Store tenant data using tables in an HBase instance.");
+		builder.description("Store tenant data using tables in an HBase instance. Note that the "
+				+ "global datastore must be configured to use HBase if this tenant datastore is to "
+				+ "be used. Most core HBase settings are configured at the global level.");
 		return builder.build();
 	}
 
@@ -120,32 +127,31 @@ public class DataManagementModel extends ConfigurationModel {
 		builder.attributeGroup("ttl", "Cache Entry Time to Live");
 
 		builder.attribute((new AttributeNode.Builder("Site cache max entries", "siteCacheMaxEntries",
-				AttributeType.Integer).setDescription("Maximum number entries in site cache.").setDefaultValue(
-				"1000").setGroup("max").build()));
+				AttributeType.Integer).description("Maximum number entries in site cache.").defaultValue(
+				"1000").group("max").build()));
 		builder.attribute((new AttributeNode.Builder("Specification cache max entries",
-				"deviceSpecificationCacheMaxEntries", AttributeType.Integer).setDescription(
-				"Maximum number entries in device specification cache.").setDefaultValue("1000").setGroup(
-				"max").build()));
+				"deviceSpecificationCacheMaxEntries", AttributeType.Integer).description(
+				"Maximum number entries in device specification cache.").defaultValue("1000").group("max").build()));
 		builder.attribute((new AttributeNode.Builder("Device cache max entries", "deviceCacheMaxEntries",
-				AttributeType.Integer).setDescription("Maximum number entries in device cache.").setDefaultValue(
-				"10000").setGroup("max").build()));
+				AttributeType.Integer).description("Maximum number entries in device cache.").defaultValue(
+				"10000").group("max").build()));
 		builder.attribute((new AttributeNode.Builder("Assignment cache max entries",
-				"deviceAssignmentCacheMaxEntries", AttributeType.Integer).setDescription(
-				"Maximum number entries in device assignment cache.").setDefaultValue("10000").setGroup("max").build()));
+				"deviceAssignmentCacheMaxEntries", AttributeType.Integer).description(
+				"Maximum number entries in device assignment cache.").defaultValue("10000").group("max").build()));
 
 		builder.attribute((new AttributeNode.Builder("Site cache TTL seconds", "siteCacheTtl",
-				AttributeType.Integer).setDescription("Maximum time to live (in seconds) for site cache.").setDefaultValue(
-				"6000").setGroup("ttl").build()));
+				AttributeType.Integer).description("Maximum time to live (in seconds) for site cache.").defaultValue(
+				"6000").group("ttl").build()));
 		builder.attribute((new AttributeNode.Builder("Specification cache TTL seconds",
-				"deviceSpecificationCacheTtl", AttributeType.Integer).setDescription(
-				"Maximum time to live (in seconds) for device specification cache.").setDefaultValue("6000").setGroup(
+				"deviceSpecificationCacheTtl", AttributeType.Integer).description(
+				"Maximum time to live (in seconds) for device specification cache.").defaultValue("6000").group(
 				"ttl").build()));
 		builder.attribute((new AttributeNode.Builder("Device cache TTL seconds", "deviceCacheTtl",
-				AttributeType.Integer).setDescription("Maximum time to live (in seconds) for device cache.").setDefaultValue(
-				"600").setGroup("ttl").build()));
+				AttributeType.Integer).description("Maximum time to live (in seconds) for device cache.").defaultValue(
+				"600").group("ttl").build()));
 		builder.attribute((new AttributeNode.Builder("Assignment cache TTL seconds",
-				"deviceAssignmentCacheTtl", AttributeType.Integer).setDescription(
-				"Maximum time to live (in seconds) for device assignment cache.").setDefaultValue("600").setGroup(
+				"deviceAssignmentCacheTtl", AttributeType.Integer).description(
+				"Maximum time to live (in seconds) for device assignment cache.").defaultValue("600").group(
 				"ttl").build()));
 		return builder.build();
 	}

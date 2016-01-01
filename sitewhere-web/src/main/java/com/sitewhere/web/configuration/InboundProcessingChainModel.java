@@ -25,6 +25,7 @@ public class InboundProcessingChainModel extends ConfigurationModel {
 		addElement(createEventStorageProcessorElement());
 		addElement(createRegistrationProcessorElement());
 		addElement(createDeviceStreamProcessorElement());
+		addElement(createHazelcastQueueElement());
 	}
 
 	/**
@@ -92,6 +93,25 @@ public class InboundProcessingChainModel extends ConfigurationModel {
 		builder.description("Passes device stream events to the device stream manager. "
 				+ "If this processor is removed, device streaming events will be ignored.");
 		builder.warnOnDelete("Deleting this component will cause device stream events to be ignored!");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for Hazelcast queue processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createHazelcastQueueElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Hazelcast Queue Processor",
+						InboundProcessingChainParser.Elements.HazelcastQueueProcessor.getLocalName(),
+						"long-arrow-right", ElementRole.InboundProcessingChain_EventProcessor);
+
+		builder.description("Forwards device events to a Hazelcast queue. This processor is often "
+				+ "configured to allow events to be processed by other SiteWhere instances in the "
+				+ "same Hazelcast group. By adding this processor and removing all others, this "
+				+ "instance will load-balance event processing between subordinate instances.");
 
 		return builder.build();
 	}

@@ -107,12 +107,12 @@ public class AttributeNode extends XmlNode {
 			attribute.setType(type);
 		}
 
-		public Builder setDescription(String description) {
+		public Builder description(String description) {
 			attribute.setDescription(description);
 			return this;
 		}
 
-		public Builder setDefaultValue(String value) {
+		public Builder defaultValue(String value) {
 			attribute.setDefaultValue(value);
 			return this;
 		}
@@ -127,7 +127,7 @@ public class AttributeNode extends XmlNode {
 			return this;
 		}
 
-		public Builder addChoice(String choice) {
+		public Builder choice(String choice) {
 			if (attribute.getChoices() == null) {
 				attribute.setChoices(new ArrayList<String>());
 			}
@@ -135,7 +135,7 @@ public class AttributeNode extends XmlNode {
 			return this;
 		}
 
-		public Builder setGroup(String group) {
+		public Builder group(String group) {
 			attribute.setGroup(group);
 			return this;
 		}

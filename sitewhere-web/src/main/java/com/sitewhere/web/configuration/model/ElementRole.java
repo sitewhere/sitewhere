@@ -130,8 +130,16 @@ public enum ElementRole {
 	InboundProcessingChain(null, false, false, false,
 			new ElementRole[] { InboundProcessingChain_EventProcessor }, new ElementRole[0], true),
 
+	/** Outbound processing chain. Processsor filters. */
+	OutboundProcessingChain_Filters("Filters", true, true, true),
+
+	/** Outbound processing chain. Filtered event processor. */
+	OutboundProcessingChain_FilteredEventProcessor("Filtered Event Processors", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_Filters }),
+
 	/** Outbound processing chain. Event processor. */
-	OutboundProcessingChain_EventProcessor("Event Processors", true, true, true),
+	OutboundProcessingChain_EventProcessor("Event Processors", true, true, true, new ElementRole[0],
+			new ElementRole[] { OutboundProcessingChain_FilteredEventProcessor }),
 
 	/** Outbound processing chain element. */
 	OutboundProcessingChain(null, false, false, false,
@@ -270,6 +278,14 @@ public enum ElementRole {
 			if (value.getChildren() != null) {
 				generator.writeArrayFieldStart("children");
 				for (ElementRole child : value.getChildren()) {
+					generator.writeString(child.name());
+				}
+				generator.writeEndArray();
+			}
+
+			if (value.getSubtypes() != null) {
+				generator.writeArrayFieldStart("subtypes");
+				for (ElementRole child : value.getSubtypes()) {
 					generator.writeString(child.name());
 				}
 				generator.writeEndArray();
