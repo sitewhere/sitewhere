@@ -28,6 +28,8 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		addElement(createHazelcastEventProcessorElement());
 		addElement(createSolrEventProcessorElement());
 		addElement(createAzureEventHubEventProcessorElement());
+		addElement(createInitialStateEventProcessorElement());
+		addElement(createDweetEventProcessorElement());
 
 		addElement(createZoneTestElement());
 		addElement(createZoneTestEventProcessorElement());
@@ -183,7 +185,7 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Azure EventHub Processor",
 						OutboundProcessingChainParser.Elements.AzureEventHubEventProcessor.getLocalName(),
-						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+						"cloud", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 		builder.description("Forwards outbound events to a Microsoft Azure EventHub for further processing.");
 		builder.attribute((new AttributeNode.Builder("SAS Name", "sasName", AttributeType.String).description(
 				"Sets the identity used for SAS authentication.").makeRequired().build()));
@@ -194,6 +196,38 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 				"Set the service bus to connect to (e.g. xxx.servicebus.windows.net).").makeRequired().build()));
 		builder.attribute((new AttributeNode.Builder("Event hub name", "eventHubName", AttributeType.String).description(
 				"Name of EventHub to connect to.").makeRequired().build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a InitialState event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createInitialStateEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("InitialState Processor",
+						OutboundProcessingChainParser.Elements.InitialStateEventProcessor.getLocalName(),
+						"cloud", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+		builder.description("Forwards outbound events to InitialState.com for advanced visualization.");
+		builder.attribute((new AttributeNode.Builder("Streaming access key", "streamingAccessKey",
+				AttributeType.String).description(
+				"Access key obtained from the InitialState.com website that specifies the account that the events will be associated with.").makeRequired().build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a Dweet.io event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDweetEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Dweet.io Processor",
+						OutboundProcessingChainParser.Elements.DweetIoEventProcessor.getLocalName(), "cloud",
+						ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+		builder.description("Sends events to the Dweet.io cloud service where they can be viewed and integrated with other services. "
+				+ "The unique 'thing' name will be the unique token for the device assignment the event is associated with.");
 		return builder.build();
 	}
 
