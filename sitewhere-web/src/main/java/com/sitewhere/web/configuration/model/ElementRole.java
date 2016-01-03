@@ -146,9 +146,18 @@ public enum ElementRole {
 	OutboundProcessingChain_FilteredEventProcessor("Filtered Event Processors", true, true, true,
 			new ElementRole[] { OutboundProcessingChain_Filters }),
 
+	/** Zone test event processsor. Zone test. */
+	OutboundProcessingChain_ZoneTest("Zone Tests", true, true, true),
+
+	/** Outbound processing chain. Zone test event processor. */
+	OutboundProcessingChain_ZoneTestEventProcessor("Zone Test Event Processor", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_ZoneTest, OutboundProcessingChain_Filters }),
+
 	/** Outbound processing chain. Event processor. */
 	OutboundProcessingChain_EventProcessor("Event Processors", true, true, true, new ElementRole[0],
-			new ElementRole[] { OutboundProcessingChain_FilteredEventProcessor }),
+			new ElementRole[] {
+					OutboundProcessingChain_FilteredEventProcessor,
+					OutboundProcessingChain_ZoneTestEventProcessor }),
 
 	/** Outbound processing chain element. */
 	OutboundProcessingChain(null, false, false, false,

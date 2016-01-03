@@ -26,10 +26,14 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		addElement(createOutboundProcessingChain());
 		addElement(createCommandDeliveryEventProcessorElement());
 		addElement(createHazelcastEventProcessorElement());
+		addElement(createZoneTestElement());
+		addElement(createZoneTestEventProcessorElement());
 
 		// Outbound processor filters.
 		addElement(createFilterCriteriaElement());
 		addElement(createSiteFilterElement());
+		addElement(createSpecificationFilterElement());
+		addElement(createGroovyFilterElement());
 	}
 
 	/**
@@ -67,6 +71,41 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 	}
 
 	/**
+	 * Create a zone test event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createZoneTestElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Zone Test", "zone-test", "map-pin",
+						ElementRole.OutboundProcessingChain_ZoneTest);
+		builder.description("Describes zone test criteria and alert to be generated in case of a match.");
+		builder.attribute((new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String).description("Unique token for zone locations are to be tested against.").build()));
+		builder.attribute((new AttributeNode.Builder("Condition", "condition", AttributeType.String).description(
+				"Condition under which alert should be generated.").choice("inside").choice("outside").build()));
+		builder.attribute((new AttributeNode.Builder("Alert type", "alertType", AttributeType.String).description("Identifier that indicates alert type.").build()));
+		builder.attribute((new AttributeNode.Builder("Alert level", "alertLevel", AttributeType.String).description(
+				"Level value of alert.").choice("info").choice("warning").choice("error").choice("critical").build()));
+		builder.attribute((new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String).description("Message shown for alert.").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a zone test event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createZoneTestEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Zone Test Processor",
+						OutboundProcessingChainParser.Elements.ZoneTestEventProcessor.getLocalName(),
+						"map-pin", ElementRole.OutboundProcessingChain_ZoneTestEventProcessor);
+		builder.description("Allows alerts to be generated if location events are inside "
+				+ "or outside of a zone based on criteria.");
+		return builder.build();
+	}
+
+	/**
 	 * Create a Hazelcast event processor.
 	 * 
 	 * @return
@@ -90,7 +129,8 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 				new ElementNode.Builder("Filter Criteria", "filters", "filter",
 						ElementRole.OutboundProcessingChain_Filters);
 		builder.description("Adds filter criteria to control which events are sent to processor. "
-				+ "If any of the filters match, the event is not forwarded for processing.");
+				+ "Each filter is applied in the order below. Any events that have not been filtered "
+				+ "will be passed to the outbound processor implementation.");
 		return builder.build();
 	}
 
@@ -105,10 +145,49 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 						OutboundProcessingChainParser.Filters.SiteFilter.getLocalName(), "filter",
 						ElementRole.OutboundProcessingChain_OutboundFilters);
 		builder.description("Allows events from a given site to be included or excluded for an outbound processor.");
-		builder.attribute((new AttributeNode.Builder("Site", "site", AttributeType.SiteReference).description("Site filter applies to.").build()));
+		builder.attribute((new AttributeNode.Builder("Site", "site", AttributeType.SiteReference).description(
+				"Site filter applies to.").makeIndex().build()));
 		builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
 				"Indicates whether events from the site should be included or excluded from processing.").choice(
 				"include").choice("exclude").defaultValue("include").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create outbound processor specification filter.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSpecificationFilterElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Specification Filter",
+						OutboundProcessingChainParser.Filters.SpecificationFilter.getLocalName(), "filter",
+						ElementRole.OutboundProcessingChain_OutboundFilters);
+		builder.description("Allows events for devices using a given specification to be included or "
+				+ "excluded for an outbound processor.");
+		builder.attribute((new AttributeNode.Builder("Specification", "specification",
+				AttributeType.SpecificationReference).description("Specification filter applies to.").makeIndex().build()));
+		builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
+				"Indicates whether events from the specification should be included or excluded from processing.").choice(
+				"include").choice("exclude").defaultValue("include").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create outbound processor Groovy filter.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createGroovyFilterElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Groovy Filter",
+						OutboundProcessingChainParser.Filters.GroovyFilter.getLocalName(), "filter",
+						ElementRole.OutboundProcessingChain_OutboundFilters);
+		builder.description("Allows events to be filtered based on the return value of a Groovy script. "
+				+ "If the script returns false, the event is filtered. See the SiteWhere documentation for "
+				+ "a description of the variable bindings provided by the system.");
+		builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+				"Script path relative to Groovy script root.").makeRequired().build()));
 		return builder.build();
 	}
 }
