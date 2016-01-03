@@ -70,6 +70,10 @@
 				fields += addBooleanField(attr, valuesByName[attr.localName]);
 			} else if (attr.type == "Integer") {
 				fields += addIntegerField(attr, valuesByName[attr.localName]);
+			} else if (attr.type == "SiteReference") {
+				fields += addSiteReferenceField(attr, valuesByName[attr.localName]);
+			} else if (attr.type == "SpecificationReference") {
+				fields += addSpecificationReferenceField(attr, valuesByName[attr.localName]);
 			} else {
 				fields += addTextField(attr, valuesByName[attr.localName]);
 			}
@@ -103,7 +107,55 @@
 			field += "<option>" + choice + "</option>"
 		}
 		field += "</select>";
-		field += "<scr" + "ipt>$('#tc-" + attr.localName + "').kendoDropDownList();</scr" + "ipt>";
+		field += "<scr" + "ipt>$('#tc-" + attr.localName + "').kendoDropDownList({value: '" + value + "'});</scr" + "ipt>";
+		return field;
+	}
+
+	/** Add a dropdown for available sites */
+	function addSiteReferenceField(attr, value) {
+		var field = "";
+
+		// If creating, use the default value.
+		if (ceCreate && attr.defaultValue) {
+			value = attr.defaultValue;
+		}
+
+		// Use empty string for no value.
+		if (!value) {
+			value = "";
+		}
+
+		field += "<input id='tc-" + attr.localName + "'/>";
+		field +=
+				"<scr" + "ipt>$('#tc-" + attr.localName + "').kendoDropDownList("
+						+ "{dataTextField : 'name', dataValueField : 'token', dataSource : sites, value: '"
+						+ value + "'});</scr" + "ipt>";
+
+		return field;
+	}
+
+	/** Add a dropdown for available specifications */
+	function addSpecificationReferenceField(attr, value) {
+		var field = "";
+
+		// If creating, use the default value.
+		if (ceCreate && attr.defaultValue) {
+			value = attr.defaultValue;
+		}
+
+		// Use empty string for no value.
+		if (!value) {
+			value = "";
+		}
+
+		field += "<input id='tc-" + attr.localName + "'/>";
+		field +=
+				"<scr" + "ipt>$('#tc-"
+						+ attr.localName
+						+ "').kendoDropDownList("
+						+ "{dataTextField : 'name', dataValueField : 'token', dataSource : specifications, value: '"
+						+ value + "'});</scr" + "ipt>";
+
 		return field;
 	}
 

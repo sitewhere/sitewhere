@@ -281,6 +281,12 @@ div.wz-button-bar {
 	/** Configuration element roles */
 	var roles = <c:out value="${roles}" escapeXml="false"/>;
 
+	/** Sites for tenant */
+	var sites = <c:out value="${sites}" escapeXml="false"/>;
+
+	/** Specifications for tenant */
+	var specifications = <c:out value="${specifications}" escapeXml="false"/>;
+
 	/** Configuration being edited */
 	var config;
 
@@ -543,7 +549,15 @@ div.wz-button-bar {
 							+ "<i class='fa fa-info-circle fa-white' title='" + attr.description + "'></i></label>";
 			section += "  <div class='controls sw-controls' style='margin-left: 300px;'>";
 			if (valuesByName[attr.localName]) {
-				section += "    " + valuesByName[attr.localName];
+				if (attr.type == 'SiteReference') {
+					var siteName = getSiteNamesByToken()[valuesByName[attr.localName]];
+					section += "    " + (siteName ? siteName : valuesByName[attr.localName]);
+				} else if (attr.type == 'SpecificationReference') {
+					var specName = getSpecificationNamesByToken()[valuesByName[attr.localName]];
+					section += "    " + (specName ? specName : valuesByName[attr.localName]);
+				} else {
+					section += "    " + valuesByName[attr.localName];
+				}
 			} else if (attr.defaultValue) {
 				section += "    (defaulted to '" + attr.defaultValue + "')";
 			}
@@ -555,6 +569,24 @@ div.wz-button-bar {
 		}
 		section += "</form>";
 		return section;
+	}
+
+	/** Create lookup of site names by token */
+	function getSiteNamesByToken() {
+		var mapped = {};
+		for (var i = 0; i < sites.length; i++) {
+			mapped[sites[i].token] = sites[i].name;
+		}
+		return mapped;
+	}
+
+	/** Create lookup of site names by token */
+	function getSpecificationNamesByToken() {
+		var mapped = {};
+		for (var i = 0; i < specifications.length; i++) {
+			mapped[specifications[i].token] = specifications[i].name;
+		}
+		return mapped;
 	}
 
 	/** Add child element navigation for panel */
@@ -626,10 +658,25 @@ div.wz-button-bar {
 
 		// Show index value if specified.
 		if (childModel.indexAttribute) {
-			for (var ai = 0; ai < childConfig.attributes.length; ai++) {
-				var attrName = childConfig.attributes[ai].name;
+			var modelAttr = null;
+			for (var i = 0; i < childModel.attributes.length; i++) {
+				if (childModel.indexAttribute == childModel.attributes[i].localName) {
+					modelAttr = childModel.attributes[i];
+					break;
+				}
+			}
+			for (var j = 0; j < childConfig.attributes.length; j++) {
+				var attrName = childConfig.attributes[j].name;
 				if (childModel.indexAttribute == attrName) {
-					section += " (" + childConfig.attributes[ai].value + ")";
+					if (modelAttr && (modelAttr.type == 'SiteReference')) {
+						var siteName = getSiteNamesByToken()[childConfig.attributes[j].value];
+						section += " (" + (siteName ? siteName : childConfig.attributes[j].value) + ")";
+					} else if (modelAttr && (modelAttr.type == 'SpecificationReference')) {
+						var specName = getSpecificationNamesByToken()[childConfig.attributes[j].value];
+						section += " (" + (specName ? specName : childConfig.attributes[j].value) + ")";
+					} else {
+						section += " (" + childConfig.attributes[j].value + ")";
+					}
 				}
 			}
 		}

@@ -26,6 +26,10 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		addElement(createOutboundProcessingChain());
 		addElement(createCommandDeliveryEventProcessorElement());
 		addElement(createHazelcastEventProcessorElement());
+
+		// Outbound processor filters.
+		addElement(createFilterCriteriaElement());
+		addElement(createSiteFilterElement());
 	}
 
 	/**
@@ -73,6 +77,38 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 						OutboundProcessingChainParser.Elements.HazelcastEventProcessor.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 		builder.description("Sends outbound events to Hazelcast topics for processing by external consumers.");
+		return builder.build();
+	}
+
+	/**
+	 * Create filter criteria element.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createFilterCriteriaElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Filter Criteria", "filters", "filter",
+						ElementRole.OutboundProcessingChain_Filters);
+		builder.description("Adds filter criteria to control which events are sent to processor. "
+				+ "If any of the filters match, the event is not forwarded for processing.");
+		return builder.build();
+	}
+
+	/**
+	 * Create outbound processor site filter.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSiteFilterElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Site Filter",
+						OutboundProcessingChainParser.Filters.SiteFilter.getLocalName(), "filter",
+						ElementRole.OutboundProcessingChain_OutboundFilters);
+		builder.description("Allows events from a given site to be included or excluded for an outbound processor.");
+		builder.attribute((new AttributeNode.Builder("Site", "site", AttributeType.SiteReference).description("Site filter applies to.").build()));
+		builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
+				"Indicates whether events from the site should be included or excluded from processing.").choice(
+				"include").choice("exclude").defaultValue("include").build()));
 		return builder.build();
 	}
 }

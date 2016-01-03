@@ -89,11 +89,16 @@ public enum ElementRole {
 	DeviceCommunication_BatchOperations(null, false, false, false,
 			new ElementRole[] { BatchOperations_BatchOperationManager }, new ElementRole[0], true),
 
-	/** Command routing container. Command router implementation. */
-	CommandRouting_CommandRouter("Command Router", false, false, false),
-
 	/** Specification mapping router. Mapping. */
 	CommandRouting_SpecificationMappingRouter_Mapping("Mappings", true, true, true),
+
+	/** Specification mapping router. Mapping. */
+	CommandRouting_SpecificationMappingRouter("Specification Mapping Router", false, false, false,
+			new ElementRole[] { CommandRouting_SpecificationMappingRouter_Mapping }),
+
+	/** Command routing container. Command router implementation. */
+	CommandRouting_CommandRouter("Command Router", false, false, false, new ElementRole[0],
+			new ElementRole[] { CommandRouting_SpecificationMappingRouter }),
 
 	/** Device communication container. Command routing configuration. */
 	DeviceCommunication_CommandRouting(null, false, false, false,
@@ -131,7 +136,11 @@ public enum ElementRole {
 			new ElementRole[] { InboundProcessingChain_EventProcessor }, new ElementRole[0], true),
 
 	/** Outbound processing chain. Processsor filters. */
-	OutboundProcessingChain_Filters("Filters", true, true, true),
+	OutboundProcessingChain_OutboundFilters("Filters", true, true, true),
+
+	/** Outbound processing chain. Processsor filter criteria. */
+	OutboundProcessingChain_Filters("Filter Criteria", true, false, false,
+			new ElementRole[] { OutboundProcessingChain_OutboundFilters }),
 
 	/** Outbound processing chain. Filtered event processor. */
 	OutboundProcessingChain_FilteredEventProcessor("Filtered Event Processors", true, true, true,

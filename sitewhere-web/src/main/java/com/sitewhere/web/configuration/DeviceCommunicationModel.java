@@ -126,11 +126,10 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	 * @param builder
 	 */
 	protected void addMqttConnectivityAttributes(ElementNode.Builder builder) {
-		builder.attribute((new AttributeNode.Builder("Transport protocol", "protocol",
-				AttributeType.String).description("Protocol used for establishing MQTT connection").defaultValue(
-				"tcp").choice("tcp").choice("tls").build()));
-		builder.attribute((new AttributeNode.Builder("MQTT broker hostname", "hostname",
-				AttributeType.String).description("Hostname used for creating the MQTT broker connection.").build()));
+		builder.attribute((new AttributeNode.Builder("Transport protocol", "protocol", AttributeType.String).description(
+				"Protocol used for establishing MQTT connection").defaultValue("tcp").choice("tcp").choice(
+				"tls").build()));
+		builder.attribute((new AttributeNode.Builder("MQTT broker hostname", "hostname", AttributeType.String).description("Hostname used for creating the MQTT broker connection.").build()));
 		builder.attribute((new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).description("Port number used for creating the MQTT broker connection.").build()));
 		builder.attribute((new AttributeNode.Builder("Trust store path", "trustStorePath",
 				AttributeType.String).description("Fully-qualified path to trust store for secured connections.").build()));
@@ -241,8 +240,8 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 						ElementRole.Registration_RegistrationManager);
 
 		builder.description("Provides device registration management functionality.");
-		builder.attribute((new AttributeNode.Builder("Allow registration of new devices",
-				"allowNewDevices", AttributeType.Boolean).description(
+		builder.attribute((new AttributeNode.Builder("Allow registration of new devices", "allowNewDevices",
+				AttributeType.Boolean).description(
 				"Indicates whether new devices should be allowed to register with the system").defaultValue(
 				"true").build()));
 		builder.attribute((new AttributeNode.Builder("Automatically assign site", "autoAssignSite",
@@ -315,7 +314,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Specification Mapping Router",
 						CommandRoutingParser.Elements.SpecificationMappingRouter.getLocalName(),
-						"sitemap fa-rotate-270", ElementRole.CommandRouting_CommandRouter);
+						"sitemap fa-rotate-270", ElementRole.CommandRouting_SpecificationMappingRouter);
 
 		builder.description("Routes commands based on a direct mapping from device specification token "
 				+ "to a command desitination. Commands for specifications not in the mapping list are routed to "
@@ -336,9 +335,8 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 						ElementRole.CommandRouting_SpecificationMappingRouter_Mapping);
 
 		builder.description("Maps a specification token to a command destination that should process it.");
-		builder.attribute((new AttributeNode.Builder("Specification token", "specification",
-				AttributeType.String).description(
-				"Unique token that identifies specification for the mapping.").makeIndex().build()));
+		builder.attribute((new AttributeNode.Builder("Specification", "specification",
+				AttributeType.SpecificationReference).description("Device specification for the mapping.").makeIndex().build()));
 		builder.attribute((new AttributeNode.Builder("Destination id", "destination", AttributeType.String).description("Unique id of command destination for the mapping.").build()));
 		return builder.build();
 	}
@@ -366,8 +364,8 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	 * @param builder
 	 */
 	protected void addCommandDestinationAttributes(ElementNode.Builder builder) {
-		builder.attribute((new AttributeNode.Builder("Destination id", "destinationId",
-				AttributeType.String).description("Unique identifier for command destination.").makeIndex().build()));
+		builder.attribute((new AttributeNode.Builder("Destination id", "destinationId", AttributeType.String).description(
+				"Unique identifier for command destination.").makeIndex().build()));
 	}
 
 	/**

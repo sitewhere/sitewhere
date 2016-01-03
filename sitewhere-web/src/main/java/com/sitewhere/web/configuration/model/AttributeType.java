@@ -24,5 +24,11 @@ public enum AttributeType {
 	Decimal,
 
 	/** Boolean value */
-	Boolean;
+	Boolean,
+
+	/** Reference to a site by token */
+	SiteReference,
+
+	/** Reference to a specification by token */
+	SpecificationReference;
 }
