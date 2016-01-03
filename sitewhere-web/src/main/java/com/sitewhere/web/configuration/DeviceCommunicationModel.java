@@ -125,12 +125,14 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	 * 
 	 * @param builder
 	 */
-	protected void addMqttConnectivityAttributes(ElementNode.Builder builder) {
+	public static void addMqttConnectivityAttributes(ElementNode.Builder builder) {
 		builder.attribute((new AttributeNode.Builder("Transport protocol", "protocol", AttributeType.String).description(
 				"Protocol used for establishing MQTT connection").defaultValue("tcp").choice("tcp").choice(
 				"tls").build()));
-		builder.attribute((new AttributeNode.Builder("MQTT broker hostname", "hostname", AttributeType.String).description("Hostname used for creating the MQTT broker connection.").build()));
-		builder.attribute((new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).description("Port number used for creating the MQTT broker connection.").build()));
+		builder.attribute((new AttributeNode.Builder("MQTT broker hostname", "hostname", AttributeType.String).description(
+				"Hostname used for creating the MQTT broker connection.").defaultValue("localhost").build()));
+		builder.attribute((new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).description(
+				"Port number used for creating the MQTT broker connection.").defaultValue("1883").build()));
 		builder.attribute((new AttributeNode.Builder("Trust store path", "trustStorePath",
 				AttributeType.String).description("Fully-qualified path to trust store for secured connections.").build()));
 		builder.attribute((new AttributeNode.Builder("Trust store password", "trustStorePassword",

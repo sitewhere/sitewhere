@@ -153,11 +153,20 @@ public enum ElementRole {
 	OutboundProcessingChain_ZoneTestEventProcessor("Zone Test Event Processor", true, true, true,
 			new ElementRole[] { OutboundProcessingChain_ZoneTest, OutboundProcessingChain_Filters }),
 
+	/** MQTT event processsor. Route builder. */
+	OutboundProcessingChain_RouteBuilder("Route Builder", true, false, false),
+
+	/** Outbound processing chain. MQTT event processor. */
+	OutboundProcessingChain_MqttEventProcessor("MQTT Event Processor", true, true, true, new ElementRole[] {
+			OutboundProcessingChain_Filters,
+			OutboundProcessingChain_RouteBuilder }),
+
 	/** Outbound processing chain. Event processor. */
 	OutboundProcessingChain_EventProcessor("Event Processors", true, true, true, new ElementRole[0],
 			new ElementRole[] {
 					OutboundProcessingChain_FilteredEventProcessor,
-					OutboundProcessingChain_ZoneTestEventProcessor }),
+					OutboundProcessingChain_ZoneTestEventProcessor,
+					OutboundProcessingChain_MqttEventProcessor }),
 
 	/** Outbound processing chain element. */
 	OutboundProcessingChain(null, false, false, false,

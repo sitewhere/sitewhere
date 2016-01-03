@@ -26,8 +26,14 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		addElement(createOutboundProcessingChain());
 		addElement(createCommandDeliveryEventProcessorElement());
 		addElement(createHazelcastEventProcessorElement());
+		addElement(createSolrEventProcessorElement());
+		addElement(createAzureEventHubEventProcessorElement());
+
 		addElement(createZoneTestElement());
 		addElement(createZoneTestEventProcessorElement());
+
+		addElement(createGroovyRouteBuilderElement());
+		addElement(createMqttEventProcessorElement());
 
 		// Outbound processor filters.
 		addElement(createFilterCriteriaElement());
@@ -106,6 +112,39 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 	}
 
 	/**
+	 * Create a Groovy route builder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createGroovyRouteBuilderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Groovy Route Builder",
+						OutboundProcessingChainParser.RouteBuilders.GroovyRouteBuilder.getLocalName(),
+						"sign-out", ElementRole.OutboundProcessingChain_RouteBuilder);
+		builder.description("Route builder which executes a Groovy script to choose routes where events will be delivered.");
+		builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description("Relative path to Groovy script.").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create an MQTT event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createMqttEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("MQTT Event Processor",
+						OutboundProcessingChainParser.Elements.MqttEventProcessor.getLocalName(), "sign-out",
+						ElementRole.OutboundProcessingChain_MqttEventProcessor);
+		builder.description("Allows events to be forwarded to any number of MQTT topics based on configuration "
+				+ "of filters and (optionally) a route builder. If no route builder is specified, the MQTT topic "
+				+ "field determines where events are delivered.");
+		DeviceCommunicationModel.addMqttConnectivityAttributes(builder);
+		builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).description("MQTT topic used if no route builder is specified.").build()));
+		return builder.build();
+	}
+
+	/**
 	 * Create a Hazelcast event processor.
 	 * 
 	 * @return
@@ -115,7 +154,46 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 				new ElementNode.Builder("Hazelcast Processor",
 						OutboundProcessingChainParser.Elements.HazelcastEventProcessor.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
-		builder.description("Sends outbound events to Hazelcast topics for processing by external consumers.");
+		builder.description("Forwards outbound events to Hazelcast topics for processing by external consumers.");
+		return builder.build();
+	}
+
+	/**
+	 * Create a Solr event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSolrEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Apache Solr Processor",
+						OutboundProcessingChainParser.Elements.SolrEventProcessor.getLocalName(), "sign-out",
+						ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+		builder.description("Forwards outbound events to Apache Solr for indexing in the search engine. This "
+				+ "event processor relies on the global Solr properties to determine the Solr instance the "
+				+ "client will connect with.");
+		return builder.build();
+	}
+
+	/**
+	 * Create a Azure event hub event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createAzureEventHubEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Azure EventHub Processor",
+						OutboundProcessingChainParser.Elements.AzureEventHubEventProcessor.getLocalName(),
+						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+		builder.description("Forwards outbound events to a Microsoft Azure EventHub for further processing.");
+		builder.attribute((new AttributeNode.Builder("SAS Name", "sasName", AttributeType.String).description(
+				"Sets the identity used for SAS authentication.").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("SAS Key", "sasKey", AttributeType.String).description(
+				"Sets the key used for SAS authentication.").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Service bus name", "serviceBusName",
+				AttributeType.String).description(
+				"Set the service bus to connect to (e.g. xxx.servicebus.windows.net).").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Event hub name", "eventHubName", AttributeType.String).description(
+				"Name of EventHub to connect to.").makeRequired().build()));
 		return builder.build();
 	}
 
