@@ -126,15 +126,33 @@ public enum ElementRole {
 	DeviceCommunication_CommandRouting(null, false, false, false,
 			new ElementRole[] { CommandRouting_CommandRouter }, new ElementRole[0], true),
 
+	/** Command destination. String command encoder. */
+	CommandDestinations_StringCommandEncoder("String Command Encoder", false, false, false),
+
 	/** Command destination. Binary command encoder. */
 	CommandDestinations_BinaryCommandEncoder("Binary Command Encoder", false, false, false),
 
-	/** Command destination. Paramter extractor. */
-	CommandDestinations_ParameterExtractor("Parameter Extractor", false, false, false),
+	/** Command destination. Command encoder. */
+	CommandDestinations_CommandEncoder("Command Encoder", false, false, false, new ElementRole[0],
+			new ElementRole[] {
+					CommandDestinations_BinaryCommandEncoder,
+					CommandDestinations_StringCommandEncoder }),
+
+	/** Command destination. MQTT parameter extractor. */
+	CommandDestinations_MqttParameterExtractor("MQTT Parameter Extractor", false, false, false),
+
+	/** Command destination. MQTT parameter extractor. */
+	CommandDestinations_SmsParameterExtractor("SMS Parameter Extractor", false, false, false),
+
+	/** Command destination. Parameter extractor. */
+	CommandDestinations_ParameterExtractor("Parameter Extractor", false, false, false, new ElementRole[0],
+			new ElementRole[] {
+					CommandDestinations_MqttParameterExtractor,
+					CommandDestinations_SmsParameterExtractor }),
 
 	/** Command destinations. Command destination. */
 	CommandDestinations_CommandDestination("Command Destinations", true, true, true, new ElementRole[] {
-			CommandDestinations_BinaryCommandEncoder,
+			CommandDestinations_CommandEncoder,
 			CommandDestinations_ParameterExtractor }),
 
 	/** Device communication container. Command destinations configuration. */

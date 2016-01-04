@@ -73,7 +73,13 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		// Command destinations.
 		addElement(createCommandDestinationsElement());
 		addElement(createMqttCommandDestinationElement());
+		addElement(createTwilioCommandDestinationElement());
+
+		// Binary command encoders.
 		addElement(createProtobufCommandEncoderElement());
+		addElement(createProtobufHybridCommandEncoderElement());
+		addElement(createJsonCommandEncoderElement());
+
 		addElement(createHardwareIdParameterExtractorElement());
 	}
 
@@ -625,8 +631,48 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		// Add common command destination attributes.
 		addCommandDestinationAttributes(builder);
 
+		// Only allow binary command encoders.
+		builder.specializes(ElementRole.CommandDestinations_CommandEncoder,
+				ElementRole.CommandDestinations_BinaryCommandEncoder);
+
+		// Only allow MQTT parameter extractors
+		builder.specializes(ElementRole.CommandDestinations_ParameterExtractor,
+				ElementRole.CommandDestinations_MqttParameterExtractor);
+
 		// Add common MQTT connectivity attributes.
 		addMqttConnectivityAttributes(builder);
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for Twilio command destination.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createTwilioCommandDestinationElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Twilio Command Destination",
+						CommandDestinationsParser.Elements.TwilioCommandDestination.getLocalName(), "phone",
+						ElementRole.CommandDestinations_CommandDestination);
+
+		builder.description("Destination that delivers commands via Twilio SMS messages.");
+
+		// Add common command destination attributes.
+		addCommandDestinationAttributes(builder);
+
+		// Only allow String command encoders.
+		builder.specializes(ElementRole.CommandDestinations_CommandEncoder,
+				ElementRole.CommandDestinations_StringCommandEncoder);
+
+		// Only allow SMS parameter extractors
+		builder.specializes(ElementRole.CommandDestinations_ParameterExtractor,
+				ElementRole.CommandDestinations_SmsParameterExtractor);
+
+		builder.attribute((new AttributeNode.Builder("Account SID", "accountSid", AttributeType.String).description("Twilio account SID.").build()));
+		builder.attribute((new AttributeNode.Builder("Authorization token", "authToken", AttributeType.String).description("Twilio authorization token.").build()));
+		builder.attribute((new AttributeNode.Builder("From phone number", "fromPhoneNumber",
+				AttributeType.String).description("Twilio phone number that originates message.").build()));
 
 		return builder.build();
 	}
@@ -650,6 +696,42 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	}
 
 	/**
+	 * Create element configuration for Java/protobuf hybrid command encoder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createProtobufHybridCommandEncoderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder(
+						"Java/Protobuf Hybrid Command Encoder",
+						CommandDestinationsParser.BinaryCommandEncoders.JavaHybridProtobufEncoder.getLocalName(),
+						"cogs", ElementRole.CommandDestinations_BinaryCommandEncoder);
+
+		builder.description("Command encoder that encodes system commands using protocol buffers but encodes "
+				+ "custom commands using serialized Java objects. This allows Java clients to use the commands "
+				+ "directly rather than having to recompile stubs based on a proto.");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for JSON command encoder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createJsonCommandEncoderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("JSON Command Encoder",
+						CommandDestinationsParser.BinaryCommandEncoders.JsonCommandEncoder.getLocalName(),
+						"cogs", ElementRole.CommandDestinations_BinaryCommandEncoder);
+
+		builder.description("Command encoder that encodes both system and custom commands as JSON for "
+				+ "simplified client use.");
+
+		return builder.build();
+	}
+
+	/**
 	 * Create element configuration for hardware id parameter extractor.
 	 * 
 	 * @return
@@ -657,7 +739,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	protected ElementNode createHardwareIdParameterExtractorElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Hardware Id Topic Extractor", "hardware-id-topic-extractor", "cogs",
-						ElementRole.CommandDestinations_ParameterExtractor);
+						ElementRole.CommandDestinations_MqttParameterExtractor);
 
 		builder.description("Calculates MQTT topic for publishing commands by substituting the device "
 				+ "hardware id into parameterized strings. The resulting values are used by the command "
