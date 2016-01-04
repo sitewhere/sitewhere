@@ -7,7 +7,7 @@
 	font-size: 12pt;
 	text-align: left;
 	display: block;
-	min-height: 95px;
+	min-height: 65px;
 	position: relative;
 }
 
@@ -26,7 +26,7 @@
 	width: 220px;
 	height: 60px;
 	position: relative;
-	margin-bottom: 70px;
+	margin-bottom: 20px;
 	margin-left: 5px;
 }
 
@@ -62,14 +62,6 @@
 			<div>
 				<span class="sw-tenant-header-label" title="Tenant state">Tenant State:</span>
 				<span title="#:engineState.lifecycleStatus#">#:engineState.lifecycleStatus#</span>
-			</div>
-			<div>
-				<span class="sw-tenant-header-label" title="#= i18next("includes.i18next.DDWATTS") #">#= i18next("public.CreatedDate") #:</span>
-				<span title="#= formattedDate(createdDate) #">#= formattedDate(createdDate) #</span>
-			</div>
-			<div>
-				<span class="sw-tenant-header-label" title="#= i18next("includes.i18next.DDWLU") #">#= i18next("public.UpdatedDate") #:</span>
-				<span title="#= formattedDate(createdDate) #">#= formattedDate(updatedDate) #</span>
 			</div>
 		</div>
 		<div class="sw-tenant-buttons btn-group">
