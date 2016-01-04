@@ -161,12 +161,24 @@ public enum ElementRole {
 			OutboundProcessingChain_Filters,
 			OutboundProcessingChain_RouteBuilder }),
 
+	/** Siddhi query. Callback. */
+	OutboundProcessingChain_SiddhiCallback("Siddhi Callbacks", true, true, true),
+
+	/** Siddhi event processsor. Siddhi query. */
+	OutboundProcessingChain_SiddhiQuery("Siddhi Queries", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_SiddhiCallback }),
+
+	/** Outbound processing chain. Siddhi event processor. */
+	OutboundProcessingChain_SiddhiEventProcessor("Siddhi Event Processor", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_SiddhiQuery, OutboundProcessingChain_Filters }),
+
 	/** Outbound processing chain. Event processor. */
 	OutboundProcessingChain_EventProcessor("Event Processors", true, true, true, new ElementRole[0],
 			new ElementRole[] {
 					OutboundProcessingChain_FilteredEventProcessor,
 					OutboundProcessingChain_ZoneTestEventProcessor,
-					OutboundProcessingChain_MqttEventProcessor }),
+					OutboundProcessingChain_MqttEventProcessor,
+					OutboundProcessingChain_SiddhiEventProcessor }),
 
 	/** Outbound processing chain element. */
 	OutboundProcessingChain(null, false, false, false,

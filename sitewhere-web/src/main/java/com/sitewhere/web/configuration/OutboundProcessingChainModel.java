@@ -30,12 +30,21 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		addElement(createAzureEventHubEventProcessorElement());
 		addElement(createInitialStateEventProcessorElement());
 		addElement(createDweetEventProcessorElement());
+		addElement(createWso2CepEventProcessorElement());
 
+		// Zone test elements.
 		addElement(createZoneTestElement());
 		addElement(createZoneTestEventProcessorElement());
 
+		// MQTT processor elements.
 		addElement(createGroovyRouteBuilderElement());
 		addElement(createMqttEventProcessorElement());
+
+		// Siddhi elements.
+		addElement(createStreamDebuggerElement());
+		addElement(createGroovyStreamProcessorElement());
+		addElement(createSiddhiQueryElement());
+		addElement(createSiddhiEventProcessorElement());
 
 		// Outbound processor filters.
 		addElement(createFilterCriteriaElement());
@@ -67,7 +76,7 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Command Delivery Processor",
 						OutboundProcessingChainParser.Elements.CommandDeliveryEventProcessor.getLocalName(),
-						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+						"bolt", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 		builder.description("Hands off outbound device command events to the device communication subsystem. "
 				+ "If this event processor is not configured, no commands will be sent to devices.");
 		builder.warnOnDelete("Deleting this component will prevent commands from being sent!");
@@ -110,6 +119,66 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 						"map-pin", ElementRole.OutboundProcessingChain_ZoneTestEventProcessor);
 		builder.description("Allows alerts to be generated if location events are inside "
 				+ "or outside of a zone based on criteria.");
+		return builder.build();
+	}
+
+	/**
+	 * Create a Siddhi query element.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createStreamDebuggerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Stream Debugger", "stream-debugger", "cogs",
+						ElementRole.OutboundProcessingChain_SiddhiCallback);
+		builder.description("Debugs Siddhi streams by printing events to the log.");
+		builder.attribute((new AttributeNode.Builder("Stream name", "stream", AttributeType.String).description(
+				"Name of stream for which a callback will be registered.").makeRequired().makeIndex().build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a Siddhi query element.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createGroovyStreamProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Groovy Stream Processor", "groovy-stream-processor", "cogs",
+						ElementRole.OutboundProcessingChain_SiddhiCallback);
+		builder.description("Processes events from a Siddhi stream using a Groovy script.");
+		builder.attribute((new AttributeNode.Builder("Stream name", "stream", AttributeType.String).description(
+				"Name of stream for which a callback will be registered.").makeRequired().makeIndex().build()));
+		builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description("Relative path to Groovy script used for processing each event.").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a Siddhi query element.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSiddhiQueryElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Siddhi Query", "siddhi-query", "cogs",
+						ElementRole.OutboundProcessingChain_SiddhiQuery);
+		builder.description("A Siddhi query that executes selector logic.");
+		builder.attribute((new AttributeNode.Builder("Selector", "selector", AttributeType.String).description("Selector expression that contains processing logic.").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a Siddhi event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSiddhiEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Siddhi Processor",
+						OutboundProcessingChainParser.Elements.SiddhiEventProcessor.getLocalName(), "cogs",
+						ElementRole.OutboundProcessingChain_SiddhiEventProcessor);
+		builder.description("Processes events through an embedded Siddhi instance to allow complex event "
+				+ "processing (CEP) funcitonality.");
 		return builder.build();
 	}
 
@@ -228,6 +297,24 @@ public class OutboundProcessingChainModel extends ConfigurationModel {
 						ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 		builder.description("Sends events to the Dweet.io cloud service where they can be viewed and integrated with other services. "
 				+ "The unique 'thing' name will be the unique token for the device assignment the event is associated with.");
+		return builder.build();
+	}
+
+	/**
+	 * Create a WSO2 CEP event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createWso2CepEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("WSO2 CEP Processor",
+						OutboundProcessingChainParser.Elements.Wso2CepEventProcessor.getLocalName(),
+						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+		builder.description("Forwards events to streams on an external WSO2 CEP instance for processing.");
+		builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String).description("Hostname for external WSO2 CEP instance.").build()));
+		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer).description("Port number for external WSO2 CEP instance.").build()));
+		builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String).description("Username for external WSO2 CEP instance.").build()));
+		builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String).description("Password for external WSO2 CEP instance.").build()));
 		return builder.build();
 	}
 

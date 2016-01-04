@@ -1185,6 +1185,13 @@ div.wz-button-bar {
 				$('#tenant-delete').show();
 				template = kendo.template($("#tpl-engine-stopped").html());
 				$('#detail-content').html(template(data));
+			} else if (data.engineState.lifecycleStatus == 'Error') {
+				$('#tenant-power-off').hide();
+				$('#tenant-power-on').show();
+				$('#tenant-edit').show();
+				$('#tenant-delete').show();
+				template = kendo.template($("#tpl-engine-stopped").html());
+				$('#detail-content').html(template(data));
 			} else {
 				$('#tenant-power-off').hide();
 				$('#tenant-power-on').hide();
