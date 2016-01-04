@@ -56,9 +56,13 @@ public enum ElementRole {
 	/** Event source. Binary event decoder. */
 	EventSource_BinaryEventDecoder("Binary Event Decoder", true, false, false),
 
+	/** Event source. String event decoder. */
+	EventSource_StringEventDecoder("String Event Decoder", true, false, false),
+
 	/** Event source. Event decoder. */
-	EventSource_EventDecoder("Event Decoder", true, false, false, new ElementRole[0],
-			new ElementRole[] { EventSource_BinaryEventDecoder }),
+	EventSource_EventDecoder("Event Decoder", true, false, false, new ElementRole[0], new ElementRole[] {
+			EventSource_BinaryEventDecoder,
+			EventSource_StringEventDecoder }),
 
 	/** Event sources container. Event source. */
 	EventSources_EventSource("Event Sources", true, true, true,

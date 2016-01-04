@@ -34,10 +34,16 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		// Event sources.
 		addElement(createEventSourcesElement());
 		addElement(createMqttEventSourceElement());
+		addElement(createAzureEventHubEventSourceElement());
+		addElement(createActiveMQEventSourceElement());
+		addElement(createHazelcastQueueEventSourceElement());
 
 		// Binary event decoders.
 		addElement(createProtobufEventDecoderElement());
 		addElement(createJsonEventDecoderElement());
+		addElement(createGroovyEventDecoderElement());
+		addElement(createGroovyStringEventDecoderElement());
+		addElement(createEchoStringEventDecoderElement());
 
 		// Inbound processing strategy.
 		addElement(createInboundProcessingStrategyElement());
@@ -107,8 +113,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 						ElementRole.EventSources_EventSource);
 
 		builder.description("Listen for events on an MQTT topic.");
-		builder.attribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).description(
-				"Unique id used for referencing this event source.").makeIndex().build()));
+		addEventSourceAttributes(builder);
 
 		// Only accept binary event decoders.
 		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
@@ -118,6 +123,16 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).description("MQTT topic event source uses for inbound messages.").build()));
 
 		return builder.build();
+	}
+
+	/**
+	 * Add common event source attributes.
+	 * 
+	 * @param builder
+	 */
+	public static void addEventSourceAttributes(ElementNode.Builder builder) {
+		builder.attribute((new AttributeNode.Builder("Source id", "sourceId", AttributeType.String).description(
+				"Unique id used for referencing this event source.").makeIndex().makeRequired().build()));
 	}
 
 	/**
@@ -137,6 +152,85 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				AttributeType.String).description("Fully-qualified path to trust store for secured connections.").build()));
 		builder.attribute((new AttributeNode.Builder("Trust store password", "trustStorePassword",
 				AttributeType.String).description("Password used to authenticate with trust store.").build()));
+	}
+
+	/**
+	 * Create element configuration for Azure EventHub event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createAzureEventHubEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Azure EventHub Event Source",
+						EventSourcesParser.Elements.AzureEventHubEventSource.getLocalName(), "cloud",
+						ElementRole.EventSources_EventSource);
+
+		builder.description("Event source that pulls binary information from an Azure EventHub endpoint and decodes it.");
+		addEventSourceAttributes(builder);
+
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
+		builder.attribute((new AttributeNode.Builder("Target FQN", "targetFqn", AttributeType.String).description("EventHub targetFqn address.").build()));
+		builder.attribute((new AttributeNode.Builder("Namespace", "namespace", AttributeType.String).description("EventHub namespace.").build()));
+		builder.attribute((new AttributeNode.Builder("Entity path", "entityPath", AttributeType.String).description("EventHub entityPath.").build()));
+		builder.attribute((new AttributeNode.Builder("Partition count", "partitionCount",
+				AttributeType.Integer).description("EventHub partition count.").build()));
+		builder.attribute((new AttributeNode.Builder("Zookeeper state store", "zkStateStore",
+				AttributeType.String).description("Zookeeper store url for EventHub state persistence.").build()));
+		builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String).description("Username for EventHub connection.").build()));
+		builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String).description("Password for EventHub connection.").build()));
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for ActiveMQ event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createActiveMQEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("ActiveMQ Event Source",
+						EventSourcesParser.Elements.ActiveMQEventSource.getLocalName(), "sign-in",
+						ElementRole.EventSources_EventSource);
+
+		builder.description("Event source that pulls binary information from an ActiveMQ queue and decodes it.");
+		addEventSourceAttributes(builder);
+
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
+		builder.attribute((new AttributeNode.Builder("Transport URI", "transportUri", AttributeType.String).description(
+				"URI used to configure the trasport for the embedded ActiveMQ broker.").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Data directory", "dataDirectory", AttributeType.String).description("Data directory used to store persistent message queues.").build()));
+		builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String).description(
+				"Name of JMS queue for consumers to pull messages from.").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Number of consumers", "numConsumers",
+				AttributeType.Integer).description("Number of consumers used to read data from the queue into SiteWhere.").build()));
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for Hazelcast queue event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createHazelcastQueueEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Hazelcast Queue Event Source",
+						EventSourcesParser.Elements.HazelcastQueueEventSource.getLocalName(), "sign-in",
+						ElementRole.EventSources_EventSource);
+
+		builder.description("Event source that pulls decoded events from a Hazelcast queue. Primarily used to "
+				+ "allow one instance of SiteWhere to decode events and feed them to multiple subordinate instances for processing.");
+		addEventSourceAttributes(builder);
+
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
+		return builder.build();
 	}
 
 	/**
@@ -169,6 +263,55 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 		builder.description("Event decoder that takes binary messages from an underlying transport "
 				+ "and parses them as the JSON representation of a SiteWhere device event batch.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for Groovy event decoder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createGroovyEventDecoderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Groovy Binary Event Decoder",
+						EventSourcesParser.BinaryDecoders.GroovyEventDecoder.getLocalName(), "cogs",
+						ElementRole.EventSource_BinaryEventDecoder);
+
+		builder.description("Decoder that uses a Groovy script to parse a binary payload into decoded events.");
+		builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+				"Relative path to script used for decoding payload.").makeRequired().build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for Groovy string event decoder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createGroovyStringEventDecoderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Groovy String Event Decoder",
+						EventSourcesParser.StringDecoders.GroovyStringDecoder.getLocalName(), "cogs",
+						ElementRole.EventSource_StringEventDecoder);
+
+		builder.description("Decoder that uses a Groovy script to parse a String payload into decoded events.");
+		builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+				"Relative path to script used for decoding payload.").makeRequired().build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for echo string event decoder.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createEchoStringEventDecoderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Echo String Event Decoder",
+						EventSourcesParser.StringDecoders.EchoStringDecoder.getLocalName(), "cogs",
+						ElementRole.EventSource_StringEventDecoder);
+
+		builder.description("Decoder for event receivers with String payloads that simply echoes the payload to the log.");
 		return builder.build();
 	}
 
