@@ -20,7 +20,10 @@ public class TenantConfigurationModel extends ConfigurationModel {
 	public TenantConfigurationModel() {
 		setLocalName("tenant-configuration");
 		setName("Tenant Configuration");
-		setDescription("Provides a model for all aspects of tenant configuration.");
+		setDescription("Allows configuration of all aspects of this tenant including data management, "
+				+ "device communication, inbound/outbound event processing, and asset management. After "
+				+ "making changes, click <strong>Stage Updates</strong> to store the updates. The changes "
+				+ "will be applied the next time the tenant is restarted.");
 		setRole(ElementRole.Root.name());
 		getElementsByRole().putAll(new GlobalsModel().getElementsByRole());
 		getElementsByRole().putAll(new DataManagementModel().getElementsByRole());

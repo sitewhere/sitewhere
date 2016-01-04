@@ -140,6 +140,10 @@ div.wz-header h2 {
 	
 }
 
+.dd-icon {
+	width: 20px;
+}
+
 div.wz-divider {
 	clear: both;
 	padding-top: 10px;
@@ -248,6 +252,7 @@ div.wz-button-bar {
 
 <%@ include file="tenantCreateDialog.inc"%>
 <%@ include file="configEditDialog.inc"%>
+<%@ include file="tenantHeader.inc"%>
 <%@ include file="tenantEntry.inc"%>
 
 <!-- Details panel shown for a started engine -->
@@ -775,8 +780,9 @@ div.wz-button-bar {
 		for (var i = 0; i < modelsForRole.length; i++) {
 			var roleModel = modelsForRole[i];
 			section +=
-					"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName + "\")'>"
-							+ roleModel.name + "</a></li>";
+					"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName
+							+ "\")'><i class='dd-icon fa fa-" + roleModel.icon + "'></i>" + roleModel.name
+							+ "</a></li>";
 		}
 
 		section += "</ul>";
@@ -805,8 +811,9 @@ div.wz-button-bar {
 		for (var i = 0; i < modelsForRole.length; i++) {
 			var roleModel = modelsForRole[i];
 			section +=
-					"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName + "\")'>"
-							+ roleModel.name + "</a></li>";
+					"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName
+							+ "\")'><i class='dd-icon fa fa-" + roleModel.icon + "'></i>" + roleModel.name
+							+ "</a></li>";
 		}
 
 		section += "</ul>";
@@ -926,7 +933,8 @@ div.wz-button-bar {
 			for (var i = 0; i < modelsForRole.length; i++) {
 				var roleModel = modelsForRole[i];
 				section +=
-						"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName + "\")'>"
+						"<li><a href='#' onclick='onAddChild(event, \"" + roleModel.localName
+								+ "\")'><i class='dd-icon fa fa-" + roleModel.icon + "'></i>"
 								+ roleModel.name + "</a></li>";
 			}
 		}
@@ -1156,9 +1164,9 @@ div.wz-button-bar {
 
 	/** Called on successful tenant load request */
 	function loadGetSuccess(data, status, jqXHR) {
+		parseEntityData(data);
 		tenant = data;
-		var template = kendo.template($("#tpl-tenant-entry").html());
-		data.inDetailView = true;
+		var template = kendo.template($("#tpl-tenant-detail-header").html());
 		$('#tenant-details').html(template(data));
 
 		if (tenant.engineState) {
