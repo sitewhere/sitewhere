@@ -38,6 +38,14 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createActiveMQEventSourceElement());
 		addElement(createHazelcastQueueEventSourceElement());
 
+		// Socket event source.
+		addElement(createReadAllSocketInteractionHandlerElement());
+		addElement(createSocketEventSourceElement());
+
+		// WebSocket event source.
+		addElement(createWebSocketHeaderElement());
+		addElement(createWebSocketEventSourceElement());
+
 		// Binary event decoders.
 		addElement(createProtobufEventDecoderElement());
 		addElement(createJsonEventDecoderElement());
@@ -208,6 +216,92 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				"Name of JMS queue for consumers to pull messages from.").makeRequired().build()));
 		builder.attribute((new AttributeNode.Builder("Number of consumers", "numConsumers",
 				AttributeType.Integer).description("Number of consumers used to read data from the queue into SiteWhere.").build()));
+
+		return builder.build();
+	}
+
+	/**
+	 * Create read-all socket interaction handler factory.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createReadAllSocketInteractionHandlerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Read-All Socket Interaction Handler Factory",
+						"read-all-interaction-handler-factory", "cog",
+						ElementRole.EventSources_SocketInteractionHandlerFactory);
+
+		builder.description("Interaction handler that reads all content from the client socket and delivers it "
+				+ "to the decoder as a byte array.");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for socket event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSocketEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Socket Event Source",
+						EventSourcesParser.Elements.SocketEventSource.getLocalName(), "plug",
+						ElementRole.EventSources_SocketEventSource);
+
+		builder.description("Event source that pulls binary information from connections to a TCP/IP server socket.");
+		addEventSourceAttributes(builder);
+
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
+		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer).description(
+				"Port on which the server socket will listen.").defaultValue("8484").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Number of threads", "numThreads", AttributeType.Integer).description(
+				"Number of threads used to handle client connections to the server socket.").defaultValue("5").build()));
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for WebSocket header.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createWebSocketHeaderElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("WebSocket Header", "header", "cog",
+						ElementRole.EventSources_WebSocketHeader);
+
+		builder.description("Header that is passed to the web socket for configuration.");
+
+		builder.attribute((new AttributeNode.Builder("Header name", "name", AttributeType.String).description(
+				"Header name.").makeRequired().makeIndex().build()));
+		builder.attribute((new AttributeNode.Builder("Header value", "value", AttributeType.String).description(
+				"Header value.").makeRequired().build()));
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for WebSocket event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createWebSocketEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("WebSocket Event Source",
+						EventSourcesParser.Elements.WebSocketEventSource.getLocalName(), "plug",
+						ElementRole.EventSources_WebSocketEventSource);
+
+		builder.description("Event source that pulls data from a web socket. Note that the event decoder needs "
+				+ "to correspond to the payload type chosen.");
+		addEventSourceAttributes(builder);
+
+		builder.attribute((new AttributeNode.Builder("Web socket URL", "webSocketUrl", AttributeType.String).description(
+				"URL of the web socket to connect to.").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Payload type", "payloadType", AttributeType.String).description(
+				"Chooses whether payload is processed as binary or string.").choice("binary").choice("string").defaultValue(
+				"binary").build()));
 
 		return builder.build();
 	}

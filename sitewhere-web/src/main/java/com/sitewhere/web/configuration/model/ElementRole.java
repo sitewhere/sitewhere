@@ -64,9 +64,27 @@ public enum ElementRole {
 			EventSource_BinaryEventDecoder,
 			EventSource_StringEventDecoder }),
 
+	/** Socket event source. Socket interaction handler factory. */
+	EventSources_SocketInteractionHandlerFactory("Socket Interaction Handler Factory", false, false, false),
+
+	/** Event sources container. Event source. */
+	EventSources_SocketEventSource("Socket Event Source", true, true, true, new ElementRole[] {
+			EventSources_SocketInteractionHandlerFactory,
+			EventSource_EventDecoder }),
+
+	/** WebSocket event source. Header. */
+	EventSources_WebSocketHeader("WebSocket Headers", true, true, true),
+
+	/** Event sources container. Event source. */
+	EventSources_WebSocketEventSource("WebSocket Event Source", true, true, true, new ElementRole[] {
+			EventSource_EventDecoder,
+			EventSources_WebSocketHeader }),
+
 	/** Event sources container. Event source. */
 	EventSources_EventSource("Event Sources", true, true, true,
-			new ElementRole[] { EventSource_EventDecoder }),
+			new ElementRole[] { EventSource_EventDecoder }, new ElementRole[] {
+					EventSources_SocketEventSource,
+					EventSources_WebSocketEventSource }),
 
 	/** Device communication container. Event sources configuration. */
 	DeviceCommunication_EventSources(null, false, false, false,
