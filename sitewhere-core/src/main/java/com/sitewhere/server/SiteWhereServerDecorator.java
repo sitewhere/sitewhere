@@ -16,7 +16,7 @@ import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.configuration.IConfigurationResolver;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -130,7 +130,7 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationResolver()
 	 */
 	@Override
-	public IConfigurationResolver getConfigurationResolver() {
+	public IGlobalConfigurationResolver getConfigurationResolver() {
 		return server.getConfigurationResolver();
 	}
 

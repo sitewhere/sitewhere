@@ -11,7 +11,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.configuration.IConfigurationResolver;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
+import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -31,11 +32,18 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 
 	/**
-	 * Get class that can be used to location the Spring configuration context.
+	 * Get resolver for global configuration elements.
 	 * 
 	 * @return
 	 */
-	public IConfigurationResolver getConfigurationResolver();
+	public IGlobalConfigurationResolver getGlobalConfigurationResolver();
+
+	/**
+	 * Get resolver for tenant configuration elements.
+	 * 
+	 * @return
+	 */
+	public ITenantConfigurationResolver getTenantConfigurationResolver();
 
 	/**
 	 * Get the device management implementation.

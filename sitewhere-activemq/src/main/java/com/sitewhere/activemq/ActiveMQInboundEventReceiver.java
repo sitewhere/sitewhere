@@ -31,7 +31,7 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
 import org.apache.log4j.Logger;
 
-import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
@@ -101,7 +101,7 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 			throw new SiteWhereException("Queue name is required.");
 		}
 		if (getDataDirectory() == null) {
-			File tomcatData = TomcatConfigurationResolver.getSiteWhereDataFolder();
+			File tomcatData = TomcatGlobalConfigurationResolver.getSiteWhereDataFolder();
 			setDataDirectory(tomcatData.getAbsolutePath());
 		}
 		try {

@@ -35,7 +35,8 @@ public class TenantUtils {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 		}
 		IVersion version = SiteWhere.getServer().getVersion();
-		return engine.getConfigurationResolver().getActiveTenantConfiguration(engine.getTenant(), version);
+		return engine.getTenantConfigurationResolver().getActiveTenantConfiguration(engine.getTenant(),
+				version);
 	}
 
 	/**
@@ -51,7 +52,8 @@ public class TenantUtils {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 		}
 		IVersion version = SiteWhere.getServer().getVersion();
-		return engine.getConfigurationResolver().getStagedTenantConfiguration(engine.getTenant(), version);
+		return engine.getTenantConfigurationResolver().getStagedTenantConfiguration(engine.getTenant(),
+				version);
 	}
 
 	/**
@@ -68,7 +70,7 @@ public class TenantUtils {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 		}
 		IVersion version = SiteWhere.getServer().getVersion();
-		engine.getConfigurationResolver().stageTenantConfiguration(configuration.getBytes(),
+		engine.getTenantConfigurationResolver().stageTenantConfiguration(configuration.getBytes(),
 				engine.getTenant(), version);
 	}
 }

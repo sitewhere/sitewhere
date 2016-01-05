@@ -7,36 +7,16 @@
  */
 package com.sitewhere.spi.configuration;
 
-import java.net.URI;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 
 /**
- * Allows for pluggable implementations that can resolve the Spring configuration for the
- * system.
+ * Pluggable resolver for interacting with global configuration data.
  * 
  * @author Derek
  */
-public interface IConfigurationResolver {
-
-	/**
-	 * Get the base configuration URL.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public URI getConfigurationRoot() throws SiteWhereException;
-
-	/**
-	 * Get the global configuration.
-	 * 
-	 * @param version
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] getGlobalConfiguration(IVersion version) throws SiteWhereException;
+public interface ITenantConfigurationResolver {
 
 	/**
 	 * Gets the active configuration for a given tenant.
@@ -93,22 +73,4 @@ public interface IConfigurationResolver {
 	 */
 	public void transitionStagedToActiveTenantConfiguration(ITenant tenant, IVersion version)
 			throws SiteWhereException;
-
-	/**
-	 * Get binary form of server state information.
-	 * 
-	 * @param version
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public byte[] resolveServerState(IVersion version) throws SiteWhereException;
-
-	/**
-	 * Store information about server state.
-	 * 
-	 * @param version
-	 * @param data
-	 * @throws SiteWhereException
-	 */
-	public void storeServerState(IVersion version, byte[] data) throws SiteWhereException;
 }

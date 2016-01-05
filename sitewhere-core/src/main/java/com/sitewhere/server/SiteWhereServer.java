@@ -27,7 +27,7 @@ import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationUtils;
-import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
@@ -46,7 +46,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.configuration.IConfigurationResolver;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
@@ -106,7 +106,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	private ITracer tracer = new NullTracer();
 
 	/** Allows Spring configuration to be resolved */
-	private IConfigurationResolver configurationResolver = new TomcatConfigurationResolver();
+	private IGlobalConfigurationResolver configurationResolver = new TomcatGlobalConfigurationResolver();
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
@@ -217,7 +217,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationResolver()
 	 */
-	public IConfigurationResolver getConfigurationResolver() {
+	public IGlobalConfigurationResolver getConfigurationResolver() {
 		return configurationResolver;
 	}
 
@@ -858,7 +858,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected ISiteWhereTenantEngine createTenantEngine(ITenant tenant, ApplicationContext parent,
-			IConfigurationResolver resolver) throws SiteWhereException {
+			IGlobalConfigurationResolver resolver) throws SiteWhereException {
 		SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
 		engine.setConfigurationResolver(resolver);
 		return engine;

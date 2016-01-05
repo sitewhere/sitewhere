@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
@@ -67,7 +67,7 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 		this.assetManagement = assetManagement;
 
 		// Locate the folder that contains asset data files.
-		File config = TomcatConfigurationResolver.getSiteWhereConfigFolder();
+		File config = TomcatGlobalConfigurationResolver.getSiteWhereConfigFolder();
 		File assetsFolder = new File(config, IFileSystemAssetModuleConstants.ASSETS_FOLDER);
 		if (!assetsFolder.exists()) {
 			throw new SiteWhereException("Assets subfolder not found. Looking for: "

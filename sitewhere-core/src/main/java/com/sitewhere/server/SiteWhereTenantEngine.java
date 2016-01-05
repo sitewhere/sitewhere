@@ -25,7 +25,8 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
-import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
+import com.sitewhere.configuration.TomcatTenantConfigurationResolver;
 import com.sitewhere.device.communication.DeviceCommandEventProcessor;
 import com.sitewhere.device.event.processor.DefaultEventStorageProcessor;
 import com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain;
@@ -51,7 +52,8 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.configuration.IConfigurationResolver;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
+import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
@@ -95,8 +97,13 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** SiteWhere global application context */
 	private ApplicationContext globalContext;
 
-	/** Allows Spring configuration to be resolved */
-	private IConfigurationResolver configurationResolver = new TomcatConfigurationResolver();
+	/** Supports global configuration management */
+	private IGlobalConfigurationResolver globalConfigurationResolver =
+			new TomcatGlobalConfigurationResolver();
+
+	/** Supports tenant configuration management */
+	private ITenantConfigurationResolver tenantConfigurationResolver =
+			new TomcatTenantConfigurationResolver();
 
 	/** Device management cache provider implementation */
 	private IDeviceManagementCacheProvider deviceManagementCacheProvider;
@@ -362,21 +369,21 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 		// Handle staged configuration if available.
 		LOGGER.info("Checking for staged tenant configuration.");
-		byte[] config = getConfigurationResolver().getStagedTenantConfiguration(getTenant(), version);
+		byte[] config = getTenantConfigurationResolver().getStagedTenantConfiguration(getTenant(), version);
 		if (config != null) {
 			LOGGER.info("Staged tenant configuration found for '" + getTenant().getName()
 					+ "'. Transitioning to active.");
-			getConfigurationResolver().transitionStagedToActiveTenantConfiguration(getTenant(), version);
+			getTenantConfigurationResolver().transitionStagedToActiveTenantConfiguration(getTenant(), version);
 		} else {
 			LOGGER.info("No staged tenant configuration found.");
 		}
 
 		// Load the active configuration and copy the default if necessary.
 		LOGGER.info("Loading active tenant configuration for '" + getTenant().getName() + "'.");
-		config = getConfigurationResolver().getActiveTenantConfiguration(getTenant(), version);
+		config = getTenantConfigurationResolver().getActiveTenantConfiguration(getTenant(), version);
 		if (config == null) {
 			LOGGER.info("No active configuration found. Copying default configuration.");
-			config = getConfigurationResolver().createDefaultTenantConfiguration(getTenant(), version);
+			config = getTenantConfigurationResolver().createDefaultTenantConfiguration(getTenant(), version);
 		}
 		this.tenantContext =
 				ConfigurationUtils.buildTenantContext(config, getTenant(), version, globalContext);
@@ -630,14 +637,29 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getConfigurationResolver()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getGlobalConfigurationResolver()
 	 */
-	public IConfigurationResolver getConfigurationResolver() {
-		return configurationResolver;
+	public IGlobalConfigurationResolver getGlobalConfigurationResolver() {
+		return globalConfigurationResolver;
 	}
 
-	public void setConfigurationResolver(IConfigurationResolver configurationResolver) {
-		this.configurationResolver = configurationResolver;
+	public void setConfigurationResolver(IGlobalConfigurationResolver configurationResolver) {
+		this.globalConfigurationResolver = configurationResolver;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getTenantConfigurationResolver()
+	 */
+	public ITenantConfigurationResolver getTenantConfigurationResolver() {
+		return tenantConfigurationResolver;
+	}
+
+	public void setTenantConfigurationResolver(ITenantConfigurationResolver tenantConfigurationResolver) {
+		this.tenantConfigurationResolver = tenantConfigurationResolver;
 	}
 
 	/*

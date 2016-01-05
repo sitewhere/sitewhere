@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
 import com.sitewhere.rest.model.asset.Asset;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.server.asset.AssetMatcher;
@@ -85,7 +85,7 @@ public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleCo
 	 * Reloads list of person assets from the filesystem.
 	 */
 	protected void reload() throws SiteWhereException {
-		File config = TomcatConfigurationResolver.getSiteWhereConfigFolder();
+		File config = TomcatGlobalConfigurationResolver.getSiteWhereConfigFolder();
 		File assetsFolder = new File(config, IFileSystemAssetModuleConstants.ASSETS_FOLDER);
 		if (!assetsFolder.exists()) {
 			throw new SiteWhereException("Assets subfolder not found. Looking for: "
