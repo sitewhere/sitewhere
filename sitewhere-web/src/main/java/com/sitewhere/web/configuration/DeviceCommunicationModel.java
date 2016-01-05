@@ -745,11 +745,15 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				+ "hardware id into parameterized strings. The resulting values are used by the command "
 				+ "destination to send the encoded command payload to the device.");
 		builder.attribute((new AttributeNode.Builder("Command topic expression", "commandTopicExpr",
-				AttributeType.String).description("Expression for building topic name to which custom commands are sent. "
-				+ "Add a '%s' where the hardware id should be inserted.").build()));
+				AttributeType.String).description(
+				"Expression for building topic name to which custom commands are sent. "
+						+ "Add a '%s' where the hardware id should be inserted.").defaultValue(
+				"SiteWhere/commands/%s").build()));
 		builder.attribute((new AttributeNode.Builder("System topic expression", "systemTopicExpr",
-				AttributeType.String).description("Expression for building topic name to which system commands are sent. "
-				+ "Add a '%s' where the hardware id should be inserted.").build()));
+				AttributeType.String).description(
+				"Expression for building topic name to which system commands are sent. "
+						+ "Add a '%s' where the hardware id should be inserted.").defaultValue(
+				"SiteWhere/system/%s").build()));
 
 		return builder.build();
 	}

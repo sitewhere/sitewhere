@@ -224,8 +224,12 @@ public enum ElementRole {
 	OutboundProcessingChain(null, false, false, false,
 			new ElementRole[] { OutboundProcessingChain_EventProcessor }, new ElementRole[0], true),
 
+	/** Asset Management. Asset module */
+	AssetManagment_AssetModule("Asset Modules", true, true, true),
+
 	/** Asset Management element. */
-	AssetManagment(null, false, false, false, new ElementRole[0], new ElementRole[0], true),
+	AssetManagment(null, false, false, false, new ElementRole[] { AssetManagment_AssetModule },
+			new ElementRole[0], true),
 
 	/** Top level element. */
 	Root(null, false, false, false, new ElementRole[] {
