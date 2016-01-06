@@ -119,9 +119,16 @@
 		
 			<!-- Inbound Processing Strategy -->
 			<sw:inbound-processing-strategy>
-				<sw:default-inbound-processing-strategy
-					numEventProcessorThreads="10" enableMonitoring="false" monitoringIntervalSec="3"/>
+				<sw:blocking-queue-inbound-processing-strategy
+					maxQueueSize="10000" numEventProcessorThreads="10" enableMonitoring="false"
+					monitoringIntervalSec="3"/>
 			</sw:inbound-processing-strategy>
+
+			<!-- Outbound Processing Strategy -->
+			<sw:outbound-processing-strategy>
+				<sw:blocking-queue-outbound-processing-strategy
+					maxQueueSize="10000" numEventProcessorThreads="10"/>
+			</sw:outbound-processing-strategy>
 			
 			<!-- Device registration -->
 			<sw:registration>

@@ -41,8 +41,8 @@ public class OutboundProcessingStrategyParser {
 						+ child.getLocalName());
 			}
 			switch (type) {
-			case BlockingQueueInboundProcessingStrategy:
-			case DefaultInboundProcessingStrategy: {
+			case BlockingQueueOutboundProcessingStrategy:
+			case DefaultOutboundProcessingStrategy: {
 				return parseDefaultOutboundProcessingStrategy(child, context);
 			}
 			}
@@ -82,10 +82,10 @@ public class OutboundProcessingStrategyParser {
 	public static enum Elements {
 
 		/** Blocking queue outbound processing strategy */
-		BlockingQueueInboundProcessingStrategy("blocking-queue-outbound-processing-strategy"),
+		BlockingQueueOutboundProcessingStrategy("blocking-queue-outbound-processing-strategy"),
 
 		/** Default outbound processing strategy */
-		DefaultInboundProcessingStrategy("default-outbound-processing-strategy");
+		DefaultOutboundProcessingStrategy("default-outbound-processing-strategy");
 
 		/** Event code */
 		private String localName;

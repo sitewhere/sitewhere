@@ -90,12 +90,19 @@ public enum ElementRole {
 	DeviceCommunication_EventSources(null, false, false, false,
 			new ElementRole[] { EventSources_EventSource }, new ElementRole[0], true),
 
-	/** Inbound processing strategy container. Blocking queue strategy. */
+	/** Inbound processing strategy container. Strategy. */
 	InboundProcessingStrategy_Strategy("Strategy", false, false, false),
 
 	/** Device communication container. Inbound processing strategy. */
 	DeviceCommunication_InboundProcessingStrategy(null, false, false, false,
 			new ElementRole[] { InboundProcessingStrategy_Strategy }, new ElementRole[0], true),
+
+	/** Outbound processing strategy container. Strategy. */
+	OutboundProcessingStrategy_Strategy("Strategy", false, false, false),
+
+	/** Device communication container. Outbound processing strategy. */
+	DeviceCommunication_OutboundProcessingStrategy(null, false, false, false,
+			new ElementRole[] { OutboundProcessingStrategy_Strategy }, new ElementRole[0], true),
 
 	/** Registration container. Registration manager. */
 	Registration_RegistrationManager("Registration Manager", false, false, false),
@@ -163,6 +170,7 @@ public enum ElementRole {
 	DeviceCommunication(null, false, false, false, new ElementRole[] {
 			DeviceCommunication_EventSources,
 			DeviceCommunication_InboundProcessingStrategy,
+			DeviceCommunication_OutboundProcessingStrategy,
 			DeviceCommunication_Registration,
 			DeviceCommunication_BatchOperations,
 			DeviceCommunication_CommandRouting,
