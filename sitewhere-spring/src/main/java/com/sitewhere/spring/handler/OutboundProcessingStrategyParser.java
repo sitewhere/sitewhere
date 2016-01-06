@@ -10,21 +10,20 @@ package com.sitewhere.spring.handler;
 import java.util.List;
 
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
-import com.sitewhere.device.communication.BlockingQueueInboundProcessingStrategy;
+import com.sitewhere.device.communication.BlockingQueueOutboundProcessingStrategy;
 
 /**
- * Parse elements related to inbound processing strategy.
+ * Parse elements related to outbound processing strategy.
  * 
  * @author Derek
  */
-public class InboundProcessingStrategyParser {
+public class OutboundProcessingStrategyParser {
 
 	/**
 	 * Parse elements in the inbound processing strategy section.
@@ -38,13 +37,13 @@ public class InboundProcessingStrategyParser {
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
-				throw new RuntimeException("Unknown inbound processing strategy element: "
+				throw new RuntimeException("Unknown outbound processing strategy element: "
 						+ child.getLocalName());
 			}
 			switch (type) {
 			case BlockingQueueInboundProcessingStrategy:
 			case DefaultInboundProcessingStrategy: {
-				return parseDefaultInboundProcessingStrategy(child, context);
+				return parseDefaultOutboundProcessingStrategy(child, context);
 			}
 			}
 		}
@@ -52,15 +51,15 @@ public class InboundProcessingStrategyParser {
 	}
 
 	/**
-	 * Parse information for the default inbound processing strategy.
+	 * Parse information for the default outbound processing strategy.
 	 * 
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected BeanDefinition parseDefaultInboundProcessingStrategy(Element element, ParserContext context) {
+	protected BeanDefinition parseDefaultOutboundProcessingStrategy(Element element, ParserContext context) {
 		BeanDefinitionBuilder manager =
-				BeanDefinitionBuilder.rootBeanDefinition(BlockingQueueInboundProcessingStrategy.class);
+				BeanDefinitionBuilder.rootBeanDefinition(BlockingQueueOutboundProcessingStrategy.class);
 
 		Attr maxQueueSize = element.getAttributeNode("maxQueueSize");
 		if (maxQueueSize != null) {
@@ -72,32 +71,7 @@ public class InboundProcessingStrategyParser {
 			manager.addPropertyValue("eventProcessorThreadCount", numEventProcessorThreads.getValue());
 		}
 
-		Attr enableMonitoring = element.getAttributeNode("enableMonitoring");
-		if (enableMonitoring != null) {
-			manager.addPropertyValue("enableMonitoring", enableMonitoring.getValue());
-		}
-
-		Attr monitoringIntervalSec = element.getAttributeNode("monitoringIntervalSec");
-		if (monitoringIntervalSec != null) {
-			manager.addPropertyValue("monitoringIntervalSec", monitoringIntervalSec.getValue());
-		}
-
 		return manager.getBeanDefinition();
-	}
-
-	/**
-	 * Parse a registration manager reference.
-	 * 
-	 * @param element
-	 * @param context
-	 * @return
-	 */
-	protected RuntimeBeanReference parseRegistrationManager(Element element, ParserContext context) {
-		Attr ref = element.getAttributeNode("ref");
-		if (ref != null) {
-			return new RuntimeBeanReference(ref.getValue());
-		}
-		throw new RuntimeException("Registration manager reference does not have ref defined.");
 	}
 
 	/**
@@ -107,11 +81,11 @@ public class InboundProcessingStrategyParser {
 	 */
 	public static enum Elements {
 
-		/** Blocking queue inbound processing strategy */
-		BlockingQueueInboundProcessingStrategy("blocking-queue-inbound-processing-strategy"),
+		/** Blocking queue outbound processing strategy */
+		BlockingQueueInboundProcessingStrategy("blocking-queue-outbound-processing-strategy"),
 
-		/** Default inbound processing strategy */
-		DefaultInboundProcessingStrategy("default-inbound-processing-strategy");
+		/** Default outbound processing strategy */
+		DefaultInboundProcessingStrategy("default-outbound-processing-strategy");
 
 		/** Event code */
 		private String localName;

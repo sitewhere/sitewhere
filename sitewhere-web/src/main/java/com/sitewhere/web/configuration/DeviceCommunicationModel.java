@@ -465,11 +465,12 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createRegistrationElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Device Registration Management",
-						DeviceCommunicationParser.Elements.Registration.getLocalName(), "key",
+				new ElementNode.Builder("Device Registration and Symbology",
+						DeviceCommunicationParser.Elements.Registration.getLocalName(), "qrcode",
 						ElementRole.DeviceCommunication_Registration);
 
-		builder.description("Manages how new devices are registered with the system.");
+		builder.description("Manages how new devices are registered with the system and how symbols such "
+				+ "as QR-codes are associated with SiteWhere entities.");
 		return builder.build();
 	}
 

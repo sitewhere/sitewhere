@@ -1,0 +1,131 @@
+<hardware-assets>
+	<!-- Android -->
+	<hardware-asset id="173" name="Galaxy Tab 3" sku="GTAB3" device="true">
+		<description> This thin, lightweight Android tablet features a 7-inch touch display along with the same familiar interface as other Samsung Galaxy devices, making it easy to use. Use it to quickly browse the web, watch movies, read e-books, or download apps from Google Play.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/android-logo.png</image-url>
+		<property name="manufacturer" value="Samsung"/>
+		<property name="cpu" value="Dual Core Application Processor "/>
+		<property name="sd.size" value="1gb"/>
+	</hardware-asset>
+
+	<!-- Raspberry Pi -->
+	<hardware-asset id="174" name="Raspberry Pi" sku="RPI" device="true">
+		<description>The Raspberry Pi is a credit-card-sized single-board computer developed in the UK by the Raspberry Pi Foundation with the intention of promoting the teaching of basic computer science in schools.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/raspberry-pi.jpg</image-url>
+		<property name="manufacturer" value="Raspberry Pi Foundation"/>
+		<property name="cpu" value="ARM1176JZF-S"/>
+		<property name="sd.size" value="32gb"/>
+	</hardware-asset>
+	
+	<!-- MeiTrack personal trackers -->
+	<hardware-asset id="175" name="MeiTrack MT90" sku="MT90" device="true">
+		<description>MT90 is a waterproof GPS personal tracker suitable for lone workers, kids, aged, pet, assets, vehicle and fleet management.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/meitrack/mt90.jpg</image-url>
+		<property name="manufacturer" value="MeiTrack"/>
+		<property name="weight" value="1.000"/>
+		<property name="sos.button" value="true"/>
+		<property name="two.way.audio" value="false"/>
+	</hardware-asset>
+	
+	<!-- Gateway -->
+	<hardware-asset id="176" name="Gateway Device" sku="GW1" device="true">
+		<description>Sample gateway for testing nested device configurations.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/gateway.gif</image-url>
+		<property name="manufacturer" value="Advantech"/>
+	</hardware-asset>
+	
+	<!-- Arduino -->
+	<hardware-asset id="180" name="Arduino Uno" sku="UNO" device="true">
+		<description>The Arduino Uno is a microcontroller board based on the ATmega328.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/arduino/uno.jpg</image-url>
+		<property name="manufacturer" value="Arduino"/>
+		<property name="operating.voltage" value="5V"/>
+	</hardware-asset>
+	<hardware-asset id="181" name="Arduino Mega 2560" sku="M2560" device="true">
+		<description>The Arduino Mega 2560 is a microcontroller board based on the ATmega2560.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/arduino/mega2560.jpg</image-url>
+		<property name="manufacturer" value="Arduino"/>
+		<property name="operating.voltage" value="5V"/>
+	</hardware-asset>
+	
+	<!-- openHAB -->
+	<hardware-asset id="190" name="openHAB Virtual Device" sku="OHAB" device="true">
+		<description>openHAB is a software for integrating different home automation systems and technologies into one single solution that allows over-arching automation rules and that offers uniform user interfaces.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/gateway/openhab.png</image-url>
+		<property name="manufacturer" value="openHAB"/>
+	</hardware-asset>
+	
+	<!-- Ekahau tags and sensors -->
+	<hardware-asset id="200" name="Ekahau A4 Tag" sku="EA4" device="true">
+		<description>A4 Wi-Fi tags act as small computers that transmit data to the Ekahau Vision server which determines asset location and status, displayed in the Vision software interface.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-a4-tag.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="programmable.buttons" value="true"/>
+		<property name="remote.audio" value="true"/>
+		<property name="wearable" value="false"/>
+		<property name="senses.temperature" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="201" name="Ekahau B4 Tag" sku="EB4" device="true">
+		<description>B4 badge tags offer an integrated staff duress or panic switch--employees just tug on the badge and their location and an alarm is sent to security and other designated groups.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-b4-tag.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="programmable.buttons" value="true"/>
+		<property name="remote.audio" value="false"/>
+		<property name="wearable" value="true"/>
+		<property name="senses.temperature" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="202" name="Ekahau T301W Wearable Tag" sku="ET301W" device="true">
+		<description>The waterproof and wearable T301W wristband tag includes two colored LEDs which signal events to the tag wearer, in addition to vibration-based alerting. Patients can acknowledge calls and press the call button to request help.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-t301w-wearable-tag.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="programmable.buttons" value="false"/>
+		<property name="remote.audio" value="false"/>
+		<property name="wearable" value="true"/>
+		<property name="senses.temperature" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="203" name="Ekahau Wireless TS1 Temperature Sensor" sku="ETS1" device="true">
+		<description>The lightweight TS1 temperature tag with probe measures and communicates temperatures ranging from: -80° C - + 125° C, and custom high/low threshold settings. TS1 sensors come with a programmable on-board audio buzzer and visual LED alert buttons.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-ts1.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="senses.temperature" value="true"/>
+		<property name="senses.humidity" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="204" name="Ekahau Wireless TS2 Temperature Sensor" sku="ETS2" device="true">
+		<description>With the TS2 Dual Temperature Sensor tag, you can monitor two separate probes from the same sensor which lowers the total cost of deployment. The temperature sensor tag itself remains always outside of the extreme temperatures allowing for easy maintenance and better network connectivity. In case of network outages, the Ekahau TS tags can locally store the temperature measurements and automatically provide the measurements to the application after the outage</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-ts1.jpg</image-url>
+		<property name="wifi" value="true"/>
+		<property name="senses.temperature" value="true"/>
+		<property name="senses.humidity" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="205" name="Ekahau HS1 Humidity Sensor" sku="EHS1" device="true">
+		<description>The Ekahau HS1 humidity tags provide an automated way to measure and monitor the relative humidity and surrouding temperature.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-humidity-sensor.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="senses.temperature" value="false"/>
+		<property name="senses.humidity" value="true"/>
+	</hardware-asset>
+	
+	<!-- Laipac -->
+	<hardware-asset id="300" name="S911 Bracelet Locator HC" sku="S911HC" device="true">
+		<description>S911 Bracelet Locator HC (Healthcare) can be used to provide location of the patients, physicians, nurses, and police on duty and assist patients unable to communicate due to issues of injury, health or age.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/laipac/laipac-s-911bl.png</image-url>
+		<property name="manufacturer" value="Laipac"/>
+	</hardware-asset>
+	
+	<!-- Apple iOS -->
+	<hardware-asset id="400" name="Apple iPhone" sku="AAPL-IPHONE6S" device="true">
+		<description>The only thing that's changed is everything. The moment you use iPhone 6s, you know you've never felt anything like it. With just a single press, 3D Touch lets you do more than ever. Live Photos brings your memories to life in a powerfully vivid way. And that's just the beginning. Take a deeper look at iPhone 6s, and you'll find innovation on every level.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/iphone6.jpg</image-url>
+		<property name="manufacturer" value="Apple"/>
+	</hardware-asset>
+	<hardware-asset id="405" name="Apple iPad" sku="AAPL-IPAD" device="true">
+		<description>Even with its 12.9-inch Retina display, the largest and most capable iPad ever is only 6.9mm thin and weighs just 1.57 lbs. It has a powerful A9X chip with 64-bit desktop-class architecture, four speaker audio, advanced iSight and FaceTime HD cameras, Wi-Fi and LTE connectivity, iCloud, the breakthrough Touch ID fingerprint sensor, and up to 10 hours of battery life.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/ipad.jpg</image-url>
+		<property name="manufacturer" value="Apple"/>
+	</hardware-asset>
+</hardware-assets>

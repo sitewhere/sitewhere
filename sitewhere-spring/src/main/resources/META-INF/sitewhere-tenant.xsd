@@ -1054,6 +1054,15 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="outbound-processing-strategy" type="outboundProcessingStrategyType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						The outbound processing strategy controls how stored events are
+						moved into the outbound processing chain.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="registration" type="registrationType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -1642,6 +1651,14 @@
 	<xsd:element name="default-inbound-processing-strategy" type="defaultInboundProcessingStrategyType"
 		substitutionGroup="abstract-inbound-processing-strategy">
 		<xsd:annotation>
+			<xsd:documentation>DEPRECATED: Equivalent of
+				blocking-queue-inbound-processing-strategy.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="blocking-queue-inbound-processing-strategy" type="defaultInboundProcessingStrategyType"
+		substitutionGroup="abstract-inbound-processing-strategy">
+		<xsd:annotation>
 			<xsd:documentation>Configures the default inbound processing strategy
 			</xsd:documentation>
 		</xsd:annotation>
@@ -1649,6 +1666,13 @@
 	<xsd:complexType name="defaultInboundProcessingStrategyType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractInboundProcessingStrategyType">
+				<xsd:attribute name="maxQueueSize" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Controls the maximum number of inbound events that can be queued
+							before blocking occurs.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 				<xsd:attribute name="numEventProcessorThreads" type="xsd:int">
 					<xsd:annotation>
 						<xsd:documentation>Controls the number of threads that submit queued events to the
@@ -1666,6 +1690,64 @@
 					<xsd:annotation>
 						<xsd:documentation>Number of seconds between monitoring log statements. The
 							'enableMonitoring' attribute must be set to true for this to have an effect.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Contains outbound processing strategy implementation -->
+	<xsd:complexType name="outboundProcessingStrategyType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-outbound-processing-strategy"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for outbound processing strategies to allow substitutionGroups -->
+	<xsd:element name="abstract-outbound-processing-strategy" abstract="true"
+		type="abstractOutboundProcessingStrategyType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound processing strategy elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common outbound processing strategy information -->
+	<xsd:complexType name="abstractOutboundProcessingStrategyType"/>
+	
+	<!-- Configures the default inbound processing strategy -->
+	<xsd:element name="default-outbound-processing-strategy" type="blockingQueueOutboundProcessingStrategyType"
+		substitutionGroup="abstract-outbound-processing-strategy">
+		<xsd:annotation>
+			<xsd:documentation>DEPRECATED: Equivalent of
+				blocking-queue-outbound-processing-strategy.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="blocking-queue-outbound-processing-strategy" type="blockingQueueOutboundProcessingStrategyType"
+		substitutionGroup="abstract-outbound-processing-strategy">
+		<xsd:annotation>
+			<xsd:documentation>Uses a fixed-length queue to store events to be submitted to the
+				outbound processing chain and a fixed pool of threads to process the queue.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="blockingQueueOutboundProcessingStrategyType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessingStrategyType">
+				<xsd:attribute name="maxQueueSize" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Controls the maximum number of outbound events that can be queued
+							before blocking occurs.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="numEventProcessorThreads" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Controls the number of threads that submit queued events to the
+							outbound processing chain.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

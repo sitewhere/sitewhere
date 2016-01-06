@@ -54,6 +54,11 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 				communication.addPropertyValue("inboundProcessingStrategy", strategy);
 				break;
 			}
+			case OutboundProcessingStrategy: {
+				Object strategy = parseOutboundProcessingStrategy(child, context);
+				communication.addPropertyValue("outboundProcessingStrategy", strategy);
+				break;
+			}
 			case Registration: {
 				Object manager = parseRegistration(child, context);
 				communication.addPropertyValue("registrationManager", manager);
@@ -114,6 +119,17 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse the outbound processing strategy configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected Object parseOutboundProcessingStrategy(Element element, ParserContext context) {
+		return new OutboundProcessingStrategyParser().parse(element, context);
+	}
+
+	/**
 	 * Parse the registration configuration.
 	 * 
 	 * @param element
@@ -169,6 +185,9 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 
 		/** Inbound processing strategy */
 		InboundProcessingStrategy("inbound-processing-strategy"),
+
+		/** Outbound processing strategy */
+		OutboundProcessingStrategy("outbound-processing-strategy"),
 
 		/** Device registration */
 		Registration("registration"),

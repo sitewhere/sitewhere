@@ -1,0 +1,8 @@
+<location-assets>
+	<location-asset id="1" name="Tool Storage Container" lat="33.7550" lon="-84.3900" elevation="0">
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/toolbox.png</image-url>
+	</location-asset>
+	<location-asset id="2" name="Construction Trailer" lat="33.7550" lon="-84.3900" elevation="0">
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/trailer.jpg</image-url>
+	</location-asset>
+</location-assets>
