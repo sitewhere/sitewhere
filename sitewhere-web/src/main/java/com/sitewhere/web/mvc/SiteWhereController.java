@@ -42,6 +42,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.user.ITenant;
@@ -705,6 +706,32 @@ public class SiteWhereController extends MvcController {
 			}
 			data.put("selected", tenant);
 
+			// Add data from tenant.
+			addTenantData(tenant, data);
+
+			return new ModelAndView("tenants/detail", data);
+		} catch (NoTenantException e) {
+			return showTenantChoices(getUrl(request), request);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Add site and specification data if tenant is active.
+	 * 
+	 * @param tenant
+	 * @param data
+	 * @throws SiteWhereException
+	 */
+	protected void addTenantData(ITenant tenant, Map<String, Object> data) throws SiteWhereException {
+		ISiteWhereTenantEngineState state =
+				SiteWhere.getServer().getTenantEngine(tenant.getId()).getEngineState();
+
+		// Only attempt to load data if engine is started.
+		if (state.getLifecycleStatus() == LifecycleStatus.Started) {
 			// Pass JSON representation of sites list.
 			ISearchResults<ISite> sites =
 					SiteWhere.getServer().getDeviceManagement(tenant).listSites(new SearchCriteria(1, 0));
@@ -733,14 +760,9 @@ public class SiteWhereController extends MvcController {
 			Collections.sort(specsList);
 			String strSpecs = MarshalUtils.marshalJsonAsString(specsList);
 			data.put("specifications", strSpecs);
-
-			return new ModelAndView("tenants/detail", data);
-		} catch (NoTenantException e) {
-			return showTenantChoices(getUrl(request), request);
-		} catch (SiteWhereException e) {
-			return showError(e);
-		} finally {
-			Tracer.stop(LOGGER);
+		} else {
+			data.put("sites", "null");
+			data.put("specifications", "null");
 		}
 	}
 

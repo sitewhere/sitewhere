@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.server;
 
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
@@ -44,6 +46,14 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public ITenantConfigurationResolver getTenantConfigurationResolver();
+
+	/**
+	 * Get list of components that have registered to participate in the server component
+	 * lifecycle.
+	 * 
+	 * @return
+	 */
+	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents();
 
 	/**
 	 * Get the device management implementation.

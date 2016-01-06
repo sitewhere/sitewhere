@@ -26,6 +26,7 @@ import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUserManagement;
@@ -238,7 +239,7 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * 
 	 * @return
 	 */
-	public List<ILifecycleComponent> getRegisteredLifecycleComponents();
+	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents();
 
 	/**
 	 * Gets an {@link ILifecycleComponent} by unique id.

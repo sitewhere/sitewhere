@@ -33,6 +33,12 @@ public class TomcatGlobalConfigurationResolver implements IGlobalConfigurationRe
 	/** Static logger instance */
 	public static Logger LOGGER = Logger.getLogger(TomcatGlobalConfigurationResolver.class);
 
+	/** Folder name for global resources */
+	public static final String GLOBAL_FOLDER_NAME = "global";
+
+	/** Folder name for global scripts */
+	public static final String SCRIPTS_FOLDER_NAME = "scripts";
+
 	/** File name for SiteWhere global configuration file */
 	public static final String GLOBAL_CONFIG_FILE_NAME = "sitewhere-server.xml";
 

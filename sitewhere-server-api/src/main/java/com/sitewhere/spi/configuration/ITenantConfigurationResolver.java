@@ -7,9 +7,9 @@
  */
 package com.sitewhere.spi.configuration;
 
+import java.net.URI;
+
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.user.ITenant;
 
 /**
  * Pluggable resolver for interacting with global configuration data.
@@ -19,36 +19,60 @@ import com.sitewhere.spi.user.ITenant;
 public interface ITenantConfigurationResolver {
 
 	/**
-	 * Gets the active configuration for a given tenant.
+	 * Get the global configuration resolver.
 	 * 
-	 * @param tenant
-	 * @param version
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] getActiveTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException;
+	public IGlobalConfigurationResolver getGlobalConfigurationResolver() throws SiteWhereException;
+
+	/**
+	 * Indicates a configuration exists for the tenant.
+	 * 
+	 * @return
+	 */
+	public boolean hasValidConfiguration();
+
+	/**
+	 * Get URI for locating asset resources.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public URI getAssetResourcesRoot() throws SiteWhereException;
+
+	/**
+	 * Get URI for locating script resources.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public URI getScriptResourcesRoot() throws SiteWhereException;
+
+	/**
+	 * Gets the active configuration for a given tenant.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] getActiveTenantConfiguration() throws SiteWhereException;
 
 	/**
 	 * Create a default configuration for a new tenant.
 	 * 
-	 * @param tenant
-	 * @param version
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] createDefaultTenantConfiguration(ITenant tenant, IVersion version)
-			throws SiteWhereException;
+	public byte[] createDefaultTenantConfiguration() throws SiteWhereException;
 
 	/**
 	 * Gets the staged configuration for a given tenant. Returns null if no configuration
 	 * is staged.
 	 * 
-	 * @param tenant
-	 * @param version
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] getStagedTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException;
+	public byte[] getStagedTenantConfiguration() throws SiteWhereException;
 
 	/**
 	 * Stage a new tenant configuration. This stores the new configuration separately from
@@ -56,21 +80,15 @@ public interface ITenantConfigurationResolver {
 	 * time the tenant is restarted.
 	 * 
 	 * @param configuration
-	 * @param tenant
-	 * @param version
 	 * @throws SiteWhereException
 	 */
-	public void stageTenantConfiguration(byte[] configuration, ITenant tenant, IVersion version)
-			throws SiteWhereException;
+	public void stageTenantConfiguration(byte[] configuration) throws SiteWhereException;
 
 	/**
 	 * Transition the staged tenant configuration to the active tenant configuration,
 	 * backing up the active configuration in the process.
 	 * 
-	 * @param tenant
-	 * @param version
 	 * @throws SiteWhereException
 	 */
-	public void transitionStagedToActiveTenantConfiguration(ITenant tenant, IVersion version)
-			throws SiteWhereException;
+	public void transitionStagedToActiveTenantConfiguration() throws SiteWhereException;
 }

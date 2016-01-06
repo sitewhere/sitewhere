@@ -13,7 +13,6 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
-import com.sitewhere.spi.system.IVersion;
 
 /**
  * Utility class for common tenant functionality.
@@ -34,9 +33,7 @@ public class TenantUtils {
 		if (engine == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 		}
-		IVersion version = SiteWhere.getServer().getVersion();
-		return engine.getTenantConfigurationResolver().getActiveTenantConfiguration(engine.getTenant(),
-				version);
+		return engine.getTenantConfigurationResolver().getActiveTenantConfiguration();
 	}
 
 	/**
@@ -51,9 +48,7 @@ public class TenantUtils {
 		if (engine == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 		}
-		IVersion version = SiteWhere.getServer().getVersion();
-		return engine.getTenantConfigurationResolver().getStagedTenantConfiguration(engine.getTenant(),
-				version);
+		return engine.getTenantConfigurationResolver().getStagedTenantConfiguration();
 	}
 
 	/**
@@ -69,8 +64,6 @@ public class TenantUtils {
 		if (engine == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 		}
-		IVersion version = SiteWhere.getServer().getVersion();
-		engine.getTenantConfigurationResolver().stageTenantConfiguration(configuration.getBytes(),
-				engine.getTenant(), version);
+		engine.getTenantConfigurationResolver().stageTenantConfiguration(configuration.getBytes());
 	}
 }

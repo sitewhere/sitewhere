@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,7 +26,6 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
-import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
 import com.sitewhere.configuration.TomcatTenantConfigurationResolver;
 import com.sitewhere.device.communication.DeviceCommandEventProcessor;
 import com.sitewhere.device.event.processor.DefaultEventStorageProcessor;
@@ -73,11 +73,12 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
-import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -98,12 +99,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	private ApplicationContext globalContext;
 
 	/** Supports global configuration management */
-	private IGlobalConfigurationResolver globalConfigurationResolver =
-			new TomcatGlobalConfigurationResolver();
+	private IGlobalConfigurationResolver globalConfigurationResolver;
 
 	/** Supports tenant configuration management */
-	private ITenantConfigurationResolver tenantConfigurationResolver =
-			new TomcatTenantConfigurationResolver();
+	private ITenantConfigurationResolver tenantConfigurationResolver;
+
+	/** List of components registered to participate in SiteWhere server lifecycle */
+	private List<ITenantLifecycleComponent> registeredLifecycleComponents =
+			new ArrayList<ITenantLifecycleComponent>();
 
 	/** Device management cache provider implementation */
 	private IDeviceManagementCacheProvider deviceManagementCacheProvider;
@@ -138,10 +141,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** Threads used to issue engine commands */
 	private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
 
-	public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent) {
+	public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent,
+			IGlobalConfigurationResolver global) {
 		super(LifecycleComponentType.TenantEngine);
 		setTenant(tenant);
 		this.globalContext = parent;
+		this.globalConfigurationResolver = global;
+		this.tenantConfigurationResolver =
+				new TomcatTenantConfigurationResolver(tenant, SiteWhere.getServer().getVersion(), global);
 	}
 
 	/*
@@ -153,6 +160,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	public void start() throws SiteWhereException {
 		// Clear the component list.
 		getLifecycleComponents().clear();
+
+		// Start lifecycle components.
+		for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
+			startNestedComponent(component, component.getComponentName() + " startup failed.", true);
+		}
 
 		// Start asset management.
 		startNestedComponent(getAssetManagement(), "Asset management startup failed.", true);
@@ -223,10 +235,26 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		if (getDeviceManagementCacheProvider() != null) {
 			getDeviceManagementCacheProvider().lifecycleStop();
 		}
+
+		// Stop lifecycle components.
+		for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
+			component.lifecycleStop();
+		}
+
 		getDeviceManagement().lifecycleStop();
 		getAssetModuleManager().lifecycleStop();
 		getAssetManagement().lifecycleStop();
 		getSearchProviderManager().lifecycleStop();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getRegisteredLifecycleComponents()
+	 */
+	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents() {
+		return registeredLifecycleComponents;
 	}
 
 	/*
@@ -322,8 +350,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	public boolean initialize() {
 		try {
+			// Verify that tenant configuration exists.
+			verifyTenantConfigured();
+
 			// Initialize the tenant Spring context.
 			initializeSpringContext();
+
+			// Register discoverable beans.
+			initializeDiscoverableBeans();
 
 			// Initialize device communication subsystem.
 			initializeDeviceCommunicationSubsystem();
@@ -359,34 +393,63 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
+	 * Verifies that a configuration exists for the tenant. If not, one is created based
+	 * on the default template.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void verifyTenantConfigured() throws SiteWhereException {
+		if (!getTenantConfigurationResolver().hasValidConfiguration()) {
+			getTenantConfigurationResolver().createDefaultTenantConfiguration();
+		}
+	}
+
+	/**
 	 * Loads the tenant configuration file. If a new configuration is staged, it is
 	 * transitioned into the active configuration.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		IVersion version = SiteWhere.getServer().getVersion();
-
 		// Handle staged configuration if available.
 		LOGGER.info("Checking for staged tenant configuration.");
-		byte[] config = getTenantConfigurationResolver().getStagedTenantConfiguration(getTenant(), version);
+		byte[] config = getTenantConfigurationResolver().getStagedTenantConfiguration();
 		if (config != null) {
 			LOGGER.info("Staged tenant configuration found for '" + getTenant().getName()
 					+ "'. Transitioning to active.");
-			getTenantConfigurationResolver().transitionStagedToActiveTenantConfiguration(getTenant(), version);
+			getTenantConfigurationResolver().transitionStagedToActiveTenantConfiguration();
 		} else {
 			LOGGER.info("No staged tenant configuration found.");
 		}
 
 		// Load the active configuration and copy the default if necessary.
 		LOGGER.info("Loading active tenant configuration for '" + getTenant().getName() + "'.");
-		config = getTenantConfigurationResolver().getActiveTenantConfiguration(getTenant(), version);
+		config = getTenantConfigurationResolver().getActiveTenantConfiguration();
 		if (config == null) {
 			LOGGER.info("No active configuration found. Copying default configuration.");
-			config = getTenantConfigurationResolver().createDefaultTenantConfiguration(getTenant(), version);
+			config = getTenantConfigurationResolver().createDefaultTenantConfiguration();
 		}
 		this.tenantContext =
-				ConfigurationUtils.buildTenantContext(config, getTenant(), version, globalContext);
+				ConfigurationUtils.buildTenantContext(config, getTenant(),
+						SiteWhere.getServer().getVersion(), globalContext);
+	}
+
+	/**
+	 * Initialize beans marked with {@link IDiscoverableTenantLifecycleComponent}
+	 * interface and add them as registered components.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeDiscoverableBeans() throws SiteWhereException {
+		Map<String, IDiscoverableTenantLifecycleComponent> components =
+				tenantContext.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		getRegisteredLifecycleComponents().clear();
+
+		LOGGER.info("Registering " + components.size() + " discoverable components.");
+		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+			LOGGER.info("Registering " + component.getComponentName() + ".");
+			getRegisteredLifecycleComponents().add(component);
+		}
 	}
 
 	/**
@@ -584,7 +647,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			ISearchResults<IAssetCategory> categories =
 					getAssetManagement().listAssetCategories(new SearchCriteria(1, 1));
 			if (categories.getNumResults() == 0) {
-				init.initialize(getAssetManagement());
+				init.initialize(getTenantConfigurationResolver(), getAssetManagement());
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No asset model initializer found in Spring bean configuration. Skipping.");

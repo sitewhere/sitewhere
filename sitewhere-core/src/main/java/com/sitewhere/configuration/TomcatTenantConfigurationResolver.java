@@ -12,11 +12,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
@@ -31,8 +34,20 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	/** Static logger instance */
 	public static Logger LOGGER = Logger.getLogger(TomcatTenantConfigurationResolver.class);
 
-	/** File name for template used to create new tenant configurations */
-	public static final String DEFAULT_TENANT_CONFIG_FILE_NAME = "tenant-template.xml";
+	/** Folder containing tenant resources */
+	public static final String TENANTS_FOLDER = "tenants";
+
+	/** Folder containing tenant asset resources */
+	public static final String ASSETS_FOLDER = "assets";
+
+	/** Folder containing tenant script resources */
+	public static final String SCRIPTS_FOLDER = "scripts";
+
+	/** Folder containing default tenant template information */
+	public static final String DEFAULT_TENANT_TEMPLATE_FOLDER = "tenant-template";
+
+	/** Filename for tenant configuration information */
+	public static final String DEFAULT_TENANT_CONFIGURATION_FILE = "sitewhere-tenant";
 
 	/** Suffix for an active tenant configuration */
 	public static final String TENANT_SUFFIX_ACTIVE = "xml";
@@ -43,18 +58,73 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	/** Suffix for a backup tenant configuration */
 	public static final String TENANT_SUFFIX_BACKUP = "backup";
 
+	/** Tenant */
+	private ITenant tenant;
+
+	/** Version information */
+	@SuppressWarnings("unused")
+	private IVersion version;
+
+	/** Global configuration resolver */
+	private IGlobalConfigurationResolver globalConfigurationResolver;
+
+	public TomcatTenantConfigurationResolver(ITenant tenant, IVersion version,
+			IGlobalConfigurationResolver globalConfigurationResolver) {
+		this.tenant = tenant;
+		this.version = version;
+		this.globalConfigurationResolver = globalConfigurationResolver;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.configuration.IConfigurationResolver#getActiveTenantConfiguration
-	 * (com.sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
+	 * com.sitewhere.spi.configuration.ITenantConfigurationResolver#getAssetResourcesRoot
+	 * ()
 	 */
 	@Override
-	public byte[] getActiveTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException {
-		File sitewhereConf = TomcatGlobalConfigurationResolver.getSiteWhereConfigFolder();
-		File tenantConfigFile =
-				getTenantConfigurationFile(sitewhereConf, tenant, version, TENANT_SUFFIX_ACTIVE);
+	public URI getAssetResourcesRoot() throws SiteWhereException {
+		File tenantFolder = getTenantFolder();
+		return (new File(tenantFolder, ASSETS_FOLDER)).toURI();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.configuration.ITenantConfigurationResolver#getScriptResourcesRoot
+	 * ()
+	 */
+	@Override
+	public URI getScriptResourcesRoot() throws SiteWhereException {
+		File tenantFolder = getTenantFolder();
+		return (new File(tenantFolder, SCRIPTS_FOLDER)).toURI();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.configuration.ITenantConfigurationResolver#
+	 * getActiveTenantConfiguration()
+	 */
+	@Override
+	public byte[] getActiveTenantConfiguration() throws SiteWhereException {
+		File tenantConfigFile = getTenantConfigurationFile(getTenantFolder(), TENANT_SUFFIX_ACTIVE);
+		if (!tenantConfigFile.exists()) {
+			return null;
+		}
+		return TomcatGlobalConfigurationResolver.getFileQuietly(tenantConfigFile);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.configuration.ITenantConfigurationResolver#
+	 * getStagedTenantConfiguration()
+	 */
+	@Override
+	public byte[] getStagedTenantConfiguration() throws SiteWhereException {
+		File tenantConfigFile = getTenantConfigurationFile(getTenantFolder(), TENANT_SUFFIX_STAGED);
 		if (!tenantConfigFile.exists()) {
 			return null;
 		}
@@ -65,33 +135,12 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.configuration.IConfigurationResolver#getStagedTenantConfiguration
-	 * (com.sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
+	 * com.sitewhere.spi.configuration.ITenantConfigurationResolver#stageTenantConfiguration
+	 * (byte[])
 	 */
 	@Override
-	public byte[] getStagedTenantConfiguration(ITenant tenant, IVersion version) throws SiteWhereException {
-		File sitewhereConf = TomcatGlobalConfigurationResolver.getSiteWhereConfigFolder();
-		File tenantConfigFile =
-				getTenantConfigurationFile(sitewhereConf, tenant, version, TENANT_SUFFIX_STAGED);
-		if (!tenantConfigFile.exists()) {
-			return null;
-		}
-		return TomcatGlobalConfigurationResolver.getFileQuietly(tenantConfigFile);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.configuration.IConfigurationResolver#stageTenantConfiguration
-	 * (byte[], com.sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
-	 */
-	@Override
-	public void stageTenantConfiguration(byte[] configuration, ITenant tenant, IVersion version)
-			throws SiteWhereException {
-		File sitewhereConf = TomcatGlobalConfigurationResolver.getSiteWhereConfigFolder();
-		File tenantConfigFile =
-				getTenantConfigurationFile(sitewhereConf, tenant, version, TENANT_SUFFIX_STAGED);
+	public void stageTenantConfiguration(byte[] configuration) throws SiteWhereException {
+		File tenantConfigFile = getTenantConfigurationFile(getTenantFolder(), TENANT_SUFFIX_STAGED);
 		try {
 			if (!tenantConfigFile.exists()) {
 				tenantConfigFile.createNewFile();
@@ -111,46 +160,50 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.configuration.IConfigurationResolver#createDefaultTenantConfiguration
-	 * (com.sitewhere.spi.user.ITenant, com.sitewhere.spi.system.IVersion)
+	 * com.sitewhere.spi.configuration.ITenantConfigurationResolver#hasValidConfiguration
+	 * ()
 	 */
 	@Override
-	public byte[] createDefaultTenantConfiguration(ITenant tenant, IVersion version)
-			throws SiteWhereException {
-		File sitewhere = TomcatGlobalConfigurationResolver.getSiteWhereConfigFolder();
-		File tenantDefault = new File(sitewhere, DEFAULT_TENANT_CONFIG_FILE_NAME);
-		if (!tenantDefault.exists()) {
-			throw new SiteWhereException("Default tenant configuration not found at: "
-					+ tenantDefault.getAbsolutePath());
+	public boolean hasValidConfiguration() {
+		try {
+			getTenantFolder();
+			return true;
+		} catch (SiteWhereException e) {
+			return false;
 		}
-		LOGGER.info("Copying configuration from " + tenantDefault.getAbsolutePath() + ".");
-		File activeTenantFile = getTenantConfigurationFile(sitewhere, tenant, version, TENANT_SUFFIX_ACTIVE);
-		copyDefaultTenantConfiguration(tenantDefault, activeTenantFile);
-		createTenantPropertiesFile(tenant, sitewhere);
-		return TomcatGlobalConfigurationResolver.getFileQuietly(activeTenantFile);
 	}
 
-	/**
-	 * Copy the default tenant configuration to initialize a new tenant.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param defaultConfig
-	 * @param tenantConfig
-	 * @throws SiteWhereException
+	 * @see com.sitewhere.spi.configuration.ITenantConfigurationResolver#
+	 * createDefaultTenantConfiguration()
 	 */
-	protected void copyDefaultTenantConfiguration(File defaultConfig, File tenantConfig)
-			throws SiteWhereException {
-		try {
-			// Copy the default configuration to the tenant configuration.
-			tenantConfig.createNewFile();
-			FileInputStream in = new FileInputStream(defaultConfig);
-			FileOutputStream out = new FileOutputStream(tenantConfig);
-			IOUtils.copy(in, out);
-			IOUtils.closeQuietly(in);
-			IOUtils.closeQuietly(out);
-		} catch (IOException e) {
-			throw new SiteWhereException("Unable to copy tenant configuration file: "
-					+ defaultConfig.getAbsolutePath(), e);
+	@Override
+	public byte[] createDefaultTenantConfiguration() throws SiteWhereException {
+		File root = new File(getGlobalConfigurationResolver().getConfigurationRoot());
+		if (!root.exists()) {
+			throw new SiteWhereException("Global configuration root not found.");
 		}
+		File tenants = new File(root, TomcatTenantConfigurationResolver.TENANTS_FOLDER);
+		if (!tenants.exists()) {
+			throw new SiteWhereException("Unable to create tenant resources folder.");
+		}
+		File tenantFolder = new File(tenants, tenant.getId());
+		File templateFolder =
+				new File(root, TomcatTenantConfigurationResolver.DEFAULT_TENANT_TEMPLATE_FOLDER);
+		if (!templateFolder.exists()) {
+			throw new SiteWhereException("Tenant template folder not found.");
+		}
+		try {
+			FileUtils.copyDirectory(templateFolder, tenantFolder);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to copy template folder for tenant.");
+		}
+
+		LOGGER.info("Copying new tenant from template at " + templateFolder.getAbsolutePath() + ".");
+		File activeTenantFile = getTenantConfigurationFile(tenantFolder, TENANT_SUFFIX_ACTIVE);
+		return TomcatGlobalConfigurationResolver.getFileQuietly(activeTenantFile);
 	}
 
 	/**
@@ -178,16 +231,14 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.configuration.IConfigurationResolver#
-	 * transitionStagedToActiveTenantConfiguration(com.sitewhere.spi.user.ITenant,
-	 * com.sitewhere.spi.system.IVersion)
+	 * @see com.sitewhere.spi.configuration.ITenantConfigurationResolver#
+	 * transitionStagedToActiveTenantConfiguration()
 	 */
 	@Override
-	public void transitionStagedToActiveTenantConfiguration(ITenant tenant, IVersion version)
-			throws SiteWhereException {
+	public void transitionStagedToActiveTenantConfiguration() throws SiteWhereException {
 		File sitewhere = TomcatGlobalConfigurationResolver.getSiteWhereConfigFolder();
-		File staged = getTenantConfigurationFile(sitewhere, tenant, version, TENANT_SUFFIX_STAGED);
-		File active = getTenantConfigurationFile(sitewhere, tenant, version, TENANT_SUFFIX_ACTIVE);
+		File staged = getTenantConfigurationFile(sitewhere, TENANT_SUFFIX_STAGED);
+		File active = getTenantConfigurationFile(sitewhere, TENANT_SUFFIX_ACTIVE);
 		try {
 			FileInputStream in = new FileInputStream(staged);
 			FileOutputStream out = new FileOutputStream(active);
@@ -205,16 +256,53 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	}
 
 	/**
-	 * Get the tenant configuration file. Create one from the template if necessary.
+	 * Get the tenant resources folder.
 	 * 
-	 * @param sitewhereConf
-	 * @param tenant
-	 * @param version
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected File getTenantConfigurationFile(File sitewhereConf, ITenant tenant, IVersion version,
-			String suffix) throws SiteWhereException {
-		return new File(sitewhereConf, tenant.getId() + "-tenant." + suffix);
+	protected File getTenantFolder() throws SiteWhereException {
+		File root = new File(getGlobalConfigurationResolver().getConfigurationRoot());
+		if (!root.exists()) {
+			throw new SiteWhereException("Global configuration root not found.");
+		}
+
+		File tenants = new File(root, TENANTS_FOLDER);
+		if (!tenants.exists()) {
+			throw new SiteWhereException("Tenants folder not found.");
+		}
+
+		File tenantFolder = new File(tenants, tenant.getId());
+		if (!tenantFolder.exists()) {
+			throw new SiteWhereException("Tenant folder not found for '" + tenant.getId() + "'.");
+		}
+
+		return tenantFolder;
+	}
+
+	/**
+	 * Get the tenant configuration file. Throw an exception if not found.
+	 * 
+	 * @param sitewhereConf
+	 * @param suffix
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected File getTenantConfigurationFile(File sitewhereConf, String suffix) throws SiteWhereException {
+		return new File(getTenantFolder(), DEFAULT_TENANT_CONFIGURATION_FILE + "." + suffix);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.configuration.ITenantConfigurationResolver#
+	 * getGlobalConfigurationResolver()
+	 */
+	public IGlobalConfigurationResolver getGlobalConfigurationResolver() {
+		return globalConfigurationResolver;
+	}
+
+	public void setGlobalConfigurationResolver(IGlobalConfigurationResolver globalConfigurationResolver) {
+		this.globalConfigurationResolver = globalConfigurationResolver;
 	}
 }

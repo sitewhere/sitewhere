@@ -9,6 +9,7 @@ package com.sitewhere.spi.server.asset;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.server.IModelInitializer;
 
 /**
@@ -21,8 +22,10 @@ public interface IAssetModelInitializer extends IModelInitializer {
 	/**
 	 * Initialize the asset model.
 	 * 
+	 * @param configuration
 	 * @param assetManagement
 	 * @throws SiteWhereException
 	 */
-	public void initialize(IAssetManagement assetManagement) throws SiteWhereException;
+	public void initialize(ITenantConfigurationResolver configuration, IAssetManagement assetManagement)
+			throws SiteWhereException;
 }

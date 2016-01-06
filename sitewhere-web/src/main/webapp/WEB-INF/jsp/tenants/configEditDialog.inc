@@ -70,9 +70,9 @@
 				fields += addBooleanField(attr, valuesByName[attr.localName]);
 			} else if (attr.type == "Integer") {
 				fields += addIntegerField(attr, valuesByName[attr.localName]);
-			} else if (attr.type == "SiteReference") {
+			} else if ((attr.type == "SiteReference") && sites) {
 				fields += addSiteReferenceField(attr, valuesByName[attr.localName]);
-			} else if (attr.type == "SpecificationReference") {
+			} else if ((attr.type == "SpecificationReference") && specifications) {
 				fields += addSpecificationReferenceField(attr, valuesByName[attr.localName]);
 			} else {
 				fields += addTextField(attr, valuesByName[attr.localName]);

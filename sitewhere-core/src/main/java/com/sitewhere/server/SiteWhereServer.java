@@ -26,6 +26,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
+import com.sitewhere.configuration.ConfigurationMigrationSupport;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
@@ -63,7 +64,9 @@ import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
@@ -112,7 +115,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	private IUserManagement userManagement;
 
 	/** List of components registered to participate in SiteWhere server lifecycle */
-	private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
+	private List<ITenantLifecycleComponent> registeredLifecycleComponents =
+			new ArrayList<ITenantLifecycleComponent>();
 
 	/** Map of component ids to lifecycle components */
 	private Map<String, ILifecycleComponent> lifecycleComponentsById =
@@ -473,7 +477,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getRegisteredLifecycleComponents()
 	 */
-	public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
+	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents() {
 		return registeredLifecycleComponents;
 	}
 
@@ -696,11 +700,17 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public void initialize() throws SiteWhereException {
 		this.version = VersionHelper.getVersion();
 
+		// Migrate old configuration structure if necessary.
+		ConfigurationMigrationSupport.migrateIfNecessary(getConfigurationResolver());
+
 		// Initialize persistent state.
 		initializeServerState();
 
 		// Initialize Spring.
 		initializeSpringContext();
+
+		// Initialize discoverable beans.
+		initializeDiscoverableBeans();
 
 		// Initialize version checker.
 		initializeVersionChecker();
@@ -771,6 +781,24 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	protected void initializeSpringContext() throws SiteWhereException {
 		byte[] global = getConfigurationResolver().getGlobalConfiguration(getVersion());
 		SERVER_SPRING_CONTEXT = ConfigurationUtils.buildGlobalContext(global, getVersion());
+	}
+
+	/**
+	 * Initialize beans marked with {@link IDiscoverableTenantLifecycleComponent}
+	 * interface and add them as registered components.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeDiscoverableBeans() throws SiteWhereException {
+		Map<String, IDiscoverableTenantLifecycleComponent> components =
+				SERVER_SPRING_CONTEXT.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		getRegisteredLifecycleComponents().clear();
+
+		LOGGER.info("Registering " + components.size() + " discoverable components.");
+		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+			LOGGER.info("Registering " + component.getComponentName() + ".");
+			getRegisteredLifecycleComponents().add(component);
+		}
 	}
 
 	/**
@@ -859,9 +887,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected ISiteWhereTenantEngine createTenantEngine(ITenant tenant, ApplicationContext parent,
 			IGlobalConfigurationResolver resolver) throws SiteWhereException {
-		SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
-		engine.setConfigurationResolver(resolver);
-		return engine;
+		return new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
 	}
 
 	/**

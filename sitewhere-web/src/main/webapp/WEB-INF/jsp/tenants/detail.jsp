@@ -554,10 +554,10 @@ div.wz-button-bar {
 							+ "<i class='fa fa-info-circle fa-white' title='" + attr.description + "'></i></label>";
 			section += "  <div class='controls sw-controls' style='margin-left: 300px;'>";
 			if (valuesByName[attr.localName]) {
-				if (attr.type == 'SiteReference') {
+				if ((attr.type == 'SiteReference') && sites) {
 					var siteName = getSiteNamesByToken()[valuesByName[attr.localName]];
 					section += "    " + (siteName ? siteName : valuesByName[attr.localName]);
-				} else if (attr.type == 'SpecificationReference') {
+				} else if ((attr.type == 'SpecificationReference') && specifications) {
 					var specName = getSpecificationNamesByToken()[valuesByName[attr.localName]];
 					section += "    " + (specName ? specName : valuesByName[attr.localName]);
 				} else {
@@ -673,10 +673,10 @@ div.wz-button-bar {
 			for (var j = 0; j < childConfig.attributes.length; j++) {
 				var attrName = childConfig.attributes[j].name;
 				if (childModel.indexAttribute == attrName) {
-					if (modelAttr && (modelAttr.type == 'SiteReference')) {
+					if (modelAttr && ((modelAttr.type == 'SiteReference') && sites)) {
 						var siteName = getSiteNamesByToken()[childConfig.attributes[j].value];
 						section += " (" + (siteName ? siteName : childConfig.attributes[j].value) + ")";
-					} else if (modelAttr && (modelAttr.type == 'SpecificationReference')) {
+					} else if (modelAttr && ((modelAttr.type == 'SpecificationReference') && specifications)) {
 						var specName = getSpecificationNamesByToken()[childConfig.attributes[j].value];
 						section += " (" + (specName ? specName : childConfig.attributes[j].value) + ")";
 					} else {
