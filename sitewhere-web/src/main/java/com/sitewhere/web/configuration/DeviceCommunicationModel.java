@@ -12,8 +12,6 @@ import com.sitewhere.spring.handler.CommandDestinationsParser;
 import com.sitewhere.spring.handler.CommandRoutingParser;
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
 import com.sitewhere.spring.handler.EventSourcesParser;
-import com.sitewhere.spring.handler.InboundProcessingStrategyParser;
-import com.sitewhere.spring.handler.OutboundProcessingStrategyParser;
 import com.sitewhere.spring.handler.RegistrationParser;
 import com.sitewhere.spring.handler.TenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
@@ -53,16 +51,6 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createGroovyEventDecoderElement());
 		addElement(createGroovyStringEventDecoderElement());
 		addElement(createEchoStringEventDecoderElement());
-
-		// Inbound processing strategy.
-		addElement(createInboundProcessingStrategyElement());
-		addElement(createDefaultInboundStrategyElement());
-		addElement(createBlockingQueueInboundStrategyElement());
-
-		// Outbound processing strategy.
-		addElement(createOutboundProcessingStrategyElement());
-		addElement(createDefaultOutboundStrategyElement());
-		addElement(createBlockingQueueOutboundStrategyElement());
 
 		// Registration.
 		addElement(createRegistrationElement());
@@ -420,142 +408,6 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 		builder.description("Decoder for event receivers with String payloads that simply echoes the payload to the log.");
 		return builder.build();
-	}
-
-	/**
-	 * Create element configuration for event sources.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createInboundProcessingStrategyElement() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder("Inbound Processing Strategy",
-						DeviceCommunicationParser.Elements.InboundProcessingStrategy.getLocalName(), "cogs",
-						ElementRole.DeviceCommunication_InboundProcessingStrategy);
-
-		builder.description("The inbound processing strategy is responsible for moving events from event "
-				+ "sources into the inbound processing chain. It is responsible for handling threading and "
-				+ "reliably delivering events for processing.");
-		return builder.build();
-	}
-
-	/**
-	 * Create element configuration for default inbound processing strategy.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createDefaultInboundStrategyElement() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder(
-						"Blocking Queue Strategy",
-						InboundProcessingStrategyParser.Elements.DefaultInboundProcessingStrategy.getLocalName(),
-						"cogs", ElementRole.InboundProcessingStrategy_Strategy);
-
-		addBlockingQueueInboundStrategyFields(builder);
-		return builder.build();
-	}
-
-	/**
-	 * Create element configuration for blocking queue inbound processing strategy.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createBlockingQueueInboundStrategyElement() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder(
-						"Blocking Queue Strategy",
-						InboundProcessingStrategyParser.Elements.BlockingQueueInboundProcessingStrategy.getLocalName(),
-						"cogs", ElementRole.InboundProcessingStrategy_Strategy);
-
-		addBlockingQueueInboundStrategyFields(builder);
-		return builder.build();
-	}
-
-	/**
-	 * Add fields for blocking queue inbound processing strategy.
-	 * 
-	 * @param builder
-	 */
-	protected void addBlockingQueueInboundStrategyFields(ElementNode.Builder builder) {
-		builder.description("Send decoded messages into the processing pipeline by first adding them "
-				+ "to a fixed-length queue, then using multiple threads to move events from the queue into "
-				+ "the pipeline. The number of threads used very directly affects system performance since "
-				+ "it determines how many events can be processed in parallel.");
-		builder.attribute((new AttributeNode.Builder("Max queue size", "maxQueueSize", AttributeType.Integer).description(
-				"Maximum number of events in queue before blocking occurs.").defaultValue("10000").build()));
-		builder.attribute((new AttributeNode.Builder("Number of processing threads",
-				"numEventProcessorThreads", AttributeType.Integer).description(
-				"Number of threads used to process incoming events in parallel").defaultValue("100").build()));
-		builder.attribute((new AttributeNode.Builder("Enable monitoring", "enableMonitoring",
-				AttributeType.Boolean).description("Enable logging of monitoring statistics at an interval").build()));
-		builder.attribute((new AttributeNode.Builder("Monitoring interval in seconds",
-				"monitoringIntervalSec", AttributeType.Integer).description("Number of seconds to wait between logging monitoring statistics.").build()));
-	}
-
-	/**
-	 * Create element configuration for outbound processing strategy.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createOutboundProcessingStrategyElement() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder("Outbound Processing Strategy",
-						DeviceCommunicationParser.Elements.OutboundProcessingStrategy.getLocalName(), "cogs",
-						ElementRole.DeviceCommunication_OutboundProcessingStrategy);
-
-		builder.description("The outbound processing strategy is responsible for taking stored events and passing "
-				+ "them into the outbound processing chain. It is responsible for handling threading and "
-				+ "reliably delivering events for outbound processing.");
-		return builder.build();
-	}
-
-	/**
-	 * Create element configuration for default outbound processing strategy.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createDefaultOutboundStrategyElement() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder(
-						"Blocking Queue Strategy",
-						OutboundProcessingStrategyParser.Elements.DefaultOutboundProcessingStrategy.getLocalName(),
-						"cogs", ElementRole.OutboundProcessingStrategy_Strategy);
-
-		addBlockingQueueOutboundStrategyFields(builder);
-		return builder.build();
-	}
-
-	/**
-	 * Create element configuration for blocking queue outbound processing strategy.
-	 * 
-	 * @return
-	 */
-	protected ElementNode createBlockingQueueOutboundStrategyElement() {
-		ElementNode.Builder builder =
-				new ElementNode.Builder(
-						"Blocking Queue Strategy",
-						OutboundProcessingStrategyParser.Elements.BlockingQueueOutboundProcessingStrategy.getLocalName(),
-						"cogs", ElementRole.OutboundProcessingStrategy_Strategy);
-
-		addBlockingQueueOutboundStrategyFields(builder);
-		return builder.build();
-	}
-
-	/**
-	 * Add fields for blocking queue outbound processing strategy.
-	 * 
-	 * @param builder
-	 */
-	protected void addBlockingQueueOutboundStrategyFields(ElementNode.Builder builder) {
-		builder.description("Sends stored messages into the outbound processing pipeline by first adding them "
-				+ "to a fixed-length queue, then using multiple threads to move events from the queue into "
-				+ "the outbound pipeline. The number of threads used very directly affects system performance since "
-				+ "it determines how many events can be processed in parallel.");
-		builder.attribute((new AttributeNode.Builder("Max queue size", "maxQueueSize", AttributeType.Integer).description(
-				"Maximum number of events in queue before blocking occurs.").defaultValue("10000").build()));
-		builder.attribute((new AttributeNode.Builder("Number of processing threads",
-				"numEventProcessorThreads", AttributeType.Integer).description(
-				"Number of threads used to process incoming events in parallel").defaultValue("100").build()));
 	}
 
 	/**

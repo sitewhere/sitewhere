@@ -20,8 +20,7 @@ import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
@@ -254,26 +253,12 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getOutboundEventProcessorChain(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getEventProcessing(com.sitewhere.spi.
+	 * user.ITenant)
 	 */
 	@Override
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException {
-		return server.getOutboundEventProcessorChain(tenant);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getInboundEventProcessorChain(com.sitewhere
-	 * .spi.user.ITenant)
-	 */
-	@Override
-	public IInboundEventProcessorChain getInboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException {
-		return server.getInboundEventProcessorChain(tenant);
+	public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException {
+		return server.getEventProcessing(tenant);
 	}
 
 	/*

@@ -19,8 +19,7 @@ import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
@@ -187,24 +186,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException;
 
 	/**
-	 * Get outbound event processor chain for the given tenant.
+	 * Get the event processing subsystem for the given tenant.
 	 * 
 	 * @param tenant
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException;
-
-	/**
-	 * Get inbound event processor chain for the given tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IInboundEventProcessorChain getInboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException;
+	public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException;
 
 	/**
 	 * Get asset module manager for tenant.

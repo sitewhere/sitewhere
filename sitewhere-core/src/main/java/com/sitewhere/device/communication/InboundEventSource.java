@@ -73,7 +73,7 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 
 		LOGGER.debug("Starting event source '" + getSourceId() + "'.");
 		if (getInboundProcessingStrategy() == null) {
-			setInboundProcessingStrategy(SiteWhere.getServer().getDeviceCommunication(getTenant()).getInboundProcessingStrategy());
+			setInboundProcessingStrategy(SiteWhere.getServer().getEventProcessing(getTenant()).getInboundProcessingStrategy());
 		}
 		if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
 			throw new SiteWhereException("No inbound event receivers registered for event source.");

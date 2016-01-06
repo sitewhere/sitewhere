@@ -13,7 +13,6 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -37,7 +36,6 @@ import com.sitewhere.groovy.device.event.processor.multicast.AllWithSpecificatio
 import com.sitewhere.groovy.device.event.processor.routing.GroovyRouteBuilder;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
-import com.sitewhere.server.SiteWhereServerBeans;
 import com.sitewhere.siddhi.GroovyStreamProcessor;
 import com.sitewhere.siddhi.SiddhiEventProcessor;
 import com.sitewhere.siddhi.SiddhiQuery;
@@ -53,17 +51,16 @@ import com.sitewhere.spi.geospatial.ZoneContainment;
  * 
  * @author Derek
  */
-public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser {
+public class OutboundProcessingChainParser {
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Parse elements for the outbound processing chain.
 	 * 
-	 * @see
-	 * org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#parseInternal
-	 * (org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)
+	 * @param element
+	 * @param context
+	 * @return
 	 */
-	@Override
-	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	protected Object parse(Element element, ParserContext context) {
 		BeanDefinitionBuilder chain =
 				BeanDefinitionBuilder.rootBeanDefinition(DefaultOutboundEventProcessorChain.class);
 		List<Element> dsChildren = DomUtils.getChildElements(element);
@@ -126,9 +123,7 @@ public class OutboundProcessingChainParser extends AbstractBeanDefinitionParser 
 			}
 		}
 		chain.addPropertyValue("processors", processors);
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN,
-				chain.getBeanDefinition());
-		return null;
+		return chain.getBeanDefinition();
 	}
 
 	/**

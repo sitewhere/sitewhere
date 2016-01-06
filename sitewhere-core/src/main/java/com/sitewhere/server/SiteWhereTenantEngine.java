@@ -27,13 +27,7 @@ import org.springframework.context.ApplicationContext;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.TomcatTenantConfigurationResolver;
-import com.sitewhere.device.communication.DeviceCommandEventProcessor;
-import com.sitewhere.device.event.processor.DefaultEventStorageProcessor;
-import com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain;
-import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
-import com.sitewhere.device.event.processor.DeviceStreamProcessor;
 import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
-import com.sitewhere.device.event.processor.RegistrationProcessor;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
@@ -59,8 +53,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.ISchedule;
@@ -120,14 +113,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** Interface to schedule management implementation */
 	private IScheduleManagement scheduleManagement;
 
-	/** Interface to inbound event processor chain */
-	private IInboundEventProcessorChain inboundEventProcessorChain;
-
-	/** Interface to outbound event processor chain */
-	private IOutboundEventProcessorChain outboundEventProcessorChain;
-
 	/** Interface to device communication subsystem implementation */
 	private IDeviceCommunication deviceCommunication;
+
+	/** Interface to event processing subsystem implementation */
+	private IEventProcessing eventProcessing;
 
 	/** Interface for the asset module manager */
 	private IAssetModuleManager assetModuleManager;
@@ -194,18 +184,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		startNestedComponent(getSearchProviderManager(), "Search provider manager startup failed.", true);
 		verifyDeviceModel();
 
-		// Enable outbound processor chain.
-		if (getOutboundEventProcessorChain() != null) {
-			startNestedComponent(getOutboundEventProcessorChain(),
-					"Outbound processor chain startup failed.", true);
-			getOutboundEventProcessorChain().setProcessingEnabled(true);
-		}
-
-		// Enable inbound processor chain.
-		if (getInboundEventProcessorChain() != null) {
-			startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.",
-					true);
-		}
+		// Start event processing subsystem.
+		startNestedComponent(getEventProcessing(), "Event processing subsystem startup failed.", true);
 
 		// Start device communication subsystem.
 		startNestedComponent(getDeviceCommunication(), "Device communication subsystem startup failed.", true);
@@ -227,9 +207,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 		// Disable device communications.
 		getDeviceCommunication().lifecycleStop();
-		getInboundEventProcessorChain().lifecycleStop();
-		getOutboundEventProcessorChain().setProcessingEnabled(false);
-		getOutboundEventProcessorChain().lifecycleStop();
+		getEventProcessing().lifecycleStop();
 
 		// Stop core management implementations.
 		if (getDeviceManagementCacheProvider() != null) {
@@ -359,14 +337,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			// Register discoverable beans.
 			initializeDiscoverableBeans();
 
+			// Initialize event processing subsystem.
+			initializeEventProcessingSubsystem();
+
 			// Initialize device communication subsystem.
 			initializeDeviceCommunicationSubsystem();
 
 			// Initialize device management.
 			initializeDeviceManagement();
-
-			// Initialize processing chain for inbound events.
-			initializeInboundEventProcessorChain();
 
 			// Initialize asset management.
 			initializeAssetManagement();
@@ -502,44 +480,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			}
 		}
 
-		try {
-			// If outbound device event processor chain is defined, use it.
-			outboundEventProcessorChain =
-					(IOutboundEventProcessorChain) tenantContext.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
-			management = new OutboundProcessingStrategyDecorator(management);
-			LOGGER.info("Event processor chain found with "
-					+ outboundEventProcessorChain.getProcessors().size() + " processors.");
-		} catch (NoSuchBeanDefinitionException e) {
-			// If no processor chain is defined, use a default chain that supports core
-			// system functionality.
-			LOGGER.info("No outbound event processor chain found. Using defaults.");
-			outboundEventProcessorChain = new DefaultOutboundEventProcessorChain();
-			outboundEventProcessorChain.getProcessors().add(new DeviceCommandEventProcessor());
-		}
-
-		return management;
-	}
-
-	/**
-	 * Initializes the {@link IInboundEventProcessorChain} that handles events coming into
-	 * the system from external devices.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	protected void initializeInboundEventProcessorChain() throws SiteWhereException {
-		try {
-			// If inbound device event processor chain is defined, use it.
-			inboundEventProcessorChain =
-					(IInboundEventProcessorChain) tenantContext.getBean(SiteWhereServerBeans.BEAN_INBOUND_PROCESSOR_CHAIN);
-		} catch (NoSuchBeanDefinitionException e) {
-			// If no processor chain is defined, use a default chain that supports core
-			// system functionality.
-			LOGGER.info("No inbound event processor chain found. Using defaults.");
-			inboundEventProcessorChain = new DefaultInboundEventProcessorChain();
-			inboundEventProcessorChain.getProcessors().add(new DefaultEventStorageProcessor());
-			inboundEventProcessorChain.getProcessors().add(new RegistrationProcessor());
-			inboundEventProcessorChain.getProcessors().add(new DeviceStreamProcessor());
-		}
+		// Routes stored events to outbound processing strategy.
+		return new OutboundProcessingStrategyDecorator(management);
 	}
 
 	/**
@@ -553,6 +495,20 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 					(IDeviceCommunication) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No device communication subsystem implementation configured.");
+		}
+	}
+
+	/**
+	 * Verify and initialize event processing subsystem implementation.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeEventProcessingSubsystem() throws SiteWhereException {
+		try {
+			eventProcessing =
+					(IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No event processing subsystem implementation configured.");
 		}
 	}
 
@@ -781,34 +737,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getInboundEventProcessorChain()
-	 */
-	public IInboundEventProcessorChain getInboundEventProcessorChain() {
-		return inboundEventProcessorChain;
-	}
-
-	public void setInboundEventProcessorChain(IInboundEventProcessorChain inboundEventProcessorChain) {
-		this.inboundEventProcessorChain = inboundEventProcessorChain;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getOutboundEventProcessorChain()
-	 */
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain() {
-		return outboundEventProcessorChain;
-	}
-
-	public void setOutboundEventProcessorChain(IOutboundEventProcessorChain outboundEventProcessorChain) {
-		this.outboundEventProcessorChain = outboundEventProcessorChain;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceCommunication()
 	 */
 	public IDeviceCommunication getDeviceCommunication() {
@@ -817,6 +745,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	public void setDeviceCommunication(IDeviceCommunication deviceCommunication) {
 		this.deviceCommunication = deviceCommunication;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getEventProcessing()
+	 */
+	public IEventProcessing getEventProcessing() {
+		return eventProcessing;
+	}
+
+	public void setEventProcessing(IEventProcessing eventProcessing) {
+		this.eventProcessing = eventProcessing;
 	}
 
 	/*

@@ -175,8 +175,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	 */
 	protected IOutboundProcessingStrategy getOutboundProcessingStrategy() throws SiteWhereException {
 		if (strategy == null) {
-			strategy =
-					SiteWhere.getServer().getDeviceCommunication(getTenant()).getOutboundProcessingStrategy();
+			strategy = SiteWhere.getServer().getEventProcessing(getTenant()).getOutboundProcessingStrategy();
 		}
 		return strategy;
 	}

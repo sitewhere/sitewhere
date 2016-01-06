@@ -21,7 +21,7 @@ import com.sitewhere.device.communication.DefaultDeviceCommunication;
 import com.sitewhere.server.SiteWhereServerBeans;
 
 /**
- * Parses configuration data from SiteWhere device communication section.
+ * Parses configuration data from SiteWhere device communication subsystem.
  * 
  * @author Derek
  */
@@ -184,9 +184,11 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 		EventSources("event-sources"),
 
 		/** Inbound processing strategy */
+		@Deprecated
 		InboundProcessingStrategy("inbound-processing-strategy"),
 
 		/** Outbound processing strategy */
+		@Deprecated
 		OutboundProcessingStrategy("outbound-processing-strategy"),
 
 		/** Device registration */

@@ -110,10 +110,7 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	@Override
 	public byte[] getActiveTenantConfiguration() throws SiteWhereException {
 		File tenantConfigFile = getTenantConfigurationFile(getTenantFolder(), TENANT_SUFFIX_ACTIVE);
-		if (!tenantConfigFile.exists()) {
-			return null;
-		}
-		return TomcatGlobalConfigurationResolver.getFileQuietly(tenantConfigFile);
+		return getConfigurationContent(tenantConfigFile);
 	}
 
 	/*
@@ -125,10 +122,23 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	@Override
 	public byte[] getStagedTenantConfiguration() throws SiteWhereException {
 		File tenantConfigFile = getTenantConfigurationFile(getTenantFolder(), TENANT_SUFFIX_STAGED);
+		return getConfigurationContent(tenantConfigFile);
+	}
+
+	/**
+	 * Get content from a tenant configuration file. The content may be updated on-the-fly
+	 * to make it compatible with the latest schema.
+	 * 
+	 * @param tenantConfigFile
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected byte[] getConfigurationContent(File tenantConfigFile) throws SiteWhereException {
 		if (!tenantConfigFile.exists()) {
 			return null;
 		}
-		return TomcatGlobalConfigurationResolver.getFileQuietly(tenantConfigFile);
+		byte[] content = TomcatGlobalConfigurationResolver.getFileQuietly(tenantConfigFile);
+		return ConfigurationMigrationSupport.migrateTenantConfigurationIfNecessary(content);
 	}
 
 	/*

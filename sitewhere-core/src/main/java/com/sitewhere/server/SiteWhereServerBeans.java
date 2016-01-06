@@ -37,6 +37,9 @@ public interface SiteWhereServerBeans {
 	/** Bean id for device communication subsystem in server configuration */
 	public static final String BEAN_DEVICE_COMMUNICATION = "deviceCommunication";
 
+	/** Bean id for event processing subsystem in server configuration */
+	public static final String BEAN_EVENT_PROCESSING = "eventProcessing";
+
 	/** Bean id for asset management in server configuration */
 	public static final String BEAN_ASSET_MANAGEMENT = "assetManagement";
 
@@ -45,16 +48,6 @@ public interface SiteWhereServerBeans {
 
 	/** Bean id for asset module manager in server configuration */
 	public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";
-
-	/**********************************
-	 * EVENT PROCESSING CONFIGURATION *
-	 **********************************/
-
-	/** Bean id for inbound event processor chain */
-	public static final String BEAN_INBOUND_PROCESSOR_CHAIN = "inboundProcessorChain";
-
-	/** Bean id for outbound event processor chain */
-	public static final String BEAN_OUTBOUND_PROCESSOR_CHAIN = "outboundProcessorChain";
 
 	/*******************
 	 * CACHE PROVIDERS *

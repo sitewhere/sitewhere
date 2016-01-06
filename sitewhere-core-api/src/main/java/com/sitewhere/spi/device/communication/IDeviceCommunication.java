@@ -30,13 +30,6 @@ public interface IDeviceCommunication extends ITenantLifecycleComponent {
 	public List<IInboundEventSource<?>> getInboundEventSources();
 
 	/**
-	 * Get the strategy for moving decoded events into the inbound chain.
-	 * 
-	 * @return
-	 */
-	public IInboundProcessingStrategy getInboundProcessingStrategy();
-
-	/**
 	 * Get the configured registration manager.
 	 * 
 	 * @return
@@ -56,13 +49,6 @@ public interface IDeviceCommunication extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public IDeviceStreamManager getDeviceStreamManager();
-
-	/**
-	 * Get the strategy for moving processed events into the outbound chain.
-	 * 
-	 * @return
-	 */
-	public IOutboundProcessingStrategy getOutboundProcessingStrategy();
 
 	/**
 	 * Get the command processing strategy.

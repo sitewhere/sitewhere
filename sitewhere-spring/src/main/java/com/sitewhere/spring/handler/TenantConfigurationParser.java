@@ -60,20 +60,16 @@ public class TenantConfigurationParser extends AbstractBeanDefinitionParser {
 				new TenantDatastoreParser().parse(child, context);
 				break;
 			}
-			case InboundProcessingChain: {
-				new InboundProcessingChainParser().parse(child, context);
-				break;
-			}
-			case OutboundProcessingChain: {
-				new OutboundProcessingChainParser().parse(child, context);
-				break;
-			}
 			case Provisioning: {
 				new DeviceCommunicationParser().parse(child, context);
 				break;
 			}
 			case DeviceCommunication: {
 				new DeviceCommunicationParser().parse(child, context);
+				break;
+			}
+			case EventProcessing: {
+				new EventProcessingParser().parse(child, context);
 				break;
 			}
 			case AssetManagement: {
@@ -102,17 +98,15 @@ public class TenantConfigurationParser extends AbstractBeanDefinitionParser {
 		/** Tenant datastore */
 		TenantDatastore("tenant-datastore"),
 
-		/** Inbound processing chain */
-		InboundProcessingChain("inbound-processing-chain"),
-
-		/** Outbound processing chain */
-		OutboundProcessingChain("outbound-processing-chain"),
-
 		/** Provisioning (DEPRECATED) */
+		@Deprecated
 		Provisioning("provisioning"),
 
 		/** Device Communication Subsystem */
 		DeviceCommunication("device-communication"),
+
+		/** Event processing Subsystem */
+		EventProcessing("event-processing"),
 
 		/** Asset management */
 		AssetManagement("asset-management"),

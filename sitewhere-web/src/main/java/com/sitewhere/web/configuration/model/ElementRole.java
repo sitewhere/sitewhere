@@ -53,6 +53,83 @@ public enum ElementRole {
 			DataManagement_AssetModelInitializer,
 			DataManagement_ScheduleModelInitializer }, new ElementRole[0], true),
 
+	/** Inbound processing strategy container. Strategy. */
+	InboundProcessingStrategy_Strategy("Strategy", false, false, false),
+
+	/** Device communication container. Inbound processing strategy. */
+	EventProcessing_InboundProcessingStrategy(null, false, false, false,
+			new ElementRole[] { InboundProcessingStrategy_Strategy }, new ElementRole[0], true),
+
+	/** Outbound processing strategy container. Strategy. */
+	OutboundProcessingStrategy_Strategy("Strategy", false, false, false),
+
+	/** Device communication container. Outbound processing strategy. */
+	EventProcessing_OutboundProcessingStrategy(null, false, false, false,
+			new ElementRole[] { OutboundProcessingStrategy_Strategy }, new ElementRole[0], true),
+
+	/** Inbound processing chain. Event processor. */
+	InboundProcessingChain_EventProcessor("Event Processors", true, true, true),
+
+	/** Inbound processing chain element. */
+	InboundProcessingChain(null, false, false, false,
+			new ElementRole[] { InboundProcessingChain_EventProcessor }, new ElementRole[0], true),
+
+	/** Outbound processing chain. Processsor filters. */
+	OutboundProcessingChain_OutboundFilters("Filters", true, true, true),
+
+	/** Outbound processing chain. Processsor filter criteria. */
+	OutboundProcessingChain_Filters("Filter Criteria", true, false, false,
+			new ElementRole[] { OutboundProcessingChain_OutboundFilters }),
+
+	/** Outbound processing chain. Filtered event processor. */
+	OutboundProcessingChain_FilteredEventProcessor("Filtered Event Processors", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_Filters }),
+
+	/** Zone test event processsor. Zone test. */
+	OutboundProcessingChain_ZoneTest("Zone Tests", true, true, true),
+
+	/** Outbound processing chain. Zone test event processor. */
+	OutboundProcessingChain_ZoneTestEventProcessor("Zone Test Event Processor", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_ZoneTest, OutboundProcessingChain_Filters }),
+
+	/** MQTT event processsor. Route builder. */
+	OutboundProcessingChain_RouteBuilder("Route Builder", true, false, false),
+
+	/** Outbound processing chain. MQTT event processor. */
+	OutboundProcessingChain_MqttEventProcessor("MQTT Event Processor", true, true, true, new ElementRole[] {
+			OutboundProcessingChain_Filters,
+			OutboundProcessingChain_RouteBuilder }),
+
+	/** Siddhi query. Callback. */
+	OutboundProcessingChain_SiddhiCallback("Siddhi Callbacks", true, true, true),
+
+	/** Siddhi event processsor. Siddhi query. */
+	OutboundProcessingChain_SiddhiQuery("Siddhi Queries", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_SiddhiCallback }),
+
+	/** Outbound processing chain. Siddhi event processor. */
+	OutboundProcessingChain_SiddhiEventProcessor("Siddhi Event Processor", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_SiddhiQuery, OutboundProcessingChain_Filters }),
+
+	/** Outbound processing chain. Event processor. */
+	OutboundProcessingChain_EventProcessor("Event Processors", true, true, true, new ElementRole[0],
+			new ElementRole[] {
+					OutboundProcessingChain_FilteredEventProcessor,
+					OutboundProcessingChain_ZoneTestEventProcessor,
+					OutboundProcessingChain_MqttEventProcessor,
+					OutboundProcessingChain_SiddhiEventProcessor }),
+
+	/** Outbound processing chain element. */
+	OutboundProcessingChain(null, false, false, false,
+			new ElementRole[] { OutboundProcessingChain_EventProcessor }, new ElementRole[0], true),
+
+	/** Event processing. */
+	EventProcessing(null, false, false, false, new ElementRole[] {
+			EventProcessing_InboundProcessingStrategy,
+			InboundProcessingChain,
+			EventProcessing_OutboundProcessingStrategy,
+			OutboundProcessingChain }, new ElementRole[0], true),
+
 	/** Event source. Binary event decoder. */
 	EventSource_BinaryEventDecoder("Binary Event Decoder", true, false, false),
 
@@ -89,20 +166,6 @@ public enum ElementRole {
 	/** Device communication container. Event sources configuration. */
 	DeviceCommunication_EventSources(null, false, false, false,
 			new ElementRole[] { EventSources_EventSource }, new ElementRole[0], true),
-
-	/** Inbound processing strategy container. Strategy. */
-	InboundProcessingStrategy_Strategy("Strategy", false, false, false),
-
-	/** Device communication container. Inbound processing strategy. */
-	DeviceCommunication_InboundProcessingStrategy(null, false, false, false,
-			new ElementRole[] { InboundProcessingStrategy_Strategy }, new ElementRole[0], true),
-
-	/** Outbound processing strategy container. Strategy. */
-	OutboundProcessingStrategy_Strategy("Strategy", false, false, false),
-
-	/** Device communication container. Outbound processing strategy. */
-	DeviceCommunication_OutboundProcessingStrategy(null, false, false, false,
-			new ElementRole[] { OutboundProcessingStrategy_Strategy }, new ElementRole[0], true),
 
 	/** Registration container. Registration manager. */
 	Registration_RegistrationManager("Registration Manager", false, false, false),
@@ -169,68 +232,10 @@ public enum ElementRole {
 	/** Device communication element. */
 	DeviceCommunication(null, false, false, false, new ElementRole[] {
 			DeviceCommunication_EventSources,
-			DeviceCommunication_InboundProcessingStrategy,
-			DeviceCommunication_OutboundProcessingStrategy,
 			DeviceCommunication_Registration,
 			DeviceCommunication_BatchOperations,
 			DeviceCommunication_CommandRouting,
 			DeviceCommunication_CommandDestinations }, new ElementRole[0], true),
-
-	/** Inbound processing chain. Event processor. */
-	InboundProcessingChain_EventProcessor("Event Processors", true, true, true),
-
-	/** Inbound processing chain element. */
-	InboundProcessingChain(null, false, false, false,
-			new ElementRole[] { InboundProcessingChain_EventProcessor }, new ElementRole[0], true),
-
-	/** Outbound processing chain. Processsor filters. */
-	OutboundProcessingChain_OutboundFilters("Filters", true, true, true),
-
-	/** Outbound processing chain. Processsor filter criteria. */
-	OutboundProcessingChain_Filters("Filter Criteria", true, false, false,
-			new ElementRole[] { OutboundProcessingChain_OutboundFilters }),
-
-	/** Outbound processing chain. Filtered event processor. */
-	OutboundProcessingChain_FilteredEventProcessor("Filtered Event Processors", true, true, true,
-			new ElementRole[] { OutboundProcessingChain_Filters }),
-
-	/** Zone test event processsor. Zone test. */
-	OutboundProcessingChain_ZoneTest("Zone Tests", true, true, true),
-
-	/** Outbound processing chain. Zone test event processor. */
-	OutboundProcessingChain_ZoneTestEventProcessor("Zone Test Event Processor", true, true, true,
-			new ElementRole[] { OutboundProcessingChain_ZoneTest, OutboundProcessingChain_Filters }),
-
-	/** MQTT event processsor. Route builder. */
-	OutboundProcessingChain_RouteBuilder("Route Builder", true, false, false),
-
-	/** Outbound processing chain. MQTT event processor. */
-	OutboundProcessingChain_MqttEventProcessor("MQTT Event Processor", true, true, true, new ElementRole[] {
-			OutboundProcessingChain_Filters,
-			OutboundProcessingChain_RouteBuilder }),
-
-	/** Siddhi query. Callback. */
-	OutboundProcessingChain_SiddhiCallback("Siddhi Callbacks", true, true, true),
-
-	/** Siddhi event processsor. Siddhi query. */
-	OutboundProcessingChain_SiddhiQuery("Siddhi Queries", true, true, true,
-			new ElementRole[] { OutboundProcessingChain_SiddhiCallback }),
-
-	/** Outbound processing chain. Siddhi event processor. */
-	OutboundProcessingChain_SiddhiEventProcessor("Siddhi Event Processor", true, true, true,
-			new ElementRole[] { OutboundProcessingChain_SiddhiQuery, OutboundProcessingChain_Filters }),
-
-	/** Outbound processing chain. Event processor. */
-	OutboundProcessingChain_EventProcessor("Event Processors", true, true, true, new ElementRole[0],
-			new ElementRole[] {
-					OutboundProcessingChain_FilteredEventProcessor,
-					OutboundProcessingChain_ZoneTestEventProcessor,
-					OutboundProcessingChain_MqttEventProcessor,
-					OutboundProcessingChain_SiddhiEventProcessor }),
-
-	/** Outbound processing chain element. */
-	OutboundProcessingChain(null, false, false, false,
-			new ElementRole[] { OutboundProcessingChain_EventProcessor }, new ElementRole[0], true),
 
 	/** Asset Management. Asset module */
 	AssetManagment_AssetModule("Asset Modules", true, true, true),
@@ -244,8 +249,7 @@ public enum ElementRole {
 			Globals,
 			DataManagement,
 			DeviceCommunication,
-			InboundProcessingChain,
-			OutboundProcessingChain,
+			EventProcessing,
 			AssetManagment });
 
 	/** Role name */

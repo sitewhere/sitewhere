@@ -149,7 +149,7 @@ public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent i
 	 */
 	protected IOutboundEventProcessorChain getOutboundEventProcessorChain() throws SiteWhereException {
 		if (outbound == null) {
-			outbound = SiteWhere.getServer().getOutboundEventProcessorChain(getTenant());
+			outbound = SiteWhere.getServer().getEventProcessing(getTenant()).getOutboundEventProcessorChain();
 		}
 		return outbound;
 	}

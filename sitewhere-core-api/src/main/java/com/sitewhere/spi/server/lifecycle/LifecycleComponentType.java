@@ -56,6 +56,9 @@ public enum LifecycleComponentType {
 	/** Device communication subsystem */
 	DeviceCommunication,
 
+	/** Event processing subsystem */
+	EventProcessing,
+
 	/** Command processing strategy */
 	CommandProcessingStrategy,
 

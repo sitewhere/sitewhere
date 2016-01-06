@@ -51,8 +51,7 @@ import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -365,28 +364,13 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getOutboundEventProcessorChain(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getEventProcessing(com.sitewhere.spi.
+	 * user.ITenant)
 	 */
 	@Override
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException {
+	public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException {
 		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
-		return engine.getOutboundEventProcessorChain();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getInboundEventProcessorChain(com.sitewhere
-	 * .spi.user.ITenant)
-	 */
-	@Override
-	public IInboundEventProcessorChain getInboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException {
-		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
-		return engine.getInboundEventProcessorChain();
+		return engine.getEventProcessing();
 	}
 
 	/*
@@ -701,7 +685,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		this.version = VersionHelper.getVersion();
 
 		// Migrate old configuration structure if necessary.
-		ConfigurationMigrationSupport.migrateIfNecessary(getConfigurationResolver());
+		ConfigurationMigrationSupport.migrateProjectStructureIfNecessary(getConfigurationResolver());
 
 		// Initialize persistent state.
 		initializeServerState();

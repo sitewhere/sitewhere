@@ -258,7 +258,7 @@ div.wz-button-bar {
 <!-- Details panel shown for a started engine -->
 <script type="text/x-kendo-tmpl" id="tpl-engine-started">
 	<div>
-		<div id="tenant-engine-hierarchy" style="margin-top: 10px; margin-bottom: 10px;"></div>
+		<div id="tenant-engine-hierarchy" style="margin-top: 10px; margin-bottom: 10px; max-height: 500px; overflow-y: scroll;"></div>
 	</div>
 </script>
 
@@ -1251,7 +1251,6 @@ div.wz-button-bar {
 
 		$("#tenant-engine-hierarchy").kendoTreeList({
 			dataSource : dataSource,
-			height : 500,
 			columns : [ {
 				field : "name",
 				title : "Component Name",
