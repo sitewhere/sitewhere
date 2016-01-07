@@ -18,6 +18,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.communication.RegistrationManager;
+import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
 
 /**
  * Parse elements related to device registration.
@@ -29,11 +30,12 @@ public class RegistrationParser {
 	/**
 	 * Parse elements in the device registration section.
 	 * 
+	 * @param dcomm
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected Object parse(Element element, ParserContext context) {
+	protected void parse(BeanDefinitionBuilder dcomm, Element element, ParserContext context) {
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -42,14 +44,19 @@ public class RegistrationParser {
 			}
 			switch (type) {
 			case DefaultRegistrationManager: {
-				return parseDefaultRegistrationManager(child, context);
+				dcomm.addPropertyValue("registrationManager", parseDefaultRegistrationManager(child, context));
+				break;
 			}
 			case RegistrationManager: {
-				return parseRegistrationManager(child, context);
+				dcomm.addPropertyValue("registrationManager", parseRegistrationManager(child, context));
+				break;
+			}
+			case SymbolGeneratorManager: {
+				dcomm.addPropertyValue("symbolGeneratorManager", parseSymbolGeneratorManager(child, context));
+				break;
 			}
 			}
 		}
-		return null;
 	}
 
 	/**
@@ -96,6 +103,25 @@ public class RegistrationParser {
 	}
 
 	/**
+	 * Parse information for the symbol generator manager.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected BeanDefinition parseSymbolGeneratorManager(Element element, ParserContext context) {
+		BeanDefinitionBuilder manager =
+				BeanDefinitionBuilder.rootBeanDefinition(SymbolGeneratorManager.class);
+
+		Attr defaultId = element.getAttributeNode("default");
+		if (defaultId != null) {
+			manager.addPropertyValue("defaultGeneratorId", defaultId.getValue());
+		}
+
+		return manager.getBeanDefinition();
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -106,7 +132,10 @@ public class RegistrationParser {
 		DefaultRegistrationManager("default-registration-manager"),
 
 		/** Registration manager reference */
-		RegistrationManager("registration-manager");
+		RegistrationManager("registration-manager"),
+
+		/** Symbol generator manager reference */
+		SymbolGeneratorManager("symbol-generator-manager");
 
 		/** Event code */
 		private String localName;

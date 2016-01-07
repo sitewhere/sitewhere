@@ -107,5 +107,7 @@
 	<classpathentry kind="var" path="M2_REPO/com/hazelcast/hazelcast/3.5.3/hazelcast-3.5.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.agent.thrift/4.2.3/org.wso2.carbon.databridge.agent.thrift-4.2.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/wso2/carbon/org.wso2.carbon.databridge.commons/4.2.3/org.wso2.carbon.databridge.commons-4.2.3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/github/kenglxn/qrgen/javase/2.1.0/javase-2.1.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/github/kenglxn/qrgen/core/2.1.0/core-2.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

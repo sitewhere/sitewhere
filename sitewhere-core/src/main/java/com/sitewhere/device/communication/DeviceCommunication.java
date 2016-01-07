@@ -10,6 +10,7 @@ package com.sitewhere.device.communication;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
 import com.sitewhere.server.batch.BatchOperationManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -23,6 +24,7 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
 import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -35,6 +37,9 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
 	/** Configured registration manager */
 	private IRegistrationManager registrationManager = new RegistrationManager();
+
+	/** Configured symbol generator manager */
+	private ISymbolGeneratorManager symbolGeneratorManager = new SymbolGeneratorManager();
 
 	/** Configured batch operation manager */
 	private IBatchOperationManager batchOperationManager = new BatchOperationManager();
@@ -94,6 +99,13 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 		}
 		startNestedComponent(getRegistrationManager(), true);
 
+		// Start symbol generator manager.
+		if (getSymbolGeneratorManager() == null) {
+			throw new SiteWhereException(
+					"No symbol generator manager configured for communication subsystem.");
+		}
+		startNestedComponent(getSymbolGeneratorManager(), true);
+
 		// Start batch operation manager.
 		if (getBatchOperationManager() == null) {
 			throw new SiteWhereException("No batch operation manager configured for communication subsystem.");
@@ -136,6 +148,11 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 		// Stop batch operation manager.
 		if (getBatchOperationManager() != null) {
 			getBatchOperationManager().lifecycleStop();
+		}
+
+		// Stop symbol generator manager.
+		if (getSymbolGeneratorManager() != null) {
+			getSymbolGeneratorManager().lifecycleStop();
 		}
 
 		// Stop registration manager.
@@ -193,6 +210,21 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
 	public void setRegistrationManager(IRegistrationManager registrationManager) {
 		this.registrationManager = registrationManager;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.communication.IDeviceCommunication#getSymbolGeneratorManager
+	 * ()
+	 */
+	public ISymbolGeneratorManager getSymbolGeneratorManager() {
+		return symbolGeneratorManager;
+	}
+
+	public void setSymbolGeneratorManager(ISymbolGeneratorManager symbolGeneratorManager) {
+		this.symbolGeneratorManager = symbolGeneratorManager;
 	}
 
 	/*

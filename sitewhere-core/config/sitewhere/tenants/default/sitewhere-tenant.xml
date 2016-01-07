@@ -76,7 +76,19 @@
 			
 			<!-- Device registration -->
 			<sw:registration>
+
+				<!-- Configure registration options -->
 				<sw:default-registration-manager allowNewDevices="true"/>
+				
+				<!-- Configures symbol generation -->
+				<sw:symbol-generator-manager default="qrcode">
+				
+					<!-- Generate QR Codes -->
+					<sw:qr-code-symbol-generator id="qrcode" width="250"
+						height="250" backgroundColor="FF000000" foregroundColor="FF333333"/>
+
+				</sw:symbol-generator-manager>
+
 			</sw:registration>
 			
 			<!-- Batch operation management -->

@@ -1861,6 +1861,14 @@
 					</xsd:annotation>
 				</xsd:element>
 			</xsd:choice>
+			<xsd:element name="symbol-generator-manager" type="symbolGeneratorManagerType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Configures the symbol generator manager.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -1890,6 +1898,86 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for symbol generator elements to allow substitutionGroups -->
+	<xsd:element name="abstract-symbol-generator" abstract="true"
+		type="abstractSymbolGeneratorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for symbol generator elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common symbol generator element information -->
+	<xsd:complexType name="abstractSymbolGeneratorType"/>
+
+	<!-- Configures the symbol generator manager -->
+	<xsd:complexType name="symbolGeneratorManagerType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="abstract-symbol-generator"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="default" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Default symbol generator to use when not specified.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- QR code symbol generator -->
+	<xsd:element name="qr-code-symbol-generator" type="qrCodeSymbolGeneratorType"
+		substitutionGroup="abstract-symbol-generator">
+		<xsd:annotation>
+			<xsd:documentation>
+				Generates QR-Code symbols for SiteWhere entities.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="qrCodeSymbolGeneratorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractSymbolGeneratorType">
+				<xsd:attribute name="id" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique id for generator.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="width" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Width of QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="height" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Height of QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="backgroundColor" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Background color for QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="foregroundColor" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Foreground color for QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="batchOperationsType">

@@ -8,6 +8,7 @@
 	text-align: left;
 	display: block;
 	min-height: 95px;
+	position: relative;
 }
 
 .sw-device-header-label {
@@ -32,6 +33,16 @@
 	top: -2px;
 	left: -4px;
 }
+
+.sw-device-header-symbol {
+	float: right;
+	width: 140px;
+	height: 140px;
+	position: absolute;
+	top: 13px;
+	right: 13px;
+	border: 1px solid #ddd;
+}
 </style>
 
 <!-- Header for device detail page -->
@@ -40,6 +51,9 @@
 		<div class="sw-device-header-logowrapper"
 			style="background-image: url(#:specification.asset.imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-device-header-logo-tag">#= i18next("public.Device") #</span>
+		</div>
+		<div class="sw-device-header-symbol"
+			style="background-image: url(/sitewhere/api/devices/#:hardwareId#/symbol?tenantAuthToken=${tenant.authenticationToken}); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 		</div>
 		<div>
 			<div>

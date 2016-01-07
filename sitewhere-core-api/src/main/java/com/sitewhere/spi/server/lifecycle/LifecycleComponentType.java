@@ -84,7 +84,13 @@ public enum LifecycleComponentType {
 	OutboundProcessingStrategy,
 
 	/** Registration manager */
-	RegistrationManger,
+	RegistrationManager,
+
+	/** Symbol generator manager */
+	SymbolGeneratorManager,
+
+	/** Symbol generator */
+	SymbolGenerator,
 
 	/** Batch operation manager */
 	BatchOperationManager,

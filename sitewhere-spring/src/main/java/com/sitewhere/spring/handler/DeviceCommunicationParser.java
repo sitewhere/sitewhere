@@ -60,8 +60,7 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 				break;
 			}
 			case Registration: {
-				Object manager = parseRegistration(child, context);
-				communication.addPropertyValue("registrationManager", manager);
+				parseRegistration(communication, child, context);
 				break;
 			}
 			case BatchOperations: {
@@ -132,12 +131,12 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 	/**
 	 * Parse the registration configuration.
 	 * 
+	 * @param dcomm
 	 * @param element
 	 * @param context
-	 * @return
 	 */
-	protected Object parseRegistration(Element element, ParserContext context) {
-		return new RegistrationParser().parse(element, context);
+	protected void parseRegistration(BeanDefinitionBuilder dcomm, Element element, ParserContext context) {
+		new RegistrationParser().parse(dcomm, element, context);
 	}
 
 	/**

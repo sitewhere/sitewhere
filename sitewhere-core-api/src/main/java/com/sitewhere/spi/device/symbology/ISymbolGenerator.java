@@ -7,20 +7,35 @@
  */
 package com.sitewhere.spi.device.symbology;
 
-import java.io.OutputStream;
-
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Generates symbols which uniquely identify SiteWhere entities.
  * 
  * @author Derek
  */
-public interface ISymbolGenerator {
+public interface ISymbolGenerator extends ITenantLifecycleComponent {
+
+	/**
+	 * Get unique generator id.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public String getId() throws SiteWhereException;
+
+	/**
+	 * Get name of symbol generator.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public String getName() throws SiteWhereException;
 
 	/**
 	 * Get symbol for a site.
@@ -30,7 +45,7 @@ public interface ISymbolGenerator {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public OutputStream getSiteSymbol(ISite site, IEntityUriProvider provider) throws SiteWhereException;
+	public byte[] getSiteSymbol(ISite site, IEntityUriProvider provider) throws SiteWhereException;
 
 	/**
 	 * Get symbol for a device specification.
@@ -40,8 +55,8 @@ public interface ISymbolGenerator {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public OutputStream getDeviceSpecificationSymbol(IDeviceSpecification specification,
-			IEntityUriProvider provider) throws SiteWhereException;
+	public byte[] getDeviceSpecificationSymbol(IDeviceSpecification specification, IEntityUriProvider provider)
+			throws SiteWhereException;
 
 	/**
 	 * Get symbol for a device.
@@ -51,8 +66,7 @@ public interface ISymbolGenerator {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public OutputStream getDeviceSymbol(IDevice device, IEntityUriProvider provider)
-			throws SiteWhereException;
+	public byte[] getDeviceSymbol(IDevice device, IEntityUriProvider provider) throws SiteWhereException;
 
 	/**
 	 * Get symbol for a device assignment.
@@ -62,6 +76,6 @@ public interface ISymbolGenerator {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public OutputStream getDeviceAssigmentSymbol(IDeviceAssignment assignment, IEntityUriProvider provider)
+	public byte[] getDeviceAssigmentSymbol(IDeviceAssignment assignment, IEntityUriProvider provider)
 			throws SiteWhereException;
 }
