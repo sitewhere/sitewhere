@@ -31,6 +31,7 @@ public class EventProcessingModel extends ConfigurationModel {
 
 		// Inbound processing chain.
 		addElement(createInboundProcessingChain());
+		addElement(createInboundProcessorElement());
 		addElement(createEventStorageProcessorElement());
 		addElement(createRegistrationProcessorElement());
 		addElement(createDeviceStreamProcessorElement());
@@ -106,6 +107,21 @@ public class EventProcessingModel extends ConfigurationModel {
 						ElementRole.InboundProcessingChain);
 		builder.description("Configure a chain of processing steps that are applied to inbound data.");
 
+		return builder.build();
+	}
+
+	/**
+	 * Create a generic inbound event processor reference.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createInboundProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Inbound Processor Bean Reference",
+						InboundProcessingChainParser.Elements.InboundEventProcessor.getLocalName(),
+						"sign-in", ElementRole.InboundProcessingChain_EventProcessor);
+		builder.description("Configures an inbound event processor that is declared in an external Spring bean.");
+		builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description("Name of Spring bean that will be referenced as an inbound event processor. The bean should implement the expected SiteWhere inbound event processor APIs").build()));
 		return builder.build();
 	}
 
