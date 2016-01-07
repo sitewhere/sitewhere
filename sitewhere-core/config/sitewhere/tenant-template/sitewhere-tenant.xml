@@ -85,7 +85,7 @@
 				
 					<!-- Generate QR Codes -->
 					<sw:qr-code-symbol-generator id="qrcode" name="Basic QR Code"
-						width="250" height="250" backgroundColor="FF000000" foregroundColor="FF333333"/>
+						width="250" height="250" backgroundColor="FFFFFFFF" foregroundColor="FF111111"/>
 
 				</sw:symbol-generator-manager>
 
