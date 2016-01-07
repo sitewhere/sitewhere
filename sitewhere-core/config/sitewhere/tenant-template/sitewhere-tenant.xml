@@ -172,6 +172,8 @@
 			
 				<!-- Send outbound device events over Hazelcast -->
 				<sw:hazelcast-event-processor/>
+				
+				<sw:outbound-event-processor ref="hz1"/>
 
 			</sw:outbound-processing-chain>
 
@@ -183,5 +185,7 @@
 		<sw:asset-management/>
 
 	</sw:tenant-configuration>
+	
+	<bean name="hz1" class="com.sitewhere.hazelcast.HazelcastEventProcessor"/>
 
 </beans>

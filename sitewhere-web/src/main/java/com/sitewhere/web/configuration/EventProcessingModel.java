@@ -38,6 +38,7 @@ public class EventProcessingModel extends ConfigurationModel {
 
 		// Outbound processing chain.
 		addElement(createOutboundProcessingChain());
+		addElement(createOutboundProcessorElement());
 		addElement(createCommandDeliveryEventProcessorElement());
 		addElement(createHazelcastEventProcessorElement());
 		addElement(createSolrEventProcessorElement());
@@ -192,6 +193,21 @@ public class EventProcessingModel extends ConfigurationModel {
 						EventProcessingParser.Elements.OutboundProcessingChain.getLocalName(), "sign-out",
 						ElementRole.OutboundProcessingChain);
 		builder.description("Configure a chain of processing steps that are applied to outbound data.");
+		return builder.build();
+	}
+
+	/**
+	 * Create a generic outbound event processor reference.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createOutboundProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Outbound Processor Bean Reference",
+						OutboundProcessingChainParser.Elements.OutboundEventProcessor.getLocalName(),
+						"sign-out", ElementRole.OutboundProcessingChain_EventProcessor);
+		builder.description("Configures an outbound event processor that is declared in an external Spring bean.");
+		builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description("Name of Spring bean that will be referenced as an outbound event processor. The bean should implement the expected SiteWhere outbound event processor APIs").build()));
 		return builder.build();
 	}
 
