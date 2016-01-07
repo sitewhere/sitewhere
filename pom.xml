@@ -119,7 +119,7 @@
 									<url>http://apache.osuosl.org/tomcat/tomcat-7/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip</url>
 									<unpack>true</unpack>
 									<outputDirectory>${project.build.directory}</outputDirectory>
-									<md5>0e93455e0d19b88307e001aabea0d5f9</md5>
+									<md5>a639e28526d1809745b46bf1189594fe</md5>
 								</configuration>
 							</execution>
 						</executions>
@@ -194,7 +194,7 @@
 		<spring.version>3.2.10.RELEASE</spring.version>
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
 		<jackson.version>2.1.5</jackson.version>
-		<tomcat.version>7.0.65</tomcat.version>
+		<tomcat.version>7.0.67</tomcat.version>
 	</properties>
 
 	<licenses>
