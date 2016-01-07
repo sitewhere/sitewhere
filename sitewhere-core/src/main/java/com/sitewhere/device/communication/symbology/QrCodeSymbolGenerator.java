@@ -213,10 +213,10 @@ public class QrCodeSymbolGenerator extends TenantLifecycleComponent implements I
 		if (argb.length() != 8) {
 			return 0;
 		}
-		byte a = Byte.parseByte(argb.substring(0, 2), 16);
-		byte r = Byte.parseByte(argb.substring(2, 2), 16);
-		byte g = Byte.parseByte(argb.substring(4, 2), 16);
-		byte b = Byte.parseByte(argb.substring(6, 2), 16);
+		byte a = (byte) Integer.parseInt(argb.substring(0, 2), 16);
+		byte r = (byte) Integer.parseInt(argb.substring(2, 4), 16);
+		byte g = (byte) Integer.parseInt(argb.substring(4, 6), 16);
+		byte b = (byte) Integer.parseInt(argb.substring(6, 8), 16);
 		return (a << 24) + ((r & 0xFF) << 16) + ((g & 0xFF) << 8) + (b & 0xFF);
 	}
 }

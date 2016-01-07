@@ -167,12 +167,20 @@ public enum ElementRole {
 	DeviceCommunication_EventSources(null, false, false, false,
 			new ElementRole[] { EventSources_EventSource }, new ElementRole[0], true),
 
-	/** Registration container. Registration manager. */
-	Registration_RegistrationManager("Registration Manager", false, false, false),
+	/** Symbol generator manager. Symbol generator. */
+	SymbolGeneratorManager_SymbolGenerator("Symbol Generator", true, true, true),
 
-	/** Device communication container. Registration. */
-	DeviceCommunication_Registration(null, false, false, false,
-			new ElementRole[] { Registration_RegistrationManager }, new ElementRole[0], true),
+	/** Device services container. Symbol generator manager. */
+	DeviceServices_SymbolGeneratorManager("Symbol Generator Manager", true, false, false,
+			new ElementRole[] { SymbolGeneratorManager_SymbolGenerator }),
+
+	/** Device services container. Registration manager. */
+	DeviceServices_RegistrationManager("Registration Manager", false, false, false),
+
+	/** Device communication container. Device Services. */
+	DeviceCommunication_DeviceServices(null, false, false, false, new ElementRole[] {
+			DeviceServices_RegistrationManager,
+			DeviceServices_SymbolGeneratorManager }, new ElementRole[0], true),
 
 	/** Batch operations container. Batch operation manager. */
 	BatchOperations_BatchOperationManager("Batch Operation Manager", false, false, false),
@@ -232,7 +240,7 @@ public enum ElementRole {
 	/** Device communication element. */
 	DeviceCommunication(null, false, false, false, new ElementRole[] {
 			DeviceCommunication_EventSources,
-			DeviceCommunication_Registration,
+			DeviceCommunication_DeviceServices,
 			DeviceCommunication_BatchOperations,
 			DeviceCommunication_CommandRouting,
 			DeviceCommunication_CommandDestinations }, new ElementRole[0], true),

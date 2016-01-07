@@ -181,7 +181,6 @@ public class ConfigurationMigrationSupport {
 		migrateTenantConfiguration(document);
 
 		String updated = format(document);
-		LOGGER.info("Migrated document: \n\n" + updated);
 		return updated.getBytes();
 	}
 

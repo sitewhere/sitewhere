@@ -12,12 +12,14 @@ import java.util.List;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.communication.RegistrationManager;
+import com.sitewhere.device.communication.symbology.QrCodeSymbolGenerator;
 import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
 
 /**
@@ -112,7 +114,70 @@ public class DeviceServicesParser {
 	protected BeanDefinition parseSymbolGeneratorManager(Element element, ParserContext context) {
 		BeanDefinitionBuilder manager =
 				BeanDefinitionBuilder.rootBeanDefinition(SymbolGeneratorManager.class);
+
+		ManagedList<Object> result = new ManagedList<Object>();
+		List<Element> children = DomUtils.getChildElements(element);
+		for (Element child : children) {
+			SymbolGenerators type = SymbolGenerators.getByLocalName(child.getLocalName());
+			if (type == null) {
+				throw new RuntimeException("Unknown symbol generator element: " + child.getLocalName());
+			}
+			switch (type) {
+			case QRCodeSymbolGenerator: {
+				result.add(parseQrCodeSymbolGenerator(child, context));
+				break;
+			}
+			}
+		}
+		manager.addPropertyValue("symbolGenerators", result);
+
 		return manager.getBeanDefinition();
+	}
+
+	/**
+	 * Parse QR-Code symbol generator.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected BeanDefinition parseQrCodeSymbolGenerator(Element element, ParserContext context) {
+		BeanDefinitionBuilder generator =
+				BeanDefinitionBuilder.rootBeanDefinition(QrCodeSymbolGenerator.class);
+
+		Attr id = element.getAttributeNode("id");
+		if (id == null) {
+			throw new RuntimeException("QR code symbol generator id is missing.");
+		}
+		generator.addPropertyValue("id", id.getValue());
+
+		Attr name = element.getAttributeNode("name");
+		if (name == null) {
+			throw new RuntimeException("QR code symbol generator name is missing.");
+		}
+		generator.addPropertyValue("name", name.getValue());
+
+		Attr width = element.getAttributeNode("width");
+		if (width != null) {
+			generator.addPropertyValue("width", width.getValue());
+		}
+
+		Attr height = element.getAttributeNode("height");
+		if (height != null) {
+			generator.addPropertyValue("height", height.getValue());
+		}
+
+		Attr backgroundColor = element.getAttributeNode("backgroundColor");
+		if (backgroundColor != null) {
+			generator.addPropertyValue("backgroundColor", backgroundColor.getValue());
+		}
+
+		Attr foregroundColor = element.getAttributeNode("foregroundColor");
+		if (foregroundColor != null) {
+			generator.addPropertyValue("foregroundColor", foregroundColor.getValue());
+		}
+
+		return generator.getBeanDefinition();
 	}
 
 	/**
@@ -140,6 +205,41 @@ public class DeviceServicesParser {
 
 		public static Elements getByLocalName(String localName) {
 			for (Elements value : Elements.values()) {
+				if (value.getLocalName().equals(localName)) {
+					return value;
+				}
+			}
+			return null;
+		}
+
+		public String getLocalName() {
+			return localName;
+		}
+
+		public void setLocalName(String localName) {
+			this.localName = localName;
+		}
+	}
+
+	/**
+	 * Expected child elements.
+	 * 
+	 * @author Derek
+	 */
+	public static enum SymbolGenerators {
+
+		/** QR-Code symbol generator */
+		QRCodeSymbolGenerator("qr-code-symbol-generator");
+
+		/** Event code */
+		private String localName;
+
+		private SymbolGenerators(String localName) {
+			this.localName = localName;
+		}
+
+		public static SymbolGenerators getByLocalName(String localName) {
+			for (SymbolGenerators value : SymbolGenerators.values()) {
 				if (value.getLocalName().equals(localName)) {
 					return value;
 				}

@@ -11,8 +11,8 @@ import com.sitewhere.spring.handler.BatchOperationsParser;
 import com.sitewhere.spring.handler.CommandDestinationsParser;
 import com.sitewhere.spring.handler.CommandRoutingParser;
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
-import com.sitewhere.spring.handler.EventSourcesParser;
 import com.sitewhere.spring.handler.DeviceServicesParser;
+import com.sitewhere.spring.handler.EventSourcesParser;
 import com.sitewhere.spring.handler.TenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
@@ -52,9 +52,11 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createGroovyStringEventDecoderElement());
 		addElement(createEchoStringEventDecoderElement());
 
-		// Registration.
+		// Device services.
 		addElement(createDeviceServicesElement());
 		addElement(createDefaultRegistrationManagerElement());
+		addElement(createSymbolGeneratorManagerElement());
+		addElement(createQRCodeSymbolGeneratorElement());
 
 		// Batch operations.
 		addElement(createBatchOperationsElement());
@@ -419,7 +421,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Registration and Symbology",
 						DeviceCommunicationParser.Elements.DeviceServices.getLocalName(), "qrcode",
-						ElementRole.DeviceCommunication_Registration);
+						ElementRole.DeviceCommunication_DeviceServices);
 
 		builder.description("Manages how new devices are registered with the system and how symbols such "
 				+ "as QR-codes are associated with SiteWhere entities.");
@@ -435,7 +437,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Registration Manager",
 						DeviceServicesParser.Elements.DefaultRegistrationManager.getLocalName(), "key",
-						ElementRole.Registration_RegistrationManager);
+						ElementRole.DeviceServices_RegistrationManager);
 
 		builder.description("Provides device registration management functionality.");
 		builder.attribute((new AttributeNode.Builder("Allow registration of new devices", "allowNewDevices",
@@ -448,6 +450,52 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		builder.attribute((new AttributeNode.Builder("Site token", "autoAssignSiteToken",
 				AttributeType.String).description("Site token used for registering new devices if auto-assign is enabled "
 				+ "and no site token is passed.").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for device registration.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createSymbolGeneratorManagerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Symbol Generator Manager",
+						DeviceServicesParser.Elements.SymbolGeneratorManager.getLocalName(), "qrcode",
+						ElementRole.DeviceServices_SymbolGeneratorManager);
+
+		builder.description("Manages how symbols such as QR-Codes are generated for devices "
+				+ "and other SiteWhere entities. Generated symbol images are made available via "
+				+ "the REST services.");
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for default registration manager.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createQRCodeSymbolGeneratorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("QR-Code Symbol Generator",
+						DeviceServicesParser.SymbolGenerators.QRCodeSymbolGenerator.getLocalName(), "qrcode",
+						ElementRole.SymbolGeneratorManager_SymbolGenerator);
+
+		builder.description("Generates QR-Codes for devices and other SiteWhere entities. The generated "
+				+ "images are available via the REST services.");
+		builder.attribute((new AttributeNode.Builder("Unique generator id", "id", AttributeType.String).description("Each symbol generator must have a unique id").build()));
+		builder.attribute((new AttributeNode.Builder("Generator name", "name", AttributeType.String).makeIndex().description(
+				"Name shown in user interface for symbol generator.").build()));
+		builder.attribute((new AttributeNode.Builder("QR-Code image width", "width", AttributeType.Integer).description(
+				"Width of QR-code image in pixels.").defaultValue("200").build()));
+		builder.attribute((new AttributeNode.Builder("QR-Code image height", "height", AttributeType.Integer).description(
+				"Height of QR-code image in pixels.").defaultValue("200").build()));
+		builder.attribute((new AttributeNode.Builder("Background color", "backgroundColor",
+				AttributeType.String).description("Background color of QR-Code image in AARRGGBB format.").defaultValue(
+				"FFFFFFFF").build()));
+		builder.attribute((new AttributeNode.Builder("Foreground color", "foregroundColor",
+				AttributeType.String).description("Foreground color of QR-Code image in AARRGGBB format.").defaultValue(
+				"FF333333").build()));
 		return builder.build();
 	}
 
