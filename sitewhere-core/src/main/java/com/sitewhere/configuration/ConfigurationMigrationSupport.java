@@ -123,9 +123,11 @@ public class ConfigurationMigrationSupport {
 					new File(templateFolder,
 							TomcatTenantConfigurationResolver.DEFAULT_TENANT_CONFIGURATION_FILE + "."
 									+ TomcatTenantConfigurationResolver.TENANT_SUFFIX_ACTIVE);
-			FileUtils.moveFile(moved, updated);
+			if (!moved.getAbsolutePath().equals(updated.getAbsolutePath())) {
+				FileUtils.moveFile(moved, updated);
+			}
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to move template file: " + templateFilename);
+			throw new SiteWhereException("Unable to migrate template file.", e);
 		}
 	}
 
@@ -179,6 +181,7 @@ public class ConfigurationMigrationSupport {
 		migrateTenantConfiguration(document);
 
 		String updated = format(document);
+		LOGGER.info("Migrated document: \n\n" + updated);
 		return updated.getBytes();
 	}
 
@@ -244,6 +247,13 @@ public class ConfigurationMigrationSupport {
 		if (ochain != null) {
 			config.removeChild(ochain);
 			eproc.appendChild(ochain);
+		}
+		Element reg = DomUtils.getChildElementByTagName(dcomm, "registration");
+		if (reg != null) {
+			String qname =
+					(reg.getPrefix() != null) ? (reg.getPrefix() + ":" + "device-services")
+							: "device-services";
+			document.renameNode(reg, reg.getNamespaceURI(), qname);
 		}
 	}
 

@@ -30,9 +30,6 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SymbolGeneratorManager.class);
 
-	/** Default generator id */
-	private String defaultGeneratorId;
-
 	/** List of symbol generators */
 	private List<ISymbolGenerator> symbolGenerators = new ArrayList<ISymbolGenerator>();
 
@@ -95,20 +92,6 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.symbology.ISymbolGeneratorManager#getDefaultGeneratorId()
-	 */
-	public String getDefaultGeneratorId() {
-		return defaultGeneratorId;
-	}
-
-	public void setDefaultGeneratorId(String defaultGeneratorId) {
-		this.defaultGeneratorId = defaultGeneratorId;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
 	 * com.sitewhere.spi.device.symbology.ISymbolGeneratorManager#getSymbolGenerators()
 	 */
 	public List<ISymbolGenerator> getSymbolGenerators() {
@@ -140,12 +123,7 @@ public class SymbolGeneratorManager extends TenantLifecycleComponent implements 
 	 */
 	@Override
 	public ISymbolGenerator getDefaultSymbolGenerator() throws SiteWhereException {
-		if (getDefaultGeneratorId() != null) {
-			ISymbolGenerator generator = getSymbolGenerator(getDefaultGeneratorId());
-			if (generator != null) {
-				return generator;
-			}
-		} else if (getSymbolGenerators().size() > 0) {
+		if (getSymbolGenerators().size() > 0) {
 			return getSymbolGenerators().get(0);
 		}
 		return null;

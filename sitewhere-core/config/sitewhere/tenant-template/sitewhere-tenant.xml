@@ -74,10 +74,22 @@
 
 			</sw:event-sources>
 			
-			<!-- Device registration -->
-			<sw:registration>
+			<!-- Device services -->
+			<sw:device-services>
+
+				<!-- Configure registration options -->
 				<sw:default-registration-manager allowNewDevices="true"/>
-			</sw:registration>
+				
+				<!-- Configures symbol generation -->
+				<sw:symbol-generator-manager default="qrcode">
+				
+					<!-- Generate QR Codes -->
+					<sw:qr-code-symbol-generator id="qrcode" width="250"
+						height="250" backgroundColor="FF000000" foregroundColor="FF333333"/>
+
+				</sw:symbol-generator-manager>
+
+			</sw:device-services>
 			
 			<!-- Batch operation management -->
 			<sw:batch-operations>

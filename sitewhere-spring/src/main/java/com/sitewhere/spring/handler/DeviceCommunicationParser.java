@@ -59,8 +59,9 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 				communication.addPropertyValue("outboundProcessingStrategy", strategy);
 				break;
 			}
-			case Registration: {
-				parseRegistration(communication, child, context);
+			case Registration:
+			case DeviceServices: {
+				parseDeviceServices(communication, child, context);
 				break;
 			}
 			case BatchOperations: {
@@ -129,14 +130,14 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
-	 * Parse the registration configuration.
+	 * Parse the device services configuration.
 	 * 
 	 * @param dcomm
 	 * @param element
 	 * @param context
 	 */
-	protected void parseRegistration(BeanDefinitionBuilder dcomm, Element element, ParserContext context) {
-		new RegistrationParser().parse(dcomm, element, context);
+	protected void parseDeviceServices(BeanDefinitionBuilder dcomm, Element element, ParserContext context) {
+		new DeviceServicesParser().parse(dcomm, element, context);
 	}
 
 	/**
@@ -182,16 +183,20 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 		/** Event sources list */
 		EventSources("event-sources"),
 
-		/** Inbound processing strategy */
+		/** Inbound processing strategy (moved into event processing) */
 		@Deprecated
 		InboundProcessingStrategy("inbound-processing-strategy"),
 
-		/** Outbound processing strategy */
+		/** Outbound processing strategy (moved into event processing) */
 		@Deprecated
 		OutboundProcessingStrategy("outbound-processing-strategy"),
 
-		/** Device registration */
+		/** Device registration (renamed to device services) */
+		@Deprecated
 		Registration("registration"),
+
+		/** Device services */
+		DeviceServices("device-services"),
 
 		/** Batch operations */
 		BatchOperations("batch-operations"),

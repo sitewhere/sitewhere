@@ -12,7 +12,7 @@ import com.sitewhere.spring.handler.CommandDestinationsParser;
 import com.sitewhere.spring.handler.CommandRoutingParser;
 import com.sitewhere.spring.handler.DeviceCommunicationParser;
 import com.sitewhere.spring.handler.EventSourcesParser;
-import com.sitewhere.spring.handler.RegistrationParser;
+import com.sitewhere.spring.handler.DeviceServicesParser;
 import com.sitewhere.spring.handler.TenantConfigurationParser;
 import com.sitewhere.web.configuration.model.AttributeNode;
 import com.sitewhere.web.configuration.model.AttributeType;
@@ -53,7 +53,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createEchoStringEventDecoderElement());
 
 		// Registration.
-		addElement(createRegistrationElement());
+		addElement(createDeviceServicesElement());
 		addElement(createDefaultRegistrationManagerElement());
 
 		// Batch operations.
@@ -415,10 +415,10 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	 * 
 	 * @return
 	 */
-	protected ElementNode createRegistrationElement() {
+	protected ElementNode createDeviceServicesElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Device Registration and Symbology",
-						DeviceCommunicationParser.Elements.Registration.getLocalName(), "qrcode",
+						DeviceCommunicationParser.Elements.DeviceServices.getLocalName(), "qrcode",
 						ElementRole.DeviceCommunication_Registration);
 
 		builder.description("Manages how new devices are registered with the system and how symbols such "
@@ -434,7 +434,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	protected ElementNode createDefaultRegistrationManagerElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Registration Manager",
-						RegistrationParser.Elements.DefaultRegistrationManager.getLocalName(), "key",
+						DeviceServicesParser.Elements.DefaultRegistrationManager.getLocalName(), "key",
 						ElementRole.Registration_RegistrationManager);
 
 		builder.description("Provides device registration management functionality.");

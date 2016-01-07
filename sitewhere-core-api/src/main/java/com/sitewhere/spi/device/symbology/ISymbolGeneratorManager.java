@@ -20,14 +20,6 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 public interface ISymbolGeneratorManager extends ITenantLifecycleComponent {
 
 	/**
-	 * Get id for the default symbol generator.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public String getDefaultGeneratorId() throws SiteWhereException;
-
-	/**
 	 * Get the list of available symbol generators.
 	 * 
 	 * @return

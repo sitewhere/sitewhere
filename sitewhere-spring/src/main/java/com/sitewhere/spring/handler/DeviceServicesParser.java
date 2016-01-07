@@ -25,7 +25,7 @@ import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
  * 
  * @author Derek
  */
-public class RegistrationParser {
+public class DeviceServicesParser {
 
 	/**
 	 * Parse elements in the device registration section.
@@ -112,12 +112,6 @@ public class RegistrationParser {
 	protected BeanDefinition parseSymbolGeneratorManager(Element element, ParserContext context) {
 		BeanDefinitionBuilder manager =
 				BeanDefinitionBuilder.rootBeanDefinition(SymbolGeneratorManager.class);
-
-		Attr defaultId = element.getAttributeNode("default");
-		if (defaultId != null) {
-			manager.addPropertyValue("defaultGeneratorId", defaultId.getValue());
-		}
-
 		return manager.getBeanDefinition();
 	}
 

@@ -1279,11 +1279,19 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="registration" type="registrationType" minOccurs="0">
+			<xsd:element name="registration" type="deviceServicesType" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						Registration elements define how inbound registration events are
-						used to register devices.
+						DEPRECATED: Registration has been renamed to 'device services' to
+						allow for the addition of other services.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="device-services" type="deviceServicesType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Contains various device-related services such as registration and
+						symbology management.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1843,7 +1851,7 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="registrationType">
+	<xsd:complexType name="deviceServicesType">
 		<xsd:sequence>
 			<xsd:choice minOccurs="1" maxOccurs="1">
 				<xsd:element name="registration-manager" type="registrationManagerReferenceType">
@@ -1920,13 +1928,6 @@
 				<xsd:element ref="abstract-symbol-generator"/>
 			</xsd:choice>
 		</xsd:sequence>
-		<xsd:attribute name="default" type="xsd:string" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
-					Default symbol generator to use when not specified.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:complexType>
 
 	<!-- QR code symbol generator -->

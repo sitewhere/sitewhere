@@ -7,6 +7,8 @@
  */
 package com.sitewhere.device.event.processor;
 
+import org.apache.log4j.Logger;
+
 import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.device.DeviceManagementDecorator;
@@ -30,6 +32,7 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
  * Acts as a decorator for injecting a {@link IOutboundEventProcessorChain} into the
@@ -38,6 +41,9 @@ import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
  * @author Derek
  */
 public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorator {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(OutboundProcessingStrategyDecorator.class);
 
 	/** Cached strategy */
 	private IOutboundProcessingStrategy strategy;
@@ -71,7 +77,11 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceMeasurements addDeviceMeasurements(String assignmentToken,
 			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
 		IDeviceMeasurements result = super.addDeviceMeasurements(assignmentToken, request);
-		getOutboundProcessingStrategy().onMeasurements(result);
+		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
+			getOutboundProcessingStrategy().onMeasurements(result);
+		} else {
+			handleOutboundProcessingNotAvailable(result);
+		}
 		return result;
 	}
 
@@ -86,7 +96,9 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 			throws SiteWhereException {
 		IDeviceLocation result = super.addDeviceLocation(assignmentToken, request);
-		getOutboundProcessingStrategy().onLocation(result);
+		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
+			getOutboundProcessingStrategy().onLocation(result);
+		}
 		return result;
 	}
 
@@ -101,7 +113,9 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
 			throws SiteWhereException {
 		IDeviceAlert result = super.addDeviceAlert(assignmentToken, request);
-		getOutboundProcessingStrategy().onAlert(result);
+		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
+			getOutboundProcessingStrategy().onAlert(result);
+		}
 		return result;
 	}
 
@@ -117,7 +131,9 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
 			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		IDeviceCommandInvocation result = super.addDeviceCommandInvocation(assignmentToken, command, request);
-		getOutboundProcessingStrategy().onCommandInvocation(result);
+		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
+			getOutboundProcessingStrategy().onCommandInvocation(result);
+		}
 		return result;
 	}
 
@@ -133,7 +149,9 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IDeviceCommandResponse addDeviceCommandResponse(String assignmentToken,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 		IDeviceCommandResponse result = super.addDeviceCommandResponse(assignmentToken, request);
-		getOutboundProcessingStrategy().onCommandResponse(result);
+		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
+			getOutboundProcessingStrategy().onCommandResponse(result);
+		}
 		return result;
 	}
 
@@ -148,7 +166,9 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
 			throws SiteWhereException {
 		IBatchOperation result = super.createBatchOperation(request);
-		getOutboundProcessingStrategy().onBatchOperation(result);
+		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
+			getOutboundProcessingStrategy().onBatchOperation(result);
+		}
 		return result;
 	}
 
@@ -163,8 +183,19 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
 			throws SiteWhereException {
 		IBatchOperation result = super.createBatchCommandInvocation(request);
-		getOutboundProcessingStrategy().onBatchOperation(result);
+		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
+			getOutboundProcessingStrategy().onBatchOperation(result);
+		}
 		return result;
+	}
+
+	/**
+	 * Handle case where outbound processing is not available to save event.
+	 * 
+	 * @param unhandled
+	 */
+	protected void handleOutboundProcessingNotAvailable(Object unhandled) {
+		LOGGER.debug("Outbound processing not started. Outbound event ignored.");
 	}
 
 	/**
