@@ -356,6 +356,15 @@ public class DevicesController extends RestController {
 		}
 	}
 
+	/**
+	 * Get default symbol for device.
+	 * 
+	 * @param hardwareId
+	 * @param servletRequest
+	 * @param response
+	 * @return
+	 * @throws SiteWhereException
+	 */
 	@RequestMapping(value = "/{hardwareId}/symbol", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get default symbol for device")
