@@ -32,6 +32,9 @@ public class SiteWhereTenantEngineState implements ISiteWhereTenantEngineState {
 	/** Hierarchy of tenant engine components */
 	private List<ITenantEngineComponent> componentHierarchyState;
 
+	/** Flag indicating whether changes are staged */
+	private boolean staged;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -57,5 +60,18 @@ public class SiteWhereTenantEngineState implements ISiteWhereTenantEngineState {
 
 	public void setComponentHierarchyState(List<ITenantEngineComponent> componentHierarchyState) {
 		this.componentHierarchyState = componentHierarchyState;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngineState#isStaged()
+	 */
+	public boolean isStaged() {
+		return staged;
+	}
+
+	public void setStaged(boolean staged) {
+		this.staged = staged;
 	}
 }

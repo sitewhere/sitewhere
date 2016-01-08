@@ -1153,6 +1153,7 @@ div.wz-button-bar {
 		}).data("kendoTabStrip");
 
 		loadTenant();
+		loadEngineConfiguration();
 	});
 
 	/** Loads information for the selected tenant */
@@ -1200,7 +1201,6 @@ div.wz-button-bar {
 				template = kendo.template($("#tpl-engine-not-running").html());
 				$('#detail-content').html(template(data));
 			}
-			loadEngineConfiguration();
 		} else {
 			$('#tenant-power-off').hide();
 			$('#tenant-power-on').show();
@@ -1230,6 +1230,7 @@ div.wz-button-bar {
 
 	/** Called on successful create */
 	function stageSuccess() {
+		loadTenant();
 	}
 
 	/** Handle failed call to create tenant */

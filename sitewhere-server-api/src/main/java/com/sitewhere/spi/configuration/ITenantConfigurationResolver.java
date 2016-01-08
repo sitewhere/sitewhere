@@ -34,6 +34,13 @@ public interface ITenantConfigurationResolver {
 	public boolean hasValidConfiguration();
 
 	/**
+	 * Indicates if a staged configuration exists for the tenant.
+	 * 
+	 * @return
+	 */
+	public boolean hasStagedConfiguration();
+
+	/**
 	 * Get URI for locating asset resources.
 	 * 
 	 * @return

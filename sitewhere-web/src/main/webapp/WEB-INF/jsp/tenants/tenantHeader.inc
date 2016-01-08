@@ -2,7 +2,7 @@
 .sw-tenant-header {
 	clear: both;
 	border: 1px solid #dcdcdc;
-	padding: 10px;
+	padding: 5px;
 	margin-bottom: 15px;
 	font-size: 12pt;
 	text-align: left;
@@ -26,20 +26,32 @@
 	width: 220px;
 	height: 60px;
 	position: relative;
+	margin-top: 7px;
 	margin-bottom: 20px;
 	margin-left: 5px;
+	border: 1px solid #ccc;
 }
 
 .sw-tenant-header-logo-tag {
 	position: absolute;
-	top: -2px;
+	top: -6px;
 	left: -4px;
 }
 
 .sw-tenant-buttons {
 	position: absolute;
-	top: 10px;
+	top: 17px;
 	right: 10px;
+}
+
+.sw-tenant-staged {
+	padding: 5px;
+	font-size: 15px;
+	background-color: #ffffdd;
+	color: #333;
+	text-align: center;
+	border: 1px solid #ee3;
+	margin-bottom: 12px;
 }
 </style>
 
@@ -79,4 +91,9 @@
 			</a>
 		</div>
 	</div>
+# if (data.engineState.staged) { #
+	<div class="sw-tenant-staged">
+		Tenant has staged updates that have not been applied. Restart tenant to apply changes.
+	</div>
+# } #
 </script>

@@ -32,4 +32,11 @@ public interface ISiteWhereTenantEngineState extends Serializable {
 	 * @return
 	 */
 	public List<ITenantEngineComponent> getComponentHierarchyState();
+
+	/**
+	 * Indicates if a new configuration has been staged, but not applied.
+	 * 
+	 * @return
+	 */
+	public boolean isStaged();
 }

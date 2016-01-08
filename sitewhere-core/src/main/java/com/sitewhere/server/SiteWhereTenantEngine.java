@@ -247,6 +247,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		if (getLifecycleStatus() == LifecycleStatus.Started) {
 			state.setComponentHierarchyState(getComponentHierarchyState());
 		}
+		state.setStaged(getTenantConfigurationResolver().hasStagedConfiguration());
 		return state;
 	}
 

@@ -186,6 +186,23 @@ public class TomcatTenantConfigurationResolver implements ITenantConfigurationRe
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.spi.configuration.ITenantConfigurationResolver#hasStagedConfiguration
+	 * ()
+	 */
+	@Override
+	public boolean hasStagedConfiguration() {
+		try {
+			File tenantConfigFile = getTenantConfigurationFile(getTenantFolder(), TENANT_SUFFIX_STAGED);
+			return (tenantConfigFile.exists());
+		} catch (SiteWhereException e) {
+			return false;
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.configuration.ITenantConfigurationResolver#
 	 * createDefaultTenantConfiguration()
 	 */
