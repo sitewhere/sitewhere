@@ -71,7 +71,7 @@ public class ActiveMQTests {
 		Channel channel = connection.createChannel();
 
 		channel.exchangeDeclare(exchangeName, "direct", true);
-		channel.queueDeclare(queueName, false, false, false, null);
+		channel.queueDeclare(queueName, true, false, false, null);
 		channel.queueBind(queueName, exchangeName, routingKey);
 
 		byte[] messageBodyBytes = EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID);

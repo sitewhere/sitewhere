@@ -1613,6 +1613,13 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
+				<xsd:attribute name="durable" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>
+							Indicates whether the queue should survive broker restarts.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 				<xsd:attribute name="numConsumers" type="xsd:int">
 					<xsd:annotation>
 						<xsd:documentation>

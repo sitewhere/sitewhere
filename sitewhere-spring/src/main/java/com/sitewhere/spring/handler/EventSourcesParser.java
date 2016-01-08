@@ -313,6 +313,11 @@ public class EventSourcesParser {
 			mqtt.addPropertyValue("queueName", queueName.getValue());
 		}
 
+		Attr durable = element.getAttributeNode("durable");
+		if (durable != null) {
+			mqtt.addPropertyValue("durable", durable.getValue());
+		}
+
 		Attr numConsumers = element.getAttributeNode("numConsumers");
 		if (connectionUri != null) {
 			mqtt.addPropertyValue("numConsumers", numConsumers.getValue());

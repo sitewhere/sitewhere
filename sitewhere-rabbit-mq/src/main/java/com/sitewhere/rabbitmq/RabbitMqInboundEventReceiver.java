@@ -58,6 +58,9 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent imple
 	/** Number of consumers to use */
 	private int numConsumers = DEFAULT_NUM_CONSUMERS;
 
+	/** Indicates if queue should be durable */
+	private boolean durable = false;
+
 	/** RabbitMQ connection */
 	private Connection connection;
 
@@ -87,9 +90,10 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent imple
 
 			LOGGER.info("RabbitMQ receiver connected to: " + getConnectionUri());
 
-			channel.queueDeclare(getQueueName(), false, false, false, null);
+			channel.queueDeclare(getQueueName(), isDurable(), false, false, null);
 
-			LOGGER.info("RabbitMQ receiver using queue: " + getQueueName());
+			LOGGER.info("RabbitMQ receiver using " + (isDurable() ? "durable " : "") + "queue: "
+					+ getQueueName());
 
 			// Add consumer callback for channel.
 			Consumer consumer = new DefaultConsumer(channel) {
@@ -202,5 +206,13 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent imple
 
 	public void setNumConsumers(int numConsumers) {
 		this.numConsumers = numConsumers;
+	}
+
+	public boolean isDurable() {
+		return durable;
+	}
+
+	public void setDurable(boolean durable) {
+		this.durable = durable;
 	}
 }

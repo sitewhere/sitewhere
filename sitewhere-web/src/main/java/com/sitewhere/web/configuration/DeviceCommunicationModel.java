@@ -158,6 +158,10 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				"amqp://localhost").description("URI that specifies RabbitMQ connectivity settings.").build()));
 		builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String).defaultValue(
 				"sitewhere.input").description("Name of queue that will be consumed.").build()));
+		builder.attribute((new AttributeNode.Builder("Durable queue", "durable", AttributeType.Boolean).defaultValue(
+				"false").description(
+				"Indicates if queue should survive broker restart. If queue exists, this "
+						+ "should agree with the existing configuration.").build()));
 		builder.attribute((new AttributeNode.Builder("Consumer threads", "numConsumers",
 				AttributeType.Integer).defaultValue("5").description(
 				"Number of thread used by consumers to pull data from the queue.").build()));
