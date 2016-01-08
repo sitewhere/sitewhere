@@ -42,6 +42,7 @@ import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
 import com.sitewhere.hazelcast.HazelcastQueueReceiver;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
+import com.sitewhere.rabbitmq.RabbitMqInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
@@ -106,6 +107,10 @@ public class EventSourcesParser {
 			}
 			case MqttEventSource: {
 				result.add(parseMqttEventSource(child, context));
+				break;
+			}
+			case RabbitMqEventSource: {
+				result.add(parseRabbitMqEventSource(child, context));
 				break;
 			}
 			case WebSocketEventSource: {
@@ -230,6 +235,87 @@ public class EventSourcesParser {
 		Attr trustStorePassword = element.getAttributeNode("trustStorePassword");
 		if (trustStorePassword != null) {
 			mqtt.addPropertyValue("trustStorePassword", trustStorePassword.getValue());
+		}
+
+		return mqtt.getBeanDefinition();
+	}
+
+	/**
+	 * Get the RabbitMQ event source implementation class.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventSource<byte[]>> getRabbitMqEventSourceImplementation() {
+		return BinaryInboundEventSource.class;
+	}
+
+	/**
+	 * Parse an RabbitMQ event source.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseRabbitMqEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source =
+				BeanDefinitionBuilder.rootBeanDefinition(getRabbitMqEventSourceImplementation());
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create event receiver bean and register it.
+		AbstractBeanDefinition receiver = createRabbitMqEventReceiver(element);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException("No event decoder specified for RabbitMQ event source: "
+					+ element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Get implementation class for MQTT event receiver.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventReceiver<byte[]>> getRabbitMqEventReceiverImplementation() {
+		return RabbitMqInboundEventReceiver.class;
+	}
+
+	/**
+	 * Create RabbitMQ event receiver from XML element.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createRabbitMqEventReceiver(Element element) {
+		BeanDefinitionBuilder mqtt =
+				BeanDefinitionBuilder.rootBeanDefinition(getRabbitMqEventReceiverImplementation());
+
+		Attr connectionUri = element.getAttributeNode("connectionUri");
+		if (connectionUri != null) {
+			mqtt.addPropertyValue("connectionUri", connectionUri.getValue());
+		}
+
+		Attr queueName = element.getAttributeNode("queueName");
+		if (connectionUri != null) {
+			mqtt.addPropertyValue("queueName", queueName.getValue());
+		}
+
+		Attr numConsumers = element.getAttributeNode("numConsumers");
+		if (connectionUri != null) {
+			mqtt.addPropertyValue("numConsumers", numConsumers.getValue());
 		}
 
 		return mqtt.getBeanDefinition();
@@ -984,6 +1070,9 @@ public class EventSourcesParser {
 
 		/** MQTT event source */
 		MqttEventSource("mqtt-event-source"),
+
+		/** RabbitMQ event source */
+		RabbitMqEventSource("rabbit-mq-event-source"),
 
 		/** Web socket event source */
 		WebSocketEventSource("web-socket-event-source"),

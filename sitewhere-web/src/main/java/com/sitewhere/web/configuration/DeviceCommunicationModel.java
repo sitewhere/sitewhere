@@ -33,6 +33,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		// Event sources.
 		addElement(createEventSourcesElement());
 		addElement(createMqttEventSourceElement());
+		addElement(createRabbitMqEventSourceElement());
 		addElement(createAzureEventHubEventSourceElement());
 		addElement(createActiveMQEventSourceElement());
 		addElement(createHazelcastQueueEventSourceElement());
@@ -132,6 +133,34 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		// Add common MQTT connectivity attributes.
 		addMqttConnectivityAttributes(builder);
 		builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).description("MQTT topic event source uses for inbound messages.").build()));
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for MQTT event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createRabbitMqEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("RabbitMQ Event Source",
+						EventSourcesParser.Elements.RabbitMqEventSource.getLocalName(), "sign-in",
+						ElementRole.EventSources_EventSource);
+
+		builder.description("Listen for events on an RabbitMQ queue.");
+		addEventSourceAttributes(builder);
+
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
+		builder.attribute((new AttributeNode.Builder("Connection URI", "connectionUri", AttributeType.String).defaultValue(
+				"amqp://localhost").description("URI that specifies RabbitMQ connectivity settings.").build()));
+		builder.attribute((new AttributeNode.Builder("Queue name", "queueName", AttributeType.String).defaultValue(
+				"sitewhere.input").description("Name of queue that will be consumed.").build()));
+		builder.attribute((new AttributeNode.Builder("Consumer threads", "numConsumers",
+				AttributeType.Integer).defaultValue("5").description(
+				"Number of thread used by consumers to pull data from the queue.").build()));
 
 		return builder.build();
 	}

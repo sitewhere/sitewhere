@@ -37,6 +37,7 @@
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-protobuf</module>
+				<module>sitewhere-rabbit-mq</module>
 				<module>sitewhere-server-api</module>
 				<module>sitewhere-siddhi</module>
 				<module>sitewhere-solr</module>

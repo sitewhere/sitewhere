@@ -1582,6 +1582,48 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
+	<!-- Event source that pulls binary information from a RabbitMQ queue and decodes it -->
+	<xsd:element name="rabbit-mq-event-source" type="rabbitMqEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls binary information from a RabbitMQ queue and
+				decodes it.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="rabbitMqEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="connectionUri" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							URI that provides information about the RabbitMQ instance to
+							connect to.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="queueName" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name of RabbitMQ queue to be consumed.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="numConsumers" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>
+							Number of consumer threads used to consume the queue.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
     <!-- Event source that pulls binary information from an EventHub endpoint and decodes it -->
 	<xsd:element name="azure-eventhub-event-source" type="azureEventhubEventSourceType"
 		substitutionGroup="abstract-event-source">

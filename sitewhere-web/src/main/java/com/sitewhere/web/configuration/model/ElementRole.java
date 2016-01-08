@@ -131,13 +131,13 @@ public enum ElementRole {
 			OutboundProcessingChain }, new ElementRole[0], true),
 
 	/** Event source. Binary event decoder. */
-	EventSource_BinaryEventDecoder("Binary Event Decoder", true, false, false),
+	EventSource_BinaryEventDecoder("Binary Event Decoder", false, false, false),
 
 	/** Event source. String event decoder. */
-	EventSource_StringEventDecoder("String Event Decoder", true, false, false),
+	EventSource_StringEventDecoder("String Event Decoder", false, false, false),
 
 	/** Event source. Event decoder. */
-	EventSource_EventDecoder("Event Decoder", true, false, false, new ElementRole[0], new ElementRole[] {
+	EventSource_EventDecoder("Event Decoder", false, false, false, new ElementRole[0], new ElementRole[] {
 			EventSource_BinaryEventDecoder,
 			EventSource_StringEventDecoder }),
 

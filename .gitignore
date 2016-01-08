@@ -15,6 +15,7 @@
 /sitewhere-mongodb/target
 /sitewhere-mule/target
 /sitewhere-protobuf/target
+/sitewhere-rabbit-mq/target
 /sitewhere-server-api/target
 /sitewhere-siddhi/target
 /sitewhere-solr/target
