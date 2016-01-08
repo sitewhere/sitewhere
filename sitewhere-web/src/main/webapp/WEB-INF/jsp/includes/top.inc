@@ -7,7 +7,7 @@
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/kendo.web.min.js"></script>
 <c:if test="${use_dataviz == true}">
-<script src="${pageContext.request.contextPath}/scripts/kendo.dataviz.min.js"></script>
+	<script src="${pageContext.request.contextPath}/scripts/kendo.dataviz.min.js"></script>
 </c:if>
 <script src="${pageContext.request.contextPath}/scripts/modernizr.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/sitewhere.js"></script>
@@ -181,6 +181,10 @@
 									<li class="divider"></li>
 								</c:when>
 							</c:choose>
+							<li><a href="http://www.sitewhere.org" target="_blank">SiteWhere Website</a></li>
+							<li><a href="http://documentation.sitewhere.org/userguide/adminui/adminui.html"
+								target="_blank">Documentation</a></li>
+							<li class="divider"></li>
 							<li><a tabindex="-1" href="<c:url value="/j_spring_security_logout"/>"
 								data-i18n="includes.top.LogOut"></a></li>
 						</ul>
