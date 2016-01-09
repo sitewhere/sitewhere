@@ -62,11 +62,11 @@ public class ActiveMQTests {
 	@Test
 	public void doRabbitMQTest() throws Exception {
 		String exchangeName = "sitewhere";
-		String queueName = "SITEWHERE.IN";
+		String queueName = "sitewhere.input";
 		String routingKey = "sitewhere";
 
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setUri("amqp://localhost:5672/SITEWHERE.IN");
+		factory.setUri("amqp://localhost:5672");
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
 

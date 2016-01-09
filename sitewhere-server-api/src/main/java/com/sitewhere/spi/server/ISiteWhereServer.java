@@ -15,17 +15,17 @@ import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.configuration.IConfigurationResolver;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUserManagement;
@@ -94,7 +94,7 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * 
 	 * @return
 	 */
-	public IConfigurationResolver getConfigurationResolver();
+	public IGlobalConfigurationResolver getConfigurationResolver();
 
 	/**
 	 * Get a tenant based on its authentication token.
@@ -186,24 +186,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException;
 
 	/**
-	 * Get outbound event processor chain for the given tenant.
+	 * Get the event processing subsystem for the given tenant.
 	 * 
 	 * @param tenant
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException;
-
-	/**
-	 * Get inbound event processor chain for the given tenant.
-	 * 
-	 * @param tenant
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public IInboundEventProcessorChain getInboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException;
+	public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException;
 
 	/**
 	 * Get asset module manager for tenant.
@@ -238,7 +227,7 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * 
 	 * @return
 	 */
-	public List<ILifecycleComponent> getRegisteredLifecycleComponents();
+	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents();
 
 	/**
 	 * Gets an {@link ILifecycleComponent} by unique id.

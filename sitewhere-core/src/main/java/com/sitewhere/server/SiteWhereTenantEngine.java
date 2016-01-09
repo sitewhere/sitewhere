@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,14 +25,9 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.configuration.TomcatConfigurationResolver;
-import com.sitewhere.device.communication.DeviceCommandEventProcessor;
-import com.sitewhere.device.event.processor.DefaultEventStorageProcessor;
-import com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain;
-import com.sitewhere.device.event.processor.DefaultOutboundEventProcessorChain;
-import com.sitewhere.device.event.processor.DeviceStreamProcessor;
+import com.sitewhere.configuration.ConfigurationUtils;
+import com.sitewhere.configuration.TomcatTenantConfigurationResolver;
 import com.sitewhere.device.event.processor.OutboundProcessingStrategyDecorator;
-import com.sitewhere.device.event.processor.RegistrationProcessor;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereTenantEngineState;
@@ -50,14 +46,14 @@ import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.configuration.IConfigurationResolver;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
+import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.ICachingDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.ISchedule;
@@ -70,7 +66,9 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 import com.sitewhere.spi.server.device.IDeviceModelInitializer;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
@@ -93,8 +91,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** SiteWhere global application context */
 	private ApplicationContext globalContext;
 
-	/** Allows Spring configuration to be resolved */
-	private IConfigurationResolver configurationResolver = new TomcatConfigurationResolver();
+	/** Supports global configuration management */
+	private IGlobalConfigurationResolver globalConfigurationResolver;
+
+	/** Supports tenant configuration management */
+	private ITenantConfigurationResolver tenantConfigurationResolver;
+
+	/** List of components registered to participate in SiteWhere server lifecycle */
+	private List<ITenantLifecycleComponent> registeredLifecycleComponents =
+			new ArrayList<ITenantLifecycleComponent>();
 
 	/** Device management cache provider implementation */
 	private IDeviceManagementCacheProvider deviceManagementCacheProvider;
@@ -108,14 +113,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** Interface to schedule management implementation */
 	private IScheduleManagement scheduleManagement;
 
-	/** Interface to inbound event processor chain */
-	private IInboundEventProcessorChain inboundEventProcessorChain;
-
-	/** Interface to outbound event processor chain */
-	private IOutboundEventProcessorChain outboundEventProcessorChain;
-
 	/** Interface to device communication subsystem implementation */
 	private IDeviceCommunication deviceCommunication;
+
+	/** Interface to event processing subsystem implementation */
+	private IEventProcessing eventProcessing;
 
 	/** Interface for the asset module manager */
 	private IAssetModuleManager assetModuleManager;
@@ -129,10 +131,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** Threads used to issue engine commands */
 	private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
 
-	public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent) {
+	public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent,
+			IGlobalConfigurationResolver global) {
 		super(LifecycleComponentType.TenantEngine);
 		setTenant(tenant);
 		this.globalContext = parent;
+		this.globalConfigurationResolver = global;
+		this.tenantConfigurationResolver =
+				new TomcatTenantConfigurationResolver(tenant, SiteWhere.getServer().getVersion(), global);
 	}
 
 	/*
@@ -144,6 +150,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	public void start() throws SiteWhereException {
 		// Clear the component list.
 		getLifecycleComponents().clear();
+
+		// Start lifecycle components.
+		for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
+			startNestedComponent(component, component.getComponentName() + " startup failed.", true);
+		}
 
 		// Start asset management.
 		startNestedComponent(getAssetManagement(), "Asset management startup failed.", true);
@@ -173,18 +184,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		startNestedComponent(getSearchProviderManager(), "Search provider manager startup failed.", true);
 		verifyDeviceModel();
 
-		// Enable outbound processor chain.
-		if (getOutboundEventProcessorChain() != null) {
-			startNestedComponent(getOutboundEventProcessorChain(),
-					"Outbound processor chain startup failed.", true);
-			getOutboundEventProcessorChain().setProcessingEnabled(true);
-		}
-
-		// Enable inbound processor chain.
-		if (getInboundEventProcessorChain() != null) {
-			startNestedComponent(getInboundEventProcessorChain(), "Inbound processor chain startup failed.",
-					true);
-		}
+		// Start event processing subsystem.
+		startNestedComponent(getEventProcessing(), "Event processing subsystem startup failed.", true);
 
 		// Start device communication subsystem.
 		startNestedComponent(getDeviceCommunication(), "Device communication subsystem startup failed.", true);
@@ -206,18 +207,32 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 		// Disable device communications.
 		getDeviceCommunication().lifecycleStop();
-		getInboundEventProcessorChain().lifecycleStop();
-		getOutboundEventProcessorChain().setProcessingEnabled(false);
-		getOutboundEventProcessorChain().lifecycleStop();
+		getEventProcessing().lifecycleStop();
 
 		// Stop core management implementations.
 		if (getDeviceManagementCacheProvider() != null) {
 			getDeviceManagementCacheProvider().lifecycleStop();
 		}
+
+		// Stop lifecycle components.
+		for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
+			component.lifecycleStop();
+		}
+
 		getDeviceManagement().lifecycleStop();
 		getAssetModuleManager().lifecycleStop();
 		getAssetManagement().lifecycleStop();
 		getSearchProviderManager().lifecycleStop();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getRegisteredLifecycleComponents()
+	 */
+	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents() {
+		return registeredLifecycleComponents;
 	}
 
 	/*
@@ -232,6 +247,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		if (getLifecycleStatus() == LifecycleStatus.Started) {
 			state.setComponentHierarchyState(getComponentHierarchyState());
 		}
+		state.setStaged(getTenantConfigurationResolver().hasStagedConfiguration());
 		return state;
 	}
 
@@ -313,17 +329,23 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	public boolean initialize() {
 		try {
+			// Verify that tenant configuration exists.
+			verifyTenantConfigured();
+
 			// Initialize the tenant Spring context.
 			initializeSpringContext();
+
+			// Register discoverable beans.
+			initializeDiscoverableBeans();
+
+			// Initialize event processing subsystem.
+			initializeEventProcessingSubsystem();
 
 			// Initialize device communication subsystem.
 			initializeDeviceCommunicationSubsystem();
 
 			// Initialize device management.
 			initializeDeviceManagement();
-
-			// Initialize processing chain for inbound events.
-			initializeInboundEventProcessorChain();
 
 			// Initialize asset management.
 			initializeAssetManagement();
@@ -350,14 +372,63 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Verifies and loads the Spring configuration file.
+	 * Verifies that a configuration exists for the tenant. If not, one is created based
+	 * on the default template.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void verifyTenantConfigured() throws SiteWhereException {
+		if (!getTenantConfigurationResolver().hasValidConfiguration()) {
+			getTenantConfigurationResolver().createDefaultTenantConfiguration();
+		}
+	}
+
+	/**
+	 * Loads the tenant configuration file. If a new configuration is staged, it is
+	 * transitioned into the active configuration.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
+		// Handle staged configuration if available.
+		LOGGER.info("Checking for staged tenant configuration.");
+		byte[] config = getTenantConfigurationResolver().getStagedTenantConfiguration();
+		if (config != null) {
+			LOGGER.info("Staged tenant configuration found for '" + getTenant().getName()
+					+ "'. Transitioning to active.");
+			getTenantConfigurationResolver().transitionStagedToActiveTenantConfiguration();
+		} else {
+			LOGGER.info("No staged tenant configuration found.");
+		}
+
+		// Load the active configuration and copy the default if necessary.
+		LOGGER.info("Loading active tenant configuration for '" + getTenant().getName() + "'.");
+		config = getTenantConfigurationResolver().getActiveTenantConfiguration();
+		if (config == null) {
+			LOGGER.info("No active configuration found. Copying default configuration.");
+			config = getTenantConfigurationResolver().createDefaultTenantConfiguration();
+		}
 		this.tenantContext =
-				getConfigurationResolver().resolveTenantContext(getTenant(),
+				ConfigurationUtils.buildTenantContext(config, getTenant(),
 						SiteWhere.getServer().getVersion(), globalContext);
+	}
+
+	/**
+	 * Initialize beans marked with {@link IDiscoverableTenantLifecycleComponent}
+	 * interface and add them as registered components.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeDiscoverableBeans() throws SiteWhereException {
+		Map<String, IDiscoverableTenantLifecycleComponent> components =
+				tenantContext.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		getRegisteredLifecycleComponents().clear();
+
+		LOGGER.info("Registering " + components.size() + " discoverable components.");
+		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+			LOGGER.info("Registering " + component.getComponentName() + ".");
+			getRegisteredLifecycleComponents().add(component);
+		}
 	}
 
 	/**
@@ -410,44 +481,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			}
 		}
 
-		try {
-			// If outbound device event processor chain is defined, use it.
-			outboundEventProcessorChain =
-					(IOutboundEventProcessorChain) tenantContext.getBean(SiteWhereServerBeans.BEAN_OUTBOUND_PROCESSOR_CHAIN);
-			management = new OutboundProcessingStrategyDecorator(management);
-			LOGGER.info("Event processor chain found with "
-					+ outboundEventProcessorChain.getProcessors().size() + " processors.");
-		} catch (NoSuchBeanDefinitionException e) {
-			// If no processor chain is defined, use a default chain that supports core
-			// system functionality.
-			LOGGER.info("No outbound event processor chain found. Using defaults.");
-			outboundEventProcessorChain = new DefaultOutboundEventProcessorChain();
-			outboundEventProcessorChain.getProcessors().add(new DeviceCommandEventProcessor());
-		}
-
-		return management;
-	}
-
-	/**
-	 * Initializes the {@link IInboundEventProcessorChain} that handles events coming into
-	 * the system from external devices.
-	 * 
-	 * @throws SiteWhereException
-	 */
-	protected void initializeInboundEventProcessorChain() throws SiteWhereException {
-		try {
-			// If inbound device event processor chain is defined, use it.
-			inboundEventProcessorChain =
-					(IInboundEventProcessorChain) tenantContext.getBean(SiteWhereServerBeans.BEAN_INBOUND_PROCESSOR_CHAIN);
-		} catch (NoSuchBeanDefinitionException e) {
-			// If no processor chain is defined, use a default chain that supports core
-			// system functionality.
-			LOGGER.info("No inbound event processor chain found. Using defaults.");
-			inboundEventProcessorChain = new DefaultInboundEventProcessorChain();
-			inboundEventProcessorChain.getProcessors().add(new DefaultEventStorageProcessor());
-			inboundEventProcessorChain.getProcessors().add(new RegistrationProcessor());
-			inboundEventProcessorChain.getProcessors().add(new DeviceStreamProcessor());
-		}
+		// Routes stored events to outbound processing strategy.
+		return new OutboundProcessingStrategyDecorator(management);
 	}
 
 	/**
@@ -461,6 +496,20 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 					(IDeviceCommunication) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No device communication subsystem implementation configured.");
+		}
+	}
+
+	/**
+	 * Verify and initialize event processing subsystem implementation.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeEventProcessingSubsystem() throws SiteWhereException {
+		try {
+			eventProcessing =
+					(IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No event processing subsystem implementation configured.");
 		}
 	}
 
@@ -555,7 +604,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			ISearchResults<IAssetCategory> categories =
 					getAssetManagement().listAssetCategories(new SearchCriteria(1, 1));
 			if (categories.getNumResults() == 0) {
-				init.initialize(getAssetManagement());
+				init.initialize(getTenantConfigurationResolver(), getAssetManagement());
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No asset model initializer found in Spring bean configuration. Skipping.");
@@ -608,14 +657,29 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getConfigurationResolver()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getGlobalConfigurationResolver()
 	 */
-	public IConfigurationResolver getConfigurationResolver() {
-		return configurationResolver;
+	public IGlobalConfigurationResolver getGlobalConfigurationResolver() {
+		return globalConfigurationResolver;
 	}
 
-	public void setConfigurationResolver(IConfigurationResolver configurationResolver) {
-		this.configurationResolver = configurationResolver;
+	public void setConfigurationResolver(IGlobalConfigurationResolver configurationResolver) {
+		this.globalConfigurationResolver = configurationResolver;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getTenantConfigurationResolver()
+	 */
+	public ITenantConfigurationResolver getTenantConfigurationResolver() {
+		return tenantConfigurationResolver;
+	}
+
+	public void setTenantConfigurationResolver(ITenantConfigurationResolver tenantConfigurationResolver) {
+		this.tenantConfigurationResolver = tenantConfigurationResolver;
 	}
 
 	/*
@@ -674,34 +738,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getInboundEventProcessorChain()
-	 */
-	public IInboundEventProcessorChain getInboundEventProcessorChain() {
-		return inboundEventProcessorChain;
-	}
-
-	public void setInboundEventProcessorChain(IInboundEventProcessorChain inboundEventProcessorChain) {
-		this.inboundEventProcessorChain = inboundEventProcessorChain;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getOutboundEventProcessorChain()
-	 */
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain() {
-		return outboundEventProcessorChain;
-	}
-
-	public void setOutboundEventProcessorChain(IOutboundEventProcessorChain outboundEventProcessorChain) {
-		this.outboundEventProcessorChain = outboundEventProcessorChain;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceCommunication()
 	 */
 	public IDeviceCommunication getDeviceCommunication() {
@@ -710,6 +746,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	public void setDeviceCommunication(IDeviceCommunication deviceCommunication) {
 		this.deviceCommunication = deviceCommunication;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getEventProcessing()
+	 */
+	public IEventProcessing getEventProcessing() {
+		return eventProcessing;
+	}
+
+	public void setEventProcessing(IEventProcessing eventProcessing) {
+		this.eventProcessing = eventProcessing;
 	}
 
 	/*

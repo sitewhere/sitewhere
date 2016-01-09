@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.configuration.TomcatConfigurationResolver;
 import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.rest.model.asset.PersonAsset;
@@ -20,11 +19,11 @@ import com.sitewhere.rest.model.asset.request.AssetCategoryCreateRequest;
 import com.sitewhere.rest.model.asset.request.HardwareAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.LocationAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
-import com.sitewhere.server.asset.filesystem.IFileSystemAssetModuleConstants;
 import com.sitewhere.server.asset.filesystem.MarshalUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetManagement;
+import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 
 /**
@@ -60,15 +59,16 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	 * 
 	 * @see
 	 * com.sitewhere.spi.server.asset.IAssetModelInitializer#initialize(com.sitewhere.
-	 * spi.asset.IAssetManagement)
+	 * spi.configuration.ITenantConfigurationResolver,
+	 * com.sitewhere.spi.asset.IAssetManagement)
 	 */
 	@Override
-	public void initialize(IAssetManagement assetManagement) throws SiteWhereException {
+	public void initialize(ITenantConfigurationResolver configuration, IAssetManagement assetManagement)
+			throws SiteWhereException {
 		this.assetManagement = assetManagement;
 
 		// Locate the folder that contains asset data files.
-		File config = TomcatConfigurationResolver.getSiteWhereConfigFolder();
-		File assetsFolder = new File(config, IFileSystemAssetModuleConstants.ASSETS_FOLDER);
+		File assetsFolder = new File(configuration.getAssetResourcesRoot());
 		if (!assetsFolder.exists()) {
 			throw new SiteWhereException("Assets subfolder not found. Looking for: "
 					+ assetsFolder.getAbsolutePath());

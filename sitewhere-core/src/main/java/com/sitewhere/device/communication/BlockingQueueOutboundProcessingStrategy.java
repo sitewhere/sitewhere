@@ -51,8 +51,14 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	/** Number of threads used for event processing */
 	private static final int EVENT_PROCESSOR_THREAD_COUNT = 10;
 
-	/** Blocking queue of pending create requests from receivers */
-	private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(MAX_QUEUE_SIZE);
+	/** Number of events added before queue blocks */
+	private int maxQueueSize = MAX_QUEUE_SIZE;
+
+	/** Number of thread processing queue */
+	private int eventProcessorThreadCount = EVENT_PROCESSOR_THREAD_COUNT;
+
+	/** Blocking queue of events waiting for outbound processing */
+	private BlockingQueue<Object> queue;
 
 	/** Thread pool for processing events */
 	private ExecutorService processorPool;
@@ -68,13 +74,14 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		this.queue = new ArrayBlockingQueue<Object>(getMaxQueueSize());
 		processorPool =
-				Executors.newFixedThreadPool(EVENT_PROCESSOR_THREAD_COUNT, new ProcessorsThreadFactory());
-		for (int i = 0; i < EVENT_PROCESSOR_THREAD_COUNT; i++) {
+				Executors.newFixedThreadPool(getEventProcessorThreadCount(), new ProcessorsThreadFactory());
+		for (int i = 0; i < getEventProcessorThreadCount(); i++) {
 			processorPool.execute(new BlockingDeviceEventProcessor(queue));
 		}
 		LOGGER.info("Started blocking queue outbound processing strategy with queue size of "
-				+ MAX_QUEUE_SIZE + " and " + EVENT_PROCESSOR_THREAD_COUNT + " threads.");
+				+ getMaxQueueSize() + " and " + getEventProcessorThreadCount() + " threads.");
 	}
 
 	/*
@@ -183,6 +190,22 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 		queue.offer(operation);
 	}
 
+	public int getMaxQueueSize() {
+		return maxQueueSize;
+	}
+
+	public void setMaxQueueSize(int maxQueueSize) {
+		this.maxQueueSize = maxQueueSize;
+	}
+
+	public int getEventProcessorThreadCount() {
+		return eventProcessorThreadCount;
+	}
+
+	public void setEventProcessorThreadCount(int eventProcessorThreadCount) {
+		this.eventProcessorThreadCount = eventProcessorThreadCount;
+	}
+
 	/**
 	 * Blocking thread that processes {@link IDeviceEvent} messages from a queue.
 	 * 
@@ -218,23 +241,17 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 				try {
 					Object event = queue.take();
 					if (event instanceof IDeviceMeasurements) {
-						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onMeasurements(
-								(IDeviceMeasurements) event);
+						getOutboundProcessorChain().onMeasurements((IDeviceMeasurements) event);
 					} else if (event instanceof IDeviceLocation) {
-						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onLocation(
-								(IDeviceLocation) event);
+						getOutboundProcessorChain().onLocation((IDeviceLocation) event);
 					} else if (event instanceof IDeviceAlert) {
-						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onAlert(
-								(IDeviceAlert) event);
+						getOutboundProcessorChain().onAlert((IDeviceAlert) event);
 					} else if (event instanceof IDeviceCommandInvocation) {
-						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onCommandInvocation(
-								(IDeviceCommandInvocation) event);
+						getOutboundProcessorChain().onCommandInvocation((IDeviceCommandInvocation) event);
 					} else if (event instanceof IDeviceCommandResponse) {
-						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onCommandResponse(
-								(IDeviceCommandResponse) event);
+						getOutboundProcessorChain().onCommandResponse((IDeviceCommandResponse) event);
 					} else if (event instanceof IBatchOperation) {
-						SiteWhere.getServer().getOutboundEventProcessorChain(getTenant()).onBatchOperation(
-								(IBatchOperation) event);
+						getOutboundProcessorChain().onBatchOperation((IBatchOperation) event);
 					} else {
 						throw new RuntimeException("Unknown device event type in outbound processing: "
 								+ event.getClass().getName());
@@ -247,6 +264,16 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 					LOGGER.error("Unhandled exception in outbound event processing.", e);
 				}
 			}
+		}
+
+		/**
+		 * Get the outbound processing chain implementation for this tenant.
+		 * 
+		 * @return
+		 * @throws SiteWhereException
+		 */
+		protected IOutboundEventProcessorChain getOutboundProcessorChain() throws SiteWhereException {
+			return SiteWhere.getServer().getEventProcessing(getTenant()).getOutboundEventProcessorChain();
 		}
 	}
 }

@@ -11,13 +11,16 @@ import groovy.util.GroovyScriptEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -25,7 +28,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class GroovyConfiguration extends TenantLifecycleComponent implements InitializingBean {
+public class GroovyConfiguration extends TenantLifecycleComponent implements
+		IDiscoverableTenantLifecycleComponent {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GroovyConfiguration.class);
@@ -33,7 +37,7 @@ public class GroovyConfiguration extends TenantLifecycleComponent implements Ini
 	/** Bean name where global Groovy configuration is expected */
 	public static final String GROOVY_CONFIGURATION_BEAN = "swGroovyConfiguration";
 
-	/** Path relative to configuration root where Groovy scripts are stored */
+	/** Path relative to scripts root where Groovy scripts are stored */
 	private static final String GROOVY_REL_SCRIPT_PATH = "groovy";
 
 	/** Groovy script engine */
@@ -55,15 +59,6 @@ public class GroovyConfiguration extends TenantLifecycleComponent implements Ini
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	public void afterPropertiesSet() throws Exception {
-		SiteWhere.getServer().getRegisteredLifecycleComponents().add(this);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
@@ -73,13 +68,39 @@ public class GroovyConfiguration extends TenantLifecycleComponent implements Ini
 				groovyScriptEngine = new GroovyScriptEngine(getExternalScriptRoot());
 				LOGGER.info("Groovy will load scripts relative to external URL: " + getExternalScriptRoot());
 			} else {
-				File root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
-				File scriptPath = new File(root, GROOVY_REL_SCRIPT_PATH);
-				if (!scriptPath.exists()) {
-					throw new SiteWhereException("Groovy configured, but scripts path does not exist.");
+				// Handle global scripts.
+				URI scriptsUri = null;
+				if (getTenant() == null) {
+					URI root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
+					File global =
+							new File(new File(root), TomcatGlobalConfigurationResolver.GLOBAL_FOLDER_NAME);
+					if (!global.exists()) {
+						global.mkdir();
+					}
+					scriptsUri =
+							new File(global, TomcatGlobalConfigurationResolver.SCRIPTS_FOLDER_NAME).toURI();
+					LOGGER.info("Starting global Groovy configuration with scripts loading from: "
+							+ scriptsUri);
 				}
-				groovyScriptEngine = new GroovyScriptEngine(scriptPath.getAbsolutePath());
-				LOGGER.info("Groovy will load scripts relative to: " + scriptPath.getAbsolutePath());
+
+				// Handle tenant scripts.
+				else {
+					ISiteWhereTenantEngine engine =
+							SiteWhere.getServer().getTenantEngine(getTenant().getId());
+					scriptsUri = engine.getTenantConfigurationResolver().getScriptResourcesRoot();
+					LOGGER.info("Starting Groovy configuration for '" + getTenant().getName()
+							+ "' with scripts loading from: " + scriptsUri
+							+ ". Global scripts will be overridden.");
+				}
+				File scripts = new File(scriptsUri);
+				if (!scripts.exists()) {
+					scripts.mkdir();
+				}
+				File groovy = new File(scripts, GROOVY_REL_SCRIPT_PATH);
+				if (!groovy.exists()) {
+					groovy.mkdir();
+				}
+				groovyScriptEngine = new GroovyScriptEngine(groovy.getAbsolutePath());
 			}
 
 			groovyScriptEngine.getConfig().setVerbose(isVerbose());

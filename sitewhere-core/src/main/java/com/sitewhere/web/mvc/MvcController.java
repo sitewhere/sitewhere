@@ -59,7 +59,7 @@ public class MvcController {
 	 * @return
 	 */
 	protected ModelAndView showError(Exception e) {
-		LOGGER.error(e);
+		LOGGER.error("Error in MVC controller.", e);
 		return showError(e.getMessage());
 	}
 

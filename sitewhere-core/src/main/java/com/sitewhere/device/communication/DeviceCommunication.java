@@ -10,6 +10,7 @@ package com.sitewhere.device.communication;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
 import com.sitewhere.server.batch.BatchOperationManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -20,11 +21,10 @@ import com.sitewhere.spi.device.communication.ICommandProcessingStrategy;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.communication.IDeviceStreamManager;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
-import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -38,25 +38,20 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	/** Configured registration manager */
 	private IRegistrationManager registrationManager = new RegistrationManager();
 
+	/** Configured symbol generator manager */
+	private ISymbolGeneratorManager symbolGeneratorManager = new SymbolGeneratorManager();
+
 	/** Configured batch operation manager */
 	private IBatchOperationManager batchOperationManager = new BatchOperationManager();
 
 	/** Configured device stream manager */
 	private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();
 
-	/** Configured inbound processing strategy */
-	private IInboundProcessingStrategy inboundProcessingStrategy =
-			new BlockingQueueInboundProcessingStrategy();
-
 	/** Configured list of inbound event sources */
 	private List<IInboundEventSource<?>> inboundEventSources = new ArrayList<IInboundEventSource<?>>();
 
 	/** Configured command processing strategy */
 	private ICommandProcessingStrategy commandProcessingStrategy = new DefaultCommandProcessingStrategy();
-
-	/** Configured outbound processing strategy */
-	private IOutboundProcessingStrategy outboundProcessingStrategy =
-			new BlockingQueueOutboundProcessingStrategy();
 
 	/** Configured outbound command router */
 	private IOutboundCommandRouter outboundCommandRouter = new NoOpCommandRouter();
@@ -98,18 +93,18 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 		getOutboundCommandRouter().initialize(getCommandDestinations());
 		startNestedComponent(getOutboundCommandRouter(), true);
 
-		// Start outbound processing strategy.
-		if (getOutboundProcessingStrategy() == null) {
-			throw new SiteWhereException(
-					"No outbound processing strategy configured for communication subsystem.");
-		}
-		startNestedComponent(getOutboundProcessingStrategy(), true);
-
 		// Start registration manager.
 		if (getRegistrationManager() == null) {
 			throw new SiteWhereException("No registration manager configured for communication subsystem.");
 		}
 		startNestedComponent(getRegistrationManager(), true);
+
+		// Start symbol generator manager.
+		if (getSymbolGeneratorManager() == null) {
+			throw new SiteWhereException(
+					"No symbol generator manager configured for communication subsystem.");
+		}
+		startNestedComponent(getSymbolGeneratorManager(), true);
 
 		// Start batch operation manager.
 		if (getBatchOperationManager() == null) {
@@ -122,13 +117,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 			throw new SiteWhereException("No device stream manager configured for communication subsystem.");
 		}
 		startNestedComponent(getDeviceStreamManager(), true);
-
-		// Start inbound processing strategy.
-		if (getInboundProcessingStrategy() == null) {
-			throw new SiteWhereException(
-					"No inbound processing strategy configured for communication subsystem.");
-		}
-		startNestedComponent(getInboundProcessingStrategy(), true);
 
 		// Start device event sources.
 		if (getInboundEventSources() != null) {
@@ -152,11 +140,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 			}
 		}
 
-		// Stop inbound processing strategy.
-		if (getInboundProcessingStrategy() != null) {
-			getInboundProcessingStrategy().lifecycleStop();
-		}
-
 		// Stop device stream manager.
 		if (getDeviceStreamManager() != null) {
 			getDeviceStreamManager().lifecycleStop();
@@ -167,14 +150,14 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 			getBatchOperationManager().lifecycleStop();
 		}
 
+		// Stop symbol generator manager.
+		if (getSymbolGeneratorManager() != null) {
+			getSymbolGeneratorManager().lifecycleStop();
+		}
+
 		// Stop registration manager.
 		if (getRegistrationManager() != null) {
 			getRegistrationManager().lifecycleStop();
-		}
-
-		// Stop outbound processing strategy.
-		if (getOutboundProcessingStrategy() != null) {
-			getOutboundProcessingStrategy().lifecycleStop();
 		}
 
 		// Stop command processing strategy.
@@ -233,6 +216,21 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.communication.IDeviceCommunication#getSymbolGeneratorManager
+	 * ()
+	 */
+	public ISymbolGeneratorManager getSymbolGeneratorManager() {
+		return symbolGeneratorManager;
+	}
+
+	public void setSymbolGeneratorManager(ISymbolGeneratorManager symbolGeneratorManager) {
+		this.symbolGeneratorManager = symbolGeneratorManager;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.communication.IDeviceCommunication#getBatchOperationManager
 	 * ()
 	 */
@@ -262,20 +260,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
-	 * getInboundProcessingStrategy()
-	 */
-	public IInboundProcessingStrategy getInboundProcessingStrategy() {
-		return inboundProcessingStrategy;
-	}
-
-	public void setInboundProcessingStrategy(IInboundProcessingStrategy inboundProcessingStrategy) {
-		this.inboundProcessingStrategy = inboundProcessingStrategy;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IDeviceCommunication#getInboundEventSources
 	 * ()
@@ -300,20 +284,6 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
 	public void setCommandProcessingStrategy(ICommandProcessingStrategy commandProcessingStrategy) {
 		this.commandProcessingStrategy = commandProcessingStrategy;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
-	 * getOutboundProcessingStrategy()
-	 */
-	public IOutboundProcessingStrategy getOutboundProcessingStrategy() {
-		return outboundProcessingStrategy;
-	}
-
-	public void setOutboundProcessingStrategy(IOutboundProcessingStrategy outboundProcessingStrategy) {
-		this.outboundProcessingStrategy = outboundProcessingStrategy;
 	}
 
 	/*

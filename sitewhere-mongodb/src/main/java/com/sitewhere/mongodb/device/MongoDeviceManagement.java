@@ -1825,8 +1825,11 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public IZone getZone(String zoneToken) throws SiteWhereException {
-		DBObject found = assertZone(zoneToken);
-		return MongoZone.fromDBObject(found);
+		DBObject dbZone = getZoneDBObjectByToken(zoneToken);
+		if (dbZone != null) {
+			return MongoZone.fromDBObject(dbZone);
+		}
+		return null;
 	}
 
 	/*
@@ -1918,8 +1921,11 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public IDeviceGroup getDeviceGroup(String token) throws SiteWhereException {
-		DBObject found = assertDeviceGroup(token);
-		return MongoDeviceGroup.fromDBObject(found);
+		DBObject found = getDeviceGroupDBObjectByToken(token);
+		if (found != null) {
+			return MongoDeviceGroup.fromDBObject(found);
+		}
+		return null;
 	}
 
 	/*
@@ -2115,8 +2121,11 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public IBatchOperation getBatchOperation(String token) throws SiteWhereException {
-		DBObject found = assertBatchOperation(token);
-		return MongoBatchOperation.fromDBObject(found);
+		DBObject found = getBatchOperationDBObjectByToken(token);
+		if (found != null) {
+			return MongoBatchOperation.fromDBObject(found);
+		}
+		return null;
 	}
 
 	/*

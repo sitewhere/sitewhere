@@ -56,6 +56,9 @@ public enum LifecycleComponentType {
 	/** Device communication subsystem */
 	DeviceCommunication,
 
+	/** Event processing subsystem */
+	EventProcessing,
+
 	/** Command processing strategy */
 	CommandProcessingStrategy,
 
@@ -81,7 +84,13 @@ public enum LifecycleComponentType {
 	OutboundProcessingStrategy,
 
 	/** Registration manager */
-	RegistrationManger,
+	RegistrationManager,
+
+	/** Symbol generator manager */
+	SymbolGeneratorManager,
+
+	/** Symbol generator */
+	SymbolGenerator,
 
 	/** Batch operation manager */
 	BatchOperationManager,

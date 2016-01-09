@@ -13,6 +13,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.batch.IBatchOperationManager;
 import com.sitewhere.spi.device.command.ISystemCommand;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -30,18 +31,18 @@ public interface IDeviceCommunication extends ITenantLifecycleComponent {
 	public List<IInboundEventSource<?>> getInboundEventSources();
 
 	/**
-	 * Get the strategy for moving decoded events into the inbound chain.
-	 * 
-	 * @return
-	 */
-	public IInboundProcessingStrategy getInboundProcessingStrategy();
-
-	/**
 	 * Get the configured registration manager.
 	 * 
 	 * @return
 	 */
 	public IRegistrationManager getRegistrationManager();
+
+	/**
+	 * Get manager for generating symbols for entities.
+	 * 
+	 * @return
+	 */
+	public ISymbolGeneratorManager getSymbolGeneratorManager();
 
 	/**
 	 * Get the configured batch operation manager.
@@ -56,13 +57,6 @@ public interface IDeviceCommunication extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public IDeviceStreamManager getDeviceStreamManager();
-
-	/**
-	 * Get the strategy for moving processed events into the outbound chain.
-	 * 
-	 * @return
-	 */
-	public IOutboundProcessingStrategy getOutboundProcessingStrategy();
 
 	/**
 	 * Get the command processing strategy.

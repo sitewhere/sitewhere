@@ -3,7 +3,7 @@
 <html class="sw-body">
 <head>
 <title>SiteWhere - Login</title>
-<script src="${pageContext.request.contextPath}/scripts/jquery.js"></script>
+<script src="${pageContext.request.contextPath}/scripts/jquery-1.11.3.min.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/kendo.web.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/sitewhere.js"></script>
@@ -102,7 +102,7 @@ sitewhere_i18next.sitewhere_title = "login.title";
 			<span style="position: absolute; right: 10px; color: #999;">
 				${version.versionIdentifier}.${version.buildTimestamp} (${version.editionIdentifier})
 			</span>
-			Copyright ï¿½ 2009-2014 SiteWhere, LLC.
+			Copyright © 2009-2016 SiteWhere, LLC.
 		</div>
 	</div>
 </body>

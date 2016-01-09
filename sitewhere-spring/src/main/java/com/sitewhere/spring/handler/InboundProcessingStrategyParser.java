@@ -38,9 +38,11 @@ public class InboundProcessingStrategyParser {
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
-				throw new RuntimeException("Unknown registration element: " + child.getLocalName());
+				throw new RuntimeException("Unknown inbound processing strategy element: "
+						+ child.getLocalName());
 			}
 			switch (type) {
+			case BlockingQueueInboundProcessingStrategy:
 			case DefaultInboundProcessingStrategy: {
 				return parseDefaultInboundProcessingStrategy(child, context);
 			}
@@ -59,6 +61,11 @@ public class InboundProcessingStrategyParser {
 	protected BeanDefinition parseDefaultInboundProcessingStrategy(Element element, ParserContext context) {
 		BeanDefinitionBuilder manager =
 				BeanDefinitionBuilder.rootBeanDefinition(BlockingQueueInboundProcessingStrategy.class);
+
+		Attr maxQueueSize = element.getAttributeNode("maxQueueSize");
+		if (maxQueueSize != null) {
+			manager.addPropertyValue("maxQueueSize", maxQueueSize.getValue());
+		}
 
 		Attr numEventProcessorThreads = element.getAttributeNode("numEventProcessorThreads");
 		if (numEventProcessorThreads != null) {
@@ -99,6 +106,9 @@ public class InboundProcessingStrategyParser {
 	 * @author Derek
 	 */
 	public static enum Elements {
+
+		/** Blocking queue inbound processing strategy */
+		BlockingQueueInboundProcessingStrategy("blocking-queue-inbound-processing-strategy"),
 
 		/** Default inbound processing strategy */
 		DefaultInboundProcessingStrategy("default-inbound-processing-strategy");

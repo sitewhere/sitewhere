@@ -1,0 +1,117 @@
+<hardware-assets>
+	<!-- Raspberry Pi -->
+	<hardware-asset id="174" name="Raspberry Pi" sku="RPI" device="true">
+		<description>The Raspberry Pi is a credit-card-sized single-board computer developed in the UK by the Raspberry Pi Foundation with the intention of promoting the teaching of basic computer science in schools.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/misc/raspberry-pi.jpg</image-url>
+		<property name="manufacturer" value="Raspberry Pi Foundation"/>
+		<property name="cpu" value="ARM1176JZF-S"/>
+		<property name="sd.size" value="32gb"/>
+	</hardware-asset>
+	
+	<!-- MeiTrack personal trackers -->
+	<hardware-asset id="175" name="MeiTrack MT90" sku="MT90" device="true">
+		<description>MT90 is a waterproof GPS personal tracker suitable for lone workers, kids, aged, pet, assets, vehicle and fleet management.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/meitrack/mt90.jpg</image-url>
+		<property name="manufacturer" value="MeiTrack"/>
+		<property name="weight" value="1.000"/>
+		<property name="sos.button" value="true"/>
+		<property name="two.way.audio" value="false"/>
+	</hardware-asset>
+	
+	<!-- Ekahau tags and sensors -->
+	<hardware-asset id="200" name="Ekahau A4 Tag" sku="EA4" device="true">
+		<description>A4 Wi-Fi tags act as small computers that transmit data to the Ekahau Vision server which determines asset location and status, displayed in the Vision software interface.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-a4-tag.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="programmable.buttons" value="true"/>
+		<property name="remote.audio" value="true"/>
+		<property name="wearable" value="false"/>
+		<property name="senses.temperature" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="201" name="Ekahau B4 Tag" sku="EB4" device="true">
+		<description>B4 badge tags offer an integrated staff duress or panic switch--employees just tug on the badge and their location and an alarm is sent to security and other designated groups.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-b4-tag.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="programmable.buttons" value="true"/>
+		<property name="remote.audio" value="false"/>
+		<property name="wearable" value="true"/>
+		<property name="senses.temperature" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="202" name="Ekahau T301W Wearable Tag" sku="ET301W" device="true">
+		<description>The waterproof and wearable T301W wristband tag includes two colored LEDs which signal events to the tag wearer, in addition to vibration-based alerting. Patients can acknowledge calls and press the call button to request help.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-t301w-wearable-tag.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="programmable.buttons" value="false"/>
+		<property name="remote.audio" value="false"/>
+		<property name="wearable" value="true"/>
+		<property name="senses.temperature" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="203" name="Ekahau Wireless TS1 Temperature Sensor" sku="ETS1" device="true">
+		<description>The lightweight TS1 temperature tag with probe measures and communicates temperatures ranging from: -80° C - + 125° C, and custom high/low threshold settings. TS1 sensors come with a programmable on-board audio buzzer and visual LED alert buttons.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-ts1.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="senses.temperature" value="true"/>
+		<property name="senses.humidity" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="204" name="Ekahau Wireless TS2 Temperature Sensor" sku="ETS2" device="true">
+		<description>With the TS2 Dual Temperature Sensor tag, you can monitor two separate probes from the same sensor which lowers the total cost of deployment. The temperature sensor tag itself remains always outside of the extreme temperatures allowing for easy maintenance and better network connectivity. In case of network outages, the Ekahau TS tags can locally store the temperature measurements and automatically provide the measurements to the application after the outage</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-ts1.jpg</image-url>
+		<property name="wifi" value="true"/>
+		<property name="senses.temperature" value="true"/>
+		<property name="senses.humidity" value="false"/>
+	</hardware-asset>
+	<hardware-asset id="205" name="Ekahau HS1 Humidity Sensor" sku="EHS1" device="true">
+		<description>The Ekahau HS1 humidity tags provide an automated way to measure and monitor the relative humidity and surrouding temperature.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/ekahau/ekahau-humidity-sensor.jpg</image-url>
+		<property name="manufacturer" value="Ekahau"/>
+		<property name="wifi" value="true"/>
+		<property name="senses.temperature" value="false"/>
+		<property name="senses.humidity" value="true"/>
+	</hardware-asset>
+	
+	<!-- Caterpillar equipment -->
+	<hardware-asset id="300" name="Caterpillar 416F Backhoe Loader" sku="CAT-416F">
+		<description>Cat® Backhoe Loaders set the industry standard for operator comfort, exceptional performance, versatility and jobsite efficiency.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-416f.jpg</image-url>
+		<property name="manufacturer" value="Caterpillar"/>
+		<property name="net.power" value="87"/>
+		<property name="operating.weight" value="24251"/>
+		<property name="dig.depth" value="14.3"/>
+	</hardware-asset>
+	<hardware-asset id="301" name="Caterpillar 430F Backhoe Loader" sku="CAT-430F">
+		<description>Cat® Backhoe Loaders set the industry standard for operator comfort, exceptional performance, versatility and jobsite efficiency.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-430f.jpg</image-url>
+		<property name="manufacturer" value="Caterpillar"/>
+		<property name="net.power" value="107"/>
+		<property name="operating.weight" value="24251"/>
+		<property name="dig.depth" value="15.4"/>
+	</hardware-asset>
+	<hardware-asset id="302" name="Caterpillar D5K2 Dozer" sku="CAT-D5K2">
+		<description>The Cat® small dozers are designed to optimize speed, transportability, maneuverability, versatility and finish grading accuracy. These crawler dozers are ideal for residential construction performing such tasks as clearing and grading lots, sloping the sides of roads, back-filling, and final grade work for landscaping and driveway construction.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-d5k2.jpg</image-url>
+		<property name="manufacturer" value="Caterpillar"/>
+		<property name="net.power" value="104"/>
+		<property name="operating.weight" value="20534"/>
+		<property name="fuel.tank" value="51.5"/>
+	</hardware-asset>
+	<hardware-asset id="303" name="Caterpillar 320E L Excavator" sku="CAT-320E-L">
+		<description>A great all-around excavator, the 320E is easy to maneuver, yet powerful enough to handle tough jobs. Lift capacity has been improved by 5 percent on the standard machine and up to 20 percent on the Heavy Lift configuration. A lower emissions engine boosts fuel efficiency, while other new features enhance safety and productivity, cut service time and reduce operating costs.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-320e.jpg</image-url>
+		<property name="manufacturer" value="Caterpillar"/>
+		<property name="net.power" value="153"/>
+		<property name="operating.weight" value="54450"/>
+		<property name="fuel.tank" value="108.3"/>
+	</hardware-asset>
+	<hardware-asset id="304" name="Caterpillar 324E Excavator" sku="CAT-324E">
+		<description>The new 324E offers enhanced versatility and maneuverability. So it's a great option for tight spaces where controllability is critical. Plus, the 324E has more horsepower and operator station improvements that will keep your team working productively and comfortably all shift long.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/construction/cat/cat-324e.jpg</image-url>
+		<property name="manufacturer" value="Caterpillar"/>
+		<property name="net.power" value="190"/>
+		<property name="operating.weight" value="64990"/>
+		<property name="fuel.tank" value="137.37"/>
+	</hardware-asset>
+</hardware-assets>

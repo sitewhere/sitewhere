@@ -1,0 +1,25 @@
+<person-assets>
+	<person-asset id="1" userName="derek" name="Derek Adams" emailAddress="derek.adams@sitewhere.com">
+		<photo-url>https://s3.amazonaws.com/sitewhere-demo/people/derek.jpg</photo-url>
+		<roles>
+			<role>dev</role>
+		</roles>
+		<property name="phone" value="678-555-1212"/>
+	</person-asset>
+	<person-asset id="2" userName="bryan" name="Bryan Rank" emailAddress="bryan.rank@sitewhere.com">
+		<photo-url>https://s3.amazonaws.com/sitewhere-demo/people/bryan.jpg</photo-url>
+		<roles>
+			<role>techsales</role>
+			<role>dev</role>
+		</roles>
+		<property name="phone" value="770-555-1212"/>
+	</person-asset>
+	<person-asset id="3" userName="martin" name="Martin Weber" emailAddress="martin.weber@sitewhere.com">
+		<photo-url>https://s3.amazonaws.com/sitewhere-demo/people/martin.jpg</photo-url>
+		<roles>
+			<role>busdev</role>
+			<role>dev</role>
+		</roles>
+		<property name="phone" value="404-555-1212"/>
+	</person-asset>
+</person-assets>

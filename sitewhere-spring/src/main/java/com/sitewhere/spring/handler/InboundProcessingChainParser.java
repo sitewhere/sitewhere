@@ -13,7 +13,6 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
@@ -25,24 +24,22 @@ import com.sitewhere.device.event.processor.DeviceStreamProcessor;
 import com.sitewhere.device.event.processor.RegistrationProcessor;
 import com.sitewhere.hazelcast.HazelcastQueueSender;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
-import com.sitewhere.server.SiteWhereServerBeans;
 
 /**
  * Parses configuration data from SiteWhere inbound processing chain section.
  * 
  * @author Derek
  */
-public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
+public class InboundProcessingChainParser {
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Parse elements for the inbound processing chain.
 	 * 
-	 * @see
-	 * org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#parseInternal
-	 * (org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)
+	 * @param element
+	 * @param context
+	 * @return
 	 */
-	@Override
-	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+	protected Object parse(Element element, ParserContext context) {
 		BeanDefinitionBuilder chain =
 				BeanDefinitionBuilder.rootBeanDefinition(DefaultInboundEventProcessorChain.class);
 		List<Element> dsChildren = DomUtils.getChildElements(element);
@@ -77,9 +74,7 @@ public class InboundProcessingChainParser extends AbstractBeanDefinitionParser {
 			}
 		}
 		chain.addPropertyValue("processors", processors);
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_INBOUND_PROCESSOR_CHAIN,
-				chain.getBeanDefinition());
-		return null;
+		return chain.getBeanDefinition();
 	}
 
 	/**

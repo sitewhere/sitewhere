@@ -32,6 +32,7 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
@@ -284,13 +285,17 @@ public class DeviceGroupsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "addDeviceGroupElements", LOGGER);
 		try {
+			IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest));
+
 			DeviceGroupElementMarshalHelper helper =
 					new DeviceGroupElementMarshalHelper(getTenant(servletRequest)).setIncludeDetails(false);
 			List<IDeviceGroupElementCreateRequest> elements =
 					(List<IDeviceGroupElementCreateRequest>) (List<? extends IDeviceGroupElementCreateRequest>) request;
-			List<IDeviceGroupElement> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceGroupElements(
-							groupToken, elements);
+
+			// Validate the list of new elements.
+			validateDeviceGroupElements(request, devices);
+
+			List<IDeviceGroupElement> results = devices.addDeviceGroupElements(groupToken, elements);
 			List<IDeviceGroupElement> converted = new ArrayList<IDeviceGroupElement>();
 			for (IDeviceGroupElement elm : results) {
 				converted.add(helper.convert(elm,
@@ -299,6 +304,35 @@ public class DeviceGroupsController extends RestController {
 			return new SearchResults<IDeviceGroupElement>(converted);
 		} finally {
 			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Validate new elements to assure they reference real objects.
+	 * 
+	 * @param elements
+	 * @param devices
+	 * @throws SiteWhereException
+	 */
+	protected void validateDeviceGroupElements(List<DeviceGroupElementCreateRequest> elements,
+			IDeviceManagement devices) throws SiteWhereException {
+		for (DeviceGroupElementCreateRequest request : elements) {
+			switch (request.getType()) {
+			case Device: {
+				if (devices.getDeviceByHardwareId(request.getElementId()) == null) {
+					throw new SiteWhereException("Referenced device does not exist: "
+							+ request.getElementId());
+				}
+				break;
+			}
+			case Group: {
+				if (devices.getDeviceGroup(request.getElementId()) == null) {
+					throw new SiteWhereException("Referenced device group does not exist: "
+							+ request.getElementId());
+				}
+				break;
+			}
+			}
 		}
 	}
 

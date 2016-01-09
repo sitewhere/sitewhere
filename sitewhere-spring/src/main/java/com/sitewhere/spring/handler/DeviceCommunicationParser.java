@@ -21,7 +21,7 @@ import com.sitewhere.device.communication.DefaultDeviceCommunication;
 import com.sitewhere.server.SiteWhereServerBeans;
 
 /**
- * Parses configuration data from SiteWhere device communication section.
+ * Parses configuration data from SiteWhere device communication subsystem.
  * 
  * @author Derek
  */
@@ -54,9 +54,14 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 				communication.addPropertyValue("inboundProcessingStrategy", strategy);
 				break;
 			}
-			case Registration: {
-				Object manager = parseRegistration(child, context);
-				communication.addPropertyValue("registrationManager", manager);
+			case OutboundProcessingStrategy: {
+				Object strategy = parseOutboundProcessingStrategy(child, context);
+				communication.addPropertyValue("outboundProcessingStrategy", strategy);
+				break;
+			}
+			case Registration:
+			case DeviceServices: {
+				parseDeviceServices(communication, child, context);
 				break;
 			}
 			case BatchOperations: {
@@ -114,14 +119,25 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
-	 * Parse the registration configuration.
+	 * Parse the outbound processing strategy configuration.
 	 * 
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected Object parseRegistration(Element element, ParserContext context) {
-		return new RegistrationParser().parse(element, context);
+	protected Object parseOutboundProcessingStrategy(Element element, ParserContext context) {
+		return new OutboundProcessingStrategyParser().parse(element, context);
+	}
+
+	/**
+	 * Parse the device services configuration.
+	 * 
+	 * @param dcomm
+	 * @param element
+	 * @param context
+	 */
+	protected void parseDeviceServices(BeanDefinitionBuilder dcomm, Element element, ParserContext context) {
+		new DeviceServicesParser().parse(dcomm, element, context);
 	}
 
 	/**
@@ -167,11 +183,20 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 		/** Event sources list */
 		EventSources("event-sources"),
 
-		/** Inbound processing strategy */
+		/** Inbound processing strategy (moved into event processing) */
+		@Deprecated
 		InboundProcessingStrategy("inbound-processing-strategy"),
 
-		/** Device registration */
+		/** Outbound processing strategy (moved into event processing) */
+		@Deprecated
+		OutboundProcessingStrategy("outbound-processing-strategy"),
+
+		/** Device registration (renamed to device services) */
+		@Deprecated
 		Registration("registration"),
+
+		/** Device services */
+		DeviceServices("device-services"),
 
 		/** Batch operations */
 		BatchOperations("batch-operations"),

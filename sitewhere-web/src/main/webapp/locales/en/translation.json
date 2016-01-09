@@ -487,6 +487,14 @@
          "AYSTYWTDDCW":"$t(public.msg.areyousure) $t(public.msg.delete) $t(public.device) command with"
       }
   },
+  "tenants":{
+      "list":{
+      },
+      "detail":{
+         "EngineState":"Engine State",
+         "EngineConfiguration":"Engine Configuration"
+       }
+  },
   "noserver":{
       "title":"Server Startup $t(public.Failed)",
       "loaderrorms":"SiteWhere did not start successfully. Check error logs for more information."

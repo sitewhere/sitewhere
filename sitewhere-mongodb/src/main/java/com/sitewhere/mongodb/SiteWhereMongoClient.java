@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -22,10 +21,10 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.ServerAddress;
-import com.sitewhere.SiteWhere;
 import com.sitewhere.core.Boilerplate;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.ITenant;
 
@@ -34,9 +33,9 @@ import com.sitewhere.spi.user.ITenant;
  * 
  * @author dadams
  */
-public class SiteWhereMongoClient extends LifecycleComponent implements InitializingBean,
-		IUserManagementMongoClient, IDeviceManagementMongoClient, IAssetManagementMongoClient,
-		IScheduleManagementMongoClient {
+public class SiteWhereMongoClient extends TenantLifecycleComponent implements
+		IDiscoverableTenantLifecycleComponent, IUserManagementMongoClient, IDeviceManagementMongoClient,
+		IAssetManagementMongoClient, IScheduleManagementMongoClient {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereMongoClient.class);
@@ -141,15 +140,6 @@ public class SiteWhereMongoClient extends LifecycleComponent implements Initiali
 
 	public SiteWhereMongoClient() {
 		super(LifecycleComponentType.DataStore);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	public void afterPropertiesSet() throws Exception {
-		SiteWhere.getServer().getRegisteredLifecycleComponents().add(this);
 	}
 
 	/*

@@ -26,8 +26,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.ExternalConfigurationResolver;
-import com.sitewhere.configuration.TomcatConfigurationResolver;
+import com.sitewhere.configuration.ConfigurationMigrationSupport;
+import com.sitewhere.configuration.ConfigurationUtils;
+import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
@@ -46,12 +47,11 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
-import com.sitewhere.spi.configuration.IConfigurationResolver;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
@@ -59,12 +59,13 @@ import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
 import com.sitewhere.spi.server.ISiteWhereServer;
-import com.sitewhere.spi.server.ISiteWhereServerEnvironment;
 import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.ITracer;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
@@ -107,13 +108,14 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	private ITracer tracer = new NullTracer();
 
 	/** Allows Spring configuration to be resolved */
-	private IConfigurationResolver configurationResolver = new TomcatConfigurationResolver();
+	private IGlobalConfigurationResolver configurationResolver = new TomcatGlobalConfigurationResolver();
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
 
 	/** List of components registered to participate in SiteWhere server lifecycle */
-	private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
+	private List<ITenantLifecycleComponent> registeredLifecycleComponents =
+			new ArrayList<ITenantLifecycleComponent>();
 
 	/** Map of component ids to lifecycle components */
 	private Map<String, ILifecycleComponent> lifecycleComponentsById =
@@ -218,7 +220,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationResolver()
 	 */
-	public IConfigurationResolver getConfigurationResolver() {
+	public IGlobalConfigurationResolver getConfigurationResolver() {
 		return configurationResolver;
 	}
 
@@ -362,28 +364,13 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getOutboundEventProcessorChain(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getEventProcessing(com.sitewhere.spi.
+	 * user.ITenant)
 	 */
 	@Override
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException {
+	public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException {
 		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
-		return engine.getOutboundEventProcessorChain();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getInboundEventProcessorChain(com.sitewhere
-	 * .spi.user.ITenant)
-	 */
-	@Override
-	public IInboundEventProcessorChain getInboundEventProcessorChain(ITenant tenant)
-			throws SiteWhereException {
-		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
-		return engine.getInboundEventProcessorChain();
+		return engine.getEventProcessing();
 	}
 
 	/*
@@ -474,7 +461,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getRegisteredLifecycleComponents()
 	 */
-	public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
+	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents() {
 		return registeredLifecycleComponents;
 	}
 
@@ -697,11 +684,17 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public void initialize() throws SiteWhereException {
 		this.version = VersionHelper.getVersion();
 
+		// Migrate old configuration structure if necessary.
+		ConfigurationMigrationSupport.migrateProjectStructureIfNecessary(getConfigurationResolver());
+
 		// Initialize persistent state.
 		initializeServerState();
 
 		// Initialize Spring.
 		initializeSpringContext();
+
+		// Initialize discoverable beans.
+		initializeDiscoverableBeans();
 
 		// Initialize version checker.
 		initializeVersionChecker();
@@ -770,12 +763,25 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		String extConfig = System.getenv(ISiteWhereServerEnvironment.ENV_EXTERNAL_CONFIGURATION_URL);
-		if (extConfig != null) {
-			IConfigurationResolver resolver = new ExternalConfigurationResolver(extConfig);
-			SERVER_SPRING_CONTEXT = resolver.resolveSiteWhereContext(getVersion());
-		} else {
-			SERVER_SPRING_CONTEXT = getConfigurationResolver().resolveSiteWhereContext(getVersion());
+		byte[] global = getConfigurationResolver().getGlobalConfiguration(getVersion());
+		SERVER_SPRING_CONTEXT = ConfigurationUtils.buildGlobalContext(global, getVersion());
+	}
+
+	/**
+	 * Initialize beans marked with {@link IDiscoverableTenantLifecycleComponent}
+	 * interface and add them as registered components.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeDiscoverableBeans() throws SiteWhereException {
+		Map<String, IDiscoverableTenantLifecycleComponent> components =
+				SERVER_SPRING_CONTEXT.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		getRegisteredLifecycleComponents().clear();
+
+		LOGGER.info("Registering " + components.size() + " discoverable components.");
+		for (IDiscoverableTenantLifecycleComponent component : components.values()) {
+			LOGGER.info("Registering " + component.getComponentName() + ".");
+			getRegisteredLifecycleComponents().add(component);
 		}
 	}
 
@@ -864,10 +870,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected ISiteWhereTenantEngine createTenantEngine(ITenant tenant, ApplicationContext parent,
-			IConfigurationResolver resolver) throws SiteWhereException {
-		SiteWhereTenantEngine engine = new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT);
-		engine.setConfigurationResolver(resolver);
-		return engine;
+			IGlobalConfigurationResolver resolver) throws SiteWhereException {
+		return new SiteWhereTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
 	}
 
 	/**

@@ -7,16 +7,18 @@
  */
 package com.sitewhere.spi.server;
 
+import java.util.List;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.configuration.IConfigurationResolver;
+import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
+import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
-import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
+import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
@@ -31,11 +33,26 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 
 	/**
-	 * Get class that can be used to location the Spring configuration context.
+	 * Get resolver for global configuration elements.
 	 * 
 	 * @return
 	 */
-	public IConfigurationResolver getConfigurationResolver();
+	public IGlobalConfigurationResolver getGlobalConfigurationResolver();
+
+	/**
+	 * Get resolver for tenant configuration elements.
+	 * 
+	 * @return
+	 */
+	public ITenantConfigurationResolver getTenantConfigurationResolver();
+
+	/**
+	 * Get list of components that have registered to participate in the server component
+	 * lifecycle.
+	 * 
+	 * @return
+	 */
+	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents();
 
 	/**
 	 * Get the device management implementation.
@@ -67,25 +84,18 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider();
 
 	/**
-	 * Get the inbound event processor chain.
-	 * 
-	 * @return
-	 */
-	public IInboundEventProcessorChain getInboundEventProcessorChain();
-
-	/**
-	 * Get the outbound event processor chain.
-	 * 
-	 * @return
-	 */
-	public IOutboundEventProcessorChain getOutboundEventProcessorChain();
-
-	/**
 	 * Get the device communication subsystem implementation.
 	 * 
 	 * @return
 	 */
 	public IDeviceCommunication getDeviceCommunication();
+
+	/**
+	 * Get the event processing subsystem implementation.
+	 * 
+	 * @return
+	 */
+	public IEventProcessing getEventProcessing();
 
 	/**
 	 * Get the asset modules manager instance.

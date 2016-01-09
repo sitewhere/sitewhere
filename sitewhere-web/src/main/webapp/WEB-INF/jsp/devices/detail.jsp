@@ -256,7 +256,7 @@
 			"hardwareId" : target,
 		}
 		$.postJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-				+ "/mappings&tenantAuthToken=${tenant.authenticationToken}", mapping, onMappingCreateSuccess,
+				+ "/mappings?tenantAuthToken=${tenant.authenticationToken}", mapping, onMappingCreateSuccess,
 			onMappingCreateFail);
 	}
 

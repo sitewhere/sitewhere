@@ -23,6 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.device.charting.ChartBuilder;
+import com.sitewhere.device.communication.symbology.DefaultEntityUriProvider;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
 import com.sitewhere.device.marshaling.DeviceCommandInvocationMarshalHelper;
 import com.sitewhere.rest.model.common.MetadataProvider;
@@ -75,6 +80,9 @@ import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.device.symbology.IEntityUriProvider;
+import com.sitewhere.spi.device.symbology.ISymbolGenerator;
+import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.IScheduledJob;
@@ -924,6 +932,43 @@ public class AssignmentsController extends RestController {
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandResponses(
 					token, criteria);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get the default symbol for a device assignment.
+	 * 
+	 * @param token
+	 * @param servletRequest
+	 * @param response
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{token}/symbol", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get default symbol for assignment")
+	@Secured({ SiteWhereRoles.REST })
+	public ResponseEntity<byte[]> getDeviceAssignmentSymbol(
+			@ApiParam(value = "Assignment token", required = true) @PathVariable String token,
+			HttpServletRequest servletRequest, HttpServletResponse response) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getDeviceAssignmentSymbol", LOGGER);
+		try {
+			IDeviceAssignment assignment = assureAssignment(token, servletRequest);
+			IEntityUriProvider provider = DefaultEntityUriProvider.getInstance();
+			ISymbolGeneratorManager symbols =
+					SiteWhere.getServer().getDeviceCommunication(getTenant(servletRequest)).getSymbolGeneratorManager();
+			ISymbolGenerator generator = symbols.getDefaultSymbolGenerator();
+			if (generator != null) {
+				byte[] image = generator.getDeviceAssigmentSymbol(assignment, provider);
+
+				final HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.IMAGE_PNG);
+				return new ResponseEntity<byte[]>(image, headers, HttpStatus.CREATED);
+			} else {
+				return null;
+			}
 		} finally {
 			Tracer.stop(LOGGER);
 		}

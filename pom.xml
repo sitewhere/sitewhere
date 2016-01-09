@@ -12,7 +12,7 @@
 	<groupId>com.sitewhere</groupId>
 	<artifactId>sitewhere</artifactId>
 	<packaging>pom</packaging>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<name>SiteWhere</name>
 	<description>SiteWhere: The Open Platform for the Internet of Things</description>
 	<url>http://www.sitewhere.com/</url>
@@ -37,6 +37,7 @@
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-protobuf</module>
+				<module>sitewhere-rabbit-mq</module>
 				<module>sitewhere-server-api</module>
 				<module>sitewhere-siddhi</module>
 				<module>sitewhere-solr</module>
@@ -119,7 +120,7 @@
 									<url>http://apache.osuosl.org/tomcat/tomcat-7/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip</url>
 									<unpack>true</unpack>
 									<outputDirectory>${project.build.directory}</outputDirectory>
-									<md5>0e93455e0d19b88307e001aabea0d5f9</md5>
+									<md5>a639e28526d1809745b46bf1189594fe</md5>
 								</configuration>
 							</execution>
 						</executions>
@@ -186,7 +187,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<sitewhere.version>1.4.0</sitewhere.version>
+		<sitewhere.version>1.5.0</sitewhere.version>
 		<hbase.version>0.98.4-hadoop2</hbase.version>
 		<hadoop.version>2.6.0</hadoop.version>
 		<junit.version>4.9</junit.version>
@@ -194,7 +195,7 @@
 		<spring.version>3.2.10.RELEASE</spring.version>
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
 		<jackson.version>2.1.5</jackson.version>
-		<tomcat.version>7.0.65</tomcat.version>
+		<tomcat.version>7.0.67</tomcat.version>
 	</properties>
 
 	<licenses>

@@ -9,14 +9,19 @@ package com.sitewhere.solr;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.springframework.beans.factory.InitializingBean;
+
+import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Class for base Solr client configuration settings.
  * 
  * @author Derek
  */
-public class SiteWhereSolrConfiguration implements InitializingBean {
+public class SiteWhereSolrConfiguration extends TenantLifecycleComponent implements
+		IDiscoverableTenantLifecycleComponent {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereSolrConfiguration.class);
@@ -33,15 +38,38 @@ public class SiteWhereSolrConfiguration implements InitializingBean {
 	/** Solr server instance */
 	private HttpSolrServer solrServer;
 
+	public SiteWhereSolrConfiguration() {
+		super(LifecycleComponentType.Other);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void start() throws SiteWhereException {
 		LOGGER.info("Solr initializing with URL: " + getSolrServerUrl());
 		setSolrServer(new HttpSolrServer(getSolrServerUrl()));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
+	 */
+	@Override
+	public Logger getLogger() {
+		return LOGGER;
 	}
 
 	public String getSolrServerUrl() {

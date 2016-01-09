@@ -7,6 +7,8 @@
  */
 package com.sitewhere.web.mvc;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,11 +41,16 @@ import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
+import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.version.VersionHelper;
+import com.sitewhere.web.configuration.TenantConfigurationModel;
+import com.sitewhere.web.configuration.TokenNamePair;
+import com.sitewhere.web.configuration.model.ElementRole;
 
 /**
  * Spring MVC controller for SiteWhere web application.
@@ -678,11 +686,28 @@ public class SiteWhereController extends MvcController {
 		try {
 			Map<String, Object> data = createBaseData(request);
 
+			// Pass JSON representation of tenant configuration model.
+			TenantConfigurationModel configModel = new TenantConfigurationModel();
+			String strConfigModel = MarshalUtils.marshalJsonAsString(configModel);
+			data.put("configModel", strConfigModel);
+
+			// Pass JSON representation of component roles.
+			ElementRole[] roles = ElementRole.values();
+			Map<String, ElementRole> rolesById = new HashMap<String, ElementRole>();
+			for (ElementRole role : roles) {
+				rolesById.put(role.name(), role);
+			}
+			String strRoles = MarshalUtils.marshalJsonAsString(rolesById);
+			data.put("roles", strRoles);
+
 			ITenant tenant = SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
 			if (tenant == null) {
 				showError("Invalid tenant id.");
 			}
 			data.put("selected", tenant);
+
+			// Add data from tenant.
+			addTenantData(tenant, data);
 
 			return new ModelAndView("tenants/detail", data);
 		} catch (NoTenantException e) {
@@ -691,6 +716,53 @@ public class SiteWhereController extends MvcController {
 			return showError(e);
 		} finally {
 			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Add site and specification data if tenant is active.
+	 * 
+	 * @param tenant
+	 * @param data
+	 * @throws SiteWhereException
+	 */
+	protected void addTenantData(ITenant tenant, Map<String, Object> data) throws SiteWhereException {
+		ISiteWhereTenantEngineState state =
+				SiteWhere.getServer().getTenantEngine(tenant.getId()).getEngineState();
+
+		// Only attempt to load data if engine is started.
+		if (state.getLifecycleStatus() == LifecycleStatus.Started) {
+			// Pass JSON representation of sites list.
+			ISearchResults<ISite> sites =
+					SiteWhere.getServer().getDeviceManagement(tenant).listSites(new SearchCriteria(1, 0));
+			List<TokenNamePair> sitesList = new ArrayList<TokenNamePair>();
+			for (ISite site : sites.getResults()) {
+				TokenNamePair pair = new TokenNamePair();
+				pair.setToken(site.getToken());
+				pair.setName(site.getName());
+				sitesList.add(pair);
+			}
+			Collections.sort(sitesList);
+			String strSites = MarshalUtils.marshalJsonAsString(sitesList);
+			data.put("sites", strSites);
+
+			// Pass JSON representation of specifications list.
+			ISearchResults<IDeviceSpecification> specs =
+					SiteWhere.getServer().getDeviceManagement(tenant).listDeviceSpecifications(false,
+							new SearchCriteria(1, 0));
+			List<TokenNamePair> specsList = new ArrayList<TokenNamePair>();
+			for (IDeviceSpecification spec : specs.getResults()) {
+				TokenNamePair pair = new TokenNamePair();
+				pair.setToken(spec.getToken());
+				pair.setName(spec.getName());
+				specsList.add(pair);
+			}
+			Collections.sort(specsList);
+			String strSpecs = MarshalUtils.marshalJsonAsString(specsList);
+			data.put("specifications", strSpecs);
+		} else {
+			data.put("sites", "null");
+			data.put("specifications", "null");
 		}
 	}
 

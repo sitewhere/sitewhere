@@ -7,10 +7,14 @@
  */
 package com.sitewhere.web.rest.controllers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
@@ -22,13 +26,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.w3c.dom.Document;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.security.LoginManager;
+import com.sitewhere.server.tenant.TenantUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.command.ICommandResponse;
@@ -37,9 +44,10 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.debug.TracerCategory;
-import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
+import com.sitewhere.web.configuration.ConfigurationContentParser;
+import com.sitewhere.web.configuration.content.ElementContent;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
@@ -184,12 +192,67 @@ public class TenantsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 		try {
-			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
-			if (engine == null) {
-				throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
+			return new String(TenantUtils.getActiveTenantConfiguration(tenantId));
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Get the current configuration for a tenant engine formatted as JSON.
+	 * 
+	 * @param tenantId
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{tenantId}/engine/configuration/json", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "Get tenant engine configuration as JSON")
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
+	@Documented
+	public ElementContent getTenantEngineConfigurationAsJson(
+			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
+			throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
+		try {
+			byte[] config = TenantUtils.getActiveTenantConfiguration(tenantId);
+			return ConfigurationContentParser.parse(config);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Stages a new tenant configuration based on a JSON representation of the
+	 * configuration. Returns the XML configuration that was staged.
+	 * 
+	 * @param tenantId
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{tenantId}/engine/configuration/json", method = RequestMethod.POST)
+	@ResponseBody
+	@ApiOperation(value = "Stage tenant engine configuration from JSON")
+	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
+	@Documented
+	public String stageTenantEngineConfiguration(
+			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+			HttpServletRequest svtRequest, HttpServletResponse svtResponse) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "stageTenantEngineConfiguration", LOGGER);
+		try {
+			ServletInputStream inData = svtRequest.getInputStream();
+			ByteArrayOutputStream byteData = new ByteArrayOutputStream();
+			int data;
+			while ((data = inData.read()) != -1) {
+				byteData.write(data);
 			}
-			IVersion version = SiteWhere.getServer().getVersion();
-			return engine.getConfigurationResolver().getTenantConfiguration(engine.getTenant(), version);
+			byteData.close();
+			ElementContent content = MarshalUtils.unmarshalJson(byteData.toByteArray(), ElementContent.class);
+			Document document = ConfigurationContentParser.buildXml(content);
+			String xml = ConfigurationContentParser.format(document);
+			TenantUtils.stageTenantConfiguration(tenantId, xml);
+			return xml;
+		} catch (IOException e) {
+			throw new SiteWhereException("Error staging tenant configuration.", e);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

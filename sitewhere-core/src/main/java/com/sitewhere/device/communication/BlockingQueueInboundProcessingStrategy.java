@@ -54,6 +54,9 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	/** Interval between monitoring log output messages */
 	private static final int MONITORING_INTERVAL_SEC = 5;
 
+	/** Maximum size of queue before blocking */
+	private int maxQueueSize = MAX_QUEUE_SIZE;
+
 	/** Number of thread used for event processing */
 	private int eventProcessorThreadCount = EVENT_PROCESSOR_THREAD_COUNT;
 
@@ -76,8 +79,7 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	private AtomicLong totalProcessingTime = new AtomicLong();
 
 	/** Blocking queue of pending event create requests from event sources */
-	private BlockingQueue<PerformanceWrapper> queue = new ArrayBlockingQueue<PerformanceWrapper>(
-			MAX_QUEUE_SIZE);
+	private BlockingQueue<PerformanceWrapper> queue;
 
 	/** Thread pool for processing events */
 	private ExecutorService processorPool;
@@ -92,13 +94,14 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 */
 	@Override
 	public void start() throws SiteWhereException {
+		this.queue = new ArrayBlockingQueue<PerformanceWrapper>(getMaxQueueSize());
 		processorPool =
 				Executors.newFixedThreadPool(getEventProcessorThreadCount(), new ProcessorsThreadFactory());
 		for (int i = 0; i < getEventProcessorThreadCount(); i++) {
 			processorPool.execute(new BlockingMessageProcessor(queue));
 		}
-		LOGGER.info("Started blocking queue inbound processing strategy with queue size of " + MAX_QUEUE_SIZE
-				+ " and " + getEventProcessorThreadCount() + " threads.");
+		LOGGER.info("Started blocking queue inbound processing strategy with queue size of "
+				+ getMaxQueueSize() + " and " + getEventProcessorThreadCount() + " threads.");
 
 		// Only show monitoring data if enabled.
 		if (isEnableMonitoring()) {
@@ -331,6 +334,14 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 			return 0;
 		}
 		return total / count;
+	}
+
+	public int getMaxQueueSize() {
+		return maxQueueSize;
+	}
+
+	public void setMaxQueueSize(int maxQueueSize) {
+		this.maxQueueSize = maxQueueSize;
 	}
 
 	public int getEventProcessorThreadCount() {

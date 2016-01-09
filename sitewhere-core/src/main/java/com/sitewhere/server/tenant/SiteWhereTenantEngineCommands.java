@@ -80,10 +80,14 @@ public class SiteWhereTenantEngineCommands {
 		@Override
 		public ICommandResponse call() throws Exception {
 			try {
-				getEngine().lifecycleStart();
-				if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
-					return new CommandResponse(CommandResult.Failed,
-							getEngine().getLifecycleError().getMessage());
+				if (getEngine().initialize()) {
+					getEngine().lifecycleStart();
+					if (getEngine().getLifecycleStatus() == LifecycleStatus.Error) {
+						return new CommandResponse(CommandResult.Failed,
+								getEngine().getLifecycleError().getMessage());
+					}
+				} else {
+					return new CommandResponse(CommandResult.Failed, "Engine initialization failed.");
 				}
 			} catch (Exception e) {
 				return new CommandResponse(CommandResult.Failed, e.getMessage());

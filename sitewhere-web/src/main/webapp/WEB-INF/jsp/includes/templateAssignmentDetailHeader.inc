@@ -23,11 +23,12 @@
 .sw-assignment-header-logowrapper {
 	float: left;
 	margin-right: 40px;
-	margin-top: 25px;
+	margin-top: 8px;
 	width: 160px;
 	height: 160px;
 	position: relative;
 	margin-left: 10px;
+	margin-bottom: 20px;
 }
 
 .sw-assignment-header-logo-tag {
@@ -42,6 +43,16 @@
 	top: 0px;
 	left: 0px;
 	right: 0px
+}
+
+.sw-assignment-header-symbol {
+	float: right;
+	width: 160px;
+	height: 160px;
+	position: absolute;
+	top: 13px;
+	right: 13px;
+	border: 1px solid #ddd;
 }
 </style>
 
@@ -71,6 +82,9 @@
 			style="background-image: url(#:device.assetImageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 			<span class="label label-info sw-assignment-header-logo-tag">Unassociated</span>
 # } #
+		</div>
+		<div class="sw-assignment-header-symbol"
+			style="background-image: url(/sitewhere/api/assignments/#:token#/symbol?tenantAuthToken=${tenant.authenticationToken}); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 		</div>
 		<div>
 			<div>

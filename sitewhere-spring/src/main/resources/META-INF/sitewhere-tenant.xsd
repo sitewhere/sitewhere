@@ -39,13 +39,13 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element ref="abstract-communication-subsystem-implementation"/>
+			<xsd:element ref="abstract-event-processing-subsystem-implementation"/>
 			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType"
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						A chain of processors through which all inbound device information
-						is passed. Each processor handles some piece of processing and passes information on
-						to the next.
+						DEPRECATED: Inbound processing chain has moved to event processing
+						subsystem.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -53,9 +53,8 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						A chain of processors through which all outbound device events are
-						passed. Each processor handles some piece of processing and passes information on to
-						the next.
+						DEPRECATED: Outbound processing chain has moved to event
+						processing subsystem.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -80,12 +79,22 @@
 		</xsd:all>
 	</xsd:complexType>
 	
+	
+	<!-- =============== -->
+	<!-- GLOBAL ELEMENTS -->
+	<!-- =============== -->
+	
 	<!-- Contains global configuration elements -->
 	<xsd:complexType name="globalsType">
 		<xsd:sequence>
 			<xsd:element ref="sw:abstract-global" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	
+	<!-- ========================= -->
+	<!-- TENANT DATASTORE ELEMENTS -->
+	<!-- ========================= -->
 
 	<xsd:complexType name="tenantDatastoreType">
 		<xsd:all>
@@ -275,6 +284,209 @@
 	<!-- Creates default schedule model data -->
 	<xsd:complexType name="defaultScheduleModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+	</xsd:complexType>
+	
+	
+	<!-- ========================== -->
+	<!-- EVENT PROCESSING SUBSYSTEM -->
+	<!-- ========================== -->
+
+	<!-- Used as a placeholder for event processing subsystem implementations to allow substitutionGroups -->
+	<xsd:element name="abstract-event-processing-subsystem-implementation"
+		abstract="true" type="abstractEventProcessingSubsystemType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for event processing subsystem implementation
+				elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common information for event processing subsystem implementations -->
+	<xsd:complexType name="abstractEventProcessingSubsystemType">
+		<xsd:sequence>
+			<xsd:element name="inbound-processing-strategy" type="inboundProcessingStrategyType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						The inbound processing strategy controls how events are moved from
+						event sources into the inbound processing chain.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="inbound-processing-chain" type="inboundProcessingChainType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						A chain of processors through which all inbound device information
+						is passed. Each processor handles some piece of processing and passes information on
+						to the next.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="outbound-processing-strategy" type="outboundProcessingStrategyType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						The outbound processing strategy controls how stored events are
+						moved into the outbound processing chain.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="outbound-processing-chain" type="outboundProcessingChainType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						A chain of processors through which all outbound device events are
+						passed. Each processor handles some piece of processing and passes information on to
+						the next.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- Default event processing implementation -->
+	<xsd:element name="event-processing" type="defaultEventProcessingSubsystemType"
+		substitutionGroup="abstract-event-processing-subsystem-implementation">
+		<xsd:annotation>
+			<xsd:documentation>Specifies the default device communication subsystem implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultEventProcessingSubsystemType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventProcessingSubsystemType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Contains inbound processing strategy implementation -->
+	<xsd:complexType name="inboundProcessingStrategyType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-inbound-processing-strategy"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for inbound processing strategies to allow substitutionGroups -->
+	<xsd:element name="abstract-inbound-processing-strategy" abstract="true"
+		type="abstractInboundProcessingStrategyType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for inbound processing strategy elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common inbound processing strategy information -->
+	<xsd:complexType name="abstractInboundProcessingStrategyType"/>
+	
+	<!-- Configures the default inbound processing strategy -->
+	<xsd:element name="default-inbound-processing-strategy" type="defaultInboundProcessingStrategyType"
+		substitutionGroup="abstract-inbound-processing-strategy">
+		<xsd:annotation>
+			<xsd:documentation>DEPRECATED: Equivalent of
+				blocking-queue-inbound-processing-strategy.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="blocking-queue-inbound-processing-strategy" type="defaultInboundProcessingStrategyType"
+		substitutionGroup="abstract-inbound-processing-strategy">
+		<xsd:annotation>
+			<xsd:documentation>Configures the default inbound processing strategy
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultInboundProcessingStrategyType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractInboundProcessingStrategyType">
+				<xsd:attribute name="maxQueueSize" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Controls the maximum number of inbound events that can be queued
+							before blocking occurs.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="numEventProcessorThreads" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Controls the number of threads that submit queued events to the
+							inbound processing chain.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="enableMonitoring" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Enables monitoring output for debugging event processing.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="monitoringIntervalSec" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Number of seconds between monitoring log statements. The
+							'enableMonitoring' attribute must be set to true for this to have an effect.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Contains outbound processing strategy implementation -->
+	<xsd:complexType name="outboundProcessingStrategyType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-outbound-processing-strategy"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for outbound processing strategies to allow substitutionGroups -->
+	<xsd:element name="abstract-outbound-processing-strategy" abstract="true"
+		type="abstractOutboundProcessingStrategyType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for outbound processing strategy elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common outbound processing strategy information -->
+	<xsd:complexType name="abstractOutboundProcessingStrategyType"/>
+	
+	<!-- Configures the default inbound processing strategy -->
+	<xsd:element name="default-outbound-processing-strategy" type="blockingQueueOutboundProcessingStrategyType"
+		substitutionGroup="abstract-outbound-processing-strategy">
+		<xsd:annotation>
+			<xsd:documentation>DEPRECATED: Equivalent of
+				blocking-queue-outbound-processing-strategy.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="blocking-queue-outbound-processing-strategy" type="blockingQueueOutboundProcessingStrategyType"
+		substitutionGroup="abstract-outbound-processing-strategy">
+		<xsd:annotation>
+			<xsd:documentation>Uses a fixed-length queue to store events to be submitted to the
+				outbound processing chain and a fixed pool of threads to process the queue.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="blockingQueueOutboundProcessingStrategyType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractOutboundProcessingStrategyType">
+				<xsd:attribute name="maxQueueSize" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Controls the maximum number of outbound events that can be queued
+							before blocking occurs.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="numEventProcessorThreads" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Controls the number of threads that submit queued events to the
+							outbound processing chain.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for inbound processor elements to allow substitutionGroups -->
@@ -1021,7 +1233,11 @@
 		<xsd:attribute name="alertLevel" type="alertLevelType" use="optional"/>
 		<xsd:attribute name="alertMessage" type="xsd:string" use="required"></xsd:attribute>
 	</xsd:complexType>
-
+	
+	
+	<!-- ============================== -->
+	<!-- DEVICE COMMUNICATION SUBSYSTEM -->
+	<!-- ============================== -->
 
 	<!-- Used as a placeholder for communication subsystem implementations to allow substitutionGroups -->
 	<xsd:element name="abstract-communication-subsystem-implementation" abstract="true"
@@ -1049,16 +1265,33 @@
 				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						The inbound processing strategy controls how events are moved from
-						event sources into the inbound processing chain.
+						DEPRECATED: Inbound processing strategy has been moved into the
+						event processing subsystem.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="registration" type="registrationType" minOccurs="0">
+			<xsd:element name="outbound-processing-strategy" type="outboundProcessingStrategyType"
+				minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
-						Registration elements define how inbound registration events are
-						used to register devices.
+						DEPRECATED: Outbound processing strategy has been moved into the
+						event processing subsystem.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="registration" type="deviceServicesType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						DEPRECATED: Registration has been renamed to 'device services' to
+						allow for the addition of other services.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="device-services" type="deviceServicesType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Contains various device-related services such as registration and
+						symbology management.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1100,7 +1333,7 @@
 		</xsd:annotation>
 	</xsd:element>
 	
-	<!-- Default device provisioning implementation -->
+	<!-- Default device communication implementation -->
 	<xsd:element name="device-communication" type="defaultCommunicationSubsystemType"
 		substitutionGroup="abstract-communication-subsystem-implementation">
 		<xsd:annotation>
@@ -1348,6 +1581,55 @@
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>
+
+	<!-- Event source that pulls binary information from a RabbitMQ queue and decodes it -->
+	<xsd:element name="rabbit-mq-event-source" type="rabbitMqEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that pulls binary information from a RabbitMQ queue and
+				decodes it.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="rabbitMqEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="connectionUri" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							URI that provides information about the RabbitMQ instance to
+							connect to.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="queueName" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name of RabbitMQ queue to be consumed.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="durable" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>
+							Indicates whether the queue should survive broker restarts.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="numConsumers" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>
+							Number of consumer threads used to consume the queue.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
     <!-- Event source that pulls binary information from an EventHub endpoint and decodes it -->
 	<xsd:element name="azure-eventhub-event-source" type="azureEventhubEventSourceType"
@@ -1618,62 +1900,7 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Contains inbound processing strategy implementation -->
-	<xsd:complexType name="inboundProcessingStrategyType">
-		<xsd:sequence>
-			<xsd:element ref="abstract-inbound-processing-strategy"/>
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<!-- Used as a placeholder for inbound processing strategies to allow substitutionGroups -->
-	<xsd:element name="abstract-inbound-processing-strategy" abstract="true"
-		type="abstractInboundProcessingStrategyType">
-		<xsd:annotation>
-			<xsd:documentation>
-				A placeholder for inbound processing strategy elements.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	
-	<!-- Common inbound processing strategy information -->
-	<xsd:complexType name="abstractInboundProcessingStrategyType"/>
-	
-	<!-- Configures the default inbound processing strategy -->
-	<xsd:element name="default-inbound-processing-strategy" type="defaultInboundProcessingStrategyType"
-		substitutionGroup="abstract-inbound-processing-strategy">
-		<xsd:annotation>
-			<xsd:documentation>Configures the default inbound processing strategy
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	<xsd:complexType name="defaultInboundProcessingStrategyType">
-		<xsd:complexContent>
-			<xsd:extension base="abstractInboundProcessingStrategyType">
-				<xsd:attribute name="numEventProcessorThreads" type="xsd:int">
-					<xsd:annotation>
-						<xsd:documentation>Controls the number of threads that submit queued events to the
-							inbound processing chain.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="enableMonitoring" type="xsd:boolean">
-					<xsd:annotation>
-						<xsd:documentation>Enables monitoring output for debugging event processing.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-				<xsd:attribute name="monitoringIntervalSec" type="xsd:int">
-					<xsd:annotation>
-						<xsd:documentation>Number of seconds between monitoring log statements. The
-							'enableMonitoring' attribute must be set to true for this to have an effect.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="registrationType">
+	<xsd:complexType name="deviceServicesType">
 		<xsd:sequence>
 			<xsd:choice minOccurs="1" maxOccurs="1">
 				<xsd:element name="registration-manager" type="registrationManagerReferenceType">
@@ -1691,6 +1918,14 @@
 					</xsd:annotation>
 				</xsd:element>
 			</xsd:choice>
+			<xsd:element name="symbol-generator-manager" type="symbolGeneratorManagerType"
+				minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Configures the symbol generator manager.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -1720,6 +1955,86 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for symbol generator elements to allow substitutionGroups -->
+	<xsd:element name="abstract-symbol-generator" abstract="true"
+		type="abstractSymbolGeneratorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for symbol generator elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common symbol generator element information -->
+	<xsd:complexType name="abstractSymbolGeneratorType"/>
+
+	<!-- Configures the symbol generator manager -->
+	<xsd:complexType name="symbolGeneratorManagerType">
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="abstract-symbol-generator"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- QR code symbol generator -->
+	<xsd:element name="qr-code-symbol-generator" type="qrCodeSymbolGeneratorType"
+		substitutionGroup="abstract-symbol-generator">
+		<xsd:annotation>
+			<xsd:documentation>
+				Generates QR-Code symbols for SiteWhere entities.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="qrCodeSymbolGeneratorType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractSymbolGeneratorType">
+				<xsd:attribute name="id" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique id for generator.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="name" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name for generator.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="width" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Width of QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="height" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Height of QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="backgroundColor" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Background color for QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="foregroundColor" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Foreground color for QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="batchOperationsType">

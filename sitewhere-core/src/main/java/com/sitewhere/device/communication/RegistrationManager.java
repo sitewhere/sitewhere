@@ -48,7 +48,7 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 	private String autoAssignSiteToken = null;
 
 	public RegistrationManager() {
-		super(LifecycleComponentType.RegistrationManger);
+		super(LifecycleComponentType.RegistrationManager);
 	}
 
 	/*
