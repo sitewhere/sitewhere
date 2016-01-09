@@ -77,9 +77,9 @@ public class GroovyFilter extends DeviceEventFilter {
 			}
 			return !((Boolean) result).booleanValue();
 		} catch (ResourceException e) {
-			throw new SiteWhereException("Unable to access Groovy decoder script.", e);
+			throw new SiteWhereException("Unable to access Groovy filter script. " + e.getMessage(), e);
 		} catch (ScriptException e) {
-			throw new SiteWhereException("Unable to run Groovy decoder script.", e);
+			throw new SiteWhereException("Unable to run Groovy filter script.", e);
 		}
 	}
 
