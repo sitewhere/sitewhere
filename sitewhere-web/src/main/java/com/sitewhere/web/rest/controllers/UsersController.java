@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -104,7 +105,7 @@ public class UsersController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{username}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{username:.+}", method = RequestMethod.PUT)
 	@ResponseBody
 	@ApiOperation(value = "Update existing user.")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
@@ -130,7 +131,7 @@ public class UsersController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{username}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{username:.+}", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get user by username")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
@@ -140,7 +141,9 @@ public class UsersController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
 		try {
-			IUser user = SiteWhere.getServer().getUserManagement().getUserByUsername(username);
+			IUser user =
+					SiteWhere.getServer().getUserManagement().getUserByUsername(
+							StringEscapeUtils.unescapeHtml(username));
 			if (user == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidUsername, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);
@@ -159,7 +162,7 @@ public class UsersController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{username:.+}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@ApiOperation(value = "Delete user by username")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
@@ -184,7 +187,7 @@ public class UsersController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{username}/authorities", method = RequestMethod.GET)
+	@RequestMapping(value = "/{username:.+}/authorities", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "Get authorities for user")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
@@ -244,7 +247,7 @@ public class UsersController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{username}/tenants", method = RequestMethod.GET)
+	@RequestMapping(value = "/{username:.+}/tenants", method = RequestMethod.GET)
 	@ResponseBody
 	@ApiOperation(value = "List authorized tenants for user")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_USER_ADMIN)
