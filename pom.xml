@@ -34,6 +34,7 @@
 				<module>sitewhere-hbase</module>
 				<module>sitewhere-gnuhealth</module>
 				<module>sitewhere-groovy</module>
+				<module>sitewhere-influx</module>
 				<module>sitewhere-magento</module>
 				<module>sitewhere-mongodb</module>
 				<module>sitewhere-protobuf</module>

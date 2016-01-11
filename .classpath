@@ -13,6 +13,7 @@
 	<classpathentry kind="src" path="sitewhere-gnuhealth/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-groovy/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-hbase/src/main/java"/>
+	<classpathentry kind="src" path="sitewhere-influx/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-magento/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/java"/>
 	<classpathentry kind="src" path="sitewhere-mongodb/src/main/test"/>
