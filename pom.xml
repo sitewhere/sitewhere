@@ -12,7 +12,7 @@
 	<groupId>com.sitewhere</groupId>
 	<artifactId>sitewhere</artifactId>
 	<packaging>pom</packaging>
-	<version>1.5.0</version>
+	<version>1.6.0</version>
 	<name>SiteWhere</name>
 	<description>SiteWhere: The Open Platform for the Internet of Things</description>
 	<url>http://www.sitewhere.com/</url>
@@ -187,7 +187,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<sitewhere.version>1.5.0</sitewhere.version>
+		<sitewhere.version>1.6.0</sitewhere.version>
 		<hbase.version>0.98.4-hadoop2</hbase.version>
 		<hadoop.version>2.6.0</hadoop.version>
 		<junit.version>4.9</junit.version>
