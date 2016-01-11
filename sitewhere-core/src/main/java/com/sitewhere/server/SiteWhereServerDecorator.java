@@ -20,6 +20,7 @@ import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
@@ -198,6 +199,18 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	@Override
 	public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
 		return server.getDeviceManagement(tenant);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceEventManagement(com.sitewhere
+	 * .spi.user.ITenant)
+	 */
+	@Override
+	public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException {
+		return server.getDeviceEventManagement(tenant);
 	}
 
 	/*

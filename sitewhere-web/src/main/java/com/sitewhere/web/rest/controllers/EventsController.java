@@ -66,7 +66,7 @@ public class EventsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getEventById", LOGGER);
 		try {
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceEventById(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).getDeviceEventById(
 					eventId);
 		} finally {
 			Tracer.stop(LOGGER);

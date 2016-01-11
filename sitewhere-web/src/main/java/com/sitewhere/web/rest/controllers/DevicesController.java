@@ -601,7 +601,7 @@ public class DevicesController extends RestController {
 				}
 			}
 
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceEventBatch(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).addDeviceEventBatch(
 					device.getAssignmentToken(), batch);
 		} finally {
 			Tracer.stop(LOGGER);

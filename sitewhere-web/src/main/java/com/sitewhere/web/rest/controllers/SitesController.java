@@ -246,7 +246,7 @@ public class SitesController extends RestController {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceMeasurements> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceMeasurementsForSite(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceMeasurementsForSite(
 							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
@@ -287,7 +287,7 @@ public class SitesController extends RestController {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceLocation> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceLocationsForSite(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceLocationsForSite(
 							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
@@ -328,7 +328,7 @@ public class SitesController extends RestController {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceAlert> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceAlertsForSite(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceAlertsForSite(
 							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
@@ -369,7 +369,7 @@ public class SitesController extends RestController {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceCommandInvocation> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandInvocationsForSite(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandInvocationsForSite(
 							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
@@ -410,7 +410,7 @@ public class SitesController extends RestController {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceCommandResponse> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandResponsesForSite(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandResponsesForSite(
 							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.
@@ -450,7 +450,7 @@ public class SitesController extends RestController {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceStateChange> results =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceStateChangesForSite(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceStateChangesForSite(
 							siteToken, criteria);
 
 			// Marshal with asset info since multiple assignments might match.

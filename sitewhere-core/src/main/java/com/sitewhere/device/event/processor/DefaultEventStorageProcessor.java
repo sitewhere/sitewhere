@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
@@ -42,6 +43,9 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	/** Cached device management implementation */
 	private IDeviceManagement deviceManagement;
 
+	/** Cached device event management implementation */
+	private IDeviceEventManagement deviceEventManagement;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -53,7 +57,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-		getDeviceManagement().addDeviceCommandResponse(assignment.getToken(), request);
+		getDeviceEventManagement().addDeviceCommandResponse(assignment.getToken(), request);
 	}
 
 	/*
@@ -68,7 +72,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
 		IDeviceMeasurements measurements =
-				getDeviceManagement().addDeviceMeasurements(assignment.getToken(), request);
+				getDeviceEventManagement().addDeviceMeasurements(assignment.getToken(), request);
 		handleLinkResponseToInvocation(originator, measurements.getId(), assignment);
 	}
 
@@ -83,7 +87,8 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	public void onDeviceLocationCreateRequest(String hardwareId, String originator,
 			IDeviceLocationCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-		IDeviceLocation location = getDeviceManagement().addDeviceLocation(assignment.getToken(), request);
+		IDeviceLocation location =
+				getDeviceEventManagement().addDeviceLocation(assignment.getToken(), request);
 		handleLinkResponseToInvocation(originator, location.getId(), assignment);
 	}
 
@@ -98,7 +103,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
-		IDeviceAlert alert = getDeviceManagement().addDeviceAlert(assignment.getToken(), request);
+		IDeviceAlert alert = getDeviceEventManagement().addDeviceAlert(assignment.getToken(), request);
 		handleLinkResponseToInvocation(originator, alert.getId(), assignment);
 	}
 
@@ -135,7 +140,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 			DeviceCommandResponseCreateRequest response = new DeviceCommandResponseCreateRequest();
 			response.setOriginatingEventId(originator);
 			response.setResponseEventId(eventId);
-			getDeviceManagement().addDeviceCommandResponse(assignment.getToken(), response);
+			getDeviceEventManagement().addDeviceCommandResponse(assignment.getToken(), response);
 		}
 	}
 
@@ -150,7 +155,7 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 	}
 
 	/**
-	 * Cache the registration manager implementation rather than looking it up each time.
+	 * Cache the device management implementation rather than looking it up each time.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
@@ -160,5 +165,19 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 			deviceManagement = SiteWhere.getServer().getDeviceManagement(getTenant());
 		}
 		return deviceManagement;
+	}
+
+	/**
+	 * Cache the device event management implementation rather than looking it up each
+	 * time.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IDeviceEventManagement getDeviceEventManagement() throws SiteWhereException {
+		if (deviceEventManagement == null) {
+			deviceEventManagement = SiteWhere.getServer().getDeviceEventManagement(getTenant());
+		}
+		return deviceEventManagement;
 	}
 }

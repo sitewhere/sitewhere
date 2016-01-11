@@ -51,6 +51,7 @@ import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -305,6 +306,19 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
 		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
 		return engine.getDeviceManagement();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceEventManagement(com.sitewhere
+	 * .spi.user.ITenant)
+	 */
+	@Override
+	public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException {
+		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
+		return engine.getDeviceEventManagement();
 	}
 
 	/*

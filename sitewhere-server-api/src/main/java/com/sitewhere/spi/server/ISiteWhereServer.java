@@ -19,6 +19,7 @@ import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
@@ -147,6 +148,15 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException;
+
+	/**
+	 * Get device event management implementation for tenant.
+	 * 
+	 * @param tenant
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException;
 
 	/**
 	 * Get device management cache provider for tenant.

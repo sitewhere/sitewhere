@@ -286,7 +286,7 @@ public class AssignmentsController extends RestController {
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceEvents(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceEvents(
 					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -316,7 +316,7 @@ public class AssignmentsController extends RestController {
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceMeasurements(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceMeasurements(
 					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -348,7 +348,7 @@ public class AssignmentsController extends RestController {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceMeasurements> measurements =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceMeasurements(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceMeasurements(
 							token, criteria);
 			ChartBuilder builder = new ChartBuilder();
 			return builder.process(measurements.getResults(), measurementIds);
@@ -379,7 +379,7 @@ public class AssignmentsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "createMeasurements", LOGGER);
 		try {
 			IDeviceMeasurements result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceMeasurements(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).addDeviceMeasurements(
 							token, input);
 			return DeviceMeasurements.copy(result);
 		} finally {
@@ -410,7 +410,7 @@ public class AssignmentsController extends RestController {
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceLocations(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceLocations(
 					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -439,7 +439,7 @@ public class AssignmentsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "createLocation", LOGGER);
 		try {
 			IDeviceLocation result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceLocation(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).addDeviceLocation(
 							token, input);
 			return DeviceLocation.copy(result);
 		} finally {
@@ -470,7 +470,7 @@ public class AssignmentsController extends RestController {
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceAlerts(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceAlerts(
 					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -499,7 +499,7 @@ public class AssignmentsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "createAlert", LOGGER);
 		try {
 			IDeviceAlert result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceAlert(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).addDeviceAlert(
 							token, input);
 			return DeviceAlert.copy(result);
 		} finally {
@@ -632,8 +632,8 @@ public class AssignmentsController extends RestController {
 			request.setEventDate(new Date());
 			request.setUpdateState(false);
 			request.setData(payload);
-			SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceStreamData(token,
-					request);
+			SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).addDeviceStreamData(
+					token, request);
 			svtResponse.setStatus(HttpServletResponse.SC_CREATED);
 		} catch (SiteWhereSystemException e) {
 			if (e.getCode() == ErrorCode.InvalidStreamId) {
@@ -671,7 +671,7 @@ public class AssignmentsController extends RestController {
 			HttpServletRequest servletRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceStreamData", LOGGER);
 		IDeviceStreamData chunk =
-				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceStreamData(
+				SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).getDeviceStreamData(
 						token, streamId, sequenceNumber);
 		if (chunk == null) {
 			svtResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -705,7 +705,7 @@ public class AssignmentsController extends RestController {
 
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, null);
 		ISearchResults<IDeviceStreamData> data =
-				SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceStreamData(
+				SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceStreamData(
 						token, streamId, criteria);
 
 		// Sort results by sequence number.
@@ -748,7 +748,7 @@ public class AssignmentsController extends RestController {
 		try {
 			IDeviceCommand command = assureDeviceCommand(request.getCommandToken(), servletRequest);
 			IDeviceCommandInvocation result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceCommandInvocation(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).addDeviceCommandInvocation(
 							token, command, request);
 			DeviceCommandInvocationMarshalHelper helper =
 					new DeviceCommandInvocationMarshalHelper(getTenant(servletRequest));
@@ -807,7 +807,7 @@ public class AssignmentsController extends RestController {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
 			ISearchResults<IDeviceCommandInvocation> matches =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandInvocations(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandInvocations(
 							token, criteria);
 			DeviceCommandInvocationMarshalHelper helper =
 					new DeviceCommandInvocationMarshalHelper(getTenant(servletRequest));
@@ -840,7 +840,7 @@ public class AssignmentsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "createStateChange", LOGGER);
 		try {
 			IDeviceStateChange result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceStateChange(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).addDeviceStateChange(
 							token, input);
 			return DeviceStateChange.copy(result);
 		} finally {
@@ -870,7 +870,7 @@ public class AssignmentsController extends RestController {
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceStateChanges(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceStateChanges(
 					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -899,7 +899,7 @@ public class AssignmentsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "createCommandResponse", LOGGER);
 		try {
 			IDeviceCommandResponse result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).addDeviceCommandResponse(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).addDeviceCommandResponse(
 							token, input);
 			return DeviceCommandResponse.copy(result);
 		} finally {
@@ -930,7 +930,7 @@ public class AssignmentsController extends RestController {
 		try {
 			DateRangeSearchCriteria criteria =
 					new DateRangeSearchCriteria(page, pageSize, startDate, endDate);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandResponses(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandResponses(
 					token, criteria);
 		} finally {
 			Tracer.stop(LOGGER);

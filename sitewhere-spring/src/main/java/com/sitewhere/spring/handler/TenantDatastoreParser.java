@@ -22,9 +22,11 @@ import com.sitewhere.ehcache.DeviceManagementCacheProvider;
 import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.hbase.asset.HBaseAssetManagement;
+import com.sitewhere.hbase.device.HBaseDeviceEventManagement;
 import com.sitewhere.hbase.device.HBaseDeviceManagement;
 import com.sitewhere.hbase.scheduling.HBaseScheduleManagement;
 import com.sitewhere.mongodb.asset.MongoAssetManagement;
+import com.sitewhere.mongodb.device.MongoDeviceEventManagement;
 import com.sitewhere.mongodb.device.MongoDeviceManagement;
 import com.sitewhere.mongodb.scheduling.MongoScheduleManagement;
 import com.sitewhere.server.SiteWhereServerBeans;
@@ -111,19 +113,24 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		// Register Mongo device management implementation.
 		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
 		dm.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
+				dm.getBeanDefinition());
 
+		// Register device event management implementation.
+		BeanDefinitionBuilder dem =
+				BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceEventManagement.class);
+		dem.addPropertyReference("mongoClient", "mongo");
 		Attr useBulkEventInserts = element.getAttributeNode("useBulkEventInserts");
 		if (useBulkEventInserts != null) {
-			dm.addPropertyValue("useBulkEventInserts", useBulkEventInserts.getValue());
+			dem.addPropertyValue("useBulkEventInserts", useBulkEventInserts.getValue());
 		}
 
 		Attr bulkInsertMaxChunkSize = element.getAttributeNode("bulkInsertMaxChunkSize");
 		if (bulkInsertMaxChunkSize != null) {
-			dm.addPropertyValue("bulkInsertMaxChunkSize", bulkInsertMaxChunkSize.getValue());
+			dem.addPropertyValue("bulkInsertMaxChunkSize", bulkInsertMaxChunkSize.getValue());
 		}
-
-		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
-				dm.getBeanDefinition());
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT,
+				dem.getBeanDefinition());
 
 		// Register Mongo asset management implementation.
 		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
@@ -150,6 +157,13 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		dm.addPropertyReference("client", "hbase");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
 				dm.getBeanDefinition());
+
+		// Register HBase device event management implementation.
+		BeanDefinitionBuilder dem =
+				BeanDefinitionBuilder.rootBeanDefinition(HBaseDeviceEventManagement.class);
+		dem.addPropertyReference("client", "hbase");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT,
+				dem.getBeanDefinition());
 
 		// Register HBase asset management implementation.
 		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(HBaseAssetManagement.class);

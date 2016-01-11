@@ -11,10 +11,8 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
-import com.sitewhere.device.DeviceManagementDecorator;
+import com.sitewhere.device.DeviceEventManagementDecorator;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceManagement;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.event.IDeviceAlert;
@@ -22,6 +20,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
@@ -30,8 +29,6 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
-import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
-import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -40,7 +37,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
  * 
  * @author Derek
  */
-public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorator {
+public class OutboundProcessingStrategyDecorator extends DeviceEventManagementDecorator {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(OutboundProcessingStrategyDecorator.class);
@@ -48,7 +45,7 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	/** Cached strategy */
 	private IOutboundProcessingStrategy strategy;
 
-	public OutboundProcessingStrategyDecorator(IDeviceManagement delegate) {
+	public OutboundProcessingStrategyDecorator(IDeviceEventManagement delegate) {
 		super(delegate);
 	}
 
@@ -56,8 +53,8 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceEventBatch(java
-	 * .lang.String, com.sitewhere.spi.device.event.IDeviceEventBatch)
+	 * com.sitewhere.device.DeviceEventManagementDecorator#addDeviceEventBatch(java.lang
+	 * .String, com.sitewhere.spi.device.event.IDeviceEventBatch)
 	 */
 	@Override
 	public IDeviceEventBatchResponse addDeviceEventBatch(String assignmentToken, IDeviceEventBatch batch)
@@ -69,8 +66,8 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceMeasurements
-	 * (java.lang.String,
+	 * com.sitewhere.device.DeviceEventManagementDecorator#addDeviceMeasurements(java.
+	 * lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest)
 	 */
 	@Override
@@ -89,8 +86,8 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceLocation(java
-	 * .lang.String, com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
+	 * com.sitewhere.device.DeviceEventManagementDecorator#addDeviceLocation(java.lang
+	 * .String, com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest)
 	 */
 	@Override
 	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
@@ -106,8 +103,8 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceAlert(java.lang
-	 * .String, com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
+	 * com.sitewhere.device.DeviceEventManagementDecorator#addDeviceAlert(java.lang.String
+	 * , com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
 	public IDeviceAlert addDeviceAlert(String assignmentToken, IDeviceAlertCreateRequest request)
@@ -123,8 +120,8 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceCommandInvocation
-	 * (java.lang.String, com.sitewhere.spi.device.command.IDeviceCommand,
+	 * com.sitewhere.device.DeviceEventManagementDecorator#addDeviceCommandInvocation(
+	 * java.lang.String, com.sitewhere.spi.device.command.IDeviceCommand,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
@@ -141,8 +138,8 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.rest.model.device.DeviceManagementDecorator#addDeviceCommandResponse
-	 * (java.lang.String,
+	 * com.sitewhere.device.DeviceEventManagementDecorator#addDeviceCommandResponse(java
+	 * .lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
 	 */
 	@Override
@@ -151,40 +148,6 @@ public class OutboundProcessingStrategyDecorator extends DeviceManagementDecorat
 		IDeviceCommandResponse result = super.addDeviceCommandResponse(assignmentToken, request);
 		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
 			getOutboundProcessingStrategy().onCommandResponse(result);
-		}
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#createBatchOperation(com.sitewhere
-	 * .spi.device.request.IBatchOperationCreateRequest)
-	 */
-	@Override
-	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
-			throws SiteWhereException {
-		IBatchOperation result = super.createBatchOperation(request);
-		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
-			getOutboundProcessingStrategy().onBatchOperation(result);
-		}
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.DeviceManagementDecorator#createBatchCommandInvocation(com
-	 * .sitewhere.spi.device.request.IBatchCommandInvocationRequest)
-	 */
-	@Override
-	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)
-			throws SiteWhereException {
-		IBatchOperation result = super.createBatchCommandInvocation(request);
-		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
-			getOutboundProcessingStrategy().onBatchOperation(result);
 		}
 		return result;
 	}

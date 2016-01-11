@@ -34,17 +34,20 @@ public interface SiteWhereServerBeans {
 	/** Bean id for device management in server configuration */
 	public static final String BEAN_DEVICE_MANAGEMENT = "deviceManagement";
 
-	/** Bean id for device communication subsystem in server configuration */
-	public static final String BEAN_DEVICE_COMMUNICATION = "deviceCommunication";
-
-	/** Bean id for event processing subsystem in server configuration */
-	public static final String BEAN_EVENT_PROCESSING = "eventProcessing";
+	/** Bean id for device event management in server configuration */
+	public static final String BEAN_DEVICE_EVENT_MANAGEMENT = "deviceEventManagement";
 
 	/** Bean id for asset management in server configuration */
 	public static final String BEAN_ASSET_MANAGEMENT = "assetManagement";
 
 	/** Bean id for schedule management in server configuration */
 	public static final String BEAN_SCHEDULE_MANAGEMENT = "scheduleManagement";
+
+	/** Bean id for device communication subsystem in server configuration */
+	public static final String BEAN_DEVICE_COMMUNICATION = "deviceCommunication";
+
+	/** Bean id for event processing subsystem in server configuration */
+	public static final String BEAN_EVENT_PROCESSING = "eventProcessing";
 
 	/** Bean id for asset module manager in server configuration */
 	public static final String BEAN_ASSET_MODULE_MANAGER = "assetModuleManager";

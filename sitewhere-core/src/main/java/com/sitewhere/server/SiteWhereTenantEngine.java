@@ -53,6 +53,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -106,6 +107,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	/** Interface to device management implementation */
 	private IDeviceManagement deviceManagement;
+
+	/** Interface to device event management implementation */
+	private IDeviceEventManagement deviceEventManagement;
 
 	/** Interface to asset management implementation */
 	private IAssetManagement assetManagement;
@@ -161,6 +165,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 		// Start device management.
 		startNestedComponent(getDeviceManagement(), "Device management startup failed.", true);
+
+		// Start device management.
+		startNestedComponent(getDeviceEventManagement(), "Device event management startup failed.", true);
 
 		// Start device management.
 		startNestedComponent(getScheduleManagement(), "Schedule management startup failed.", true);
@@ -219,6 +226,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			component.lifecycleStop();
 		}
 
+		getDeviceEventManagement().lifecycleStop();
 		getDeviceManagement().lifecycleStop();
 		getAssetModuleManager().lifecycleStop();
 		getAssetManagement().lifecycleStop();
@@ -347,6 +355,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			// Initialize device management.
 			initializeDeviceManagement();
 
+			// Initialize device event management.
+			initializeDeviceEventManagement();
+
 			// Initialize asset management.
 			initializeAssetManagement();
 
@@ -470,7 +481,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected IDeviceManagement configureDeviceManagement(IDeviceManagement management)
 			throws SiteWhereException {
-
 		// Inject cache provider if available.
 		if (getDeviceManagementCacheProvider() != null) {
 			if (management instanceof ICachingDeviceManagement) {
@@ -480,6 +490,41 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 				LOGGER.info("Device management implementation not using cache provider.");
 			}
 		}
+
+		return management;
+	}
+
+	/**
+	 * Initialize device event management implementation.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeDeviceEventManagement() throws SiteWhereException {
+		// Verify that a device event management implementation exists.
+		try {
+			IDeviceEventManagement management =
+					(IDeviceEventManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT);
+			this.deviceEventManagement = configureDeviceEventManagement(management);
+			LOGGER.info("Device event management implementation using: "
+					+ deviceEventManagement.getClass().getName());
+
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No device event management implementation configured.");
+		}
+	}
+
+	/**
+	 * Configure device event management implementation by injecting configured options or
+	 * wrapping to add functionality.
+	 * 
+	 * @param wrapped
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected IDeviceEventManagement configureDeviceEventManagement(IDeviceEventManagement management)
+			throws SiteWhereException {
+		// Add reference to device management implementation.
+		management.setDeviceManagement(getDeviceManagement());
 
 		// Routes stored events to outbound processing strategy.
 		return new OutboundProcessingStrategyDecorator(management);
@@ -584,7 +629,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 					(IDeviceModelInitializer) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER);
 			ISearchResults<ISite> sites = getDeviceManagement().listSites(new SearchCriteria(1, 1));
 			if (sites.getNumResults() == 0) {
-				init.initialize(getDeviceManagement(), getAssetModuleManager());
+				init.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No device model initializer found in Spring bean configuration. Skipping.");
@@ -707,6 +752,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	public void setDeviceManagement(IDeviceManagement deviceManagement) {
 		this.deviceManagement = deviceManagement;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceEventManagement()
+	 */
+	public IDeviceEventManagement getDeviceEventManagement() {
+		return deviceEventManagement;
+	}
+
+	public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
+		this.deviceEventManagement = deviceEventManagement;
 	}
 
 	/*

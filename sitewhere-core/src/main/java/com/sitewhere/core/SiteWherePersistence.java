@@ -89,6 +89,7 @@ import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
@@ -656,7 +657,7 @@ public class SiteWherePersistence {
 	 * @throws SiteWhereException
 	 */
 	public static DeviceEventBatchResponse deviceEventBatchLogic(String assignmentToken,
-			IDeviceEventBatch batch, IDeviceManagement management) throws SiteWhereException {
+			IDeviceEventBatch batch, IDeviceEventManagement management) throws SiteWhereException {
 		DeviceEventBatchResponse response = new DeviceEventBatchResponse();
 		for (IDeviceMeasurementsCreateRequest measurements : batch.getMeasurements()) {
 			response.getCreatedMeasurements().add(

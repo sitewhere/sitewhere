@@ -20,6 +20,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
 /**
  * Handles underlying logic to make common actions simpler to invoke from scripts.
@@ -31,8 +32,12 @@ public class DeviceActions implements IDeviceActions {
 	/** Device management implementation */
 	private IDeviceManagement deviceManagement;
 
-	public DeviceActions(IDeviceManagement deviceManagement) {
+	/** Device event management implementation */
+	private IDeviceEventManagement deviceEventManagement;
+
+	public DeviceActions(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement) {
 		this.deviceManagement = deviceManagement;
+		this.deviceEventManagement = deviceEventManagement;
 	}
 
 	/*
@@ -67,7 +72,7 @@ public class DeviceActions implements IDeviceActions {
 		create.setTarget(CommandTarget.Assignment);
 		create.setTargetId(assignment.getToken());
 		create.setEventDate(new Date());
-		getDeviceManagement().addDeviceCommandInvocation(assignment.getToken(), match, create);
+		getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(), match, create);
 	}
 
 	public IDeviceManagement getDeviceManagement() {
@@ -76,5 +81,13 @@ public class DeviceActions implements IDeviceActions {
 
 	public void setDeviceManagement(IDeviceManagement deviceManagement) {
 		this.deviceManagement = deviceManagement;
+	}
+
+	public IDeviceEventManagement getDeviceEventManagement() {
+		return deviceEventManagement;
+	}
+
+	public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
+		this.deviceEventManagement = deviceEventManagement;
 	}
 }

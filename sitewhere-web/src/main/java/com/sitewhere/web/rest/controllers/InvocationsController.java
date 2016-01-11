@@ -73,7 +73,7 @@ public class InvocationsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandInvocation", LOGGER);
 		try {
 			IDeviceEvent found =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceEventById(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).getDeviceEventById(
 							id);
 			if (!(found instanceof IDeviceCommandInvocation)) {
 				throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
@@ -104,7 +104,7 @@ public class InvocationsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getDeviceCommandInvocationSummary", LOGGER);
 		try {
 			IDeviceEvent found =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).getDeviceEventById(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).getDeviceEventById(
 							id);
 			if (!(found instanceof IDeviceCommandInvocation)) {
 				throw new SiteWhereException("Event with the corresponding id is not a command invocation.");
@@ -115,7 +115,7 @@ public class InvocationsController extends RestController {
 			helper.setIncludeCommand(true);
 			DeviceCommandInvocation converted = helper.convert(invocation);
 			ISearchResults<IDeviceCommandResponse> responses =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandInvocationResponses(
+					SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandInvocationResponses(
 							found.getId());
 			return DeviceInvocationSummaryBuilder.build(converted, responses.getResults(),
 					getTenant(servletRequest));
@@ -141,7 +141,7 @@ public class InvocationsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listCommandInvocationResponses", LOGGER);
 		try {
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listDeviceCommandInvocationResponses(
+			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).listDeviceCommandInvocationResponses(
 					id);
 		} finally {
 			Tracer.stop(LOGGER);

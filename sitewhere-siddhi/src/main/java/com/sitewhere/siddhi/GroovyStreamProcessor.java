@@ -20,6 +20,7 @@ import com.sitewhere.device.DeviceActions;
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.server.ITenantAware;
 import com.sitewhere.spi.user.ITenant;
 
@@ -67,7 +68,8 @@ public class GroovyStreamProcessor extends StreamCallback implements ITenantAwar
 		for (Event event : events) {
 			try {
 				IDeviceManagement dm = SiteWhere.getServer().getDeviceManagement(getTenant());
-				DeviceActions actions = new DeviceActions(dm);
+				IDeviceEventManagement dem = SiteWhere.getServer().getDeviceEventManagement(getTenant());
+				DeviceActions actions = new DeviceActions(dm, dem);
 				Binding binding = new Binding();
 				binding.setVariable(VAR_EVENT, event);
 				binding.setVariable(VAR_DEVICE_MANAGEMENT, dm);

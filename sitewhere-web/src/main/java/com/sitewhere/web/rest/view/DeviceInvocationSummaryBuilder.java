@@ -58,7 +58,7 @@ public class DeviceInvocationSummaryBuilder {
 			rsp.setDate(response.getEventDate());
 			if (response.getResponseEventId() != null) {
 				IDeviceEvent event =
-						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceEventById(
+						SiteWhere.getServer().getDeviceEventManagement(tenant).getDeviceEventById(
 								response.getResponseEventId());
 				rsp.setDescription(getDeviceEventDescription(event));
 			} else if (response.getResponse() != null) {

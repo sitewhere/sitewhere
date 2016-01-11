@@ -26,6 +26,7 @@ import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.scheduling.JobConstants;
 import com.sitewhere.spi.user.ITenant;
 
@@ -67,6 +68,7 @@ public class CommandInvocationJob implements Job {
 					SiteWhere.getServer().getUserManagement().getTenantById(
 							context.getScheduler().getSchedulerName());
 			IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(tenant);
+			IDeviceEventManagement events = SiteWhere.getServer().getDeviceEventManagement(tenant);
 			IDeviceCommand command = devices.getDeviceCommandByToken(getCommandToken());
 			DeviceCommandInvocationCreateRequest create = new DeviceCommandInvocationCreateRequest();
 			create.setCommandToken(getCommandToken());
@@ -76,7 +78,7 @@ public class CommandInvocationJob implements Job {
 			create.setTarget(CommandTarget.Assignment);
 			create.setTargetId(getAssignmentToken());
 			create.setEventDate(new Date());
-			devices.addDeviceCommandInvocation(assignmentToken, command, create);
+			events.addDeviceCommandInvocation(assignmentToken, command, create);
 			LOGGER.info("Executed command invocation job.");
 		} catch (SiteWhereException e) {
 			throw new JobExecutionException("Unable to create command invocation.", e);

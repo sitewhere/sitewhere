@@ -67,6 +67,7 @@ import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -224,6 +225,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Device management implementation */
 	protected IDeviceManagement deviceManagement;
 
+	/** Device event management implementation */
+	protected IDeviceEventManagement deviceEventManagement;
+
 	/** Asset module manager implementation */
 	protected IAssetModuleManager assetModuleManager;
 
@@ -231,9 +235,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	private boolean initializeIfNoConsole = false;
 
 	@Override
-	public void initialize(IDeviceManagement deviceManagement, IAssetModuleManager assetModuleManager)
-			throws SiteWhereException {
+	public void initialize(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement,
+			IAssetModuleManager assetModuleManager) throws SiteWhereException {
 		this.deviceManagement = deviceManagement;
+		this.deviceEventManagement = deviceEventManagement;
 		this.assetModuleManager = assetModuleManager;
 
 		// Use the system account for logging "created by" on created elements.
@@ -714,7 +719,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			mreq.addOrReplaceMeasurement("engine.temperature", temp);
 			mreq.addOrReplaceMeasurement("fuel.level", fuel);
 			mreq.setEventDate(new Date(current));
-			results.add(getDeviceManagement().addDeviceMeasurements(assignment.getToken(), mreq));
+			results.add(getDeviceEventManagement().addDeviceMeasurements(assignment.getToken(), mreq));
 			measurementCount++;
 
 			// Create alerts based on current temperature.
@@ -732,7 +737,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					areq.setLevel(AlertLevel.Critical);
 					break;
 				}
-				getDeviceManagement().addDeviceAlert(assignment.getToken(), areq);
+				getDeviceEventManagement().addDeviceAlert(assignment.getToken(), areq);
 				alertCount++;
 			}
 
@@ -796,7 +801,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					request.setElevation(0.0);
 					request.setEventDate(new Date(current));
 					IDeviceLocation created =
-							getDeviceManagement().addDeviceLocation(assignment.getToken(), request);
+							getDeviceEventManagement().addDeviceLocation(assignment.getToken(), request);
 					results.add(created);
 
 					cx = cx + deltaX;
@@ -843,8 +848,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 				values.put(param.getName(), getSampleValue(param.getType()));
 			}
 			request.setParameterValues(values);
-			invocations.add(getDeviceManagement().addDeviceCommandInvocation(assignment.getToken(), command,
-					request));
+			invocations.add(getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(),
+					command, request));
 			current += 30000;
 		}
 		return invocations;
@@ -868,7 +873,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setOriginatingEventId(invocation.getId());
 			request.setResponse("ACK");
 			request.setEventDate(new Date(current));
-			responses.add(getDeviceManagement().addDeviceCommandResponse(assignment.getToken(), request));
+			responses.add(getDeviceEventManagement().addDeviceCommandResponse(assignment.getToken(), request));
 			current += 30000;
 		}
 		return responses;
@@ -889,7 +894,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		register.setHardwareId(assignment.getDeviceHardwareId());
 		register.setSpecificationToken(specification.getToken());
 		register.setEventDate(start);
-		stateChanges.add(getDeviceManagement().addDeviceStateChange(assignment.getToken(), register));
+		stateChanges.add(getDeviceEventManagement().addDeviceStateChange(assignment.getToken(), register));
 		return stateChanges;
 	}
 
@@ -1001,5 +1006,13 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 	protected void setDeviceManagement(IDeviceManagement deviceManagement) {
 		this.deviceManagement = deviceManagement;
+	}
+
+	public IDeviceEventManagement getDeviceEventManagement() {
+		return deviceEventManagement;
+	}
+
+	public void setDeviceEventManagement(IDeviceEventManagement deviceEventManagement) {
+		this.deviceEventManagement = deviceEventManagement;
 	}
 }

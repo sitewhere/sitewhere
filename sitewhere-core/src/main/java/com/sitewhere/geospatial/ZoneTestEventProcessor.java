@@ -85,7 +85,7 @@ public class ZoneTestEventProcessor extends FilteredOutboundEventProcessor {
 				alert.setMessage(test.getAlertMessage());
 				alert.setUpdateState(false);
 				alert.setEventDate(new Date());
-				SiteWhere.getServer().getDeviceManagement(getTenant()).addDeviceAlert(
+				SiteWhere.getServer().getDeviceEventManagement(getTenant()).addDeviceAlert(
 						location.getDeviceAssignmentToken(), alert);
 			}
 		}
