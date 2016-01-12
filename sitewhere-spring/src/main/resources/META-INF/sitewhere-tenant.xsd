@@ -164,6 +164,69 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+
+	<!-- Attributes for configuring InfluxDB event storage -->
+	<xsd:attributeGroup name="influxDbAttributes">
+		<xsd:attribute name="connectUrl" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Url used to connect.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="username" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Username used to connect.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="password" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Password used to connect.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="database" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Database where events are stored.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="retention" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>Retention identifier for events.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="batchChunkSize" type="xsd:int">
+			<xsd:annotation>
+				<xsd:documentation>Max number of events to cache before writing.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="batchIntervalMs" type="xsd:int">
+			<xsd:annotation>
+				<xsd:documentation>Max interval (in ms) to wait before writing.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<!-- Configuration data for a MongoDB tenant datastore with InfluxDB event storage -->
+	<xsd:element name="mongo-influxdb-tenant-datastore" type="mongoInfluxDbTenantDatastoreType"
+		substitutionGroup="abstract-tenant-datastore">
+		<xsd:annotation>
+			<xsd:documentation>Hybrid tenant datastore that uses MongoDB for storing device
+				management data and InfluxDB for storing event data.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="mongoInfluxDbTenantDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractTenantDatastoreType">
+				<xsd:attributeGroup ref="influxDbAttributes"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
 	<!-- Configuration data for an HBase tenant datastore -->
 	<xsd:element name="hbase-tenant-datastore" type="hbaseTenantDatastoreType"

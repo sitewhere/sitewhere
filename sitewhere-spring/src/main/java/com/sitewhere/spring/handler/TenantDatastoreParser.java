@@ -25,6 +25,7 @@ import com.sitewhere.hbase.asset.HBaseAssetManagement;
 import com.sitewhere.hbase.device.HBaseDeviceEventManagement;
 import com.sitewhere.hbase.device.HBaseDeviceManagement;
 import com.sitewhere.hbase.scheduling.HBaseScheduleManagement;
+import com.sitewhere.influx.InfluxDbDeviceEventManagement;
 import com.sitewhere.mongodb.asset.MongoAssetManagement;
 import com.sitewhere.mongodb.device.MongoDeviceEventManagement;
 import com.sitewhere.mongodb.device.MongoDeviceManagement;
@@ -71,6 +72,10 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 			switch (type) {
 			case MongoTenantDatastore: {
 				parseMongoTenantDatasource(child, context);
+				break;
+			}
+			case MongoInfluxDbTenantDatastore: {
+				parseMongoInfluxDbTenantDatasource(child, context);
 				break;
 			}
 			case HBaseTenantDatastore: {
@@ -128,6 +133,68 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		Attr bulkInsertMaxChunkSize = element.getAttributeNode("bulkInsertMaxChunkSize");
 		if (bulkInsertMaxChunkSize != null) {
 			dem.addPropertyValue("bulkInsertMaxChunkSize", bulkInsertMaxChunkSize.getValue());
+		}
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT,
+				dem.getBeanDefinition());
+
+		// Register Mongo asset management implementation.
+		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
+		am.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
+				am.getBeanDefinition());
+
+		// Register Mongo schedule management implementation.
+		BeanDefinitionBuilder sm = BeanDefinitionBuilder.rootBeanDefinition(MongoScheduleManagement.class);
+		sm.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT,
+				sm.getBeanDefinition());
+	}
+
+	/**
+	 * Add service provider implementations to support a hybid MongoDB/InfluxDB tenant
+	 * datastore..
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseMongoInfluxDbTenantDatasource(Element element, ParserContext context) {
+
+		// Register Mongo device management implementation.
+		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
+		dm.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
+				dm.getBeanDefinition());
+
+		// Register device event management implementation.
+		BeanDefinitionBuilder dem =
+				BeanDefinitionBuilder.rootBeanDefinition(InfluxDbDeviceEventManagement.class);
+		Attr connectUrl = element.getAttributeNode("connectUrl");
+		if (connectUrl != null) {
+			dem.addPropertyValue("connectUrl", connectUrl.getValue());
+		}
+		Attr username = element.getAttributeNode("username");
+		if (username != null) {
+			dem.addPropertyValue("username", username.getValue());
+		}
+		Attr password = element.getAttributeNode("password");
+		if (password != null) {
+			dem.addPropertyValue("password", password.getValue());
+		}
+		Attr database = element.getAttributeNode("database");
+		if (database != null) {
+			dem.addPropertyValue("database", database.getValue());
+		}
+		Attr retention = element.getAttributeNode("retention");
+		if (retention != null) {
+			dem.addPropertyValue("retention", retention.getValue());
+		}
+		Attr batchChunkSize = element.getAttributeNode("batchChunkSize");
+		if (retention != null) {
+			dem.addPropertyValue("batchChunkSize", batchChunkSize.getValue());
+		}
+		Attr batchIntervalMs = element.getAttributeNode("batchIntervalMs");
+		if (retention != null) {
+			dem.addPropertyValue("batchIntervalMs", batchIntervalMs.getValue());
 		}
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT,
 				dem.getBeanDefinition());
@@ -301,6 +368,9 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 
 		/** Mongo tenant datastore service providers */
 		MongoTenantDatastore("mongo-tenant-datastore"),
+
+		/** Hybrid MongoDB/InfluxDB datastore configuration */
+		MongoInfluxDbTenantDatastore("mongo-influxdb-tenant-datastore"),
 
 		/** HBase tenant datastore service providers */
 		HBaseTenantDatastore("hbase-tenant-datastore"),

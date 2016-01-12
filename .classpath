@@ -112,5 +112,7 @@
 	<classpathentry kind="var" path="M2_REPO/com/github/kenglxn/qrgen/javase/2.1.0/javase-2.1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/github/kenglxn/qrgen/core/2.1.0/core-2.1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/rabbitmq/amqp-client/3.6.0/amqp-client-3.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/influxdb/influxdb-java/2.1/influxdb-java-2.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/joda-time/joda-time/2.9.1/joda-time-2.9.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
