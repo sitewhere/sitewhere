@@ -8,10 +8,7 @@
 package com.sitewhere.influx;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -22,19 +19,18 @@ import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
-import org.influxdb.dto.QueryResult.Result;
-import org.influxdb.dto.QueryResult.Series;
-import org.joda.time.format.ISODateTimeFormat;
 
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.influx.device.InfluxDbDeviceAlert;
+import com.sitewhere.influx.device.InfluxDbDeviceEvent;
+import com.sitewhere.influx.device.InfluxDbDeviceLocation;
+import com.sitewhere.influx.device.InfluxDbDeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
-import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -70,9 +66,6 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(InfluxDbDeviceEventManagement.class);
-
-	/** Collection for events */
-	private static final String COLLECTION_EVENTS = "events";
 
 	/** Device management implementation */
 	private IDeviceManagement deviceManagement;
@@ -190,14 +183,9 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 		IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
 		DeviceMeasurements mxs = SiteWherePersistence.deviceMeasurementsCreateLogic(measurements, assignment);
 		mxs.setId(UUID.randomUUID().toString());
-		long time = System.currentTimeMillis();
-		for (String key : mxs.getMeasurements().keySet()) {
-			Double value = mxs.getMeasurement(key);
-			Point.Builder builder = Point.measurement(COLLECTION_EVENTS).time(time, TimeUnit.MILLISECONDS);
-			builder.tag(IInfluxEventFields.MEASUREMENT_NAME, key);
-			builder.field(IInfluxEventFields.MEASUREMENT_VALUE, value);
-			saveEvent(mxs, builder);
-		}
+		Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
+		InfluxDbDeviceMeasurements.saveToBuilder(mxs, builder);
+		influx.write(getDatabase(), getRetention(), builder.build());
 		return mxs;
 	}
 
@@ -211,8 +199,12 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceMeasurements> listDeviceMeasurements(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		List<IDeviceMeasurements> mxs = new ArrayList<IDeviceMeasurements>();
-		return new SearchResults<IDeviceMeasurements>(mxs);
+		Query query =
+				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
+						+ DeviceEventType.Measurements.name() + "'", getDatabase());
+		QueryResult response = influx.query(query);
+		return new SearchResults<IDeviceMeasurements>(InfluxDbDeviceEvent.eventsOfType(response,
+				IDeviceMeasurements.class));
 	}
 
 	/*
@@ -225,8 +217,13 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		List<IDeviceMeasurements> mxs = new ArrayList<IDeviceMeasurements>();
-		return new SearchResults<IDeviceMeasurements>(mxs);
+		Query query =
+				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where "
+						+ InfluxDbDeviceEvent.EVENT_TYPE + "='" + DeviceEventType.Measurements.name()
+						+ "' and " + InfluxDbDeviceEvent.EVENT_SITE + "='" + siteToken + "'", getDatabase());
+		QueryResult response = influx.query(query);
+		return new SearchResults<IDeviceMeasurements>(InfluxDbDeviceEvent.eventsOfType(response,
+				IDeviceMeasurements.class));
 	}
 
 	/*
@@ -243,12 +240,9 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 		IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
 		DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
 		location.setId(UUID.randomUUID().toString());
-		Point.Builder builder =
-				Point.measurement(COLLECTION_EVENTS).time(System.currentTimeMillis(), TimeUnit.MILLISECONDS).field(
-						IInfluxEventFields.LOCATION_LATITUDE, request.getLatitude()).field(
-						IInfluxEventFields.LOCATION_LONGITUDE, request.getLongitude()).field(
-						IInfluxEventFields.LOCATION_ELEVATION, request.getElevation());
-		saveEvent(location, builder);
+		Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
+		InfluxDbDeviceLocation.saveToBuilder(location, builder);
+		influx.write(getDatabase(), getRetention(), builder.build());
 		return location;
 	}
 
@@ -263,13 +257,11 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	public ISearchResults<IDeviceLocation> listDeviceLocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		Query query =
-				new Query("SELECT * FROM " + COLLECTION_EVENTS + " where type='"
+				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
 						+ DeviceEventType.Location.name() + "'", getDatabase());
 		QueryResult response = influx.query(query);
-		handleError(response);
-
-		List<IDeviceLocation> locations = new ArrayList<IDeviceLocation>();
-		return new SearchResults<IDeviceLocation>(locations);
+		return new SearchResults<IDeviceLocation>(InfluxDbDeviceEvent.eventsOfType(response,
+				IDeviceLocation.class));
 	}
 
 	/*
@@ -283,94 +275,12 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		Query query =
-				new Query("SELECT * FROM " + COLLECTION_EVENTS + " where " + IInfluxEventFields.EVENT_TYPE
-						+ "='" + DeviceEventType.Location.name() + "' and " + IInfluxEventFields.EVENT_SITE
-						+ "='" + siteToken + "'", getDatabase());
+				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where "
+						+ InfluxDbDeviceEvent.EVENT_TYPE + "='" + DeviceEventType.Location.name() + "' and "
+						+ InfluxDbDeviceEvent.EVENT_SITE + "='" + siteToken + "'", getDatabase());
 		QueryResult response = influx.query(query);
-		handleError(response);
-
-		// Parse locations.
-		List<IDeviceLocation> locations = new ArrayList<IDeviceLocation>();
-		for (Result result : response.getResults()) {
-			if (result.getSeries() != null) {
-				for (Series series : result.getSeries()) {
-					for (List<Object> values : series.getValues()) {
-						Map<String, Object> valueMap = getValueMap(series.getColumns(), values);
-						locations.add(parseDeviceLocation(valueMap));
-					}
-				}
-			}
-		}
-		return new SearchResults<IDeviceLocation>(locations);
-	}
-
-	/**
-	 * Parse a device location from values.
-	 * 
-	 * @param values
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected DeviceLocation parseDeviceLocation(Map<String, Object> values) throws SiteWhereException {
-		DeviceLocation location = new DeviceLocation();
-		location.setEventType(DeviceEventType.Location);
-		parseDeviceEvent(values, location);
-		location.setLatitude((Double) values.get(IInfluxEventFields.LOCATION_LATITUDE));
-		location.setLongitude((Double) values.get(IInfluxEventFields.LOCATION_LONGITUDE));
-		location.setElevation((Double) values.get(IInfluxEventFields.LOCATION_ELEVATION));
-		return location;
-	}
-
-	/**
-	 * Parse common device event fields.
-	 * 
-	 * @param values
-	 * @param event
-	 * @throws SiteWhereException
-	 */
-	protected void parseDeviceEvent(Map<String, Object> values, DeviceEvent event) throws SiteWhereException {
-		event.setId((String) values.get(IInfluxEventFields.EVENT_ID));
-		event.setDeviceAssignmentToken((String) values.get(IInfluxEventFields.EVENT_ASSIGNMENT));
-		event.setSiteToken(((String) values.get(IInfluxEventFields.EVENT_SITE)));
-		event.setAssetModuleId(((String) values.get(IInfluxEventFields.EVENT_ASSET_MODULE)));
-		event.setAssetId(((String) values.get(IInfluxEventFields.EVENT_ASSET)));
-		event.setAssignmentType(DeviceAssignmentType.Associated);
-		event.setEventDate(parseDateField(values, IInfluxEventFields.EVENT_DATE));
-		event.setReceivedDate(parseDateField(values, "time"));
-	}
-
-	/**
-	 * Parse a date field.
-	 * 
-	 * @param values
-	 * @param value
-	 * @return
-	 */
-	protected Date parseDateField(Map<String, Object> values, String tag) {
-		String value = (String) values.get(tag);
-		if (value != null) {
-			return ISODateTimeFormat.dateTime().parseDateTime(value).toDate();
-		}
-		return null;
-	}
-
-	/**
-	 * Create a map of values that are present.
-	 * 
-	 * @param columns
-	 * @param values
-	 * @return
-	 */
-	protected Map<String, Object> getValueMap(List<String> columns, List<Object> values) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		for (int i = 0; i < columns.size(); i++) {
-			String key = columns.get(i);
-			Object value = values.get(i);
-			if (value != null) {
-				map.put(key, value);
-			}
-		}
-		return map;
+		return new SearchResults<IDeviceLocation>(InfluxDbDeviceEvent.eventsOfType(response,
+				IDeviceLocation.class));
 	}
 
 	/*
@@ -400,13 +310,9 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 		IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
 		DeviceAlert alert = SiteWherePersistence.deviceAlertCreateLogic(assignment, request);
 		alert.setId(UUID.randomUUID().toString());
-		Point.Builder builder =
-				Point.measurement(COLLECTION_EVENTS).time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-		builder.tag(IInfluxEventFields.ALERT_TYPE, alert.getType());
-		builder.tag(IInfluxEventFields.ALERT_SOURCE, alert.getSource().name());
-		builder.tag(IInfluxEventFields.ALERT_LEVEL, alert.getLevel().name());
-		builder.field(IInfluxEventFields.ALERT_MESSAGE, alert.getMessage());
-		saveEvent(alert, builder);
+		Point.Builder builder = InfluxDbDeviceEvent.createBuilder();
+		InfluxDbDeviceAlert.saveToBuilder(alert, builder);
+		influx.write(getDatabase(), getRetention(), builder.build());
 		return alert;
 	}
 
@@ -420,8 +326,11 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		List<IDeviceAlert> alerts = new ArrayList<IDeviceAlert>();
-		return new SearchResults<IDeviceAlert>(alerts);
+		Query query =
+				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
+						+ DeviceEventType.Alert.name() + "'", getDatabase());
+		QueryResult response = influx.query(query);
+		return new SearchResults<IDeviceAlert>(InfluxDbDeviceEvent.eventsOfType(response, IDeviceAlert.class));
 	}
 
 	/*
@@ -434,8 +343,12 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		List<IDeviceAlert> alerts = new ArrayList<IDeviceAlert>();
-		return new SearchResults<IDeviceAlert>(alerts);
+		Query query =
+				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where "
+						+ InfluxDbDeviceEvent.EVENT_TYPE + "='" + DeviceEventType.Alert.name() + "' and "
+						+ InfluxDbDeviceEvent.EVENT_SITE + "='" + siteToken + "'", getDatabase());
+		QueryResult response = influx.query(query);
+		return new SearchResults<IDeviceAlert>(InfluxDbDeviceEvent.eventsOfType(response, IDeviceAlert.class));
 	}
 
 	/*
@@ -615,42 +528,6 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		List<IDeviceStateChange> results = new ArrayList<IDeviceStateChange>();
 		return new SearchResults<IDeviceStateChange>(results);
-	}
-
-	/**
-	 * Add common fields for the event and save it.
-	 * 
-	 * @param event
-	 * @param builder
-	 * @throws SiteWhereException
-	 */
-	protected void saveEvent(DeviceEvent event, Point.Builder builder) throws SiteWhereException {
-		builder.tag(IInfluxEventFields.EVENT_ID, event.getId());
-		builder.tag(IInfluxEventFields.EVENT_TYPE, event.getEventType().name());
-		builder.tag(IInfluxEventFields.EVENT_ASSIGNMENT, event.getDeviceAssignmentToken());
-		builder.tag(IInfluxEventFields.EVENT_SITE, event.getSiteToken());
-		builder.tag(IInfluxEventFields.EVENT_ASSET_MODULE, event.getAssetModuleId());
-		builder.tag(IInfluxEventFields.EVENT_ASSET, event.getAssetId());
-		builder.field(IInfluxEventFields.EVENT_DATE,
-				ISODateTimeFormat.dateTime().print(event.getEventDate().getTime()));
-
-		// Add field for each metadata value.
-		for (String key : event.getMetadata().keySet()) {
-			builder.field(IInfluxEventFields.EVENT_METADATA_PREFIX + key, event.getMetadata(key));
-		}
-		influx.write(getDatabase(), getRetention(), builder.build());
-	}
-
-	/**
-	 * Handle error condition in query.
-	 * 
-	 * @param result
-	 * @throws SiteWhereException
-	 */
-	protected void handleError(QueryResult result) throws SiteWhereException {
-		if (result.getError() != null) {
-			throw new SiteWhereException("Unable to list events: " + result.getError());
-		}
 	}
 
 	/*
