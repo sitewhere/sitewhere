@@ -5,7 +5,7 @@
 <title>SiteWhere - Login</title>
 <script src="${pageContext.request.contextPath}/scripts/jquery-1.11.3.min.js"></script>
 <script src="${pageContext.request.contextPath}/scripts/jquery.validity.js"></script>
-<script src="${pageContext.request.contextPath}/scripts/kendo.web.js"></script>
+<script src="${pageContext.request.contextPath}/scripts/kendo.web.min.js"><script>
 <script src="${pageContext.request.contextPath}/scripts/sitewhere.js"></script>
 <link rel="shortcut icon" href="${pageContext.request.contextPath}/img/favicon.ico" />
 <link href="${pageContext.request.contextPath}/css/kendo.common.min.css" rel="stylesheet" />
