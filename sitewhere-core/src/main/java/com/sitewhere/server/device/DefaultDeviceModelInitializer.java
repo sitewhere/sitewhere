@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -741,7 +742,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 				alertCount++;
 			}
 
-			current += 10000;
+			current += ThreadLocalRandom.current().nextLong(10000);
 		}
 		LOGGER.info(PREFIX_CREATE_EVENTS + " " + measurementCount + " measurements. " + alertCount
 				+ " alerts.");

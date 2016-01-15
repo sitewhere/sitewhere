@@ -17,8 +17,6 @@ import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDB.LogLevel;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
-import org.influxdb.dto.Query;
-import org.influxdb.dto.QueryResult;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.influx.device.InfluxDbDeviceAlert;
@@ -199,12 +197,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceMeasurements> listDeviceMeasurements(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Query query =
-				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
-						+ DeviceEventType.Measurements.name() + "'", getDatabase());
-		QueryResult response = influx.query(query);
-		return new SearchResults<IDeviceMeasurements>(InfluxDbDeviceEvent.eventsOfType(response,
-				IDeviceMeasurements.class));
+		return InfluxDbDeviceEvent.searchByAssignment(assignmentToken, DeviceEventType.Measurements,
+				criteria, influx, getDatabase(), IDeviceMeasurements.class);
 	}
 
 	/*
@@ -217,13 +211,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceMeasurements> listDeviceMeasurementsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Query query =
-				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where "
-						+ InfluxDbDeviceEvent.EVENT_TYPE + "='" + DeviceEventType.Measurements.name()
-						+ "' and " + InfluxDbDeviceEvent.EVENT_SITE + "='" + siteToken + "'", getDatabase());
-		QueryResult response = influx.query(query);
-		return new SearchResults<IDeviceMeasurements>(InfluxDbDeviceEvent.eventsOfType(response,
-				IDeviceMeasurements.class));
+		return InfluxDbDeviceEvent.searchBySite(siteToken, DeviceEventType.Measurements, criteria, influx,
+				getDatabase(), IDeviceMeasurements.class);
 	}
 
 	/*
@@ -236,7 +225,6 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public IDeviceLocation addDeviceLocation(String assignmentToken, IDeviceLocationCreateRequest request)
 			throws SiteWhereException {
-		LOGGER.info("Adding device location to InfluxDB..");
 		IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(assignmentToken);
 		DeviceLocation location = SiteWherePersistence.deviceLocationCreateLogic(assignment, request);
 		location.setId(UUID.randomUUID().toString());
@@ -256,12 +244,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceLocation> listDeviceLocations(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Query query =
-				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
-						+ DeviceEventType.Location.name() + "'", getDatabase());
-		QueryResult response = influx.query(query);
-		return new SearchResults<IDeviceLocation>(InfluxDbDeviceEvent.eventsOfType(response,
-				IDeviceLocation.class));
+		return InfluxDbDeviceEvent.searchByAssignment(assignmentToken, DeviceEventType.Location, criteria,
+				influx, getDatabase(), IDeviceLocation.class);
 	}
 
 	/*
@@ -274,13 +258,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceLocation> listDeviceLocationsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Query query =
-				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where "
-						+ InfluxDbDeviceEvent.EVENT_TYPE + "='" + DeviceEventType.Location.name() + "' and "
-						+ InfluxDbDeviceEvent.EVENT_SITE + "='" + siteToken + "'", getDatabase());
-		QueryResult response = influx.query(query);
-		return new SearchResults<IDeviceLocation>(InfluxDbDeviceEvent.eventsOfType(response,
-				IDeviceLocation.class));
+		return InfluxDbDeviceEvent.searchBySite(siteToken, DeviceEventType.Location, criteria, influx,
+				getDatabase(), IDeviceLocation.class);
 	}
 
 	/*
@@ -326,11 +305,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceAlert> listDeviceAlerts(String assignmentToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Query query =
-				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
-						+ DeviceEventType.Alert.name() + "'", getDatabase());
-		QueryResult response = influx.query(query);
-		return new SearchResults<IDeviceAlert>(InfluxDbDeviceEvent.eventsOfType(response, IDeviceAlert.class));
+		return InfluxDbDeviceEvent.searchByAssignment(assignmentToken, DeviceEventType.Alert, criteria,
+				influx, getDatabase(), IDeviceAlert.class);
 	}
 
 	/*
@@ -343,12 +319,8 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	@Override
 	public ISearchResults<IDeviceAlert> listDeviceAlertsForSite(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		Query query =
-				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where "
-						+ InfluxDbDeviceEvent.EVENT_TYPE + "='" + DeviceEventType.Alert.name() + "' and "
-						+ InfluxDbDeviceEvent.EVENT_SITE + "='" + siteToken + "'", getDatabase());
-		QueryResult response = influx.query(query);
-		return new SearchResults<IDeviceAlert>(InfluxDbDeviceEvent.eventsOfType(response, IDeviceAlert.class));
+		return InfluxDbDeviceEvent.searchBySite(siteToken, DeviceEventType.Alert, criteria, influx,
+				getDatabase(), IDeviceAlert.class);
 	}
 
 	/*
