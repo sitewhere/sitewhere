@@ -1,5 +1,5 @@
 <!-- Dialog for editing tenant configuration elements -->
-<div id="ce-dialog" class="modal hide" style="width: 760px; margin: -300px 0 0 -380px;">
+<div id="ce-dialog" class="modal hide" style="width: 760px; margin: -350px 0 0 -380px;">
 	<div class="modal-header k-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3 id="ce-dialog-header" data-i18n="tenant.configure.CreateConfigurationComponent"></h3>

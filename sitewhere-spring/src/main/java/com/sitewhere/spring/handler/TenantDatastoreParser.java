@@ -188,6 +188,10 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		if (retention != null) {
 			dem.addPropertyValue("retention", retention.getValue());
 		}
+		Attr enableBatch = element.getAttributeNode("enableBatch");
+		if (enableBatch != null) {
+			dem.addPropertyValue("enableBatch", enableBatch.getValue());
+		}
 		Attr batchChunkSize = element.getAttributeNode("batchChunkSize");
 		if (retention != null) {
 			dem.addPropertyValue("batchChunkSize", batchChunkSize.getValue());
@@ -195,6 +199,10 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		Attr batchIntervalMs = element.getAttributeNode("batchIntervalMs");
 		if (retention != null) {
 			dem.addPropertyValue("batchIntervalMs", batchIntervalMs.getValue());
+		}
+		Attr logLevel = element.getAttributeNode("logLevel");
+		if (logLevel != null) {
+			dem.addPropertyValue("logLevel", logLevel.getValue());
 		}
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT,
 				dem.getBeanDefinition());

@@ -34,13 +34,14 @@
 		<sw:tenant-datastore>
 		
 			<!-- Default MongoDB Datastore -->
-			<!--  
 			<sw:mongo-tenant-datastore useBulkEventInserts="true"
 				bulkInsertMaxChunkSize="1000"/>
-			-->
 
 			<!-- Hybrid MongoDB/InfluxDB Datastore -->
-			<sw:mongo-influxdb-tenant-datastore connectUrl="http://localhost:8086"/>
+			<!--  
+			<sw:mongo-influxdb-tenant-datastore connectUrl="http://localhost:8086"
+				logLevel="basic" enableBatch="true" batchChunkSize="1000" batchIntervalMs="100"/>
+			-->
 		
 			<!-- Default HBase Datastore -->
 			<!--  

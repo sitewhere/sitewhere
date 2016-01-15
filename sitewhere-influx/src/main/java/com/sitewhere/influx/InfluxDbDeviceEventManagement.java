@@ -86,11 +86,17 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	/** Retention policy */
 	private String retention = "default";
 
+	/** Indicates if batch delivery is enabled */
+	private boolean enableBatch = true;
+
 	/** Max records in batch */
 	private int batchChunkSize = 2000;
 
 	/** Max time to wait for sending batch */
 	private int batchIntervalMs = 100;
+
+	/** Log level */
+	private String logLevel;
 
 	public InfluxDbDeviceEventManagement() {
 		super(LifecycleComponentType.DataStore);
@@ -105,8 +111,29 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 	public void start() throws SiteWhereException {
 		this.influx = InfluxDBFactory.connect(getConnectUrl(), getUsername(), getPassword());
 		influx.createDatabase(getDatabase());
-		influx.enableBatch(getBatchChunkSize(), getBatchIntervalMs(), TimeUnit.MILLISECONDS);
-		influx.setLogLevel(LogLevel.FULL);
+		if (isEnableBatch()) {
+			influx.enableBatch(getBatchChunkSize(), getBatchIntervalMs(), TimeUnit.MILLISECONDS);
+		}
+		influx.setLogLevel(convertLogLevel(getLogLevel()));
+	}
+
+	/**
+	 * Convert log level setting to expected enum value.
+	 * 
+	 * @param level
+	 * @return
+	 */
+	protected LogLevel convertLogLevel(String level) {
+		if ((level == null) || (level.equalsIgnoreCase("none"))) {
+			return LogLevel.NONE;
+		} else if (level.equalsIgnoreCase("basic")) {
+			return LogLevel.BASIC;
+		} else if (level.equalsIgnoreCase("headers")) {
+			return LogLevel.HEADERS;
+		} else if (level.equalsIgnoreCase("full")) {
+			return LogLevel.FULL;
+		}
+		return LogLevel.NONE;
 	}
 
 	/*
@@ -562,6 +589,14 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 		this.retention = retention;
 	}
 
+	public boolean isEnableBatch() {
+		return enableBatch;
+	}
+
+	public void setEnableBatch(boolean enableBatch) {
+		this.enableBatch = enableBatch;
+	}
+
 	public int getBatchChunkSize() {
 		return batchChunkSize;
 	}
@@ -576,5 +611,13 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent impl
 
 	public void setBatchIntervalMs(int batchIntervalMs) {
 		this.batchIntervalMs = batchIntervalMs;
+	}
+
+	public String getLogLevel() {
+		return logLevel;
+	}
+
+	public void setLogLevel(String logLevel) {
+		this.logLevel = logLevel;
 	}
 }

@@ -165,6 +165,16 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Filter operation type -->
+	<xsd:simpleType name="influxDbLogLevels">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="none"/>
+			<xsd:enumeration value="basic"/>
+			<xsd:enumeration value="headers"/>
+			<xsd:enumeration value="full"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 	<!-- Attributes for configuring InfluxDB event storage -->
 	<xsd:attributeGroup name="influxDbAttributes">
 		<xsd:attribute name="connectUrl" type="xsd:string">
@@ -194,6 +204,20 @@
 		<xsd:attribute name="retention" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>Retention identifier for events.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="logLevel" type="influxDbLogLevels" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Indicates the amount of logging output for debugging interactions
+					with InfluxDB.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="enableBatch" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation>Enable batch delvery of events.
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
