@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -692,7 +691,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 */
 	protected List<IDeviceMeasurements> createDeviceMeasurements(IDeviceAssignment assignment, Date start)
 			throws SiteWhereException {
-		long current = start.getTime();
+		long current = start.getTime() - (long) Math.floor(Math.random() * 60000.0);
 		double temp = MIN_TEMP;
 		double fuel = 100;
 		double delta = 4;
@@ -742,7 +741,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 				alertCount++;
 			}
 
-			current += ThreadLocalRandom.current().nextLong(10000);
+			current += (long) Math.floor(Math.random() * 30000.0);
 		}
 		LOGGER.info(PREFIX_CREATE_EVENTS + " " + measurementCount + " measurements. " + alertCount
 				+ " alerts.");
@@ -816,7 +815,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					deltaY = delta.y;
 				}
 			}
-			current += 30000;
+			current += (long) Math.floor(Math.random() * 30000.0);
 		}
 		LOGGER.info(PREFIX_CREATE_EVENTS + " " + results.size() + " locations. ");
 		return results;
@@ -851,7 +850,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setParameterValues(values);
 			invocations.add(getDeviceEventManagement().addDeviceCommandInvocation(assignment.getToken(),
 					command, request));
-			current += 30000;
+			current += (long) Math.floor(Math.random() * 30000.0);
 		}
 		return invocations;
 	}
@@ -875,7 +874,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setResponse("ACK");
 			request.setEventDate(new Date(current));
 			responses.add(getDeviceEventManagement().addDeviceCommandResponse(assignment.getToken(), request));
-			current += 30000;
+			current += (long) Math.floor(Math.random() * 30000.0);
 		}
 		return responses;
 	}
