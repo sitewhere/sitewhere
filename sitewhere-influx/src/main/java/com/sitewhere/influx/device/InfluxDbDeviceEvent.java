@@ -63,7 +63,7 @@ public class InfluxDbDeviceEvent {
 	public static final String EVENT_ASSET = "asset";
 
 	/** Event received date field */
-	public static final String RECEIVED_DATE = "eventdate";
+	public static final String RECEIVED_DATE = "rcvdate";
 
 	/** Event metadata field */
 	public static final String EVENT_METADATA_PREFIX = "meta:";
@@ -92,11 +92,11 @@ public class InfluxDbDeviceEvent {
 	 */
 	public static <T> SearchResults<T> searchByAssignment(String assignmentToken, DeviceEventType type,
 			ISearchCriteria criteria, InfluxDB influx, String database, Class<T> clazz)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Query query =
 				InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignmentToken, criteria, database);
 		LOGGER.debug("Query: " + query.getCommand());
-		QueryResult response = influx.query(query);
+		QueryResult response = influx.query(query, TimeUnit.NANOSECONDS);
 		List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
 		Query countQuery =
@@ -122,10 +122,10 @@ public class InfluxDbDeviceEvent {
 	 */
 	public static <T> SearchResults<T> searchBySite(String siteToken, DeviceEventType type,
 			ISearchCriteria criteria, InfluxDB influx, String database, Class<T> clazz)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Query query = InfluxDbDeviceEvent.queryEventsOfTypeForSite(type, siteToken, criteria, database);
 		LOGGER.debug("Query: " + query.getCommand());
-		QueryResult response = influx.query(query);
+		QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
 		List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
 		Query countQuery =
@@ -411,9 +411,11 @@ public class InfluxDbDeviceEvent {
 	 * @return
 	 */
 	protected static Date parseDateField(Map<String, Object> values, String tag) {
-		String value = (String) values.get(tag);
-		if (value != null) {
-			return ISODateTimeFormat.dateTime().parseDateTime(value).toDate();
+		Object value = (Object) values.get(tag);
+		if (value instanceof String) {
+			return ISODateTimeFormat.dateTime().parseDateTime((String) value).toDate();
+		} else if (value instanceof Double) {
+			return new Date(((Double) value).longValue());
 		}
 		return null;
 	}
