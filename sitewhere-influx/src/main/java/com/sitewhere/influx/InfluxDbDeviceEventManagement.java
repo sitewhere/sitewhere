@@ -182,7 +182,7 @@ public class InfluxDbDeviceEventManagement extends TenantLifecycleComponent
 	 */
 	@Override
 	public IDeviceEvent getDeviceEventById(String id) throws SiteWhereException {
-		return null;
+		return InfluxDbDeviceEvent.getEventById(id, influx, getDatabase());
 	}
 
 	/*

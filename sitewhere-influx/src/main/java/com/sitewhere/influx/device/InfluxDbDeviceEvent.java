@@ -79,6 +79,28 @@ public class InfluxDbDeviceEvent {
 	}
 
 	/**
+	 * Get an event by unique id.
+	 * 
+	 * @param eventId
+	 * @param influx
+	 * @param database
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static IDeviceEvent getEventById(String eventId, InfluxDB influx, String database)
+			throws SiteWhereException {
+		Query query =
+				new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where eid='" + eventId
+						+ "'", database);
+		QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
+		List<IDeviceEvent> results = InfluxDbDeviceEvent.eventsOfType(response, IDeviceEvent.class);
+		if (results.size() > 0) {
+			return results.get(0);
+		}
+		return null;
+	}
+
+	/**
 	 * Search for of events of a given type associated with an assignment.
 	 * 
 	 * @param assignmentToken
