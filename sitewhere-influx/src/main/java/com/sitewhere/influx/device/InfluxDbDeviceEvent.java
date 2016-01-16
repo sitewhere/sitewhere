@@ -96,7 +96,7 @@ public class InfluxDbDeviceEvent {
 		Query query =
 				InfluxDbDeviceEvent.queryEventsOfTypeForAssignment(type, assignmentToken, criteria, database);
 		LOGGER.debug("Query: " + query.getCommand());
-		QueryResult response = influx.query(query, TimeUnit.NANOSECONDS);
+		QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
 		List<T> results = InfluxDbDeviceEvent.eventsOfType(response, clazz);
 
 		Query countQuery =
@@ -297,6 +297,14 @@ public class InfluxDbDeviceEvent {
 							results.add(InfluxDbDeviceAlert.parse(valueMap));
 							break;
 						}
+						case CommandInvocation: {
+							results.add(InfluxDbDeviceCommandInvocation.parse(valueMap));
+							break;
+						}
+						case CommandResponse: {
+							results.add(InfluxDbDeviceCommandResponse.parse(valueMap));
+							break;
+						}
 						default: {
 							throw new SiteWhereException("No parser found for type: " + type);
 						}
@@ -328,7 +336,43 @@ public class InfluxDbDeviceEvent {
 				}
 			}
 		}
-		throw new SiteWhereException("Unable to find count response.");
+		return 0;
+	}
+
+	/**
+	 * Finds String value and throws exception if null.
+	 * 
+	 * @param values
+	 * @param field
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static String find(Map<String, Object> values, String field) throws SiteWhereException {
+		return find(values, field, false);
+	}
+
+	/**
+	 * Finds String value.
+	 * 
+	 * @param values
+	 * @param field
+	 * @param allowNull
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static String find(Map<String, Object> values, String field, boolean allowNull)
+			throws SiteWhereException {
+		Object value = values.get(field);
+		if (value == null) {
+			if (allowNull) {
+				return null;
+			}
+			throw new SiteWhereException("Field value missing: " + field);
+		}
+		if (!(value instanceof String)) {
+			throw new SiteWhereException("Expected String field but found: " + field.getClass().getName());
+		}
+		return (String) value;
 	}
 
 	/**
