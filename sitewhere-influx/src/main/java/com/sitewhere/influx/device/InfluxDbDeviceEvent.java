@@ -444,6 +444,15 @@ public class InfluxDbDeviceEvent {
 		event.setAssignmentType(DeviceAssignmentType.Associated);
 		event.setReceivedDate(parseDateField(values, RECEIVED_DATE));
 		event.setEventDate(parseDateField(values, "time"));
+
+		// Load metadata values.
+		for (String key : values.keySet()) {
+			if (key.startsWith(EVENT_METADATA_PREFIX)) {
+				String name = key.substring(EVENT_METADATA_PREFIX.length());
+				String value = (String) values.get(key);
+				event.addOrReplaceMetadata(name, value);
+			}
+		}
 	}
 
 	/**
