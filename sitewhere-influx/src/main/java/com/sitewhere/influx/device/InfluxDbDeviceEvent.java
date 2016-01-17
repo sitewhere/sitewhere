@@ -29,6 +29,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 
 /**
@@ -172,9 +173,9 @@ public class InfluxDbDeviceEvent {
 	public static Query queryEventsOfTypeForAssignment(DeviceEventType type, String assignmentToken,
 			ISearchCriteria criteria, String database) throws SiteWhereException {
 		return new Query("SELECT * FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS + " where type='"
-				+ type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentToken
-				+ "' GROUP BY " + EVENT_ASSIGNMENT + " ORDER BY time DESC" + buildSearchCriteria(criteria),
-				database);
+				+ type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='" + assignmentToken + "'"
+				+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT + " ORDER BY time DESC"
+				+ buildPagingCriteria(criteria), database);
 	}
 
 	/**
@@ -192,7 +193,7 @@ public class InfluxDbDeviceEvent {
 			ISearchCriteria criteria, String database) throws SiteWhereException {
 		return new Query("SELECT count(" + EVENT_ID + ") FROM " + InfluxDbDeviceEvent.COLLECTION_EVENTS
 				+ " where type='" + type.name() + "' and " + InfluxDbDeviceEvent.EVENT_ASSIGNMENT + "='"
-				+ assignmentToken + "' GROUP BY " + EVENT_ASSIGNMENT + buildNoPagingSearchCriteria(criteria),
+				+ assignmentToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_ASSIGNMENT,
 				database);
 	}
 
@@ -210,8 +211,8 @@ public class InfluxDbDeviceEvent {
 	public static Query queryEventsOfTypeForSite(DeviceEventType type, String siteToken,
 			ISearchCriteria criteria, String database) throws SiteWhereException {
 		return new Query("SELECT * FROM " + COLLECTION_EVENTS + " where type='" + type.name() + "' and "
-				+ EVENT_SITE + "='" + siteToken + "' GROUP BY " + EVENT_SITE + " ORDER BY time DESC"
-				+ buildSearchCriteria(criteria), database);
+				+ EVENT_SITE + "='" + siteToken + "'" + buildDateRangeCriteria(criteria) + " GROUP BY "
+				+ EVENT_SITE + " ORDER BY time DESC" + buildPagingCriteria(criteria), database);
 	}
 
 	/**
@@ -228,8 +229,8 @@ public class InfluxDbDeviceEvent {
 	public static Query queryEventsOfTypeForSiteCount(DeviceEventType type, String siteToken,
 			ISearchCriteria criteria, String database) throws SiteWhereException {
 		return new Query("SELECT count(" + EVENT_ID + ") FROM " + COLLECTION_EVENTS + " where type='"
-				+ type.name() + "' and " + EVENT_SITE + "='" + siteToken + "' GROUP BY " + EVENT_SITE
-				+ buildNoPagingSearchCriteria(criteria), database);
+				+ type.name() + "' and " + EVENT_SITE + "='" + siteToken + "'"
+				+ buildDateRangeCriteria(criteria) + " GROUP BY " + EVENT_SITE, database);
 	}
 
 	/**
@@ -239,7 +240,7 @@ public class InfluxDbDeviceEvent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static String buildSearchCriteria(ISearchCriteria criteria) throws SiteWhereException {
+	protected static String buildPagingCriteria(ISearchCriteria criteria) throws SiteWhereException {
 		if (criteria == null) {
 			return "";
 		}
@@ -254,15 +255,28 @@ public class InfluxDbDeviceEvent {
 	}
 
 	/**
-	 * Build search criteria clause that does not include paging values (used for counting
-	 * total matches).
+	 * Build search criteria clause that handles date ranges specified for event queries.
 	 * 
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static String buildNoPagingSearchCriteria(ISearchCriteria criteria) throws SiteWhereException {
-		return "";
+	protected static String buildDateRangeCriteria(ISearchCriteria criteria) throws SiteWhereException {
+		String dateClause = "";
+		if (criteria instanceof IDateRangeSearchCriteria) {
+			IDateRangeSearchCriteria dates = (IDateRangeSearchCriteria) criteria;
+			if (dates.getStartDate() != null) {
+				dateClause +=
+						" and time >= '" + ISODateTimeFormat.dateTime().print(dates.getStartDate().getTime())
+								+ "'";
+			}
+			if (dates.getEndDate() != null) {
+				dateClause +=
+						" and time <= '" + ISODateTimeFormat.dateTime().print(dates.getEndDate().getTime())
+								+ "'";
+			}
+		}
+		return dateClause;
 	}
 
 	/**
