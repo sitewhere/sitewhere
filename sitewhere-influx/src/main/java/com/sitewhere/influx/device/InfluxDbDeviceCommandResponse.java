@@ -62,8 +62,8 @@ public class InfluxDbDeviceCommandResponse {
 			throws SiteWhereException {
 		event.setEventType(DeviceEventType.CommandResponse);
 		event.setOriginatingEventId(InfluxDbDeviceEvent.find(values, RSP_ORIGINATING_EVENT_ID));
-		event.setResponseEventId(InfluxDbDeviceEvent.find(values, RSP_RESPONSE_EVENT_ID));
-		event.setResponse(InfluxDbDeviceEvent.find(values, RSP_RESPONSE));
+		event.setResponseEventId(InfluxDbDeviceEvent.find(values, RSP_RESPONSE_EVENT_ID, true));
+		event.setResponse(InfluxDbDeviceEvent.find(values, RSP_RESPONSE, true));
 
 		InfluxDbDeviceEvent.loadFromMap(event, values);
 	}
@@ -78,8 +78,12 @@ public class InfluxDbDeviceCommandResponse {
 	public static void saveToBuilder(DeviceCommandResponse event, Point.Builder builder)
 			throws SiteWhereException {
 		builder.tag(RSP_ORIGINATING_EVENT_ID, event.getOriginatingEventId());
-		builder.tag(RSP_RESPONSE_EVENT_ID, event.getResponseEventId());
-		builder.tag(RSP_RESPONSE, event.getResponse());
+		if (event.getResponseEventId() != null) {
+			builder.tag(RSP_RESPONSE_EVENT_ID, event.getResponseEventId());
+		}
+		if (event.getResponse() != null) {
+			builder.tag(RSP_RESPONSE, event.getResponse());
+		}
 
 		InfluxDbDeviceEvent.saveToBuilder(event, builder);
 	}
@@ -96,7 +100,7 @@ public class InfluxDbDeviceCommandResponse {
 	public static SearchResults<IDeviceCommandResponse> getResponsesForInvocation(String originatingEventId,
 			InfluxDB influx, String database) throws SiteWhereException {
 		Query query = queryResponsesForInvocation(originatingEventId, database);
-		QueryResult response = influx.query(query, TimeUnit.NANOSECONDS);
+		QueryResult response = influx.query(query, TimeUnit.MILLISECONDS);
 		List<IDeviceCommandResponse> results =
 				InfluxDbDeviceEvent.eventsOfType(response, IDeviceCommandResponse.class);
 
