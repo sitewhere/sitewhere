@@ -27,6 +27,10 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
  * Event decoder that converts a binary payload into the default SiteWhere REST
  * implementations using Jackson to marshal them as JSON.
  * 
+ * DEPRECATED: This only supports events that can be wrapped in a {@link DeviceEventBatch}
+ * object and does not offer full-featured support. Use {@link JsonDeviceRequestDecoder}
+ * instead.
+ * 
  * @author Derek
  */
 public class JsonBatchEventDecoder implements IDeviceEventDecoder<byte[]> {

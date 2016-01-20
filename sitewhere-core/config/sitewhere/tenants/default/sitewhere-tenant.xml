@@ -72,10 +72,16 @@
 					<sw:protobuf-event-decoder/>
 				</sw:mqtt-event-source>
 
-				<!-- Event source for JSON messages over MQTT -->
+				<!-- Event source for JSON device requests over MQTT -->
 				<sw:mqtt-event-source sourceId="json" hostname="localhost" port="1883"
-					topic="SiteWhere/input/jsonbatch">
-					<sw:json-event-decoder/>
+					topic="SiteWhere/input/json">
+					<sw:json-device-request-decoder/>
+				</sw:mqtt-event-source>
+
+				<!-- Event source for JSON event batches over MQTT -->
+				<sw:mqtt-event-source sourceId="json-batch" hostname="localhost"
+					port="1883" topic="SiteWhere/input/jsonbatch">
+					<sw:json-batch-event-decoder/>
 				</sw:mqtt-event-source>
 
 			</sw:event-sources>

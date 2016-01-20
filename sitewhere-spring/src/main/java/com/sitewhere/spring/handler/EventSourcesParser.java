@@ -31,6 +31,7 @@ import com.sitewhere.device.communication.DecodedInboundEventSource;
 import com.sitewhere.device.communication.EchoStringDecoder;
 import com.sitewhere.device.communication.StringInboundEventSource;
 import com.sitewhere.device.communication.json.JsonBatchEventDecoder;
+import com.sitewhere.device.communication.json.JsonDeviceRequestDecoder;
 import com.sitewhere.device.communication.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.device.communication.protobuf.ProtobufDeviceEventDecoder;
 import com.sitewhere.device.communication.socket.BinarySocketInboundEventReceiver;
@@ -80,8 +81,8 @@ public class EventSourcesParser {
 					nested.parse(child, context);
 					continue;
 				} else {
-					throw new RuntimeException("Invalid nested element found in 'event-sources' section: "
-							+ child.toString());
+					throw new RuntimeException(
+							"Invalid nested element found in 'event-sources' section: " + child.toString());
 				}
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -178,8 +179,8 @@ public class EventSourcesParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException("No event decoder specified for MQTT event source: "
-					+ element.toString());
+			throw new RuntimeException(
+					"No event decoder specified for MQTT event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -277,8 +278,8 @@ public class EventSourcesParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException("No event decoder specified for RabbitMQ event source: "
-					+ element.toString());
+			throw new RuntimeException(
+					"No event decoder specified for RabbitMQ event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -354,8 +355,8 @@ public class EventSourcesParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException("No event decoder specified for EvenHub event source: "
-					+ element.toString());
+			throw new RuntimeException(
+					"No event decoder specified for EvenHub event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -453,8 +454,8 @@ public class EventSourcesParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException("No event decoder specified for ActiveMQ event source: "
-					+ element.toString());
+			throw new RuntimeException(
+					"No event decoder specified for ActiveMQ event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -547,8 +548,8 @@ public class EventSourcesParser {
 		// Add decoder reference.
 		boolean hadDecoder = parseBinaryDecoder(element, context, source);
 		if (!hadDecoder) {
-			throw new RuntimeException("No event decoder specified for socket event source: "
-					+ element.toString());
+			throw new RuntimeException(
+					"No event decoder specified for socket event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -663,7 +664,8 @@ public class EventSourcesParser {
 	 */
 	protected void parseReadAllFactory(Element parent, Element decoder, ParserContext context,
 			BeanDefinitionBuilder source) {
-		LOGGER.debug("Configuring 'read all' socket interaction handler factory for " + parent.getLocalName());
+		LOGGER.debug(
+				"Configuring 'read all' socket interaction handler factory for " + parent.getLocalName());
 		BeanDefinitionBuilder builder =
 				BeanDefinitionBuilder.rootBeanDefinition(ReadAllInteractionHandler.Factory.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
@@ -719,8 +721,8 @@ public class EventSourcesParser {
 		}
 
 		if (!hadDecoder) {
-			throw new RuntimeException("No valid event decoder specified for web socket event source: "
-					+ element.toString());
+			throw new RuntimeException(
+					"No valid event decoder specified for web socket event source: " + element.toString());
 		}
 
 		return source.getBeanDefinition();
@@ -806,7 +808,8 @@ public class EventSourcesParser {
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition createHazelcastQueueEventReceiver(Element element, ParserContext context) {
+	protected AbstractBeanDefinition createHazelcastQueueEventReceiver(Element element,
+			ParserContext context) {
 		BeanDefinitionBuilder receiver =
 				BeanDefinitionBuilder.rootBeanDefinition(HazelcastQueueReceiver.class);
 		receiver.addPropertyReference("configuration",
@@ -822,7 +825,8 @@ public class EventSourcesParser {
 	 * @param source
 	 * @return
 	 */
-	protected boolean parseBinaryDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
+	protected boolean parseBinaryDecoder(Element parent, ParserContext context,
+			BeanDefinitionBuilder source) {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
@@ -848,8 +852,13 @@ public class EventSourcesParser {
 				parseProtobufDecoder(parent, child, context, source);
 				return true;
 			}
-			case JsonDecoder: {
-				parseJsonDecoder(parent, child, context, source);
+			case JsonDeviceRequestDecoder: {
+				parseJsonDeviceRequestDecoder(parent, child, context, source);
+				return true;
+			}
+			case JsonEventDecoder:
+			case JsonBatchEventDecoder: {
+				parseJsonBatchDecoder(parent, child, context, source);
 				return true;
 			}
 			case GroovyEventDecoder: {
@@ -873,7 +882,8 @@ public class EventSourcesParser {
 	 * @param source
 	 * @return
 	 */
-	protected boolean parseStringDecoder(Element parent, ParserContext context, BeanDefinitionBuilder source) {
+	protected boolean parseStringDecoder(Element parent, ParserContext context,
+			BeanDefinitionBuilder source) {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
@@ -922,8 +932,8 @@ public class EventSourcesParser {
 	 */
 	protected void parseProtobufDecoder(Element parent, Element decoder, ParserContext context,
 			BeanDefinitionBuilder source) {
-		LOGGER.debug("Configuring SiteWhere Google Protocol Buffer event decoder for "
-				+ parent.getLocalName());
+		LOGGER.debug(
+				"Configuring SiteWhere Google Protocol Buffer event decoder for " + parent.getLocalName());
 		BeanDefinitionBuilder builder =
 				BeanDefinitionBuilder.rootBeanDefinition(ProtobufDeviceEventDecoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
@@ -933,14 +943,33 @@ public class EventSourcesParser {
 	}
 
 	/**
-	 * Create parser for SiteWhere Google Protocol Buffer format.
+	 * Parse configuration for JSON device request decoder.
 	 * 
 	 * @param parent
 	 * @param decoder
 	 * @param context
 	 * @param source
 	 */
-	protected void parseJsonDecoder(Element parent, Element decoder, ParserContext context,
+	protected void parseJsonDeviceRequestDecoder(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring SiteWhere JSON device request decoder for " + parent.getLocalName());
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition(JsonDeviceRequestDecoder.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("deviceEventDecoder", name);
+	}
+
+	/**
+	 * Create parser for JSON batch event format.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseJsonBatchDecoder(Element parent, Element decoder, ParserContext context,
 			BeanDefinitionBuilder source) {
 		LOGGER.debug("Configuring SiteWhere JSON batch event decoder for " + parent.getLocalName());
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonBatchEventDecoder.class);
@@ -1048,8 +1077,8 @@ public class EventSourcesParser {
 	protected void parseEventSourceId(Element element, BeanDefinitionBuilder builder) {
 		Attr sourceId = element.getAttributeNode("sourceId");
 		if (sourceId == null) {
-			throw new RuntimeException("No 'sourceId' attribute specified for event source: "
-					+ element.toString());
+			throw new RuntimeException(
+					"No 'sourceId' attribute specified for event source: " + element.toString());
 		}
 		builder.addPropertyValue("sourceId", sourceId.getValue());
 	}
@@ -1120,8 +1149,14 @@ public class EventSourcesParser {
 		/** SiteWhere Google Protocol Buffer decoder */
 		ProtobufDecoder("protobuf-event-decoder"),
 
+		/** SiteWhere JSON device request decoder */
+		JsonDeviceRequestDecoder("json-device-request-decoder"),
+
 		/** SiteWhere JSON batch decoder */
-		JsonDecoder("json-event-decoder"),
+		@Deprecated JsonEventDecoder("json-event-decoder"),
+
+		/** SiteWhere JSON batch decoder */
+		JsonBatchEventDecoder("json-batch-event-decoder"),
 
 		/** Uses Groovy script to parse events */
 		GroovyEventDecoder("groovy-event-decoder"),
@@ -1205,7 +1240,9 @@ public class EventSourcesParser {
 		/** Reference to a socket interaction handler factory defined in a Spring bean */
 		InteractionHandlerFactoryReference("interaction-handler-factory"),
 
-		/** Produces socket interaction handlers that read all data from the client socket */
+		/**
+		 * Produces socket interaction handlers that read all data from the client socket
+		 */
 		ReadAllInteractionHandlerFactory("read-all-interaction-handler-factory");
 
 		/** Event code */

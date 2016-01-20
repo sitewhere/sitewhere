@@ -1485,15 +1485,38 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 	
-	<!-- Decode using the standard SiteWhere JSON representation -->
-	<xsd:element name="json-event-decoder" type="swJsonDecoderType"
+	<!-- Decode using the standard SiteWhere JSON device interaction representation -->
+	<xsd:element name="json-device-request-decoder" type="swJsonDeviceRequestDecoderType"
 		substitutionGroup="abstract-decoder">
 		<xsd:annotation>
-			<xsd:documentation>Decoder that expects a message in the SiteWhere JSON batch format.
+			<xsd:documentation>Decoder that parses requests from devices.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-	<xsd:complexType name="swJsonDecoderType">
+	<xsd:complexType name="swJsonDeviceRequestDecoderType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDecoderType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Decode using the standard SiteWhere JSON batch representation -->
+	<xsd:element name="json-event-decoder" type="swJsonEventBatchDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>DEPRECATED: Use json-batch=event-decoder for JSON batch event
+				processing.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="json-batch-event-decoder" type="swJsonEventBatchDecoderType"
+		substitutionGroup="abstract-decoder">
+		<xsd:annotation>
+			<xsd:documentation>Decoder that parses batches of device events.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="swJsonEventBatchDecoderType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractDecoderType">
 			</xsd:extension>
