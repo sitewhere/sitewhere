@@ -1,0 +1,6 @@
+
+description = 'SiteWhere Cloud Services Integration'
+dependencies {
+    compile project(':sitewhere-client')
+    compile project(':sitewhere-core')
+}

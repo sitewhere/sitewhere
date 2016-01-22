@@ -1,0 +1,7 @@
+
+description = 'SiteWhere Groovy Integration'
+dependencies {
+    compile project(':sitewhere-client')
+    compile project(':sitewhere-core')
+    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.4.3'
+}

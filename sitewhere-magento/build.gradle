@@ -1,0 +1,6 @@
+
+description = 'SiteWhere Magento Asset Module'
+dependencies {
+    compile project(':sitewhere-client')
+    compile project(':sitewhere-core')
+}
