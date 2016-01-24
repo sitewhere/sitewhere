@@ -118,6 +118,8 @@
 						destination="hybrid"/>
 					<sw:mapping specification="5a95f3f2-96f0-47f9-b98d-f5c081d01948"
 						destination="hybrid"/>
+					<sw:mapping specification="964e7613-dab3-4fb3-8919-266a91370884"
+						destination="json"/>
 				</sw:specification-mapping-router>
 			</sw:command-routing>
 			
@@ -136,6 +138,14 @@
 				<sw:mqtt-command-destination destinationId="hybrid"
 					hostname="localhost" port="1883">
 					<sw:java-protobuf-hybrid-encoder/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
+
+				<!-- Used for devices that expect hybrid protobuf/Java invocations -->
+				<sw:mqtt-command-destination destinationId="json"
+					hostname="localhost" port="1883">
+					<sw:json-command-encoder/>
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>

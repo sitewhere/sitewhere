@@ -54,6 +54,13 @@
 		<image-url>https://s3.amazonaws.com/sitewhere-demo/gateway/openhab.png</image-url>
 		<property name="manufacturer" value="openHAB"/>
 	</hardware-asset>
+		
+	<!-- Node-RED -->
+	<hardware-asset id="195" name="Node-RED Virtual Device" sku="NRED" device="true">
+		<description>Node-RED is a tool for wiring together hardware devices, APIs and online services in new and interesting ways.</description>
+		<image-url>https://s3.amazonaws.com/sitewhere-demo/gateway/node-red.png</image-url>
+		<property name="manufacturer" value="Node-RED"/>
+	</hardware-asset>
 	
 	<!-- Ekahau tags and sensors -->
 	<hardware-asset id="200" name="Ekahau A4 Tag" sku="EA4" device="true">

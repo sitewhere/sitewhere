@@ -157,8 +157,11 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Namespace for Arduino commands */
 	public static final String ARDUINO_NAMESPACE = "http://arduino/example";
 
-	/** Specification token openHAB virual device */
+	/** Specification token openHAB virtual device */
 	public static final String OPENHAB_SPEC_TOKEN = "5a95f3f2-96f0-47f9-b98d-f5c081d01948";
+
+	/** Specification token for Node-RED virtual device */
+	public static final String NODERED_SPEC_TOKEN = "964e7613-dab3-4fb3-8919-266a91370884";
 
 	/** Specification token for Laipac S-911 BL */
 	public static final String LAIPAC_S911_SPEC_TOKEN = "fc0f3d8d-c6e6-4fd2-b7d6-6f21bcf3a910";
@@ -176,23 +179,27 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	public static final String SITE_TOKEN = "bb105f8d-3150-41f5-b9d1-db04965668d3";
 
 	/** Available choices for devices/assignments that track heavy equipment */
-	protected static AssignmentChoice[] HEAVY_EQUIPMENT = {
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "300"),
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "301"),
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "302"),
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
-			new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "304") };
+	protected static AssignmentChoice[] HEAVY_EQUIPMENT =
+			{
+					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "300"),
+					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "301"),
+					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "302"),
+					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID, "303"),
+					new AssignmentChoice("Equipment Tracker", FileSystemHardwareAssetModule.MODULE_ID,
+							"304") };
 
 	/** Available choices for devices/assignments that track people */
-	protected static AssignmentChoice[] PERSONNEL = {
-			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "1"),
-			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "2"),
-			new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "3") };
+	protected static AssignmentChoice[] PERSONNEL =
+			{
+					new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "1"),
+					new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "2"),
+					new AssignmentChoice("Personnel Tracker", FileSystemPersonAssetModule.MODULE_ID, "3") };
 
 	/** Available choices for devices/assignments that track tools */
-	protected static AssignmentChoice[] TOOLS = {
-			new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "1"),
-			new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "2") };
+	protected static AssignmentChoice[] TOOLS =
+			{
+					new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "1"),
+					new AssignmentChoice("Tool Tracker", FileSystemLocationAssetModule.MODULE_ID, "2") };
 
 	/** Information for available device specifications */
 	public static final SpecificationDetails[] SPECIFICATION_INFO =
@@ -204,9 +211,10 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 					new SpecificationDetails("174", "Raspberry Pi", "7dfd6d63-5e8d-4380-be04-fc5c73801dfb",
 							TOOLS),
 					new SpecificationDetails("175", "MeiTrack GPS", MEITRACK_SPEC_TOKEN, HEAVY_EQUIPMENT),
-					new SpecificationDetails("176", "Gateway Default",
-							"75126a52-0607-4cca-b995-df40e73a707b", TOOLS),
+					new SpecificationDetails("176", "Gateway Default", "75126a52-0607-4cca-b995-df40e73a707b",
+							TOOLS),
 					new SpecificationDetails("190", "openHAB", OPENHAB_SPEC_TOKEN, TOOLS),
+					new SpecificationDetails("195", "Node-RED", NODERED_SPEC_TOKEN, TOOLS),
 					new SpecificationDetails("300", "Laipac Health Bracelet", LAIPAC_S911_SPEC_TOKEN,
 							PERSONNEL),
 					new SpecificationDetails("400", "Apple iPhone", IPHONE_SPEC_TOKEN, PERSONNEL),
@@ -231,7 +239,9 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	/** Asset module manager implementation */
 	protected IAssetModuleManager assetModuleManager;
 
-	/** Indiates whether model should be initialized if no console is available for input */
+	/**
+	 * Indiates whether model should be initialized if no console is available for input
+	 */
 	private boolean initializeIfNoConsole = false;
 
 	@Override
@@ -593,7 +603,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 		DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
 		request.setToken(UUID.randomUUID().toString());
 		request.setName("Heavy Equipment Tracking");
-		request.setDescription("Device group that contains devices for tracking location of heavy equipment.");
+		request.setDescription(
+				"Device group that contains devices for tracking location of heavy equipment.");
 		request.setRoles(new ArrayList<String>());
 		request.getRoles().add("heavy-equipment-tracking");
 		request.getRoles().add("tracking");
@@ -743,8 +754,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 
 			current += (long) Math.floor(Math.random() * 30000.0);
 		}
-		LOGGER.info(PREFIX_CREATE_EVENTS + " " + measurementCount + " measurements. " + alertCount
-				+ " alerts.");
+		LOGGER.info(
+				PREFIX_CREATE_EVENTS + " " + measurementCount + " measurements. " + alertCount + " alerts.");
 		return results;
 	}
 
@@ -873,7 +884,8 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 			request.setOriginatingEventId(invocation.getId());
 			request.setResponse("ACK");
 			request.setEventDate(new Date(current));
-			responses.add(getDeviceEventManagement().addDeviceCommandResponse(assignment.getToken(), request));
+			responses.add(
+					getDeviceEventManagement().addDeviceCommandResponse(assignment.getToken(), request));
 			current += (long) Math.floor(Math.random() * 30000.0);
 		}
 		return responses;
