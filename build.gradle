@@ -22,9 +22,9 @@ subprojects {
     targetCompatibility = 1.8
 
     repositories {
-        mavenLocal()
-    
-        maven { url "http://repo.maven.apache.org/maven2" }
+        mavenCentral()
+
+        maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
         maven { url "http://dist.wso2.org/maven2/" }
         maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
