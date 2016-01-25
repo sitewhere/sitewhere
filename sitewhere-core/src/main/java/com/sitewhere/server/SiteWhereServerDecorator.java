@@ -150,11 +150,13 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getAuthorizedTenants(java.lang.String)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getAuthorizedTenants(java.lang.String,
+	 * boolean)
 	 */
 	@Override
-	public List<ITenant> getAuthorizedTenants(String userId) throws SiteWhereException {
-		return server.getAuthorizedTenants(userId);
+	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted)
+			throws SiteWhereException {
+		return server.getAuthorizedTenants(userId, requireStarted);
 	}
 
 	/*
@@ -323,9 +325,8 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.lang.String
-	 * )
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.lang.
+	 * String )
 	 */
 	@Override
 	public ILifecycleComponent getLifecycleComponentById(String id) {

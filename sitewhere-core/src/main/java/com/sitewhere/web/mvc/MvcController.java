@@ -127,12 +127,15 @@ public class MvcController {
 		try {
 			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
 			if (engine == null) {
+				request.getSession().removeAttribute(SESSION_TENANT);
 				throw new NoTenantException("Engine not found for tenant.");
 			}
 			tenant.setEngineState(engine.getEngineState());
 
+			// If session contains tenant, but engine not started, remove tenant.
 			if ((tenant.getEngineState() != null)
 					&& (tenant.getEngineState().getLifecycleStatus() != LifecycleStatus.Started)) {
+				request.getSession().removeAttribute(SESSION_TENANT);
 				throw new NoTenantException("Tenant engine not started.");
 			}
 			return tenant;

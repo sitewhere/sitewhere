@@ -112,8 +112,7 @@ public class TenantsController extends RestController {
 	@Documented(examples = {
 			@Example(stage = Stage.Request, json = Tenants.UpdateTenantRequest.class, description = "updateTenantRequest.md"),
 			@Example(stage = Stage.Response, json = Tenants.UpdateTenantResponse.class, description = "updateTenantResponse.md") })
-	public ITenant updateTenant(
-			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
+	public ITenant updateTenant(@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@RequestBody TenantCreateRequest request) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateTenant", LOGGER);
 		try {
@@ -134,11 +133,12 @@ public class TenantsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get tenant by unique id")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
-	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByIdResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByIdResponse.md") })
 	public ITenant getTenantById(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantById", LOGGER);
 		try {
 			ITenant tenant = SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
@@ -158,11 +158,12 @@ public class TenantsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Send command to tenant engine")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
-	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.IssueTenantEngineCommandResponse.class, description = "issueTenantEngineCommandResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Tenants.IssueTenantEngineCommandResponse.class, description = "issueTenantEngineCommandResponse.md") })
 	public ICommandResponse issueTenantEngineCommand(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Command", required = true) @PathVariable String command)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "issueTenantEngineCommand", LOGGER);
 		try {
 			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenantId);
@@ -189,7 +190,7 @@ public class TenantsController extends RestController {
 	@Documented
 	public String getTenantEngineConfiguration(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 		try {
 			return new String(TenantUtils.getActiveTenantConfiguration(tenantId));
@@ -212,7 +213,7 @@ public class TenantsController extends RestController {
 	@Documented
 	public ElementContent getTenantEngineConfigurationAsJson(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
 		try {
 			byte[] config = TenantUtils.getActiveTenantConfiguration(tenantId);
@@ -269,10 +270,11 @@ public class TenantsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get tenant by authentication token")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
-	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByAuthTokenResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByAuthTokenResponse.md") })
 	public ITenant getTenantByAuthToken(
 			@ApiParam(value = "Authentication token", required = true) @PathVariable String authToken)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantByAuthToken", LOGGER);
 		try {
 			return SiteWhere.getServer().getUserManagement().getTenantByAuthenticationToken(authToken);
@@ -292,13 +294,15 @@ public class TenantsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "List tenants that match criteria")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
-	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "listTenantsResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Tenants.ListTenantsResponse.class, description = "listTenantsResponse.md") })
 	public ISearchResults<ITenant> listTenants(
 			@ApiParam(value = "Authorized user id", required = false) @RequestParam(required = false) String authUserId,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize)
-			throws SiteWhereException {
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+					ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+					ConcernType.Paging }) int pageSize) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listTenants", LOGGER);
 		try {
 			TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
@@ -322,11 +326,12 @@ public class TenantsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Delete existing tenant")
 	@PreAuthorize(value = SiteWhereRoles.PREAUTH_REST_AND_TENANT_ADMIN)
-	@Documented(examples = { @Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "deleteTenantByIdResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "deleteTenantByIdResponse.md") })
 	public ITenant deleteTenantById(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteTenantById", LOGGER);
 		try {
 			return SiteWhere.getServer().getUserManagement().deleteTenant(tenantId, force);
@@ -354,10 +359,11 @@ public class TenantsController extends RestController {
 		try {
 			List<ITenant> tenants =
 					SiteWhere.getServer().getAuthorizedTenants(
-							LoginManager.getCurrentlyLoggedInUser().getUsername());
+							LoginManager.getCurrentlyLoggedInUser().getUsername(), true);
 			List<ITenant> matches = new ArrayList<ITenant>();
 			for (ITenant tenant : tenants) {
-				if (SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId) != null) {
+				if (SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(
+						hardwareId) != null) {
 					matches.add(tenant);
 				}
 			}

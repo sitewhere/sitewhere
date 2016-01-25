@@ -106,7 +106,7 @@ public class SiteWhereController extends MvcController {
 
 			// Find tenants the logged in user is able to view.
 			IUser user = LoginManager.getCurrentlyLoggedInUser();
-			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername());
+			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername(), true);
 			if (matches.size() == 0) {
 				return showError("User is not authorized to access any of the available tenants.");
 			} else if (matches.size() == 1) {
@@ -147,7 +147,7 @@ public class SiteWhereController extends MvcController {
 
 			// Find tenants the logged in user is able to view.
 			IUser user = LoginManager.getCurrentlyLoggedInUser();
-			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername());
+			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername(), true);
 			ITenant chosen = null;
 			for (ITenant tenant : matches) {
 				if (tenant.getId().equals(tenantId)) {
@@ -450,7 +450,8 @@ public class SiteWhereController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/devices/{hardwareId}")
-	public ModelAndView deviceDetail(@PathVariable("hardwareId") String hardwareId, HttpServletRequest request) {
+	public ModelAndView deviceDetail(@PathVariable("hardwareId") String hardwareId,
+			HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "deviceDetail", LOGGER);
 		try {
 			Map<String, Object> data = createBaseData(request);

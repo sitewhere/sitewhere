@@ -229,15 +229,23 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getAuthorizedTenants(java.lang.String)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getAuthorizedTenants(java.lang.String,
+	 * boolean)
 	 */
 	@Override
-	public List<ITenant> getAuthorizedTenants(String userId) throws SiteWhereException {
+	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted)
+			throws SiteWhereException {
 		ISearchResults<ITenant> tenants =
 				SiteWhere.getServer().getUserManagement().listTenants(new TenantSearchCriteria(1, 0));
 		List<ITenant> matches = new ArrayList<ITenant>();
 		for (ITenant tenant : tenants.getResults()) {
 			if (tenant.getAuthorizedUserIds().contains(userId)) {
+				if (requireStarted) {
+					ISiteWhereTenantEngine engine = getTenantEngine(tenant.getId());
+					if ((engine == null) || (engine.getLifecycleStatus() != LifecycleStatus.Started)) {
+						continue;
+					}
+				}
 				matches.add(tenant);
 			}
 		}
@@ -597,9 +605,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.lang.String
-	 * )
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.lang.
+	 * String )
 	 */
 	@Override
 	public ILifecycleComponent getLifecycleComponentById(String id) {
@@ -836,7 +843,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	protected void initializeUserManagement() throws SiteWhereException {
 		try {
 			IUserManagement implementation =
-					(IUserManagement) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
+					(IUserManagement) SERVER_SPRING_CONTEXT.getBean(
+							SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
 			this.userManagement = new UserManagementTriggers(implementation);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No user management implementation configured.");
@@ -921,7 +929,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	protected void verifyUserModel() {
 		try {
 			IUserModelInitializer init =
-					(IUserModelInitializer) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER);
+					(IUserModelInitializer) SERVER_SPRING_CONTEXT.getBean(
+							SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER);
 			init.initialize(getUserManagement());
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No user model initializer found in Spring bean configuration. Skipping.");

@@ -109,10 +109,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	/**
 	 * Get list of tenants a given user can access.
 	 * 
+	 * @param userId
+	 * @param requireStarted
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<ITenant> getAuthorizedTenants(String userId) throws SiteWhereException;
+	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted)
+			throws SiteWhereException;
 
 	/**
 	 * Get a tenant engine by tenant id. If a tenant exists but the engine has not been
