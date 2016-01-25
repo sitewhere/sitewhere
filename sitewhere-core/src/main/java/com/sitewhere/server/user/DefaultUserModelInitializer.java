@@ -45,6 +45,9 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 	/** Default administrator password */
 	public static final String DEFAULT_PASSWORD = "password";
 
+	/** Default username/password for user without admin privs */
+	public static final String NOADMIN_CREDENTIAL = "noadmin";
+
 	/** Default tenant id */
 	public static final String DEFAULT_TENANT_ID = "default";
 
@@ -70,7 +73,9 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 	/** User management instance */
 	private IUserManagement userManagement;
 
-	/** Indiates whether model should be initialized if no console is available for input */
+	/**
+	 * Indiates whether model should be initialized if no console is available for input
+	 */
 	private boolean initializeIfNoConsole = false;
 
 	/**
@@ -115,13 +120,28 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 		getUserManagement().createUser(ureq);
 		LOGGER.info(PREFIX_CREATE_USER + " " + ureq.getUsername());
 
+		// Non-admin user will not be able to admin users or tenants.
+		grantedAuthIds.remove(SiteWhereAuthority.AdminTenants.getName());
+		grantedAuthIds.remove(SiteWhereAuthority.AdminUsers.getName());
+
+		UserCreateRequest nonadmin = new UserCreateRequest();
+		nonadmin.setFirstName("Non-Admin");
+		nonadmin.setLastName("User");
+		nonadmin.setUsername(NOADMIN_CREDENTIAL);
+		nonadmin.setPassword(NOADMIN_CREDENTIAL);
+		nonadmin.setAuthorities(grantedAuthIds);
+		nonadmin.setStatus(AccountStatus.Active);
+
+		getUserManagement().createUser(nonadmin);
+		LOGGER.info(PREFIX_CREATE_USER + " " + nonadmin.getUsername());
+
 		ITenant tenant = getUserManagement().getTenantById(DEFAULT_TENANT_ID);
 		if (tenant == null) {
 			TenantCreateRequest treq = new TenantCreateRequest();
 			treq.setId(DEFAULT_TENANT_ID);
 			treq.setName(DEFAULT_TENANT_NAME);
 			treq.setLogoUrl(DEFAULT_TENANT_LOGO);
-			treq.setAuthorizedUserIds(Arrays.asList(new String[] { DEFAULT_USERNAME }));
+			treq.setAuthorizedUserIds(Arrays.asList(new String[] { DEFAULT_USERNAME, NOADMIN_CREDENTIAL }));
 			treq.setAuthenticationToken(DEFAULT_TENANT_TOKEN);
 			tenant = getUserManagement().createTenant(treq);
 			LOGGER.info(PREFIX_CREATE_TENANT + " " + tenant.getId());
