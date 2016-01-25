@@ -106,28 +106,60 @@ public class SiteWhereController extends MvcController {
 
 			// Find tenants the logged in user is able to view.
 			IUser user = LoginManager.getCurrentlyLoggedInUser();
+			AuthoritiesHelper auths = new AuthoritiesHelper(user);
 			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername(), true);
+
+			// Create standard data objects, but do not require tenant.
+			Map<String, Object> data = createBaseData(servletRequest, false);
+
+			// Handle cases where there are no tenants or exactly one.
 			if (matches.size() == 0) {
-				return showError("User is not authorized to access any of the available tenants.");
+				return handleNoRunningTenants(auths, data);
 			} else if (matches.size() == 1) {
-				// If no redirect specified, show server info page.
-				if (redirect == null) {
-					redirect = "server.html";
-				}
-				setChosenTenant(matches.get(0), servletRequest);
-				return new ModelAndView("redirect:" + redirect);
+				return handleExactlyOneTenant(matches.get(0), redirect, servletRequest);
 			}
 
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put(DATA_VERSION, VersionHelper.getVersion());
-			data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
-			data.put(DATA_REDIRECT, redirect);
+			// Multiple tenants available. Allow user to choose.
 			return new ModelAndView("tenant", data);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
+	}
+
+	/**
+	 * Handle case where user either has no tenants or has no running tenants.
+	 * 
+	 * @param auths
+	 * @return
+	 */
+	protected ModelAndView handleNoRunningTenants(AuthoritiesHelper auths, Map<String, Object> data) {
+		if (auths.isAdministerTenants()) {
+			return new ModelAndView("tenants/list", data);
+		} else {
+			return showError("User is not authorized to access any of the available tenants.");
+		}
+	}
+
+	/**
+	 * Handle case where exactly one tenant is available. In this case, the tenant is
+	 * chosen and the user is forwarded to the server page.
+	 * 
+	 * @param tenant
+	 * @param redirect
+	 * @param servletRequest
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ModelAndView handleExactlyOneTenant(ITenant tenant, String redirect,
+			HttpServletRequest servletRequest) throws SiteWhereException {
+		// If no redirect specified, show server info page.
+		if (redirect == null) {
+			redirect = "server.html";
+		}
+		setChosenTenant(tenant, servletRequest);
+		return new ModelAndView("redirect:" + redirect);
 	}
 
 	@RequestMapping("/tenant/{tenantId}")
@@ -642,10 +674,8 @@ public class SiteWhereController extends MvcController {
 	public ModelAndView listUsers(HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listUsers", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createBaseData(request, false);
 			return new ModelAndView("users/list", data);
-		} catch (NoTenantException e) {
-			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -663,10 +693,8 @@ public class SiteWhereController extends MvcController {
 	public ModelAndView listTenants(HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listTenants", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createBaseData(request, false);
 			return new ModelAndView("tenants/list", data);
-		} catch (NoTenantException e) {
-			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {
@@ -685,7 +713,7 @@ public class SiteWhereController extends MvcController {
 	public ModelAndView viewTenant(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "viewTenant", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createBaseData(request, false);
 
 			// Pass JSON representation of tenant configuration model.
 			TenantConfigurationModel configModel = new TenantConfigurationModel();
@@ -711,8 +739,6 @@ public class SiteWhereController extends MvcController {
 			addTenantData(tenant, data);
 
 			return new ModelAndView("tenants/detail", data);
-		} catch (NoTenantException e) {
-			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
 			return showError(e);
 		} finally {

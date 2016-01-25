@@ -353,8 +353,9 @@ div.wz-button-bar {
 			stopFailed);
 	}
 
+	/** Called after successfully starting or stopping tenant */
 	function commandSuccess(data, status, jqXHR) {
-		loadTenant();
+		window.location.reload();
 	}
 
 	function stopFailed(jqXHR, textStatus, errorThrown) {

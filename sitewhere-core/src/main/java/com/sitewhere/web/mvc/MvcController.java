@@ -85,18 +85,32 @@ public class MvcController {
 	}
 
 	/**
-	 * Create data structure and common objects passed to pages.
+	 * Create data structure and common objects passed to pages. Require a tenant is
+	 * chosen for the user.
 	 * 
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	protected Map<String, Object> createBaseData(HttpServletRequest request) throws SiteWhereException {
+		return createBaseData(request, true);
+	}
+
+	/**
+	 * Create data structure and common objects passed to pages.
+	 * 
+	 * @param request
+	 * @param requireTenant
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected Map<String, Object> createBaseData(HttpServletRequest request, boolean requireTenant)
+			throws SiteWhereException {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put(DATA_VERSION, VersionHelper.getVersion());
 		data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
 		data.put(DATA_AUTHORITIES, new AuthoritiesHelper(LoginManager.getCurrentlyLoggedInUser()));
-		data.put(DATA_TENANT, assureTenant(request));
+		data.put(DATA_TENANT, getChosenTenant(request, requireTenant));
 		return data;
 	}
 
@@ -112,23 +126,31 @@ public class MvcController {
 	}
 
 	/**
-	 * Assure that a tenant is associated with the session.
+	 * Get the chosen tenant assocaited with the session. If require is flagged, throw an
+	 * exception if no tenant is chosen.
 	 * 
 	 * @param request
+	 * @param require
 	 * @return
 	 * @throws NoTenantException
 	 */
-	protected ITenant assureTenant(HttpServletRequest request) throws NoTenantException {
+	protected ITenant getChosenTenant(HttpServletRequest request, boolean require) throws NoTenantException {
 		Tenant tenant = (Tenant) request.getSession().getAttribute(SESSION_TENANT);
 		if (tenant == null) {
-			throw new NoTenantException("Tenant not found in session.");
+			if (require) {
+				throw new NoTenantException("Tenant not found in session.");
+			}
+			return null;
 		}
 
 		try {
 			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
 			if (engine == null) {
 				request.getSession().removeAttribute(SESSION_TENANT);
-				throw new NoTenantException("Engine not found for tenant.");
+				if (require) {
+					throw new NoTenantException("Engine not found for tenant.");
+				}
+				return null;
 			}
 			tenant.setEngineState(engine.getEngineState());
 
@@ -136,7 +158,10 @@ public class MvcController {
 			if ((tenant.getEngineState() != null)
 					&& (tenant.getEngineState().getLifecycleStatus() != LifecycleStatus.Started)) {
 				request.getSession().removeAttribute(SESSION_TENANT);
-				throw new NoTenantException("Tenant engine not started.");
+				if (require) {
+					throw new NoTenantException("Tenant engine not started.");
+				}
+				return null;
 			}
 			return tenant;
 		} catch (SiteWhereException e) {

@@ -52,106 +52,115 @@
 		<div class="k-content container sw-content">
 			<div class="sw-header">
 				<div class="sw-logo">
-					<img src="${tenant.logoUrl}" />
+					<c:choose>
+						<c:when test="${tenant != null}">
+							<img src="${tenant.logoUrl}" />
+						</c:when>
+						<c:otherwise>
+							<img src="https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png" />
+						</c:otherwise>
+					</c:choose>
 				</div>
 				<div class="sw-main-nav">
-					<ul class="nav nav-pills">
-						<c:choose>
-							<c:when test="${sitewhere_section == 'server'}">
-								<li class="active"><a href="${pageContext.request.contextPath}/admin/server.html"
-									data-i18n="public.Server">Server</a></li>
-							</c:when>
-							<c:otherwise>
-								<li><a href="${pageContext.request.contextPath}/admin/server.html"
-									data-i18n="public.Server">Server</a></li>
-							</c:otherwise>
-						</c:choose>
-						<c:choose>
-							<c:when test="${sitewhere_section == 'sites'}">
-								<li class="active"><a href="${pageContext.request.contextPath}/admin/sites/list.html"
-									data-i18n="public.Sites"></a></li>
-							</c:when>
-							<c:otherwise>
-								<li><a href="${pageContext.request.contextPath}/admin/sites/list.html"
-									data-i18n="public.Sites"></a></li>
-							</c:otherwise>
-						</c:choose>
-						<c:choose>
-							<c:when test="${sitewhere_section == 'devices'}">
-								<li class="active dropdown"><a class="dropdown-toggle"
-									style="background-color: #dc0000" href="javascript:void(0);"
-									data-i18n="[prepend]public.Devices" data-toggle="dropdown"> <span class="caret"></span>
-								</a>
-									<ul class="dropdown-menu">
-										<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html"
-											data-i18n="public.Specifications"></a></li>
-										<li><a href="${pageContext.request.contextPath}/admin/devices/list.html"
-											data-i18n="public.Devices"></a></li>
-										<li><a href="${pageContext.request.contextPath}/admin/groups/list.html"
-											data-i18n="public.DeviceGroups"></a></li>
-									</ul></li>
-							</c:when>
-							<c:otherwise>
-								<li class="dropdown"><a class="dropdown-toggle" href="javascript:void(0);"
-									data-i18n="[prepend]public.Devices" data-toggle="dropdown"> <span class="caret"></span>
-								</a>
-									<ul class="dropdown-menu">
-										<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html"
-											data-i18n="public.Specifications"></a></li>
-										<li><a href="${pageContext.request.contextPath}/admin/devices/list.html"
-											data-i18n="public.Devices"></a></li>
-										<li><a href="${pageContext.request.contextPath}/admin/groups/list.html"
-											data-i18n="public.DeviceGroups"></a></li>
-									</ul></li>
-							</c:otherwise>
-						</c:choose>
-						<c:choose>
-							<c:when test="${sitewhere_section == 'assets'}">
-								<li class="active"><a
-									href="${pageContext.request.contextPath}/admin/assets/categories.html"
-									data-i18n="public.Assets">Assets</a></li>
-							</c:when>
-							<c:otherwise>
-								<li><a href="${pageContext.request.contextPath}/admin/assets/categories.html"
-									data-i18n="public.Assets">Assets</a></li>
-							</c:otherwise>
-						</c:choose>
-						<c:choose>
-							<c:when test="${sitewhere_section == 'batch'}">
-								<li class="active"><a href="${pageContext.request.contextPath}/admin/batch/list.html"
-									data-i18n="public.Batch">Batch</a></li>
-							</c:when>
-							<c:otherwise>
-								<li><a href="${pageContext.request.contextPath}/admin/batch/list.html"
-									data-i18n="public.Batch">Batch</a></li>
-							</c:otherwise>
-						</c:choose>
-						<c:choose>
-							<c:when test="${sitewhere_section == 'schedules'}">
-								<li class="active dropdown"><a class="dropdown-toggle"
-									style="background-color: #dc0000" href="javascript:void(0);"
-									data-i18n="[prepend]public.Schedules" data-toggle="dropdown"> <span class="caret"></span>
-								</a>
-									<ul class="dropdown-menu">
-										<li><a href="${pageContext.request.contextPath}/admin/schedules/list.html"
-											data-i18n="public.Schedules"></a></li>
-										<li><a href="${pageContext.request.contextPath}/admin/jobs/list.html"
-											data-i18n="public.ScheduledJobs"></a></li>
-									</ul></li>
-							</c:when>
-							<c:otherwise>
-								<li class="dropdown"><a class="dropdown-toggle" href="javascript:void(0);"
-									data-i18n="[prepend]public.Schedules" data-toggle="dropdown"> <span class="caret"></span>
-								</a>
-									<ul class="dropdown-menu">
-										<li><a href="${pageContext.request.contextPath}/admin/schedules/list.html"
-											data-i18n="public.Schedules"></a></li>
-										<li><a href="${pageContext.request.contextPath}/admin/jobs/list.html"
-											data-i18n="public.ScheduledJobs"></a></li>
-									</ul></li>
-							</c:otherwise>
-						</c:choose>
-					</ul>
+					<c:if test="${tenant != null}">
+						<ul class="nav nav-pills">
+							<c:choose>
+								<c:when test="${sitewhere_section == 'server'}">
+									<li class="active"><a href="${pageContext.request.contextPath}/admin/server.html"
+										data-i18n="public.Server">Server</a></li>
+								</c:when>
+								<c:otherwise>
+									<li><a href="${pageContext.request.contextPath}/admin/server.html"
+										data-i18n="public.Server">Server</a></li>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${sitewhere_section == 'sites'}">
+									<li class="active"><a href="${pageContext.request.contextPath}/admin/sites/list.html"
+										data-i18n="public.Sites"></a></li>
+								</c:when>
+								<c:otherwise>
+									<li><a href="${pageContext.request.contextPath}/admin/sites/list.html"
+										data-i18n="public.Sites"></a></li>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${sitewhere_section == 'devices'}">
+									<li class="active dropdown"><a class="dropdown-toggle"
+										style="background-color: #dc0000" href="javascript:void(0);"
+										data-i18n="[prepend]public.Devices" data-toggle="dropdown"> <span class="caret"></span>
+									</a>
+										<ul class="dropdown-menu">
+											<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html"
+												data-i18n="public.Specifications"></a></li>
+											<li><a href="${pageContext.request.contextPath}/admin/devices/list.html"
+												data-i18n="public.Devices"></a></li>
+											<li><a href="${pageContext.request.contextPath}/admin/groups/list.html"
+												data-i18n="public.DeviceGroups"></a></li>
+										</ul></li>
+								</c:when>
+								<c:otherwise>
+									<li class="dropdown"><a class="dropdown-toggle" href="javascript:void(0);"
+										data-i18n="[prepend]public.Devices" data-toggle="dropdown"> <span class="caret"></span>
+									</a>
+										<ul class="dropdown-menu">
+											<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html"
+												data-i18n="public.Specifications"></a></li>
+											<li><a href="${pageContext.request.contextPath}/admin/devices/list.html"
+												data-i18n="public.Devices"></a></li>
+											<li><a href="${pageContext.request.contextPath}/admin/groups/list.html"
+												data-i18n="public.DeviceGroups"></a></li>
+										</ul></li>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${sitewhere_section == 'assets'}">
+									<li class="active"><a
+										href="${pageContext.request.contextPath}/admin/assets/categories.html"
+										data-i18n="public.Assets">Assets</a></li>
+								</c:when>
+								<c:otherwise>
+									<li><a href="${pageContext.request.contextPath}/admin/assets/categories.html"
+										data-i18n="public.Assets">Assets</a></li>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${sitewhere_section == 'batch'}">
+									<li class="active"><a href="${pageContext.request.contextPath}/admin/batch/list.html"
+										data-i18n="public.Batch">Batch</a></li>
+								</c:when>
+								<c:otherwise>
+									<li><a href="${pageContext.request.contextPath}/admin/batch/list.html"
+										data-i18n="public.Batch">Batch</a></li>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${sitewhere_section == 'schedules'}">
+									<li class="active dropdown"><a class="dropdown-toggle"
+										style="background-color: #dc0000" href="javascript:void(0);"
+										data-i18n="[prepend]public.Schedules" data-toggle="dropdown"> <span class="caret"></span>
+									</a>
+										<ul class="dropdown-menu">
+											<li><a href="${pageContext.request.contextPath}/admin/schedules/list.html"
+												data-i18n="public.Schedules"></a></li>
+											<li><a href="${pageContext.request.contextPath}/admin/jobs/list.html"
+												data-i18n="public.ScheduledJobs"></a></li>
+										</ul></li>
+								</c:when>
+								<c:otherwise>
+									<li class="dropdown"><a class="dropdown-toggle" href="javascript:void(0);"
+										data-i18n="[prepend]public.Schedules" data-toggle="dropdown"> <span class="caret"></span>
+									</a>
+										<ul class="dropdown-menu">
+											<li><a href="${pageContext.request.contextPath}/admin/schedules/list.html"
+												data-i18n="public.Schedules"></a></li>
+											<li><a href="${pageContext.request.contextPath}/admin/jobs/list.html"
+												data-i18n="public.ScheduledJobs"></a></li>
+										</ul></li>
+								</c:otherwise>
+							</c:choose>
+						</ul>
+					</c:if>
 				</div>
 				<div class="sw-user-info">
 					<div class="btn-group">
