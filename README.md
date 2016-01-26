@@ -33,7 +33,7 @@ folder.
 #### Building a Full Server #####
 Once the **sitewhere.war** file has been generated, you can create the full server distribution by using:
 
-	mvn -P builderServer clean install
+	mvn -P buildServer clean install
 	
 This will download a copy of Tomcat, copy the WAR to the webapps folder, and copy the default 
 configuration files to the correct location. A zipped archive is generated and may be used 
