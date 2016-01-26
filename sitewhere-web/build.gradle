@@ -41,5 +41,10 @@ dependencies {
     providedCompile group: 'org.reflections', name: 'reflections', version:'0.9.10'
     providedCompile group: 'org.pegdown', name: 'pegdown', version:'1.5.0'
     providedCompile group: 'com.thoughtworks.paranamer', name: 'paranamer', version:'2.8'
+    providedCompile group: 'com.sun.jersey.jersey-test-framework', name:'jersey-test-framework-grizzly2', version:'1.9'
+    providedCompile group: 'javax.servlet.jsp', name:'jsp-api', version: '2.1'
+    providedCompile group: 'javax.servlet', name: 'servlet-api', version:'2.3'
+    providedCompile group: 'tomcat', name:'jasper-compiler', version: '5.5.23'
+    providedCompile group: 'tomcat', name:'jasper-runtime', version: '5.5.23'
 
 }

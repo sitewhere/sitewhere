@@ -1,4 +1,6 @@
 
+apply plugin: 'nebula.provided-base'
+
 description = 'SiteWhere HBase Implementation'
 dependencies {
     compile project(':sitewhere-client')
@@ -14,7 +16,8 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version:'2.1.5'
     compile group: 'commons-codec', name: 'commons-codec', version:'1.8'
     compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
-    compile group: 'javax.servlet', name: 'servlet-api', version:'2.3'
+    
+    provided group: 'javax.servlet', name: 'servlet-api'
 }
 
 // apply plugin: 'com.google.protobuf'
