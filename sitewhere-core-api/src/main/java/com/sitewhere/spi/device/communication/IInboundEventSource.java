@@ -27,13 +27,6 @@ public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
 	public String getSourceId();
 
 	/**
-	 * Indicates whether assignment state should be updated with events.
-	 * 
-	 * @return
-	 */
-	public boolean isUpdateAssignmentState();
-
-	/**
 	 * Set the device event decoder.
 	 * 
 	 * @param decoder

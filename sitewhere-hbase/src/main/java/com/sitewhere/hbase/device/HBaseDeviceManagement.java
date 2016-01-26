@@ -57,6 +57,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -68,8 +69,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HBaseDeviceManagement extends TenantLifecycleComponent implements IDeviceManagement,
-		ICachingDeviceManagement {
+public class HBaseDeviceManagement extends TenantLifecycleComponent
+		implements IDeviceManagement, ICachingDeviceManagement {
 
 	/** Static logger instance */
 	private static final Logger LOGGER = Logger.getLogger(HBaseDeviceManagement.class);
@@ -509,6 +510,20 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsWithLastInteraction(
+	 * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.lang
 	 * .String, java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.DeviceAssignmentStatus,
@@ -517,7 +532,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
 	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		return HBaseSite.listDeviceAssignmentsForAsset(context, siteToken, assetModuleId, assetId, status,
 				criteria);
 	}
@@ -718,9 +733,8 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang.String
-	 * , boolean, com.sitewhere.spi.search.ISearchCriteria)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang.
+	 * String , boolean, com.sitewhere.spi.search.ISearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
@@ -866,9 +880,8 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#createBatchCommandInvocation(com.sitewhere
-	 * .spi.device.request.IBatchCommandInvocationRequest)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#createBatchCommandInvocation(com.
+	 * sitewhere .spi.device.request.IBatchCommandInvocationRequest)
 	 */
 	@Override
 	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)

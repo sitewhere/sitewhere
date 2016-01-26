@@ -30,6 +30,7 @@ import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -339,6 +340,19 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 			ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
+	 * Finds all device assignments for a site with a last interaction date in the given
+	 * date range. Note that events must be posted with the 'updateState' option in order
+	 * for the last interaction date to be updated.
+	 * 
+	 * @param date
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException;
+
+	/**
 	 * Get a list of device assignments associated with a given asset.
 	 * 
 	 * @param siteToken
@@ -351,7 +365,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 */
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-			throws SiteWhereException;
+					throws SiteWhereException;
 
 	/**
 	 * Create a new {@link IDeviceStream} associated with an assignment.

@@ -39,6 +39,7 @@ import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -76,6 +77,7 @@ import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -87,8 +89,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author dadams
  */
-public class MongoDeviceManagement extends TenantLifecycleComponent implements IDeviceManagement,
-		ICachingDeviceManagement {
+public class MongoDeviceManagement extends TenantLifecycleComponent
+		implements IDeviceManagement, ICachingDeviceManagement {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MongoDeviceManagement.class);
@@ -155,7 +157,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 		getMongoClient().getDeviceAssignmentsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, 1).append(
 						MongoDeviceAssignment.PROP_ASSET_MODULE_ID, 1).append(
-						MongoDeviceAssignment.PROP_ASSET_ID, 1).append(MongoDeviceAssignment.PROP_STATUS, 1));
+								MongoDeviceAssignment.PROP_ASSET_ID, 1).append(
+										MongoDeviceAssignment.PROP_STATUS, 1));
 		getMongoClient().getDeviceGroupsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceGroup.PROP_TOKEN, 1), new BasicDBObject("unique", true));
 		getMongoClient().getDeviceGroupsCollection(getTenant()).createIndex(
@@ -163,7 +166,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 		getMongoClient().getGroupElementsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
 						MongoDeviceGroupElement.PROP_TYPE, 1).append(MongoDeviceGroupElement.PROP_ELEMENT_ID,
-						1));
+								1));
 		getMongoClient().getGroupElementsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, 1).append(
 						MongoDeviceGroupElement.PROP_ROLES, 1));
@@ -941,6 +944,39 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsWithLastInteraction(
+	 * java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
+			IDateRangeSearchCriteria dates) throws SiteWhereException {
+		if ((dates.getStartDate() == null) && (dates.getEndDate() == null)) {
+			throw new SiteWhereException("No date criteria specified.");
+		}
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+		BasicDBObject dateQuery = new BasicDBObject();
+		if (dates.getEndDate() != null) {
+			dateQuery.append("$lte", dates.getEndDate());
+		}
+		if (dates.getStartDate() != null) {
+			dateQuery.append("$gte", dates.getStartDate());
+		}
+
+		// Search by site and with date range search criteria.
+		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
+		query.append(MongoDeviceAssignment.PROP_STATE + "."
+				+ MongoDeviceAssignmentState.PROP_LAST_INTERACTION_DATE, dateQuery);
+		BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+
+		// Only pass paging critieria. Dates apply to last interaction not create date.
+		SearchCriteria criteria = new SearchCriteria(dates.getPageNumber(), dates.getPageSize());
+		return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.lang
 	 * .String, java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.DeviceAssignmentStatus,
@@ -949,12 +985,12 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken).append(
 						MongoDeviceAssignment.PROP_ASSET_MODULE_ID, assetModuleId).append(
-						MongoDeviceAssignment.PROP_ASSET_ID, assetId);
+								MongoDeviceAssignment.PROP_ASSET_ID, assetId);
 		if (status != null) {
 			query.append(MongoDeviceAssignment.PROP_STATUS, status.name());
 		}
@@ -1327,9 +1363,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang.String
-	 * , boolean, com.sitewhere.spi.search.ISearchCriteria)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceGroupsWithRole(java.lang.
+	 * String , boolean, com.sitewhere.spi.search.ISearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceGroup> listDeviceGroupsWithRole(String role, boolean includeDeleted,
@@ -1408,7 +1443,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 			BasicDBObject match =
 					new BasicDBObject(MongoDeviceGroupElement.PROP_GROUP_TOKEN, groupToken).append(
 							MongoDeviceGroupElement.PROP_TYPE, request.getType().name()).append(
-							MongoDeviceGroupElement.PROP_ELEMENT_ID, request.getElementId());
+									MongoDeviceGroupElement.PROP_ELEMENT_ID, request.getElementId());
 			DBCursor found = getMongoClient().getGroupElementsCollection(getTenant()).find(match);
 			while (found.hasNext()) {
 				DBObject current = found.next();
@@ -1599,9 +1634,8 @@ public class MongoDeviceManagement extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#createBatchCommandInvocation(com.sitewhere
-	 * .spi.device.request.IBatchCommandInvocationRequest)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#createBatchCommandInvocation(com.
+	 * sitewhere .spi.device.request.IBatchCommandInvocationRequest)
 	 */
 	@Override
 	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request)

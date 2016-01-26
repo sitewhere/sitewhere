@@ -40,6 +40,7 @@ import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.device.request.IZoneCreateRequest;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
@@ -65,9 +66,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(com.sitewhere
-	 * .spi.user.ITenant)
+	 * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(com.
+	 * sitewhere .spi.user.ITenant)
 	 */
 	@Override
 	public void setTenant(ITenant tenant) {
@@ -233,6 +233,12 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
+			IDateRangeSearchCriteria criteria) throws SiteWhereException {
+		return delegate.getDeviceAssignmentsWithLastInteraction(siteToken, criteria);
+	}
+
+	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId,
 			ISearchCriteria criteria) throws SiteWhereException {
 		return delegate.getDeviceAssignmentHistory(hardwareId, criteria);
@@ -247,7 +253,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		return delegate.getDeviceAssignmentsForAsset(siteToken, assetModuleId, assetId, status, criteria);
 	}
 

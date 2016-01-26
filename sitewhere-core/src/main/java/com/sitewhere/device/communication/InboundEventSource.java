@@ -22,7 +22,6 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
-import com.sitewhere.spi.device.event.request.IDeviceEventCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
@@ -45,9 +44,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 
 	/** Unique id for referencing source */
 	private String sourceId;
-
-	/** Indicates if assignment state should be updated with event data */
-	private boolean updateAssignmentState = false;
 
 	/** Device event decoder */
 	private IDeviceEventDecoder<T> deviceEventDecoder;
@@ -73,7 +69,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 
 		LOGGER.debug("Starting event source '" + getSourceId() + "'.");
 		if (getInboundProcessingStrategy() == null) {
-			setInboundProcessingStrategy(SiteWhere.getServer().getEventProcessing(getTenant()).getInboundProcessingStrategy());
+			setInboundProcessingStrategy(
+					SiteWhere.getServer().getEventProcessing(getTenant()).getInboundProcessingStrategy());
 		}
 		if ((getInboundEventReceivers() == null) || (getInboundEventReceivers().size() == 0)) {
 			throw new SiteWhereException("No inbound event receivers registered for event source.");
@@ -133,9 +130,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 			List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload);
 			if (requests != null) {
 				for (IDecodedDeviceRequest<?> decoded : requests) {
-					if (decoded.getRequest() instanceof IDeviceEventCreateRequest) {
-						((IDeviceEventCreateRequest) decoded.getRequest()).setUpdateState(isUpdateAssignmentState());
-					}
 					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
 						getInboundProcessingStrategy().processRegistration(
 								(IDecodedDeviceRequest<IDeviceRegistrationRequest>) decoded);
@@ -226,21 +220,6 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventSource#isUpdateAssignmentState
-	 * ()
-	 */
-	public boolean isUpdateAssignmentState() {
-		return updateAssignmentState;
-	}
-
-	public void setUpdateAssignmentState(boolean updateAssignmentState) {
-		this.updateAssignmentState = updateAssignmentState;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundEventSource#setDeviceEventDecoder
 	 * (com.sitewhere.spi.device.communication.IDeviceEventDecoder)
 	 */
@@ -255,8 +234,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventSource#setInboundProcessingStrategy
+	 * @see com.sitewhere.spi.device.communication.IInboundEventSource#
+	 * setInboundProcessingStrategy
 	 * (com.sitewhere.spi.device.communication.IInboundProcessingStrategy)
 	 */
 	public void setInboundProcessingStrategy(IInboundProcessingStrategy inboundProcessingStrategy) {
