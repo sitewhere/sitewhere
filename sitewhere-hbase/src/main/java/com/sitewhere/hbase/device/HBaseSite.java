@@ -35,6 +35,7 @@ import com.sitewhere.hbase.common.HBaseUtils;
 import com.sitewhere.hbase.common.Pager;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.device.DeviceAssignment;
+import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.search.SearchResults;
@@ -274,12 +275,22 @@ public class HBaseSite {
 				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
 					continue;
 				}
-				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] state =
+						result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
 
-				if ((payloadType != null) && (payload != null)) {
-					pager.process((IDeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
-							payloadType).decode(payload, DeviceAssignment.class));
+				if ((type != null) && (payload != null)) {
+					DeviceAssignment assignment =
+							(DeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
+									type).decode(payload, DeviceAssignment.class);
+					if (state != null) {
+						DeviceAssignmentState assnState =
+								PayloadMarshalerResolver.getInstance().getMarshaler(
+										type).decodeDeviceAssignmentState(state);
+						assignment.setState(assnState);
+					}
+					pager.process(assignment);
 				}
 			}
 			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
@@ -334,23 +345,30 @@ public class HBaseSite {
 				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
 					continue;
 				}
-				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] state =
+						result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
 
-				if ((payloadType != null) && (payload != null)) {
-					IDeviceAssignment assignment =
-							(IDeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
-									payloadType).decode(payload, DeviceAssignment.class);
-					if ((assignment.getState() != null)
-							&& (assignment.getState().getLastInteractionDate() != null)) {
-						Date last = assignment.getState().getLastInteractionDate();
-						if ((criteria.getStartDate() != null) && (criteria.getStartDate().after(last))) {
-							continue;
+				if ((type != null) && (payload != null)) {
+					DeviceAssignment assignment =
+							(DeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
+									type).decode(payload, DeviceAssignment.class);
+					if (state != null) {
+						DeviceAssignmentState assnState =
+								PayloadMarshalerResolver.getInstance().getMarshaler(
+										type).decodeDeviceAssignmentState(state);
+						assignment.setState(assnState);
+						if (assignment.getState().getLastInteractionDate() != null) {
+							Date last = assignment.getState().getLastInteractionDate();
+							if ((criteria.getStartDate() != null) && (criteria.getStartDate().after(last))) {
+								continue;
+							}
+							if ((criteria.getEndDate() != null) && (criteria.getEndDate().before(last))) {
+								continue;
+							}
+							pager.process(assignment);
 						}
-						if ((criteria.getEndDate() != null) && (criteria.getEndDate().before(last))) {
-							continue;
-						}
-						pager.process(assignment);
 					}
 				}
 			}
