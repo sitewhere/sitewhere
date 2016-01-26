@@ -38,9 +38,6 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 	/** Property for latest measurements */
 	public static final String PROP_LATEST_ALERTS = "latestAlerts";
 
-	/** Property for last 'reply to' location */
-	public static final String PROP_LAST_REPLY_TO = "lastReplyTo";
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -91,10 +88,6 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 			}
 			target.append(PROP_LATEST_ALERTS, alerts);
 		}
-
-		if (source.getLastReplyTo() != null) {
-			target.append(PROP_LAST_REPLY_TO, source.getLastReplyTo());
-		}
 	}
 
 	/**
@@ -122,7 +115,6 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 				target.getLatestAlerts().add(MongoDeviceAlert.fromDBObject(sa, true));
 			}
 		}
-		target.setLastReplyTo((String) source.get(PROP_LAST_REPLY_TO));
 	}
 
 	/**

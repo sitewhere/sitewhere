@@ -49,11 +49,4 @@ public interface IDeviceAssignmentState {
 	 * @return
 	 */
 	public List<IDeviceAlert> getLatestAlerts();
-
-	/**
-	 * Get the last 'reply to' for assignment.
-	 * 
-	 * @return
-	 */
-	public String getLastReplyTo();
 }

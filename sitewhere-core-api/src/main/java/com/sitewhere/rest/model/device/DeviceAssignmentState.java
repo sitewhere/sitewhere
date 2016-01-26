@@ -45,9 +45,6 @@ public class DeviceAssignmentState implements IDeviceAssignmentState, Serializab
 	/** Last alert event for each alert type */
 	private List<DeviceAlert> latestAlerts = new ArrayList<DeviceAlert>();
 
-	/** Last reply-to address */
-	private String lastReplyTo;
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -107,20 +104,6 @@ public class DeviceAssignmentState implements IDeviceAssignmentState, Serializab
 		this.latestAlerts = latestAlerts;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getLastReplyTo()
-	 */
-	@Override
-	public String getLastReplyTo() {
-		return lastReplyTo;
-	}
-
-	public void setLastReplyTo(String lastReplyTo) {
-		this.lastReplyTo = lastReplyTo;
-	}
-
 	public static DeviceAssignmentState copy(IDeviceAssignmentState source) throws SiteWhereException {
 		DeviceAssignmentState target = new DeviceAssignmentState();
 		target.setLastInteractionDate(source.getLastInteractionDate());
@@ -137,7 +120,6 @@ public class DeviceAssignmentState implements IDeviceAssignmentState, Serializab
 			alerts.add(DeviceAlert.copy(sa));
 		}
 		target.setLatestAlerts(alerts);
-		target.setLastReplyTo(source.getLastReplyTo());
 		return target;
 	}
 }
