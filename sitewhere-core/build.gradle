@@ -5,7 +5,11 @@ dependencies {
     compile project(':sitewhere-core-api')
     compile project(':sitewhere-server-api')
     compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.0.2'
-    compile group: 'org.apache.cxf', name: 'cxf-rt-frontend-simple', version:'3.0.2'
+    compile (group: 'org.apache.cxf', name: 'cxf-rt-frontend-simple', version:'3.0.2') {
+        exclude (module: 'jaxb-core')
+        exclude (module: 'jaxb-api')
+        exclude (module: 'jaxb-impl')
+    }
     compile group: 'org.springframework', name: 'spring-core', version:'3.2.10.RELEASE'
     compile group: 'org.springframework', name: 'spring-beans', version:'3.2.10.RELEASE'
     compile group: 'org.springframework', name: 'spring-context', version:'3.2.10.RELEASE'
@@ -30,9 +34,21 @@ dependencies {
     compile group: 'commons-collections', name: 'commons-collections', version:'3.2.1'
     compile group: 'commons-io', name: 'commons-io', version:'1.4'
     compile group: 'javax.ws.rs', name: 'jsr311-api', version:'1.1.1'
-    compile group: 'javax.servlet', name: 'servlet-api', version:'2.3'
+    compile group: 'com.google.guava', name: 'guava', version:'18.0'
     
+    provided group: 'javax.servlet', name: 'servlet-api', version:'2.3'
     provided group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version:'1.10'
     provided group: 'org.glassfish.tyrus', name: 'tyrus-server', version:'1.10'
     provided group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-server', version:'1.10'
+}
+
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include '**/*.properties'
+        filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+            'build.timestamp': new java.text.SimpleDateFormat('yyyyMMddHHmmss').format(new Date()),
+            'version.identifier'    : project.version
+        ])
+    }
 }

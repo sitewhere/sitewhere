@@ -5,6 +5,7 @@ buildscript {
   dependencies {
     classpath "com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3"
     classpath "gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.7.3"
+    classpath "io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE"
   }
 }
 
@@ -20,8 +21,9 @@ allprojects  {
     version = '1.6.0'
 
     repositories {
-        mavenCentral()
+//        mavenCentral()
 
+        maven { url "http://repo.maven.apache.org/maven2" }
         maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
         maven { url "http://dist.wso2.org/maven2/" }

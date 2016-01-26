@@ -5,10 +5,12 @@ description = 'SiteWhere HBase Implementation'
 dependencies {
     compile project(':sitewhere-client')
     compile project(':sitewhere-core')
-    compile(group: 'org.apache.hbase', name: 'hbase-client', version:'0.98.4-hadoop2') {
-        exclude(module: 'guava')
+    compile (group: 'org.apache.hbase', name: 'hbase-client', version:'0.98.4-hadoop2') {
+        exclude (module: 'jaxb-impl')        
     }
-    compile group: 'org.apache.hadoop', name: 'hadoop-common', version:'2.6.0'
+    compile (group: 'org.apache.hadoop', name: 'hadoop-common', version:'2.6.0') {
+        exclude (module: 'jaxb-impl')
+    }
     compile group: 'com.google.protobuf', name: 'protobuf-java', version:'2.5.0'
     compile group: 'org.springframework', name: 'spring-beans', version:'3.2.10.RELEASE'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.1.5'
