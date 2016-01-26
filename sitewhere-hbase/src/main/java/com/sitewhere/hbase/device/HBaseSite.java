@@ -9,6 +9,7 @@ package com.sitewhere.hbase.device;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Date;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
@@ -46,6 +47,7 @@ import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.server.debug.TracerCategory;
 
@@ -246,8 +248,8 @@ public class HBaseSite {
 	 */
 	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context,
 			String siteToken, ISearchCriteria criteria) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForSite (HBase) "
-				+ siteToken, LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall,
+				"listDeviceAssignmentsForSite (HBase) " + siteToken, LOGGER);
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
@@ -293,6 +295,78 @@ public class HBaseSite {
 	}
 
 	/**
+	 * List device assignments for a site that have state attached and have a last
+	 * interaction date within a given date range. TODO: This is not efficient since it
+	 * iterates through all assignments for a site.
+	 * 
+	 * @param context
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsWithLastInteraction(
+			IHBaseContext context, String siteToken, IDateRangeSearchCriteria criteria)
+					throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall,
+				"listDeviceAssignmentsWithLastInteraction (HBase) " + siteToken, LOGGER);
+		HTableInterface sites = null;
+		ResultScanner scanner = null;
+		try {
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
+			if (siteId == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+			}
+			byte[] assnPrefix = getAssignmentRowKey(siteId);
+			byte[] after = getAfterAssignmentRowKey(siteId);
+
+			sites = getSitesTableInterface(context);
+
+			Scan scan = new Scan();
+			scan.setStartRow(assnPrefix);
+			scan.setStopRow(after);
+			scanner = sites.getScanner(scan);
+
+			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
+			for (Result result : scanner) {
+				// TODO: This is inefficient. There should be a filter on the scanner
+				// instead.
+				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
+					continue;
+				}
+				byte[] payloadType = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+
+				if ((payloadType != null) && (payload != null)) {
+					IDeviceAssignment assignment =
+							(IDeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
+									payloadType).decode(payload, DeviceAssignment.class);
+					if ((assignment.getState() != null)
+							&& (assignment.getState().getLastInteractionDate() != null)) {
+						Date last = assignment.getState().getLastInteractionDate();
+						if ((criteria.getStartDate() != null) && (criteria.getStartDate().after(last))) {
+							continue;
+						}
+						if ((criteria.getEndDate() != null) && (criteria.getEndDate().before(last))) {
+							continue;
+						}
+						pager.process(assignment);
+					}
+				}
+			}
+			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
+		} catch (IOException e) {
+			throw new SiteWhereException("Error scanning site rows.", e);
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+			HBaseUtils.closeCleanly(sites);
+			Tracer.pop(LOGGER);
+		}
+	}
+
+	/**
 	 * List device assignments that are associated with a given asset.
 	 * 
 	 * @param context
@@ -306,8 +380,8 @@ public class HBaseSite {
 	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForAsset(IHBaseContext context,
 			String siteToken, String assetModuleId, String assetId, DeviceAssignmentStatus status,
 			ISearchCriteria criteria) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForAsset (HBase) "
-				+ siteToken, LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall,
+				"listDeviceAssignmentsForAsset (HBase) " + siteToken, LOGGER);
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
@@ -547,7 +621,8 @@ public class HBaseSite {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Long allocateNextAssignmentId(IHBaseContext context, Long siteId) throws SiteWhereException {
+	public static Long allocateNextAssignmentId(IHBaseContext context, Long siteId)
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextAssignmentId (HBase)", LOGGER);
 		try {
 			byte[] primary = getPrimaryRowkey(siteId);

@@ -221,9 +221,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeSite(com.sitewhere.spi.device
-	 * .ISite)
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeSite(com.sitewhere.spi.
+	 * device .ISite)
 	 */
 	@Override
 	public byte[] encodeSite(ISite site) throws SiteWhereException {
@@ -276,9 +275,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeZone(com.sitewhere.spi.device
-	 * .IZone)
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeZone(com.sitewhere.spi.
+	 * device .IZone)
 	 */
 	@Override
 	public byte[] encodeZone(IZone zone) throws SiteWhereException {
@@ -608,9 +606,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceMeasurements(com.sitewhere
-	 * .spi.device.event.IDeviceMeasurements)
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceMeasurements(com.
+	 * sitewhere .spi.device.event.IDeviceMeasurements)
 	 */
 	@Override
 	public byte[] encodeDeviceMeasurements(IDeviceMeasurements measurements) throws SiteWhereException {
@@ -727,9 +724,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceStreamData(com.sitewhere
-	 * .spi.device.event.IDeviceStreamData)
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceStreamData(com.
+	 * sitewhere .spi.device.event.IDeviceStreamData)
 	 */
 	public byte[] encodeDeviceStreamData(IDeviceStreamData streamData) throws SiteWhereException {
 		try {
@@ -903,9 +899,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceAssignment(com.sitewhere
-	 * .spi.device.IDeviceAssignment)
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceAssignment(com.
+	 * sitewhere .spi.device.IDeviceAssignment)
 	 */
 	@Override
 	public byte[] encodeDeviceAssignment(IDeviceAssignment assignment) throws SiteWhereException {
@@ -914,8 +909,12 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		builder.setDeviceHardwareId(assignment.getDeviceHardwareId());
 		builder.setSiteToken(assignment.getSiteToken());
 		builder.setAssignmentType(marshalAssignmentType(assignment.getAssignmentType()));
-		builder.setAssetModuleId(assignment.getAssetModuleId());
-		builder.setAssetId(assignment.getAssetId());
+		if (assignment.getAssetModuleId() != null) {
+			builder.setAssetModuleId(assignment.getAssetModuleId());
+		}
+		if (assignment.getAssetId() != null) {
+			builder.setAssetId(assignment.getAssetId());
+		}
 		builder.setStatus(assignment.getStatus().name());
 		if (assignment.getActiveDate() != null) {
 			builder.setActiveDate(assignment.getActiveDate().getTime());
@@ -1136,9 +1135,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceGroupElement(com.sitewhere
-	 * .spi.device.group.IDeviceGroupElement)
+	 * @see com.sitewhere.hbase.encoder.JsonPayloadMarshaler#encodeDeviceGroupElement(com.
+	 * sitewhere .spi.device.group.IDeviceGroupElement)
 	 */
 	@Override
 	public byte[] encodeDeviceGroupElement(IDeviceGroupElement element) throws SiteWhereException {
@@ -1603,7 +1601,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 	 * @param type
 	 * @return
 	 */
-	protected BatchOperationStatus unmarshalBatchOperationStatus(ProtobufMarshaler.BatchOperationStatus type) {
+	protected BatchOperationStatus unmarshalBatchOperationStatus(
+			ProtobufMarshaler.BatchOperationStatus type) {
 		switch (type) {
 		case BOSFinishedSuccessfully: {
 			return BatchOperationStatus.FinishedSuccessfully;
@@ -1725,7 +1724,8 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 		List<ProtobufMarshaler.MetadataEntry> entries = new ArrayList<ProtobufMarshaler.MetadataEntry>();
 		for (String key : metadata.keySet()) {
 			ProtobufMarshaler.MetadataEntry entry =
-					ProtobufMarshaler.MetadataEntry.newBuilder().setName(key).setValue(metadata.get(key)).build();
+					ProtobufMarshaler.MetadataEntry.newBuilder().setName(key).setValue(
+							metadata.get(key)).build();
 			entries.add(entry);
 		}
 		return entries;

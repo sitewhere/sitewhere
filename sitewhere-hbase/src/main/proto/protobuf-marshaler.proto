@@ -194,8 +194,8 @@ message DeviceAssignment {
 	required string deviceHardwareId = 2;
 	required string siteToken = 3;
 	required DeviceAssignmentType assignmentType = 4;
-	required string assetModuleId = 5;
-	required string assetId = 6;
+	optional string assetModuleId = 5;
+	optional string assetId = 6;
 	required string status = 7;
 	optional int64 activeDate = 8;
 	optional int64 releasedDate = 9;

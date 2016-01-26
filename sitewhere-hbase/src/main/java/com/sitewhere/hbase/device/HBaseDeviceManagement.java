@@ -516,8 +516,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
 	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsWithLastInteraction(String siteToken,
 			IDateRangeSearchCriteria criteria) throws SiteWhereException {
-		// TODO Auto-generated method stub
-		return null;
+		return HBaseSite.listDeviceAssignmentsWithLastInteraction(context, siteToken, criteria);
 	}
 
 	/*

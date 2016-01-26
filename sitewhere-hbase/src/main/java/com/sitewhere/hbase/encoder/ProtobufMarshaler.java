@@ -22144,32 +22144,32 @@ public final class ProtobufMarshaler {
      */
     com.sitewhere.hbase.encoder.ProtobufMarshaler.DeviceAssignmentType getAssignmentType();
 
-    // required string assetModuleId = 5;
+    // optional string assetModuleId = 5;
     /**
-     * <code>required string assetModuleId = 5;</code>
+     * <code>optional string assetModuleId = 5;</code>
      */
     boolean hasAssetModuleId();
     /**
-     * <code>required string assetModuleId = 5;</code>
+     * <code>optional string assetModuleId = 5;</code>
      */
     java.lang.String getAssetModuleId();
     /**
-     * <code>required string assetModuleId = 5;</code>
+     * <code>optional string assetModuleId = 5;</code>
      */
     com.google.protobuf.ByteString
         getAssetModuleIdBytes();
 
-    // required string assetId = 6;
+    // optional string assetId = 6;
     /**
-     * <code>required string assetId = 6;</code>
+     * <code>optional string assetId = 6;</code>
      */
     boolean hasAssetId();
     /**
-     * <code>required string assetId = 6;</code>
+     * <code>optional string assetId = 6;</code>
      */
     java.lang.String getAssetId();
     /**
-     * <code>required string assetId = 6;</code>
+     * <code>optional string assetId = 6;</code>
      */
     com.google.protobuf.ByteString
         getAssetIdBytes();
@@ -22496,17 +22496,17 @@ public final class ProtobufMarshaler {
       return assignmentType_;
     }
 
-    // required string assetModuleId = 5;
+    // optional string assetModuleId = 5;
     public static final int ASSETMODULEID_FIELD_NUMBER = 5;
     private java.lang.Object assetModuleId_;
     /**
-     * <code>required string assetModuleId = 5;</code>
+     * <code>optional string assetModuleId = 5;</code>
      */
     public boolean hasAssetModuleId() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>required string assetModuleId = 5;</code>
+     * <code>optional string assetModuleId = 5;</code>
      */
     public java.lang.String getAssetModuleId() {
       java.lang.Object ref = assetModuleId_;
@@ -22523,7 +22523,7 @@ public final class ProtobufMarshaler {
       }
     }
     /**
-     * <code>required string assetModuleId = 5;</code>
+     * <code>optional string assetModuleId = 5;</code>
      */
     public com.google.protobuf.ByteString
         getAssetModuleIdBytes() {
@@ -22539,17 +22539,17 @@ public final class ProtobufMarshaler {
       }
     }
 
-    // required string assetId = 6;
+    // optional string assetId = 6;
     public static final int ASSETID_FIELD_NUMBER = 6;
     private java.lang.Object assetId_;
     /**
-     * <code>required string assetId = 6;</code>
+     * <code>optional string assetId = 6;</code>
      */
     public boolean hasAssetId() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>required string assetId = 6;</code>
+     * <code>optional string assetId = 6;</code>
      */
     public java.lang.String getAssetId() {
       java.lang.Object ref = assetId_;
@@ -22566,7 +22566,7 @@ public final class ProtobufMarshaler {
       }
     }
     /**
-     * <code>required string assetId = 6;</code>
+     * <code>optional string assetId = 6;</code>
      */
     public com.google.protobuf.ByteString
         getAssetIdBytes() {
@@ -22703,14 +22703,6 @@ public final class ProtobufMarshaler {
         return false;
       }
       if (!hasAssignmentType()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasAssetModuleId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasAssetId()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -23053,14 +23045,6 @@ public final class ProtobufMarshaler {
           
           return false;
         }
-        if (!hasAssetModuleId()) {
-          
-          return false;
-        }
-        if (!hasAssetId()) {
-          
-          return false;
-        }
         if (!hasStatus()) {
           
           return false;
@@ -23353,16 +23337,16 @@ public final class ProtobufMarshaler {
         return this;
       }
 
-      // required string assetModuleId = 5;
+      // optional string assetModuleId = 5;
       private java.lang.Object assetModuleId_ = "";
       /**
-       * <code>required string assetModuleId = 5;</code>
+       * <code>optional string assetModuleId = 5;</code>
        */
       public boolean hasAssetModuleId() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required string assetModuleId = 5;</code>
+       * <code>optional string assetModuleId = 5;</code>
        */
       public java.lang.String getAssetModuleId() {
         java.lang.Object ref = assetModuleId_;
@@ -23376,7 +23360,7 @@ public final class ProtobufMarshaler {
         }
       }
       /**
-       * <code>required string assetModuleId = 5;</code>
+       * <code>optional string assetModuleId = 5;</code>
        */
       public com.google.protobuf.ByteString
           getAssetModuleIdBytes() {
@@ -23392,7 +23376,7 @@ public final class ProtobufMarshaler {
         }
       }
       /**
-       * <code>required string assetModuleId = 5;</code>
+       * <code>optional string assetModuleId = 5;</code>
        */
       public Builder setAssetModuleId(
           java.lang.String value) {
@@ -23405,7 +23389,7 @@ public final class ProtobufMarshaler {
         return this;
       }
       /**
-       * <code>required string assetModuleId = 5;</code>
+       * <code>optional string assetModuleId = 5;</code>
        */
       public Builder clearAssetModuleId() {
         bitField0_ = (bitField0_ & ~0x00000010);
@@ -23414,7 +23398,7 @@ public final class ProtobufMarshaler {
         return this;
       }
       /**
-       * <code>required string assetModuleId = 5;</code>
+       * <code>optional string assetModuleId = 5;</code>
        */
       public Builder setAssetModuleIdBytes(
           com.google.protobuf.ByteString value) {
@@ -23427,16 +23411,16 @@ public final class ProtobufMarshaler {
         return this;
       }
 
-      // required string assetId = 6;
+      // optional string assetId = 6;
       private java.lang.Object assetId_ = "";
       /**
-       * <code>required string assetId = 6;</code>
+       * <code>optional string assetId = 6;</code>
        */
       public boolean hasAssetId() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>required string assetId = 6;</code>
+       * <code>optional string assetId = 6;</code>
        */
       public java.lang.String getAssetId() {
         java.lang.Object ref = assetId_;
@@ -23450,7 +23434,7 @@ public final class ProtobufMarshaler {
         }
       }
       /**
-       * <code>required string assetId = 6;</code>
+       * <code>optional string assetId = 6;</code>
        */
       public com.google.protobuf.ByteString
           getAssetIdBytes() {
@@ -23466,7 +23450,7 @@ public final class ProtobufMarshaler {
         }
       }
       /**
-       * <code>required string assetId = 6;</code>
+       * <code>optional string assetId = 6;</code>
        */
       public Builder setAssetId(
           java.lang.String value) {
@@ -23479,7 +23463,7 @@ public final class ProtobufMarshaler {
         return this;
       }
       /**
-       * <code>required string assetId = 6;</code>
+       * <code>optional string assetId = 6;</code>
        */
       public Builder clearAssetId() {
         bitField0_ = (bitField0_ & ~0x00000020);
@@ -23488,7 +23472,7 @@ public final class ProtobufMarshaler {
         return this;
       }
       /**
-       * <code>required string assetId = 6;</code>
+       * <code>optional string assetId = 6;</code>
        */
       public Builder setAssetIdBytes(
           com.google.protobuf.ByteString value) {
