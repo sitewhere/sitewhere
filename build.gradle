@@ -21,8 +21,6 @@ allprojects  {
     version = '1.6.0'
 
     repositories {
-//        mavenCentral()
-
         maven { url "http://repo.maven.apache.org/maven2" }
         maven { url 'http://maven.restlet.org' }
         maven { url "https://jitpack.io" }
@@ -44,6 +42,9 @@ subprojects {
             exclude(module: 'jmxtools')
         }
         testCompile group: 'junit', name: 'junit', version:'4.9'
+    }
+    test {
+        exclude '**/*'
     }
 }
 
