@@ -10,6 +10,7 @@ dependencies {
         exclude(module: 'org.eclipse.osgi.services')
         exclude(module: 'httpclient')
         exclude(module: 'slf4j')
+        exclude(module: 'org.wso2.carbon.logging')
     }
     compile(group: 'org.wso2.carbon', name: 'org.wso2.carbon.databridge.commons', version:'4.2.3') {
         exclude(module: 'org.wso2.carbon.logging')

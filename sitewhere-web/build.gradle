@@ -35,14 +35,20 @@ dependencies {
     compile group: 'com.mangofactory', name: 'swagger-springmvc', version:'0.9.0'
     compile group: 'com.google.guava', name: 'guava'//, version:'18.0'
     compile group: 'commons-lang', name: 'commons-lang', version:'2.6'
+    compile group: 'javax.mail', name: 'mail', version: '1.4'
     
     runtime group: 'javax.servlet', name: 'jstl', version:'1.1.1'
     
-    providedCompile group: 'com.sun.jersey.jersey-test-framework', name:'jersey-test-framework-grizzly2', version:'1.9'
+    providedCompile (group: 'com.sun.jersey.jersey-test-framework', name:'jersey-test-framework-grizzly2', version:'1.9') {
+        exclude (module: 'jersey-server')
+        exclude (module: 'jersey-core')
+    }
     providedCompile group: 'javax.servlet.jsp', name:'jsp-api', version: '2.1'
     providedCompile group: 'javax.servlet', name: 'servlet-api', version:'2.3'
     providedCompile group: 'tomcat', name:'jasper-compiler', version: '5.5.23'
-    providedCompile group: 'tomcat', name:'jasper-runtime', version: '5.5.23'
+    providedCompile (group: 'tomcat', name:'jasper-runtime', version: '5.5.23') {
+        exclude (module: 'commons-el')
+    }
 
     providedCompile (group: 'org.reflections', name: 'reflections', version:'0.9.10') {
         exclude (module: 'guava')

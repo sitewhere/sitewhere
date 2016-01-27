@@ -6,7 +6,7 @@ dependencies {
     compile project(':sitewhere-client')
     compile project(':sitewhere-core')
     compile (group: 'org.apache.hbase', name: 'hbase-client', version:'0.98.4-hadoop2') {
-        exclude (module: 'jaxb-impl')        
+        exclude (module: 'jaxb-impl')   
     }
     compile (group: 'org.apache.hadoop', name: 'hadoop-common', version:'2.6.0') {
         exclude (module: 'jaxb-impl')
