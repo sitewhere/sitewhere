@@ -1,0 +1,12 @@
+
+description = 'SiteWhere Google Protocol Buffers Integration'
+dependencies {
+    compile project(':sitewhere-client')
+    compile project(':sitewhere-core')
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version:'2.5.0'
+    compile group: 'com.google', name: 'bitcoinj', version:'0.11.3'
+    
+    testCompile group: 'com.rabbitmq', name: 'amqp-client', version:'3.4.1'
+    testCompile group: 'org.apache.qpid', name: 'proton-j', version:'0.8'
+    testCompile group: 'org.apache.activemq', name: 'activemq-all', version:'5.10.0'
+}

@@ -1,0 +1,119 @@
+buildscript {
+  repositories {
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+  dependencies {
+    classpath "com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3"
+    classpath "gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.7.3"
+    classpath "io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE"
+  }
+}
+
+ext {
+    tomcatVersion = '7.0.67'
+}
+
+
+allprojects  {
+    apply plugin: 'maven'
+
+    group = 'com.sitewhere'
+    version = '1.6.0'
+
+    repositories {
+        maven { url "http://repo.maven.apache.org/maven2" }
+        maven { url 'http://maven.restlet.org' }
+        maven { url "https://jitpack.io" }
+        maven { url "http://dist.wso2.org/maven2/" }
+        maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
+        maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+  
+    dependencies {
+        compile(group: 'log4j', name: 'log4j', version:'1.2.15') {
+            exclude(module: 'jms')
+            exclude(module: 'jmxri')
+            exclude(module: 'jmxtools')
+        }
+        testCompile group: 'junit', name: 'junit', version:'4.9'
+    }
+    test {
+        exclude '**/*'
+    }
+}
+
+configurations {
+    tomcat
+}
+
+dependencies {
+    tomcat "org.apache.tomcat:tomcat:${tomcatVersion}@tar.gz"
+}
+
+task createServerLayout {
+    doLast {
+        copy {
+            from(tarTree(configurations.tomcat.getSingleFile()))
+            exclude '**/webapps/*/**'
+            into "$buildDir/tomcat" 
+        }
+
+        copy {
+            from(project(':sitewhere-web').war)
+            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/webapps" 
+
+            rename { String fileName ->
+                fileName.replace("sitewhere-web-${version}.war", 'sitewhere.war')
+            }
+        }
+
+        copy {
+            from(project(':sitewhere-core').projectDir.path + '/config')
+            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/conf" 
+            exclude 'log4j.xml'
+        }
+
+        copy {
+            from(tarTree(project(':sitewhere-core').projectDir.path + '/config/policy.tar'))
+            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/conf" 
+        }
+
+        copy {
+            from(project(':sitewhere-core').projectDir.path + '/config')
+            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/lib" 
+            include 'log4j.xml'
+        }
+
+        copy {
+            from(project(':sitewhere-core').projectDir.path + '/config')
+            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/bin" 
+            include 'setenv.*'
+        }
+    }
+}
+
+
+task serverZip(type: Zip) {
+    baseName = 'sitewhere-server'
+    from "$buildDir/tomcat/apache-tomcat-${tomcatVersion}"
+    into "${baseName}-${version}"
+    exclude '**/conf/policy.d'
+}
+
+task serverTar(type: Tar) {
+
+    baseName = 'sitewhere-server'
+    compression = 'GZIP'
+    from "$buildDir/tomcat/apache-tomcat-${tomcatVersion}"
+    into "${baseName}-${version}"
+}
+
+createServerLayout.dependsOn subprojects.build
+serverZip.dependsOn createServerLayout
+serverTar.dependsOn createServerLayout

@@ -1,0 +1,6 @@
+
+description = 'SiteWhere RabbitMQ Integration'
+dependencies {
+    compile project(':sitewhere-core')
+    compile group: 'com.rabbitmq', name: 'amqp-client', version:'3.6.0'
+}

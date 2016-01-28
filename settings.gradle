@@ -1,0 +1,48 @@
+rootProject.name = 'sitewhere'
+include ':sitewhere-activemq'
+include ':sitewhere-azure'
+include ':sitewhere-client'
+include ':sitewhere-cloud'
+include ':sitewhere-core'
+include ':sitewhere-core-api'
+include ':sitewhere-ehcache'
+include ':sitewhere-hbase'
+include ':sitewhere-gnuhealth'
+include ':sitewhere-groovy'
+include ':sitewhere-influx'
+include ':sitewhere-magento'
+include ':sitewhere-mongodb'
+include ':sitewhere-protobuf'
+include ':sitewhere-rabbit-mq'
+include ':sitewhere-server-api'
+include ':sitewhere-siddhi'
+include ':sitewhere-solr'
+include ':sitewhere-spark'
+include ':sitewhere-spring'
+include ':sitewhere-twilio'
+include ':sitewhere-web'
+include ':sitewhere-wso2'
+
+project(':sitewhere-activemq').projectDir = "$rootDir/sitewhere-activemq" as File
+project(':sitewhere-azure').projectDir = "$rootDir/sitewhere-azure" as File
+project(':sitewhere-client').projectDir = "$rootDir/sitewhere-client" as File
+project(':sitewhere-cloud').projectDir = "$rootDir/sitewhere-cloud" as File
+project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
+project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
+project(':sitewhere-ehcache').projectDir = "$rootDir/sitewhere-ehcache" as File
+project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File
+project(':sitewhere-gnuhealth').projectDir = "$rootDir/sitewhere-gnuhealth" as File
+project(':sitewhere-groovy').projectDir = "$rootDir/sitewhere-groovy" as File
+project(':sitewhere-influx').projectDir = "$rootDir/sitewhere-influx" as File
+project(':sitewhere-magento').projectDir = "$rootDir/sitewhere-magento" as File
+project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
+project(':sitewhere-protobuf').projectDir = "$rootDir/sitewhere-protobuf" as File
+project(':sitewhere-rabbit-mq').projectDir = "$rootDir/sitewhere-rabbit-mq" as File
+project(':sitewhere-server-api').projectDir = "$rootDir/sitewhere-server-api" as File
+project(':sitewhere-siddhi').projectDir = "$rootDir/sitewhere-siddhi" as File
+project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File
+project(':sitewhere-spark').projectDir = "$rootDir/sitewhere-spark" as File
+project(':sitewhere-spring').projectDir = "$rootDir/sitewhere-spring" as File
+project(':sitewhere-twilio').projectDir = "$rootDir/sitewhere-twilio" as File
+project(':sitewhere-web').projectDir = "$rootDir/sitewhere-web" as File
+project(':sitewhere-wso2').projectDir = "$rootDir/sitewhere-wso2" as File
