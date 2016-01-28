@@ -13,6 +13,7 @@ import com.sitewhere.hbase.device.IDeviceIdManager;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.scheduling.IScheduleIdManager;
 import com.sitewhere.hbase.user.IUserIdManager;
+import com.sitewhere.spi.device.IAssignmentStateManager;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.user.ITenant;
 
@@ -57,6 +58,13 @@ public interface IHBaseContext {
 	 * @return
 	 */
 	public IDeviceEventBuffer getDeviceEventBuffer();
+
+	/**
+	 * Get assignment state manager.
+	 * 
+	 * @return
+	 */
+	public IAssignmentStateManager getAssignmentStateManager();
 
 	/**
 	 * Device id manager.

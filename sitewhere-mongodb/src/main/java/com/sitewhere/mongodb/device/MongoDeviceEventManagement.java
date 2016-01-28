@@ -19,9 +19,9 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.device.AssignmentStateManager;
 import com.sitewhere.mongodb.IDeviceManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
-import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
@@ -33,6 +33,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.device.IAssignmentStateManager;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.command.IDeviceCommand;
@@ -80,6 +81,9 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 	/** Device event buffer implementation */
 	private IDeviceEventBuffer eventBuffer;
 
+	/** Assignment state manager */
+	private IAssignmentStateManager assignmentStateManager;
+
 	/** Indicates whether bulk inserts should be used for adding events */
 	private boolean useBulkEventInserts = false;
 
@@ -110,6 +114,10 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 		} else {
 			LOGGER.info("MongoDB device event management is not using bulk inserts for events.");
 		}
+
+		// Create assignment state manager and start it.
+		this.assignmentStateManager = new AssignmentStateManager(getDeviceManagement());
+		startNestedComponent(assignmentStateManager, true);
 	}
 
 	/*
@@ -122,6 +130,11 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 		// Stop the event buffer if used.
 		if (getEventBuffer() != null) {
 			getEventBuffer().stop();
+		}
+
+		// Stop the assignment state manager.
+		if (assignmentStateManager != null) {
+			assignmentStateManager.stop();
 		}
 	}
 
@@ -235,9 +248,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 		// Update assignment state if requested.
 		measurements = MongoDeviceMeasurements.fromDBObject(mObject, false);
 		if (request.isUpdateState()) {
-			DeviceAssignmentState updated =
-					SiteWherePersistence.assignmentStateMeasurementsUpdateLogic(assignment, measurements);
-			getDeviceManagement().updateDeviceAssignmentState(assignmentToken, updated);
+			getAssignmentStateManager().addMeasurements(assignmentToken, measurements);
 		}
 
 		return measurements;
@@ -305,9 +316,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 		// Update assignment state if requested.
 		location = MongoDeviceLocation.fromDBObject(locObject, false);
 		if (request.isUpdateState()) {
-			DeviceAssignmentState updated =
-					SiteWherePersistence.assignmentStateLocationUpdateLogic(assignment, location);
-			getDeviceManagement().updateDeviceAssignmentState(assignment.getToken(), updated);
+			getAssignmentStateManager().addLocation(assignmentToken, location);
 		}
 
 		return location;
@@ -396,9 +405,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 		// Update assignment state if requested.
 		alert = MongoDeviceAlert.fromDBObject(alertObject, false);
 		if (request.isUpdateState()) {
-			DeviceAssignmentState updated =
-					SiteWherePersistence.assignmentStateAlertUpdateLogic(assignment, alert);
-			getDeviceManagement().updateDeviceAssignmentState(assignment.getToken(), updated);
+			getAssignmentStateManager().addAlert(assignmentToken, alert);
 		}
 
 		return alert;
@@ -503,7 +510,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 						MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.StreamData.name()).append(
-						MongoDeviceStreamData.PROP_STREAM_ID, streamId);
+								MongoDeviceStreamData.PROP_STREAM_ID, streamId);
 		MongoPersistence.addDateSearchCriteria(query, MongoDeviceEvent.PROP_EVENT_DATE, criteria);
 		BasicDBObject sort = new BasicDBObject(MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, 1);
 		return MongoPersistence.search(IDeviceStreamData.class, events, query, sort, criteria);
@@ -518,8 +525,8 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
-	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
-			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = assertApiDeviceAssignment(assignmentToken);
 		DeviceCommandInvocation ci =
 				SiteWherePersistence.deviceCommandInvocationCreateLogic(assignment, command, request);
@@ -584,8 +591,9 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 			throws SiteWhereException {
 		DBCollection events = getMongoClient().getEventsCollection(getTenant());
 		BasicDBObject query =
-				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_TYPE, DeviceEventType.CommandResponse.name()).append(
-						MongoDeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, invocationId);
+				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_TYPE,
+						DeviceEventType.CommandResponse.name()).append(
+								MongoDeviceCommandResponse.PROP_ORIGINATING_EVENT_ID, invocationId);
 		BasicDBObject sort =
 				new BasicDBObject(MongoDeviceEvent.PROP_EVENT_DATE, -1).append(
 						MongoDeviceEvent.PROP_RECEIVED_DATE, -1);
@@ -638,9 +646,9 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceCommandResponsesForSite
-	 * (java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceCommandResponsesForSite (java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
@@ -731,9 +739,8 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#setDeviceManagement(com.sitewhere
-	 * .spi.device.IDeviceManagement)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#setDeviceManagement(com.
+	 * sitewhere .spi.device.IDeviceManagement)
 	 */
 	public void setDeviceManagement(IDeviceManagement deviceManagement) {
 		this.deviceManagement = deviceManagement;
@@ -756,7 +763,7 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 			BasicDBObject query =
 					new BasicDBObject(MongoDeviceEvent.PROP_DEVICE_ASSIGNMENT_TOKEN, assignmentToken).append(
 							MongoDeviceStreamData.PROP_STREAM_ID, streamId).append(
-							MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
+									MongoDeviceStreamData.PROP_SEQUENCE_NUMBER, sequenceNumber);
 			DBObject result = events.findOne(query);
 			return result;
 		} catch (MongoTimeoutException e) {
@@ -786,6 +793,14 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 
 	public void setEventBuffer(IDeviceEventBuffer eventBuffer) {
 		this.eventBuffer = eventBuffer;
+	}
+
+	public IAssignmentStateManager getAssignmentStateManager() {
+		return assignmentStateManager;
+	}
+
+	public void setAssignmentStateManager(IAssignmentStateManager assignmentStateManager) {
+		this.assignmentStateManager = assignmentStateManager;
 	}
 
 	public boolean isUseBulkEventInserts() {

@@ -118,6 +118,14 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
+	public void stop() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
@@ -174,14 +182,6 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 				new BasicDBObject(MongoBatchOperation.PROP_TOKEN, 1), new BasicDBObject("unique", true));
 		getMongoClient().getBatchOperationElementsCollection(getTenant()).createIndex(
 				new BasicDBObject(MongoBatchElement.PROP_BATCH_OPERATION_TOKEN, 1));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	public void stop() throws SiteWhereException {
 	}
 
 	/*

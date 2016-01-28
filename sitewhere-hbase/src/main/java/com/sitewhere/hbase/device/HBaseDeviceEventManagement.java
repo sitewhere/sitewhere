@@ -13,6 +13,7 @@ import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.core.SiteWherePersistence;
+import com.sitewhere.device.AssignmentStateManager;
 import com.sitewhere.hbase.HBaseContext;
 import com.sitewhere.hbase.ISiteWhereHBase;
 import com.sitewhere.hbase.ISiteWhereHBaseClient;
@@ -75,6 +76,9 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 	/** Allows puts to be buffered for device events */
 	private DeviceEventBuffer buffer;
 
+	/** Assignment state manager */
+	private AssignmentStateManager assignmentStateManager;
+
 	/** Device id manager */
 	private DeviceIdManager deviceIdManager;
 
@@ -106,6 +110,11 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 		buffer = new DeviceEventBuffer(context);
 		buffer.start();
 		context.setDeviceEventBuffer(buffer);
+
+		// Create assignment state manager and start it.
+		assignmentStateManager = new AssignmentStateManager(getDeviceManagement());
+		startNestedComponent(assignmentStateManager, true);
+		context.setAssignmentStateManager(assignmentStateManager);
 	}
 
 	/*
@@ -117,6 +126,11 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 	public void stop() throws SiteWhereException {
 		if (buffer != null) {
 			buffer.stop();
+		}
+
+		// Stop the assignment state manager.
+		if (assignmentStateManager != null) {
+			assignmentStateManager.stop();
 		}
 	}
 
@@ -363,8 +377,8 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
-	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
-			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		IDeviceAssignment assignment = assertDeviceAssignment(assignmentToken);
 		return HBaseDeviceEvent.createDeviceCommandInvocation(context, assignment, command, request);
 	}
@@ -438,9 +452,9 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#listDeviceCommandResponsesForSite
-	 * (java.lang.String, com.sitewhere.spi.search.IDateRangeSearchCriteria)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#
+	 * listDeviceCommandResponsesForSite (java.lang.String,
+	 * com.sitewhere.spi.search.IDateRangeSearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceCommandResponse> listDeviceCommandResponsesForSite(String siteToken,
@@ -501,9 +515,8 @@ public class HBaseDeviceEventManagement extends TenantLifecycleComponent impleme
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.IDeviceEventManagement#setDeviceManagement(com.sitewhere
-	 * .spi.device.IDeviceManagement)
+	 * @see com.sitewhere.spi.device.event.IDeviceEventManagement#setDeviceManagement(com.
+	 * sitewhere .spi.device.IDeviceManagement)
 	 */
 	public void setDeviceManagement(IDeviceManagement deviceManagement) {
 		this.deviceManagement = deviceManagement;

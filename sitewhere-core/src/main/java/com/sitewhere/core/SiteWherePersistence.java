@@ -29,7 +29,6 @@ import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
 import com.sitewhere.rest.model.device.Device;
 import com.sitewhere.rest.model.device.DeviceAssignment;
-import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.DeviceElementMapping;
 import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
@@ -45,7 +44,6 @@ import com.sitewhere.rest.model.device.event.DeviceCommandResponse;
 import com.sitewhere.rest.model.device.event.DeviceEvent;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
-import com.sitewhere.rest.model.device.event.DeviceMeasurement;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.DeviceStateChange;
 import com.sitewhere.rest.model.device.event.DeviceStreamData;
@@ -87,12 +85,8 @@ import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.event.AlertLevel;
 import com.sitewhere.spi.device.event.AlertSource;
 import com.sitewhere.spi.device.event.CommandStatus;
-import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEventBatch;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.device.event.IDeviceLocation;
-import com.sitewhere.spi.device.event.IDeviceMeasurement;
-import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -267,7 +261,7 @@ public class SiteWherePersistence {
 	 */
 	public static DeviceCommand deviceCommandCreateLogic(IDeviceSpecification spec,
 			IDeviceCommandCreateRequest request, String token, List<IDeviceCommand> existing)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		DeviceCommand command = new DeviceCommand();
 
 		// Token is required.
@@ -680,8 +674,8 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void deviceEventCreateLogic(IDeviceEventCreateRequest request,
-			IDeviceAssignment assignment, DeviceEvent target) throws SiteWhereException {
+	public static void deviceEventCreateLogic(IDeviceEventCreateRequest request, IDeviceAssignment assignment,
+			DeviceEvent target) throws SiteWhereException {
 		target.setSiteToken(assignment.getSiteToken());
 		target.setDeviceAssignmentToken(assignment.getToken());
 		target.setAssignmentType(assignment.getAssignmentType());
@@ -960,108 +954,6 @@ public class SiteWherePersistence {
 			state.getData().putAll(request.getData());
 		}
 		return state;
-	}
-
-	/**
-	 * Gets a copy of the existing state or creates a new state.
-	 * 
-	 * @param assignment
-	 * @return
-	 */
-	protected static DeviceAssignmentState assureState(IDeviceAssignment assignment)
-			throws SiteWhereException {
-		if (assignment.getState() == null) {
-			return new DeviceAssignmentState();
-		}
-		return DeviceAssignmentState.copy(assignment.getState());
-	}
-
-	/**
-	 * Update latest device location if necessary.
-	 * 
-	 * @param assignment
-	 * @param location
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static DeviceAssignmentState assignmentStateLocationUpdateLogic(IDeviceAssignment assignment,
-			IDeviceLocation location) throws SiteWhereException {
-		DeviceAssignmentState existing = assureState(assignment);
-		existing.setLastInteractionDate(new Date());
-
-		if ((existing.getLastLocation() == null)
-				|| (location.getEventDate().after(existing.getLastLocation().getEventDate()))) {
-			existing.setLastLocation(DeviceLocation.copy(location));
-		}
-		return existing;
-	}
-
-	/**
-	 * Update latest device measurements if necessary.
-	 * 
-	 * @param assignment
-	 * @param measurements
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static DeviceAssignmentState assignmentStateMeasurementsUpdateLogic(IDeviceAssignment assignment,
-			IDeviceMeasurements measurements) throws SiteWhereException {
-		DeviceAssignmentState existing = assureState(assignment);
-		existing.setLastInteractionDate(new Date());
-
-		Map<String, IDeviceMeasurement> measurementsById = new HashMap<String, IDeviceMeasurement>();
-		if (existing.getLatestMeasurements() != null) {
-			for (IDeviceMeasurement m : existing.getLatestMeasurements()) {
-				measurementsById.put(m.getName(), m);
-			}
-		}
-		for (String key : measurements.getMeasurements().keySet()) {
-			IDeviceMeasurement em = measurementsById.get(key);
-			if ((em == null) || (em.getEventDate().before(measurements.getEventDate()))) {
-				Double value = measurements.getMeasurement(key);
-				DeviceMeasurement newMeasurement = new DeviceMeasurement();
-				DeviceEvent.copy(measurements, newMeasurement);
-				newMeasurement.setName(key);
-				newMeasurement.setValue(value);
-				measurementsById.put(key, newMeasurement);
-			}
-		}
-		existing.getLatestMeasurements().clear();
-		for (IDeviceMeasurement m : measurementsById.values()) {
-			existing.getLatestMeasurements().add(m);
-		}
-		return existing;
-	}
-
-	/**
-	 * Update device alerts if necessary.
-	 * 
-	 * @param assignment
-	 * @param alert
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public static DeviceAssignmentState assignmentStateAlertUpdateLogic(IDeviceAssignment assignment,
-			IDeviceAlert alert) throws SiteWhereException {
-		DeviceAssignmentState existing = assureState(assignment);
-		existing.setLastInteractionDate(new Date());
-
-		Map<String, IDeviceAlert> alertsById = new HashMap<String, IDeviceAlert>();
-		if ((existing != null) && (existing.getLatestAlerts() != null)) {
-			for (IDeviceAlert a : existing.getLatestAlerts()) {
-				alertsById.put(a.getType(), a);
-			}
-		}
-		IDeviceAlert ea = alertsById.get(alert.getType());
-		if ((ea == null) || (ea.getEventDate().before(alert.getEventDate()))) {
-			DeviceAlert newAlert = DeviceAlert.copy(alert);
-			alertsById.put(newAlert.getType(), newAlert);
-		}
-		existing.getLatestAlerts().clear();
-		for (IDeviceAlert a : alertsById.values()) {
-			existing.getLatestAlerts().add(a);
-		}
-		return existing;
 	}
 
 	/**
@@ -1624,7 +1516,8 @@ public class SiteWherePersistence {
 	 */
 	public static HardwareAsset hardwareAssetCreateLogic(IAssetCategory category,
 			IHardwareAssetCreateRequest request) throws SiteWhereException {
-		if ((category.getAssetType() != AssetType.Hardware) && (category.getAssetType() != AssetType.Device)) {
+		if ((category.getAssetType() != AssetType.Hardware)
+				&& (category.getAssetType() != AssetType.Device)) {
 			throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
 		}
 

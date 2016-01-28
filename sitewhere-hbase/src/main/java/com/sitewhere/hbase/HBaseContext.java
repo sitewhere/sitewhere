@@ -13,6 +13,7 @@ import com.sitewhere.hbase.device.IDeviceIdManager;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.scheduling.IScheduleIdManager;
 import com.sitewhere.hbase.user.IUserIdManager;
+import com.sitewhere.spi.device.IAssignmentStateManager;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.user.ITenant;
 
@@ -37,6 +38,9 @@ public class HBaseContext implements IHBaseContext {
 
 	/** Device event buffer */
 	private IDeviceEventBuffer deviceEventBuffer;
+
+	/** Assignment state manager */
+	private IAssignmentStateManager assignmentStateManager;
 
 	/** Device id manager */
 	private IDeviceIdManager deviceIdManager;
@@ -88,6 +92,14 @@ public class HBaseContext implements IHBaseContext {
 
 	public void setDeviceEventBuffer(IDeviceEventBuffer deviceEventBuffer) {
 		this.deviceEventBuffer = deviceEventBuffer;
+	}
+
+	public IAssignmentStateManager getAssignmentStateManager() {
+		return assignmentStateManager;
+	}
+
+	public void setAssignmentStateManager(IAssignmentStateManager assignmentStateManager) {
+		this.assignmentStateManager = assignmentStateManager;
 	}
 
 	public IDeviceIdManager getDeviceIdManager() {

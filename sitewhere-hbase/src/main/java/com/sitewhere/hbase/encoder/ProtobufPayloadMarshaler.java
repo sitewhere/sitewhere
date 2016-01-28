@@ -1075,6 +1075,7 @@ public class ProtobufPayloadMarshaler extends JsonPayloadMarshaler implements IP
 				mx.setName(pbmx.getName());
 				mx.setValue(pbmx.getValue());
 				loadDeviceEventData(mx, pbmx.getEventData());
+				state.getLatestMeasurements().add(mx);
 			}
 			return state;
 		} catch (IOException e) {
