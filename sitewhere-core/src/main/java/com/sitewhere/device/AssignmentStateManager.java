@@ -185,7 +185,7 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 				long diff = System.currentTimeMillis() - start;
 				if (diff < FLUSH_INTERVAL) {
 					try {
-						Thread.sleep(diff);
+						Thread.sleep(FLUSH_INTERVAL - diff);
 					} catch (InterruptedException e) {
 						LOGGER.info("State manager persistence thread shut down.", e);
 						return;
