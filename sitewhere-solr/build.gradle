@@ -1,0 +1,11 @@
+apply plugin: 'nebula.provided-base'
+
+description = 'SiteWhere Solr Integration'
+dependencies {
+    compile project(':sitewhere-client')
+    compile project(':sitewhere-core')
+    compile group: 'org.apache.solr', name: 'solr-solrj', version:'4.6.0'
+    compile group: 'org.springframework', name: 'spring-beans', version:'3.2.10.RELEASE'
+    
+    provided group: 'org.apache.solr', name: 'solr-core', version:'4.6.0'
+}

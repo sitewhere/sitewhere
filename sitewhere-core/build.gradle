@@ -1,0 +1,54 @@
+apply plugin: 'nebula.provided-base'
+
+description = 'SiteWhere Core Library'
+dependencies {
+    compile project(':sitewhere-core-api')
+    compile project(':sitewhere-server-api')
+    compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.0.2'
+    compile (group: 'org.apache.cxf', name: 'cxf-rt-frontend-simple', version:'3.0.2') {
+        exclude (module: 'jaxb-core')
+        exclude (module: 'jaxb-api')
+        exclude (module: 'jaxb-impl')
+    }
+    compile group: 'org.springframework', name: 'spring-core', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context-support', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-tx', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-orm', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-jdbc', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-jms', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-webmvc', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-config', version:'3.2.6.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-core', version:'3.2.6.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-web', version:'3.2.6.RELEASE'
+    compile group: 'com.hazelcast', name: 'hazelcast', version:'3.5.3'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.1.5'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.1.5'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version:'2.1.5'
+    compile group: 'com.vividsolutions', name: 'jts', version:'1.13'
+    compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.1.0'
+    compile group: 'org.fusesource.mqtt-client', name: 'mqtt-client', version:'1.11'
+    compile group: 'org.quartz-scheduler', name: 'quartz', version:'2.2.2'
+    compile group: 'commons-lang', name: 'commons-lang', version:'2.4'
+    compile group: 'commons-collections', name: 'commons-collections', version:'3.2.1'
+    compile group: 'commons-io', name: 'commons-io', version:'1.4'
+    compile group: 'javax.ws.rs', name: 'jsr311-api', version:'1.1.1'
+    compile group: 'com.google.guava', name: 'guava', version:'18.0'
+    
+    provided group: 'javax.servlet', name: 'servlet-api', version:'2.3'
+    provided group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client', version:'1.10'
+    provided group: 'org.glassfish.tyrus', name: 'tyrus-server', version:'1.10'
+    provided group: 'org.glassfish.tyrus', name: 'tyrus-container-grizzly-server', version:'1.10'
+}
+
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include '**/*.properties'
+        filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+            'build.timestamp': new java.text.SimpleDateFormat('yyyyMMddHHmmss').format(new Date()),
+            'version.identifier'    : project.version
+        ])
+    }
+}

@@ -1,0 +1,59 @@
+
+apply plugin: 'war'
+
+description = 'SiteWhere Web Components'
+dependencies {
+    compile project(':sitewhere-activemq')
+    compile project(':sitewhere-azure')
+    compile project(':sitewhere-core')
+    compile project(':sitewhere-ehcache')
+    compile project(':sitewhere-hbase')
+    compile project(':sitewhere-gnuhealth')
+    compile project(':sitewhere-groovy')
+    compile project(':sitewhere-influx')
+    compile project(':sitewhere-magento')
+    compile project(':sitewhere-mongodb')
+    compile project(':sitewhere-protobuf')
+    compile project(':sitewhere-rabbit-mq')
+    compile project(':sitewhere-siddhi')
+    compile project(':sitewhere-solr')
+    compile project(':sitewhere-spark')
+    compile project(':sitewhere-spring')
+    compile project(':sitewhere-twilio')
+    compile project(':sitewhere-wso2')
+    compile group: 'org.springframework', name: 'spring-web', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-webmvc', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version:'3.2.10.RELEASE'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version:'2.1.5'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.1.5'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.1.5'
+    compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version:'2.1.5'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-scala_2.10', version:'2.1.5'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jsonSchema', version:'2.1.5'
+    compile group: 'com.wordnik', name: 'swagger-core_2.10', version:'1.3.5'
+    compile group: 'com.wordnik', name: 'swagger-annotations', version:'1.3.5'
+    compile group: 'com.mangofactory', name: 'swagger-springmvc', version:'0.9.0'
+    compile group: 'com.google.guava', name: 'guava'//, version:'18.0'
+    compile group: 'commons-lang', name: 'commons-lang', version:'2.6'
+    compile group: 'javax.mail', name: 'mail', version: '1.4'
+    
+    runtime group: 'javax.servlet', name: 'jstl', version:'1.1.1'
+    
+    providedCompile (group: 'com.sun.jersey.jersey-test-framework', name:'jersey-test-framework-grizzly2', version:'1.9') {
+        exclude (module: 'jersey-server')
+        exclude (module: 'jersey-core')
+    }
+    providedCompile group: 'javax.servlet.jsp', name:'jsp-api', version: '2.1'
+    providedCompile group: 'javax.servlet', name: 'servlet-api', version:'2.3'
+    providedCompile group: 'tomcat', name:'jasper-compiler', version: '5.5.23'
+    providedCompile (group: 'tomcat', name:'jasper-runtime', version: '5.5.23') {
+        exclude (module: 'commons-el')
+    }
+
+    providedCompile (group: 'org.reflections', name: 'reflections', version:'0.9.10') {
+        exclude (module: 'guava')
+    }
+    
+    providedCompile group: 'org.pegdown', name: 'pegdown', version:'1.5.0'
+    providedCompile group: 'com.thoughtworks.paranamer', name: 'paranamer', version:'2.8'
+}

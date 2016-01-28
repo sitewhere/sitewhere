@@ -11,6 +11,11 @@ import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.system.IVersion;
 
+import java.util.Properties;
+import java.io.InputStream;
+import java.io.IOException;
+
+
 /**
  * Used as basis for generating version information. This file is modified by the Maven
  * build process so that the correct values exist in the compiled classes.
@@ -24,6 +29,16 @@ public class Version implements IVersion {
 
 	/** Timestamp for build */
 	public static final String BUILD_TIMESTAMP = "@build.timestamp@";
+
+	private static Properties properties = new Properties();
+
+	static {
+		try (final InputStream stream = Version.class.getClassLoader().getResourceAsStream("META-INF/application-build.properties")) {
+    		properties.load(stream);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -49,7 +64,7 @@ public class Version implements IVersion {
 	 * @see com.sitewhere.spi.system.IVersion#getVersionIdentifier()
 	 */
 	public String getVersionIdentifier() {
-		return VERSION_IDENTIFIER;
+		return properties.getProperty("sitewhere.version");
 	}
 
 	/*
@@ -58,7 +73,7 @@ public class Version implements IVersion {
 	 * @see com.sitewhere.spi.system.IVersion#getBuildTimestamp()
 	 */
 	public String getBuildTimestamp() {
-		return BUILD_TIMESTAMP;
+		return properties.getProperty("build.timestamp");
 	}
 
 	/*

@@ -1,0 +1,8 @@
+
+description = 'SiteWhere Server API'
+dependencies {
+    compile project(':sitewhere-core-api')
+    compile group: 'org.springframework', name: 'spring-web', version:'3.2.10.RELEASE'
+    compile group: 'io.dropwizard.metrics', name: 'metrics-core', version:'3.1.0'
+    compile group: 'io.dropwizard.metrics', name: 'metrics-healthchecks', version:'3.1.0'
+}
