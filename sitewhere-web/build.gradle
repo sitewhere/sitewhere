@@ -72,3 +72,13 @@ task restDocumentationGenerator(type: JavaExec, dependsOn: 'manifestJar') {
     classpath = sourceSets.main.output + files(manifestJar.archivePath)
     args "$projectDir/src/main/documentation", "$buildDir/rest"
 }
+
+task restDocZip(type: Zip, dependsOn: restDocumentationGenerator) {
+    classifier = 'api'
+    from "$buildDir/rest"
+}
+
+artifacts {
+    archives restDocZip
+}
+
