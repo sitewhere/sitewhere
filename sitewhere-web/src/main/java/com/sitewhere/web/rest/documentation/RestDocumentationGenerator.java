@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.system.IVersion;
+import com.sitewhere.version.VersionHelper;
 import com.sitewhere.web.rest.annotations.Concerns;
 import com.sitewhere.web.rest.annotations.Concerns.ConcernType;
 import com.sitewhere.web.rest.annotations.Documented;
@@ -112,8 +114,8 @@ public class RestDocumentationGenerator {
 		for (ParsedController controller : results) {
 			methodCount += controller.getMethods().size();
 		}
-		System.out.println("Found " + controllers.size() + " documented controllers containing "
-				+ methodCount + " methods.");
+		System.out.println("Found " + controllers.size() + " documented controllers containing " + methodCount
+				+ " methods.");
 		return results;
 	}
 
@@ -148,7 +150,11 @@ public class RestDocumentationGenerator {
 		if (!footer.exists()) {
 			throw new SiteWhereException("Unable to find footer file: " + footer.getAbsolutePath());
 		}
-		completeDoc += readFile(footer);
+
+		IVersion version = VersionHelper.getVersion();
+		completeDoc +=
+				readFile(footer).replace("${sitewhere.version}",
+						"SiteWhere " + version.getVersionIdentifier() + " " + version.getEditionIdentifier());
 
 		File output = new File(outputFolder);
 		if (!output.exists()) {
@@ -245,10 +251,8 @@ public class RestDocumentationGenerator {
 	 */
 	protected static String createUriBlock(ParsedMethod method, RequestMethodColors colors) {
 		String uri =
-				"<h3>Request URI</h3><div style=\"background-color: "
-						+ colors.getBgColor()
-						+ "; border: 1px solid "
-						+ colors.getBrdColor()
+				"<h3>Request URI</h3><div style=\"background-color: " + colors.getBgColor()
+						+ "; border: 1px solid " + colors.getBrdColor()
 						+ "; font-size: 13px; margin: 20px 0px;\"><span style=\"width: 70px; background-color: "
 						+ colors.getTagColor()
 						+ "; color: #fff; text-align: center; display: inline-block; margin-right: 15px; padding: 5px;\">"
@@ -401,10 +405,7 @@ public class RestDocumentationGenerator {
 		for (ConcernType type : breakdown.getConcernParameters().keySet()) {
 			List<ParsedParameter> params = breakdown.getConcernParameters().get(type);
 			String table =
-					"<h3><a href=\"#"
-							+ type.getLink()
-							+ "\">"
-							+ type.getTitle()
+					"<h3><a href=\"#" + type.getLink() + "\">" + type.getTitle()
 							+ "</a> Request Parameters</h3><table class=\"param-table\"><thead><tr><th style=\"width: 25%\">Name</th>"
 							+ "<th style=\"width: 50%\">Description</th><th>Required</th></thead><tbody>";
 
@@ -446,23 +447,23 @@ public class RestDocumentationGenerator {
 
 		RequestMapping mapping = controller.getAnnotation(RequestMapping.class);
 		if (mapping == null) {
-			throw new SiteWhereException(
-					"Spring RequestMapping annotation missing on documented controller: "
-							+ controller.getName());
+			throw new SiteWhereException("Spring RequestMapping annotation missing on documented controller: "
+					+ controller.getName());
 		}
 		parsed.setBaseUri("/sitewhere/api" + mapping.value()[0]);
 
 		// Verify controller markdown file.
 		File markdownFile = new File(resourcesFolder, parsed.getResource() + ".md");
 		if (!markdownFile.exists()) {
-			throw new SiteWhereException("Controller markdown file missing: "
-					+ markdownFile.getAbsolutePath());
+			throw new SiteWhereException(
+					"Controller markdown file missing: " + markdownFile.getAbsolutePath());
 		}
 
 		// Verify controller resources folder.
 		File resources = new File(resourcesFolder, parsed.getResource());
 		if (!resources.exists()) {
-			throw new SiteWhereException("Controller markdown folder missing: " + resources.getAbsolutePath());
+			throw new SiteWhereException(
+					"Controller markdown folder missing: " + resources.getAbsolutePath());
 		}
 
 		try {
@@ -470,7 +471,8 @@ public class RestDocumentationGenerator {
 			String markdown = readFile(markdownFile);
 			parsed.setDescription(processor.markdownToHtml(markdown));
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to read markdown from: " + markdownFile.getAbsolutePath(), e);
+			throw new SiteWhereException("Unable to read markdown from: " + markdownFile.getAbsolutePath(),
+					e);
 		}
 
 		Method[] methods = controller.getMethods();
@@ -506,15 +508,15 @@ public class RestDocumentationGenerator {
 
 		ApiOperation op = method.getAnnotation(ApiOperation.class);
 		if (op == null) {
-			throw new SiteWhereException("Spring ApiOperation annotation missing on documented method: "
-					+ method.getName());
+			throw new SiteWhereException(
+					"Spring ApiOperation annotation missing on documented method: " + method.getName());
 		}
 		parsed.setSummary(op.value());
 
 		RequestMapping mapping = method.getAnnotation(RequestMapping.class);
 		if (mapping == null) {
-			throw new SiteWhereException("Spring RequestMapping annotation missing on documented method: "
-					+ method.getName());
+			throw new SiteWhereException(
+					"Spring RequestMapping annotation missing on documented method: " + method.getName());
 		}
 
 		// Find URI mapping.
