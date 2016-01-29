@@ -30,6 +30,13 @@ public interface IDeviceAssignmentState {
 	public Date getLastInteractionDate();
 
 	/**
+	 * Date when presence was determined to be missing.
+	 * 
+	 * @return
+	 */
+	public Date getPresenceMissingDate();
+
+	/**
 	 * Get last device location.
 	 * 
 	 * @return

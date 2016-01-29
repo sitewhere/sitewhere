@@ -36,6 +36,9 @@ public class DeviceAssignmentState implements IDeviceAssignmentState, Serializab
 	/** Date of last interaction with assignment */
 	private Date lastInteractionDate;
 
+	/** Date presence was determined to be missing */
+	private Date presenceMissingDate;
+
 	/** Last location event */
 	private DeviceLocation lastLocation;
 
@@ -58,6 +61,20 @@ public class DeviceAssignmentState implements IDeviceAssignmentState, Serializab
 
 	public void setLastInteractionDate(Date lastInteractionDate) {
 		this.lastInteractionDate = lastInteractionDate;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceAssignmentState#getPresenceMissingDate()
+	 */
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getPresenceMissingDate() {
+		return presenceMissingDate;
+	}
+
+	public void setPresenceMissingDate(Date presenceMissingDate) {
+		this.presenceMissingDate = presenceMissingDate;
 	}
 
 	/*

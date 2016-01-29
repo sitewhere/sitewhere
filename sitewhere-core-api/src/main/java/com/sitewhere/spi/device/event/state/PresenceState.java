@@ -8,15 +8,15 @@
 package com.sitewhere.spi.device.event.state;
 
 /**
- * Enumerates the types of state changes known to the system.
+ * Enumerates possible system presence states.
  * 
  * @author Derek
  */
-public enum StateChangeType {
+public enum PresenceState {
 
-	/** Device registration request */
-	Registration_Requested,
+	/** Device was determined to be present */
+	PRESENT,
 
-	/** Presence status was updated */
-	Presence_Updated,
+	/** Device was determined not to be present */
+	NOT_PRESENT;
 }

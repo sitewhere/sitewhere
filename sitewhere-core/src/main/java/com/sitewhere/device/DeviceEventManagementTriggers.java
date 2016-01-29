@@ -5,13 +5,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.device.event.processor;
+package com.sitewhere.device;
 
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.core.SiteWherePersistence;
-import com.sitewhere.device.DeviceEventManagementDecorator;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
@@ -23,7 +22,6 @@ import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
-import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
@@ -32,20 +30,19 @@ import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
- * Acts as a decorator for injecting a {@link IOutboundEventProcessorChain} into the
- * default processing flow.
+ * Adds triggers for processing related to device event management API calls.
  * 
  * @author Derek
  */
-public class OutboundProcessingStrategyDecorator extends DeviceEventManagementDecorator {
+public class DeviceEventManagementTriggers extends DeviceEventManagementDecorator {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(OutboundProcessingStrategyDecorator.class);
+	private static Logger LOGGER = Logger.getLogger(DeviceEventManagementTriggers.class);
 
 	/** Cached strategy */
 	private IOutboundProcessingStrategy strategy;
 
-	public OutboundProcessingStrategyDecorator(IDeviceEventManagement delegate) {
+	public DeviceEventManagementTriggers(IDeviceEventManagement delegate) {
 		super(delegate);
 	}
 
@@ -125,8 +122,8 @@ public class OutboundProcessingStrategyDecorator extends DeviceEventManagementDe
 	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest)
 	 */
 	@Override
-	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken,
-			IDeviceCommand command, IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+	public IDeviceCommandInvocation addDeviceCommandInvocation(String assignmentToken, IDeviceCommand command,
+			IDeviceCommandInvocationCreateRequest request) throws SiteWhereException {
 		IDeviceCommandInvocation result = super.addDeviceCommandInvocation(assignmentToken, command, request);
 		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
 			getOutboundProcessingStrategy().onCommandInvocation(result);

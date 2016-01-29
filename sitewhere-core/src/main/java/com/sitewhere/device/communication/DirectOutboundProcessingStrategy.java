@@ -12,13 +12,13 @@ import org.apache.log4j.Logger;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -28,8 +28,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent implements
-		IOutboundProcessingStrategy {
+public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent
+		implements IOutboundProcessingStrategy {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DirectOutboundProcessingStrategy.class);
@@ -96,9 +96,8 @@ public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent i
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.sitewhere
-	 * .spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.
+	 * sitewhere .spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
@@ -108,9 +107,8 @@ public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent i
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandInvocation
-	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+	 * onCommandInvocation (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
 	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
@@ -133,12 +131,12 @@ public class DirectOutboundProcessingStrategy extends TenantLifecycleComponent i
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onBatchOperation
-	 * (com.sitewhere.spi.device.batch.IBatchOperation)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onStateChange(com.
+	 * sitewhere.spi.device.event.IDeviceStateChange)
 	 */
 	@Override
-	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
-		getOutboundEventProcessorChain().onBatchOperation(operation);
+	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+		getOutboundEventProcessorChain().onStateChange(state);
 	}
 
 	/**

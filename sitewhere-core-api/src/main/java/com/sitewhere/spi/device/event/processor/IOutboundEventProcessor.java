@@ -8,12 +8,12 @@
 package com.sitewhere.spi.device.event.processor;
 
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -64,10 +64,10 @@ public interface IOutboundEventProcessor extends ITenantLifecycleComponent {
 	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
 
 	/**
-	 * Executes code after batch operation has been successfully saved.
+	 * Executes code after device state change has been successfully saved.
 	 * 
-	 * @param operation
+	 * @param state
 	 * @throws SiteWhereException
 	 */
-	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException;
+	public void onStateChange(IDeviceStateChange state) throws SiteWhereException;
 }

@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 
 /**
@@ -83,20 +82,9 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
+			throws SiteWhereException {
 		executor.execute(new CommandInvocationProcessor(invocation));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onBatchOperation(com
-	 * .sitewhere.spi.device.batch.IBatchOperation)
-	 */
-	@Override
-	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
-		executor.execute(new BatchOperationProcessor(operation));
 	}
 
 	/**
@@ -119,31 +107,6 @@ public class DeviceCommandEventProcessor extends FilteredOutboundEventProcessor 
 				LOGGER.error("Exception thrown in command processing operation.", e);
 			} catch (Throwable e) {
 				LOGGER.error("Unhandled exception in command processing operation.", e);
-			}
-		}
-	}
-
-	/**
-	 * Processes batch operations asynchronously.
-	 */
-	private class BatchOperationProcessor implements Runnable {
-
-		private IBatchOperation operation;
-
-		public BatchOperationProcessor(IBatchOperation operation) {
-			this.operation = operation;
-		}
-
-		@Override
-		public void run() {
-			try {
-				LOGGER.debug("Command processor thread processing batch operation.");
-				SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(
-						operation);
-			} catch (SiteWhereException e) {
-				LOGGER.error("Exception thrown in batch processing operation.", e);
-			} catch (Throwable e) {
-				LOGGER.error("Unhandled exception in batch processing operation.", e);
 			}
 		}
 	}

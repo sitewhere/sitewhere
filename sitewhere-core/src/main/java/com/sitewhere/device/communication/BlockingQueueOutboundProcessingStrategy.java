@@ -21,7 +21,6 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.communication.IOutboundProcessingStrategy;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
@@ -29,6 +28,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -39,8 +39,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComponent implements
-		IOutboundProcessingStrategy {
+public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComponent
+		implements IOutboundProcessingStrategy {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BlockingQueueOutboundProcessingStrategy.class);
@@ -58,7 +58,7 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	private int eventProcessorThreadCount = EVENT_PROCESSOR_THREAD_COUNT;
 
 	/** Blocking queue of events waiting for outbound processing */
-	private BlockingQueue<Object> queue;
+	private BlockingQueue<IDeviceEvent> queue;
 
 	/** Thread pool for processing events */
 	private ExecutorService processorPool;
@@ -74,7 +74,7 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		this.queue = new ArrayBlockingQueue<Object>(getMaxQueueSize());
+		this.queue = new ArrayBlockingQueue<IDeviceEvent>(getMaxQueueSize());
 		processorPool =
 				Executors.newFixedThreadPool(getEventProcessorThreadCount(), new ProcessorsThreadFactory());
 		for (int i = 0; i < getEventProcessorThreadCount(); i++) {
@@ -145,9 +145,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.sitewhere
-	 * .spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onAlert(com.
+	 * sitewhere .spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlert(IDeviceAlert alert) throws SiteWhereException {
@@ -157,9 +156,8 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onCommandInvocation
-	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
+	 * @see com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#
+	 * onCommandInvocation (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
 	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException {
@@ -182,12 +180,12 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onBatchOperation
-	 * (com.sitewhere.spi.device.batch.IBatchOperation)
+	 * com.sitewhere.spi.device.event.processor.IOutboundEventProcessor#onStateChange(com.
+	 * sitewhere.spi.device.event.IDeviceStateChange)
 	 */
 	@Override
-	public void onBatchOperation(IBatchOperation operation) throws SiteWhereException {
-		queue.offer(operation);
+	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+		queue.offer(state);
 	}
 
 	public int getMaxQueueSize() {
@@ -216,9 +214,9 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 	private class BlockingDeviceEventProcessor implements Runnable {
 
 		/** Queue where messages are placed */
-		private BlockingQueue<Object> queue;
+		private BlockingQueue<IDeviceEvent> queue;
 
-		public BlockingDeviceEventProcessor(BlockingQueue<Object> queue) {
+		public BlockingDeviceEventProcessor(BlockingQueue<IDeviceEvent> queue) {
 			this.queue = queue;
 		}
 
@@ -239,22 +237,36 @@ public class BlockingQueueOutboundProcessingStrategy extends TenantLifecycleComp
 			}
 			while (true) {
 				try {
-					Object event = queue.take();
-					if (event instanceof IDeviceMeasurements) {
+					IDeviceEvent event = queue.take();
+					switch (event.getEventType()) {
+					case Measurements: {
 						getOutboundProcessorChain().onMeasurements((IDeviceMeasurements) event);
-					} else if (event instanceof IDeviceLocation) {
+						break;
+					}
+					case Location: {
 						getOutboundProcessorChain().onLocation((IDeviceLocation) event);
-					} else if (event instanceof IDeviceAlert) {
+						break;
+					}
+					case Alert: {
 						getOutboundProcessorChain().onAlert((IDeviceAlert) event);
-					} else if (event instanceof IDeviceCommandInvocation) {
+						break;
+					}
+					case CommandInvocation: {
 						getOutboundProcessorChain().onCommandInvocation((IDeviceCommandInvocation) event);
-					} else if (event instanceof IDeviceCommandResponse) {
+						break;
+					}
+					case CommandResponse: {
 						getOutboundProcessorChain().onCommandResponse((IDeviceCommandResponse) event);
-					} else if (event instanceof IBatchOperation) {
-						getOutboundProcessorChain().onBatchOperation((IBatchOperation) event);
-					} else {
+						break;
+					}
+					case StateChange: {
+						getOutboundProcessorChain().onStateChange((IDeviceStateChange) event);
+						break;
+					}
+					default: {
 						throw new RuntimeException("Unknown device event type in outbound processing: "
 								+ event.getClass().getName());
+					}
 					}
 				} catch (SiteWhereException e) {
 					LOGGER.error("Error processing outbound device event.", e);

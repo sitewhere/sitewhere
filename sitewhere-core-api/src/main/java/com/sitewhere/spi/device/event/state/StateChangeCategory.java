@@ -8,12 +8,15 @@
 package com.sitewhere.spi.device.event.state;
 
 /**
- * Categories related state changes into groups.
+ * Categories for state change events.
  * 
  * @author Derek
  */
 public enum StateChangeCategory {
 
-	/** System registation state */
+	/** Device registation */
 	Registration,
+
+	/** Device presence */
+	Presence;
 }

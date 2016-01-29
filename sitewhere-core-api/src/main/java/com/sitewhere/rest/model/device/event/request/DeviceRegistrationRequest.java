@@ -24,8 +24,8 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
  */
 @JsonIgnoreProperties
 @JsonInclude(Include.NON_NULL)
-public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest implements
-		IDeviceRegistrationRequest, Serializable {
+public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest
+		implements IDeviceRegistrationRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = -6396459122879336428L;
@@ -40,16 +40,15 @@ public class DeviceRegistrationRequest extends DeviceStateChangeCreateRequest im
 	public static final String DATA_SITE_TOKEN = "siteToken";
 
 	public DeviceRegistrationRequest() {
-		super(StateChangeCategory.Registration, StateChangeType.Registration,
+		super(StateChangeCategory.Registration, StateChangeType.Registration_Requested,
 				RegistrationState.Unregistered.name(), RegistrationState.Registered.name());
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#getHardwareId
-	 * ()
+	 * @see com.sitewhere.spi.device.event.request.IDeviceRegistrationCreateRequest#
+	 * getHardwareId ()
 	 */
 	@Override
 	public String getHardwareId() {
