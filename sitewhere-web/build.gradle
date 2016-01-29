@@ -58,9 +58,17 @@ dependencies {
     providedCompile group: 'com.thoughtworks.paranamer', name: 'paranamer', version:'2.8'
 }
 
+task manifestJar(dependsOn:'classes',type: Jar) {
+    archiveName 'restdoc-classpath.jar'
+    doFirst {
+        manifest {
+             attributes 'Class-Path': configurations.compile.files.collect{ project.uri(it) }.join(' ')
+        }
+    }
+}
 
-task restDocumentationGenerator(type: JavaExec, dependsOn: 'classes') {
+task restDocumentationGenerator(type: JavaExec, dependsOn: 'manifestJar') {
     main = 'com.sitewhere.web.rest.documentation.RestDocumentationGenerator'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.main.output + files(manifestJar.archivePath)
     args "$projectDir/src/main/documentation", "$buildDir/rest"
 }
