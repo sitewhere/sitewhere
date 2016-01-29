@@ -57,3 +57,10 @@ dependencies {
     providedCompile group: 'org.pegdown', name: 'pegdown', version:'1.5.0'
     providedCompile group: 'com.thoughtworks.paranamer', name: 'paranamer', version:'2.8'
 }
+
+
+task restDocumentationGenerator(type: JavaExec, dependsOn: 'classes') {
+    main = 'com.sitewhere.web.rest.documentation.RestDocumentationGenerator'
+    classpath = sourceSets.main.runtimeClasspath
+    args "$projectDir/src/main/documentation", "$buildDir/rest"
+}
