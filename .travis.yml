@@ -1,3 +1,8 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
+env:
+  global:
+    secure: KvVvZGs9Kq7vXXXEOeV1cu3x/oZjgyn+x4l56JEwqGCpjTibIvgDhkmLQmtpXmSFdoNFDUxAANXnr/AGNcNxvCRQcMCeuiGkLWEWMapKYBNYh/Ey6+YCQq6FDxy1XKZDrMkALy1wRQVQwF1fVxAG5C+fokSciBgu9XZ54ftKzsd1SY2aNqIOkB0WP1DQWX1x7PgM+GdZwPPkD0Rd3xK/7dvKvdhIYiEkkMYW2ZPkkNMVncI1jxDzWCVkHJqKg+xnHavla2OBZMbYUFK/wIVlYMurh+hUDprqDiBAW55tkQmeNuLh+8c3Soyhrvya3UDnB62Cfk2kpjRcrOfoP3ZbQT6wEDHd4DSbZhxFPGTOGyzCkSMMUr8V0jE7qtFO8DFbRLgwBXm3SWRHWlZm4Wx+1KEIHnxZ/hDmk3ApR5Vz450ndckxlpwDuHht6DNa+DYqCk/48H96eRpEnY15LryRZnTh6WKP1/k/Uc1bfbD/9Z73s+ymeZDoLGLtgREzwZLsxFySuQ0l1jh1N/guUCFUxZ2ENpEMwxFsgOKqueQ21tkUiL+Iq1IK8goP/dDBk4p92FL3DLqJyU6bFU+mQ1NWog9YRUiZHgKjM6eCAxvdEt89+s5TSBkCd6lK162YlzS458+SwKbbCR+3iRlqmf7H9cqUKpvZqOktmQN0/+sHV3E=
+after_success:
+- .utility/push-javadoc-to-gh-pages.sh
