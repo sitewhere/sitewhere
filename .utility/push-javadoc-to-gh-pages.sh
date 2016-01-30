@@ -19,7 +19,7 @@ if [ "$TRAVIS_REPO_SLUG" == "sitewhere/sitewhere" ] && [ "$TRAVIS_PULL_REQUEST" 
   cp -Rf $HOME/sitewhere-server-api ./javadoc/sitewhere-server-api
   git add -f .
   git commit -m "Latest javadoc on successful travis build $TRAVIS_BUILD_NUMBER auto-pushed to sitewhere.github.io."
-  git push -fq origin sitewhere.github.io > /dev/null
+  git push -fq origin master > /dev/null
 
   echo -e "Published Javadoc to sitewhere.github.io.\n"
   
