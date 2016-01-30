@@ -147,8 +147,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 						getInboundProcessingStrategy().processDeviceAlert(
 								(IDecodedDeviceRequest<IDeviceAlertCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStateChangeCreateRequest) {
-						getInboundProcessingStrategy().processDeviceAlert(
-								(IDecodedDeviceRequest<IDeviceAlertCreateRequest>) decoded);
+						getInboundProcessingStrategy().processDeviceStateChange(
+								(IDecodedDeviceRequest<IDeviceStateChangeCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {
 						getInboundProcessingStrategy().processDeviceStream(
 								(IDecodedDeviceRequest<IDeviceStreamCreateRequest>) decoded);
