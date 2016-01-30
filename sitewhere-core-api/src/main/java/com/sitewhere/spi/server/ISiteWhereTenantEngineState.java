@@ -13,7 +13,7 @@ import java.util.List;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
- * Contains runtime information about an {@link ISiteWhereTenantEngine}.
+ * Contains runtime information about a tenant engine.
  * 
  * @author Derek
  */

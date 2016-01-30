@@ -36,8 +36,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  *
  * @param <T>
  */
-public abstract class WebSocketEventReceiver<T> extends LifecycleComponent implements
-		IInboundEventReceiver<T> {
+public abstract class WebSocketEventReceiver<T> extends LifecycleComponent
+		implements IInboundEventReceiver<T> {
 
 	/** Static logger */
 	private static Logger LOGGER = Logger.getLogger(WebSocketEventReceiver.class);
@@ -62,7 +62,7 @@ public abstract class WebSocketEventReceiver<T> extends LifecycleComponent imple
 	}
 
 	/**
-	 * Get concrete {@link WebSocketClient} implementation class.
+	 * Get concrete {@link Endpoint} implementation class.
 	 * 
 	 * @return
 	 */

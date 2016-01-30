@@ -80,7 +80,7 @@ public class DeviceMeasurementsCreateRequest extends DeviceEventCreateRequest im
 	/**
 	 * Needed for JSON marshaling.
 	 * 
-	 * @param entries
+	 * @param measurements
 	 */
 	public void setMeasurements(Map<String, Double> measurements) {
 		this.measurements = new MeasurementsProvider();

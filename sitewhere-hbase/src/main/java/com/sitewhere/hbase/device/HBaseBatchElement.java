@@ -187,8 +187,8 @@ public class HBaseBatchElement {
 
 				if ((payload != null) && (payloadType != null)) {
 					BatchElement elm =
-							PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeBatchElement(
-									payload);
+							PayloadMarshalerResolver.getInstance().getMarshaler(
+									payloadType).decodeBatchElement(payload);
 					if ((criteria.getProcessingStatus() == null)
 							|| (criteria.getProcessingStatus() == elm.getProcessingStatus())) {
 						pager.process(elm);
@@ -299,7 +299,8 @@ public class HBaseBatchElement {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context)
+			throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

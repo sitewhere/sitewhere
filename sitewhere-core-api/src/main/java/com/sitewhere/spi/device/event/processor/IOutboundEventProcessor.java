@@ -26,48 +26,48 @@ public interface IOutboundEventProcessor extends ITenantLifecycleComponent {
 	/**
 	 * Executes code after device measurements have been successfully saved.
 	 * 
-	 * @param measurements
-	 * @throws SiteWhereException
+	 * @param measurements event information
+	 * @throws SiteWhereException if an error occurs in processing
 	 */
 	public void onMeasurements(IDeviceMeasurements measurements) throws SiteWhereException;
 
 	/**
 	 * Executes code after device location has been successfully saved.
 	 * 
-	 * @param location
-	 * @throws SiteWhereException
+	 * @param location event information
+	 * @throws SiteWhereException if an error occurs in processing
 	 */
 	public void onLocation(IDeviceLocation location) throws SiteWhereException;
 
 	/**
 	 * Executes code after device alert has been successfully saved.
 	 * 
-	 * @param location
-	 * @throws SiteWhereException
+	 * @param alert event information
+	 * @throws SiteWhereException if an error occurs in processing
 	 */
 	public void onAlert(IDeviceAlert alert) throws SiteWhereException;
 
 	/**
 	 * Executes code after device command invocation has been successfully saved.
 	 * 
-	 * @param invocation
-	 * @throws SiteWhereException
+	 * @param invocation event information
+	 * @throws SiteWhereException if an error occurs in processing
 	 */
 	public void onCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
 
 	/**
 	 * Executes code after device command response has been successfully saved.
 	 * 
-	 * @param response
-	 * @throws SiteWhereException
+	 * @param response event information
+	 * @throws SiteWhereException if an error occurs in processing
 	 */
 	public void onCommandResponse(IDeviceCommandResponse response) throws SiteWhereException;
 
 	/**
 	 * Executes code after device state change has been successfully saved.
 	 * 
-	 * @param state
-	 * @throws SiteWhereException
+	 * @param state event information
+	 * @throws SiteWhereException if an error occurs in processing
 	 */
 	public void onStateChange(IDeviceStateChange state) throws SiteWhereException;
 }

@@ -22,64 +22,64 @@ public interface ICache<K, V> {
 	/**
 	 * Get the cache type.
 	 * 
-	 * @return
+	 * @return the type of cache
 	 */
 	public CacheType getType();
 
 	/**
 	 * Get value based on a given key.
 	 * 
-	 * @param key
-	 * @return
-	 * @throws SiteWhereException
+	 * @param key unique key
+	 * @return corresponding value or null if not found
+	 * @throws SiteWhereException if implementation can not get value
 	 */
 	public V get(K key) throws SiteWhereException;
 
 	/**
 	 * Add or replace value for the given key.
 	 * 
-	 * @param key
-	 * @param Value
-	 * @throws SiteWhereException
+	 * @param key unique key
+	 * @param value new or replacement value
+	 * @throws SiteWhereException if implementation can not put value
 	 */
 	public void put(K key, V value) throws SiteWhereException;
 
 	/**
 	 * Remove an element from the cache.
 	 * 
-	 * @param key
-	 * @throws SiteWhereException
+	 * @param key unique key for object to remove
+	 * @throws SiteWhereException if implementation can not remove value
 	 */
 	public void remove(K key) throws SiteWhereException;
 
 	/**
 	 * Clear all elements from cache.
 	 * 
-	 * @throws SiteWhereException
+	 * @throws SiteWhereException if implementation can not clear cache
 	 */
 	public void clear() throws SiteWhereException;
 
 	/**
 	 * Get count of elements currently in cache.
 	 * 
-	 * @return
-	 * @throws SiteWhereException
+	 * @return count of cache elements
+	 * @throws SiteWhereException if implementation can not get count
 	 */
 	public int getElementCount() throws SiteWhereException;
 
 	/**
 	 * Get the number of requests made to the cache.
 	 * 
-	 * @return
-	 * @throws SiteWhereException
+	 * @return count of requests made to cache
+	 * @throws SiteWhereException if implementation can not get count
 	 */
 	public long getRequestCount() throws SiteWhereException;
 
 	/**
 	 * Get the number of cache hits.
 	 * 
-	 * @return
-	 * @throws SiteWhereException
+	 * @return count of cache hits
+	 * @throws SiteWhereException if implementation can not count hits
 	 */
 	public long getHitCount() throws SiteWhereException;
 }

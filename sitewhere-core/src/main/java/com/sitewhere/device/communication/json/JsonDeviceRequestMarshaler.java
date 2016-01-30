@@ -83,7 +83,8 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 	/**
 	 * Unmarshal payload based on type indicator.
 	 * 
-	 * @param parser
+	 * @param hardwareId
+	 * @param originator
 	 * @param type
 	 * @param json
 	 * @return

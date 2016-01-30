@@ -28,7 +28,7 @@ public class ScheduleIdManager implements IScheduleIdManager {
 	/**
 	 * Load key managers from HBase.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @throws SiteWhereException
 	 */
 	public void load(IHBaseContext context) throws SiteWhereException {

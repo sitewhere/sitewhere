@@ -223,8 +223,7 @@ public abstract class UniqueIdMap<N, V> {
 	/**
 	 * Get all {@link Result} results for the given uid type.
 	 * 
-	 * @param start
-	 * @param end
+	 * @param type
 	 * @return
 	 * @throws Exception
 	 */

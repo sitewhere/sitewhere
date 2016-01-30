@@ -21,9 +21,9 @@ public interface IDeviceEventDecoder<T> {
 	/**
 	 * Decodes a payload into one or more {@link IDecodedDeviceRequest} objects.
 	 * 
-	 * @param payload
-	 * @return
-	 * @throws SiteWhereException
+	 * @param payload the payload that will be decoded
+	 * @return a list of decoded device requests to be processed
+	 * @throws SiteWhereException if the payload can not be decoded
 	 */
 	public List<IDecodedDeviceRequest<?>> decode(T payload) throws SiteWhereException;
 }

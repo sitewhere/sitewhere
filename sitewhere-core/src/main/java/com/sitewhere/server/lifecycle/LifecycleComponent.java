@@ -180,6 +180,7 @@ public abstract class LifecycleComponent implements ILifecycleComponent {
 	/**
 	 * Recursive matching of nested components to find those of the given type.
 	 * 
+	 * @param current
 	 * @param matches
 	 * @param type
 	 * @throws SiteWhereException

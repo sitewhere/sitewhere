@@ -7,7 +7,6 @@
  */
 package com.sitewhere.version;
 
-import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
 
 /**
@@ -27,7 +26,6 @@ public class VersionHelper {
 	 * Hacky method of accessing a version file that is created at build time.
 	 * 
 	 * @return
-	 * @throws SiteWhereException
 	 */
 	public static IVersion getVersion() {
 		Class<?> clazz;

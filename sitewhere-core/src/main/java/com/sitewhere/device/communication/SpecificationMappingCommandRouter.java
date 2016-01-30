@@ -101,7 +101,7 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 	 * Get {@link ICommandDestination} for device based on specification token associated
 	 * with the device.
 	 * 
-	 * @param device
+	 * @param nesting
 	 * @return
 	 * @throws SiteWhereException
 	 */
@@ -113,7 +113,8 @@ public class SpecificationMappingCommandRouter extends OutboundCommandRouter {
 			if (getDefaultDestination() != null) {
 				destinationId = getDefaultDestination();
 			} else {
-				throw new SiteWhereException("No command destination mapping for specification: " + specToken);
+				throw new SiteWhereException(
+						"No command destination mapping for specification: " + specToken);
 			}
 		}
 		ICommandDestination<?, ?> destination = getDestinations().get(destinationId);

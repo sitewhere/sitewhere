@@ -479,7 +479,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 * Configure device management implementation by injecting configured options or
 	 * wrapping to add functionality.
 	 * 
-	 * @param wrapped
+	 * @param management
 	 * @return
 	 * @throws SiteWhereException
 	 */
@@ -522,7 +522,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 * Configure device event management implementation by injecting configured options or
 	 * wrapping to add functionality.
 	 * 
-	 * @param wrapped
+	 * @param management
 	 * @return
 	 * @throws SiteWhereException
 	 */

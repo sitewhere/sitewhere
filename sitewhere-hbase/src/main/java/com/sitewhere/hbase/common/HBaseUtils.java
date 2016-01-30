@@ -61,7 +61,7 @@ public class HBaseUtils {
 	 */
 	public static <T> T createOrUpdate(IHBaseContext context, IPayloadMarshaler marshaler, byte[] tableName,
 			T entity, String token, IRowKeyBuilder builder, Map<byte[], byte[]> qualifiers)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		byte[] primary = builder.buildPrimaryKey(context, token);
 		byte[] payload = marshaler.encode(entity);
 
@@ -75,7 +75,8 @@ public class HBaseUtils {
 			}
 			table.put(put);
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to create entity data for " + entity.getClass().getName(), e);
+			throw new SiteWhereException("Unable to create entity data for " + entity.getClass().getName(),
+					e);
 		} finally {
 			HBaseUtils.closeCleanly(table);
 		}
@@ -331,7 +332,7 @@ public class HBaseUtils {
 	/**
 	 * Adds payload fields to an HBase put.
 	 * 
-	 * @param context
+	 * @param encoding
 	 * @param put
 	 * @param encoded
 	 * @throws SiteWhereException

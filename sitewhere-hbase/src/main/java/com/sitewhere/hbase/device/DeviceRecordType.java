@@ -32,7 +32,7 @@ public enum DeviceRecordType {
 	/**
 	 * Create a unique id type with the given byte value.
 	 * 
-	 * @param value
+	 * @param type
 	 */
 	private DeviceRecordType(byte type) {
 		this.type = type;

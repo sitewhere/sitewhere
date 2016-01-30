@@ -47,7 +47,7 @@ public class DeviceIdManager implements IDeviceIdManager {
 	/**
 	 * Load key managers from HBase.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @throws SiteWhereException
 	 */
 	public void load(IHBaseContext context) throws SiteWhereException {

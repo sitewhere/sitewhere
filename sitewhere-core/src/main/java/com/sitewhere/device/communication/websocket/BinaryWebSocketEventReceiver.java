@@ -41,7 +41,7 @@ public class BinaryWebSocketEventReceiver extends WebSocketEventReceiver<byte[]>
 	}
 
 	/**
-	 * Implementation of {@link WebSocketClient} that operates on byte[] payloads.
+	 * Implementation of {@link Endpoint} that operates on byte[] payloads.
 	 * 
 	 * @author Derek
 	 */

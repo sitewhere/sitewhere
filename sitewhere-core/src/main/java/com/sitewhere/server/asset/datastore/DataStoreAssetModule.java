@@ -121,7 +121,7 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
 	/**
 	 * Load the list of assets for the category.
 	 * 
-	 * @throws SiteWhereException
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	protected ICommandResponse doLoadAssets() {
@@ -135,8 +135,8 @@ public class DataStoreAssetModule<T extends IAsset> extends TenantLifecycleCompo
 			}
 			return new CommandResponse(CommandResult.Successful, "Asset module refreshed.");
 		} catch (SiteWhereException e) {
-			return new CommandResponse(CommandResult.Failed, "Asset module refreshed failed. "
-					+ e.getMessage());
+			return new CommandResponse(CommandResult.Failed,
+					"Asset module refreshed failed. " + e.getMessage());
 		}
 	}
 

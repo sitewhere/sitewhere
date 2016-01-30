@@ -147,8 +147,6 @@ public interface IDeviceEventManagement extends ITenantLifecycleComponent {
 	 * List device locations for the given tokens within the given time range.
 	 * 
 	 * @param assignmentTokens
-	 * @param start
-	 * @param end
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException

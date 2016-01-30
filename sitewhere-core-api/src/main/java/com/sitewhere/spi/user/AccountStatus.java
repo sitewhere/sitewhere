@@ -42,7 +42,7 @@ public enum AccountStatus {
 	/**
 	 * Get AccountStatus from status code.
 	 * 
-	 * @param type
+	 * @param code
 	 * @return
 	 */
 	public static AccountStatus fromStatusCode(char code) {

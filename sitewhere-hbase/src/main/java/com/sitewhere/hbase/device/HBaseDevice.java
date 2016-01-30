@@ -261,8 +261,8 @@ public class HBaseDevice {
 				if (result != null) {
 					Tracer.info("Returning cached device.", LOGGER);
 					DeviceMarshalHelper helper =
-							new DeviceMarshalHelper(context.getTenant()).setIncludeAsset(false).setIncludeAssignment(
-									false).setIncludeSpecification(false);
+							new DeviceMarshalHelper(context.getTenant()).setIncludeAsset(
+									false).setIncludeAssignment(false).setIncludeSpecification(false);
 					return helper.convert(result,
 							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
@@ -482,7 +482,6 @@ public class HBaseDevice {
 	 * 
 	 * @param context
 	 * @param hardwareId
-	 * @param cache
 	 * @throws SiteWhereException
 	 */
 	public static void removeDeviceAssignment(IHBaseContext context, String hardwareId)
@@ -532,14 +531,13 @@ public class HBaseDevice {
 	 * @param context
 	 * @param hardwareId
 	 * @param criteria
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	public static SearchResults<IDeviceAssignment> getDeviceAssignmentHistory(IHBaseContext context,
 			String hardwareId, ISearchCriteria criteria) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "getDeviceAssignmentHistory (HBase) "
-				+ hardwareId, LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall,
+				"getDeviceAssignmentHistory (HBase) " + hardwareId, LOGGER);
 		try {
 			Long deviceId = context.getDeviceIdManager().getDeviceKeys().getValue(hardwareId);
 			if (deviceId == null) {
@@ -629,7 +627,8 @@ public class HBaseDevice {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected static HTableInterface getDeviceTableInterface(IHBaseContext context) throws SiteWhereException {
+	protected static HTableInterface getDeviceTableInterface(IHBaseContext context)
+			throws SiteWhereException {
 		return context.getClient().getTableInterface(context.getTenant(), ISiteWhereHBase.DEVICES_TABLE_NAME);
 	}
 }

@@ -39,7 +39,7 @@ public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String>
 	}
 
 	/**
-	 * Implementation of {@link WebSocketClient} that operates on String payloads.
+	 * Implementation of {@link Endpoint} that operates on String payloads.
 	 * 
 	 * @author Derek
 	 */

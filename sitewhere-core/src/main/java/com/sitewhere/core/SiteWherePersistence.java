@@ -538,8 +538,7 @@ public class SiteWherePersistence {
 	/**
 	 * Common logic for creating new site object and populating it from request.
 	 * 
-	 * @param source
-	 * @param uuid
+	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
@@ -565,7 +564,7 @@ public class SiteWherePersistence {
 	/**
 	 * Common logic for copying data from site update request to existing site.
 	 * 
-	 * @param source
+	 * @param request
 	 * @param target
 	 * @throws SiteWhereException
 	 */
@@ -593,7 +592,7 @@ public class SiteWherePersistence {
 	 * Common logic for creating a device assignment from a request.
 	 * 
 	 * @param source
-	 * @param siteToken
+	 * @param device
 	 * @param uuid
 	 * @return
 	 * @throws SiteWhereException
@@ -987,7 +986,7 @@ public class SiteWherePersistence {
 	/**
 	 * Common code for copying information from an update request to an existing zone.
 	 * 
-	 * @param source
+	 * @param request
 	 * @param target
 	 * @throws SiteWhereException
 	 */
@@ -1035,7 +1034,7 @@ public class SiteWherePersistence {
 	/**
 	 * Common logic for updating an existing device group.
 	 * 
-	 * @param source
+	 * @param request
 	 * @param target
 	 * @throws SiteWhereException
 	 */
@@ -1099,7 +1098,7 @@ public class SiteWherePersistence {
 	/**
 	 * Common logic for updating batch operation information.
 	 * 
-	 * @param source
+	 * @param request
 	 * @param target
 	 * @throws SiteWhereException
 	 */
@@ -1411,7 +1410,7 @@ public class SiteWherePersistence {
 	/**
 	 * Handle base logic common to all asset types.
 	 * 
-	 * @param categoryId
+	 * @param category
 	 * @param request
 	 * @param asset
 	 * @throws SiteWhereException
@@ -1638,7 +1637,7 @@ public class SiteWherePersistence {
 	/**
 	 * Handle common logic for updating a schedule.
 	 * 
-	 * @param location
+	 * @param schedule
 	 * @param request
 	 * @throws SiteWhereException
 	 */

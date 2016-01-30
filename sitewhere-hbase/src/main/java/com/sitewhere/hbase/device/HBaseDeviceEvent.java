@@ -241,7 +241,6 @@ public class HBaseDeviceEvent {
 	 * @param context
 	 * @param assignment
 	 * @param request
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
@@ -346,7 +345,7 @@ public class HBaseDeviceEvent {
 	 * the fly.
 	 * 
 	 * @param context
-	 * @param assnToken
+	 * @param assignment
 	 * @param streamId
 	 * @param criteria
 	 * @return
@@ -781,7 +780,8 @@ public class HBaseDeviceEvent {
 	/**
 	 * Decodes the event date encoded in the rowkey and qualifier for events.
 	 * 
-	 * @param kv
+	 * @param key
+	 * @param qualifier
 	 * @return
 	 */
 	protected static Date getDateForEventKeyValue(byte[] key, byte[] qualifier) {
@@ -986,8 +986,7 @@ public class HBaseDeviceEvent {
 	/**
 	 * Get row key for a given event type and time.
 	 * 
-	 * @param assnToken
-	 * @param eventType
+	 * @param assnKey
 	 * @param time
 	 * @return
 	 * @throws SiteWhereException
@@ -1007,8 +1006,9 @@ public class HBaseDeviceEvent {
 	/**
 	 * Get column qualifier for storing the event.
 	 * 
-	 * @param type
+	 * @param eventType
 	 * @param time
+	 * @param encoding
 	 * @return
 	 */
 	public static byte[] getQualifier(EventRecordType eventType, long time, PayloadEncoding encoding) {

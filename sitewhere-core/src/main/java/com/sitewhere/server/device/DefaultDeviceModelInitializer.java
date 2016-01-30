@@ -763,7 +763,7 @@ public class DefaultDeviceModelInitializer implements IDeviceModelInitializer {
 	 * Create device locations in a path near the main zone.
 	 * 
 	 * @param assignment
-	 * @param start
+	 * @param date
 	 * @return
 	 * @throws SiteWhereException
 	 */

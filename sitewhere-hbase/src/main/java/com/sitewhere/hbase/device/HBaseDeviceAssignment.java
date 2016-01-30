@@ -143,8 +143,8 @@ public class HBaseDeviceAssignment {
 				if (result != null) {
 					Tracer.info("Returning cached device assignment.", LOGGER);
 					DeviceAssignmentMarshalHelper helper =
-							new DeviceAssignmentMarshalHelper(context.getTenant()).setIncludeAsset(false).setIncludeDevice(
-									false).setIncludeSite(false);
+							new DeviceAssignmentMarshalHelper(context.getTenant()).setIncludeAsset(
+									false).setIncludeDevice(false).setIncludeSite(false);
 					return helper.convert(result,
 							SiteWhere.getServer().getAssetModuleManager(context.getTenant()));
 				}
@@ -175,8 +175,8 @@ public class HBaseDeviceAssignment {
 								payload);
 				if (state != null) {
 					DeviceAssignmentState assnState =
-							PayloadMarshalerResolver.getInstance().getMarshaler(type).decodeDeviceAssignmentState(
-									state);
+							PayloadMarshalerResolver.getInstance().getMarshaler(
+									type).decodeDeviceAssignmentState(state);
 					found.setState(assnState);
 				}
 				if ((context.getCacheProvider() != null) && (found != null)) {
@@ -204,8 +204,8 @@ public class HBaseDeviceAssignment {
 	 */
 	public static DeviceAssignment updateDeviceAssignmentMetadata(IHBaseContext context, String token,
 			IMetadataProvider metadata) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall,
-				"updateDeviceAssignmentMetadata (HBase) " + token, LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "updateDeviceAssignmentMetadata (HBase) " + token,
+				LOGGER);
 		try {
 			DeviceAssignment updated = getDeviceAssignment(context, token);
 			updated.clearMetadata();
@@ -244,7 +244,6 @@ public class HBaseDeviceAssignment {
 	 * @param context
 	 * @param token
 	 * @param state
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
@@ -332,7 +331,6 @@ public class HBaseDeviceAssignment {
 	 * 
 	 * @param context
 	 * @param token
-	 * @param cache
 	 * @return
 	 * @throws SiteWhereException
 	 */
@@ -391,7 +389,8 @@ public class HBaseDeviceAssignment {
 	 */
 	public static IDeviceAssignment deleteDeviceAssignment(IHBaseContext context, String token, boolean force)
 			throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDeviceAssignment (HBase) " + token, LOGGER);
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteDeviceAssignment (HBase) " + token,
+				LOGGER);
 		try {
 			byte[] assnKey = context.getDeviceIdManager().getAssignmentKeys().getValue(token);
 			if (assnKey == null) {
@@ -448,7 +447,7 @@ public class HBaseDeviceAssignment {
 	/**
 	 * Get primary row key for a given device assignment.
 	 * 
-	 * @param siteId
+	 * @param assnKey
 	 * @return
 	 */
 	public static byte[] getPrimaryRowkey(byte[] assnKey) {
@@ -461,7 +460,7 @@ public class HBaseDeviceAssignment {
 	/**
 	 * Get base row key for device streams.
 	 * 
-	 * @param siteId
+	 * @param assnKey
 	 * @return
 	 */
 	public static byte[] getStreamRowkey(byte[] assnKey) {
@@ -474,7 +473,7 @@ public class HBaseDeviceAssignment {
 	/**
 	 * Get base row key for end marker.
 	 * 
-	 * @param siteId
+	 * @param assnKey
 	 * @return
 	 */
 	public static byte[] getEndMarkerKey(byte[] assnKey) {

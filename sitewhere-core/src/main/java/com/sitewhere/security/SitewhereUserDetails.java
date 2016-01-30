@@ -43,8 +43,7 @@ public class SitewhereUserDetails implements UserDetails {
 	/**
 	 * Get and convert the granted authorities.
 	 * 
-	 * @param userManagement
-	 * @param user
+	 * @param authorities
 	 * @return
 	 */
 	protected Collection<GrantedAuthority> convertAuthorities(List<IGrantedAuthority> authorities) {

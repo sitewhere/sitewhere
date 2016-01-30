@@ -83,7 +83,7 @@ public class HBaseGrantedAuthority {
 	/**
 	 * Get a granted authority by unique name.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param name
 	 * @return
 	 * @throws SiteWhereException
@@ -116,7 +116,7 @@ public class HBaseGrantedAuthority {
 	/**
 	 * List granted authorities that match the given criteria.
 	 * 
-	 * @param hbase
+	 * @param context
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
@@ -148,8 +148,8 @@ public class HBaseGrantedAuthority {
 					}
 				}
 				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
-					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decodeGrantedAuthority(
-							payload));
+					matches.add(PayloadMarshalerResolver.getInstance().getMarshaler(
+							payloadType).decodeGrantedAuthority(payload));
 				}
 			}
 			return matches;
@@ -166,7 +166,7 @@ public class HBaseGrantedAuthority {
 	/**
 	 * Get row key for a granted authority.
 	 * 
-	 * @param username
+	 * @param name
 	 * @return
 	 */
 	public static byte[] getGrantedAuthorityRowKey(String name) {

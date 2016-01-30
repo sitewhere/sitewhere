@@ -47,8 +47,8 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	/**
 	 * Create a new device specification.
 	 * 
-	 * @param request
-	 * @return
+	 * @param request information about new specification
+	 * @return device specification that was created
 	 * @throws SiteWhereException
 	 */
 	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
@@ -57,19 +57,19 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	/**
 	 * Get a device specification by unique token.
 	 * 
-	 * @param token
-	 * @return
-	 * @throws SiteWhereException
+	 * @param token unique device specification token
+	 * @return corresponding specification or null if not found
+	 * @throws SiteWhereException if implementation encountered an error
 	 */
 	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
 
 	/**
 	 * Update an existing device specification.
 	 * 
-	 * @param token
-	 * @param request
-	 * @return
-	 * @throws SiteWhereException
+	 * @param token unique specification token
+	 * @param request updated information
+	 * @return updated device specification
+	 * @throws SiteWhereException if implementation encountered an error
 	 */
 	public IDeviceSpecification updateDeviceSpecification(String token,
 			IDeviceSpecificationCreateRequest request) throws SiteWhereException;
@@ -77,10 +77,10 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	/**
 	 * List device specifications that match the search criteria.
 	 * 
-	 * @param includeDeleted
-	 * @param criteria
-	 * @return
-	 * @throws SiteWhereException
+	 * @param includeDeleted include specifications marked as deleted
+	 * @param criteria search criteria
+	 * @return results corresponding to search criteria
+	 * @throws SiteWhereException if implementation encountered an error
 	 */
 	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException;
@@ -88,10 +88,10 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	/**
 	 * Delete an existing device specification.
 	 * 
-	 * @param token
-	 * @param force
-	 * @return
-	 * @throws SiteWhereException
+	 * @param token unique specification token
+	 * @param force if true, deletes specification. if false, marks as deleted.
+	 * @return the deleted specification
+	 * @throws SiteWhereException if implementation encountered an error
 	 */
 	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
 			throws SiteWhereException;
@@ -344,7 +344,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * date range. Note that events must be posted with the 'updateState' option in order
 	 * for the last interaction date to be updated.
 	 * 
-	 * @param date
+	 * @param siteToken
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
