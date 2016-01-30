@@ -6,7 +6,7 @@ if [ "$TRAVIS_REPO_SLUG" == "sitewhere/sitewhere" ] && [ "$TRAVIS_PULL_REQUEST" 
 
   cp -R sitewhere-core-api/build/docs/javadoc $HOME/sitewhere-core-api
   cp -R sitewhere-server-api/build/docs/javadoc $HOME/sitewhere-server-api
-  cp -R sitewhere-web/build/rest $HOME/rest
+  cp -R sitewhere-web/build/rest $HOME
 
   cd $HOME
   git config --global user.email "travis@travis-ci.org"
