@@ -21,11 +21,13 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessor;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 
@@ -105,6 +107,22 @@ public class DefaultEventStorageProcessor extends InboundEventProcessor {
 		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
 		IDeviceAlert alert = getDeviceEventManagement().addDeviceAlert(assignment.getToken(), request);
 		handleLinkResponseToInvocation(originator, alert.getId(), assignment);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
+	 * onDeviceStateChangeCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+	 */
+	@Override
+	public void onDeviceStateChangeCreateRequest(String hardwareId, String originator,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		IDeviceAssignment assignment = getCurrentAssignment(hardwareId);
+		IDeviceStateChange state =
+				getDeviceEventManagement().addDeviceStateChange(assignment.getToken(), request);
+		handleLinkResponseToInvocation(originator, state.getId(), assignment);
 	}
 
 	/**

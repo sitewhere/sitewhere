@@ -28,6 +28,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
@@ -39,8 +40,8 @@ import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
  * 
  * @author Derek
  */
-public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStrategy implements
-		IInboundProcessingStrategy {
+public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStrategy
+		implements IInboundProcessingStrategy {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(BlockingQueueInboundProcessingStrategy.class);
@@ -150,9 +151,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundProcessingStrategy#processRegistration
-	 * (com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processRegistration (com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
 	 */
 	@Override
 	public void processRegistration(IDecodedDeviceRequest<IDeviceRegistrationRequest> request)
@@ -189,8 +189,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundProcessingStrategy#processDeviceLocation
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processDeviceLocation
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
@@ -202,8 +202,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundProcessingStrategy#processDeviceAlert
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processDeviceAlert
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
@@ -215,8 +215,21 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundProcessingStrategy#processDeviceStream
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processDeviceStateChange(com.sitewhere.spi.device.communication.
+	 * IDecodedDeviceRequest)
+	 */
+	@Override
+	public void processDeviceStateChange(IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> request)
+			throws SiteWhereException {
+		addRequestToQueue(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processDeviceStream
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override

@@ -18,6 +18,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
@@ -28,8 +29,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class InboundProcessingStrategy extends TenantLifecycleComponent implements
-		IInboundProcessingStrategy {
+public abstract class InboundProcessingStrategy extends TenantLifecycleComponent
+		implements IInboundProcessingStrategy {
 
 	public InboundProcessingStrategy() {
 		super(LifecycleComponentType.InboundProcessingStrategy);
@@ -45,8 +46,8 @@ public abstract class InboundProcessingStrategy extends TenantLifecycleComponent
 	@Override
 	public void sendToInboundProcessingChain(IDecodedDeviceRequest<?> decoded) throws SiteWhereException {
 		if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
-			getInboundProcessorChain().onRegistrationRequest(decoded.getHardwareId(),
-					decoded.getOriginator(), ((IDeviceRegistrationRequest) decoded.getRequest()));
+			getInboundProcessorChain().onRegistrationRequest(decoded.getHardwareId(), decoded.getOriginator(),
+					((IDeviceRegistrationRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
 			getInboundProcessorChain().onDeviceCommandResponseRequest(decoded.getHardwareId(),
 					decoded.getOriginator(), ((IDeviceCommandResponseCreateRequest) decoded.getRequest()));
@@ -59,6 +60,9 @@ public abstract class InboundProcessingStrategy extends TenantLifecycleComponent
 		} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
 			getInboundProcessorChain().onDeviceAlertCreateRequest(decoded.getHardwareId(),
 					decoded.getOriginator(), ((IDeviceAlertCreateRequest) decoded.getRequest()));
+		} else if (decoded.getRequest() instanceof IDeviceStateChangeCreateRequest) {
+			getInboundProcessorChain().onDeviceStateChangeCreateRequest(decoded.getHardwareId(),
+					decoded.getOriginator(), ((IDeviceStateChangeCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {
 			getInboundProcessorChain().onDeviceStreamCreateRequest(decoded.getHardwareId(),
 					decoded.getOriginator(), ((IDeviceStreamCreateRequest) decoded.getRequest()));
@@ -69,8 +73,8 @@ public abstract class InboundProcessingStrategy extends TenantLifecycleComponent
 			getInboundProcessorChain().onSendDeviceStreamDataRequest(decoded.getHardwareId(),
 					decoded.getOriginator(), ((ISendDeviceStreamDataRequest) decoded.getRequest()));
 		} else {
-			throw new RuntimeException("Unknown device event type: "
-					+ decoded.getRequest().getClass().getName());
+			throw new RuntimeException(
+					"Unknown device event type: " + decoded.getRequest().getClass().getName());
 		}
 	}
 

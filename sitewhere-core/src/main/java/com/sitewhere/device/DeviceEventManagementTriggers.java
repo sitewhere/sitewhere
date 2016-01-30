@@ -22,11 +22,13 @@ import com.sitewhere.spi.device.event.IDeviceEventBatchResponse;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 
 /**
@@ -109,6 +111,23 @@ public class DeviceEventManagementTriggers extends DeviceEventManagementDecorato
 		IDeviceAlert result = super.addDeviceAlert(assignmentToken, request);
 		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
 			getOutboundProcessingStrategy().onAlert(result);
+		}
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.device.DeviceEventManagementDecorator#addDeviceStateChange(java.lang.
+	 * String, com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+	 */
+	@Override
+	public IDeviceStateChange addDeviceStateChange(String assignmentToken,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		IDeviceStateChange result = super.addDeviceStateChange(assignmentToken, request);
+		if (getOutboundProcessingStrategy().getLifecycleStatus() == LifecycleStatus.Started) {
+			getOutboundProcessingStrategy().onStateChange(result);
 		}
 		return result;
 	}

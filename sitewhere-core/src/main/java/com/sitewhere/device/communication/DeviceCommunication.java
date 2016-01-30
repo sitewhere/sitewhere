@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
+import com.sitewhere.device.presence.DevicePresenceManager;
 import com.sitewhere.server.batch.BatchOperationManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -24,6 +25,7 @@ import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.IOutboundCommandRouter;
 import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
+import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -46,6 +48,9 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
 	/** Configured device stream manager */
 	private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();
+
+	/** Configured device presence manager */
+	private IDevicePresenceManager devicePresenceManager = new DevicePresenceManager();
 
 	/** Configured list of inbound event sources */
 	private List<IInboundEventSource<?>> inboundEventSources = new ArrayList<IInboundEventSource<?>>();
@@ -108,7 +113,8 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
 		// Start batch operation manager.
 		if (getBatchOperationManager() == null) {
-			throw new SiteWhereException("No batch operation manager configured for communication subsystem.");
+			throw new SiteWhereException(
+					"No batch operation manager configured for communication subsystem.");
 		}
 		startNestedComponent(getBatchOperationManager(), true);
 
@@ -117,6 +123,13 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 			throw new SiteWhereException("No device stream manager configured for communication subsystem.");
 		}
 		startNestedComponent(getDeviceStreamManager(), true);
+
+		// Start device presence manager.
+		if (getDevicePresenceManager() == null) {
+			throw new SiteWhereException(
+					"No device presence manager configured for communication subsystem.");
+		}
+		startNestedComponent(getDevicePresenceManager(), true);
 
 		// Start device event sources.
 		if (getInboundEventSources() != null) {
@@ -138,6 +151,11 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 			for (IInboundEventSource<?> processor : getInboundEventSources()) {
 				processor.lifecycleStop();
 			}
+		}
+
+		// Stop device stream manager.
+		if (getDevicePresenceManager() != null) {
+			getDevicePresenceManager().lifecycleStop();
 		}
 
 		// Stop device stream manager.
@@ -215,9 +233,8 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceCommunication#getSymbolGeneratorManager
-	 * ()
+	 * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
+	 * getSymbolGeneratorManager ()
 	 */
 	public ISymbolGeneratorManager getSymbolGeneratorManager() {
 		return symbolGeneratorManager;
@@ -230,9 +247,8 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceCommunication#getBatchOperationManager
-	 * ()
+	 * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
+	 * getBatchOperationManager ()
 	 */
 	public IBatchOperationManager getBatchOperationManager() {
 		return batchOperationManager;
@@ -255,6 +271,20 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 
 	public void setDeviceStreamManager(IDeviceStreamManager deviceStreamManager) {
 		this.deviceStreamManager = deviceStreamManager;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
+	 * getDevicePresenceManager()
+	 */
+	public IDevicePresenceManager getDevicePresenceManager() {
+		return devicePresenceManager;
+	}
+
+	public void setDevicePresenceManager(IDevicePresenceManager devicePresenceManager) {
+		this.devicePresenceManager = devicePresenceManager;
 	}
 
 	/*
@@ -289,9 +319,8 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceCommunication#getOutboundCommandRouter
-	 * ()
+	 * @see com.sitewhere.spi.device.communication.IDeviceCommunication#
+	 * getOutboundCommandRouter ()
 	 */
 	public IOutboundCommandRouter getOutboundCommandRouter() {
 		return outboundCommandRouter;

@@ -15,6 +15,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
@@ -26,8 +27,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class InboundEventProcessor extends TenantLifecycleComponent implements
-		IInboundEventProcessor {
+public abstract class InboundEventProcessor extends TenantLifecycleComponent
+		implements IInboundEventProcessor {
 
 	public InboundEventProcessor() {
 		super(LifecycleComponentType.InboundEventProcessor);
@@ -54,14 +55,13 @@ public abstract class InboundEventProcessor extends TenantLifecycleComponent imp
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessor#onRegistrationRequest
-	 * (java.lang.String, java.lang.String,
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onRegistrationRequest (java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
-			throws SiteWhereException {
+	public void onRegistrationRequest(String hardwareId, String originator,
+			IDeviceRegistrationRequest request) throws SiteWhereException {
 	}
 
 	/*
@@ -110,6 +110,18 @@ public abstract class InboundEventProcessor extends TenantLifecycleComponent imp
 	@Override
 	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceStateChangeCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+	 */
+	@Override
+	public void onDeviceStateChangeCreateRequest(String hardwareId, String originator,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
 	}
 
 	/*

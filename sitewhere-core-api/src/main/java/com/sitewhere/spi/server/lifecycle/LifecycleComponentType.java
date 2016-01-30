@@ -95,6 +95,9 @@ public enum LifecycleComponentType {
 	/** Batch operation manager */
 	BatchOperationManager,
 
+	/** Device presence manager */
+	DevicePresenceManager,
+
 	/** Device stream manager */
 	DeviceStreamManager,
 

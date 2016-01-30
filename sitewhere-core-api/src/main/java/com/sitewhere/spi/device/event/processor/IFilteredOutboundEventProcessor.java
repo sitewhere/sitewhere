@@ -15,6 +15,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 
 /**
  * Adds concept of filtering to outbound event processors.
@@ -53,6 +54,14 @@ public interface IFilteredOutboundEventProcessor extends IOutboundEventProcessor
 	 * @throws SiteWhereException
 	 */
 	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException;
+
+	/**
+	 * Called if state change data was not filtered.
+	 * 
+	 * @param state
+	 * @throws SiteWhereException
+	 */
+	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException;
 
 	/**
 	 * Called if command invocation data was not filtered.

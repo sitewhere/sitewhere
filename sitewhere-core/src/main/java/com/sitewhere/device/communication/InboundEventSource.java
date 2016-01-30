@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
@@ -143,6 +144,9 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 						getInboundProcessingStrategy().processDeviceLocation(
 								(IDecodedDeviceRequest<IDeviceLocationCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
+						getInboundProcessingStrategy().processDeviceAlert(
+								(IDecodedDeviceRequest<IDeviceAlertCreateRequest>) decoded);
+					} else if (decoded.getRequest() instanceof IDeviceStateChangeCreateRequest) {
 						getInboundProcessingStrategy().processDeviceAlert(
 								(IDecodedDeviceRequest<IDeviceAlertCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {

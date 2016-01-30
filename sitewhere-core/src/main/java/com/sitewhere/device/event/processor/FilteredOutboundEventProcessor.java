@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.processor.IDeviceEventFilter;
 import com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor;
 
@@ -29,8 +30,8 @@ import com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor;
  * 
  * @author Derek
  */
-public abstract class FilteredOutboundEventProcessor extends OutboundEventProcessor implements
-		IFilteredOutboundEventProcessor {
+public abstract class FilteredOutboundEventProcessor extends OutboundEventProcessor
+		implements IFilteredOutboundEventProcessor {
 
 	/** List of filters in order they should be applied */
 	private List<IDeviceEventFilter> filters = new ArrayList<IDeviceEventFilter>();
@@ -92,9 +93,8 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onLocation(com.sitewhere
-	 * .spi.device.event.IDeviceLocation)
+	 * @see com.sitewhere.device.event.processor.OutboundEventProcessor#onLocation(com.
+	 * sitewhere .spi.device.event.IDeviceLocation)
 	 */
 	@Override
 	public final void onLocation(IDeviceLocation location) throws SiteWhereException {
@@ -140,6 +140,29 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.device.event.processor.OutboundEventProcessor#onStateChange(com.
+	 * sitewhere.spi.device.event.IDeviceStateChange)
+	 */
+	@Override
+	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+		if (!isFiltered(state)) {
+			onStateChangeNotFiltered(state);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
+	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceStateChange)
+	 */
+	@Override
+	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * com.sitewhere.device.event.processor.OutboundEventProcessor#onCommandInvocation
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
@@ -159,7 +182,8 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
+			throws SiteWhereException {
 	}
 
 	/*

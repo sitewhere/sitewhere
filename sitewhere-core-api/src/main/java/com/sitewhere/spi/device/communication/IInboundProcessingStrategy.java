@@ -14,6 +14,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
@@ -70,6 +71,15 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request)
+			throws SiteWhereException;
+
+	/**
+	 * Process an {@link IDeviceStateChangeCreateRequest}.
+	 * 
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void processDeviceStateChange(IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> request)
 			throws SiteWhereException;
 
 	/**

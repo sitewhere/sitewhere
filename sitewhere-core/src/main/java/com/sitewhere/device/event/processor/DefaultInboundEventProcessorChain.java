@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateReques
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
@@ -31,8 +32,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent implements
-		IInboundEventProcessorChain {
+public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
+		implements IInboundEventProcessorChain {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultInboundEventProcessorChain.class);
@@ -82,14 +83,13 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessor#onRegistrationRequest
-	 * (java.lang.String, java.lang.String,
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onRegistrationRequest (java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
-			throws SiteWhereException {
+	public void onRegistrationRequest(String hardwareId, String originator,
+			IDeviceRegistrationRequest request) throws SiteWhereException {
 		for (IInboundEventProcessor processor : getProcessors()) {
 			try {
 				processor.onRegistrationRequest(hardwareId, originator, request);
@@ -171,6 +171,25 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent 
 				processor.onDeviceAlertCreateRequest(hardwareId, originator, request);
 			} catch (SiteWhereException e) {
 				LOGGER.error("Processor failed to process alert create request.", e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceStateChangeCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest)
+	 */
+	@Override
+	public void onDeviceStateChangeCreateRequest(String hardwareId, String originator,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onDeviceStateChangeCreateRequest(hardwareId, originator, request);
+			} catch (SiteWhereException e) {
+				LOGGER.error("Processor failed to process state change create request.", e);
 			}
 		}
 	}

@@ -11,12 +11,14 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
+import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
@@ -38,8 +40,8 @@ public interface IInboundEventProcessor extends ITenantLifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
-			throws SiteWhereException;
+	public void onRegistrationRequest(String hardwareId, String originator,
+			IDeviceRegistrationRequest request) throws SiteWhereException;
 
 	/**
 	 * Called when an {@link IDeviceCommandResponseCreateRequest} is received.
@@ -87,6 +89,18 @@ public interface IInboundEventProcessor extends ITenantLifecycleComponent {
 	 */
 	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
 			IDeviceAlertCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * Called to request the creation of a new {@link IDeviceStateChange} based on the
+	 * given information.
+	 * 
+	 * @param hardwareId
+	 * @param originator
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void onDeviceStateChangeCreateRequest(String hardwareId, String originator,
+			IDeviceStateChangeCreateRequest request) throws SiteWhereException;
 
 	/**
 	 * Called to request the creation of a new {@link IDeviceStream} based on the given

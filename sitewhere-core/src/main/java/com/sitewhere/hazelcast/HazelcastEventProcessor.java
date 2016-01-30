@@ -23,6 +23,7 @@ import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
 
 /**
@@ -137,12 +138,26 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onStateChange(
+	 * com.sitewhere.spi.device.event.IDeviceStateChange)
+	 */
+	@Override
+	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+		LOGGER.info("Hazelcast received state change of type: " + state.getCategory().name() + ":"
+				+ state.getNewState());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.device.event.processor.IFilteredOutboundEventProcessor#
 	 * onCommandInvocationNotFiltered
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
+			throws SiteWhereException {
 		DeviceCommandInvocation converted = invocationHelper.convert(invocation);
 		commandInvocationsTopic.publish(converted);
 		LOGGER.debug("Published command invocation event to Hazelcast (id=" + invocation.getId() + ")");

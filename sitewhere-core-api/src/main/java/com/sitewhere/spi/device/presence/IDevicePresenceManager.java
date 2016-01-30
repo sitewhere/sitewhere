@@ -7,9 +7,6 @@
  */
 package com.sitewhere.spi.device.presence;
 
-import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.IDeviceAssignment;
-import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -19,13 +16,4 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * @author Derek
  */
 public interface IDevicePresenceManager extends ITenantLifecycleComponent {
-
-	/**
-	 * Get assignments for a site which are no longer considered present.
-	 * 
-	 * @param siteToken
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	ISearchResults<IDeviceAssignment> getNonPresentAssignments(String siteToken) throws SiteWhereException;
 }
