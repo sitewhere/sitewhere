@@ -6,6 +6,7 @@ buildscript {
     classpath "com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3"
     classpath "gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.7.3"
     classpath "io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE"
+    classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
   }
 }
 
@@ -15,7 +16,7 @@ ext {
 
 
 allprojects  {
-    apply plugin: 'maven'
+    apply plugin: 'com.bmuschko.nexus'
 
     group = 'com.sitewhere'
     version = '1.6.0'
@@ -28,6 +29,46 @@ allprojects  {
         maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
         maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
     }
+    
+	modifyPom {
+		project {
+			name project.description
+			description project.description
+			url 'http://www.sitewhere.org/'
+			inceptionYear '2009'
+			
+			scm {
+				url 'https://github.com/sitewhere/sitewhere'
+				connection 'https://github.com/sitewhere/sitewhere.git'
+			}
+
+			issueManagement {
+				system 'Jira'
+				url 'https://sitewhere.atlassian.net'
+			}
+			
+			organization {
+				name 'SiteWhere, LLC.'
+				url 'http://www.sitewhere.com/'
+			}
+
+			licenses {
+				license {
+					name 'Common Public Attribution License Version 1.0 (CPAL-1.0)'
+					url 'http://opensource.org/licenses/CPAL-1.0'
+					distribution 'repo'
+				}
+			}
+
+			developers {
+				developer {
+					id 'derekadams'
+					name 'Derek Adams'
+					email 'derek.adams@sitewhere.com'
+				}
+			}
+		}
+	}
 }
 
 
@@ -50,15 +91,6 @@ subprojects {
 
     javadoc {
         failOnError = false
-    }
-
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives sourcesJar
     }
 }
 
