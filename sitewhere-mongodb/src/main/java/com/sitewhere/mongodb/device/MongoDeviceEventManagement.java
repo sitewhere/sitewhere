@@ -682,7 +682,12 @@ public class MongoDeviceEventManagement extends TenantLifecycleComponent impleme
 		DBObject dbstate = MongoDeviceStateChange.toDBObject(state);
 		MongoPersistence.insertEvent(events, dbstate, isUseBulkEventInserts(), getEventBuffer());
 
-		return MongoDeviceStateChange.fromDBObject(dbstate);
+		state = MongoDeviceStateChange.fromDBObject(dbstate);
+		if (request.isUpdateState()) {
+			getAssignmentStateManager().addStateChange(assignmentToken, state);
+		}
+
+		return state;
 	}
 
 	/*

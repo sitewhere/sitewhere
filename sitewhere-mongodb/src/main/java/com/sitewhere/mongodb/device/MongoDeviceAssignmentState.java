@@ -29,6 +29,9 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 	/** Property for last interaction date */
 	public static final String PROP_LAST_INTERACTION_DATE = "lastInteractionDate";
 
+	/** Property for presence missing date */
+	public static final String PROP_PRESENCE_MISSING_DATE = "presenceMissingDate";
+
 	/** Property for last location */
 	public static final String PROP_LAST_LOCATION = "lastLocation";
 
@@ -69,6 +72,10 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 			target.append(PROP_LAST_INTERACTION_DATE, source.getLastInteractionDate());
 		}
 
+		if (source.getPresenceMissingDate() != null) {
+			target.append(PROP_PRESENCE_MISSING_DATE, source.getPresenceMissingDate());
+		}
+
 		if (source.getLastLocation() != null) {
 			target.append(PROP_LAST_LOCATION, MongoDeviceLocation.toDBObject(source.getLastLocation(), true));
 		}
@@ -99,6 +106,7 @@ public class MongoDeviceAssignmentState implements MongoConverter<IDeviceAssignm
 	@SuppressWarnings("unchecked")
 	public static void fromDBObject(DBObject source, DeviceAssignmentState target) {
 		target.setLastInteractionDate((Date) source.get(PROP_LAST_INTERACTION_DATE));
+		target.setPresenceMissingDate((Date) source.get(PROP_PRESENCE_MISSING_DATE));
 		DBObject lastLocation = (DBObject) source.get(PROP_LAST_LOCATION);
 		if (lastLocation != null) {
 			target.setLastLocation(MongoDeviceLocation.fromDBObject(lastLocation, true));

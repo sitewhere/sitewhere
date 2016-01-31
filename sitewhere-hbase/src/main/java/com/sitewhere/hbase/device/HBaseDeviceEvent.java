@@ -479,6 +479,11 @@ public class HBaseDeviceEvent {
 		put.add(ISiteWhereHBase.FAMILY_ID, qualifier, payload);
 		context.getDeviceEventBuffer().add(put);
 
+		// Update state if requested.
+		if (request.isUpdateState()) {
+			context.getAssignmentStateManager().addStateChange(assignment.getToken(), state);
+		}
+
 		return state;
 	}
 

@@ -16,4 +16,11 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
  * @author Derek
  */
 public interface IDevicePresenceManager extends ITenantLifecycleComponent {
+
+	/**
+	 * Get notification strategy that controls how often presence events are sent.
+	 * 
+	 * @return
+	 */
+	public IPresenceNotificationStrategy getPresenceNotificationStrategy();
 }

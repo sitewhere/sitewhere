@@ -33,6 +33,10 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurement;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
+import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.device.event.state.PresenceState;
+import com.sitewhere.spi.device.event.state.StateChangeCategory;
+import com.sitewhere.spi.device.event.state.StateChangeType;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -130,6 +134,19 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 		events.add(alert);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.IAssignmentStateManager#addStateChange(java.lang.String,
+	 * com.sitewhere.spi.device.event.IDeviceStateChange)
+	 */
+	@Override
+	public void addStateChange(String token, IDeviceStateChange state) throws SiteWhereException {
+		List<IDeviceEvent> events = getEventsFor(token);
+		events.add(state);
+	}
+
 	/**
 	 * Get state for a given assignment. Create if necessary.
 	 * 
@@ -207,14 +224,21 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 				switch (event.getEventType()) {
 				case Location: {
 					updateWithLocation(state, (IDeviceLocation) event);
+					state.setPresenceMissingDate(null);
 					break;
 				}
 				case Measurements: {
 					updateWithMeasurements(state, (IDeviceMeasurements) event);
+					state.setPresenceMissingDate(null);
 					break;
 				}
 				case Alert: {
 					updateWithAlert(state, (IDeviceAlert) event);
+					state.setPresenceMissingDate(null);
+					break;
+				}
+				case StateChange: {
+					updateWithStateChange(state, (IDeviceStateChange) event);
 					break;
 				}
 				default: {
@@ -298,6 +322,23 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 			state.getLatestAlerts().clear();
 			for (IDeviceAlert a : alertsById.values()) {
 				state.getLatestAlerts().add(a);
+			}
+		}
+
+		/**
+		 * Update state with state change.
+		 * 
+		 * @param state
+		 * @param change
+		 * @throws SiteWhereException
+		 */
+		private void updateWithStateChange(DeviceAssignmentState state, IDeviceStateChange change)
+				throws SiteWhereException {
+			// Handle case where state should reflect non-present device.
+			if ((change.getCategory() == StateChangeCategory.Presence)
+					&& (change.getType() == StateChangeType.Presence_Updated)
+					&& (PresenceState.NOT_PRESENT.name().equals(change.getNewState()))) {
+				state.setPresenceMissingDate(new Date());
 			}
 		}
 	}

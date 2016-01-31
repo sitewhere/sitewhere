@@ -31,6 +31,7 @@ import com.sitewhere.spi.device.event.state.PresenceState;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
 import com.sitewhere.spi.device.presence.IDevicePresenceManager;
+import com.sitewhere.spi.device.presence.IPresenceNotificationStrategy;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
@@ -55,6 +56,10 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 
 	/** Presence missing interval in seconds */
 	private int presenceMissingIntervalSecs = DEFAULT_PRESENCE_MISSING_INTERVAL_SECS;
+
+	/** Chooses how presence state is stored and how often notifications are sent */
+	private IPresenceNotificationStrategy presenceNotificationStrategy =
+			new PresenceNotificationStrategies.SendOnceNotificationStrategy();
 
 	/** Executor service for threading */
 	private ExecutorService executor;
@@ -142,10 +147,14 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 										StateChangeType.Presence_Updated, PresenceState.PRESENT.name(),
 										PresenceState.NOT_PRESENT.name());
 						create.setUpdateState(true);
-						IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded =
-								new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
-										assignment.getDeviceHardwareId(), null, create);
-						inbound.processDeviceStateChange(decoded);
+
+						// Only send an event if the strategy permits it.
+						if (getPresenceNotificationStrategy().shouldGenerateEvent(assignment, create)) {
+							IDecodedDeviceRequest<IDeviceStateChangeCreateRequest> decoded =
+									new DecodedDeviceRequest<IDeviceStateChangeCreateRequest>(
+											assignment.getDeviceHardwareId(), null, create);
+							inbound.processDeviceStateChange(decoded);
+						}
 					}
 				} catch (SiteWhereException e) {
 					LOGGER.error("Error processing presence query.", e);
@@ -158,6 +167,20 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 				}
 			}
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.presence.IDevicePresenceManager#
+	 * getPresenceNotificationStrategy()
+	 */
+	public IPresenceNotificationStrategy getPresenceNotificationStrategy() {
+		return presenceNotificationStrategy;
+	}
+
+	public void setPresenceNotificationStrategy(IPresenceNotificationStrategy presenceNotificationStrategy) {
+		this.presenceNotificationStrategy = presenceNotificationStrategy;
 	}
 
 	public int getPresenceCheckIntervalSecs() {

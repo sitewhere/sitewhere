@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
@@ -28,6 +30,7 @@ import com.sitewhere.spi.device.event.IDeviceMeasurement;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class DeviceAssignmentState implements IDeviceAssignmentState, Serializable {
 
 	/** Serialization version identifier */
@@ -124,6 +127,7 @@ public class DeviceAssignmentState implements IDeviceAssignmentState, Serializab
 	public static DeviceAssignmentState copy(IDeviceAssignmentState source) throws SiteWhereException {
 		DeviceAssignmentState target = new DeviceAssignmentState();
 		target.setLastInteractionDate(source.getLastInteractionDate());
+		target.setPresenceMissingDate(source.getPresenceMissingDate());
 		if (source.getLastLocation() != null) {
 			target.setLastLocation(DeviceLocation.copy(source.getLastLocation()));
 		}
