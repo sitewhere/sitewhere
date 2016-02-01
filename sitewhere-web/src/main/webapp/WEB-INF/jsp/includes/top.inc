@@ -64,16 +64,18 @@
 				<div class="sw-main-nav">
 					<c:if test="${tenant != null}">
 						<ul class="nav nav-pills">
-							<c:choose>
-								<c:when test="${sitewhere_section == 'server'}">
-									<li class="active"><a href="${pageContext.request.contextPath}/admin/server.html"
-										data-i18n="public.Server">Server</a></li>
-								</c:when>
-								<c:otherwise>
-									<li><a href="${pageContext.request.contextPath}/admin/server.html"
-										data-i18n="public.Server">Server</a></li>
-								</c:otherwise>
-							</c:choose>
+							<c:if test="${authorities.viewServerInformation}">
+								<c:choose>
+									<c:when test="${sitewhere_section == 'server'}">
+										<li class="active"><a href="${pageContext.request.contextPath}/admin/server.html"
+											data-i18n="public.Server">Server</a></li>
+									</c:when>
+									<c:otherwise>
+										<li><a href="${pageContext.request.contextPath}/admin/server.html"
+											data-i18n="public.Server">Server</a></li>
+									</c:otherwise>
+								</c:choose>
+							</c:if>
 							<c:choose>
 								<c:when test="${sitewhere_section == 'sites'}">
 									<li class="active"><a href="${pageContext.request.contextPath}/admin/sites/list.html"
