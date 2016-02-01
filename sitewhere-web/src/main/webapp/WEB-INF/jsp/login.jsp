@@ -68,13 +68,13 @@ sitewhere_i18next.sitewhere_title = "login.title";
 						<div class="control-group">
 							<label class="control-label" for="login-username" data-i18n="public.Username"></label>
 							<div class="controls">
-								<input type="text" id="login-username" name="j_username" class="input-large" title="Username">
+								<input type="text" id="login-username" name="username" class="input-large" title="Username">
 							</div>
 						</div>
 						<div class="control-group">
 							<label class="control-label" for="login-password" data-i18n="public.Password"></label>
 							<div class="controls">
-								<input type="password" id="login-password" name="j_password" class="input-large" 
+								<input type="password" id="login-password" name="password" class="input-large" 
 									title="Password">
 							</div>
 						</div>

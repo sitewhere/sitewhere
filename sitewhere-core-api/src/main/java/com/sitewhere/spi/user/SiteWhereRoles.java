@@ -23,6 +23,12 @@ public interface SiteWhereRoles {
 	/** Authority to access administrative console */
 	public static final String AUTH_ADMIN_CONSOLE = "ADMIN_CONSOLE";
 
+	/** Group for global server administration */
+	public static final String GRP_SERVER = "GRP_SERVER";
+
+	/** Authority to view server information */
+	public static final String AUTH_VIEW_SERVER_INFO = "VIEW_SERVER_INFO";
+
 	/** Group for user authorities */
 	public static final String GRP_USERS = "GRP_USERS";
 
@@ -63,6 +69,9 @@ public interface SiteWhereRoles {
 	/** Role for access to administrative console */
 	public static final String ADMIN_CONSOLE = ROLE_PREFIX + AUTH_ADMIN_CONSOLE;
 
+	/** Role for viewing server information */
+	public static final String VIEW_SERVER_INFO = ROLE_PREFIX + AUTH_VIEW_SERVER_INFO;
+
 	/** Role to administer all system users */
 	public static final String ADMINISTER_USERS = ROLE_PREFIX + AUTH_ADMINISTER_USERS;
 
@@ -80,10 +89,10 @@ public interface SiteWhereRoles {
 	 **********************/
 
 	/** User has REST permissions and user administration rights */
-	public static final String PREAUTH_REST_AND_USER_ADMIN = "hasRole('" + SiteWhereRoles.REST
-			+ "') and hasRole('" + SiteWhereRoles.ADMINISTER_USERS + "')";
+	public static final String PREAUTH_REST_AND_USER_ADMIN =
+			"hasRole('" + SiteWhereRoles.REST + "') and hasRole('" + SiteWhereRoles.ADMINISTER_USERS + "')";
 
 	/** User has REST permissions and tenant administration rights */
-	public static final String PREAUTH_REST_AND_TENANT_ADMIN = "hasRole('" + SiteWhereRoles.REST
-			+ "') and hasRole('" + SiteWhereRoles.ADMINISTER_TENANTS + "')";
+	public static final String PREAUTH_REST_AND_TENANT_ADMIN =
+			"hasRole('" + SiteWhereRoles.REST + "') and hasRole('" + SiteWhereRoles.ADMINISTER_TENANTS + "')";
 }

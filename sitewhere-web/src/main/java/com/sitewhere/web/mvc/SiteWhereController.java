@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +48,7 @@ import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.version.VersionHelper;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.TokenNamePair;
@@ -58,6 +60,7 @@ import com.sitewhere.web.configuration.model.ElementRole;
  * @author dadams
  */
 @Controller
+@RequestMapping
 public class SiteWhereController extends MvcController {
 
 	/** Static logger instance */
@@ -116,7 +119,7 @@ public class SiteWhereController extends MvcController {
 			if (matches.size() == 0) {
 				return handleNoRunningTenants(auths, data);
 			} else if (matches.size() == 1) {
-				return handleExactlyOneTenant(matches.get(0), redirect, servletRequest);
+				return chooseTenant(matches.get(0).getId(), redirect, servletRequest);
 			}
 
 			// Multiple tenants available. Allow user to choose.
@@ -142,26 +145,6 @@ public class SiteWhereController extends MvcController {
 		}
 	}
 
-	/**
-	 * Handle case where exactly one tenant is available. In this case, the tenant is
-	 * chosen and the user is forwarded to the server page.
-	 * 
-	 * @param tenant
-	 * @param redirect
-	 * @param servletRequest
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected ModelAndView handleExactlyOneTenant(ITenant tenant, String redirect,
-			HttpServletRequest servletRequest) throws SiteWhereException {
-		// If no redirect specified, show server info page.
-		if (redirect == null) {
-			redirect = "server.html";
-		}
-		setChosenTenant(tenant, servletRequest);
-		return new ModelAndView("redirect:" + redirect);
-	}
-
 	@RequestMapping("/tenant/{tenantId}")
 	public ModelAndView chooseTenant(@PathVariable("tenantId") String tenantId,
 			@RequestParam(required = false) String redirect, HttpServletRequest servletRequest) {
@@ -173,12 +156,17 @@ public class SiteWhereController extends MvcController {
 			}
 
 			// If no redirect specified, show server info page.
+			IUser user = LoginManager.getCurrentlyLoggedInUser();
+			AuthoritiesHelper auths = new AuthoritiesHelper(user);
 			if ((redirect == null) || (redirect.length() == 0)) {
-				redirect = "../server.html";
+				if (auths.isViewServerInformation()) {
+					redirect = "server.html";
+				} else {
+					redirect = "sites/list.html";
+				}
 			}
 
 			// Find tenants the logged in user is able to view.
-			IUser user = LoginManager.getCurrentlyLoggedInUser();
 			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername(), true);
 			ITenant chosen = null;
 			for (ITenant tenant : matches) {
@@ -226,6 +214,7 @@ public class SiteWhereController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/server")
+	@Secured({ SiteWhereRoles.VIEW_SERVER_INFO })
 	public ModelAndView serverInfo(HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "serverInfo", LOGGER);
 		try {
@@ -690,6 +679,7 @@ public class SiteWhereController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/tenants/list")
+	@Secured({ SiteWhereRoles.ADMINISTER_TENANTS })
 	public ModelAndView listTenants(HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listTenants", LOGGER);
 		try {

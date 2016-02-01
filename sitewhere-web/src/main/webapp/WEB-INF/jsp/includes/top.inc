@@ -194,8 +194,7 @@
 							<li><a href="http://documentation.sitewhere.org/userguide/adminui/adminui.html"
 								target="_blank">Documentation</a></li>
 							<li class="divider"></li>
-							<li><a tabindex="-1" href="<c:url value="/j_spring_security_logout"/>"
-								data-i18n="includes.top.LogOut"></a></li>
+							<li><a tabindex="-1" href="<c:url value="/logout"/>" data-i18n="includes.top.LogOut"></a></li>
 						</ul>
 					</div>
 				</div>

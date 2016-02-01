@@ -121,6 +121,7 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 		LOGGER.info(PREFIX_CREATE_USER + " " + ureq.getUsername());
 
 		// Non-admin user will not be able to admin users or tenants.
+		grantedAuthIds.remove(SiteWhereAuthority.ViewServerInfo.getName());
 		grantedAuthIds.remove(SiteWhereAuthority.AdminTenants.getName());
 		grantedAuthIds.remove(SiteWhereAuthority.AdminUsers.getName());
 

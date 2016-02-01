@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.plugin.EnableSwagger;
@@ -26,6 +27,7 @@ import com.wordnik.swagger.model.ApiInfo;
  */
 @Configuration
 @EnableSwagger
+@EnableWebMvc
 public class SiteWhereSwaggerConfig {
 
 	/** Title for API page */
@@ -64,9 +66,10 @@ public class SiteWhereSwaggerConfig {
 	@Bean
 	public SwaggerSpringMvcPlugin customImplementation() {
 		ApiInfo apiInfo =
-				new ApiInfo(API_TITLE + " (" + VersionHelper.getVersion().getVersionIdentifier() + " "
-						+ VersionHelper.getVersion().getEditionIdentifier() + ")", API_DESCRIPTION, null,
-						API_CONTACT_EMAIL, API_LICENSE_TYPE, API_LICENSE_URL);
+				new ApiInfo(
+						API_TITLE + " (" + VersionHelper.getVersion().getVersionIdentifier() + " "
+								+ VersionHelper.getVersion().getEditionIdentifier() + ")",
+						API_DESCRIPTION, null, API_CONTACT_EMAIL, API_LICENSE_TYPE, API_LICENSE_URL);
 		return new SwaggerSpringMvcPlugin(this.springSwaggerConfig).pathProvider(pathProvider).apiInfo(
 				apiInfo).apiVersion(VersionHelper.getVersion().getVersionIdentifier());
 	}

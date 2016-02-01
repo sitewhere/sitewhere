@@ -14,15 +14,22 @@ package com.sitewhere.spi.user;
  */
 public enum SiteWhereAuthority {
 
+	/** Group for server administration */
+	Server(SiteWhereRoles.GRP_SERVER, "Server administration", null, true),
+
+	/** View global server information */
+	ViewServerInfo(SiteWhereRoles.AUTH_VIEW_SERVER_INFO, "View global server information",
+			SiteWhereRoles.GRP_SERVER, false),
+
 	/** Group for system access setting */
-	Access(SiteWhereRoles.GRP_ACCESS, "System access", null, true),
+	Access(SiteWhereRoles.GRP_ACCESS, "Remote access", null, true),
 
 	/** REST services access */
 	REST(SiteWhereRoles.AUTH_REST, "REST services access", SiteWhereRoles.GRP_ACCESS, false),
 
 	/** REST services access */
-	AdminConsole(SiteWhereRoles.AUTH_ADMIN_CONSOLE, "Administrative console login",
-			SiteWhereRoles.GRP_ACCESS, false),
+	AdminConsole(SiteWhereRoles.AUTH_ADMIN_CONSOLE, "Administrative console login", SiteWhereRoles.GRP_ACCESS,
+			false),
 
 	/** Group for all user authorities */
 	Users(SiteWhereRoles.GRP_USERS, "Users", null, true),
@@ -38,8 +45,8 @@ public enum SiteWhereAuthority {
 	Tenants(SiteWhereRoles.GRP_TENANTS, "Tenants", null, true),
 
 	/** Administer all users */
-	AdminTenants(SiteWhereRoles.AUTH_ADMINISTER_TENANTS, "Administer all tenants",
-			SiteWhereRoles.GRP_TENANTS, false),
+	AdminTenants(SiteWhereRoles.AUTH_ADMINISTER_TENANTS, "Administer all tenants", SiteWhereRoles.GRP_TENANTS,
+			false),
 
 	/** Administer own tenant */
 	AdminOwnTenant(SiteWhereRoles.AUTH_ADMINISTER_TENANT_SELF, "Administer own tenant",

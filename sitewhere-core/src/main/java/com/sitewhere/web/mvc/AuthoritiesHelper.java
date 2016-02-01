@@ -25,6 +25,15 @@ public class AuthoritiesHelper {
 	}
 
 	/**
+	 * Indicates if user can see global server information.
+	 * 
+	 * @return
+	 */
+	public boolean isViewServerInformation() {
+		return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_VIEW_SERVER_INFO);
+	}
+
+	/**
 	 * Indicates if user is a user administrator.
 	 * 
 	 * @return
@@ -40,6 +49,15 @@ public class AuthoritiesHelper {
 	 */
 	public boolean isAdministerTenants() {
 		return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANTS);
+	}
+
+	/**
+	 * Indicates if user can administer their own tenant.
+	 * 
+	 * @return
+	 */
+	public boolean isAdministerTenantSelf() {
+		return getUser().getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANT_SELF);
 	}
 
 	public IUser getUser() {
