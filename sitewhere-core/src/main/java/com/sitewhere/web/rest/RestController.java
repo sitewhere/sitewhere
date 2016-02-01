@@ -27,6 +27,8 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.user.IUser;
+import com.sitewhere.spi.user.SiteWhereRoles;
 
 /**
  * Base class for common REST controller functionality.
@@ -56,6 +58,42 @@ public class RestController {
 			return match;
 		}
 		throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+	}
+
+	/**
+	 * Verify that the current user is authorized to interact with the given tenant id.
+	 * 
+	 * @param tenantId
+	 * @throws SiteWhereException
+	 */
+	protected ITenant assureAuthorizedTenantId(String tenantId) throws SiteWhereException {
+		ITenant tenant = SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
+		if (tenant == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
+		}
+		return assureAuthorizedTenant(tenant);
+	}
+
+	/**
+	 * Verify that the current user is authorized to interact with the given tenant.
+	 * 
+	 * @param tenant
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ITenant assureAuthorizedTenant(ITenant tenant) throws SiteWhereException {
+		IUser user = LoginManager.getCurrentlyLoggedInUser();
+
+		// Tenant administrators do not have to be in the list of authorized users.
+		if (user.getAuthorities().contains(SiteWhereRoles.AUTH_ADMINISTER_TENANTS)) {
+			return tenant;
+		}
+
+		// Tenant self-editors have to be in the list of authorized users.
+		if (!tenant.getAuthorizedUserIds().contains(user.getUsername())) {
+			throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+		}
+		return tenant;
 	}
 
 	/**
@@ -172,7 +210,8 @@ public class RestController {
 	protected void handleMissingContent(HttpMessageNotReadableException e, HttpServletResponse response) {
 		try {
 			LOGGER.error("Error handling REST request..", e);
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No body content passed for POST request.");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+					"No body content passed for POST request.");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

@@ -15,7 +15,7 @@ import java.util.List;
  * 
  * @author Derek
  */
-public class GrantedAuthorityHierarchyNode {
+public class GrantedAuthorityHierarchyNode implements Comparable<GrantedAuthorityHierarchyNode> {
 
 	/** Authority id */
 	private String id;
@@ -59,5 +59,10 @@ public class GrantedAuthorityHierarchyNode {
 
 	public void setItems(List<GrantedAuthorityHierarchyNode> items) {
 		this.items = items;
+	}
+
+	@Override
+	public int compareTo(GrantedAuthorityHierarchyNode o) {
+		return getText().compareTo(o.getText());
 	}
 }

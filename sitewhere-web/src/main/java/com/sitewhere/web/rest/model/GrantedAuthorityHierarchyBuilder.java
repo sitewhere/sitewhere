@@ -8,6 +8,7 @@
 package com.sitewhere.web.rest.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.sitewhere.spi.SiteWhereException;
@@ -45,6 +46,7 @@ public class GrantedAuthorityHierarchyBuilder {
 			addChildren(node, auths);
 			results.add(node);
 		}
+		Collections.sort(results);
 		return results;
 	}
 
@@ -69,6 +71,7 @@ public class GrantedAuthorityHierarchyBuilder {
 			addChildren(child, auths);
 			node.getItems().add(child);
 		}
+		Collections.sort(node.getItems());
 	}
 
 	/**
