@@ -139,7 +139,7 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 					DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
 					ISearchResults<IDeviceAssignment> missing =
 							devices.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
-					LOGGER.info("Presence manager for '" + site.getName() + "' creating "
+					LOGGER.debug("Presence manager for '" + site.getName() + "' creating "
 							+ missing.getNumResults() + " events for non-present devices.");
 					for (IDeviceAssignment assignment : missing.getResults()) {
 						DeviceStateChangeCreateRequest create =
