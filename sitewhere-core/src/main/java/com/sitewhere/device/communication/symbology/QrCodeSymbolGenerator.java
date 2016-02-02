@@ -9,9 +9,6 @@ package com.sitewhere.device.communication.symbology;
 
 import java.net.URI;
 
-import net.glxn.qrgen.core.image.ImageType;
-import net.glxn.qrgen.javase.QRCode;
-
 import org.apache.log4j.Logger;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
@@ -23,6 +20,9 @@ import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.symbology.IEntityUriProvider;
 import com.sitewhere.spi.device.symbology.ISymbolGenerator;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+
+import net.glxn.qrgen.core.image.ImageType;
+import net.glxn.qrgen.javase.QRCode;
 
 /**
  * Implementation of {@link ISymbolGenerator} that generates QR-Codes for SiteWhere

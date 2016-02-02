@@ -46,12 +46,14 @@ public enum ElementRole {
 	DataManagement_ScheduleModelInitializer("Schedule Model Initializer", true, false, false),
 
 	/** Data management. */
-	DataManagement(null, false, false, false, new ElementRole[] {
-			DataManagement_Datastore,
-			DataManagement_CacheProvider,
-			DataManagement_DeviceModelInitializer,
-			DataManagement_AssetModelInitializer,
-			DataManagement_ScheduleModelInitializer }, new ElementRole[0], true),
+	DataManagement(null, false, false, false,
+			new ElementRole[] {
+					DataManagement_Datastore,
+					DataManagement_CacheProvider,
+					DataManagement_DeviceModelInitializer,
+					DataManagement_AssetModelInitializer,
+					DataManagement_ScheduleModelInitializer },
+			new ElementRole[0], true),
 
 	/** Inbound processing strategy container. Strategy. */
 	InboundProcessingStrategy_Strategy("Strategy", false, false, false),
@@ -96,9 +98,8 @@ public enum ElementRole {
 	OutboundProcessingChain_RouteBuilder("Route Builder", true, false, false),
 
 	/** Outbound processing chain. MQTT event processor. */
-	OutboundProcessingChain_MqttEventProcessor("MQTT Event Processor", true, true, true, new ElementRole[] {
-			OutboundProcessingChain_Filters,
-			OutboundProcessingChain_RouteBuilder }),
+	OutboundProcessingChain_MqttEventProcessor("MQTT Event Processor", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_Filters, OutboundProcessingChain_RouteBuilder }),
 
 	/** Siddhi query. Callback. */
 	OutboundProcessingChain_SiddhiCallback("Siddhi Callbacks", true, true, true),
@@ -124,11 +125,13 @@ public enum ElementRole {
 			new ElementRole[] { OutboundProcessingChain_EventProcessor }, new ElementRole[0], true),
 
 	/** Event processing. */
-	EventProcessing(null, false, false, false, new ElementRole[] {
-			EventProcessing_InboundProcessingStrategy,
-			InboundProcessingChain,
-			EventProcessing_OutboundProcessingStrategy,
-			OutboundProcessingChain }, new ElementRole[0], true),
+	EventProcessing(null, false, false, false,
+			new ElementRole[] {
+					EventProcessing_InboundProcessingStrategy,
+					InboundProcessingChain,
+					EventProcessing_OutboundProcessingStrategy,
+					OutboundProcessingChain },
+			new ElementRole[0], true),
 
 	/** Event source. Binary event decoder. */
 	EventSource_BinaryEventDecoder("Binary Event Decoder", false, false, false),
@@ -137,31 +140,27 @@ public enum ElementRole {
 	EventSource_StringEventDecoder("String Event Decoder", false, false, false),
 
 	/** Event source. Event decoder. */
-	EventSource_EventDecoder("Event Decoder", false, false, false, new ElementRole[0], new ElementRole[] {
-			EventSource_BinaryEventDecoder,
-			EventSource_StringEventDecoder }),
+	EventSource_EventDecoder("Event Decoder", false, false, false, new ElementRole[0],
+			new ElementRole[] { EventSource_BinaryEventDecoder, EventSource_StringEventDecoder }),
 
 	/** Socket event source. Socket interaction handler factory. */
 	EventSources_SocketInteractionHandlerFactory("Socket Interaction Handler Factory", false, false, false),
 
 	/** Event sources container. Event source. */
-	EventSources_SocketEventSource("Socket Event Source", true, true, true, new ElementRole[] {
-			EventSources_SocketInteractionHandlerFactory,
-			EventSource_EventDecoder }),
+	EventSources_SocketEventSource("Socket Event Source", true, true, true,
+			new ElementRole[] { EventSources_SocketInteractionHandlerFactory, EventSource_EventDecoder }),
 
 	/** WebSocket event source. Header. */
 	EventSources_WebSocketHeader("WebSocket Headers", true, true, true),
 
 	/** Event sources container. Event source. */
-	EventSources_WebSocketEventSource("WebSocket Event Source", true, true, true, new ElementRole[] {
-			EventSource_EventDecoder,
-			EventSources_WebSocketHeader }),
+	EventSources_WebSocketEventSource("WebSocket Event Source", true, true, true,
+			new ElementRole[] { EventSource_EventDecoder, EventSources_WebSocketHeader }),
 
 	/** Event sources container. Event source. */
 	EventSources_EventSource("Event Sources", true, true, true,
-			new ElementRole[] { EventSource_EventDecoder }, new ElementRole[] {
-					EventSources_SocketEventSource,
-					EventSources_WebSocketEventSource }),
+			new ElementRole[] { EventSource_EventDecoder },
+			new ElementRole[] { EventSources_SocketEventSource, EventSources_WebSocketEventSource }),
 
 	/** Device communication container. Event sources configuration. */
 	DeviceCommunication_EventSources(null, false, false, false,
@@ -177,10 +176,16 @@ public enum ElementRole {
 	/** Device services container. Registration manager. */
 	DeviceServices_RegistrationManager("Registration Manager", false, false, false),
 
+	/** Device services container. Presence manager. */
+	DeviceServices_PresenceManager("Presence Manager", true, false, false),
+
 	/** Device communication container. Device Services. */
-	DeviceCommunication_DeviceServices(null, false, false, false, new ElementRole[] {
-			DeviceServices_RegistrationManager,
-			DeviceServices_SymbolGeneratorManager }, new ElementRole[0], true),
+	DeviceCommunication_DeviceServices(null, false, false, false,
+			new ElementRole[] {
+					DeviceServices_RegistrationManager,
+					DeviceServices_SymbolGeneratorManager,
+					DeviceServices_PresenceManager },
+			new ElementRole[0], true),
 
 	/** Batch operations container. Batch operation manager. */
 	BatchOperations_BatchOperationManager("Batch Operation Manager", false, false, false),
@@ -229,21 +234,22 @@ public enum ElementRole {
 					CommandDestinations_SmsParameterExtractor }),
 
 	/** Command destinations. Command destination. */
-	CommandDestinations_CommandDestination("Command Destinations", true, true, true, new ElementRole[] {
-			CommandDestinations_CommandEncoder,
-			CommandDestinations_ParameterExtractor }),
+	CommandDestinations_CommandDestination("Command Destinations", true, true, true,
+			new ElementRole[] { CommandDestinations_CommandEncoder, CommandDestinations_ParameterExtractor }),
 
 	/** Device communication container. Command destinations configuration. */
 	DeviceCommunication_CommandDestinations(null, false, false, false,
 			new ElementRole[] { CommandDestinations_CommandDestination }, new ElementRole[0], true),
 
 	/** Device communication element. */
-	DeviceCommunication(null, false, false, false, new ElementRole[] {
-			DeviceCommunication_EventSources,
-			DeviceCommunication_DeviceServices,
-			DeviceCommunication_BatchOperations,
-			DeviceCommunication_CommandRouting,
-			DeviceCommunication_CommandDestinations }, new ElementRole[0], true),
+	DeviceCommunication(null, false, false, false,
+			new ElementRole[] {
+					DeviceCommunication_EventSources,
+					DeviceCommunication_DeviceServices,
+					DeviceCommunication_BatchOperations,
+					DeviceCommunication_CommandRouting,
+					DeviceCommunication_CommandDestinations },
+			new ElementRole[0], true),
 
 	/** Asset Management. Asset module */
 	AssetManagment_AssetModule("Asset Modules", true, true, true),

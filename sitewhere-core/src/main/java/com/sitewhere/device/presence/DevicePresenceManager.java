@@ -13,6 +13,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Period;
+import org.joda.time.format.ISOPeriodFormat;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
@@ -45,17 +49,24 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DevicePresenceManager.class);
 
-	/** Default presence check interval in seconds */
-	private static final int DEFAULT_PRESENCE_CHECK_INTERVAL_SECS = 60;
+	/** Default presence check interval (10 min) */
+	private static final String DEFAULT_PRESENCE_CHECK_INTERVAL = "T1M";
 
-	/** Default presence missing interval (1 day) */
-	private static final int DEFAULT_PRESENCE_MISSING_INTERVAL_SECS = 120;
+	/** Default presence missing interval (1 hour) */
+	private static final String DEFAULT_PRESENCE_MISSING_INTERVAL = "T2M30S";
 
-	/** Presence check interval in seconds */
-	private int presenceCheckIntervalSecs = DEFAULT_PRESENCE_CHECK_INTERVAL_SECS;
+	/** Used to format durations for output */
+	private static final PeriodFormatter PERIOD_FORMATTER =
+			new PeriodFormatterBuilder().appendWeeks().appendSuffix("w").appendSeparator(
+					" ").appendDays().appendSuffix("d").appendSeparator(" ").appendHours().appendSuffix(
+							"h").appendSeparator(" ").appendMinutes().appendSuffix("m").appendSeparator(
+									" ").appendSeconds().appendSuffix("s").toFormatter();
 
-	/** Presence missing interval in seconds */
-	private int presenceMissingIntervalSecs = DEFAULT_PRESENCE_MISSING_INTERVAL_SECS;
+	/** Presence check interval */
+	private String presenceCheckInterval = DEFAULT_PRESENCE_CHECK_INTERVAL;
+
+	/** Presence missing interval */
+	private String presenceMissingInterval = DEFAULT_PRESENCE_MISSING_INTERVAL;
 
 	/** Chooses how presence state is stored and how often notifications are sent */
 	private IPresenceNotificationStrategy presenceNotificationStrategy =
@@ -130,12 +141,34 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 
 		@Override
 		public void run() {
+
+			Period missingInterval;
+			try {
+				missingInterval = Period.parse(getPresenceMissingInterval(), ISOPeriodFormat.standard());
+			} catch (IllegalArgumentException e) {
+				missingInterval = PERIOD_FORMATTER.parsePeriod(getPresenceMissingInterval());
+			}
+			int missingIntervalSecs = missingInterval.toStandardSeconds().getSeconds();
+
+			Period checkInterval;
+			try {
+				checkInterval = Period.parse(getPresenceCheckInterval(), ISOPeriodFormat.standard());
+			} catch (IllegalArgumentException e) {
+				checkInterval = PERIOD_FORMATTER.parsePeriod(getPresenceCheckInterval());
+			}
+			int checkIntervalSecs = checkInterval.toStandardSeconds().getSeconds();
+
+			LOGGER.info("Presence manager for '" + site.getName() + "' checking every "
+					+ PERIOD_FORMATTER.print(checkInterval) + " (" + checkIntervalSecs + " seconds) "
+					+ "for devices with last interaction date of more than "
+					+ PERIOD_FORMATTER.print(missingInterval) + " (" + missingIntervalSecs + " seconds) "
+					+ ".");
+
 			while (true) {
 
 				try {
 					// Calculate time window for presence calculation.
-					Date endDate =
-							new Date(System.currentTimeMillis() - (60 * getPresenceMissingIntervalSecs()));
+					Date endDate = new Date(System.currentTimeMillis() - (missingIntervalSecs * 1000));
 					DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 0, null, endDate);
 					ISearchResults<IDeviceAssignment> missing =
 							devices.getDeviceAssignmentsWithLastInteraction(site.getToken(), criteria);
@@ -161,7 +194,7 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 				}
 
 				try {
-					Thread.sleep(getPresenceCheckIntervalSecs() * 1000);
+					Thread.sleep(checkIntervalSecs * 1000);
 				} catch (InterruptedException e) {
 					LOGGER.info("Presence check thread shut down.", e);
 				}
@@ -183,19 +216,19 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 		this.presenceNotificationStrategy = presenceNotificationStrategy;
 	}
 
-	public int getPresenceCheckIntervalSecs() {
-		return presenceCheckIntervalSecs;
+	public String getPresenceCheckInterval() {
+		return presenceCheckInterval;
 	}
 
-	public void setPresenceCheckIntervalSecs(int presenceCheckIntervalSecs) {
-		this.presenceCheckIntervalSecs = presenceCheckIntervalSecs;
+	public void setPresenceCheckInterval(String presenceCheckInterval) {
+		this.presenceCheckInterval = presenceCheckInterval;
 	}
 
-	public int getPresenceMissingIntervalSecs() {
-		return presenceMissingIntervalSecs;
+	public String getPresenceMissingInterval() {
+		return presenceMissingInterval;
 	}
 
-	public void setPresenceMissingIntervalSecs(int presenceMissingIntervalSecs) {
-		this.presenceMissingIntervalSecs = presenceMissingIntervalSecs;
+	public void setPresenceMissingInterval(String presenceMissingInterval) {
+		this.presenceMissingInterval = presenceMissingInterval;
 	}
 }

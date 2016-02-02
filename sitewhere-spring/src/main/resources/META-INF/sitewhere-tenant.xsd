@@ -2012,22 +2012,7 @@
 
 	<xsd:complexType name="deviceServicesType">
 		<xsd:sequence>
-			<xsd:choice minOccurs="1" maxOccurs="1">
-				<xsd:element name="registration-manager" type="registrationManagerReferenceType">
-					<xsd:annotation>
-						<xsd:documentation>
-							References a custom registration manager implementation.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-				<xsd:element name="default-registration-manager" type="defaultRegistrationManagerType">
-					<xsd:annotation>
-						<xsd:documentation>
-							Configures the default registration manager implementation.
-						</xsd:documentation>
-					</xsd:annotation>
-				</xsd:element>
-			</xsd:choice>
+			<xsd:element ref="abstract-registration-manager" minOccurs="0"/>
 			<xsd:element name="symbol-generator-manager" type="symbolGeneratorManagerType"
 				minOccurs="0">
 				<xsd:annotation>
@@ -2036,35 +2021,82 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element ref="abstract-presence-manager" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<!-- Used as a placeholder for registration manager elements to allow substitutionGroups -->
+	<xsd:element name="abstract-registration-manager" abstract="true"
+		type="abstractRegistrationManagerType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for registration manager elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common registration manager element information -->
+	<xsd:complexType name="abstractRegistrationManagerType"/>
+	
+	<!-- Registration manager reference -->
+	<xsd:element name="registration-manager" type="registrationManagerReferenceType"
+		substitutionGroup="abstract-registration-manager">
+		<xsd:annotation>
+			<xsd:documentation>
+				Allows a custom registration manager to be installed.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
 	<xsd:complexType name="registrationManagerReferenceType">
-		<xsd:attribute name="ref" type="xsd:string"></xsd:attribute>
+		<xsd:complexContent>
+			<xsd:extension base="abstractRegistrationManagerType">
+				<xsd:attribute name="ref" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Identifies bean that implements registration manager.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
-
+	
+	<!-- Default registration manager implementation -->
+	<xsd:element name="default-registration-manager" type="defaultRegistrationManagerType"
+		substitutionGroup="abstract-registration-manager">
+		<xsd:annotation>
+			<xsd:documentation>
+				Installs the default registration manager implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
 	<xsd:complexType name="defaultRegistrationManagerType">
-		<xsd:attribute name="allowNewDevices" type="xsd:boolean">
-			<xsd:annotation>
-				<xsd:documentation>Indicates whether new devices should be allowed to register. If set
-					to false, devices not already in the system will be rejected.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="autoAssignSite" type="xsd:boolean">
-			<xsd:annotation>
-				<xsd:documentation>Indicates whether the site should automatically be chosen if not
-					passed with registration request.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="autoAssignToken" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>Token for site used in auto assignment. If not set and
-					'autoAssignSite' is set to true, the first site will be used.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
+		<xsd:complexContent>
+			<xsd:extension base="abstractRegistrationManagerType">
+				<xsd:attribute name="allowNewDevices" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Indicates whether new devices should be allowed to register. If
+							set
+							to false, devices not already in the system will be rejected.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="autoAssignSite" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Indicates whether the site should automatically be chosen if not
+							passed with registration request.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="autoAssignToken" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>Token for site used in auto assignment. If not set and
+							'autoAssignSite' is set to true, the first site will be used.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Used as a placeholder for symbol generator elements to allow substitutionGroups -->
@@ -2140,6 +2172,52 @@
 					<xsd:annotation>
 						<xsd:documentation>
 							Foreground color for QR code image.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for presence manager elements to allow substitutionGroups -->
+	<xsd:element name="abstract-presence-manager" abstract="true"
+		type="abstractPresenceManagerType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for presence manager elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common presence manager element information -->
+	<xsd:complexType name="abstractPresenceManagerType"/>
+
+	<!-- Default presence manager implementation -->
+	<xsd:element name="default-presence-manager" type="defaultPresenceManagerType"
+		substitutionGroup="abstract-presence-manager">
+		<xsd:annotation>
+			<xsd:documentation>
+				Default presence manager implementation.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultPresenceManagerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractPresenceManagerType">
+				<xsd:attribute name="checkInterval" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Amount of time to wait between presence check cycles. Uses
+							ISO8601 duration format. (e.g. T1H30M is 1 hour and 30 minutes)
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="presenceMissingInterval" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Amount of time since last interaction date at which a device is
+							considered non-present. Uses ISO8601 duration format. (e.g. P2DT3H5M20S is 2 days,
+							3 hours, 5 minutes, and 20 seconds)
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

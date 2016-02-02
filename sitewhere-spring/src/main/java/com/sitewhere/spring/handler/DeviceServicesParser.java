@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 import com.sitewhere.device.communication.RegistrationManager;
 import com.sitewhere.device.communication.symbology.QrCodeSymbolGenerator;
 import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
+import com.sitewhere.device.presence.DevicePresenceManager;
 
 /**
  * Parse elements related to device registration.
@@ -30,14 +31,14 @@ import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
 public class DeviceServicesParser {
 
 	/**
-	 * Parse elements in the device registration section.
+	 * Parse elements in the device service section.
 	 * 
 	 * @param dcomm
 	 * @param element
 	 * @param context
 	 * @return
 	 */
-	protected void parse(BeanDefinitionBuilder dcomm, Element element, ParserContext context) {
+	protected void parse(BeanDefinitionBuilder services, Element element, ParserContext context) {
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -46,15 +47,22 @@ public class DeviceServicesParser {
 			}
 			switch (type) {
 			case DefaultRegistrationManager: {
-				dcomm.addPropertyValue("registrationManager", parseDefaultRegistrationManager(child, context));
+				services.addPropertyValue("registrationManager",
+						parseDefaultRegistrationManager(child, context));
 				break;
 			}
 			case RegistrationManager: {
-				dcomm.addPropertyValue("registrationManager", parseRegistrationManager(child, context));
+				services.addPropertyValue("registrationManager", parseRegistrationManager(child, context));
 				break;
 			}
 			case SymbolGeneratorManager: {
-				dcomm.addPropertyValue("symbolGeneratorManager", parseSymbolGeneratorManager(child, context));
+				services.addPropertyValue("symbolGeneratorManager",
+						parseSymbolGeneratorManager(child, context));
+				break;
+			}
+			case DefaultPresenceManager: {
+				services.addPropertyValue("devicePresenceManager",
+						parseDefaultPresenceManager(child, context));
 				break;
 			}
 			}
@@ -181,6 +189,29 @@ public class DeviceServicesParser {
 	}
 
 	/**
+	 * Parse information for the default presence manager.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected BeanDefinition parseDefaultPresenceManager(Element element, ParserContext context) {
+		BeanDefinitionBuilder manager = BeanDefinitionBuilder.rootBeanDefinition(DevicePresenceManager.class);
+
+		Attr checkInterval = element.getAttributeNode("checkInterval");
+		if (checkInterval != null) {
+			manager.addPropertyValue("presenceCheckInterval", checkInterval.getValue());
+		}
+
+		Attr presenceMissingInterval = element.getAttributeNode("presenceMissingInterval");
+		if (presenceMissingInterval != null) {
+			manager.addPropertyValue("presenceMissingInterval", presenceMissingInterval.getValue());
+		}
+
+		return manager.getBeanDefinition();
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -194,7 +225,10 @@ public class DeviceServicesParser {
 		RegistrationManager("registration-manager"),
 
 		/** Symbol generator manager reference */
-		SymbolGeneratorManager("symbol-generator-manager");
+		SymbolGeneratorManager("symbol-generator-manager"),
+
+		/** Default presence manager */
+		DefaultPresenceManager("default-presence-manager");
 
 		/** Event code */
 		private String localName;

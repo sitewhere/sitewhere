@@ -100,6 +100,10 @@
 						width="250" height="250" backgroundColor="FFFFFFFF" foregroundColor="FF111111"/>
 
 				</sw:symbol-generator-manager>
+				
+				<!-- Configures presence management -->
+				<sw:default-presence-manager checkInterval="PT5M"
+					presenceMissingInterval="PT8H"/>
 
 			</sw:device-services>
 			

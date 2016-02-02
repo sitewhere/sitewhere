@@ -7,11 +7,15 @@
  */
 package com.sitewhere.web;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -19,6 +23,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
@@ -45,7 +50,7 @@ public class WebConfiguration {
 	@Configuration
 	@ComponentScan(basePackages = "com.sitewhere.web.rest.controllers")
 	@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-	public static class RestConfiguration extends WebSecurityConfigurerAdapter {
+	public static class RestConfiguration extends WebSecurityMvcConfigurerAdapter {
 
 		@Autowired
 		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -69,6 +74,30 @@ public class WebConfiguration {
 			http.csrf().disable();
 			http.antMatcher("/api/**").authorizeRequests().antMatchers("/api/**").hasRole(
 					SiteWhereRoles.AUTH_REST).and().httpBasic();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.web.WebSecurityMvcConfigurerAdapter#configureContentNegotiation(
+		 * org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer)
+		 */
+		@Override
+		public void configureContentNegotiation(ContentNegotiationConfigurer content) {
+			content.favorPathExtension(false);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.web.WebSecurityMvcConfigurerAdapter#configureMessageConverters(
+		 * java.util.List)
+		 */
+		@Override
+		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+			converters.add(new MappingJackson2HttpMessageConverter());
 		}
 	}
 

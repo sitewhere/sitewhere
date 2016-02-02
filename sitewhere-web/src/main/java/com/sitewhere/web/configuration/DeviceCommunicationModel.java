@@ -61,6 +61,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createDefaultRegistrationManagerElement());
 		addElement(createSymbolGeneratorManagerElement());
 		addElement(createQRCodeSymbolGeneratorElement());
+		addElement(createDefaultPresenceManagerElement());
 
 		// Batch operations.
 		addElement(createBatchOperationsElement());
@@ -601,6 +602,32 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				AttributeType.String).description(
 						"Foreground color of QR-Code image in AARRGGBB format.").defaultValue(
 								"FF333333").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for default presence manager.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createDefaultPresenceManagerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Default Presence Manager",
+						DeviceServicesParser.Elements.DefaultPresenceManager.getLocalName(), "bullseye",
+						ElementRole.DeviceServices_PresenceManager);
+
+		builder.description("Determines device presence information by monitoring the last interaction date"
+				+ "for the device and firing an event if too much time has elapsed.");
+		builder.attribute((new AttributeNode.Builder("Check interval", "checkInterval",
+				AttributeType.String).description(
+						"Time duration (in ISO6801 duration format) that indicates amount of time to "
+								+ "to wait between performing presence checks.").defaultValue(
+										"PT5M").build()));
+		builder.attribute((new AttributeNode.Builder("Presence missing interval", "presenceMissingInterval",
+				AttributeType.String).description(
+						"Time duration (in ISO6801 duration format) that indicates amount of time to "
+								+ "since last interaction with a device to consider it non-present.").defaultValue(
+										"PT8H").build()));
 		return builder.build();
 	}
 

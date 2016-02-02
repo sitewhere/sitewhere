@@ -7,13 +7,13 @@
  */
 package com.sitewhere;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.system.IVersion;
-
-import java.util.Properties;
-import java.io.InputStream;
-import java.io.IOException;
 
 
 /**
