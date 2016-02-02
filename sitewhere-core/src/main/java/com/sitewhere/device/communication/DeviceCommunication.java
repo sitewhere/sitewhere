@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.device.communication.symbology.SymbolGeneratorManager;
-import com.sitewhere.device.presence.DevicePresenceManager;
 import com.sitewhere.server.batch.BatchOperationManager;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -50,7 +49,7 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 	private IDeviceStreamManager deviceStreamManager = new DeviceStreamManager();
 
 	/** Configured device presence manager */
-	private IDevicePresenceManager devicePresenceManager = new DevicePresenceManager();
+	private IDevicePresenceManager devicePresenceManager;
 
 	/** Configured list of inbound event sources */
 	private List<IInboundEventSource<?>> inboundEventSources = new ArrayList<IInboundEventSource<?>>();
@@ -124,12 +123,10 @@ public abstract class DeviceCommunication extends TenantLifecycleComponent imple
 		}
 		startNestedComponent(getDeviceStreamManager(), true);
 
-		// Start device presence manager.
-		if (getDevicePresenceManager() == null) {
-			throw new SiteWhereException(
-					"No device presence manager configured for communication subsystem.");
+		// Start device presence manager if configured.
+		if (getDevicePresenceManager() != null) {
+			startNestedComponent(getDevicePresenceManager(), true);
 		}
-		startNestedComponent(getDevicePresenceManager(), true);
 
 		// Start device event sources.
 		if (getInboundEventSources() != null) {

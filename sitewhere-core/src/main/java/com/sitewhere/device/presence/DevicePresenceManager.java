@@ -50,10 +50,10 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 	private static Logger LOGGER = Logger.getLogger(DevicePresenceManager.class);
 
 	/** Default presence check interval (10 min) */
-	private static final String DEFAULT_PRESENCE_CHECK_INTERVAL = "T1M";
+	private static final String DEFAULT_PRESENCE_CHECK_INTERVAL = "10m";
 
 	/** Default presence missing interval (1 hour) */
-	private static final String DEFAULT_PRESENCE_MISSING_INTERVAL = "T2M30S";
+	private static final String DEFAULT_PRESENCE_MISSING_INTERVAL = "8h";
 
 	/** Used to format durations for output */
 	private static final PeriodFormatter PERIOD_FORMATTER =

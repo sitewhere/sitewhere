@@ -516,12 +516,14 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	 */
 	protected ElementNode createDeviceServicesElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder("Device Registration and Symbology",
-						DeviceCommunicationParser.Elements.DeviceServices.getLocalName(), "qrcode",
+				new ElementNode.Builder("Device Interaction Services",
+						DeviceCommunicationParser.Elements.DeviceServices.getLocalName(), "star",
 						ElementRole.DeviceCommunication_DeviceServices);
 
-		builder.description("Manages how new devices are registered with the system and how symbols such "
-				+ "as QR-codes are associated with SiteWhere entities.");
+		builder.description("Manages services that control various types of device interactions. "
+				+ "This includes how new devices are registered with the system, how symbols such "
+				+ "as QR-codes are associated with SiteWhere entities, and how device presence "
+				+ "calculations are performed.");
 		return builder.build();
 	}
 
@@ -620,14 +622,14 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				+ "for the device and firing an event if too much time has elapsed.");
 		builder.attribute((new AttributeNode.Builder("Check interval", "checkInterval",
 				AttributeType.String).description(
-						"Time duration (in ISO6801 duration format) that indicates amount of time to "
+						"Time duration (ISO6801 or '1h 10m 30s' format) that indicates amount of time to "
 								+ "to wait between performing presence checks.").defaultValue(
-										"PT5M").build()));
+										"10m").build()));
 		builder.attribute((new AttributeNode.Builder("Presence missing interval", "presenceMissingInterval",
 				AttributeType.String).description(
-						"Time duration (in ISO6801 duration format) that indicates amount of time to "
+						"Time duration (ISO6801 or '2d 5h 10m' format) that indicates amount of time to "
 								+ "since last interaction with a device to consider it non-present.").defaultValue(
-										"PT8H").build()));
+										"8h").build()));
 		return builder.build();
 	}
 
