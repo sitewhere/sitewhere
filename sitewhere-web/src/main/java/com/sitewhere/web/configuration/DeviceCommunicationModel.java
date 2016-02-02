@@ -622,12 +622,12 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				+ "for the device and firing an event if too much time has elapsed.");
 		builder.attribute((new AttributeNode.Builder("Check interval", "checkInterval",
 				AttributeType.String).description(
-						"Time duration (ISO6801 or '1h 10m 30s' format) that indicates amount of time to "
+						"Time duration (ISO8601 or \"1h 10m 30s\" format) that indicates amount of time to "
 								+ "to wait between performing presence checks.").defaultValue(
 										"10m").build()));
 		builder.attribute((new AttributeNode.Builder("Presence missing interval", "presenceMissingInterval",
 				AttributeType.String).description(
-						"Time duration (ISO6801 or '2d 5h 10m' format) that indicates amount of time to "
+						"Time duration (ISO8601 or \"2d 5h 10m\" format) that indicates amount of time to "
 								+ "since last interaction with a device to consider it non-present.").defaultValue(
 										"8h").build()));
 		return builder.build();
