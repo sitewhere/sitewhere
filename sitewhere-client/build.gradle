@@ -2,7 +2,7 @@
 description = 'SiteWhere Client'
 dependencies {
     compile project(':sitewhere-core-api')
-    compile group: 'org.springframework', name: 'spring-web', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.3.1'
     
     testCompile group: 'org.apache.activemq', name: 'activemq-all', version:'5.10.0'

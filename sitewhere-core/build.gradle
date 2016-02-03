@@ -10,18 +10,20 @@ dependencies {
         exclude (module: 'jaxb-api')
         exclude (module: 'jaxb-impl')
     }
-    compile group: 'org.springframework', name: 'spring-core', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework', name: 'spring-beans', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework', name: 'spring-context', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework', name: 'spring-context-support', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework', name: 'spring-tx', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework', name: 'spring-orm', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework', name: 'spring-jdbc', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework', name: 'spring-jms', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework', name: 'spring-webmvc', version:'3.2.10.RELEASE'
-    compile group: 'org.springframework.security', name: 'spring-security-config', version:'3.2.6.RELEASE'
-    compile group: 'org.springframework.security', name: 'spring-security-core', version:'3.2.6.RELEASE'
-    compile group: 'org.springframework.security', name: 'spring-security-web', version:'3.2.6.RELEASE'
+    
+    compile group: 'org.springframework', name: 'spring-core'
+    compile group: 'org.springframework', name: 'spring-beans'
+    compile group: 'org.springframework', name: 'spring-context'
+    compile group: 'org.springframework', name: 'spring-context-support'
+    compile group: 'org.springframework', name: 'spring-tx'
+    compile group: 'org.springframework', name: 'spring-orm'
+    compile group: 'org.springframework', name: 'spring-jdbc'
+    compile group: 'org.springframework', name: 'spring-jms'
+    compile group: 'org.springframework', name: 'spring-webmvc'
+    compile group: 'org.springframework.security', name: 'spring-security-config'
+    compile group: 'org.springframework.security', name: 'spring-security-core'
+    compile group: 'org.springframework.security', name: 'spring-security-web'
+    
     compile group: 'com.hazelcast', name: 'hazelcast', version:'3.5.3'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.1.5'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.1.5'

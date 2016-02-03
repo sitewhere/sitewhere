@@ -17,5 +17,5 @@ dependencies {
     compile project(':sitewhere-solr')
     compile project(':sitewhere-twilio')
     compile project(':sitewhere-wso2')
-    compile group: 'org.springframework', name: 'spring-beans', version:'3.2.10.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans'
 }
