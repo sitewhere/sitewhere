@@ -1,33 +1,8 @@
 /bin
-/sitewhere-activemq/target
-/sitewhere-azure/target
-/sitewhere-client/target
-/sitewhere-cloud/target
-/sitewhere-core/target
-/sitewhere-core-api/target
-/sitewhere-documentation/target
-/sitewhere-ehcache/target
-/sitewhere-gnuhealth/target
-/sitewhere-groovy/target
-/sitewhere-hbase/target
-/sitewhere-hbase/src/gen
-/sitewhere-influx/target
-/sitewhere-magento/target
-/sitewhere-mongodb/target
-/sitewhere-mule/target
-/sitewhere-protobuf/target
-/sitewhere-rabbit-mq/target
-/sitewhere-server-api/target
-/sitewhere-siddhi/target
-/sitewhere-solr/target
-/sitewhere-spark/target
-/sitewhere-spring/target
-/sitewhere-twilio/target
-/sitewhere-web/target
-/sitewhere-wso2/target
 /deploy
 /target
 
 ### Gradle ###
 build
 .gradle*
+/.settings/
