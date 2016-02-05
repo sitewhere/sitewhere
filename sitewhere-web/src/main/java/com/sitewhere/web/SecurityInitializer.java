@@ -9,6 +9,9 @@ package com.sitewhere.web;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 
+import com.sitewhere.web.mvc.MvcSecurityConfiguration;
+import com.sitewhere.web.rest.RestSecurityConfiguration;
+
 /**
  * Web application initializer that bootstraps Spring Security.
  * 
@@ -17,6 +20,6 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 public class SecurityInitializer extends AbstractSecurityWebApplicationInitializer {
 
 	public SecurityInitializer() {
-		super(WebConfiguration.class);
+		super(MvcSecurityConfiguration.class, RestSecurityConfiguration.class);
 	}
 }

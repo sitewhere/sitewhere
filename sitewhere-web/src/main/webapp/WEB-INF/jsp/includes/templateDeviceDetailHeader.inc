@@ -82,11 +82,11 @@
 			</div>
 			<div>
 				<span class="sw-device-header-label" title="#= i18next("includes.i18next.DDWATTS") #">#= i18next("public.CreatedDate") #:</span>
-				<span title="#= formattedDate(createdDate) #">#= formattedDate(createdDate) #</span>
+				<span title="#: formattedDate(data.createdDate) #">#: formattedDate(data.createdDate) #</span>
 			</div>
 			<div>
 				<span class="sw-device-header-label" title="#= i18next("includes.i18next.DDWLU") #">#= i18next("public.UpdatedDate") #:</span>
-				<span title="#= formattedDate(createdDate) #">#= formattedDate(updatedDate) #</span>
+				<span title="#: formattedDate(data.createdDate) #">#: formattedDate(data.updatedDate) #</span>
 			</div>
 		</div>
 	</div>

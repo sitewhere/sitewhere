@@ -15,7 +15,6 @@ import com.sitewhere.web.JsonpFilter;
 import com.sitewhere.web.MethodOverrideFilter;
 import com.sitewhere.web.NoCacheFilter;
 import com.sitewhere.web.ResponseTimerFilter;
-import com.sitewhere.web.WebConfiguration;
 import com.sitewhere.web.swagger.SiteWhereSwaggerConfig;
 
 /**
@@ -55,7 +54,7 @@ public class RestInitializer extends AbstractAnnotationConfigDispatcherServletIn
 	 */
 	@Override
 	protected Class<?>[] getServletConfigClasses() {
-		return new Class[] { WebConfiguration.RestConfiguration.class, SiteWhereSwaggerConfig.class };
+		return new Class[] { RestMvcConfiguration.class, SiteWhereSwaggerConfig.class };
 	}
 
 	/*

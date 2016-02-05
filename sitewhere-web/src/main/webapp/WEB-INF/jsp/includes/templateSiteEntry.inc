@@ -58,8 +58,8 @@
 			style="background-image: url(#:imageUrl#); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 		</div>
 		<div class="sw-site-list-entry-actions">
-			<p class="ellipsis"><span class="sw-site-list-entry-label">#= i18next("public.Created") #:</span> #= formattedDate(createdDate) #</p>
-			<p class="ellipsis"><span class="sw-site-list-entry-label">#= i18next("public.Updated") #:</span> #= formattedDate(updatedDate) #</p>
+			<p class="ellipsis"><span class="sw-site-list-entry-label">#= i18next("public.Created") #:</span> #: formattedDate(data.createdDate) #</p>
+			<p class="ellipsis"><span class="sw-site-list-entry-label">#= i18next("public.Updated") #:</span> #: formattedDate(data.updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: 3px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next('public.EditSite') #" style="color: \\#009;" 

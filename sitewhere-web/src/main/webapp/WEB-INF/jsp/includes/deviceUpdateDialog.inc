@@ -80,8 +80,8 @@
 	</div>
 	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.HardwareId") #:</span> #:hardwareId#</p>
 	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.Specification") #:</span> #:specification.name#</p>
-	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.Created") #:</span> #= formattedDate(kendo.parseDate(createdDate)) #</p>
-	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.Updated") #:</span> #= formattedDate(kendo.parseDate(updatedDate)) #</p>
+	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.Created") #:</span> #: formattedDate(kendo.parseDate(data.createdDate)) #</p>
+	<p class="ellipsis"><span class="sw-device-update-label">#= i18next("public.Updated") #:</span> #: formattedDate(kendo.parseDate(data.updatedDate)) #</p>
 </script>
 
 <script>

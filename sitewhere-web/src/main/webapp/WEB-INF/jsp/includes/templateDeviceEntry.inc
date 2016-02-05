@@ -83,8 +83,8 @@
 			<span class="label label-info sw-device-list-entry-logo-tag">#= i18next("public.Device") #</span>
 		</div>
 		<div class="sw-device-list-entry-actions">
-			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Created") #:</span> #= formattedDate(createdDate) #</p>
-			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Updated") #:</span> #= formattedDate(updatedDate) #</p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Created") #:</span> #: formattedDate(data.createdDate) #</p>
+			<p class="ellipsis"><span class="sw-device-list-entry-label sw-min-70">#= i18next("public.Updated") #:</span> #: formattedDate(data.updatedDate) #</p>
 # if (data.inDetailView == null) { #
 			<div class="btn-group btn-group-vertical" style="position: absolute; right: 0px; top: -2px;">
 				<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="#= i18next("public.EditDevice") #" style="color: \\#009;" 

@@ -8,8 +8,8 @@
 		</td>
 		<td class="ellipsis" style="max-width: 200px;">#:name#</td>
 		<td>#:token#</td>
-		<td>#= formattedDate(createdDate) #</td>
-		<td>#= formattedDate(updatedDate) #</td>
+		<td>#: formattedDate(data.createdDate) #</td>
+		<td>#: formattedDate(data.updatedDate) #</td>
 		<td>
 			<div style="width: 100%; text-align: left">
 				<i class="fa fa-edit sw-action-glyph sw-edit-glyph" title="#= i18next("includes.EditZone") #"

@@ -118,8 +118,8 @@
 		</div>
 # } #
 		<div class="sw-assignment-list-entry-actions">
-			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 70px;">#= i18next("public.Assigned") #:</span> #= formattedDate(activeDate) #</p>
-			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 70px;">#= i18next("public.Released") #:</span> #= formattedDate(releasedDate) #</p>
+			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 70px;">#= i18next("public.Assigned") #:</span> #: formattedDate(data.activeDate) #</p>
+			<p class="ellipsis"><span class="sw-assignment-list-entry-label" style="min-width: 70px;">#= i18next("public.Released") #:</span> #: formattedDate(data.releasedDate) #</p>
 # if (data.status == 'Active') { #
 			<span class="sw-min-70 sw-assignment-list-entry-label">#= i18next("public.Status") #:</span>			
 			<div class="btn-group" style="margin-top: -6px;">

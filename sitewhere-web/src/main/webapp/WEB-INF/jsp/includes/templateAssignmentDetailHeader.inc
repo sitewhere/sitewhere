@@ -113,19 +113,19 @@
 			</div>
 			<div>
 				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DAWC") #">#= i18next("public.CreatedDate") #:</span>
-				<span title="#= formattedDate(createdDate) #">#= formattedDate(createdDate) #</span>
+				<span title="#= formattedDate(createdDate) #">#: formattedDate(data.createdDate) #</span>
 			</div>
 			<div>
 				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DAWLU") #">#= i18next("public.UpdatedDate") #:</span>
-				<span title="#= formattedDate(createdDate) #">#= formattedDate(updatedDate) #</span>
+				<span title="#= formattedDate(createdDate) #">#: formattedDate(data.updatedDate) #</span>
 			</div>
 			<div>
 				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DABA") #">#= i18next("includes.i18next.ActiveDate") #:</span>
-				<span title="#= formattedDate(activeDate) #">#= formattedDate(activeDate) #</span>
+				<span title="#: formattedDate(data.activeDate) #">#: formattedDate(data.activeDate) #</span>
 			</div>
 			<div>
 				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DAWR") #">#= i18next("includes.i18next.ReleasedDate") #:</span>
-				<span title="#= formattedDate(releasedDate) #">#= formattedDate(releasedDate) #</releasedDate>
+				<span title="#: formattedDate(data.releasedDate) #">#: formattedDate(data.releasedDate) #</span>
 			</div>
 			<div>
 				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.Assignmentstatus") #">#= i18next("includes.i18next.AssignmentStatus") #:</span>

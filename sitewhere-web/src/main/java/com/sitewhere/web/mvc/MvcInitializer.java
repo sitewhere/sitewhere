@@ -9,8 +9,6 @@ package com.sitewhere.web.mvc;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import com.sitewhere.web.WebConfiguration;
-
 /**
  * Initializes MVC servlet configuration.
  * 
@@ -48,7 +46,7 @@ public class MvcInitializer extends AbstractAnnotationConfigDispatcherServletIni
 	 */
 	@Override
 	protected Class<?>[] getServletConfigClasses() {
-		return new Class[] { WebConfiguration.MvcConfiguration.class };
+		return new Class[] { MvcConfiguration.class };
 	}
 
 	/*

@@ -25,9 +25,9 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-web'
     
     compile group: 'com.hazelcast', name: 'hazelcast', version:'3.5.3'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.1.5'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.1.5'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version:'2.1.5'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
     compile group: 'com.vividsolutions', name: 'jts', version:'1.13'
     compile group: 'com.github.kenglxn.qrgen', name: 'javase', version:'2.1.0'
     compile group: 'org.fusesource.mqtt-client', name: 'mqtt-client', version:'1.12'
