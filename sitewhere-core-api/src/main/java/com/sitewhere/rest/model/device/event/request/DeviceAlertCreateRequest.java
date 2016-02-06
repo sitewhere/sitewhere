@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.event.request;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -22,8 +23,8 @@ import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceAlertCreateRequest extends DeviceEventCreateRequest implements IDeviceAlertCreateRequest,
-		Serializable {
+public class DeviceAlertCreateRequest extends DeviceEventCreateRequest
+		implements IDeviceAlertCreateRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 7660473778731839384L;
@@ -90,5 +91,69 @@ public class DeviceAlertCreateRequest extends DeviceEventCreateRequest implement
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public static class Builder extends DeviceEventCreateRequest.Builder<DeviceAlertCreateRequest> {
+
+		private DeviceAlertCreateRequest request = new DeviceAlertCreateRequest();
+
+		public Builder(String type, String message) {
+			request.setType(type);
+			request.setMessage(message);
+			request.setSource(AlertSource.Device);
+			request.setLevel(AlertLevel.Info);
+		}
+
+		public Builder asSystemAlert() {
+			request.setSource(AlertSource.System);
+			return this;
+		}
+
+		public Builder warning() {
+			request.setLevel(AlertLevel.Warning);
+			return this;
+		}
+
+		public Builder error() {
+			request.setLevel(AlertLevel.Error);
+			return this;
+		}
+
+		public Builder critical() {
+			request.setLevel(AlertLevel.Critical);
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest.Builder#
+		 * getRequest()
+		 */
+		@Override
+		public DeviceAlertCreateRequest getRequest() {
+			return request;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest.Builder#
+		 * build()
+		 */
+		@Override
+		public DeviceAlertCreateRequest build() {
+			return request;
+		}
 	}
 }

@@ -7,7 +7,9 @@
  */
 package com.sitewhere.rest.model.device.event.request.scripting;
 
+import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.IDeviceEvent;
@@ -27,15 +29,16 @@ public class DeviceEventRequestBuilder {
 		this.events = events;
 	}
 
-	/**
-	 * Create request for a new location event.
-	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @return
-	 */
 	public DeviceLocationCreateRequest.Builder newLocation(double latitude, double longitude) {
 		return new DeviceLocationCreateRequest.Builder(latitude, longitude);
+	}
+
+	public DeviceMeasurementsCreateRequest.Builder newMeasurements() {
+		return new DeviceMeasurementsCreateRequest.Builder();
+	}
+
+	public DeviceAlertCreateRequest.Builder newAlert(String type, String message) {
+		return new DeviceAlertCreateRequest.Builder(type, message);
 	}
 
 	public AssignmentScope forSameAssignmentAs(DeviceEventSupport support) {
@@ -65,8 +68,21 @@ public class DeviceEventRequestBuilder {
 
 		public AssignmentScope persist(DeviceLocationCreateRequest.Builder builder)
 				throws SiteWhereException {
-			DeviceLocationCreateRequest request = builder.getRequest();
+			DeviceLocationCreateRequest request = builder.build();
 			events.addDeviceLocation(getAssignmentToken(), request);
+			return this;
+		}
+
+		public AssignmentScope persist(DeviceMeasurementsCreateRequest.Builder builder)
+				throws SiteWhereException {
+			DeviceMeasurementsCreateRequest request = builder.build();
+			events.addDeviceMeasurements(getAssignmentToken(), request);
+			return this;
+		}
+
+		public AssignmentScope persist(DeviceAlertCreateRequest.Builder builder) throws SiteWhereException {
+			DeviceAlertCreateRequest request = builder.build();
+			events.addDeviceAlert(getAssignmentToken(), request);
 			return this;
 		}
 

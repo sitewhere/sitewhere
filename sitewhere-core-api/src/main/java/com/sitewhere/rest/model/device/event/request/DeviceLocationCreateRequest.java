@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.event.request;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -74,11 +75,6 @@ public class DeviceLocationCreateRequest extends DeviceEventCreateRequest
 		this.elevation = elevation;
 	}
 
-	/**
-	 * Supports builder pattern for creating a device location request.
-	 * 
-	 * @author Derek
-	 */
 	public static class Builder extends DeviceEventCreateRequest.Builder<DeviceLocationCreateRequest> {
 
 		private DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
@@ -89,14 +85,16 @@ public class DeviceLocationCreateRequest extends DeviceEventCreateRequest
 			request.setElevation(0.0);
 		}
 
-		/**
-		 * Set elevation for request.
-		 * 
-		 * @param value
-		 * @return
-		 */
 		public Builder withElevation(double value) {
 			request.setElevation(value);
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
 			return this;
 		}
 

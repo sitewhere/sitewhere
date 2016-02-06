@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -108,5 +109,30 @@ public class DeviceAssignmentCreateRequest implements IDeviceAssignmentCreateReq
 
 	public void setMetadata(Map<String, String> metadata) {
 		this.metadata = metadata;
+	}
+	
+	public static class Builder {
+
+		/** Request being built */
+		private DeviceAssignmentCreateRequest request = new DeviceAssignmentCreateRequest();
+
+		public Builder(String hardwareId, String assetModuleId, String assetId) {
+			request.setDeviceHardwareId(hardwareId);
+			request.setAssetModuleId(assetModuleId);
+			request.setAssetId(assetId); 
+			request.setAssignmentType(DeviceAssignmentType.Associated);
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public DeviceAssignmentCreateRequest build() {
+			return request;
+		}
 	}
 }

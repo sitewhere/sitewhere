@@ -190,7 +190,7 @@ public class DeviceCreateRequest implements IDeviceCreateRequest, Serializable {
 			request.setComments("");
 		}
 
-		public Builder comments(String comments) {
+		public Builder withComment(String comments) {
 			request.setComments(comments);
 			return this;
 		}

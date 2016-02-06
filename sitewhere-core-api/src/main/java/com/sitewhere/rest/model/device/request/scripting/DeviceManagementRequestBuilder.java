@@ -7,11 +7,14 @@
  */
 package com.sitewhere.rest.model.device.request.scripting;
 
+import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
@@ -63,8 +66,18 @@ public class DeviceManagementRequestBuilder {
 		return new DeviceCreateRequest.Builder(siteToken, specificationToken, hardwareId);
 	}
 
-	public void persist(DeviceCreateRequest.Builder builder) throws SiteWhereException {
-		getDeviceManagement().createDevice(builder.build());
+	public IDevice persist(DeviceCreateRequest.Builder builder) throws SiteWhereException {
+		return getDeviceManagement().createDevice(builder.build());
+	}
+
+	public DeviceAssignmentCreateRequest.Builder newAssignment(String hardwareId, String assetModuleId,
+			String assetId) {
+		return new DeviceAssignmentCreateRequest.Builder(hardwareId, assetModuleId, assetId);
+	}
+
+	public IDeviceAssignment persist(DeviceAssignmentCreateRequest.Builder builder)
+			throws SiteWhereException {
+		return getDeviceManagement().createDeviceAssignment(builder.build());
 	}
 
 	public IDeviceManagement getDeviceManagement() {
