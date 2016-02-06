@@ -138,12 +138,11 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onStateChange(
-	 * com.sitewhere.spi.device.event.IDeviceStateChange)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onStateChangeNotFiltered(com.sitewhere.spi.device.event.IDeviceStateChange)
 	 */
 	@Override
-	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
 		LOGGER.info("Hazelcast received state change of type: " + state.getCategory().name() + ":"
 				+ state.getNewState());
 	}

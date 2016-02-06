@@ -82,4 +82,28 @@ public class DeviceEventCreateRequest implements IDeviceEventCreateRequest, Seri
 	public void setMetadata(Map<String, String> metadata) {
 		this.metadata = metadata;
 	}
+
+	/**
+	 * Uses builder pattern to create device event requests.
+	 * 
+	 * @author Derek
+	 */
+	public abstract static class Builder<T extends DeviceEventCreateRequest> {
+
+		// Request type implemented in subclasses.
+		public abstract T getRequest();
+
+		// Build the create request.
+		public abstract T build();
+
+		public Builder<T> on(Date date) {
+			getRequest().setEventDate(date);
+			return this;
+		}
+
+		public Builder<T> trackState() {
+			getRequest().setUpdateState(true);
+			return this;
+		}
+	}
 }

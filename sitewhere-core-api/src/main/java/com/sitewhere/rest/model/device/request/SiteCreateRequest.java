@@ -8,11 +8,14 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.SiteMapData;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.ISiteMapMetadata;
 import com.sitewhere.spi.device.request.ISiteCreateRequest;
 
 /**
@@ -120,5 +123,44 @@ public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 
 	public void setMetadata(Map<String, String> metadata) {
 		this.metadata = metadata;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private SiteCreateRequest request = new SiteCreateRequest();
+
+		public Builder(String token, String name, String description, String imageUrl) {
+			request.setToken(token);
+			request.setName(name);
+			request.setDescription(description);
+			request.setImageUrl(imageUrl);
+		}
+
+		public Builder mapquestMap(double latitude, double longitude, int zoomLevel) {
+			SiteMapData map = new SiteMapData();
+			try {
+				map.setType("mapquest");
+				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LATITUDE, String.valueOf(latitude));
+				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LONGITUDE, String.valueOf(longitude));
+				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_ZOOM_LEVEL, String.valueOf(zoomLevel));
+				request.setMap(map);
+			} catch (SiteWhereException e) {
+				throw new RuntimeException(e);
+			}
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public SiteCreateRequest build() {
+			return request;
+		}
 	}
 }

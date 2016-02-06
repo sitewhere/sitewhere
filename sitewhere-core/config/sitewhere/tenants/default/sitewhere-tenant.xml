@@ -52,7 +52,7 @@
 			<sw:hazelcast-cache/>
 			
 			<!-- Initializes data model with sample data if datastore is empty -->
-			<sw:default-device-model-initializer/>
+			<sw:groovy-device-model-initializer scriptPath="initializer/deviceModel.groovy"/>
 			<sw:default-asset-model-initializer/>
 			<sw:default-schedule-model-initializer/>
 
@@ -198,6 +198,9 @@
 			
 				<!-- Send outbound device events over Hazelcast -->
 				<sw:hazelcast-event-processor/>
+				
+				<!-- Perform custom processing in a Groovy script -->
+				<sw:groovy-event-processor scriptPath="rangeCheck.groovy"/>
 
 			</sw:outbound-processing-chain>
 

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceActions;
@@ -38,6 +39,24 @@ public class DeviceActions implements IDeviceActions {
 	public DeviceActions(IDeviceManagement deviceManagement, IDeviceEventManagement deviceEventManagement) {
 		this.deviceManagement = deviceManagement;
 		this.deviceEventManagement = deviceEventManagement;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.IDeviceActions#createLocation(java.lang.String,
+	 * double, double, double, boolean)
+	 */
+	@Override
+	public void createLocation(String assignmentToken, double latitude, double longitude, double elevation,
+			boolean updateState) throws SiteWhereException {
+		DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
+		location.setLatitude(latitude);
+		location.setLongitude(longitude);
+		location.setElevation(elevation);
+		location.setEventDate(new Date());
+		location.setUpdateState(updateState);
+		getDeviceEventManagement().addDeviceLocation(assignmentToken, location);
 	}
 
 	/*

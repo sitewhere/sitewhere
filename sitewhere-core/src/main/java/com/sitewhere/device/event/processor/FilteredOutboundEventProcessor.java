@@ -144,7 +144,7 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	 * sitewhere.spi.device.event.IDeviceStateChange)
 	 */
 	@Override
-	public void onStateChange(IDeviceStateChange state) throws SiteWhereException {
+	public final void onStateChange(IDeviceStateChange state) throws SiteWhereException {
 		if (!isFiltered(state)) {
 			onStateChangeNotFiltered(state);
 		}

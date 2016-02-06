@@ -100,13 +100,7 @@
 		<xsd:all>
 			<xsd:element ref="abstract-tenant-datastore"/>
 			<xsd:element ref="abstract-cache" minOccurs="0"/>
-			<xsd:element minOccurs="0" name="default-device-model-initializer" type="defaultDeviceModelInitializerType">
-				<xsd:annotation>
-					<xsd:documentation>
-						Initializes device model with data if database is empty.
-					</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element ref="abstract-device-model-initializer" minOccurs="0"/>
 			<xsd:element minOccurs="0" name="default-asset-model-initializer" type="defaultAssetModelInitializerType">
 				<xsd:annotation>
 					<xsd:documentation>
@@ -354,6 +348,61 @@
 	<xsd:complexType name="hazelcastCacheType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractCacheType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Used as a placeholder for tenant datastores to allow substitutionGroups -->
+	<xsd:element name="abstract-device-model-initializer" abstract="true"
+		type="abstractDeviceModelInitializerType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for device model initializer elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common device model initializer information -->
+	<xsd:complexType name="abstractDeviceModelInitializerType">
+		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- Default device model initializer -->
+	<xsd:element name="default-device-model-initializer" type="defaultDeviceModelInitializerType"
+		substitutionGroup="abstract-device-model-initializer">
+		<xsd:annotation>
+			<xsd:documentation>Device model initializer that loads the default device data
+				referenced in many examples.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultDeviceModelInitializerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDeviceModelInitializerType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Groovy device model initializer -->
+	<xsd:element name="groovy-device-model-initializer" type="groovyDeviceModelInitializerType"
+		substitutionGroup="abstract-device-model-initializer">
+		<xsd:annotation>
+			<xsd:documentation>Device model initializer that delegates creation logic to a Groovy
+				script.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyDeviceModelInitializerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractDeviceModelInitializerType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that executes logic needed to create
+							device model.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -1045,6 +1094,31 @@
 	<xsd:complexType name="hazelcastEventProcessorType">
 		<xsd:complexContent>
 			<xsd:extension base="filteredOutboundProcessorType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Groovy outbound event processor -->
+	<xsd:element name="groovy-event-processor" type="groovyEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Delegates event processing to a Groovy script. The script can apply
+				conditional logic or interact with SiteWhere interfaces to create new events or
+				perform other tasks.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to script used for processing each event.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

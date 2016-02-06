@@ -31,6 +31,7 @@ import com.sitewhere.device.event.processor.filter.SpecificationFilter;
 import com.sitewhere.geospatial.ZoneTest;
 import com.sitewhere.geospatial.ZoneTestEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.device.event.processor.GroovyEventProcessor;
 import com.sitewhere.groovy.device.event.processor.filter.GroovyFilter;
 import com.sitewhere.groovy.device.event.processor.multicast.AllWithSpecificationStringMulticaster;
 import com.sitewhere.groovy.device.event.processor.routing.GroovyRouteBuilder;
@@ -68,8 +69,8 @@ public class OutboundProcessingChainParser {
 		for (Element child : dsChildren) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
-				throw new RuntimeException("Unknown inbound processing chain element: "
-						+ child.getLocalName());
+				throw new RuntimeException(
+						"Unknown inbound processing chain element: " + child.getLocalName());
 			}
 			switch (type) {
 			case OutboundEventProcessor: {
@@ -118,6 +119,10 @@ public class OutboundProcessingChainParser {
 			}
 			case Wso2CepEventProcessor: {
 				processors.add(parseWso2CepEventProcessor(child, context));
+				break;
+			}
+			case GroovyEventProcessor: {
+				processors.add(parseGroovyEventProcessor(child, context));
 				break;
 			}
 			}
@@ -316,7 +321,8 @@ public class OutboundProcessingChainParser {
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition parseAzureEventHubEventProcessor(Element element, ParserContext context) {
+	protected AbstractBeanDefinition parseAzureEventHubEventProcessor(Element element,
+			ParserContext context) {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(EventHubOutboundEventProcessor.class);
 
@@ -398,7 +404,8 @@ public class OutboundProcessingChainParser {
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition parseCommandDeliveryEventProcessor(Element element, ParserContext context) {
+	protected AbstractBeanDefinition parseCommandDeliveryEventProcessor(Element element,
+			ParserContext context) {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(DeviceCommandEventProcessor.class);
 
@@ -443,6 +450,26 @@ public class OutboundProcessingChainParser {
 		Attr password = element.getAttributeNode("password");
 		if (password != null) {
 			processor.addPropertyValue("siddhiPassword", password.getValue());
+		}
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
+	 * Parse configuration for event processor delegates processing to a Groovy script.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseGroovyEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(GroovyEventProcessor.class);
+		processor.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			processor.addPropertyValue("scriptPath", scriptPath.getValue());
 		}
 
 		return processor.getBeanDefinition();
@@ -534,7 +561,8 @@ public class OutboundProcessingChainParser {
 	 * @param context
 	 * @return
 	 */
-	protected AbstractBeanDefinition parseSiddhiGroovyStreamProcessor(Element element, ParserContext context) {
+	protected AbstractBeanDefinition parseSiddhiGroovyStreamProcessor(Element element,
+			ParserContext context) {
 		BeanDefinitionBuilder groovy = BeanDefinitionBuilder.rootBeanDefinition(GroovyStreamProcessor.class);
 		groovy.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
 
@@ -577,8 +605,8 @@ public class OutboundProcessingChainParser {
 						nested.parse(child, context);
 						continue;
 					} else {
-						throw new RuntimeException("Invalid nested element found in 'filters' section: "
-								+ child.toString());
+						throw new RuntimeException(
+								"Invalid nested element found in 'filters' section: " + child.toString());
 					}
 				}
 				Filters type = Filters.getByLocalName(child.getLocalName());
@@ -813,7 +841,10 @@ public class OutboundProcessingChainParser {
 		Wso2CepEventProcessor("wso2-cep-event-processor"),
 
 		/** Outbound event processor that uses Siddhi for complex event processing */
-		SiddhiEventProcessor("siddhi-event-processor");
+		SiddhiEventProcessor("siddhi-event-processor"),
+
+		/** Outbound event processor that delegates to a Groovy script */
+		GroovyEventProcessor("groovy-event-processor");
 
 		/** Event code */
 		private String localName;

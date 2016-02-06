@@ -20,8 +20,8 @@ import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceLocationCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceLocationCreateRequest, Serializable {
+public class DeviceLocationCreateRequest extends DeviceEventCreateRequest
+		implements IDeviceLocationCreateRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = -7160866457228082338L;
@@ -72,5 +72,56 @@ public class DeviceLocationCreateRequest extends DeviceEventCreateRequest implem
 
 	public void setElevation(Double elevation) {
 		this.elevation = elevation;
+	}
+
+	/**
+	 * Supports builder pattern for creating a device location request.
+	 * 
+	 * @author Derek
+	 */
+	public static class Builder extends DeviceEventCreateRequest.Builder<DeviceLocationCreateRequest> {
+
+		private DeviceLocationCreateRequest request = new DeviceLocationCreateRequest();
+
+		public Builder(double latitude, double longitude) {
+			request.setLatitude(latitude);
+			request.setLongitude(longitude);
+			request.setElevation(0.0);
+		}
+
+		/**
+		 * Set elevation for request.
+		 * 
+		 * @param value
+		 * @return
+		 */
+		public Builder withElevation(double value) {
+			request.setElevation(value);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest.Builder#
+		 * getRequest()
+		 */
+		@Override
+		public DeviceLocationCreateRequest getRequest() {
+			return request;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest.Builder#
+		 * build()
+		 */
+		@Override
+		public DeviceLocationCreateRequest build() {
+			return request;
+		}
 	}
 }

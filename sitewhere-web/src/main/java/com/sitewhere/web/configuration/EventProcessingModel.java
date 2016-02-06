@@ -47,6 +47,7 @@ public class EventProcessingModel extends ConfigurationModel {
 		addElement(createInitialStateEventProcessorElement());
 		addElement(createDweetEventProcessorElement());
 		addElement(createWso2CepEventProcessorElement());
+		addElement(createGroovyEventProcessorElement());
 
 		// Zone test elements.
 		addElement(createZoneTestElement());
@@ -118,10 +119,13 @@ public class EventProcessingModel extends ConfigurationModel {
 	protected ElementNode createInboundProcessorElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Inbound Processor Bean Reference",
-						InboundProcessingChainParser.Elements.InboundEventProcessor.getLocalName(),
-						"sign-in", ElementRole.InboundProcessingChain_EventProcessor);
-		builder.description("Configures an inbound event processor that is declared in an external Spring bean.");
-		builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description("Name of Spring bean that will be referenced as an inbound event processor. The bean should implement the expected SiteWhere inbound event processor APIs").build()));
+						InboundProcessingChainParser.Elements.InboundEventProcessor.getLocalName(), "sign-in",
+						ElementRole.InboundProcessingChain_EventProcessor);
+		builder.description(
+				"Configures an inbound event processor that is declared in an external Spring bean.");
+		builder.attribute(
+				(new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
+						"Name of Spring bean that will be referenced as an inbound event processor. The bean should implement the expected SiteWhere inbound event processor APIs").build()));
 		return builder.build();
 	}
 
@@ -222,8 +226,11 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Outbound Processor Bean Reference",
 						OutboundProcessingChainParser.Elements.OutboundEventProcessor.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain_EventProcessor);
-		builder.description("Configures an outbound event processor that is declared in an external Spring bean.");
-		builder.attribute((new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description("Name of Spring bean that will be referenced as an outbound event processor. The bean should implement the expected SiteWhere outbound event processor APIs").build()));
+		builder.description(
+				"Configures an outbound event processor that is declared in an external Spring bean.");
+		builder.attribute(
+				(new AttributeNode.Builder("Bean reference name", "ref", AttributeType.String).description(
+						"Name of Spring bean that will be referenced as an outbound event processor. The bean should implement the expected SiteWhere outbound event processor APIs").build()));
 		return builder.build();
 	}
 
@@ -242,8 +249,8 @@ public class EventProcessingModel extends ConfigurationModel {
 		builder.warnOnDelete("Deleting this component will prevent commands from being sent!");
 		builder.attribute((new AttributeNode.Builder("Number of processing threads", "numThreads",
 				AttributeType.Integer).description(
-				"Sets the number of threads used to process provisioning commands. Increase for situations "
-						+ "where the load of device commands is high.").defaultValue("5").build()));
+						"Sets the number of threads used to process provisioning commands. Increase for situations "
+								+ "where the load of device commands is high.").defaultValue("5").build()));
 		return builder.build();
 	}
 
@@ -257,13 +264,23 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Zone Test", "zone-test", "map-pin",
 						ElementRole.OutboundProcessingChain_ZoneTest);
 		builder.description("Describes zone test criteria and alert to be generated in case of a match.");
-		builder.attribute((new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String).description("Unique token for zone locations are to be tested against.").build()));
-		builder.attribute((new AttributeNode.Builder("Condition", "condition", AttributeType.String).description(
-				"Condition under which alert should be generated.").choice("inside").choice("outside").build()));
-		builder.attribute((new AttributeNode.Builder("Alert type", "alertType", AttributeType.String).description("Identifier that indicates alert type.").build()));
-		builder.attribute((new AttributeNode.Builder("Alert level", "alertLevel", AttributeType.String).description(
-				"Level value of alert.").choice("info").choice("warning").choice("error").choice("critical").build()));
-		builder.attribute((new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String).description("Message shown for alert.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Zone token", "zoneToken", AttributeType.String).description(
+						"Unique token for zone locations are to be tested against.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Condition", "condition", AttributeType.String).description(
+						"Condition under which alert should be generated.").choice("inside").choice(
+								"outside").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Alert type", "alertType", AttributeType.String).description(
+						"Identifier that indicates alert type.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Alert level", "alertLevel", AttributeType.String).description(
+						"Level value of alert.").choice("info").choice("warning").choice("error").choice(
+								"critical").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Alert message", "alertMessage", AttributeType.String).description(
+						"Message shown for alert.").build()));
 		return builder.build();
 	}
 
@@ -292,8 +309,9 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Stream Debugger", "stream-debugger", "cogs",
 						ElementRole.OutboundProcessingChain_SiddhiCallback);
 		builder.description("Debugs Siddhi streams by printing events to the log.");
-		builder.attribute((new AttributeNode.Builder("Stream name", "stream", AttributeType.String).description(
-				"Name of stream for which a callback will be registered.").makeRequired().makeIndex().build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Stream name", "stream", AttributeType.String).description(
+						"Name of stream for which a callback will be registered.").makeRequired().makeIndex().build()));
 		return builder.build();
 	}
 
@@ -307,9 +325,12 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Groovy Stream Processor", "groovy-stream-processor", "cogs",
 						ElementRole.OutboundProcessingChain_SiddhiCallback);
 		builder.description("Processes events from a Siddhi stream using a Groovy script.");
-		builder.attribute((new AttributeNode.Builder("Stream name", "stream", AttributeType.String).description(
-				"Name of stream for which a callback will be registered.").makeRequired().makeIndex().build()));
-		builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description("Relative path to Groovy script used for processing each event.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Stream name", "stream", AttributeType.String).description(
+						"Name of stream for which a callback will be registered.").makeRequired().makeIndex().build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+						"Relative path to Groovy script used for processing each event.").build()));
 		return builder.build();
 	}
 
@@ -323,7 +344,9 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Siddhi Query", "siddhi-query", "cogs",
 						ElementRole.OutboundProcessingChain_SiddhiQuery);
 		builder.description("A Siddhi query that executes selector logic.");
-		builder.attribute((new AttributeNode.Builder("Selector", "selector", AttributeType.String).description("Selector expression that contains processing logic.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Selector", "selector", AttributeType.String).description(
+						"Selector expression that contains processing logic.").build()));
 		return builder.build();
 	}
 
@@ -352,8 +375,11 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Groovy Route Builder",
 						OutboundProcessingChainParser.RouteBuilders.GroovyRouteBuilder.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain_RouteBuilder);
-		builder.description("Route builder which executes a Groovy script to choose routes where events will be delivered.");
-		builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description("Relative path to Groovy script.").build()));
+		builder.description(
+				"Route builder which executes a Groovy script to choose routes where events will be delivered.");
+		builder.attribute(
+				(new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+						"Relative path to Groovy script.").build()));
 		return builder.build();
 	}
 
@@ -367,11 +393,13 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("MQTT Event Processor",
 						OutboundProcessingChainParser.Elements.MqttEventProcessor.getLocalName(), "sign-out",
 						ElementRole.OutboundProcessingChain_MqttEventProcessor);
-		builder.description("Allows events to be forwarded to any number of MQTT topics based on configuration "
-				+ "of filters and (optionally) a route builder. If no route builder is specified, the MQTT topic "
-				+ "field determines where events are delivered.");
+		builder.description(
+				"Allows events to be forwarded to any number of MQTT topics based on configuration "
+						+ "of filters and (optionally) a route builder. If no route builder is specified, the MQTT topic "
+						+ "field determines where events are delivered.");
 		DeviceCommunicationModel.addMqttConnectivityAttributes(builder);
-		builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).description("MQTT topic used if no route builder is specified.").build()));
+		builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).description(
+				"MQTT topic used if no route builder is specified.").build()));
 		return builder.build();
 	}
 
@@ -385,7 +413,8 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Hazelcast Processor",
 						OutboundProcessingChainParser.Elements.HazelcastEventProcessor.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
-		builder.description("Forwards outbound events to Hazelcast topics for processing by external consumers.");
+		builder.description(
+				"Forwards outbound events to Hazelcast topics for processing by external consumers.");
 		return builder.build();
 	}
 
@@ -422,9 +451,9 @@ public class EventProcessingModel extends ConfigurationModel {
 				"Sets the key used for SAS authentication.").makeRequired().build()));
 		builder.attribute((new AttributeNode.Builder("Service bus name", "serviceBusName",
 				AttributeType.String).description(
-				"Set the service bus to connect to (e.g. xxx.servicebus.windows.net).").makeRequired().build()));
-		builder.attribute((new AttributeNode.Builder("Event hub name", "eventHubName", AttributeType.String).description(
-				"Name of EventHub to connect to.").makeRequired().build()));
+						"Set the service bus to connect to (e.g. xxx.servicebus.windows.net).").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Event hub name", "eventHubName",
+				AttributeType.String).description("Name of EventHub to connect to.").makeRequired().build()));
 		return builder.build();
 	}
 
@@ -441,7 +470,7 @@ public class EventProcessingModel extends ConfigurationModel {
 		builder.description("Forwards outbound events to InitialState.com for advanced visualization.");
 		builder.attribute((new AttributeNode.Builder("Streaming access key", "streamingAccessKey",
 				AttributeType.String).description(
-				"Access key obtained from the InitialState.com website that specifies the account that the events will be associated with.").makeRequired().build()));
+						"Access key obtained from the InitialState.com website that specifies the account that the events will be associated with.").makeRequired().build()));
 		return builder.build();
 	}
 
@@ -455,8 +484,9 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Dweet.io Processor",
 						OutboundProcessingChainParser.Elements.DweetIoEventProcessor.getLocalName(), "cloud",
 						ElementRole.OutboundProcessingChain_FilteredEventProcessor);
-		builder.description("Sends events to the Dweet.io cloud service where they can be viewed and integrated with other services. "
-				+ "The unique 'thing' name will be the unique token for the device assignment the event is associated with.");
+		builder.description(
+				"Sends events to the Dweet.io cloud service where they can be viewed and integrated with other services. "
+						+ "The unique 'thing' name will be the unique token for the device assignment the event is associated with.");
 		return builder.build();
 	}
 
@@ -471,10 +501,35 @@ public class EventProcessingModel extends ConfigurationModel {
 						OutboundProcessingChainParser.Elements.Wso2CepEventProcessor.getLocalName(),
 						"sign-out", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
 		builder.description("Forwards events to streams on an external WSO2 CEP instance for processing.");
-		builder.attribute((new AttributeNode.Builder("Hostname", "hostname", AttributeType.String).description("Hostname for external WSO2 CEP instance.").build()));
-		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer).description("Port number for external WSO2 CEP instance.").build()));
-		builder.attribute((new AttributeNode.Builder("Username", "username", AttributeType.String).description("Username for external WSO2 CEP instance.").build()));
-		builder.attribute((new AttributeNode.Builder("Password", "password", AttributeType.String).description("Password for external WSO2 CEP instance.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Hostname", "hostname", AttributeType.String).description(
+						"Hostname for external WSO2 CEP instance.").build()));
+		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer).description(
+				"Port number for external WSO2 CEP instance.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Username", "username", AttributeType.String).description(
+						"Username for external WSO2 CEP instance.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Password", "password", AttributeType.String).description(
+						"Password for external WSO2 CEP instance.").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a Groovy event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createGroovyEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Groovy Processor",
+						OutboundProcessingChainParser.Elements.GroovyEventProcessor.getLocalName(), "cogs",
+						ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+		builder.description("Delegates event processing to a Groovy script which can execute "
+				+ "conditional logic, create new events, or carry out other tasks.");
+		builder.attribute(
+				(new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+						"Script path relative to Groovy script root.").makeRequired().build()));
 		return builder.build();
 	}
 
@@ -503,12 +558,14 @@ public class EventProcessingModel extends ConfigurationModel {
 				new ElementNode.Builder("Site Filter",
 						OutboundProcessingChainParser.Filters.SiteFilter.getLocalName(), "filter",
 						ElementRole.OutboundProcessingChain_OutboundFilters);
-		builder.description("Allows events from a given site to be included or excluded for an outbound processor.");
+		builder.description(
+				"Allows events from a given site to be included or excluded for an outbound processor.");
 		builder.attribute((new AttributeNode.Builder("Site", "site", AttributeType.SiteReference).description(
 				"Site filter applies to.").makeIndex().build()));
-		builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
-				"Indicates whether events from the site should be included or excluded from processing.").choice(
-				"include").choice("exclude").defaultValue("include").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
+						"Indicates whether events from the site should be included or excluded from processing.").choice(
+								"include").choice("exclude").defaultValue("include").build()));
 		return builder.build();
 	}
 
@@ -525,10 +582,12 @@ public class EventProcessingModel extends ConfigurationModel {
 		builder.description("Allows events for devices using a given specification to be included or "
 				+ "excluded for an outbound processor.");
 		builder.attribute((new AttributeNode.Builder("Specification", "specification",
-				AttributeType.SpecificationReference).description("Specification filter applies to.").makeIndex().build()));
-		builder.attribute((new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
-				"Indicates whether events from the specification should be included or excluded from processing.").choice(
-				"include").choice("exclude").defaultValue("include").build()));
+				AttributeType.SpecificationReference).description(
+						"Specification filter applies to.").makeIndex().build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Include/Exclude", "operation", AttributeType.String).description(
+						"Indicates whether events from the specification should be included or excluded from processing.").choice(
+								"include").choice("exclude").defaultValue("include").build()));
 		return builder.build();
 	}
 
@@ -545,8 +604,9 @@ public class EventProcessingModel extends ConfigurationModel {
 		builder.description("Allows events to be filtered based on the return value of a Groovy script. "
 				+ "If the script returns false, the event is filtered. See the SiteWhere documentation for "
 				+ "a description of the variable bindings provided by the system.");
-		builder.attribute((new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
-				"Script path relative to Groovy script root.").makeRequired().build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+						"Script path relative to Groovy script root.").makeRequired().build()));
 		return builder.build();
 	}
 
@@ -574,8 +634,7 @@ public class EventProcessingModel extends ConfigurationModel {
 	 */
 	protected ElementNode createDefaultInboundStrategyElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder(
-						"Blocking Queue Strategy",
+				new ElementNode.Builder("Blocking Queue Strategy",
 						InboundProcessingStrategyParser.Elements.DefaultInboundProcessingStrategy.getLocalName(),
 						"cogs", ElementRole.InboundProcessingStrategy_Strategy);
 
@@ -590,8 +649,7 @@ public class EventProcessingModel extends ConfigurationModel {
 	 */
 	protected ElementNode createBlockingQueueInboundStrategyElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder(
-						"Blocking Queue Strategy",
+				new ElementNode.Builder("Blocking Queue Strategy",
 						InboundProcessingStrategyParser.Elements.BlockingQueueInboundProcessingStrategy.getLocalName(),
 						"cogs", ElementRole.InboundProcessingStrategy_Strategy);
 
@@ -609,15 +667,20 @@ public class EventProcessingModel extends ConfigurationModel {
 				+ "to a fixed-length queue, then using multiple threads to move events from the queue into "
 				+ "the pipeline. The number of threads used very directly affects system performance since "
 				+ "it determines how many events can be processed in parallel.");
-		builder.attribute((new AttributeNode.Builder("Max queue size", "maxQueueSize", AttributeType.Integer).description(
-				"Maximum number of events in queue before blocking occurs.").defaultValue("10000").build()));
+		builder.attribute((new AttributeNode.Builder("Max queue size", "maxQueueSize",
+				AttributeType.Integer).description(
+						"Maximum number of events in queue before blocking occurs.").defaultValue(
+								"10000").build()));
 		builder.attribute((new AttributeNode.Builder("Number of processing threads",
 				"numEventProcessorThreads", AttributeType.Integer).description(
-				"Number of threads used to process incoming events in parallel").defaultValue("100").build()));
+						"Number of threads used to process incoming events in parallel").defaultValue(
+								"100").build()));
 		builder.attribute((new AttributeNode.Builder("Enable monitoring", "enableMonitoring",
-				AttributeType.Boolean).description("Enable logging of monitoring statistics at an interval").build()));
+				AttributeType.Boolean).description(
+						"Enable logging of monitoring statistics at an interval").build()));
 		builder.attribute((new AttributeNode.Builder("Monitoring interval in seconds",
-				"monitoringIntervalSec", AttributeType.Integer).description("Number of seconds to wait between logging monitoring statistics.").build()));
+				"monitoringIntervalSec", AttributeType.Integer).description(
+						"Number of seconds to wait between logging monitoring statistics.").build()));
 	}
 
 	/**
@@ -631,9 +694,10 @@ public class EventProcessingModel extends ConfigurationModel {
 						EventProcessingParser.Elements.OutboundProcessingStrategy.getLocalName(), "cogs",
 						ElementRole.EventProcessing_OutboundProcessingStrategy);
 
-		builder.description("The outbound processing strategy is responsible for taking stored events and passing "
-				+ "them into the outbound processing chain. It is responsible for handling threading and "
-				+ "reliably delivering events for outbound processing.");
+		builder.description(
+				"The outbound processing strategy is responsible for taking stored events and passing "
+						+ "them into the outbound processing chain. It is responsible for handling threading and "
+						+ "reliably delivering events for outbound processing.");
 		return builder.build();
 	}
 
@@ -644,8 +708,7 @@ public class EventProcessingModel extends ConfigurationModel {
 	 */
 	protected ElementNode createDefaultOutboundStrategyElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder(
-						"Blocking Queue Strategy",
+				new ElementNode.Builder("Blocking Queue Strategy",
 						OutboundProcessingStrategyParser.Elements.DefaultOutboundProcessingStrategy.getLocalName(),
 						"cogs", ElementRole.OutboundProcessingStrategy_Strategy);
 
@@ -660,8 +723,7 @@ public class EventProcessingModel extends ConfigurationModel {
 	 */
 	protected ElementNode createBlockingQueueOutboundStrategyElement() {
 		ElementNode.Builder builder =
-				new ElementNode.Builder(
-						"Blocking Queue Strategy",
+				new ElementNode.Builder("Blocking Queue Strategy",
 						OutboundProcessingStrategyParser.Elements.BlockingQueueOutboundProcessingStrategy.getLocalName(),
 						"cogs", ElementRole.OutboundProcessingStrategy_Strategy);
 
@@ -675,14 +737,18 @@ public class EventProcessingModel extends ConfigurationModel {
 	 * @param builder
 	 */
 	protected void addBlockingQueueOutboundStrategyFields(ElementNode.Builder builder) {
-		builder.description("Sends stored messages into the outbound processing pipeline by first adding them "
-				+ "to a fixed-length queue, then using multiple threads to move events from the queue into "
-				+ "the outbound pipeline. The number of threads used very directly affects system performance since "
-				+ "it determines how many events can be processed in parallel.");
-		builder.attribute((new AttributeNode.Builder("Max queue size", "maxQueueSize", AttributeType.Integer).description(
-				"Maximum number of events in queue before blocking occurs.").defaultValue("10000").build()));
+		builder.description(
+				"Sends stored messages into the outbound processing pipeline by first adding them "
+						+ "to a fixed-length queue, then using multiple threads to move events from the queue into "
+						+ "the outbound pipeline. The number of threads used very directly affects system performance since "
+						+ "it determines how many events can be processed in parallel.");
+		builder.attribute((new AttributeNode.Builder("Max queue size", "maxQueueSize",
+				AttributeType.Integer).description(
+						"Maximum number of events in queue before blocking occurs.").defaultValue(
+								"10000").build()));
 		builder.attribute((new AttributeNode.Builder("Number of processing threads",
 				"numEventProcessorThreads", AttributeType.Integer).description(
-				"Number of threads used to process incoming events in parallel").defaultValue("100").build()));
+						"Number of threads used to process incoming events in parallel").defaultValue(
+								"100").build()));
 	}
 }

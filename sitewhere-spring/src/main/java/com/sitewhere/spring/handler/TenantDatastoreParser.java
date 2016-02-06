@@ -19,6 +19,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.ehcache.DeviceManagementCacheProvider;
+import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.hbase.asset.HBaseAssetManagement;
@@ -61,8 +63,8 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 					nested.parse(child, context);
 					continue;
 				} else {
-					throw new RuntimeException("Invalid nested element found in 'datastore' section: "
-							+ child.toString());
+					throw new RuntimeException(
+							"Invalid nested element found in 'datastore' section: " + child.toString());
 				}
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -92,6 +94,10 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 			}
 			case DefaultDeviceModelInitializer: {
 				parseDefaultDeviceModelInitializer(child, context);
+				break;
+			}
+			case GroovyDeviceModelInitializer: {
+				parseGroovyDeviceModelInitializer(child, context);
 				break;
 			}
 			case DefaultAssetModelInitializer: {
@@ -334,6 +340,30 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse configuration for Groovy device model initializer.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseGroovyDeviceModelInitializer(Element element, ParserContext context) {
+		BeanDefinitionBuilder init =
+				BeanDefinitionBuilder.rootBeanDefinition(GroovyDeviceModelInitializer.class);
+		init.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			init.addPropertyValue("scriptPath", scriptPath.getValue());
+		}
+
+		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
+		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
+			init.addPropertyValue("initializeIfNoConsole", "true");
+		}
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER,
+				init.getBeanDefinition());
+	}
+
+	/**
 	 * Parse configuration for default asset model initializer.
 	 * 
 	 * @param element
@@ -391,6 +421,9 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 
 		/** Creates sample data if no device data is present */
 		DefaultDeviceModelInitializer("default-device-model-initializer"),
+
+		/** Create sample device data based on logic in a Groovy script */
+		GroovyDeviceModelInitializer("groovy-device-model-initializer"),
 
 		/** Creates sample data if no asset data is present */
 		DefaultAssetModelInitializer("default-asset-model-initializer"),
