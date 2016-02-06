@@ -130,11 +130,21 @@ public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 		/** Request being built */
 		private SiteCreateRequest request = new SiteCreateRequest();
 
-		public Builder(String token, String name, String description, String imageUrl) {
+		public Builder(String token, String name) {
 			request.setToken(token);
 			request.setName(name);
+			request.setDescription("");
+			request.setImageUrl("https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg");
+		}
+
+		public Builder withDescription(String description) {
 			request.setDescription(description);
+			return this;
+		}
+
+		public Builder withImageUrl(String imageUrl) {
 			request.setImageUrl(imageUrl);
+			return this;
 		}
 
 		public Builder mapquestMap(double latitude, double longitude, int zoomLevel) {

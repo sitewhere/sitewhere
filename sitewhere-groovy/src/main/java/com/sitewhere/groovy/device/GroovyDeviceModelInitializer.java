@@ -8,10 +8,12 @@
 package com.sitewhere.groovy.device;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
+import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDeviceManagement;
@@ -67,11 +69,15 @@ public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
 		binding.setVariable("eventBuilder", new DeviceEventRequestBuilder(deviceEventManagement));
 
 		try {
+			// Use the system account for logging "created by" on created elements.
+			SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 		} catch (ResourceException e) {
 			throw new SiteWhereException("Unable to access Groovy script. " + e.getMessage(), e);
 		} catch (ScriptException e) {
 			throw new SiteWhereException("Unable to run Groovy script.", e);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(null);
 		}
 	}
 

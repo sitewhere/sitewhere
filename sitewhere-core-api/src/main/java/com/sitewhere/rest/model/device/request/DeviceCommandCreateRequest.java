@@ -9,6 +9,7 @@ package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.command.CommandParameter;
 import com.sitewhere.spi.device.command.ICommandParameter;
+import com.sitewhere.spi.device.command.ParameterType;
 import com.sitewhere.spi.device.request.IDeviceCommandCreateRequest;
 
 /**
@@ -128,5 +130,59 @@ public class DeviceCommandCreateRequest implements IDeviceCommandCreateRequest, 
 
 	public void setMetadata(Map<String, String> metadata) {
 		this.metadata = metadata;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private DeviceCommandCreateRequest request = new DeviceCommandCreateRequest();
+
+		public Builder(String token, String namespace, String name) {
+			request.setToken(token);
+			request.setNamespace(namespace);
+			request.setName(name);
+		}
+
+		public Builder withDescription(String description) {
+			request.setDescription(description);
+			return this;
+		}
+
+		public Builder withStringParameter(String name, boolean required) {
+			request.getParameters().add(new CommandParameter(name, ParameterType.String, required));
+			return this;
+		}
+
+		public Builder withIntParameter(String name, boolean required) {
+			request.getParameters().add(new CommandParameter(name, ParameterType.Int64, required));
+			return this;
+		}
+
+		public Builder withDoubleParameter(String name, boolean required) {
+			request.getParameters().add(new CommandParameter(name, ParameterType.Double, required));
+			return this;
+		}
+
+		public Builder withBooleanParameter(String name, boolean required) {
+			request.getParameters().add(new CommandParameter(name, ParameterType.Bool, required));
+			return this;
+		}
+
+		public Builder withParameter(String name, ParameterType type, boolean required) {
+			request.getParameters().add(new CommandParameter(name, type, required));
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public DeviceCommandCreateRequest build() {
+			return request;
+		}
 	}
 }

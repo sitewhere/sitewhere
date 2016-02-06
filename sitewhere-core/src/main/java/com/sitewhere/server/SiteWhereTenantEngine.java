@@ -631,8 +631,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	/**
 	 * Check whether device model is populated and offer to bootstrap system if not.
+	 * 
+	 * @throws SiteWhereException
 	 */
-	protected void verifyDeviceModel() {
+	protected void verifyDeviceModel() throws SiteWhereException {
 		try {
 			IDeviceModelInitializer init =
 					(IDeviceModelInitializer) tenantContext.getBean(
@@ -644,15 +646,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No device model initializer found in Spring bean configuration. Skipping.");
 			return;
-		} catch (SiteWhereException e) {
-			LOGGER.warn("Unable to read from device model.", e);
 		}
 	}
 
 	/**
 	 * Check whether asset model is populated and offer to bootstrap system if not.
+	 * 
+	 * @throws SiteWhereException
 	 */
-	protected void verifyAssetModel() {
+	protected void verifyAssetModel() throws SiteWhereException {
 		try {
 			IAssetModelInitializer init =
 					(IAssetModelInitializer) tenantContext.getBean(
@@ -665,15 +667,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No asset model initializer found in Spring bean configuration. Skipping.");
 			return;
-		} catch (SiteWhereException e) {
-			LOGGER.warn("Unable to read from asset model.", e);
 		}
 	}
 
 	/**
 	 * Check whether schedule model is populated and offer to bootstrap system if not.
+	 * 
+	 * @throws SiteWhereException
 	 */
-	protected void verifyScheduleModel() {
+	protected void verifyScheduleModel() throws SiteWhereException {
 		try {
 			IScheduleModelInitializer init =
 					(IScheduleModelInitializer) tenantContext.getBean(
@@ -686,8 +688,6 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No schedule model initializer found in Spring bean configuration. Skipping.");
 			return;
-		} catch (SiteWhereException e) {
-			LOGGER.warn("Unable to read from schedule model.", e);
 		}
 	}
 

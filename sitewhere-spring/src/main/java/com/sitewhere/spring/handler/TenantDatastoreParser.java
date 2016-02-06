@@ -355,10 +355,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 			init.addPropertyValue("scriptPath", scriptPath.getValue());
 		}
 
-		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
-		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
-			init.addPropertyValue("initializeIfNoConsole", "true");
-		}
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER,
 				init.getBeanDefinition());
 	}

@@ -8,11 +8,14 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.element.DeviceElementSchema;
+import com.sitewhere.rest.model.device.element.DeviceSlot;
+import com.sitewhere.rest.model.device.element.DeviceUnit;
 import com.sitewhere.spi.device.DeviceContainerPolicy;
 import com.sitewhere.spi.device.element.IDeviceElementSchema;
 import com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest;
@@ -107,9 +110,8 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#getContainerPolicy
-	 * ()
+	 * @see com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest#
+	 * getContainerPolicy ()
 	 */
 	public DeviceContainerPolicy getContainerPolicy() {
 		return containerPolicy;
@@ -145,5 +147,93 @@ public class DeviceSpecificationCreateRequest implements IDeviceSpecificationCre
 
 	public void setMetadata(Map<String, String> metadata) {
 		this.metadata = metadata;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private DeviceSpecificationCreateRequest request = new DeviceSpecificationCreateRequest();
+
+		public Builder(String token, String name, String assetModuleId, String assetId) {
+			request.setToken(token);
+			request.setName(name);
+			request.setAssetModuleId(assetModuleId);
+			request.setAssetId(assetId);
+			request.setContainerPolicy(DeviceContainerPolicy.Standalone);
+		}
+
+		public Builder makeComposite() {
+			request.setContainerPolicy(DeviceContainerPolicy.Composite);
+			return this;
+		}
+
+		public DeviceElementSchemaBuilder newSchema() {
+			DeviceElementSchemaBuilder schema = new DeviceElementSchemaBuilder();
+			request.setDeviceElementSchema(schema.build());
+			return schema;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public DeviceSpecificationCreateRequest build() {
+			return request;
+		}
+	}
+
+	public static class DeviceElementSchemaBuilder {
+
+		private DeviceElementSchema schema = new DeviceElementSchema();
+
+		public DeviceUnitBuilder addUnit(String name, String path) {
+			DeviceUnitBuilder unit = new DeviceUnitBuilder(name, path);
+			schema.getDeviceUnits().add(unit.build());
+			return unit;
+		}
+
+		public DeviceElementSchemaBuilder addSlot(String name, String path) {
+			DeviceSlot slot = new DeviceSlot();
+			slot.setName(name);
+			slot.setPath(path);
+			schema.getDeviceSlots().add(slot);
+			return this;
+		}
+
+		public DeviceElementSchema build() {
+			return schema;
+		}
+	}
+
+	public static class DeviceUnitBuilder {
+
+		private DeviceUnit unit = new DeviceUnit();
+
+		public DeviceUnitBuilder(String name, String path) {
+			unit.setName(name);
+			unit.setPath(path);
+		}
+
+		public DeviceUnitBuilder addUnit(String name, String path) {
+			DeviceUnitBuilder sub = new DeviceUnitBuilder(name, path);
+			unit.getDeviceUnits().add(sub.build());
+			return sub;
+		}
+
+		public DeviceUnitBuilder addSlot(String name, String path) {
+			DeviceSlot slot = new DeviceSlot();
+			slot.setName(name);
+			slot.setPath(path);
+			unit.getDeviceSlots().add(slot);
+			return this;
+		}
+
+		public DeviceUnit build() {
+			return unit;
+		}
 	}
 }

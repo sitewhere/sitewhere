@@ -136,7 +136,7 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 		Binding binding = new Binding();
 		binding.setVariable("logger", getLogger());
 		binding.setVariable("event", new DeviceEventSupport(event));
-		binding.setVariable("eventsBuilder", eventsBuilder);
+		binding.setVariable("eventBuilder", eventsBuilder);
 
 		try {
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);

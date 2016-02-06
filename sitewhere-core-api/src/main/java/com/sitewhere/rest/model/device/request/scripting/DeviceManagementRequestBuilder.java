@@ -7,10 +7,15 @@
  */
 package com.sitewhere.rest.model.device.request.scripting;
 
+import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.IDeviceSpecification;
+import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 
 /**
  * Builder that supports creating device management entities.
@@ -26,12 +31,31 @@ public class DeviceManagementRequestBuilder {
 		this.deviceManagement = deviceManagement;
 	}
 
-	public SiteCreateRequest.Builder newSite(String token, String name, String description, String imageUrl) {
-		return new SiteCreateRequest.Builder(token, name, description, imageUrl);
+	public SiteCreateRequest.Builder newSite(String token, String name) {
+		return new SiteCreateRequest.Builder(token, name);
 	}
 
-	public void persist(SiteCreateRequest.Builder builder) throws SiteWhereException {
-		getDeviceManagement().createSite(builder.build());
+	public ISite persist(SiteCreateRequest.Builder builder) throws SiteWhereException {
+		return getDeviceManagement().createSite(builder.build());
+	}
+
+	public DeviceSpecificationCreateRequest.Builder newSpecification(String token, String name,
+			String assetModuleId, String assetId) {
+		return new DeviceSpecificationCreateRequest.Builder(token, name, assetModuleId, assetId);
+	}
+
+	public IDeviceSpecification persist(DeviceSpecificationCreateRequest.Builder builder)
+			throws SiteWhereException {
+		return getDeviceManagement().createDeviceSpecification(builder.build());
+	}
+
+	public DeviceCommandCreateRequest.Builder newCommand(String token, String namespace, String name) {
+		return new DeviceCommandCreateRequest.Builder(token, namespace, name);
+	}
+
+	public IDeviceCommand persist(IDeviceSpecification specification,
+			DeviceCommandCreateRequest.Builder builder) throws SiteWhereException {
+		return getDeviceManagement().createDeviceCommand(specification, builder.build());
 	}
 
 	public DeviceCreateRequest.Builder newDevice(String siteToken, String specificationToken,

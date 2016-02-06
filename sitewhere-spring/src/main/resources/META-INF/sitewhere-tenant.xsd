@@ -407,11 +407,6 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 	
-	<!-- Creates default device model data -->
-	<xsd:complexType name="defaultDeviceModelInitializerType">
-		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
-	</xsd:complexType>
-	
 	<!-- Creates default asset model data -->
 	<xsd:complexType name="defaultAssetModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
