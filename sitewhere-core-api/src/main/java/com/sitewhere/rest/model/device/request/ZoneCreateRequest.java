@@ -9,6 +9,7 @@ package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,5 +125,47 @@ public class ZoneCreateRequest implements IZoneCreateRequest, Serializable {
 
 	public void setMetadata(Map<String, String> metadata) {
 		this.metadata = metadata;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private ZoneCreateRequest request = new ZoneCreateRequest();
+
+		public Builder(String name) {
+			request.setName(name);
+		}
+
+		public Builder withBorderColor(String borderColor) {
+			request.setBorderColor(borderColor);
+			return this;
+		}
+
+		public Builder withFillColor(String fillColor) {
+			request.setFillColor(fillColor);
+			return this;
+		}
+
+		public Builder withOpacity(double opacity) {
+			request.setOpacity(opacity);
+			return this;
+		}
+
+		public Builder coord(double latitude, double longitude) {
+			request.getCoordinates().add(new Location(latitude, longitude));
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public ZoneCreateRequest build() {
+			return request;
+		}
 	}
 }

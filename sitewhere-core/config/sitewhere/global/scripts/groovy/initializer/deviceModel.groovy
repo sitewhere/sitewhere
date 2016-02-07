@@ -1,8 +1,13 @@
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.util.*;
+import com.vividsolutions.jts.algorithm.*;
+
 // ########### //
 // Common Code //
 // ########### //
 Integer devicesPerSite = 50
 Integer mxPerAssignment = 75
+Integer locationsPerAssignment = 40
 Integer minTemp = 80
 Integer warnTemp = 160
 Integer errorTemp = 180
@@ -27,6 +32,15 @@ site.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construc
 site.mapquestMap 34.10469794977326, -84.23966646194458, 15
 site = deviceBuilder.persist site
 logger.info "[Create Site] ${site.name}"
+
+// Create zone associated with site.
+def zone = deviceBuilder.newZone 'Construction Site' withBorderColor('#017112') withFillColor('#1db32e') withOpacity(0.4)
+zone.coord(34.10260138703638, -84.24412965774536) coord(34.101837372446774, -84.24243450164795)
+zone.coord(34.101517550337825, -84.24091100692749) coord(34.10154953265732, -84.23856675624847)
+zone.coord(34.10153176473365, -84.23575580120087) coord(34.10409030732968, -84.23689305782318)
+zone.coord(34.104996439280704, -84.23700034618376) coord(34.10606246444614, -84.23700034618376)
+zone.coord(34.107691680235604, -84.23690915107727)
+zone = deviceBuilder.persist site, zone
 
 // ############################ //
 // Create Device Specifications //
@@ -169,15 +183,15 @@ def createMeasurements = { assn, start ->
 			fuel = 0
 		}
 		
-		def newmx = eventBuilder.newMeasurements() measurement('engine.temperature', temp) measurement('fuel.level', fuel) trackState()
+		def newmx = eventBuilder.newMeasurements() measurement('engine.temperature', temp) measurement('fuel.level', fuel) on(new Date(current)) trackState()
 		eventBuilder.forAssignment assn.token persist newmx
 		
 		if (temp > warnTemp) {
-			def alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at top of operating range.' warning() trackState()
+			def alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at top of operating range.' on(new Date(current)) warning() trackState()
 			if (temp > errorTemp) {
-				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at a dangerous level.' error() trackState()
+				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature is at a dangerous level.' on(new Date(current)) error() trackState()
 			} else if (temp > criticalTemp) {
-				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature critical. Shutting down.' critical() trackState()
+				alert = eventBuilder.newAlert 'engine.overheat', 'Engine temperature critical. Shutting down.' on(new Date(current)) critical() trackState()
 			}
 			eventBuilder.forAssignment assn.token persist alert
 			
@@ -188,6 +202,65 @@ def createMeasurements = { assn, start ->
 		current += (long) (Math.random() * 30000.0);
 	}
 	logger.info "[Create Events] ${mxCount} measurements. ${alertCount} alerts."
+}
+
+// Closure for creating location events.
+def createLocations = { assn, startDate ->
+	long current = startDate.time - (long) (Math.random() * 60000.0);
+	Polygon polyZone = com.sitewhere.geospatial.GeoUtils.createPolygonForLocations(zone.coordinates);
+	Point centroid = polyZone.getCentroid();
+
+	// Calculate length of steps between locations based on bounding circle.
+	MinimumBoundingCircle circle = new MinimumBoundingCircle(polyZone);
+	double step = circle.radius / 10;
+
+	double cx = centroid.x;
+	double cy = centroid.y;
+	double deltaX = (Math.sqrt(Math.random()) * step * 2) - step;
+	double deltaY = (Math.sqrt(Math.random()) * step * 2) - step;
+
+	// Used to rotate deltas to turn path and stay inside polygon.
+	AffineTransformation xform = new AffineTransformation();
+	xform.rotate(Math.toRadians(22.5));
+
+	int locCount = 0
+	GeometryFactory factory = new GeometryFactory();
+	locationsPerAssignment.times {
+		boolean foundNext = false;
+
+		// Add a little randomness to path.
+		double waver = ((Math.random() * 20) - 10.0);
+		AffineTransformation waverXform = new AffineTransformation();
+		waverXform.rotate(Math.toRadians(waver));
+		Coordinate waverDelta = new Coordinate(deltaX, deltaY);
+		waverXform.transform(waverDelta, waverDelta);
+		deltaX = waverDelta.x;
+		deltaY = waverDelta.y;
+
+		while (!foundNext) {
+			Coordinate start = new Coordinate(cx, cy);
+			Coordinate end = new Coordinate(cx + deltaX, cy + deltaY);
+			Coordinate[] lineCoords = [start, end];
+			LineString line = factory.createLineString(lineCoords);
+			if (polyZone.contains(line)) {
+				def newloc = eventBuilder.newLocation end.y, end.x on(new Date(current)) trackState()
+				eventBuilder.forAssignment assn.token persist newloc
+
+				cx = cx + deltaX;
+				cy = cy + deltaY;
+				foundNext = true;
+			} else {
+				// Rotate deltas and try again.
+				Coordinate delta = new Coordinate(deltaX, deltaY);
+				xform.transform(delta, delta);
+				deltaX = delta.x;
+				deltaY = delta.y;
+			}
+		}
+		locCount++
+		current += (long) (Math.random() * 30000.0);
+	}
+	logger.info "[Create Events] ${locCount} locations."
 }
 
 // Create the requested number of devices and assignments per site.
@@ -219,4 +292,5 @@ devicesPerSite.times {
 	// Start events two hours before current.
 	Date start = new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000));
 	createMeasurements assn, start
+	createLocations assn, start
 }

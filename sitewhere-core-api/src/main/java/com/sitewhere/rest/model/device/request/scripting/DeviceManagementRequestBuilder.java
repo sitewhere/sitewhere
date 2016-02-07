@@ -12,12 +12,14 @@ import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
+import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
 
 /**
@@ -40,6 +42,14 @@ public class DeviceManagementRequestBuilder {
 
 	public ISite persist(SiteCreateRequest.Builder builder) throws SiteWhereException {
 		return getDeviceManagement().createSite(builder.build());
+	}
+
+	public ZoneCreateRequest.Builder newZone(String name) {
+		return new ZoneCreateRequest.Builder(name);
+	}
+
+	public IZone persist(ISite site, ZoneCreateRequest.Builder builder) throws SiteWhereException {
+		return getDeviceManagement().createZone(site, builder.build());
 	}
 
 	public DeviceSpecificationCreateRequest.Builder newSpecification(String token, String name,
