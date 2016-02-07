@@ -7,9 +7,14 @@
  */
 package com.sitewhere.rest.model.device.request.scripting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCommandCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceGroupElementCreateRequest;
 import com.sitewhere.rest.model.device.request.DeviceSpecificationCreateRequest;
 import com.sitewhere.rest.model.device.request.SiteCreateRequest;
 import com.sitewhere.rest.model.device.request.ZoneCreateRequest;
@@ -21,6 +26,9 @@ import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
 import com.sitewhere.spi.device.command.IDeviceCommand;
+import com.sitewhere.spi.device.group.IDeviceGroup;
+import com.sitewhere.spi.device.group.IDeviceGroupElement;
+import com.sitewhere.spi.device.request.IDeviceGroupElementCreateRequest;
 
 /**
  * Builder that supports creating device management entities.
@@ -88,6 +96,27 @@ public class DeviceManagementRequestBuilder {
 	public IDeviceAssignment persist(DeviceAssignmentCreateRequest.Builder builder)
 			throws SiteWhereException {
 		return getDeviceManagement().createDeviceAssignment(builder.build());
+	}
+
+	public DeviceGroupCreateRequest.Builder newGroup(String token, String name) {
+		return new DeviceGroupCreateRequest.Builder(token, name);
+	}
+
+	public IDeviceGroup persist(DeviceGroupCreateRequest.Builder builder) throws SiteWhereException {
+		return getDeviceManagement().createDeviceGroup(builder.build());
+	}
+
+	public DeviceGroupElementCreateRequest.Builder newGroupElement(String id) {
+		return new DeviceGroupElementCreateRequest.Builder(id);
+	}
+
+	public List<IDeviceGroupElement> persist(IDeviceGroup group,
+			List<DeviceGroupElementCreateRequest.Builder> builders) throws SiteWhereException {
+		List<IDeviceGroupElementCreateRequest> elements = new ArrayList<IDeviceGroupElementCreateRequest>();
+		for (DeviceGroupElementCreateRequest.Builder builder : builders) {
+			elements.add(builder.build());
+		}
+		return getDeviceManagement().addDeviceGroupElements(group.getToken(), elements);
 	}
 
 	public IDeviceManagement getDeviceManagement() {

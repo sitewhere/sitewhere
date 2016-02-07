@@ -8,6 +8,8 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,5 +106,41 @@ public class DeviceGroupCreateRequest implements IDeviceGroupCreateRequest, Seri
 
 	public void setMetadata(Map<String, String> metadata) {
 		this.metadata = metadata;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private DeviceGroupCreateRequest request = new DeviceGroupCreateRequest();
+
+		public Builder(String token, String name) {
+			request.setToken(token);
+			request.setName(name);
+		}
+
+		public Builder withDescription(String description) {
+			request.setDescription(description);
+			return this;
+		}
+
+		public Builder withRole(String role) {
+			if (request.getRoles() == null) {
+				request.setRoles(new ArrayList<String>());
+			}
+			request.getRoles().add(role);
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public DeviceGroupCreateRequest build() {
+			return request;
+		}
 	}
 }

@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.request;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -33,7 +34,7 @@ public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreat
 	private String elementId;
 
 	/** List of roles for element */
-	private List<String> roles;
+	private List<String> roles = new ArrayList<String>();
 
 	public GroupElementType getType() {
 		return type;
@@ -57,5 +58,30 @@ public class DeviceGroupElementCreateRequest implements IDeviceGroupElementCreat
 
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private DeviceGroupElementCreateRequest request = new DeviceGroupElementCreateRequest();
+
+		public Builder(String id) {
+			request.setElementId(id);
+			request.setType(GroupElementType.Device);
+		}
+
+		public Builder withRole(String role) {
+			request.getRoles().add(role);
+			return this;
+		}
+
+		public Builder asGroup() {
+			request.setType(GroupElementType.Group);
+			return this;
+		}
+
+		public DeviceGroupElementCreateRequest build() {
+			return request;
+		}
 	}
 }

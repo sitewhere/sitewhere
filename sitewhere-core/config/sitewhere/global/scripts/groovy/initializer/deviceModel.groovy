@@ -19,9 +19,9 @@ def randomItem = { items ->
 	items.get((int)(Math.random() * items.size()))
 }
 
-// ########### //
-// Create Site //
-// ########### //
+// #################### //
+// Create Site and Zone //
+// #################### //
 def site = deviceBuilder.newSite 'bb105f8d-3150-41f5-b9d1-db04965668d3', 'Construction Site'
 
 site.withDescription '''A construction site with many high-value assets that should not be taken offsite. 
@@ -158,6 +158,10 @@ allSpecifications.each { spec ->
 	}
 }
 
+// #################### //
+// Create Device Events //
+// #################### //
+
 // Closure for creating measurement and alert events.
 def createMeasurements = { assn, start ->
 	long current = start.time - (long) (Math.random() * 60000.0);
@@ -263,7 +267,35 @@ def createLocations = { assn, startDate ->
 	logger.info "[Create Events] ${locCount} locations."
 }
 
+// #################### //
+// Create Device Groups //
+// #################### //
+def addGroup = { group ->
+	group = deviceBuilder.persist group
+	logger.info "[Create Group] ${group.name}"
+	return group;
+}
+
+def heavyGroup = deviceBuilder.newGroup randomId(), 'Heavy Equipment Tracking' withRole('heavy-equipment-tracking') withRole('tracking')
+heavyGroup.withDescription 'Device group that contains devices for tracking location of heavy equipment.'
+heavyGroup = addGroup heavyGroup
+
+def personGroup = deviceBuilder.newGroup randomId(), 'Personnel Tracking' withRole('personnel-tracking') withRole('tracking')
+personGroup.withDescription 'Device group that contains devices for tracking location of people.'
+personGroup = addGroup personGroup
+
+def toolGroup = deviceBuilder.newGroup randomId(), 'Tool Tracking' withRole('tool-tracking') withRole('tracking')
+toolGroup.withDescription 'Device group that contains devices for tracking location of tools.'
+toolGroup = addGroup toolGroup
+
+// ############################## //
+// Create Devices and Assignments //
+// ############################## //
+
 // Create the requested number of devices and assignments per site.
+def heavyElements = []
+def personElements = []
+def toolElements = []
 devicesPerSite.times {
 	def spec = randomItem(allSpecifications);
 	if (Math.random() > 0.75) {
@@ -289,8 +321,20 @@ devicesPerSite.times {
 	assn = deviceBuilder.persist assn
 	logger.info "[Create Assignment] ${assn.token}"
 	
+	def element = deviceBuilder.newGroupElement device.hardwareId;
+	if (spec in tools) {
+		toolElements << element
+	} else if (spec in personnel) {
+		personElements << element
+	} else {
+		heavyElements << element
+	}
+	
 	// Start events two hours before current.
 	Date start = new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000));
 	createMeasurements assn, start
 	createLocations assn, start
 }
+deviceBuilder.persist heavyGroup, heavyElements
+deviceBuilder.persist personGroup, personElements
+deviceBuilder.persist toolGroup, toolElements
