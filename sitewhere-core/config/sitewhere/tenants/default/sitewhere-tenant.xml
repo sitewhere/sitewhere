@@ -34,14 +34,14 @@
 		<sw:tenant-datastore>
 		
 			<!-- Default MongoDB Datastore -->
-			<!--  
 			<sw:mongo-tenant-datastore useBulkEventInserts="true"
 				bulkInsertMaxChunkSize="1000"/>
-			-->
 				
 			<!-- Hybrid MongoDB/Hazelcast Datastore -->
+			<!--  
 			<sw:mongo-hazelcast-tenant-datastore
 				expirationInMin="60"/>
+			-->
 
 			<!-- Hybrid MongoDB/InfluxDB Datastore -->
 			<!--  
@@ -206,7 +206,7 @@
 				<sw:hazelcast-event-processor/>
 				
 				<!-- Perform custom processing in a Groovy script -->
-				<sw:groovy-event-processor scriptPath="rangeCheck.groovy"/>
+				<sw:groovy-event-processor scriptPath="eventCreate.groovy"/>
 
 			</sw:outbound-processing-chain>
 

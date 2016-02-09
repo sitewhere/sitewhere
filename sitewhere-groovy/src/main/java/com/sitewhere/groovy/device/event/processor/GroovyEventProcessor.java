@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.spi.SiteWhereException;
@@ -39,6 +40,9 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 
 	/** Injected Groovy configuration */
 	private GroovyConfiguration configuration;
+
+	/** Common Hazelcast configuration */
+	private SiteWhereHazelcastConfiguration hazelcast;
 
 	/** Relative path to Groovy script */
 	private String scriptPath;
@@ -137,6 +141,7 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 		binding.setVariable("logger", getLogger());
 		binding.setVariable("event", new DeviceEventSupport(event));
 		binding.setVariable("eventBuilder", eventsBuilder);
+		binding.setVariable("hazelcast", getHazelcast().getHazelcastInstance());
 
 		try {
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
@@ -163,6 +168,14 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 
 	public void setConfiguration(GroovyConfiguration configuration) {
 		this.configuration = configuration;
+	}
+
+	public SiteWhereHazelcastConfiguration getHazelcast() {
+		return hazelcast;
+	}
+
+	public void setHazelcast(SiteWhereHazelcastConfiguration hazelcast) {
+		this.hazelcast = hazelcast;
 	}
 
 	public String getScriptPath() {

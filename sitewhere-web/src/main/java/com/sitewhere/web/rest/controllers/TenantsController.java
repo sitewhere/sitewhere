@@ -238,7 +238,7 @@ public class TenantsController extends RestController {
 	@ApiOperation(value = "Stage tenant engine configuration from JSON")
 	@Secured({ SiteWhereRoles.ADMINISTER_TENANTS, SiteWhereRoles.ADMINISTER_TENANT_SELF })
 	@Documented
-	public String stageTenantEngineConfiguration(
+	public ElementContent stageTenantEngineConfiguration(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			HttpServletRequest svtRequest, HttpServletResponse svtResponse) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "stageTenantEngineConfiguration", LOGGER);
@@ -255,7 +255,7 @@ public class TenantsController extends RestController {
 			Document document = ConfigurationContentParser.buildXml(content);
 			String xml = ConfigurationContentParser.format(document);
 			TenantUtils.stageTenantConfiguration(tenantId, xml);
-			return xml;
+			return content;
 		} catch (IOException e) {
 			throw new SiteWhereException("Error staging tenant configuration.", e);
 		} finally {

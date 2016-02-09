@@ -466,6 +466,8 @@ public class OutboundProcessingChainParser {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(GroovyEventProcessor.class);
 		processor.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+		processor.addPropertyReference("hazelcast",
+				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
 
 		Attr scriptPath = element.getAttributeNode("scriptPath");
 		if (scriptPath != null) {
