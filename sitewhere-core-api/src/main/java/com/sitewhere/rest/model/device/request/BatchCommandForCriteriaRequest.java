@@ -15,7 +15,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion;
 import com.sitewhere.rest.model.datatype.JsonDateSerializer;
 import com.sitewhere.spi.device.request.IBatchCommandForCriteriaRequest;
 
@@ -113,7 +112,7 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 		this.siteToken = siteToken;
 	}
 
-	@JsonSerialize(using = JsonDateSerializer.class, include = Inclusion.NON_NULL)
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -122,7 +121,7 @@ public class BatchCommandForCriteriaRequest implements IBatchCommandForCriteriaR
 		this.startDate = startDate;
 	}
 
-	@JsonSerialize(using = JsonDateSerializer.class, include = Inclusion.NON_NULL)
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getEndDate() {
 		return endDate;
 	}

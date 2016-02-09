@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 import com.sitewhere.ehcache.DeviceManagementCacheProvider;
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
+import com.sitewhere.hazelcast.HazelcastDeviceEventManagement;
 import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.hbase.asset.HBaseAssetManagement;
@@ -76,6 +77,10 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 				parseMongoTenantDatasource(child, context);
 				break;
 			}
+			case MongoHazelcastDbTenantDatastore: {
+				parseMongoHazelcastTenantDatasource(child, context);
+				break;
+			}
 			case MongoInfluxDbTenantDatastore: {
 				parseMongoInfluxDbTenantDatasource(child, context);
 				break;
@@ -120,7 +125,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	 * @param context
 	 */
 	protected void parseMongoTenantDatasource(Element element, ParserContext context) {
-
 		// Register Mongo device management implementation.
 		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
 		dm.addPropertyReference("mongoClient", "mongo");
@@ -157,6 +161,46 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Add service provider implementations to support a hybid MongoDB/Hazelcast tenant
+	 * datastore.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseMongoHazelcastTenantDatasource(Element element, ParserContext context) {
+		// Register Mongo device management implementation.
+		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
+		dm.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT,
+				dm.getBeanDefinition());
+
+		// Register device event management implementation.
+		BeanDefinitionBuilder dem =
+				BeanDefinitionBuilder.rootBeanDefinition(HazelcastDeviceEventManagement.class);
+		dem.addPropertyReference("configuration",
+				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
+
+		Attr expirationInMin = element.getAttributeNode("expirationInMin");
+		if (expirationInMin != null) {
+			dem.addPropertyValue("expirationInMin", expirationInMin.getValue());
+		}
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT,
+				dem.getBeanDefinition());
+
+		// Register Mongo asset management implementation.
+		BeanDefinitionBuilder am = BeanDefinitionBuilder.rootBeanDefinition(MongoAssetManagement.class);
+		am.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT,
+				am.getBeanDefinition());
+
+		// Register Mongo schedule management implementation.
+		BeanDefinitionBuilder sm = BeanDefinitionBuilder.rootBeanDefinition(MongoScheduleManagement.class);
+		sm.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT,
+				sm.getBeanDefinition());
+	}
+
+	/**
 	 * Add service provider implementations to support a hybid MongoDB/InfluxDB tenant
 	 * datastore..
 	 * 
@@ -164,7 +208,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	 * @param context
 	 */
 	protected void parseMongoInfluxDbTenantDatasource(Element element, ParserContext context) {
-
 		// Register Mongo device management implementation.
 		BeanDefinitionBuilder dm = BeanDefinitionBuilder.rootBeanDefinition(MongoDeviceManagement.class);
 		dm.addPropertyReference("mongoClient", "mongo");
@@ -402,6 +445,9 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 
 		/** Mongo tenant datastore service providers */
 		MongoTenantDatastore("mongo-tenant-datastore"),
+
+		/** Hybrid MongoDB/Hazelcast datastore configuration */
+		MongoHazelcastDbTenantDatastore("mongo-hazelcast-tenant-datastore"),
 
 		/** Hybrid MongoDB/InfluxDB datastore configuration */
 		MongoInfluxDbTenantDatastore("mongo-influxdb-tenant-datastore"),

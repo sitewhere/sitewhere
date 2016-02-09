@@ -245,6 +245,29 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+
+	<!-- Configuration data for a MongoDB tenant datastore with Hazelcast event storage -->
+	<xsd:element name="mongo-hazelcast-tenant-datastore" type="mongoHazelcastDbTenantDatastoreType"
+		substitutionGroup="abstract-tenant-datastore">
+		<xsd:annotation>
+			<xsd:documentation>Hybrid tenant datastore that uses MongoDB for storing device
+				management data and Hazelcast for storing event data.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="mongoHazelcastDbTenantDatastoreType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractTenantDatastoreType">
+				<xsd:attribute name="expirationInMin" type="xsd:int">
+					<xsd:annotation>
+						<xsd:documentation>Number of minutes events are kept in memory before they are
+							evicted.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
 	<!-- Configuration data for an HBase tenant datastore -->
 	<xsd:element name="hbase-tenant-datastore" type="hbaseTenantDatastoreType"

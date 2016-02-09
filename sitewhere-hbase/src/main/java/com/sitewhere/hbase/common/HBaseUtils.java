@@ -30,6 +30,7 @@ import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.PayloadEncoding;
 import com.sitewhere.hbase.encoder.PayloadMarshalerResolver;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.rest.model.search.Pager;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IFilter;

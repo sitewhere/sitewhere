@@ -34,8 +34,14 @@
 		<sw:tenant-datastore>
 		
 			<!-- Default MongoDB Datastore -->
+			<!--  
 			<sw:mongo-tenant-datastore useBulkEventInserts="true"
 				bulkInsertMaxChunkSize="1000"/>
+			-->
+				
+			<!-- Hybrid MongoDB/Hazelcast Datastore -->
+			<sw:mongo-hazelcast-tenant-datastore
+				expirationInMin="60"/>
 
 			<!-- Hybrid MongoDB/InfluxDB Datastore -->
 			<!--  
