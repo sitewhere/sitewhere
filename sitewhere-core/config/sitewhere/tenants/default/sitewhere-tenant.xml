@@ -204,9 +204,6 @@
 			
 				<!-- Send outbound device events over Hazelcast -->
 				<sw:hazelcast-event-processor/>
-				
-				<!-- Perform custom processing in a Groovy script -->
-				<sw:groovy-event-processor scriptPath="eventCreate.groovy"/>
 
 			</sw:outbound-processing-chain>
 

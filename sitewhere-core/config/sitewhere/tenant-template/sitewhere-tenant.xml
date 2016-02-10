@@ -36,6 +36,18 @@
 			<!-- Default MongoDB Datastore -->
 			<sw:mongo-tenant-datastore useBulkEventInserts="true"
 				bulkInsertMaxChunkSize="1000"/>
+				
+			<!-- Hybrid MongoDB/Hazelcast Datastore -->
+			<!--  
+			<sw:mongo-hazelcast-tenant-datastore
+				expirationInMin="60"/>
+			-->
+
+			<!-- Hybrid MongoDB/InfluxDB Datastore -->
+			<!--  
+			<sw:mongo-influxdb-tenant-datastore connectUrl="http://localhost:8086"
+				logLevel="basic" enableBatch="true" batchChunkSize="1000" batchIntervalMs="100"/>
+			-->
 		
 			<!-- Default HBase Datastore -->
 			<!--  
@@ -46,7 +58,7 @@
 			<sw:hazelcast-cache/>
 			
 			<!-- Initializes data model with sample data if datastore is empty -->
-			<sw:default-device-model-initializer/>
+			<sw:groovy-device-model-initializer scriptPath="initializer/deviceModel.groovy"/>
 			<sw:default-asset-model-initializer/>
 			<sw:default-schedule-model-initializer/>
 
@@ -94,6 +106,10 @@
 						width="250" height="250" backgroundColor="FFFFFFFF" foregroundColor="FF111111"/>
 
 				</sw:symbol-generator-manager>
+				
+				<!-- Configures presence management -->
+				<sw:default-presence-manager checkInterval="PT5M"
+					presenceMissingInterval="PT8H"/>
 
 			</sw:device-services>
 			
@@ -112,6 +128,8 @@
 						destination="hybrid"/>
 					<sw:mapping specification="5a95f3f2-96f0-47f9-b98d-f5c081d01948"
 						destination="hybrid"/>
+					<sw:mapping specification="964e7613-dab3-4fb3-8919-266a91370884"
+						destination="json"/>
 				</sw:specification-mapping-router>
 			</sw:command-routing>
 			
@@ -130,6 +148,14 @@
 				<sw:mqtt-command-destination destinationId="hybrid"
 					hostname="localhost" port="1883">
 					<sw:java-protobuf-hybrid-encoder/>
+					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
+						systemTopicExpr="SiteWhere/system/%s"/>
+				</sw:mqtt-command-destination>
+
+				<!-- Used for devices that expect hybrid protobuf/Java invocations -->
+				<sw:mqtt-command-destination destinationId="json"
+					hostname="localhost" port="1883">
+					<sw:json-command-encoder/>
 					<sw:hardware-id-topic-extractor commandTopicExpr="SiteWhere/commands/%s"
 						systemTopicExpr="SiteWhere/system/%s"/>
 				</sw:mqtt-command-destination>

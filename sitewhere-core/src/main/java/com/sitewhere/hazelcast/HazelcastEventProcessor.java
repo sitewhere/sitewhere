@@ -143,7 +143,7 @@ public class HazelcastEventProcessor extends FilteredOutboundEventProcessor {
 	 */
 	@Override
 	public void onStateChangeNotFiltered(IDeviceStateChange state) throws SiteWhereException {
-		LOGGER.info("Hazelcast received state change of type: " + state.getCategory().name() + ":"
+		LOGGER.debug("Hazelcast received state change of type: " + state.getCategory().name() + ":"
 				+ state.getNewState());
 	}
 

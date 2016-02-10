@@ -1,7 +1,7 @@
 // ######################## //
 // Event Generation Example //
 // ######################## //
-logger.info "Handling event processing in Groovy script"
+logger.debug "Handling event processing in Groovy script"
 
 // Only execute logic if event contains measurements with fuel level.
 if (event.hasMeasurement('fuel.level')) {
