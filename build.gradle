@@ -1,14 +1,15 @@
 buildscript {
-  repositories {
-    maven { url "https://plugins.gradle.org/m2/" }
-  }
-  dependencies {
-    classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
-    classpath 'gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.7.3'
-    classpath 'io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE'
-    classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-    classpath 'com.github.skhatri:gradle-s3-plugin:1.0.2'
-  }
+	repositories {
+		maven { url "https://plugins.gradle.org/m2/" }
+	}
+	dependencies {
+		classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
+		classpath 'gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.7.3'
+		classpath 'io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE'
+		classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+		classpath 'com.github.skhatri:gradle-s3-plugin:1.0.2'
+		classpath 'se.transmode.gradle:gradle-docker:1.2'
+	}
 }
 
 ext {
@@ -16,10 +17,15 @@ ext {
 }
 
 apply plugin: 's3'
-
 s3 {
     bucket = 'sitewhere'
     awsProfile = 'gradle'
+}
+
+apply plugin: 'docker'
+docker {
+    baseImage "ubuntu:14.04"
+    maintainer 'Derek Adams "derek.adams@sitewhere.com"'
 }
 
 allprojects  {
@@ -114,6 +120,7 @@ dependencies {
     tomcat "org.apache.tomcat:tomcat:${tomcatVersion}@tar.gz"
 }
 
+// Create layout for zip and tar archives.
 task createServerLayout {
     doLast {
         copy {
@@ -176,11 +183,16 @@ task uploadServerZip(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
 
 // Build server tar distrubtion
 task serverTar(type: Tar) {
-
     baseName = 'sitewhere-server'
     compression = 'GZIP'
-    from "$buildDir/tomcat/apache-tomcat-${tomcatVersion}"
-    into "${baseName}-${version}"
+ 	from("$buildDir/tomcat/apache-tomcat-${tomcatVersion}") {
+		exclude ('**/*.sh')
+	}
+	from("$buildDir/tomcat/apache-tomcat-${tomcatVersion}") {
+		include ('**/*.sh')
+		fileMode 0755
+	}    
+	into "${baseName}-${version}"
 }
 
 // Upload server tar file to Amazon S3
@@ -191,6 +203,32 @@ task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
     doLast {
     	println 'Uploaded server tar to Amazon S3.'
     }
+}
+
+// Create the standalone Docker image.
+task dockerStandalone(type: Docker, dependsOn: serverZip) {
+    applicationName = "sitewhere/standalone:{version}"
+    runCommand "apt-get update"
+    runCommand "apt-get install -y unzip wget openjdk-8-jdk"
+    
+    // Install HiveMQ
+    runCommand "cd /opt && wget --content-disposition https://s3.amazonaws.com/sitewhere-hivemq/hivemq-3.0.2.zip && unzip hivemq-3.0.2.zip"
+    addFile "${projectDir}/sitewhere-docker/standalone/1.5.0/config.xml", "/opt/hivemq-3.0.2/conf/config.xml"
+    runCommand "ln -s /opt/hivemq-3.0.2 /opt/hivemq && useradd -d /opt/hivemq hivemq && chown -R hivemq.hivemq /opt/hivemq-3.0.2 && chown -R hivemq.hivemq /opt/hivemq && cd /opt/hivemq && chmod +x ./bin/run.sh"
+    
+    // Install MongoDB
+    runCommand "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list && apt-get update && apt-get install -y mongodb-org && mkdir -p /data/db"
+    
+    // Install SiteWhere
+	addFile serverZip.archivePath, "/opt/sitewhere-server-${version}.zip"
+    runCommand "cd /opt unzip sitewhere-server-${version}.zip"
+	setEnvironment 'catalina.base', "/opt/sitewhere-server-${version}"
+	setEnvironment 'catalina.home', "/opt/sitewhere-server-${version}"
+    runCommand "ln -s /opt/sitewhere-server-${version} /opt/sitewhere && useradd -d /opt/sitewhere sitewhere && chown -R sitewhere.sitewhere /opt/sitewhere-server-${version} && chown -R sitewhere.sitewhere /opt/sitewhere && cd /opt/sitewhere && chmod +x /opt/sitewhere-server-${version}/bin/*.sh"
+
+	def commands = []
+	commands << "nohup /opt/hivemq/bin/run.sh > /dev/null & nohup /usr/bin/mongod --smallfiles > /dev/null & echo 'Waiting for MongoDB to start...' && while ! nc -vz localhost 27017 2> /dev/null; do sleep 1; done && nohup /opt/sitewhere/bin/startup.sh & echo 'Starting SiteWhere...' && while ! [ -f /opt/sitewhere/logs/catalina.out ]; do sleep 1; done && tail -f /opt/sitewhere/logs/catalina.out"
+	defaultCommand commands
 }
 
 createServerLayout.dependsOn subprojects.build
