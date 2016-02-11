@@ -26,6 +26,7 @@ apply plugin: 'docker'
 docker {
     baseImage "ubuntu:14.04"
     maintainer 'Derek Adams "derek.adams@sitewhere.com"'
+    useApi true
 }
 
 allprojects  {
@@ -207,9 +208,12 @@ task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
 
 // Create the standalone Docker image.
 task dockerStandalone(type: Docker, dependsOn: serverZip) {
-    applicationName = "sitewhere/standalone:{version}"
-    runCommand "apt-get update"
-    runCommand "apt-get install -y unzip wget openjdk-8-jdk"
+	project.group = 'sitewhere'
+	
+    applicationName = 'standalone'
+    runCommand 'add-apt-repository ppa:openjdk-r/ppa'
+    runCommand 'apt-get update'
+    runCommand 'apt-get install -y unzip wget openjdk-8-jdk'
     
     // Install HiveMQ
     runCommand "cd /opt && wget --content-disposition https://s3.amazonaws.com/sitewhere-hivemq/hivemq-3.0.2.zip && unzip hivemq-3.0.2.zip"
