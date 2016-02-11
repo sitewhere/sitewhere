@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device.event.scripting;
 
 import com.sitewhere.spi.device.event.DeviceEventType;
+import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 
@@ -26,12 +27,21 @@ public class DeviceEventSupport {
 	}
 
 	/**
-	 * Indicates if event is a location.
+	 * Indicates a location event.
 	 * 
 	 * @return
 	 */
 	public boolean isLocation() {
 		return event.getEventType() == DeviceEventType.Location;
+	}
+
+	/**
+	 * Indicates a measurements event.
+	 * 
+	 * @return
+	 */
+	public boolean isMeasurements() {
+		return event.getEventType() == DeviceEventType.Measurements;
 	}
 
 	/**
@@ -62,7 +72,30 @@ public class DeviceEventSupport {
 		return mx;
 	}
 
+	/**
+	 * Returns true if event is an alert.
+	 * 
+	 * @return
+	 */
+	public boolean isAlert() {
+		return event.getEventType() == DeviceEventType.Alert;
+	}
+
+	/**
+	 * Returns true if event is an alert and has the given type.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public boolean isAlertOfType(String type) {
+		return (isAlert() && ((IDeviceAlert) event).getType().equals(type));
+	}
+
 	public IDeviceEvent data() {
+		return event;
+	}
+
+	public IDeviceEvent getData() {
 		return event;
 	}
 }
