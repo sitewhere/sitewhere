@@ -26,7 +26,6 @@ apply plugin: 'docker'
 docker {
     baseImage "ubuntu:14.04"
     maintainer 'Derek Adams "derek.adams@sitewhere.com"'
-    useApi true
 }
 
 allprojects  {
@@ -122,7 +121,7 @@ dependencies {
 }
 
 // Create layout for zip and tar archives.
-task createServerLayout {
+task createServerLayout(dependsOn: subprojects.build) {
     doLast {
         copy {
             from(tarTree(configurations.tomcat.getSingleFile()))
@@ -165,7 +164,7 @@ task createServerLayout {
 }
 
 // Build server zip distrubtion
-task serverZip(type: Zip) {
+task serverZip(type: Zip, dependsOn: createServerLayout) {
     baseName = 'sitewhere-server'
     from "$buildDir/tomcat/apache-tomcat-${tomcatVersion}"
     into "${baseName}-${version}"
@@ -183,7 +182,7 @@ task uploadServerZip(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
 }
 
 // Build server tar distrubtion
-task serverTar(type: Tar) {
+task serverTar(type: Tar, dependsOn: createServerLayout) {
     baseName = 'sitewhere-server'
     compression = 'GZIP'
  	from("$buildDir/tomcat/apache-tomcat-${tomcatVersion}") {
@@ -234,10 +233,6 @@ task dockerStandalone(type: Docker, dependsOn: serverZip) {
 	commands << "nohup /opt/hivemq/bin/run.sh > /dev/null & nohup /usr/bin/mongod --smallfiles > /dev/null & echo 'Waiting for MongoDB to start...' && while ! nc -vz localhost 27017 2> /dev/null; do sleep 1; done && nohup /opt/sitewhere/bin/startup.sh & echo 'Starting SiteWhere...' && while ! [ -f /opt/sitewhere/logs/catalina.out ]; do sleep 1; done && tail -f /opt/sitewhere/logs/catalina.out"
 	defaultCommand commands
 }
-
-createServerLayout.dependsOn subprojects.build
-serverZip.dependsOn createServerLayout
-serverTar.dependsOn createServerLayout
 
 uploadArchives {
 	dependsOn uploadServerZip
