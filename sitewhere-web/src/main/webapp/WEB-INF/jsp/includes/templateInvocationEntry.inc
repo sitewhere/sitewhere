@@ -26,7 +26,7 @@
 		<td title="#:command.name#">#= asHtml #</td>
 		<td title="#:initiator#(#:initiatorId#)">#:initiator#(#:initiatorId#)</td>
 		<td title="#:target#">#:target#</td>
-		<td>#= formattedDate(eventDate) #</td>
+		<td>#: formattedDate(data.eventDate) #</td>
 		<td>
 			<div style="width: 100%; text-align: left">
 				<i class="fa fa-info-circle sw-action-glyph sw-edit-glyph" title="#= i18next("includes.templateInvocationEntry.ViewInvocation") #"
