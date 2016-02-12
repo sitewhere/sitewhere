@@ -116,6 +116,11 @@ heavyEquipment << meitrack
 
 // Gateway default specification.
 def gateway = deviceBuilder.newSpecification '75126a52-0607-4cca-b995-df40e73a707b', 'Gateway Default', module, '176'
+def schema = gateway.makeComposite() newSchema() addSlot 'Gateway Port 1', 'gw1'
+def dbus = schema.addUnit 'Default Bus', 'default'
+dbus.addUnit 'PCI Bus', 'pci' addSlot 'PCI Device 1', 'pci1' addSlot 'PCI Device 2', 'pci2'
+dbus.addUnit 'Serial Ports', 'serial' addSlot 'COM Port 1', 'com1' addSlot 'COM Port 2', 'com2'
+schema.addUnit 'High Voltage Bus 1', 'hv1' addSlot 'HV Slot 1', 'slot1' addSlot 'HV Slot 2', 'slot2'
 gateway = addSpecification gateway
 tools << gateway
 
