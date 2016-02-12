@@ -17,6 +17,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.log4j.Logger;
+import org.fusesource.hawtdispatch.Dispatch;
+import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
@@ -65,6 +67,9 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 	/** MQTT client */
 	private MQTT mqtt;
 
+	/** Hawtdispatch queue */
+	private DispatchQueue queue;
+
 	public MqttLifecycleComponent(LifecycleComponentType type) {
 		super(type);
 	}
@@ -103,7 +108,8 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		this.mqtt = MqttLifecycleComponent.configure(this);
+		this.queue = Dispatch.createQueue(getComponentId());
+		this.mqtt = MqttLifecycleComponent.configure(this, queue);
 	}
 
 	/**
@@ -113,7 +119,7 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static MQTT configure(IMqttComponent component) throws SiteWhereException {
+	public static MQTT configure(IMqttComponent component, DispatchQueue queue) throws SiteWhereException {
 		MQTT mqtt = new MQTT();
 		if ((component.getProtocol().startsWith("ssl")) || (component.getProtocol().startsWith("tls"))) {
 			if ((component.getTrustStorePath() != null) && (component.getTrustStorePassword() != null)) {
@@ -134,8 +140,8 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 			}
 		}
 		try {
-			mqtt.setHost(component.getProtocol() + "://" + component.getHostname() + ":"
-					+ component.getPort());
+			mqtt.setHost(
+					component.getProtocol() + "://" + component.getHostname() + ":" + component.getPort());
 			return mqtt;
 		} catch (URISyntaxException e) {
 			throw new SiteWhereException("Invalid hostname for MQTT server.", e);
@@ -149,6 +155,9 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		if (queue != null) {
+			queue.suspend();
+		}
 	}
 
 	/*

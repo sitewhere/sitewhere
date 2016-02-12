@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.fusesource.hawtdispatch.Dispatch;
+import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
@@ -38,8 +40,8 @@ import com.sitewhere.spi.device.event.processor.routing.IRouteBuilder;
  * 
  * @author Derek
  */
-public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor implements
-		IMulticastingOutboundEventProcessor<String>, IMqttComponent {
+public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
+		implements IMulticastingOutboundEventProcessor<String>, IMqttComponent {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttOutboundEventProcessor.class);
@@ -64,6 +66,9 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 	/** MQTT client */
 	private MQTT mqtt;
 
+	/** Hawtdispatch queue */
+	private DispatchQueue queue;
+
 	/** Shared MQTT connection */
 	private FutureConnection connection;
 
@@ -81,7 +86,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 	@Override
 	public void start() throws SiteWhereException {
 		if ((topic == null) && ((multicaster == null) && (routeBuilder == null))) {
-			throw new SiteWhereException("No topic specified and no multicaster or route builder configured.");
+			throw new SiteWhereException(
+					"No topic specified and no multicaster or route builder configured.");
 		}
 
 		// Required for filters.
@@ -93,7 +99,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 		}
 
 		// Use common MQTT configuration setup.
-		this.mqtt = MqttLifecycleComponent.configure(this);
+		this.queue = Dispatch.createQueue(getComponentId());
+		this.mqtt = MqttLifecycleComponent.configure(this, queue);
 
 		LOGGER.info("Connecting to MQTT broker at '" + getHostname() + ":" + getPort() + "'...");
 		connection = mqtt.futureConnection();
@@ -120,6 +127,9 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 			} catch (Exception e) {
 				LOGGER.error("Error shutting down MQTT device event receiver.", e);
 			}
+		}
+		if (queue != null) {
+			queue.suspend();
 		}
 		super.stop();
 	}
@@ -149,9 +159,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#onAlertNotFiltered
-	 * (com.sitewhere.spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.device.event.processor.FilteredOutboundEventProcessor#
+	 * onAlertNotFiltered (com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	@Override
 	public void onAlertNotFiltered(IDeviceAlert alert) throws SiteWhereException {
@@ -166,7 +175,8 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor i
 	 * (com.sitewhere.spi.device.event.IDeviceCommandInvocation)
 	 */
 	@Override
-	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation) throws SiteWhereException {
+	public void onCommandInvocationNotFiltered(IDeviceCommandInvocation invocation)
+			throws SiteWhereException {
 		sendEvent(invocation);
 	}
 

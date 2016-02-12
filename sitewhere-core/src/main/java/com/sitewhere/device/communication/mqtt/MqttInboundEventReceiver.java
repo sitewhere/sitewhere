@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
+import org.fusesource.hawtdispatch.ShutdownException;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.Message;
@@ -30,7 +31,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MqttInboundEventReceiver extends MqttLifecycleComponent implements IInboundEventReceiver<byte[]> {
+public class MqttInboundEventReceiver extends MqttLifecycleComponent
+		implements IInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
@@ -76,8 +78,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 
 			LOGGER.info("Subscribed to events on MQTT topic: " + getTopic());
 		} catch (Exception e) {
-			throw new SiteWhereException("Exception while attempting to subscribe to MQTT topic: "
-					+ getTopic(), e);
+			throw new SiteWhereException(
+					"Exception while attempting to subscribe to MQTT topic: " + getTopic(), e);
 		}
 
 		// Handle message processing in separate thread.
@@ -165,8 +167,10 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent implements 
 		}
 		if (connection != null) {
 			try {
-				connection.disconnect();
-				connection.kill();
+				connection.disconnect().await();
+				connection.kill().await();
+			} catch (ShutdownException e) {
+				LOGGER.info("Dispatcher has already been shut down.");
 			} catch (Exception e) {
 				LOGGER.error("Error shutting down MQTT device event receiver.", e);
 			}

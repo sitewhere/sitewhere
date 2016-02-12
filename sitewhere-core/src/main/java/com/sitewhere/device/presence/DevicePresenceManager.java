@@ -196,7 +196,7 @@ public class DevicePresenceManager extends TenantLifecycleComponent implements I
 				try {
 					Thread.sleep(checkIntervalSecs * 1000);
 				} catch (InterruptedException e) {
-					LOGGER.info("Presence check thread shut down.", e);
+					LOGGER.info("Presence check thread shut down.");
 				}
 			}
 		}

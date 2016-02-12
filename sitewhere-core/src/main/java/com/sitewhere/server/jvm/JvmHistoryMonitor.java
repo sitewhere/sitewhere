@@ -75,7 +75,7 @@ public class JvmHistoryMonitor implements Runnable {
 			try {
 				Thread.sleep(UPDATE_INTERVAL);
 			} catch (InterruptedException e) {
-				LOGGER.error("JVM history monitoring interrupted.", e);
+				LOGGER.error("JVM history monitoring interrupted.");
 				return;
 			}
 		}

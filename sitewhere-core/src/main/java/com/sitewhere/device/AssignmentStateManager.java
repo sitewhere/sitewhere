@@ -204,7 +204,7 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 					try {
 						Thread.sleep(FLUSH_INTERVAL - diff);
 					} catch (InterruptedException e) {
-						LOGGER.info("State manager persistence thread shut down.", e);
+						LOGGER.info("State manager persistence thread shut down.");
 						return;
 					}
 				}
