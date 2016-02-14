@@ -9,13 +9,15 @@ package com.sitewhere.groovy.device.event.processor;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
+import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
@@ -47,6 +49,9 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 	/** Relative path to Groovy script */
 	private String scriptPath;
 
+	/** Supports building device management entities */
+	private DeviceManagementRequestBuilder deviceBuilder;
+
 	/** Supports building various types of device events */
 	private DeviceEventRequestBuilder eventsBuilder;
 
@@ -64,8 +69,8 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 			throw new SiteWhereException("No Groovy configuration provided.");
 		}
 
-		this.eventsBuilder =
-				new DeviceEventRequestBuilder(SiteWhere.getServer().getDeviceEventManagement(getTenant()));
+		this.deviceBuilder = new DeviceManagementRequestBuilder(getDeviceManagement());
+		this.eventsBuilder = new DeviceEventRequestBuilder(getEventManagement());
 	}
 
 	/*
@@ -137,9 +142,18 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 	 * @throws SiteWhereException
 	 */
 	protected void processEvent(IDeviceEvent event) throws SiteWhereException {
+		// These should be cached, so no performance hit.
+		IDeviceAssignment assignment =
+				getDeviceManagement().getDeviceAssignmentByToken(event.getDeviceAssignmentToken());
+		IDevice device = getDeviceManagement().getDeviceForAssignment(assignment);
+
+		// Create Groovy binding with handles to everything.
 		Binding binding = new Binding();
 		binding.setVariable("logger", getLogger());
 		binding.setVariable("event", new DeviceEventSupport(event));
+		binding.setVariable("assignment", assignment);
+		binding.setVariable("device", device);
+		binding.setVariable("deviceManagement", deviceBuilder);
 		binding.setVariable("eventBuilder", eventsBuilder);
 		binding.setVariable("hazelcast", getHazelcast().getHazelcastInstance());
 

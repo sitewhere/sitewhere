@@ -19,6 +19,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceCommandResponse;
 import com.sitewhere.spi.device.event.IDeviceEvent;
+import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
@@ -39,6 +40,9 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	/** Device management implementation */
 	private IDeviceManagement deviceManagement;
 
+	/** Event management implementation */
+	private IDeviceEventManagement eventManagement;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -47,6 +51,7 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 	@Override
 	public void start() throws SiteWhereException {
 		this.deviceManagement = SiteWhere.getServer().getDeviceManagement(getTenant());
+		this.eventManagement = SiteWhere.getServer().getDeviceEventManagement(getTenant());
 
 		getLifecycleComponents().clear();
 		for (IDeviceEventFilter filter : filters) {
@@ -248,5 +253,21 @@ public abstract class FilteredOutboundEventProcessor extends OutboundEventProces
 
 	public void setFilters(List<IDeviceEventFilter> filters) {
 		this.filters = filters;
+	}
+
+	public IDeviceManagement getDeviceManagement() {
+		return deviceManagement;
+	}
+
+	public void setDeviceManagement(IDeviceManagement deviceManagement) {
+		this.deviceManagement = deviceManagement;
+	}
+
+	public IDeviceEventManagement getEventManagement() {
+		return eventManagement;
+	}
+
+	public void setEventManagement(IDeviceEventManagement eventManagement) {
+		this.eventManagement = eventManagement;
 	}
 }
