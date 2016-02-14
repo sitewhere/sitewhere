@@ -160,9 +160,9 @@ public class SiteWhereController extends MvcController {
 			AuthoritiesHelper auths = new AuthoritiesHelper(user);
 			if ((redirect == null) || (redirect.length() == 0)) {
 				if (auths.isViewServerInformation()) {
-					redirect = "server.html";
+					redirect = "/admin/server.html";
 				} else {
-					redirect = "sites/list.html";
+					redirect = "/admin/sites/list.html";
 				}
 			}
 
