@@ -7,11 +7,18 @@
  */
 package com.sitewhere.rest.model.device.event.request.scripting;
 
+import java.util.List;
+
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.IDeviceAssignment;
+import com.sitewhere.spi.device.IDeviceManagement;
+import com.sitewhere.spi.device.command.IDeviceCommand;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 
@@ -22,11 +29,16 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
  */
 public class DeviceEventRequestBuilder {
 
-	/** Event management interface */
-	private IDeviceEventManagement events;
+	/** Device management implementation */
+	private IDeviceManagement deviceManagement;
 
-	public DeviceEventRequestBuilder(IDeviceEventManagement events) {
-		this.events = events;
+	/** Event management interface */
+	private IDeviceEventManagement eventManagement;
+
+	public DeviceEventRequestBuilder(IDeviceManagement deviceManagement,
+			IDeviceEventManagement eventManagement) {
+		this.deviceManagement = deviceManagement;
+		this.eventManagement = eventManagement;
 	}
 
 	public DeviceLocationCreateRequest.Builder newLocation(double latitude, double longitude) {
@@ -41,19 +53,66 @@ public class DeviceEventRequestBuilder {
 		return new DeviceAlertCreateRequest.Builder(type, message);
 	}
 
+	public DeviceCommandInvocationCreateRequest.Builder newCommandInvocation(String commandName,
+			String target) {
+		try {
+			IDeviceAssignment targetAssignment = deviceManagement.getDeviceAssignmentByToken(target);
+			if (targetAssignment == null) {
+				throw new SiteWhereException("Target assignment not found: " + target);
+			}
+			IDevice targetDevice = deviceManagement.getDeviceForAssignment(targetAssignment);
+			List<IDeviceCommand> commands =
+					deviceManagement.listDeviceCommands(targetDevice.getSpecificationToken(), false);
+			IDeviceCommand match = null;
+			for (IDeviceCommand command : commands) {
+				if (command.getName().equals(commandName)) {
+					match = command;
+				}
+			}
+			if (match == null) {
+				throw new SiteWhereException(
+						"Command not executed. No command found matching: " + commandName);
+			}
+			return new DeviceCommandInvocationCreateRequest.Builder(match.getToken(), target);
+		} catch (SiteWhereException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public AssignmentScope forSameAssignmentAs(DeviceEventSupport support) {
-		return new AssignmentScope(events, support.data().getDeviceAssignmentToken());
+		return new AssignmentScope(getDeviceManagement(), getEventManagement(),
+				support.data().getDeviceAssignmentToken());
 	}
 
 	public AssignmentScope forSameAssignmentAs(IDeviceEvent event) {
-		return new AssignmentScope(events, event.getDeviceAssignmentToken());
+		return new AssignmentScope(getDeviceManagement(), getEventManagement(),
+				event.getDeviceAssignmentToken());
 	}
 
 	public AssignmentScope forAssignment(String assignmentToken) {
-		return new AssignmentScope(events, assignmentToken);
+		return new AssignmentScope(getDeviceManagement(), getEventManagement(), assignmentToken);
+	}
+
+	public IDeviceManagement getDeviceManagement() {
+		return deviceManagement;
+	}
+
+	public void setDeviceManagement(IDeviceManagement deviceManagement) {
+		this.deviceManagement = deviceManagement;
+	}
+
+	public IDeviceEventManagement getEventManagement() {
+		return eventManagement;
+	}
+
+	public void setEventManagement(IDeviceEventManagement eventManagement) {
+		this.eventManagement = eventManagement;
 	}
 
 	public static class AssignmentScope {
+
+		/** Device management interface */
+		private IDeviceManagement deviceManagement;
 
 		/** Event management interface */
 		private IDeviceEventManagement events;
@@ -61,7 +120,9 @@ public class DeviceEventRequestBuilder {
 		/** Assignment token */
 		private String assignmentToken;
 
-		public AssignmentScope(IDeviceEventManagement events, String assignmentToken) {
+		public AssignmentScope(IDeviceManagement deviceManagement, IDeviceEventManagement events,
+				String assignmentToken) {
+			this.deviceManagement = deviceManagement;
 			this.events = events;
 			this.assignmentToken = assignmentToken;
 		}
@@ -83,6 +144,14 @@ public class DeviceEventRequestBuilder {
 		public AssignmentScope persist(DeviceAlertCreateRequest.Builder builder) throws SiteWhereException {
 			DeviceAlertCreateRequest request = builder.build();
 			events.addDeviceAlert(getAssignmentToken(), request);
+			return this;
+		}
+
+		public AssignmentScope persist(DeviceCommandInvocationCreateRequest.Builder builder)
+				throws SiteWhereException {
+			DeviceCommandInvocationCreateRequest request = builder.build();
+			IDeviceCommand command = deviceManagement.getDeviceCommandByToken(request.getCommandToken());
+			events.addDeviceCommandInvocation(getAssignmentToken(), command, request);
 			return this;
 		}
 

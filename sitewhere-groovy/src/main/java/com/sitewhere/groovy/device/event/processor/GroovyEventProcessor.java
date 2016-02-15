@@ -70,7 +70,7 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 		}
 
 		this.deviceBuilder = new DeviceManagementRequestBuilder(getDeviceManagement());
-		this.eventsBuilder = new DeviceEventRequestBuilder(getEventManagement());
+		this.eventsBuilder = new DeviceEventRequestBuilder(getDeviceManagement(), getEventManagement());
 	}
 
 	/*

@@ -66,7 +66,8 @@ public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
 		Binding binding = new Binding();
 		binding.setVariable("logger", LOGGER);
 		binding.setVariable("deviceBuilder", new DeviceManagementRequestBuilder(deviceManagement));
-		binding.setVariable("eventBuilder", new DeviceEventRequestBuilder(deviceEventManagement));
+		binding.setVariable("eventBuilder",
+				new DeviceEventRequestBuilder(deviceManagement, deviceEventManagement));
 
 		try {
 			// Use the system account for logging "created by" on created elements.

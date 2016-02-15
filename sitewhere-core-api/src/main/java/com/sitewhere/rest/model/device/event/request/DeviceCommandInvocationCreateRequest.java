@@ -14,6 +14,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.event.CommandInitiator;
 import com.sitewhere.spi.device.event.CommandStatus;
 import com.sitewhere.spi.device.event.CommandTarget;
@@ -25,8 +26,8 @@ import com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequ
  * @author Derek
  */
 @JsonInclude(Include.NON_NULL)
-public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateRequest implements
-		IDeviceCommandInvocationCreateRequest, Serializable {
+public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateRequest
+		implements IDeviceCommandInvocationCreateRequest, Serializable {
 
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 8638261326864469204L;
@@ -83,9 +84,8 @@ public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateReque
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest#getTarget
-	 * ()
+	 * @see com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest#
+	 * getTarget ()
 	 */
 	public CommandTarget getTarget() {
 		return target;
@@ -140,9 +140,8 @@ public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateReque
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest#getStatus
-	 * ()
+	 * @see com.sitewhere.spi.device.event.request.IDeviceCommandInvocationCreateRequest#
+	 * getStatus ()
 	 */
 	public CommandStatus getStatus() {
 		return status;
@@ -150,5 +149,55 @@ public class DeviceCommandInvocationCreateRequest extends DeviceEventCreateReque
 
 	public void setStatus(CommandStatus status) {
 		this.status = status;
+	}
+
+	public static class Builder
+			extends DeviceEventCreateRequest.Builder<DeviceCommandInvocationCreateRequest> {
+
+		private DeviceCommandInvocationCreateRequest request = new DeviceCommandInvocationCreateRequest();
+
+		public Builder(String commandToken, String target) throws SiteWhereException {
+			request.setCommandToken(commandToken);
+			request.setInitiator(CommandInitiator.Script);
+			request.setTarget(CommandTarget.Assignment);
+			request.setTargetId(target);
+		}
+
+		public Builder parameterValue(String name, String value) {
+			request.getParameterValues().put(name, value);
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest.Builder#
+		 * getRequest()
+		 */
+		@Override
+		public DeviceCommandInvocationCreateRequest getRequest() {
+			return request;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest.Builder#
+		 * build()
+		 */
+		@Override
+		public DeviceCommandInvocationCreateRequest build() {
+			return request;
+		}
 	}
 }
