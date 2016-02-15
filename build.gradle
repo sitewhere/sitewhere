@@ -32,7 +32,7 @@ allprojects  {
     apply plugin: 'com.bmuschko.nexus'
 
     group = 'com.sitewhere'
-    version = '1.6.0'
+    version = '1.6.1'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }
