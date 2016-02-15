@@ -24,7 +24,11 @@
 <script type="text/x-kendo-tmpl" id="tpl-invocation-entry">
 	<tr class="sw-list-entry row-gradient">
 		<td title="#:command.name#">#= asHtml #</td>
+# if (data.initiatorId) { #
 		<td title="#:initiator#(#:initiatorId#)">#:initiator#(#:initiatorId#)</td>
+# } else { #
+		<td title="#:initiator#">#:initiator#</td>
+# } #
 		<td title="#:target#">#:target#</td>
 		<td>#: formattedDate(data.eventDate) #</td>
 		<td>
