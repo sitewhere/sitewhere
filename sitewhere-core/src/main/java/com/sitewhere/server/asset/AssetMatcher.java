@@ -101,6 +101,6 @@ public class AssetMatcher {
 		if (field == null) {
 			return false;
 		}
-		return field.trim().toLowerCase().indexOf(value) != -1;
+		return field.trim().toLowerCase().indexOf(value.toLowerCase()) != -1;
 	}
 }
