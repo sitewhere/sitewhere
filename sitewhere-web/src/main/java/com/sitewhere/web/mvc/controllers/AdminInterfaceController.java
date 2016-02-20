@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.web.mvc;
+package com.sitewhere.web.mvc.controllers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,18 +53,21 @@ import com.sitewhere.version.VersionHelper;
 import com.sitewhere.web.configuration.TenantConfigurationModel;
 import com.sitewhere.web.configuration.TokenNamePair;
 import com.sitewhere.web.configuration.model.ElementRole;
+import com.sitewhere.web.mvc.AuthoritiesHelper;
+import com.sitewhere.web.mvc.MvcController;
+import com.sitewhere.web.mvc.NoTenantException;
 
 /**
- * Spring MVC controller for SiteWhere web application.
+ * Spring MVC controller for SiteWhere administrative application.
  * 
  * @author dadams
  */
 @Controller
 @RequestMapping
-public class SiteWhereController extends MvcController {
+public class AdminInterfaceController extends MvcController {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereController.class);
+	private static Logger LOGGER = Logger.getLogger(AdminInterfaceController.class);
 
 	/**
 	 * Display the "login" page.

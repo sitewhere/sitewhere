@@ -8,7 +8,7 @@
            http://www.sitewhere.com/schema/sitewhere/ce http://www.sitewhere.org/schema/sitewhere/ce/current/sitewhere.xsd">
            
 	<!-- Load property values for substitution -->
-	<context:property-placeholder location="file:${catalina.home}/conf/sitewhere/sitewhere.properties"
+	<context:property-placeholder location="file:${sitewhere.home}/conf/sitewhere.properties"
 		ignore-resource-not-found="true"/>
 	
 	<!-- ########################### -->
@@ -20,7 +20,7 @@
 		<!-- # GLOBAL SERVICES CONFIGURATION # -->
 		<!-- ################################# -->
 		<sw:globals>
-			<sw:hazelcast-configuration configFileLocation="${catalina.home}/conf/sitewhere/hazelcast.xml"/>
+			<sw:hazelcast-configuration configFileLocation="${sitewhere.home}/conf/hazelcast.xml"/>
 			<sw:solr-configuration solrServerUrl="http://localhost:8983/solr/SiteWhere"/>
 			<sw:groovy-configuration debug="true" verbose="true"/>
 			<!-- Optionally, use an external URL root for loading scripts.

@@ -10,15 +10,24 @@ package com.sitewhere.web.mvc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
+import com.sitewhere.web.mvc.controllers.AdminInterfaceController;
+
 @Configuration
-@EnableWebMvc
-@ComponentScan(basePackages = "com.sitewhere.web.mvc")
+@ComponentScan(basePackageClasses = { AdminInterfaceController.class })
 public class MvcConfiguration extends WebMvcConfigurationSupport {
+
+	/**
+	 * Ignore path extension on URLs.
+	 */
+	@Override
+	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+		configurer.favorPathExtension(false);
+	}
 
 	/**
 	 * Set up the JSP view resolver.

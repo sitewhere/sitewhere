@@ -60,7 +60,7 @@ public class ConfigurationMigrationSupport {
 			throw new SiteWhereException("Configuration root does not exist.");
 		}
 		File templateFolder =
-				new File(root, TomcatTenantConfigurationResolver.DEFAULT_TENANT_TEMPLATE_FOLDER);
+				new File(root, FileSystemTenantConfigurationResolver.DEFAULT_TENANT_TEMPLATE_FOLDER);
 		if (!templateFolder.exists()) {
 			if (!templateFolder.mkdir()) {
 				throw new SiteWhereException("Unable to create template folder.");
@@ -76,7 +76,7 @@ public class ConfigurationMigrationSupport {
 		}
 
 		// Migrate tenant configuration files to separate directories.
-		File tenants = new File(root, TomcatTenantConfigurationResolver.TENANTS_FOLDER);
+		File tenants = new File(root, FileSystemTenantConfigurationResolver.TENANTS_FOLDER);
 		if (!tenants.exists()) {
 			if (!tenants.mkdir()) {
 				throw new SiteWhereException("Unable to create tenant resources folder.");
@@ -92,8 +92,8 @@ public class ConfigurationMigrationSupport {
 				FileUtils.copyDirectory(templateFolder, tenantFolder);
 				File tenantConfig =
 						new File(tenantFolder,
-								TomcatTenantConfigurationResolver.DEFAULT_TENANT_CONFIGURATION_FILE + "."
-										+ TomcatTenantConfigurationResolver.TENANT_SUFFIX_ACTIVE);
+								FileSystemTenantConfigurationResolver.DEFAULT_TENANT_CONFIGURATION_FILE + "."
+										+ FileSystemTenantConfigurationResolver.TENANT_SUFFIX_ACTIVE);
 				if (tenantConfig.exists()) {
 					tenantConfig.delete();
 				}
@@ -121,8 +121,8 @@ public class ConfigurationMigrationSupport {
 			File moved = new File(templateFolder, templateFilename);
 			File updated =
 					new File(templateFolder,
-							TomcatTenantConfigurationResolver.DEFAULT_TENANT_CONFIGURATION_FILE + "."
-									+ TomcatTenantConfigurationResolver.TENANT_SUFFIX_ACTIVE);
+							FileSystemTenantConfigurationResolver.DEFAULT_TENANT_CONFIGURATION_FILE + "."
+									+ FileSystemTenantConfigurationResolver.TENANT_SUFFIX_ACTIVE);
 			if (!moved.getAbsolutePath().equals(updated.getAbsolutePath())) {
 				FileUtils.moveFile(moved, updated);
 			}
@@ -143,7 +143,7 @@ public class ConfigurationMigrationSupport {
 		File assets = new File(root, "assets");
 		if (assets.exists()) {
 			try {
-				File newAssets = new File(templateFolder, TomcatTenantConfigurationResolver.ASSETS_FOLDER);
+				File newAssets = new File(templateFolder, FileSystemTenantConfigurationResolver.ASSETS_FOLDER);
 				FileUtils.moveDirectory(assets, newAssets);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to move assets folder to template.");
@@ -151,7 +151,7 @@ public class ConfigurationMigrationSupport {
 		}
 
 		// Move Groovy scripts.
-		File scripts = new File(templateFolder, TomcatTenantConfigurationResolver.SCRIPTS_FOLDER);
+		File scripts = new File(templateFolder, FileSystemTenantConfigurationResolver.SCRIPTS_FOLDER);
 		if (!scripts.exists()) {
 			if (!scripts.mkdir()) {
 				throw new SiteWhereException("Unable to create scripts folder in template folder.");

@@ -9,11 +9,11 @@ package com.sitewhere.web.rest;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
+import com.sitewhere.web.rest.controllers.AssetsController;
+
 @Configuration
-@EnableWebMvc
-@ComponentScan(basePackages = "com.sitewhere.web.rest.controllers")
+@ComponentScan(basePackageClasses = { AssetsController.class })
 public class RestMvcConfiguration extends WebMvcConfigurationSupport {
 }

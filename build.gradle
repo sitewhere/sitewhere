@@ -1,19 +1,16 @@
 buildscript {
 	repositories {
 		maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
 	}
 	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.2.RELEASE")
 		classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
 		classpath 'gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.7.3'
 		classpath 'io.spring.gradle:dependency-management-plugin:0.5.4.RELEASE'
 		classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
 		classpath 'com.github.skhatri:gradle-s3-plugin:1.0.2'
-		classpath 'se.transmode.gradle:gradle-docker:1.2'
 	}
-}
-
-ext {
-    tomcatVersion = '7.0.67'
 }
 
 apply plugin: 's3'
@@ -22,17 +19,11 @@ s3 {
     awsProfile = 'gradle'
 }
 
-apply plugin: 'docker'
-docker {
-    baseImage "ubuntu:14.04"
-    maintainer 'Derek Adams "derek.adams@sitewhere.com"'
-}
-
 allprojects  {
     apply plugin: 'com.bmuschko.nexus'
 
     group = 'com.sitewhere'
-    version = '1.6.1'
+    version = '1.7.0'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }
@@ -84,7 +75,6 @@ allprojects  {
 	}
 }
 
-
 subprojects {
  	apply plugin: 'io.spring.dependency-management'
  	
@@ -112,63 +102,31 @@ subprojects {
     }
 }
 
-configurations {
-    tomcat
-}
-
-dependencies {
-    tomcat "org.apache.tomcat:tomcat:${tomcatVersion}@tar.gz"
-}
-
-// Create layout for zip and tar archives.
-task createServerLayout(dependsOn: subprojects.build) {
+// Arranges files to be packaged as a distribution.
+task createServerDistro(dependsOn: subprojects.build) {
     doLast {
+ 
         copy {
-            from(tarTree(configurations.tomcat.getSingleFile()))
-            exclude '**/webapps/*/**'
-            into "$buildDir/tomcat" 
-        }
-
+            from(project.projectDir.path + '/server')
+            into "$buildDir/sitewhere" 
+		}
+    	
         copy {
             from(project(':sitewhere-web').war)
-            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/webapps" 
+            into "$buildDir/sitewhere/lib" 
 
             rename { String fileName ->
                 fileName.replace("sitewhere-web-${version}.war", 'sitewhere.war')
             }
         }
-
-        copy {
-            from(project(':sitewhere-core').projectDir.path + '/config')
-            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/conf" 
-            exclude 'log4j.xml'
-        }
-
-        copy {
-            from(tarTree(project(':sitewhere-core').projectDir.path + '/config/policy.tar'))
-            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/conf" 
-        }
-
-        copy {
-            from(project(':sitewhere-core').projectDir.path + '/config')
-            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/lib" 
-            include 'log4j.xml'
-        }
-
-        copy {
-            from(project(':sitewhere-core').projectDir.path + '/config')
-            into "$buildDir/tomcat/apache-tomcat-${tomcatVersion}/bin" 
-            include 'setenv.*'
-        }
     }
 }
 
-// Build server zip distrubtion
-task serverZip(type: Zip, dependsOn: createServerLayout) {
+// Build server zip distribution.
+task serverZip(type: Zip, dependsOn: createServerDistro) {
     baseName = 'sitewhere-server'
-    from "$buildDir/tomcat/apache-tomcat-${tomcatVersion}"
+    from "$buildDir/sitewhere"
     into "${baseName}-${version}"
-    exclude '**/conf/policy.d'
 }
 
 // Upload server zip file to Amazon S3
@@ -181,17 +139,17 @@ task uploadServerZip(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
     }
 }
 
-// Build server tar distrubtion
-task serverTar(type: Tar, dependsOn: createServerLayout) {
+// Build server tar distribution.
+task serverTar(type: Tar, dependsOn: createServerDistro) {
     baseName = 'sitewhere-server'
     compression = 'GZIP'
- 	from("$buildDir/tomcat/apache-tomcat-${tomcatVersion}") {
+ 	from("$buildDir/sitewhere") {
 		exclude ('**/*.sh')
 	}
-	from("$buildDir/tomcat/apache-tomcat-${tomcatVersion}") {
+	from("$buildDir/sitewhere") {
 		include ('**/*.sh')
 		fileMode 0755
-	}    
+	}
 	into "${baseName}-${version}"
 }
 
@@ -203,38 +161,4 @@ task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
     doLast {
     	println 'Uploaded server tar to Amazon S3.'
     }
-}
-
-// Create the standalone Docker image.
-task dockerStandalone(type: Docker, dependsOn: serverZip) {
-	project.group = 'sitewhere'
-	
-    applicationName = 'standalone'
-    runCommand 'add-apt-repository ppa:openjdk-r/ppa'
-    runCommand 'apt-get update'
-    runCommand 'apt-get install -y unzip wget openjdk-8-jdk'
-    
-    // Install HiveMQ
-    runCommand "cd /opt && wget --content-disposition https://s3.amazonaws.com/sitewhere-hivemq/hivemq-3.0.2.zip && unzip hivemq-3.0.2.zip"
-    addFile "${projectDir}/sitewhere-docker/standalone/1.5.0/config.xml", "/opt/hivemq-3.0.2/conf/config.xml"
-    runCommand "ln -s /opt/hivemq-3.0.2 /opt/hivemq && useradd -d /opt/hivemq hivemq && chown -R hivemq.hivemq /opt/hivemq-3.0.2 && chown -R hivemq.hivemq /opt/hivemq && cd /opt/hivemq && chmod +x ./bin/run.sh"
-    
-    // Install MongoDB
-    runCommand "apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list && apt-get update && apt-get install -y mongodb-org && mkdir -p /data/db"
-    
-    // Install SiteWhere
-	addFile serverZip.archivePath, "/opt/sitewhere-server-${version}.zip"
-    runCommand "cd /opt unzip sitewhere-server-${version}.zip"
-	setEnvironment 'catalina.base', "/opt/sitewhere-server-${version}"
-	setEnvironment 'catalina.home', "/opt/sitewhere-server-${version}"
-    runCommand "ln -s /opt/sitewhere-server-${version} /opt/sitewhere && useradd -d /opt/sitewhere sitewhere && chown -R sitewhere.sitewhere /opt/sitewhere-server-${version} && chown -R sitewhere.sitewhere /opt/sitewhere && cd /opt/sitewhere && chmod +x /opt/sitewhere-server-${version}/bin/*.sh"
-
-	def commands = []
-	commands << "nohup /opt/hivemq/bin/run.sh > /dev/null & nohup /usr/bin/mongod --smallfiles > /dev/null & echo 'Waiting for MongoDB to start...' && while ! nc -vz localhost 27017 2> /dev/null; do sleep 1; done && nohup /opt/sitewhere/bin/startup.sh & echo 'Starting SiteWhere...' && while ! [ -f /opt/sitewhere/logs/catalina.out ]; do sleep 1; done && tail -f /opt/sitewhere/logs/catalina.out"
-	defaultCommand commands
-}
-
-uploadArchives {
-	dependsOn uploadServerZip
-	dependsOn uploadServerTar
 }

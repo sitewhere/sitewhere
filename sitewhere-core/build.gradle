@@ -24,7 +24,8 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-core'
     compile group: 'org.springframework.security', name: 'spring-security-web'
     
-    compile group: 'com.hazelcast', name: 'hazelcast', version:'3.5.3'
+    compile group: 'com.hazelcast', name: 'hazelcast'
+    compile group: 'com.hazelcast', name: 'hazelcast-client', version:'3.5.4'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'

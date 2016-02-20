@@ -11,7 +11,7 @@
            
 	<!-- Load property values for substitution -->
 	<context:property-placeholder
-		location="file:${catalina.home}/conf/sitewhere/${tenant.id}-tenant.properties"
+		location="file:${sitewhere.home}/conf/tenants/${tenant.id}/sitewhere-tenant.properties"
 		ignore-resource-not-found="true"/>
 	
 	<!-- ######################## -->

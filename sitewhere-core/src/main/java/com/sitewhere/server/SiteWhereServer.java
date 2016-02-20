@@ -28,7 +28,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.configuration.ConfigurationMigrationSupport;
 import com.sitewhere.configuration.ConfigurationUtils;
-import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
+import com.sitewhere.configuration.DefaultGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
@@ -109,7 +109,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	private ITracer tracer = new NullTracer();
 
 	/** Allows Spring configuration to be resolved */
-	private IGlobalConfigurationResolver configurationResolver = new TomcatGlobalConfigurationResolver();
+	private IGlobalConfigurationResolver configurationResolver = new DefaultGlobalConfigurationResolver();
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
@@ -646,7 +646,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			}
 		}
 
-		getUserManagement().lifecycleStop();
+		if (getUserManagement() != null) {
+			getUserManagement().lifecycleStop();
+		}
 
 		// Start all lifecycle components.
 		for (ILifecycleComponent component : getRegisteredLifecycleComponents()) {

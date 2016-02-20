@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
-import com.sitewhere.configuration.TomcatTenantConfigurationResolver;
+import com.sitewhere.configuration.DefaultTenantConfigurationResolver;
 import com.sitewhere.device.DeviceEventManagementTriggers;
 import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.rest.model.command.CommandResponse;
@@ -143,7 +143,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		this.globalContext = parent;
 		this.globalConfigurationResolver = global;
 		this.tenantConfigurationResolver =
-				new TomcatTenantConfigurationResolver(tenant, SiteWhere.getServer().getVersion(), global);
+				new DefaultTenantConfigurationResolver(tenant, SiteWhere.getServer().getVersion(), global);
 	}
 
 	/*

@@ -9,6 +9,8 @@ package com.sitewhere.hazelcast;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -20,6 +22,8 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleListener;
+import com.hazelcast.logging.LogEvent;
+import com.hazelcast.logging.LogListener;
 import com.sitewhere.spi.SiteWhereException;
 
 /**
@@ -27,7 +31,7 @@ import com.sitewhere.spi.SiteWhereException;
  * 
  * @author Derek
  */
-public class SiteWhereHazelcastConfiguration implements InitializingBean, LifecycleListener {
+public class SiteWhereHazelcastConfiguration implements InitializingBean, LifecycleListener, LogListener {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereHazelcastConfiguration.class);
@@ -57,14 +61,16 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 		LOGGER.info("Starting Hazelcast instance ...");
 		File configFile = new File(getConfigFileLocation());
 		if (!configFile.exists()) {
-			throw new SiteWhereException("Hazelcast configuration file not found. Looking in: "
-					+ configFile.getAbsolutePath());
+			throw new SiteWhereException(
+					"Hazelcast configuration file not found. Looking in: " + configFile.getAbsolutePath());
 		}
 		Config config = new XmlConfigBuilder(new FileInputStream(configFile)).build();
 		performGroupOverrides(config);
+		config.setProperty("hazelcast.logging.type", "log4j");
 
 		instance = Hazelcast.newHazelcastInstance(config);
 		instance.getLifecycleService().addLifecycleListener(this);
+		instance.getLoggingService().addLogListener(Level.INFO, this);
 		LOGGER.info("Hazelcast instance started.");
 	}
 
@@ -98,6 +104,23 @@ public class SiteWhereHazelcastConfiguration implements InitializingBean, Lifecy
 	@Override
 	public void stateChanged(LifecycleEvent event) {
 		LOGGER.info("Hazelcast lifecycle changed to: " + event.getState().name());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.hazelcast.logging.LogListener#log(com.hazelcast.logging.LogEvent)
+	 */
+	@Override
+	public void log(LogEvent logEvent) {
+		LogRecord record = logEvent.getLogRecord();
+		if (record.getLevel() == Level.INFO) {
+			LOGGER.info(record.getMessage());
+		} else if (record.getLevel() == Level.WARNING) {
+			LOGGER.warn(record.getMessage());
+		} else if (record.getLevel() == Level.SEVERE) {
+			LOGGER.error(record.getMessage());
+		}
 	}
 
 	public HazelcastInstance getHazelcastInstance() {

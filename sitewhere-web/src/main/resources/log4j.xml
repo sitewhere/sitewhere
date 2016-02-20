@@ -9,12 +9,12 @@
 	<!-- ============================== -->
 
 	<appender name="file" class="org.apache.log4j.RollingFileAppender">
-		<param name="maxFileSize" value="10MB" />
-		<param name="maxBackupIndex" value="5" />
-		<param name="File" value="${catalina.home}/logs/sitewhere.log" />
-		<param name="threshold" value="trace" />
+		<param name="maxFileSize" value="10MB"/>
+		<param name="maxBackupIndex" value="5"/>
+		<param name="File" value="${sitewhere.home}/logs/sitewhere.log"/>
+		<param name="threshold" value="trace"/>
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] %x %m%n" />
+			<param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] %x %m%n"/>
 		</layout>
 	</appender>
 
@@ -23,12 +23,12 @@
 	<!-- ============================== -->
 
 	<appender name="console" class="org.apache.log4j.ConsoleAppender">
-		<param name="Target" value="System.out" />
-		<param name="Threshold" value="trace" />
+		<param name="Target" value="System.out"/>
+		<param name="Threshold" value="trace"/>
 
 		<layout class="org.apache.log4j.PatternLayout">
 			<!-- The default pattern: Date Priority [Category] Message\n -->
-			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
 		</layout>
 	</appender>
 
@@ -38,64 +38,63 @@
 
 	<!-- Change to DEBUG for detailed SiteWhere logging -->
 	<category name="com.sitewhere">
-		<priority value="INFO" />
-	</category>
-
-	<!-- Change to DEBUG for detailed SiteWhere logging -->
-	<category name="com.sitewhere.ee.hbase">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<!-- Change to DEBUG for detailed communication subsystem logging -->
 	<category name="com.sitewhere.device.communication">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<!-- Change to DEBUG for detailed HBase logging -->
 	<category name="org.apache.hadoop.hbase">
-		<priority value="WARN" />
+		<priority value="WARN"/>
 	</category>
 
 	<!-- Change to DEBUG for detailed HBase logging -->
 	<category name="org.apache.activemq">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<!-- Change to DEBUG for detailed HBase logging -->
 	<category name="org.wso2.siddhi">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<category name="org.hbase">
-		<priority value="WARN" />
+		<priority value="WARN"/>
 	</category>
 
 	<category name="org.springframework">
-		<priority value="INFO" />
+		<priority value="INFO"/>
+	</category>
+
+	<category name="org.springframework.web">
+		<priority value="WARN"/>
 	</category>
 
 	<category name="org.springframework.security">
-		<priority value="WARN" />
+		<priority value="INFO"/>
 	</category>
 
 	<category name="com.mangofactory">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<category name="net.sf.ehcache">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<category name="org.mule">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<category name="org.quartz">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<category name="com.arjuna">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<!-- ================ -->
@@ -104,7 +103,7 @@
 
 	<!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
 	<category name="org.apache">
-		<priority value="INFO" />
+		<priority value="INFO"/>
 	</category>
 
 	<!-- ======================= -->
@@ -112,8 +111,8 @@
 	<!-- ======================= -->
 
 	<root>
-		<appender-ref ref="console" />
-		<appender-ref ref="file" />
+		<appender-ref ref="console"/>
+		<appender-ref ref="file"/>
 	</root>
 
 

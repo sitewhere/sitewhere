@@ -11,17 +11,19 @@ import java.io.File;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
+import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.user.ITenant;
 
 /**
- * Tenant configuration resolver that locates files relative to CATALINA_HOME for Tomcat.
+ * Default implementation of {@link ITenantConfigurationResolver} that resolves tenants
+ * relative to the SITEWHERE_HOME/conf folder.
  * 
  * @author Derek
  */
-public class TomcatTenantConfigurationResolver extends FileSystemTenantConfigurationResolver {
+public class DefaultTenantConfigurationResolver extends FileSystemTenantConfigurationResolver {
 
-	public TomcatTenantConfigurationResolver(ITenant tenant, IVersion version,
+	public DefaultTenantConfigurationResolver(ITenant tenant, IVersion version,
 			IGlobalConfigurationResolver globalConfigurationResolver) {
 		super(tenant, version, globalConfigurationResolver);
 	}
@@ -32,6 +34,7 @@ public class TomcatTenantConfigurationResolver extends FileSystemTenantConfigura
 	 * @see
 	 * com.sitewhere.configuration.FileSystemTenantConfigurationResolver#getTenantFolder()
 	 */
+	@Override
 	public File getTenantFolder() throws SiteWhereException {
 		File root = new File(getGlobalConfigurationResolver().getConfigurationRoot());
 		if (!root.exists()) {

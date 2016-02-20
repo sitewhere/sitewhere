@@ -16,7 +16,7 @@ import java.net.URI;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
+import com.sitewhere.configuration.FileSystemGlobalConfigurationResolver;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereTenantEngine;
@@ -73,12 +73,12 @@ public class GroovyConfiguration extends TenantLifecycleComponent implements
 				if (getTenant() == null) {
 					URI root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
 					File global =
-							new File(new File(root), TomcatGlobalConfigurationResolver.GLOBAL_FOLDER_NAME);
+							new File(new File(root), FileSystemGlobalConfigurationResolver.GLOBAL_FOLDER_NAME);
 					if (!global.exists()) {
 						global.mkdir();
 					}
 					scriptsUri =
-							new File(global, TomcatGlobalConfigurationResolver.SCRIPTS_FOLDER_NAME).toURI();
+							new File(global, FileSystemGlobalConfigurationResolver.SCRIPTS_FOLDER_NAME).toURI();
 					LOGGER.info("Starting global Groovy configuration with scripts loading from: "
 							+ scriptsUri);
 				}

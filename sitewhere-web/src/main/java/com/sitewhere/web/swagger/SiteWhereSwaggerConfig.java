@@ -15,10 +15,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
+import com.mangofactory.swagger.models.dto.ApiInfo;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 import com.sitewhere.version.VersionHelper;
-import com.wordnik.swagger.model.ApiInfo;
 
 /**
  * Configures information used to generate Swagger metadata.

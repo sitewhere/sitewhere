@@ -63,7 +63,7 @@ public class Boilerplate {
 			String current = "";
 			for (String chunk : chunks) {
 				if (chunk.length() > noBorderLength) {
-					chunk = chunk.substring(0, noBorderLength);
+					chunk = chunk.substring(0, noBorderLength - 1);
 				}
 				if ((current.length() + chunk.length()) > noBorderLength) {
 					output += blank.substring(0, 2) + current + blank.substring(2 + current.length()) + "\n";

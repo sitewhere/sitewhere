@@ -31,7 +31,7 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
 import org.apache.log4j.Logger;
 
-import com.sitewhere.configuration.TomcatGlobalConfigurationResolver;
+import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
@@ -44,7 +44,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class ActiveMQInboundEventReceiver extends LifecycleComponent implements IInboundEventReceiver<byte[]> {
+public class ActiveMQInboundEventReceiver extends LifecycleComponent
+		implements IInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ActiveMQInboundEventReceiver.class);
@@ -101,8 +102,12 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 			throw new SiteWhereException("Queue name is required.");
 		}
 		if (getDataDirectory() == null) {
-			File tomcatData = TomcatGlobalConfigurationResolver.getSiteWhereDataFolder();
-			setDataDirectory(tomcatData.getAbsolutePath());
+			File root = new File(SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot());
+			File data = new File(root, "data");
+			if (!data.exists()) {
+				data.mkdir();
+			}
+			setDataDirectory(data.getAbsolutePath());
 		}
 		try {
 			brokerService.setBrokerName(getBrokerName());
@@ -204,8 +209,8 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent implements 
 		private AtomicInteger counter = new AtomicInteger();
 
 		public Thread newThread(Runnable r) {
-			return new Thread(r, "SiteWhere ActiveMQ(" + getBrokerName() + ") Consumer "
-					+ counter.incrementAndGet());
+			return new Thread(r,
+					"SiteWhere ActiveMQ(" + getBrokerName() + ") Consumer " + counter.incrementAndGet());
 		}
 	}
 
