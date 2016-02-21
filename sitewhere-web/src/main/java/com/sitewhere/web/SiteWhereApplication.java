@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -39,7 +40,7 @@ import com.sitewhere.web.swagger.SiteWhereSwaggerConfig;
  */
 @Configuration
 @Import(SiteWhereSecurity.class)
-@EnableAutoConfiguration(exclude = { HazelcastAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = { HazelcastAutoConfiguration.class, ActiveMQAutoConfiguration.class })
 public class SiteWhereApplication {
 
 	/** Static logger instance */
@@ -53,6 +54,8 @@ public class SiteWhereApplication {
 		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
 		tomcat.setContextPath("/sitewhere");
 		tomcat.setPort(8080);
+		tomcat.setTldSkip("sitewhere*.jar,cxf*.jar,ehcache*.jar,hadoop*.jar,"
+				+ "hazelcast*.jar,hbase*.jar,jersey*.jar,ksoap*.jar,scala*.jar");
 		return tomcat;
 	}
 

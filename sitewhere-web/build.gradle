@@ -48,16 +48,10 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava'
     compile group: 'commons-lang', name: 'commons-lang'
     compile group: 'javax.mail', name: 'mail', version: '1.4'
-    
-    providedCompile (group: 'com.sun.jersey.jersey-test-framework', name:'jersey-test-framework-grizzly2', version:'1.9') {
-        exclude (module: 'jersey-server')
-        exclude (module: 'jersey-core')
-    }
-    providedCompile (group: 'org.reflections', name: 'reflections', version:'0.9.10') {
-        exclude (module: 'guava')
-    }
-    providedCompile group: 'org.pegdown', name: 'pegdown', version:'1.5.0'
-    providedCompile group: 'com.thoughtworks.paranamer', name: 'paranamer', version:'2.8'
+
+    compile (group: 'org.reflections', name: 'reflections', version:'0.9.10');
+    compile group: 'org.pegdown', name: 'pegdown', version:'1.5.0'
+    compile group: 'com.thoughtworks.paranamer', name: 'paranamer', version:'2.8'
 }
 
 task manifestJar(dependsOn:'classes',type: Jar) {

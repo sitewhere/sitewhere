@@ -46,17 +46,18 @@
 		<priority value="INFO"/>
 	</category>
 
-	<!-- Change to DEBUG for detailed HBase logging -->
 	<category name="org.apache.hadoop.hbase">
 		<priority value="WARN"/>
 	</category>
 
-	<!-- Change to DEBUG for detailed HBase logging -->
+	<category name="org.apache.jasper">
+		<priority value="DEBUG"/>
+	</category>
+
 	<category name="org.apache.activemq">
 		<priority value="INFO"/>
 	</category>
 
-	<!-- Change to DEBUG for detailed HBase logging -->
 	<category name="org.wso2.siddhi">
 		<priority value="INFO"/>
 	</category>
@@ -78,7 +79,7 @@
 	</category>
 
 	<category name="com.mangofactory">
-		<priority value="INFO"/>
+		<priority value="WARN"/>
 	</category>
 
 	<category name="net.sf.ehcache">
