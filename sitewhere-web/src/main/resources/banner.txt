@@ -8,6 +8,6 @@
           \ `\____\ \_\ \__\ \____\\ `\___x___/\ \_\ \_\ \____\\ \_\\ \____\
            \/_____/\/_/\/__/\/____/ '\/__//__/  \/_/\/_/\/____/ \/_/ \/____/
                                                                      
-                   The Open Platform for the Internet of Things (tm)
+                   The Open Platform for the Internet of Things (TM)
         
             
