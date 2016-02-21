@@ -9,7 +9,9 @@ dependencies {
         exclude (module: 'jaxb-impl')   
     }
     compile (group: 'org.apache.hadoop', name: 'hadoop-common', version:'2.6.0') {
-        exclude (module: 'jaxb-impl')
+        exclude module: 'jaxb-impl'
+        exclude group: 'tomcat'
+        exclude module: 'jsp-api'
     }
     compile group: 'com.google.protobuf', name: 'protobuf-java'
     compile group: 'org.springframework', name: 'spring-beans'
