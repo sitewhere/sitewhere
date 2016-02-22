@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.sitewhere.SiteWhere;
 import com.sitewhere.security.SitewhereAuthenticationProvider;
 import com.sitewhere.spi.user.SiteWhereRoles;
 
@@ -57,7 +58,8 @@ public class SiteWhereSecurity {
 		 */
 		@Override
 		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth.authenticationProvider(new SitewhereAuthenticationProvider());
+			auth.authenticationProvider(
+					new SitewhereAuthenticationProvider(SiteWhere.getServer().getUserManagement()));
 		}
 
 		/*
@@ -108,7 +110,8 @@ public class SiteWhereSecurity {
 		 */
 		@Override
 		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth.authenticationProvider(new SitewhereAuthenticationProvider());
+			auth.authenticationProvider(
+					new SitewhereAuthenticationProvider(SiteWhere.getServer().getUserManagement()));
 		}
 
 		/*

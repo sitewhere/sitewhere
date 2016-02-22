@@ -52,7 +52,6 @@ public class ConfigurationMigrationSupport {
 	 * @param global
 	 * @throws SiteWhereException
 	 */
-	@SuppressWarnings("unchecked")
 	public static void migrateProjectStructureIfNecessary(IGlobalConfigurationResolver global)
 			throws SiteWhereException {
 		File root = new File(global.getConfigurationRoot());
@@ -143,7 +142,8 @@ public class ConfigurationMigrationSupport {
 		File assets = new File(root, "assets");
 		if (assets.exists()) {
 			try {
-				File newAssets = new File(templateFolder, FileSystemTenantConfigurationResolver.ASSETS_FOLDER);
+				File newAssets =
+						new File(templateFolder, FileSystemTenantConfigurationResolver.ASSETS_FOLDER);
 				FileUtils.moveDirectory(assets, newAssets);
 			} catch (IOException e) {
 				throw new SiteWhereException("Unable to move assets folder to template.");

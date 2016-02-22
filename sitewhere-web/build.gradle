@@ -52,6 +52,9 @@ dependencies {
     compile (group: 'org.reflections', name: 'reflections', version:'0.9.10');
     compile group: 'org.pegdown', name: 'pegdown', version:'1.5.0'
     compile group: 'com.thoughtworks.paranamer', name: 'paranamer', version:'2.8'
+    
+	compile group: 'javax.servlet', name: 'javax.servlet-api'
+	compile group: 'javax.servlet', name: 'jstl'
 }
 
 task manifestJar(dependsOn:'classes',type: Jar) {

@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
-import com.sitewhere.SiteWhere;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
@@ -28,6 +27,13 @@ import com.sitewhere.spi.user.IUserManagement;
  * @author Derek
  */
 public class SitewhereAuthenticationProvider implements AuthenticationProvider {
+
+	/** User management implementation */
+	private IUserManagement userManagement;
+
+	public SitewhereAuthenticationProvider(IUserManagement userManagement) {
+		this.userManagement = userManagement;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -51,25 +57,12 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 			} else if (input instanceof SitewhereAuthentication) {
 				return input;
 			} else {
-				throw new AuthenticationServiceException("Unknown authentication: "
-						+ input.getClass().getName());
+				throw new AuthenticationServiceException(
+						"Unknown authentication: " + input.getClass().getName());
 			}
 		} catch (SiteWhereException e) {
 			throw new BadCredentialsException("Unable to authenticate.", e);
 		}
-	}
-
-	/**
-	 * Get the {@link IUserManagement} implementation.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected IUserManagement getUserManagement() throws SiteWhereException {
-		if (SiteWhere.getServer() != null) {
-			return SiteWhere.getServer().getUserManagement();
-		}
-		return null;
 	}
 
 	/*
@@ -82,5 +75,13 @@ public class SitewhereAuthenticationProvider implements AuthenticationProvider {
 	@SuppressWarnings("rawtypes")
 	public boolean supports(Class clazz) {
 		return true;
+	}
+
+	public IUserManagement getUserManagement() {
+		return userManagement;
+	}
+
+	public void setUserManagement(IUserManagement userManagement) {
+		this.userManagement = userManagement;
 	}
 }
