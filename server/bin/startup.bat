@@ -7,7 +7,7 @@
   if errorlevel 1 goto NOJAVA
 
   set "JAVA_OPTS=-Djava.net.preferIPv4Stack=true -noverify %JAVA_OPTS%"
-  set "JPDA_OPTS=-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
+  rem set "JPDA_OPTS=-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
 
 
   IF "%SITEWHERE_HOME%" == "" GOTO NOPATH
