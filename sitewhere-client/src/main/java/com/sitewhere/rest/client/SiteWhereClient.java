@@ -254,10 +254,10 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("includeDeleted", String.valueOf(includeDeleted));
 		vars.put("includeAsset", String.valueOf(includeAsset));
 		addSearchCriteria(vars, criteria);
-		return sendRest(getBaseUrl()
-				+ "specifications?includeDeleted={includeDeleted}&includeAsset={includeAsset}&"
-				+ getSearchCriteriaFields(criteria), HttpMethod.GET, null,
-				DeviceSpecificationSearchResults.class, vars);
+		return sendRest(
+				getBaseUrl() + "specifications?includeDeleted={includeDeleted}&includeAsset={includeAsset}&"
+						+ getSearchCriteriaFields(criteria),
+				HttpMethod.GET, null, DeviceSpecificationSearchResults.class, vars);
 	}
 
 	/*
@@ -310,9 +310,8 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.ISiteWhereClient#createSite(com.sitewhere.rest.model.device.request
-	 * .SiteCreateRequest)
+	 * @see com.sitewhere.spi.ISiteWhereClient#createSite(com.sitewhere.rest.model.device.
+	 * request .SiteCreateRequest)
 	 */
 	@Override
 	public Site createSite(SiteCreateRequest request) throws SiteWhereException {
@@ -403,16 +402,17 @@ public class SiteWhereClient implements ISiteWhereClient {
 	@Override
 	public DeviceSearchResults listDevices(boolean includeDeleted, boolean excludeAssigned,
 			boolean populateSpecification, boolean populateAssignment, DateRangeSearchCriteria criteria)
-			throws SiteWhereException {
+					throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("includeDeleted", String.valueOf(includeDeleted));
 		vars.put("excludeAssigned", String.valueOf(excludeAssigned));
 		vars.put("includeSpecification", String.valueOf(populateSpecification));
 		vars.put("includeAssignment", String.valueOf(populateAssignment));
 		addSearchCriteria(vars, criteria);
-		return sendRest(getBaseUrl() + "devices?includeDeleted={includeDeleted}"
-				+ "&excludeAssigned={excludeAssigned}&includeSpecification={includeSpecification}"
-				+ "&includeAssignment={includeAssignment}&" + getSearchCriteriaFields(criteria),
+		return sendRest(
+				getBaseUrl() + "devices?includeDeleted={includeDeleted}"
+						+ "&excludeAssigned={excludeAssigned}&includeSpecification={includeSpecification}"
+						+ "&includeAssignment={includeAssignment}&" + getSearchCriteriaFields(criteria),
 				HttpMethod.GET, null, DeviceSearchResults.class, vars);
 	}
 
@@ -440,8 +440,9 @@ public class SiteWhereClient implements ISiteWhereClient {
 	public DeviceAssignment getCurrentAssignmentForDevice(String hardwareId) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("hardwareId", hardwareId);
-		return sendRest(getBaseUrl()
-				+ "devices/{hardwareId}/assignment?includeAsset=false&includeDevice=false&includeSite=false",
+		return sendRest(
+				getBaseUrl()
+						+ "devices/{hardwareId}/assignment?includeAsset=false&includeDevice=false&includeSite=false",
 				HttpMethod.GET, null, DeviceAssignment.class, vars);
 	}
 
@@ -527,7 +528,8 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 */
 	@Override
 	public DeviceAssignmentSearchResults getAssignmentsForAsset(String siteToken, String assetModuleId,
-			String assetId, DeviceAssignmentStatus status, SearchCriteria criteria) throws SiteWhereException {
+			String assetId, DeviceAssignmentStatus status, SearchCriteria criteria)
+					throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("assetModuleId", assetModuleId);
 		vars.put("assetId", assetId);
@@ -597,17 +599,17 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 * int)
 	 */
 	@Override
-	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken, DateRangeSearchCriteria searchCriteria)
-			throws SiteWhereException {
+	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken,
+			DateRangeSearchCriteria searchCriteria) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("token", assignmentToken);
 		addSearchCriteria(vars, searchCriteria);
-                          
+
 		String url = getBaseUrl() + "assignments/{token}/measurements?";
-                if (searchCriteria != null) {
-                    url += getSearchCriteriaFields(searchCriteria);
+		if (searchCriteria != null) {
+			url += getSearchCriteriaFields(searchCriteria);
 		}
-                return sendRest(url, HttpMethod.GET, null, DeviceMeasurementsSearchResults.class, vars);
+		return sendRest(url, HttpMethod.GET, null, DeviceMeasurementsSearchResults.class, vars);
 	}
 
 	/*
@@ -747,8 +749,9 @@ public class SiteWhereClient implements ISiteWhereClient {
 		vars.put("streamId", streamId);
 		vars.put("sequenceNumber", String.valueOf(sequenceNumber));
 		try {
-			return sendRestWithBinaryResponse(getBaseUrl()
-					+ "assignments/{token}/streams/{streamId}/data/{sequenceNumber}", HttpMethod.GET, vars);
+			return sendRestWithBinaryResponse(
+					getBaseUrl() + "assignments/{token}/streams/{streamId}/data/{sequenceNumber}",
+					HttpMethod.GET, vars);
 		} catch (SiteWhereSystemException e) {
 			return null;
 		}
@@ -792,9 +795,8 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.ISiteWhereClient#createDeviceGroup(com.sitewhere.rest.model.device
-	 * .request.DeviceGroupCreateRequest)
+	 * @see com.sitewhere.spi.ISiteWhereClient#createDeviceGroup(com.sitewhere.rest.model.
+	 * device .request.DeviceGroupCreateRequest)
 	 */
 	@Override
 	public DeviceGroup createDeviceGroup(DeviceGroupCreateRequest request) throws SiteWhereException {
@@ -899,7 +901,8 @@ public class SiteWhereClient implements ISiteWhereClient {
 	 * @see com.sitewhere.spi.ISiteWhereClient#getAssetsByModuleId(java.lang.String,
 	 * java.lang.String)
 	 */
-	public AssetSearchResults getAssetsByModuleId(String moduleId, String criteria) throws SiteWhereException {
+	public AssetSearchResults getAssetsByModuleId(String moduleId, String criteria)
+			throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		String url = "assets/modules/" + moduleId + "/assets";
 		if ((criteria != null) && (criteria.length() > 0)) {

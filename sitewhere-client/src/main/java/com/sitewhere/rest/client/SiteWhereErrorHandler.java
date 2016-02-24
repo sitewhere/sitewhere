@@ -10,6 +10,7 @@ package com.sitewhere.rest.client;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -21,11 +22,15 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 
 /**
- * Uses extra information passed by SiteWhere in headers to provide more information about errors.
+ * Uses extra information passed by SiteWhere in headers to provide more information about
+ * errors.
  * 
  * @author Derek
  */
 public class SiteWhereErrorHandler implements ResponseErrorHandler {
+
+	/** Static logger instance */
+	private static Logger LOGGER = Logger.getLogger(SiteWhereErrorHandler.class);
 
 	/** Delegate to default error handler */
 	private ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();
@@ -33,8 +38,9 @@ public class SiteWhereErrorHandler implements ResponseErrorHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.web.client.ResponseErrorHandler#handleError(org.springframework.http.client.
-	 * ClientHttpResponse)
+	 * @see
+	 * org.springframework.web.client.ResponseErrorHandler#handleError(org.springframework
+	 * .http.client. ClientHttpResponse)
 	 */
 	public void handleError(ClientHttpResponse response) throws IOException {
 		String errorCode = null;
@@ -45,6 +51,7 @@ public class SiteWhereErrorHandler implements ResponseErrorHandler {
 		try {
 			errorHandler.handleError(response);
 		} catch (RestClientException e) {
+			LOGGER.error("Exception in error handling.", e);
 			if (errorCode != null) {
 				ErrorCode code = ErrorCode.valueOf(errorCode);
 				throw new SiteWhereSystemException(code, ErrorLevel.ERROR, response.getRawStatusCode());
@@ -58,8 +65,9 @@ public class SiteWhereErrorHandler implements ResponseErrorHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.web.client.ResponseErrorHandler#hasError(org.springframework.http.client.
-	 * ClientHttpResponse)
+	 * @see
+	 * org.springframework.web.client.ResponseErrorHandler#hasError(org.springframework.
+	 * http.client. ClientHttpResponse)
 	 */
 	public boolean hasError(ClientHttpResponse response) throws IOException {
 		return errorHandler.hasError(response);
