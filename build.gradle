@@ -162,3 +162,9 @@ task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
     	println 'Uploaded server tar to Amazon S3.'
     }
 }
+
+// Upload archives to Amazon S3
+uploadArchives {
+	dependsOn uploadServerZip
+	dependsOn uploadServerTar
+}
