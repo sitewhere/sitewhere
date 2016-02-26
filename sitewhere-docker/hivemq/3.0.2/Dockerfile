@@ -11,4 +11,4 @@ RUN cd /opt && wget --content-disposition https://s3.amazonaws.com/sitewhere-hiv
 COPY config.xml /opt/hivemq-3.0.2/conf/config.xml
 RUN ln -s /opt/hivemq-3.0.2 /opt/hivemq && useradd -d /opt/hivemq hivemq && chown -R hivemq.hivemq /opt/hivemq-3.0.2 && chown -R hivemq.hivemq /opt/hivemq && cd /opt/hivemq && chmod +x ./bin/run.sh
 
-CMD nohup /opt/hivemq/bin/run.sh
+CMD /opt/hivemq/bin/run.sh
