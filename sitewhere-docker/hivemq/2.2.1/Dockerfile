@@ -1,8 +1,10 @@
-FROM ubuntu:14.10
+FROM ubuntu:14.04
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:openjdk-r/ppa
 RUN apt-get update
 EXPOSE 1883 61623
 
-RUN apt-get install -y unzip wget openjdk-7-jdk
+RUN apt-get install -y unzip wget openjdk-8-jdk
 
 RUN cd /opt && wget --content-disposition http://www.hivemq.com/wp-content/uploads/hivemq-2.2.1.zip && unzip hivemq-2.2.1.zip
 COPY configuration.properties /opt/hivemq-2.2.1/conf/configuration.properties
