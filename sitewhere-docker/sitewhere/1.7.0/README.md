@@ -1,4 +1,4 @@
-# SiteWhere 1.6.1 CE Docker Image
+# SiteWhere 1.7.0 CE Docker Image
 This image includes SiteWhere CE without any external dependencies. The 
 instance will need to be configured to connect to other containers
 that provide data persistence and broker communication protocols.
@@ -9,7 +9,7 @@ Based on the default configuration, a MongoDB container and HiveMQ
 Execute the following command to create a local Docker image:
 
 ```
-docker build -t sitewhere/sitewhere:1.6.1 .
+docker build -t sitewhere/sitewhere:1.7.0 .
 ```
 
 ## Start the Docker Image
@@ -17,14 +17,14 @@ After downloading the dependencies, an image will be created in your
 local repository. To run the image from the command line execute:
 
 ```
-docker run --name sitewhere -p 80:8080 sitewhere/sitewhere:1.6.1
+docker run --name sitewhere -p 80:8080 -p5701:5701 sitewhere/sitewhere:1.7.0
 ```
 
 ## Edit the Configuration
 Before starting the SiteWhere server, it must be configured. By default
 the server looks for a local MongoDB instance. Create a separate
 MongoDB container and point the global configuration 
-(conf/sitewhere/sitewhere-server.xml) to access it.
+(conf/sitewhere-server.xml) to access it.
 
 ## Start the Server
 Run the startup command at the following location to start the server.
