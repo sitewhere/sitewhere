@@ -44,6 +44,7 @@ public class EventProcessingModel extends ConfigurationModel {
 		addElement(createHazelcastEventProcessorElement());
 		addElement(createSolrEventProcessorElement());
 		addElement(createAzureEventHubEventProcessorElement());
+		addElement(createAmazonSqsEventProcessorElement());
 		addElement(createInitialStateEventProcessorElement());
 		addElement(createDweetEventProcessorElement());
 		addElement(createWso2CepEventProcessorElement());
@@ -454,6 +455,29 @@ public class EventProcessingModel extends ConfigurationModel {
 						"Set the service bus to connect to (e.g. xxx.servicebus.windows.net).").makeRequired().build()));
 		builder.attribute((new AttributeNode.Builder("Event hub name", "eventHubName",
 				AttributeType.String).description("Name of EventHub to connect to.").makeRequired().build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create an Amazon SQS queue event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createAmazonSqsEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Amazon SQS Processor",
+						OutboundProcessingChainParser.Elements.AmazonSqsEventProcessor.getLocalName(),
+						"cloud", ElementRole.OutboundProcessingChain_FilteredEventProcessor);
+		builder.description("Forwards outbound events to an Amazon SQS queue for further processing.");
+		builder.attribute(
+				(new AttributeNode.Builder("Access key", "accessKey", AttributeType.String).description(
+						"Amazon AWS access key for account owning SQS queue.").makeRequired().build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Secret key", "secretKey", AttributeType.String).description(
+						"Amazon AWS secret key for account owning SQS queue.").makeRequired().build()));
+		builder.attribute(
+				(new AttributeNode.Builder("SQS queue URL", "queueUrl", AttributeType.String).description(
+						"Unique URL for SQS queue.").makeRequired().build()));
 		return builder.build();
 	}
 
