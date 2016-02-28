@@ -1244,6 +1244,43 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Amazon SQS outbound event processor -->
+	<xsd:element name="amazon-sqs-event-processor" type="amazonSqsEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Forwards outbound events to Amazon SQS.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="amazonSqsEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:attribute name="accessKey" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Amazon AWS access key for account owning SQS queue.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="secretKey" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Amazon AWS secret key for account owning SQS queue.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="queueUrl" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Unique URL for SQS queue.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- WSO2 CEP event processor -->
 	<xsd:element name="wso2-cep-event-processor" type="wso2CepEventProcessorType"
 		substitutionGroup="abstract-outbound-processor">

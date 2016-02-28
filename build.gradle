@@ -21,6 +21,7 @@ s3 {
 
 allprojects  {
     apply plugin: 'com.bmuschko.nexus'
+	apply plugin: 'eclipse'
 
     group = 'com.sitewhere'
     version = '1.7.0'

@@ -1,5 +1,6 @@
 rootProject.name = 'sitewhere'
 include ':sitewhere-activemq'
+include ':sitewhere-aws'
 include ':sitewhere-azure'
 include ':sitewhere-client'
 include ':sitewhere-cloud'
@@ -24,6 +25,7 @@ include ':sitewhere-web'
 include ':sitewhere-wso2'
 
 project(':sitewhere-activemq').projectDir = "$rootDir/sitewhere-activemq" as File
+project(':sitewhere-aws').projectDir = "$rootDir/sitewhere-aws" as File
 project(':sitewhere-azure').projectDir = "$rootDir/sitewhere-azure" as File
 project(':sitewhere-client').projectDir = "$rootDir/sitewhere-client" as File
 project(':sitewhere-cloud').projectDir = "$rootDir/sitewhere-cloud" as File

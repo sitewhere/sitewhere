@@ -4,6 +4,7 @@ dependencies {
     compile project(':sitewhere-client')
     compile project(':sitewhere-core')
     compile project(':sitewhere-activemq')
+    compile project(':sitewhere-aws')
     compile project(':sitewhere-azure')
     compile project(':sitewhere-cloud')
     compile project(':sitewhere-ehcache')

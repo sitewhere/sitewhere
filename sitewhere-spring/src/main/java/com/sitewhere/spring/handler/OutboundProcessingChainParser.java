@@ -19,6 +19,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.aws.SqsOutboundEventProcessor;
 import com.sitewhere.azure.device.communication.EventHubOutboundEventProcessor;
 import com.sitewhere.cloud.providers.dweetio.DweetIoEventProcessor;
 import com.sitewhere.cloud.providers.initialstate.InitialStateEventProcessor;
@@ -95,6 +96,10 @@ public class OutboundProcessingChainParser {
 			}
 			case AzureEventHubEventProcessor: {
 				processors.add(parseAzureEventHubEventProcessor(child, context));
+				break;
+			}
+			case AmazonSqsEventProcessor: {
+				processors.add(parseAmazonSqsEventProcessor(child, context));
 				break;
 			}
 			case InitialStateEventProcessor: {
@@ -349,6 +354,41 @@ public class OutboundProcessingChainParser {
 			throw new RuntimeException("EventHub name required for Azure EventHub event processor.");
 		}
 		processor.addPropertyValue("eventHubName", eventHubName.getValue());
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
+	 * Parses configuration for Amazon SQS event processor.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseAmazonSqsEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(SqsOutboundEventProcessor.class);
+
+		Attr accessKey = element.getAttributeNode("accessKey");
+		if (accessKey == null) {
+			throw new RuntimeException("Amazon access key required for SQS event processor.");
+		}
+		processor.addPropertyValue("accessKey", accessKey.getValue());
+
+		Attr secretKey = element.getAttributeNode("secretKey");
+		if (secretKey == null) {
+			throw new RuntimeException("Amazon secret key required for SQS event processor.");
+		}
+		processor.addPropertyValue("secretKey", secretKey.getValue());
+
+		Attr queueUrl = element.getAttributeNode("queueUrl");
+		if (queueUrl == null) {
+			throw new RuntimeException("Queue URL required for Amazon SQS event processor.");
+		}
+		processor.addPropertyValue("queueUrl", queueUrl.getValue());
 
 		// Parse nested filters.
 		processor.addPropertyValue("filters", parseFilters(element, context));
@@ -826,6 +866,9 @@ public class OutboundProcessingChainParser {
 
 		/** Sends outbound events to an Azure EventHub */
 		AzureEventHubEventProcessor("azure-eventhub-event-processor"),
+
+		/** Sends outbound events to an Amazon SQS queue */
+		AmazonSqsEventProcessor("amazon-sqs-event-processor"),
 
 		/** Sends outbound events to InitialState.com */
 		InitialStateEventProcessor("initial-state-event-processor"),
