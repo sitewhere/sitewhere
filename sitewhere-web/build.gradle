@@ -3,7 +3,7 @@ apply plugin: 'war'
 
 apply plugin: 'spring-boot'
 springBoot {
-    mainClass = 'com.sitewhere.web.SiteWhereApplication'
+    mainClass = 'com.sitewhere.web.SiteWhereWebApplication'
 }
 
 description = 'SiteWhere Web Components'

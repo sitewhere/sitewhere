@@ -7,14 +7,8 @@
  */
 package com.sitewhere.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -25,26 +19,24 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.sitewhere.SiteWhere;
-import com.sitewhere.core.Boilerplate;
-import com.sitewhere.spi.ServerStartupException;
-import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.SiteWhereApplication;
 import com.sitewhere.web.mvc.MvcConfiguration;
 import com.sitewhere.web.rest.RestMvcConfiguration;
 import com.sitewhere.web.swagger.SiteWhereSwaggerConfig;
 
 /**
- * Root Spring Boot application that loads all other SiteWhere artifacts.
+ * Spring Boot application that loads SiteWhere with embedded Tomcat container, REST
+ * services, and administrative application.
  * 
  * @author Derek
  */
 @Configuration
 @Import(SiteWhereSecurity.class)
-@EnableAutoConfiguration(exclude = { HazelcastAutoConfiguration.class, ActiveMQAutoConfiguration.class })
-public class SiteWhereApplication {
+public class SiteWhereWebApplication extends SiteWhereApplication {
 
 	/** Static logger instance */
-	private static Logger LOGGER = Logger.getLogger(SiteWhereApplication.class);
+	@SuppressWarnings("unused")
+	private static Logger LOGGER = Logger.getLogger(SiteWhereWebApplication.class);
 
 	/** URL prefix for matching REST API calls */
 	private static final String REST_API_MATCHER = "/api/*";
@@ -122,39 +114,6 @@ public class SiteWhereApplication {
 		return registration;
 	}
 
-	public SiteWhereApplication() {
-		try {
-			SiteWhere.start();
-			LOGGER.info("Server started successfully.");
-			SiteWhere.getServer().logState();
-		} catch (ServerStartupException e) {
-			SiteWhere.getServer().setServerStartupError(e);
-			List<String> messages = new ArrayList<String>();
-			messages.add("!!!! SiteWhere Server Failed to Start !!!!");
-			messages.add("");
-			messages.add("Component: " + e.getDescription());
-			messages.add("Error: " + e.getComponent().getLifecycleError().getMessage());
-			String message = Boilerplate.boilerplate(messages, '*', 60);
-			LOGGER.info("\n" + message + "\n");
-		} catch (SiteWhereException e) {
-			LOGGER.error("Exception on server startup.", e);
-			List<String> messages = new ArrayList<String>();
-			messages.add("!!!! SiteWhere Server Failed to Start !!!!");
-			messages.add("");
-			messages.add("Error: " + e.getMessage());
-			String message = Boilerplate.boilerplate(messages, '*', 60);
-			LOGGER.info("\n" + message + "\n");
-		} catch (Throwable e) {
-			LOGGER.error("Unhandled exception in server startup.", e);
-			List<String> messages = new ArrayList<String>();
-			messages.add("!!!! Unhandled Exception !!!!");
-			messages.add("");
-			messages.add("Error: " + e.getMessage());
-			String message = Boilerplate.boilerplate(messages, '*', 60);
-			LOGGER.info("\n" + message + "\n");
-		}
-	}
-
 	/**
 	 * Acts on shutdown hook to gracefully shut down SiteWhere server components.
 	 * 
@@ -166,6 +125,6 @@ public class SiteWhereApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(SiteWhereApplication.class, args);
+		SpringApplication.run(SiteWhereWebApplication.class, args);
 	}
 }
