@@ -15,26 +15,20 @@ import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.system.IVersion;
 
-
 /**
- * Used as basis for generating version information. This file is modified by the Maven
- * build process so that the correct values exist in the compiled classes.
+ * Gets information about system version from properties generated into the classpath.
  * 
  * @author Derek
  */
 public class Version implements IVersion {
 
-	/** Version identifier supplied by the Maven POM */
-	public static final String VERSION_IDENTIFIER = "@version.identifier@";
-
-	/** Timestamp for build */
-	public static final String BUILD_TIMESTAMP = "@build.timestamp@";
-
+	/** Loaded from classpath to get version information */
 	private static Properties properties = new Properties();
 
 	static {
-		try (final InputStream stream = Version.class.getClassLoader().getResourceAsStream("META-INF/application-build.properties")) {
-    		properties.load(stream);
+		try (final InputStream stream =
+				Version.class.getClassLoader().getResourceAsStream("META-INF/application-build.properties")) {
+			properties.load(stream);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

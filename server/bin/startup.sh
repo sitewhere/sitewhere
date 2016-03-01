@@ -27,7 +27,7 @@ if hash java 2>/dev/null; then
 	           	echo $SITEWHERE_FOLDER;
 		  else
 			 #SITEWHERE_FOLDER=$(echo "$SITEWHERE_FOLDER" | sed 's/ /\\ /g')
-			 HOME_OPT="-Dsitewhere.home=$SITEWHERE_FOLDER"
+			 HOME_OPT="-Dsitewhere.home=$SITEWHERE_FOLDER -Dspring.config.location=$SITEWHERE_FOLDER/conf/"
 			 JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$SITEWHERE_FOLDER/heap-dump.hprof"
 
 			echo "-------------------------------------------------------------------------"
@@ -38,7 +38,7 @@ if hash java 2>/dev/null; then
 			echo ""
 			echo "-------------------------------------------------------------------------"
 			echo ""
-			 # Run SiteWHere
+			 # Run SiteWhere
 			 WAR_PATH="$SITEWHERE_FOLDER/lib/sitewhere.war"
 			 eval \"java\" "$HOME_OPT" "$JAVA_OPTS" -jar "$WAR_PATH"
 		  fi

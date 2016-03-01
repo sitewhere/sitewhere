@@ -66,6 +66,10 @@
 		<priority value="WARN"/>
 	</category>
 
+	<category name="com.hazelcast">
+		<priority value="INFO"/>
+	</category>
+
 	<category name="org.springframework">
 		<priority value="INFO"/>
 	</category>

@@ -8,9 +8,9 @@
 package com.sitewhere;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.ISiteWhereApplication;
 import com.sitewhere.spi.server.ISiteWhereServer;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-import com.sitewhere.version.VersionHelper;
 
 /**
  * Main class for accessing core SiteWhere functionality.
@@ -27,10 +27,10 @@ public class SiteWhere {
 	 * 
 	 * @throws SiteWhereException
 	 */
-	public static void start() throws SiteWhereException {
-		Class<?> clazz = VersionHelper.getVersion().getServerClass();
+	public static void start(ISiteWhereApplication application) throws SiteWhereException {
+		Class<? extends ISiteWhereServer> clazz = application.getServerClass();
 		try {
-			SERVER = (ISiteWhereServer) clazz.newInstance();
+			SERVER = clazz.newInstance();
 			SERVER.initialize();
 			SERVER.lifecycleStart();
 

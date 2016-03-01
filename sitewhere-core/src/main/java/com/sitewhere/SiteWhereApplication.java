@@ -18,8 +18,10 @@ import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfigura
 import org.springframework.context.annotation.Configuration;
 
 import com.sitewhere.core.Boilerplate;
+import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.ISiteWhereApplication;
 
 /**
  * Root Spring Boot application that loads all other SiteWhere artifacts.
@@ -28,14 +30,14 @@ import com.sitewhere.spi.SiteWhereException;
  */
 @Configuration
 @EnableAutoConfiguration(exclude = { HazelcastAutoConfiguration.class, ActiveMQAutoConfiguration.class })
-public class SiteWhereApplication {
+public class SiteWhereApplication implements ISiteWhereApplication {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereApplication.class);
 
 	public SiteWhereApplication() {
 		try {
-			SiteWhere.start();
+			SiteWhere.start(this);
 			LOGGER.info("Server started successfully.");
 			SiteWhere.getServer().logState();
 		} catch (ServerStartupException e) {
@@ -64,6 +66,16 @@ public class SiteWhereApplication {
 			String message = Boilerplate.boilerplate(messages, '*', 60);
 			LOGGER.info("\n" + message + "\n");
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereApplication#getServerClass()
+	 */
+	@Override
+	public Class<? extends SiteWhereServer> getServerClass() throws SiteWhereException {
+		return SiteWhereServer.class;
 	}
 
 	public static void main(String[] args) {

@@ -44,7 +44,7 @@
       echo -------------------------------------------------------------------------
       echo.
     
-  set "JAVA_OPTS=-Dsitewhere.home=%SITEWHERE_FOLDER% %JAVA_OPTS%"
+  set "JAVA_OPTS=-Dsitewhere.home=%SITEWHERE_FOLDER% -Dspring.config.location=%SITEWHERE_FOLDER%/conf/ %JAVA_OPTS%"
   
   java %JAVA_OPTS% %JPDA_OPTS% -jar %SITEWHERE_FOLDER%/lib/sitewhere.war
   GOTO EXIT
