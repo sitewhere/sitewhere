@@ -57,6 +57,7 @@ public class EventProcessingModel extends ConfigurationModel {
 		// MQTT processor elements.
 		addElement(createGroovyRouteBuilderElement());
 		addElement(createMqttEventProcessorElement());
+		addElement(createRabbitMqEventProcessorElement());
 
 		// Siddhi elements.
 		addElement(createStreamDebuggerElement());
@@ -401,6 +402,28 @@ public class EventProcessingModel extends ConfigurationModel {
 		DeviceCommunicationModel.addMqttConnectivityAttributes(builder);
 		builder.attribute((new AttributeNode.Builder("MQTT topic", "topic", AttributeType.String).description(
 				"MQTT topic used if no route builder is specified.").build()));
+		return builder.build();
+	}
+
+	/**
+	 * Create a RabbitMQ event processor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createRabbitMqEventProcessorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("RabbitMQ Event Processor",
+						OutboundProcessingChainParser.Elements.RabbitMqEventProcessor.getLocalName(),
+						"sign-out", ElementRole.OutboundProcessingChain_RabbitMqEventProcessor);
+		builder.description(
+				"Allows events to be forwarded to any number of RabbitMQ exchanges based on configuration "
+						+ "of filters and (optionally) a route builder. If no route builder is specified, the exchange "
+						+ "field determines where events are delivered.");
+		builder.attribute((new AttributeNode.Builder("Connection URI", "connectionUri",
+				AttributeType.String).defaultValue("amqp://localhost").description(
+						"URI that provides information about the RabbitMQ instance to connect to.").build()));
+		builder.attribute((new AttributeNode.Builder("Topic", "topic", AttributeType.String).defaultValue(
+				"sitewhere.output").description("Topic used if no route builder is specified.").build()));
 		return builder.build();
 	}
 

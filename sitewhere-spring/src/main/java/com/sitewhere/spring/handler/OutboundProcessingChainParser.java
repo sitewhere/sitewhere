@@ -38,6 +38,7 @@ import com.sitewhere.groovy.device.event.processor.multicast.AllWithSpecificatio
 import com.sitewhere.groovy.device.event.processor.routing.GroovyRouteBuilder;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
 import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
+import com.sitewhere.rabbitmq.RabbitMqOutboundEventProcessor;
 import com.sitewhere.siddhi.GroovyStreamProcessor;
 import com.sitewhere.siddhi.SiddhiEventProcessor;
 import com.sitewhere.siddhi.SiddhiQuery;
@@ -84,6 +85,10 @@ public class OutboundProcessingChainParser {
 			}
 			case MqttEventProcessor: {
 				processors.add(parseMqttEventProcessor(child, context));
+				break;
+			}
+			case RabbitMqEventProcessor: {
+				processors.add(parseRabbitMqEventProcessor(child, context));
 				break;
 			}
 			case HazelcastEventProcessor: {
@@ -263,6 +268,40 @@ public class OutboundProcessingChainParser {
 		Attr trustStorePassword = element.getAttributeNode("trustStorePassword");
 		if (trustStorePassword != null) {
 			processor.addPropertyValue("trustStorePassword", trustStorePassword.getValue());
+		}
+
+		Attr topic = element.getAttributeNode("topic");
+		if (topic != null) {
+			processor.addPropertyValue("topic", topic.getValue());
+		}
+
+		// Parse nested filters.
+		processor.addPropertyValue("filters", parseFilters(element, context));
+
+		// Parse multicaster.
+		processor.addPropertyValue("multicaster", parseMulticaster(element, context));
+
+		// Parse route builder.
+		processor.addPropertyValue("routeBuilder", parseRouteBuilder(element, context));
+
+		return processor.getBeanDefinition();
+	}
+
+	/**
+	 * Parse configuration for event processor that delivers events to a RabbitMQ
+	 * exchange.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseRabbitMqEventProcessor(Element element, ParserContext context) {
+		BeanDefinitionBuilder processor =
+				BeanDefinitionBuilder.rootBeanDefinition(RabbitMqOutboundEventProcessor.class);
+
+		Attr connectionUri = element.getAttributeNode("connectionUri");
+		if (connectionUri != null) {
+			processor.addPropertyValue("connectionUri", connectionUri.getValue());
 		}
 
 		Attr topic = element.getAttributeNode("topic");
@@ -857,6 +896,9 @@ public class OutboundProcessingChainParser {
 
 		/** Sends outbound events to an MQTT topic */
 		MqttEventProcessor("mqtt-event-processor"),
+
+		/** Sends outbound events to a RabbitMQ exchange */
+		RabbitMqEventProcessor("rabbit-mq-event-processor"),
 
 		/** Sends outbound events over Hazelcast topics */
 		HazelcastEventProcessor("hazelcast-event-processor"),

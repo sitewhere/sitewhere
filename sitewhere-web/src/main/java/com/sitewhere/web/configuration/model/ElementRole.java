@@ -101,6 +101,10 @@ public enum ElementRole {
 	OutboundProcessingChain_MqttEventProcessor("MQTT Event Processor", true, true, true,
 			new ElementRole[] { OutboundProcessingChain_Filters, OutboundProcessingChain_RouteBuilder }),
 
+	/** Outbound processing chain. RabbitMQ event processor. */
+	OutboundProcessingChain_RabbitMqEventProcessor("RabbitMQ Event Processor", true, true, true,
+			new ElementRole[] { OutboundProcessingChain_Filters, OutboundProcessingChain_RouteBuilder }),
+
 	/** Siddhi query. Callback. */
 	OutboundProcessingChain_SiddhiCallback("Siddhi Callbacks", true, true, true),
 
@@ -118,6 +122,7 @@ public enum ElementRole {
 					OutboundProcessingChain_FilteredEventProcessor,
 					OutboundProcessingChain_ZoneTestEventProcessor,
 					OutboundProcessingChain_MqttEventProcessor,
+					OutboundProcessingChain_RabbitMqEventProcessor,
 					OutboundProcessingChain_SiddhiEventProcessor }),
 
 	/** Outbound processing chain element. */

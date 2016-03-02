@@ -1099,6 +1099,55 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- RabbitMQ outbound event processor -->
+	<xsd:element name="rabbit-mq-event-processor" type="rabbitMqEventProcessorType"
+		substitutionGroup="abstract-outbound-processor">
+		<xsd:annotation>
+			<xsd:documentation>
+				Sends outbound events to a RabbitMQ exchange.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="rabbitMqEventProcessorType">
+		<xsd:complexContent>
+			<xsd:extension base="filteredOutboundProcessorType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-outbound-multicaster" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Allows a multicaster to be configured so that events can be
+								broadcast to many different exchanges.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element ref="abstract-outbound-route-builder" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>
+								Allows customization of route building logic.
+							</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+				<xsd:attribute name="connectionUri" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							URI that provides information about the RabbitMQ instance to
+							connect to.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="topic" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name of topic to publish to if route builder is not
+							configured.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- Hazelcast outbound event processor -->
 	<xsd:element name="hazelcast-event-processor" type="hazelcastEventProcessorType"
 		substitutionGroup="abstract-outbound-processor">

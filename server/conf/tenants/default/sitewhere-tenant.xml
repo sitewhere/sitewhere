@@ -204,6 +204,11 @@
 			
 				<!-- Send outbound device events over Hazelcast -->
 				<sw:hazelcast-event-processor/>
+				
+				<!-- RabbitMQ outbound processor -->
+				<sw:rabbit-mq-event-processor>
+					<sw:groovy-route-builder scriptPath="route.groovy"/>
+				</sw:rabbit-mq-event-processor>
 
 			</sw:outbound-processing-chain>
 
