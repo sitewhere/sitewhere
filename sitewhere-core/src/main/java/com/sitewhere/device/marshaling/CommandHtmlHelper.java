@@ -7,7 +7,7 @@
  */
 package com.sitewhere.device.marshaling;
 
-import org.apache.cxf.common.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
@@ -83,8 +83,8 @@ public class CommandHtmlHelper {
 		IDeviceSpecification specification =
 				devices.getDeviceSpecificationByToken(criteria.getSpecificationToken());
 		if (specification == null) {
-			throw new SiteWhereException("Invalid specification reference: "
-					+ criteria.getSpecificationToken());
+			throw new SiteWhereException(
+					"Invalid specification reference: " + criteria.getSpecificationToken());
 		}
 		String html = "all devices";
 		if (!StringUtils.isEmpty(criteria.getSiteToken())) {

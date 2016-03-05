@@ -8,10 +8,8 @@ include ':sitewhere-core'
 include ':sitewhere-core-api'
 include ':sitewhere-ehcache'
 include ':sitewhere-hbase'
-include ':sitewhere-gnuhealth'
 include ':sitewhere-groovy'
 include ':sitewhere-influx'
-include ':sitewhere-magento'
 include ':sitewhere-mongodb'
 include ':sitewhere-protobuf'
 include ':sitewhere-rabbit-mq'
@@ -33,10 +31,8 @@ project(':sitewhere-core').projectDir = "$rootDir/sitewhere-core" as File
 project(':sitewhere-core-api').projectDir = "$rootDir/sitewhere-core-api" as File
 project(':sitewhere-ehcache').projectDir = "$rootDir/sitewhere-ehcache" as File
 project(':sitewhere-hbase').projectDir = "$rootDir/sitewhere-hbase" as File
-project(':sitewhere-gnuhealth').projectDir = "$rootDir/sitewhere-gnuhealth" as File
 project(':sitewhere-groovy').projectDir = "$rootDir/sitewhere-groovy" as File
 project(':sitewhere-influx').projectDir = "$rootDir/sitewhere-influx" as File
-project(':sitewhere-magento').projectDir = "$rootDir/sitewhere-magento" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-protobuf').projectDir = "$rootDir/sitewhere-protobuf" as File
 project(':sitewhere-rabbit-mq').projectDir = "$rootDir/sitewhere-rabbit-mq" as File

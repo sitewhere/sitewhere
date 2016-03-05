@@ -8,26 +8,36 @@
 package com.sitewhere.wso2.identity.scim;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.server.asset.AssetMatcher;
@@ -85,11 +95,8 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	/** Indicates whether to ignore a bad SSL certificate on the server */
 	private boolean ignoreBadCertificate = false;
 
-	/** Use CXF web client to send requests */
-	private WebClient client;
-
-	/** Jackson JSON factory */
-	private ObjectMapper mapper = new ObjectMapper();
+	/** Use Spring RestTemplate to send requests */
+	private RestTemplate client;
 
 	/** Cached asset map */
 	private Map<String, PersonAsset> assetCache = new HashMap<String, PersonAsset>();
@@ -108,7 +115,17 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 	 */
 	public void start() throws SiteWhereException {
 		LOGGER.info("Connecting to WSO2 Identity Server instance at: " + getScimUsersUrl());
-		this.client = WebClient.create(getScimUsersUrl(), getUsername(), getPassword(), null);
+
+		// Set up the REST client.
+		this.client =
+				isIgnoreBadCertificate()
+						? new RestTemplate(createSecureTransport(getUsername(), getPassword()))
+						: new RestTemplate();
+		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
+		converters.add(new MappingJackson2HttpMessageConverter());
+		converters.add(new ByteArrayHttpMessageConverter());
+		client.setMessageConverters(converters);
+
 		cacheAssetData();
 	}
 
@@ -234,15 +251,8 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 		LOGGER.info("Caching search data.");
 		int totalAssets = 0;
 		long startTime = System.currentTimeMillis();
-		WebClient caller = WebClient.fromClient(client);
-		if (isIgnoreBadCertificate()) {
-			doIgnoreBadCertificate(caller);
-		}
-		caller.accept(MediaType.APPLICATION_JSON_TYPE);
-		Response response = caller.get();
-		Object entity = response.getEntity();
+		JsonNode json = doGet(getScimUsersUrl(), JsonNode.class);
 		try {
-			JsonNode json = mapper.readTree((InputStream) entity);
 			JsonNode resources = json.get(IScimFields.RESOURCES);
 			if (resources == null) {
 				String message = "SCIM JSON response did not contain a 'resources' section.";
@@ -256,8 +266,6 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 				assetCache.put(asset.getId(), asset);
 				totalAssets++;
 			}
-		} catch (JsonParseException e) {
-			throw new SiteWhereException("Unable to parse asset response.", e);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to read asset response.", e);
 		}
@@ -265,6 +273,91 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 		String message = "Cached " + totalAssets + " assets in " + totalTime + "ms.";
 		LOGGER.info(message);
 		return new CommandResponse(CommandResult.Successful, message);
+	}
+
+	/**
+	 * Perform a REST get operation and return a marshaled result.
+	 * 
+	 * @param url
+	 * @param clazz
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected <S> S doGet(String url, Class<S> clazz) throws SiteWhereException {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Authorization", getAuthHeader());
+			HttpEntity<Void> entity = new HttpEntity<Void>(headers);
+			ResponseEntity<S> response = client.exchange(url, HttpMethod.GET, entity, clazz);
+			return response.getBody();
+		} catch (ResourceAccessException e) {
+			throw new SiteWhereException("REST call failed.", e);
+		}
+	}
+
+	/**
+	 * Creates a transport that allows missing certificates to be ignored.
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	protected ClientHttpRequestFactory createSecureTransport(String username, String password) {
+		HostnameVerifier nullHostnameVerifier = new HostnameVerifier() {
+			public boolean verify(String hostname, SSLSession session) {
+				return true;
+			}
+		};
+
+		HttpClient client =
+				HttpClientBuilder.create().setSSLHostnameVerifier(nullHostnameVerifier).setSSLContext(
+						createContext()).build();
+
+		HttpComponentsClientHttpRequestFactory requestFactory =
+				new HttpComponentsClientHttpRequestFactory(client);
+
+		return requestFactory;
+	}
+
+	protected SSLContext createContext() {
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
+
+			public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+			}
+
+			public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+			}
+		} };
+
+		try {
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, null);
+			SSLContext.setDefault(sc);
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			});
+			return sc;
+
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
+	/**
+	 * Encode the username and password to make the authorization header.
+	 * 
+	 * @return
+	 */
+	protected String getAuthHeader() {
+		String token = getUsername() + ":" + getPassword();
+		String encoded = new String(Base64.encodeBase64(token.getBytes()));
+		return "Basic " + encoded;
 	}
 
 	/**
@@ -367,31 +460,6 @@ public class Wso2ScimAssetModule extends LifecycleComponent implements IAssetMod
 				}
 			}
 		}
-	}
-
-	/**
-	 * Update certificate management to ignore invalid SSL certificates.
-	 * 
-	 * @param caller
-	 * @throws SiteWhereException
-	 */
-	protected void doIgnoreBadCertificate(WebClient caller) throws SiteWhereException {
-		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
-
-			public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-			}
-
-			public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-			}
-		} };
-		HTTPConduit httpConduit = (HTTPConduit) WebClient.getConfig(caller).getConduit();
-		TLSClientParameters tlsCP = new TLSClientParameters();
-		tlsCP.setTrustManagers(trustAllCerts);
-		tlsCP.setDisableCNCheck(true);
-		httpConduit.setTlsClientParameters(tlsCP);
 	}
 
 	public String getModuleId() {

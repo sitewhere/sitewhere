@@ -4,13 +4,7 @@ description = 'SiteWhere Core Library'
 dependencies {
     compile project(':sitewhere-core-api')
     compile project(':sitewhere-server-api')
-    compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.0.2'
-    compile (group: 'org.apache.cxf', name: 'cxf-rt-frontend-simple', version:'3.0.2') {
-        exclude (module: 'jaxb-core')
-        exclude (module: 'jaxb-api')
-        exclude (module: 'jaxb-impl')
-    }
-    
+     
     compile group: 'org.springframework', name: 'spring-core'
     compile group: 'org.springframework', name: 'spring-beans'
     compile group: 'org.springframework', name: 'spring-context'
