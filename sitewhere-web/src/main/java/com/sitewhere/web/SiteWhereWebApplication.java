@@ -46,8 +46,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
 		tomcat.setContextPath("/sitewhere");
 		tomcat.setPort(8080);
-		tomcat.setTldSkip("sitewhere*.jar,cxf*.jar,ehcache*.jar,hadoop*.jar,"
-				+ "hazelcast*.jar,hbase*.jar,jersey*.jar,ksoap*.jar,scala*.jar");
+		tomcat.setTldSkip("*.jar");
 		return tomcat;
 	}
 
