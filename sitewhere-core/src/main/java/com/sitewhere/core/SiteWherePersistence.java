@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
@@ -393,15 +391,14 @@ public class SiteWherePersistence {
 			throws SiteWhereException {
 		// Can not update the hardware id on a device.
 		if ((request.getHardwareId() != null) && (!request.getHardwareId().equals(target.getHardwareId()))) {
-			throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR,
-					HttpServletResponse.SC_BAD_REQUEST);
+			throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR);
 		}
 		if (request.getSiteToken() != null) {
 			// Can not change the site for an assigned device.
 			if (target.getAssignmentToken() != null) {
 				if (!target.getSiteToken().equals(request.getSiteToken())) {
 					throw new SiteWhereSystemException(ErrorCode.DeviceSiteCanNotBeChangedIfAssigned,
-							ErrorLevel.ERROR, HttpServletResponse.SC_BAD_REQUEST);
+							ErrorLevel.ERROR);
 				}
 			}
 			target.setSiteToken(request.getSiteToken());

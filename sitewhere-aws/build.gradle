@@ -3,5 +3,5 @@ description = 'SiteWhere AWS Integration'
 dependencies {
 	compile project(':sitewhere-client')
 	compile project(':sitewhere-core')
-	compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.9.6'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-sqs', version: '1.9.6'
 }

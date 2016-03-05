@@ -7,8 +7,6 @@
  */
 package com.sitewhere.security;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -34,13 +32,12 @@ public class LoginManager {
 	public static IUser getCurrentlyLoggedInUser() throws SiteWhereException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null) {
-			throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR,
-					HttpServletResponse.SC_FORBIDDEN);
+			throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR);
 		}
 		if (!(auth instanceof SitewhereAuthentication)) {
-			throw new SiteWhereException("Authentication was not of expected type: "
-					+ SitewhereAuthentication.class.getName() + " found " + auth.getClass().getName()
-					+ " instead.");
+			throw new SiteWhereException(
+					"Authentication was not of expected type: " + SitewhereAuthentication.class.getName()
+							+ " found " + auth.getClass().getName() + " instead.");
 		}
 		return (IUser) ((SitewhereAuthentication) auth).getPrincipal();
 	}
