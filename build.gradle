@@ -23,10 +23,26 @@ s3 {
     awsProfile = 'gradle'
 }
 
+allprojects {
+    group = 'com.sitewhere'
+	version = '1.7.0'
+	
+    repositories {
+        maven { url "http://repo.maven.apache.org/maven2" }
+        maven { url 'http://maven.restlet.org' }
+        maven { url "https://jitpack.io" }
+        maven { url "http://dist.wso2.org/maven2/" }
+        maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
+        maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
+    }
+}
+
 subprojects {
+	apply plugin: 'eclipse'
  	apply plugin: 'io.spring.dependency-management'
  	
     apply plugin: 'java'
+    
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     
@@ -74,7 +90,7 @@ task createServerDistro(dependsOn: subprojects.build) {
 task serverZip(type: Zip, dependsOn: createServerDistro) {
     baseName = 'sitewhere-server'
     from "$buildDir/sitewhere"
-    into "${baseName}-${version}"
+    into "${baseName}-${project.version}"
 }
 
 // Upload server zip file to Amazon S3
@@ -98,7 +114,7 @@ task serverTar(type: Tar, dependsOn: createServerDistro) {
 		include ('**/*.sh')
 		fileMode 0755
 	}
-	into "${baseName}-${version}"
+	into "${baseName}-${project.version}"
 }
 
 // Upload server tar file to Amazon S3
@@ -111,8 +127,7 @@ task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
     }
 }
 
-allprojects  {
-	
+allprojects {
 	if (!releaseBuild) {
 		apply plugin: 'distribution'
     } else {
@@ -164,19 +179,5 @@ allprojects  {
 				}
 			}
 		}
-    }
-    
-	apply plugin: 'eclipse'
-
-    group = 'com.sitewhere'
-    version = '1.7.0'
-	
-    repositories {
-        maven { url "http://repo.maven.apache.org/maven2" }
-        maven { url 'http://maven.restlet.org' }
-        maven { url "https://jitpack.io" }
-        maven { url "http://dist.wso2.org/maven2/" }
-        maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
-        maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
     }
 }
