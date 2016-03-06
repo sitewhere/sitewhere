@@ -13,67 +13,14 @@ buildscript {
 	}
 }
 
+ext {
+	releaseBuild = project.hasProperty('releaseBuild') ? project.getProperty('releaseBuild') : false
+}
+
 apply plugin: 's3'
 s3 {
     bucket = 'sitewhere'
     awsProfile = 'gradle'
-}
-
-allprojects  {
-    apply plugin: 'com.bmuschko.nexus'
-	apply plugin: 'eclipse'
-
-    group = 'com.sitewhere'
-    version = '1.7.0'
-	
-    repositories {
-        maven { url "http://repo.maven.apache.org/maven2" }
-        maven { url 'http://maven.restlet.org' }
-        maven { url "https://jitpack.io" }
-        maven { url "http://dist.wso2.org/maven2/" }
-        maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
-        maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
-    }
-    
-	modifyPom {
-		project {
-			name project.description
-			description project.description
-			url 'http://www.sitewhere.org/'
-			inceptionYear '2009'
-			
-			scm {
-				url 'https://github.com/sitewhere/sitewhere'
-				connection 'https://github.com/sitewhere/sitewhere.git'
-			}
-
-			issueManagement {
-				system 'Jira'
-				url 'https://sitewhere.atlassian.net'
-			}
-			
-			organization {
-				name 'SiteWhere, LLC.'
-				url 'http://www.sitewhere.com/'
-			}
-
-			licenses {
-				license {
-					name 'Common Public Attribution License Version 1.0 (CPAL-1.0)'
-					url 'http://opensource.org/licenses/CPAL-1.0'
-					distribution 'repo'
-				}
-			}
-
-			developers {
-				developer {
-					id 'derekadams'
-					name 'Derek Adams'
-					email 'derek.adams@sitewhere.com'
-				}
-			}
-		}
-	}
 }
 
 subprojects {
@@ -164,8 +111,72 @@ task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
     }
 }
 
-// Upload archives to Amazon S3
-uploadArchives {
-	dependsOn uploadServerZip
-	dependsOn uploadServerTar
+allprojects  {
+	
+	if (!releaseBuild) {
+		apply plugin: 'distribution'
+    } else {
+    	apply plugin: 'com.bmuschko.nexus'
+
+		// Upload archives to Amazon S3
+		uploadArchives {
+			dependsOn uploadServerZip
+			dependsOn uploadServerTar
+		}
+		
+		// Set up default POM to be uploaded to Nexus.
+		modifyPom {
+			project {
+				name project.description
+				description project.description
+				url 'http://www.sitewhere.org/'
+				inceptionYear '2009'
+				
+				scm {
+					url 'https://github.com/sitewhere/sitewhere'
+					connection 'https://github.com/sitewhere/sitewhere.git'
+				}
+	
+				issueManagement {
+					system 'Jira'
+					url 'https://sitewhere.atlassian.net'
+				}
+				
+				organization {
+					name 'SiteWhere, LLC.'
+					url 'http://www.sitewhere.com/'
+				}
+	
+				licenses {
+					license {
+						name 'Common Public Attribution License Version 1.0 (CPAL-1.0)'
+						url 'http://opensource.org/licenses/CPAL-1.0'
+						distribution 'repo'
+					}
+				}
+	
+				developers {
+					developer {
+						id 'derekadams'
+						name 'Derek Adams'
+						email 'derek.adams@sitewhere.com'
+					}
+				}
+			}
+		}
+    }
+    
+	apply plugin: 'eclipse'
+
+    group = 'com.sitewhere'
+    version = '1.7.0'
+	
+    repositories {
+        maven { url "http://repo.maven.apache.org/maven2" }
+        maven { url 'http://maven.restlet.org' }
+        maven { url "https://jitpack.io" }
+        maven { url "http://dist.wso2.org/maven2/" }
+        maven { url "http://oss.jfrog.org/artifactory/oss-release-local/" }
+        maven { url "https://oss.sonatype.org/content/repositories/ksoap2-android-releases/" }
+    }
 }
