@@ -9,6 +9,8 @@ package com.sitewhere.spi.server;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.asset.IAssetModuleManager;
@@ -46,6 +48,13 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public ITenantConfigurationResolver getTenantConfigurationResolver();
+
+	/**
+	 * Get Spring {@link ApplicationContext} used to configure the tenant engine.
+	 * 
+	 * @return
+	 */
+	public ApplicationContext getSpringContext();
 
 	/**
 	 * Get list of components that have registered to participate in the server component
