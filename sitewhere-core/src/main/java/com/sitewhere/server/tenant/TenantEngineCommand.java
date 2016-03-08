@@ -10,7 +10,7 @@ package com.sitewhere.server.tenant;
 import java.util.concurrent.Callable;
 
 import com.sitewhere.spi.command.ICommandResponse;
-import com.sitewhere.spi.server.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 
 /**
  * Base class for commands executed on a tenant engine.

@@ -12,7 +12,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.server.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 
 /**
  * Utility class for common tenant functionality.

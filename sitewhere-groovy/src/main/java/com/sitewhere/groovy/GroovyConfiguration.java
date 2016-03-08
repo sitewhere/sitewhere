@@ -19,9 +19,9 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.FileSystemGlobalConfigurationResolver;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 
 /**
  * Global configuration for Groovy scripting support.

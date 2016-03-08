@@ -22,6 +22,8 @@ import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that reads events from a Hazelcast
@@ -29,8 +31,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class HazelcastQueueReceiver extends LifecycleComponent implements
-		IInboundEventReceiver<DecodedDeviceRequest<?>> {
+public class HazelcastQueueReceiver extends LifecycleComponent
+		implements IInboundEventReceiver<DecodedDeviceRequest<?>>, ITenantHazelcastAware {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(HazelcastQueueReceiver.class);
@@ -38,11 +40,11 @@ public class HazelcastQueueReceiver extends LifecycleComponent implements
 	/** Parent event source */
 	private IInboundEventSource<DecodedDeviceRequest<?>> eventSource;
 
-	/** Common Hazelcast configuration */
-	private SiteWhereHazelcastConfiguration configuration;
-
 	/** Queue of events to be processed */
 	private IQueue<DecodedDeviceRequest<?>> eventQueue;
+
+	/** Injected Hazelcast configuration */
+	private ITenantHazelcastConfiguration hazelcastConfiguration;
 
 	/** Used to queue processing in a separate thread */
 	private ExecutorService executor;
@@ -58,11 +60,12 @@ public class HazelcastQueueReceiver extends LifecycleComponent implements
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		if (getConfiguration() == null) {
+		if (getHazelcastConfiguration() == null) {
 			throw new SiteWhereException("No Hazelcast configuration provided.");
 		}
 		this.eventQueue =
-				getConfiguration().getHazelcastInstance().getQueue(ISiteWhereHazelcast.QUEUE_ALL_EVENTS);
+				getHazelcastConfiguration().getHazelcastInstance().getQueue(
+						ISiteWhereHazelcast.QUEUE_ALL_EVENTS);
 		this.executor = Executors.newSingleThreadExecutor(new ProcessorsThreadFactory());
 		executor.submit(new HazelcastQueueProcessor());
 	}
@@ -169,19 +172,26 @@ public class HazelcastQueueReceiver extends LifecycleComponent implements
 		}
 	}
 
-	public SiteWhereHazelcastConfiguration getConfiguration() {
-		return configuration;
-	}
-
-	public void setConfiguration(SiteWhereHazelcastConfiguration configuration) {
-		this.configuration = configuration;
-	}
-
 	public IQueue<DecodedDeviceRequest<?>> getEventQueue() {
 		return eventQueue;
 	}
 
 	public void setEventQueue(IQueue<DecodedDeviceRequest<?>> eventQueue) {
 		this.eventQueue = eventQueue;
+	}
+
+	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
+		return hazelcastConfiguration;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+	 */
+	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
+		this.hazelcastConfiguration = hazelcastConfiguration;
 	}
 }

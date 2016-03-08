@@ -21,7 +21,7 @@ import com.sitewhere.spi.device.event.IDeviceAlert;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessor;
-import com.sitewhere.spi.server.ITenantAware;
+import com.sitewhere.spi.server.tenant.ITenantAware;
 
 /**
  * Implementation of {@link IOutboundEventProcessor} that injects events into Siddhi for

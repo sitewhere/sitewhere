@@ -50,6 +50,8 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Implementation of {@link IDeviceEventManagement} that stores data in a Hazelcast
@@ -59,7 +61,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
-		implements IDeviceEventManagement {
+		implements IDeviceEventManagement, ITenantHazelcastAware {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(HazelcastDeviceEventManagement.class);
@@ -67,11 +69,11 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	/** Default expiration period in minutes */
 	private static final long DEFAULT_EXPIRATION_IN_MIN = 120;
 
-	/** Common Hazelcast configuration */
-	private SiteWhereHazelcastConfiguration configuration;
-
 	/** Device management implementation */
 	private IDeviceManagement deviceManagement;
+
+	/** Injected tenant Hazelcast configuration */
+	private ITenantHazelcastConfiguration hazelcastConfiguration;
 
 	/** Manages time series data in Hazelcast */
 	private TimeSeriesManager timeSeriesManager;
@@ -90,13 +92,13 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		if (getConfiguration() == null) {
+		if (getHazelcastConfiguration() == null) {
 			throw new SiteWhereException("No Hazelcast configuration provided.");
 		}
 
 		LOGGER.info("Cache entries will expire in " + getExpirationInMin() + " minutes.");
 		this.timeSeriesManager =
-				new TimeSeriesManager(getTenant(), getConfiguration().getHazelcastInstance(),
+				new TimeSeriesManager(getTenant(), getHazelcastConfiguration().getHazelcastInstance(),
 						getExpirationInMin() * 60);
 		timeSeriesManager.start();
 	}
@@ -522,12 +524,19 @@ public class HazelcastDeviceEventManagement extends TenantLifecycleComponent
 				IDeviceStateChange.class);
 	}
 
-	public SiteWhereHazelcastConfiguration getConfiguration() {
-		return configuration;
+	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
+		return hazelcastConfiguration;
 	}
 
-	public void setConfiguration(SiteWhereHazelcastConfiguration configuration) {
-		this.configuration = configuration;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+	 */
+	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
+		this.hazelcastConfiguration = hazelcastConfiguration;
 	}
 
 	public long getExpirationInMin() {

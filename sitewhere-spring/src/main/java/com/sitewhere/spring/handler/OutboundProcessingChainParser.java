@@ -37,7 +37,6 @@ import com.sitewhere.groovy.device.event.processor.filter.GroovyFilter;
 import com.sitewhere.groovy.device.event.processor.multicast.AllWithSpecificationStringMulticaster;
 import com.sitewhere.groovy.device.event.processor.routing.GroovyRouteBuilder;
 import com.sitewhere.hazelcast.HazelcastEventProcessor;
-import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.rabbitmq.RabbitMqOutboundEventProcessor;
 import com.sitewhere.siddhi.GroovyStreamProcessor;
 import com.sitewhere.siddhi.SiddhiEventProcessor;
@@ -331,8 +330,6 @@ public class OutboundProcessingChainParser {
 	protected AbstractBeanDefinition parseHazelcastEventProcessor(Element element, ParserContext context) {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(HazelcastEventProcessor.class);
-		processor.addPropertyReference("configuration",
-				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
 
 		// Parse nested filters.
 		processor.addPropertyValue("filters", parseFilters(element, context));
@@ -545,8 +542,6 @@ public class OutboundProcessingChainParser {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(GroovyEventProcessor.class);
 		processor.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
-		processor.addPropertyReference("hazelcast",
-				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
 
 		Attr scriptPath = element.getAttributeNode("scriptPath");
 		if (scriptPath != null) {

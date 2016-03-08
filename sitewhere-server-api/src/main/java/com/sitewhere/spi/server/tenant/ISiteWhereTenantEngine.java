@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.server;
+package com.sitewhere.spi.server.tenant;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
+import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
@@ -55,6 +56,13 @@ public interface ISiteWhereTenantEngine extends ITenantLifecycleComponent {
 	 * @return
 	 */
 	public ApplicationContext getSpringContext();
+
+	/**
+	 * Get the Hazelcast configuration for this tenant.
+	 * 
+	 * @return
+	 */
+	public ITenantHazelcastConfiguration getHazelcastConfiguration();
 
 	/**
 	 * Get list of components that have registered to participate in the server component

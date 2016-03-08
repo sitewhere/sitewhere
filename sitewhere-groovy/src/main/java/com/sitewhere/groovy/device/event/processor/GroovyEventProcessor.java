@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.sitewhere.device.event.processor.FilteredOutboundEventProcessor;
 import com.sitewhere.groovy.GroovyConfiguration;
-import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.rest.model.device.event.request.scripting.DeviceEventRequestBuilder;
 import com.sitewhere.rest.model.device.event.scripting.DeviceEventSupport;
 import com.sitewhere.rest.model.device.request.scripting.DeviceManagementRequestBuilder;
@@ -25,6 +24,8 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.IDeviceLocation;
 import com.sitewhere.spi.device.event.IDeviceMeasurements;
 import com.sitewhere.spi.device.event.IDeviceStateChange;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
@@ -35,7 +36,7 @@ import groovy.util.ScriptException;
  * 
  * @author Derek
  */
-public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
+public class GroovyEventProcessor extends FilteredOutboundEventProcessor implements ITenantHazelcastAware {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GroovyEventProcessor.class);
@@ -43,8 +44,8 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 	/** Injected Groovy configuration */
 	private GroovyConfiguration configuration;
 
-	/** Common Hazelcast configuration */
-	private SiteWhereHazelcastConfiguration hazelcast;
+	/** Injected tenant Hazelcast configuration */
+	private ITenantHazelcastConfiguration hazelcastConfiguration;
 
 	/** Relative path to Groovy script */
 	private String scriptPath;
@@ -155,7 +156,7 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 		binding.setVariable("device", device);
 		binding.setVariable("deviceManagement", deviceBuilder);
 		binding.setVariable("eventBuilder", eventsBuilder);
-		binding.setVariable("hazelcast", getHazelcast().getHazelcastInstance());
+		binding.setVariable("hazelcast", getHazelcastConfiguration().getHazelcastInstance());
 
 		try {
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
@@ -176,20 +177,27 @@ public class GroovyEventProcessor extends FilteredOutboundEventProcessor {
 		return LOGGER;
 	}
 
+	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
+		return hazelcastConfiguration;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+	 */
+	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
+		this.hazelcastConfiguration = hazelcastConfiguration;
+	}
+
 	public GroovyConfiguration getConfiguration() {
 		return configuration;
 	}
 
 	public void setConfiguration(GroovyConfiguration configuration) {
 		this.configuration = configuration;
-	}
-
-	public SiteWhereHazelcastConfiguration getHazelcast() {
-		return hazelcast;
-	}
-
-	public void setHazelcast(SiteWhereHazelcastConfiguration hazelcast) {
-		this.hazelcast = hazelcast;
 	}
 
 	public String getScriptPath() {

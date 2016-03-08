@@ -26,6 +26,8 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Default implementation of {@link IInboundEventProcessorChain} interface.
@@ -33,7 +35,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * @author Derek
  */
 public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
-		implements IInboundEventProcessorChain {
+		implements IInboundEventProcessorChain, ITenantHazelcastAware {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultInboundEventProcessorChain.class);
@@ -77,6 +79,22 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
 	public void stop() throws SiteWhereException {
 		for (IInboundEventProcessor processor : getProcessors()) {
 			processor.lifecycleStop();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+	 */
+	@Override
+	public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			if (processor instanceof ITenantHazelcastAware) {
+				((ITenantHazelcastAware) processor).setHazelcastConfiguration(configuration);
+			}
 		}
 	}
 

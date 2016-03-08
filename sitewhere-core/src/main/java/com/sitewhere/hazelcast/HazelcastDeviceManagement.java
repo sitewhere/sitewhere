@@ -23,6 +23,7 @@ import com.sitewhere.rest.model.device.DeviceSpecification;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.server.tenant.TenantHazelcastConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.common.IMetadataProvider;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
@@ -88,7 +89,7 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	private static Logger LOGGER = Logger.getLogger(HazelcastDeviceManagement.class);
 
 	/** Common Hazelcast configuration */
-	private SiteWhereHazelcastConfiguration configuration;
+	private TenantHazelcastConfiguration configuration;
 
 	/** Map that stores site information */
 	private IMap<String, Site> sites;
@@ -587,11 +588,11 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 		return LOGGER;
 	}
 
-	public SiteWhereHazelcastConfiguration getConfiguration() {
+	public TenantHazelcastConfiguration getConfiguration() {
 		return configuration;
 	}
 
-	public void setConfiguration(SiteWhereHazelcastConfiguration configuration) {
+	public void setConfiguration(TenantHazelcastConfiguration configuration) {
 		this.configuration = configuration;
 	}
 

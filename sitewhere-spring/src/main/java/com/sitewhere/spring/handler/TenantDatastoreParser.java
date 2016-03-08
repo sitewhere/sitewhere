@@ -23,7 +23,6 @@ import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.GroovyDeviceModelInitializer;
 import com.sitewhere.hazelcast.HazelcastDeviceEventManagement;
 import com.sitewhere.hazelcast.HazelcastDistributedCacheProvider;
-import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.hbase.asset.HBaseAssetManagement;
 import com.sitewhere.hbase.device.HBaseDeviceEventManagement;
 import com.sitewhere.hbase.device.HBaseDeviceManagement;
@@ -177,8 +176,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 		// Register device event management implementation.
 		BeanDefinitionBuilder dem =
 				BeanDefinitionBuilder.rootBeanDefinition(HazelcastDeviceEventManagement.class);
-		dem.addPropertyReference("configuration",
-				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
 
 		Attr expirationInMin = element.getAttributeNode("expirationInMin");
 		if (expirationInMin != null) {
@@ -359,8 +356,6 @@ public class TenantDatastoreParser extends AbstractBeanDefinitionParser {
 	protected void parseHazelcastCache(Element element, ParserContext context) {
 		BeanDefinitionBuilder cache =
 				BeanDefinitionBuilder.rootBeanDefinition(HazelcastDistributedCacheProvider.class);
-		cache.addPropertyReference("configuration",
-				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
 		context.getRegistry().registerBeanDefinition(
 				SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER, cache.getBeanDefinition());
 	}

@@ -22,19 +22,21 @@ import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Sends all events to a Hazelcast queue.
  * 
  * @author Derek
  */
-public class HazelcastQueueSender extends InboundEventProcessor {
+public class HazelcastQueueSender extends InboundEventProcessor implements ITenantHazelcastAware {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(HazelcastQueueSender.class);
 
-	/** Common Hazelcast configuration */
-	private SiteWhereHazelcastConfiguration configuration;
+	/** Injected Hazelcast configuration */
+	private ITenantHazelcastConfiguration hazelcastConfiguration;
 
 	/** Queue of events to be processed */
 	private IQueue<DecodedDeviceRequest<?>> eventQueue;
@@ -46,11 +48,12 @@ public class HazelcastQueueSender extends InboundEventProcessor {
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		if (getConfiguration() == null) {
+		if (getHazelcastConfiguration() == null) {
 			throw new SiteWhereException("No Hazelcast configuration provided.");
 		}
 		this.eventQueue =
-				getConfiguration().getHazelcastInstance().getQueue(ISiteWhereHazelcast.QUEUE_ALL_EVENTS);
+				getHazelcastConfiguration().getHazelcastInstance().getQueue(
+						ISiteWhereHazelcast.QUEUE_ALL_EVENTS);
 	}
 
 	/*
@@ -62,8 +65,8 @@ public class HazelcastQueueSender extends InboundEventProcessor {
 	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
-			throws SiteWhereException {
+	public void onRegistrationRequest(String hardwareId, String originator,
+			IDeviceRegistrationRequest request) throws SiteWhereException {
 		try {
 			getEventQueue().put(
 					new DecodedDeviceRequest<IDeviceRegistrationRequest>(hardwareId, originator, request));
@@ -84,9 +87,8 @@ public class HazelcastQueueSender extends InboundEventProcessor {
 	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
 		try {
-			getEventQueue().put(
-					new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>(hardwareId, originator,
-							request));
+			getEventQueue().put(new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>(hardwareId,
+					originator, request));
 		} catch (InterruptedException e) {
 			handleInterrupted(e);
 		}
@@ -103,9 +105,8 @@ public class HazelcastQueueSender extends InboundEventProcessor {
 	public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
 			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
 		try {
-			getEventQueue().put(
-					new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>(hardwareId, originator,
-							request));
+			getEventQueue().put(new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>(hardwareId,
+					originator, request));
 		} catch (InterruptedException e) {
 			handleInterrupted(e);
 		}
@@ -132,9 +133,8 @@ public class HazelcastQueueSender extends InboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.InboundEventProcessor#onDeviceAlertCreateRequest
-	 * (java.lang.String, java.lang.String,
+	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
+	 * onDeviceAlertCreateRequest (java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
@@ -151,9 +151,8 @@ public class HazelcastQueueSender extends InboundEventProcessor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.device.event.processor.InboundEventProcessor#onDeviceStreamCreateRequest
-	 * (java.lang.String, java.lang.String,
+	 * @see com.sitewhere.device.event.processor.InboundEventProcessor#
+	 * onDeviceStreamCreateRequest (java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
 	 */
 	@Override
@@ -178,8 +177,8 @@ public class HazelcastQueueSender extends InboundEventProcessor {
 	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
 		try {
-			getEventQueue().put(
-					new DecodedDeviceRequest<IDeviceStreamDataCreateRequest>(hardwareId, originator, request));
+			getEventQueue().put(new DecodedDeviceRequest<IDeviceStreamDataCreateRequest>(hardwareId,
+					originator, request));
 		} catch (InterruptedException e) {
 			handleInterrupted(e);
 		}
@@ -222,12 +221,19 @@ public class HazelcastQueueSender extends InboundEventProcessor {
 		return LOGGER;
 	}
 
-	public SiteWhereHazelcastConfiguration getConfiguration() {
-		return configuration;
+	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
+		return hazelcastConfiguration;
 	}
 
-	public void setConfiguration(SiteWhereHazelcastConfiguration configuration) {
-		this.configuration = configuration;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+	 */
+	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
+		this.hazelcastConfiguration = hazelcastConfiguration;
 	}
 
 	public IQueue<DecodedDeviceRequest<?>> getEventQueue() {

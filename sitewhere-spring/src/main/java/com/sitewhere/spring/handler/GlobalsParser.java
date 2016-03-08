@@ -19,7 +19,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.groovy.GroovyConfiguration;
-import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.solr.SiteWhereSolrConfiguration;
 
 /**
@@ -48,8 +47,8 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 					nested.parse(child, context);
 					continue;
 				} else {
-					throw new RuntimeException("Invalid nested element found in 'globals' section: "
-							+ child.toString());
+					throw new RuntimeException(
+							"Invalid nested element found in 'globals' section: " + child.toString());
 				}
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -58,7 +57,7 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 			}
 			switch (type) {
 			case HazelcastConfiguration: {
-				parseHazelcastConfiguration(child, context);
+				// Hazelcast is no longer configured globally.
 				break;
 			}
 			case SolrConfiguration: {
@@ -72,39 +71,6 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Parse the global Hazelcast configuration.
-	 * 
-	 * @param element
-	 * @param context
-	 */
-	protected void parseHazelcastConfiguration(Element element, ParserContext context) {
-		BeanDefinitionBuilder config =
-				BeanDefinitionBuilder.rootBeanDefinition(SiteWhereHazelcastConfiguration.class);
-
-		// Handle configuration file location.
-		Attr configFileLocation = element.getAttributeNode("configFileLocation");
-		if (configFileLocation == null) {
-			throw new RuntimeException("Hazelcast configuration missing 'configFileLocation' attribute.");
-		}
-		config.addPropertyValue("configFileLocation", configFileLocation.getValue());
-
-		// Handle group name override.
-		Attr groupName = element.getAttributeNode("groupName");
-		if (groupName != null) {
-			config.addPropertyValue("groupName", groupName.getValue());
-		}
-
-		// Handle group password override.
-		Attr groupPassword = element.getAttributeNode("groupPassword");
-		if (groupPassword != null) {
-			config.addPropertyValue("groupPassword", groupPassword.getValue());
-		}
-
-		context.getRegistry().registerBeanDefinition(
-				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN, config.getBeanDefinition());
 	}
 
 	/**
@@ -162,7 +128,7 @@ public class GlobalsParser extends AbstractBeanDefinitionParser {
 	public static enum Elements {
 
 		/** Global Hazelcast configuration */
-		HazelcastConfiguration("hazelcast-configuration"),
+		@Deprecated HazelcastConfiguration("hazelcast-configuration"),
 
 		/** Global Solr configuration */
 		SolrConfiguration("solr-configuration"),

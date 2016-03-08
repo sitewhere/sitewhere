@@ -8,6 +8,7 @@
 package com.sitewhere.server;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import com.sitewhere.server.scheduling.ScheduleManagementTriggers;
 import com.sitewhere.server.search.SearchProviderManager;
 import com.sitewhere.server.tenant.SiteWhereTenantEngineCommands;
 import com.sitewhere.server.tenant.TenantEngineCommand;
+import com.sitewhere.server.tenant.TenantHazelcastConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -63,7 +65,6 @@ import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
-import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.ITenantEngineComponent;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
@@ -74,6 +75,9 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
+import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -98,6 +102,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	/** Supports tenant configuration management */
 	private ITenantConfigurationResolver tenantConfigurationResolver;
+
+	/** Tenant Hazelcast configuration */
+	private ITenantHazelcastConfiguration hazelcastConfiguration;
 
 	/** List of components registered to participate in SiteWhere server lifecycle */
 	private List<ITenantLifecycleComponent> registeredLifecycleComponents =
@@ -155,6 +162,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	public void start() throws SiteWhereException {
 		// Clear the component list.
 		getLifecycleComponents().clear();
+
+		// Start Hazelcast instance.
+		startNestedComponent(getHazelcastConfiguration(), true);
 
 		// Start lifecycle components.
 		for (ITenantLifecycleComponent component : getRegisteredLifecycleComponents()) {
@@ -233,6 +243,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		getAssetModuleManager().lifecycleStop();
 		getAssetManagement().lifecycleStop();
 		getSearchProviderManager().lifecycleStop();
+
+		// Stop Hazelcast instance.
+		getHazelcastConfiguration().stop();
 	}
 
 	/*
@@ -346,6 +359,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			// Initialize the tenant Spring context.
 			initializeSpringContext();
 
+			// Initialize the Hazelcast configuration.
+			setHazelcastConfiguration(initializeHazelcastConfiguration());
+
 			// Register discoverable beans.
 			initializeDiscoverableBeans();
 
@@ -435,6 +451,28 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		this.tenantContext =
 				ConfigurationUtils.buildTenantContext(config, getTenant(), SiteWhere.getServer().getVersion(),
 						globalContext);
+	}
+
+	/**
+	 * Initialize tenant Hazelcast configuration.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ITenantHazelcastConfiguration initializeHazelcastConfiguration() throws SiteWhereException {
+		File root = new File(getGlobalConfigurationResolver().getConfigurationRoot());
+		File config = new File(root, TenantHazelcastConfiguration.CONFIG_FILE_NAME);
+		ITenantHazelcastConfiguration hazelcast = new TenantHazelcastConfiguration(config);
+
+		// Dynamically inject configuration into interested beans.
+		Map<String, ITenantHazelcastAware> beans =
+				getSpringContext().getBeansOfType(ITenantHazelcastAware.class);
+		for (String key : beans.keySet()) {
+			ITenantHazelcastAware aware = beans.get(key);
+			aware.setHazelcastConfiguration(hazelcast);
+		}
+
+		return hazelcast;
 	}
 
 	/**
@@ -568,7 +606,13 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected IEventProcessing initializeEventProcessingSubsystem() throws SiteWhereException {
 		try {
-			return (IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
+			IEventProcessing eventProcessing =
+					(IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
+			if (eventProcessing instanceof ITenantHazelcastAware) {
+				((ITenantHazelcastAware) eventProcessing).setHazelcastConfiguration(
+						getHazelcastConfiguration());
+			}
+			return eventProcessing;
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No event processing subsystem implementation configured.");
 		}
@@ -606,7 +650,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 					(IScheduleManagement) tenantContext.getBean(
 							SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT);
 			IScheduleManagement withTriggers = new ScheduleManagementTriggers(implementation);
-			scheduleManager = (IScheduleManager) new QuartzScheduleManager(scheduleManagement);
+			scheduleManager = (IScheduleManager) new QuartzScheduleManager(withTriggers);
 			return withTriggers;
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No schedule manager implementation configured.");
@@ -751,6 +795,20 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 	public void setTenantConfigurationResolver(ITenantConfigurationResolver tenantConfigurationResolver) {
 		this.tenantConfigurationResolver = tenantConfigurationResolver;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#getHazelcastConfiguration()
+	 */
+	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
+		return hazelcastConfiguration;
+	}
+
+	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
+		this.hazelcastConfiguration = hazelcastConfiguration;
 	}
 
 	/*

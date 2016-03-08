@@ -19,13 +19,16 @@ import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.processor.IOutboundEventProcessorChain;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
  * Default implementation of {@link IEventProcessing}.
  * 
  * @author Derek
  */
-public class EventProcessing extends TenantLifecycleComponent implements IEventProcessing {
+public class EventProcessing extends TenantLifecycleComponent
+		implements IEventProcessing, ITenantHazelcastAware {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(EventProcessing.class);
@@ -58,8 +61,8 @@ public class EventProcessing extends TenantLifecycleComponent implements IEventP
 
 		// Enable outbound processor chain.
 		if (getOutboundEventProcessorChain() != null) {
-			startNestedComponent(getOutboundEventProcessorChain(),
-					"Outbound processor chain startup failed.", true);
+			startNestedComponent(getOutboundEventProcessorChain(), "Outbound processor chain startup failed.",
+					true);
 			getOutboundEventProcessorChain().setProcessingEnabled(true);
 		}
 
@@ -109,6 +112,25 @@ public class EventProcessing extends TenantLifecycleComponent implements IEventP
 		if (getOutboundEventProcessorChain() != null) {
 			getOutboundEventProcessorChain().setProcessingEnabled(false);
 			getOutboundEventProcessorChain().lifecycleStop();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+	 */
+	@Override
+	public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
+		if (getOutboundEventProcessorChain() instanceof ITenantHazelcastAware) {
+			((ITenantHazelcastAware) getOutboundEventProcessorChain()).setHazelcastConfiguration(
+					configuration);
+		}
+		if (getInboundEventProcessorChain() instanceof ITenantHazelcastAware) {
+			((ITenantHazelcastAware) getInboundEventProcessorChain()).setHazelcastConfiguration(
+					configuration);
 		}
 	}
 

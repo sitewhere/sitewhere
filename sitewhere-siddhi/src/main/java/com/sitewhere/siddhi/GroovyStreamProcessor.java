@@ -21,7 +21,7 @@ import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
-import com.sitewhere.spi.server.ITenantAware;
+import com.sitewhere.spi.server.tenant.ITenantAware;
 import com.sitewhere.spi.user.ITenant;
 
 /**

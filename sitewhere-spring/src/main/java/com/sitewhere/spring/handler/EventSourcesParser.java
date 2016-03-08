@@ -42,7 +42,6 @@ import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
 import com.sitewhere.hazelcast.HazelcastQueueReceiver;
-import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 import com.sitewhere.rabbitmq.RabbitMqInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
@@ -812,8 +811,6 @@ public class EventSourcesParser {
 			ParserContext context) {
 		BeanDefinitionBuilder receiver =
 				BeanDefinitionBuilder.rootBeanDefinition(HazelcastQueueReceiver.class);
-		receiver.addPropertyReference("configuration",
-				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
 		return receiver.getBeanDefinition();
 	}
 

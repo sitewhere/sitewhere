@@ -19,8 +19,8 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.version.VersionHelper;
 

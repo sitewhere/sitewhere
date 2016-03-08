@@ -23,7 +23,6 @@ import com.sitewhere.device.event.processor.DefaultInboundEventProcessorChain;
 import com.sitewhere.device.event.processor.DeviceStreamProcessor;
 import com.sitewhere.device.event.processor.RegistrationProcessor;
 import com.sitewhere.hazelcast.HazelcastQueueSender;
-import com.sitewhere.hazelcast.SiteWhereHazelcastConfiguration;
 
 /**
  * Parses configuration data from SiteWhere inbound processing chain section.
@@ -47,8 +46,8 @@ public class InboundProcessingChainParser {
 		for (Element child : dsChildren) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
-				throw new RuntimeException("Unknown inbound processing chain element: "
-						+ child.getLocalName());
+				throw new RuntimeException(
+						"Unknown inbound processing chain element: " + child.getLocalName());
 			}
 			switch (type) {
 			case InboundEventProcessor: {
@@ -141,8 +140,6 @@ public class InboundProcessingChainParser {
 	protected AbstractBeanDefinition parseHazelcastQueueProcessor(Element element, ParserContext context) {
 		BeanDefinitionBuilder processor =
 				BeanDefinitionBuilder.rootBeanDefinition(HazelcastQueueSender.class);
-		processor.addPropertyReference("configuration",
-				SiteWhereHazelcastConfiguration.HAZELCAST_CONFIGURATION_BEAN);
 		return processor.getBeanDefinition();
 	}
 
