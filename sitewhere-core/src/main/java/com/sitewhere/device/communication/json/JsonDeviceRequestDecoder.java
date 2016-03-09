@@ -10,6 +10,7 @@ package com.sitewhere.device.communication.json;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -34,10 +35,12 @@ public class JsonDeviceRequestDecoder implements IDeviceEventDecoder<byte[]> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object)
+	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
+	 * java.util.Map)
 	 */
 	@Override
-	public List<IDecodedDeviceRequest<?>> decode(byte[] payload) throws SiteWhereException {
+	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
+			throws SiteWhereException {
 		try {
 			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 			DecodedDeviceRequest<?> decoded = MAPPER.readValue(payload, DecodedDeviceRequest.class);

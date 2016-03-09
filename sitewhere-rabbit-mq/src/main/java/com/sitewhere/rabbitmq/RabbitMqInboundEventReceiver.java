@@ -8,6 +8,7 @@
 package com.sitewhere.rabbitmq;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,8 +32,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent implements
-		IInboundEventReceiver<byte[]> {
+public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent
+		implements IInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(RabbitMqInboundEventReceiver.class);
@@ -101,7 +102,7 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent imple
 				@Override
 				public void handleDelivery(String consumerTag, Envelope envelope,
 						AMQP.BasicProperties properties, byte[] body) throws IOException {
-					onEventPayloadReceived(body);
+					onEventPayloadReceived(body, null);
 				}
 			};
 			channel.basicConsume(getQueueName(), true, consumer);
@@ -155,11 +156,11 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent imple
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object)
+	 * (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(byte[] payload) {
-		getEventSource().onEncodedEventReceived(this, payload);
+	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
+		getEventSource().onEncodedEventReceived(this, payload, metadata);
 	}
 
 	/*

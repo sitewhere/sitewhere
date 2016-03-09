@@ -9,6 +9,7 @@ package com.sitewhere.device.communication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -38,12 +39,12 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
 		 * (non-Javadoc)
 		 * 
 		 * @see
-		 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang
-		 * .Object)
+		 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.
+		 * Object, java.util.Map)
 		 */
 		@Override
-		public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload)
-				throws SiteWhereException {
+		public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload,
+				Map<String, String> metadata) throws SiteWhereException {
 			List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
 			results.add(payload);
 			return results;

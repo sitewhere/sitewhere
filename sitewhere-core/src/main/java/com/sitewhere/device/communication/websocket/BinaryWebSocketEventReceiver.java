@@ -62,7 +62,7 @@ public class BinaryWebSocketEventReceiver extends WebSocketEventReceiver<byte[]>
 					IInboundEventReceiver<byte[]> receiver =
 							(IInboundEventReceiver<byte[]>) config.getUserProperties().get(
 									WebSocketEventReceiver.PROP_EVENT_RECEIVER);
-					receiver.onEventPayloadReceived(payload.array());
+					receiver.onEventPayloadReceived(payload.array(), null);
 				}
 			});
 		}

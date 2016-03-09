@@ -66,10 +66,12 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object)
+	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
+	 * java.util.Map)
 	 */
 	@Override
-	public List<IDecodedDeviceRequest<?>> decode(byte[] payload) throws SiteWhereException {
+	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> payloadMetadata)
+			throws SiteWhereException {
 		try {
 			ByteArrayInputStream stream = new ByteArrayInputStream(payload);
 			Header header = SiteWhere.Header.parseDelimitedFrom(stream);
@@ -125,7 +127,8 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				DeviceMeasurementsCreateRequest request = new DeviceMeasurementsCreateRequest();
 				List<Measurement> measurements = dm.getMeasurementList();
 				for (Measurement current : measurements) {
-					request.addOrReplaceMeasurement(current.getMeasurementId(), current.getMeasurementValue());
+					request.addOrReplaceMeasurement(current.getMeasurementId(),
+							current.getMeasurementValue());
 				}
 
 				List<Metadata> pbmeta = dm.getMetadataList();
@@ -286,8 +289,8 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 				return results;
 			}
 			default: {
-				throw new SiteWhereException("Unable to decode message. Type not supported: "
-						+ header.getCommand().name());
+				throw new SiteWhereException(
+						"Unable to decode message. Type not supported: " + header.getCommand().name());
 			}
 			}
 		} catch (IOException e) {

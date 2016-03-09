@@ -60,7 +60,7 @@ public class StringWebSocketEventReceiver extends WebSocketEventReceiver<String>
 					IInboundEventReceiver<String> receiver =
 							(IInboundEventReceiver<String>) config.getUserProperties().get(
 									WebSocketEventReceiver.PROP_EVENT_RECEIVER);
-					receiver.onEventPayloadReceived(payload);
+					receiver.onEventPayloadReceived(payload, null);
 				}
 			});
 		}

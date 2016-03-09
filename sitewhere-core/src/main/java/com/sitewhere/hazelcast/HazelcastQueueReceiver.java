@@ -7,6 +7,7 @@
  */
 package com.sitewhere.hazelcast;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -95,7 +96,7 @@ public class HazelcastQueueReceiver extends LifecycleComponent
 			while (true) {
 				try {
 					DecodedDeviceRequest<?> payload = getEventQueue().take();
-					onEventPayloadReceived(payload);
+					onEventPayloadReceived(payload, null);
 					LOGGER.debug("Processed event from " + payload.getHardwareId()
 							+ " from Hazelcast event queue.");
 				} catch (InterruptedException e) {
@@ -131,11 +132,11 @@ public class HazelcastQueueReceiver extends LifecycleComponent
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object)
+	 * (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(DecodedDeviceRequest<?> payload) {
-		getEventSource().onEncodedEventReceived(this, payload);
+	public void onEventPayloadReceived(DecodedDeviceRequest<?> payload, Map<String, String> metadata) {
+		getEventSource().onEncodedEventReceived(this, payload, metadata);
 	}
 
 	/*

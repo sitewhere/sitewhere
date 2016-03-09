@@ -7,12 +7,9 @@
  */
 package com.sitewhere.groovy.device.communication;
 
-import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -20,6 +17,10 @@ import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
+
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 /**
  * Implementation of {@link IDeviceEventDecoder} that delegates parsing to a Groovy
@@ -42,11 +43,13 @@ public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object)
+	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
+	 * java.util.Map)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<IDecodedDeviceRequest<?>> decode(String payload) throws SiteWhereException {
+	public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, String> metadata)
+			throws SiteWhereException {
 		try {
 			Binding binding = new Binding();
 			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();

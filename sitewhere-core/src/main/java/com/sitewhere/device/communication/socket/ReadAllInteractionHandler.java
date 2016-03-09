@@ -42,7 +42,7 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
 				output.write(value);
 			}
 			input.close();
-			receiver.onEventPayloadReceived(output.toByteArray());
+			receiver.onEventPayloadReceived(output.toByteArray(), null);
 		} catch (IOException e) {
 			throw new SiteWhereException("Exception processing request in socket interaction handler.", e);
 		}

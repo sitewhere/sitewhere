@@ -10,6 +10,7 @@ package com.sitewhere.device.communication.socket;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -180,11 +181,11 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object)
+	 * (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(T payload) {
-		getEventSource().onEncodedEventReceived(SocketInboundEventReceiver.this, payload);
+	public void onEventPayloadReceived(T payload, Map<String, String> metadata) {
+		getEventSource().onEncodedEventReceived(SocketInboundEventReceiver.this, payload, metadata);
 	}
 
 	/**

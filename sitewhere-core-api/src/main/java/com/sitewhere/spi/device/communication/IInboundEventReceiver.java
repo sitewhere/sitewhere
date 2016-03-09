@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.device.communication;
 
+import java.util.Map;
+
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 
 /**
@@ -27,8 +29,9 @@ public interface IInboundEventReceiver<T> extends ILifecycleComponent {
 	 * Called when an event payload is received.
 	 * 
 	 * @param payload
+	 * @param metadata
 	 */
-	public void onEventPayloadReceived(T payload);
+	public void onEventPayloadReceived(T payload, Map<String, String> metadata);
 
 	/**
 	 * Set the parent event source that will process events.

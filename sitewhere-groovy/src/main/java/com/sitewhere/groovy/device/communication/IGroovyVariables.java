@@ -20,6 +20,9 @@ public interface IGroovyVariables {
 	/** Groovy variable used for passing payload */
 	public static final String VAR_PAYLOAD = "payload";
 
+	/** Groovy variable used for passing payload metadata */
+	public static final String VAR_PAYLOAD_METADATA = "metadata";
+
 	/** Groovy variable used for passing logger */
 	public static final String VAR_LOGGER = "logger";
 }

@@ -11,6 +11,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -195,11 +196,11 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object)
+	 * (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(byte[] payload) {
-		getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this, payload);
+	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
+		getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this, payload, metadata);
 	}
 
 	/** Used for naming consumer threads */
@@ -275,12 +276,12 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent
 					}
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
-						onEventPayloadReceived(textMessage.getText().getBytes());
+						onEventPayloadReceived(textMessage.getText().getBytes(), null);
 					} else if (message instanceof BytesMessage) {
 						BytesMessage bytesMessage = (BytesMessage) message;
 						byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 						bytesMessage.readBytes(buffer);
-						onEventPayloadReceived(buffer);
+						onEventPayloadReceived(buffer, null);
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}

@@ -9,6 +9,7 @@ package com.sitewhere.device.communication.debug;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -33,10 +34,12 @@ public class PayloadLoggerEventDecoder implements IDeviceEventDecoder<byte[]> {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object)
+	 * com.sitewhere.spi.device.communication.IDeviceEventDecoder#decode(java.lang.Object,
+	 * java.util.Map)
 	 */
 	@Override
-	public List<IDecodedDeviceRequest<?>> decode(byte[] payload) throws SiteWhereException {
+	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
+			throws SiteWhereException {
 		LOGGER.info("=== EVENT DATA BEGIN ===");
 		LOGGER.info(new String(payload));
 		LOGGER.info("(hex) " + DataUtils.bytesToHex(payload));

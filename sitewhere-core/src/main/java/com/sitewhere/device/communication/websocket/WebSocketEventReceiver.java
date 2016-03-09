@@ -124,9 +124,16 @@ public abstract class WebSocketEventReceiver<T> extends LifecycleComponent
 		return "WebSocket()";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
+	 * (java.lang.Object, java.util.Map)
+	 */
 	@Override
-	public void onEventPayloadReceived(T payload) {
-		getEventSource().onEncodedEventReceived(this, payload);
+	public void onEventPayloadReceived(T payload, Map<String, String> metadata) {
+		getEventSource().onEncodedEventReceived(this, payload, metadata);
 	}
 
 	/*

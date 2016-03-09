@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.communication;
 
 import java.util.List;
+import java.util.Map;
 
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
@@ -52,6 +53,8 @@ public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
 	 * 
 	 * @param receiver
 	 * @param encodedEvent
+	 * @param metadata
 	 */
-	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent);
+	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent,
+			Map<String, String> metadata);
 }

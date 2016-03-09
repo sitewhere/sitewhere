@@ -47,6 +47,21 @@ public class SocketTests {
 	}
 
 	@Test
+	public void doOssTest() throws Exception {
+		Socket socket = new Socket("localhost", 8484);
+		String message =
+				"{ \"deveui\": \"hex\", \"dataFrame\": \"AB==\","
+						+ "\"port\": 1, \"timestamp\": \"2015-02-11 10:33:00.578\","
+						+ "\"fcnt\": 138,\"rssi\": -111,\"snr\": -6,\"sf_used\": \"8\",\"id\": 278998,"
+						+ "\"live\": true,\"decrypted\":false}";
+		byte[] encoded = message.getBytes();
+		socket.getOutputStream().write(encoded);
+		socket.getOutputStream().flush();
+		socket.getOutputStream().close();
+		socket.close();
+	}
+
+	@Test
 	public void doMqttTest() throws Exception {
 		MQTT mqtt = new MQTT();
 		try {

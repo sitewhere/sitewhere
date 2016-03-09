@@ -7,6 +7,7 @@
  */
 package com.sitewhere.device.communication.mqtt;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -123,11 +124,11 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object)
+	 * (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(byte[] payload) {
-		getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload);
+	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
+		getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, metadata);
 	}
 
 	/**
@@ -145,7 +146,7 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 					Future<Message> future = connection.receive();
 					Message message = future.await();
 					message.ack();
-					onEventPayloadReceived(message.getPayload());
+					onEventPayloadReceived(message.getPayload(), null);
 				} catch (InterruptedException e) {
 					break;
 				} catch (Throwable e) {

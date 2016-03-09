@@ -24,6 +24,17 @@
  *******************************************************************************/
 package com.sitewhere.azure.device.communication;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.log4j.Logger;
+import org.apache.qpid.amqp_1_0.client.Message;
+
 import com.sitewhere.azure.device.communication.client.Constants;
 import com.sitewhere.azure.device.communication.client.EventData;
 import com.sitewhere.azure.device.communication.client.EventHubReceiverTask;
@@ -34,18 +45,8 @@ import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
-import org.apache.log4j.Logger;
-import org.apache.qpid.amqp_1_0.client.Message;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class EventHubInboundEventReceiver extends LifecycleComponent implements IInboundEventReceiver<byte[]> {
+public class EventHubInboundEventReceiver extends LifecycleComponent
+		implements IInboundEventReceiver<byte[]> {
 
 	private static final Logger logger = Logger.getLogger(EventHubInboundEventReceiver.class);
 	private static String username = "";
@@ -155,18 +156,19 @@ public class EventHubInboundEventReceiver extends LifecycleComponent implements 
 						}
 						Message p = data.getMessage();
 
-						if (p == null
-								|| p.getApplicationProperties() == null
+						if (p == null || p.getApplicationProperties() == null
 								|| p.getApplicationProperties().getValue() == null
-								|| p.getApplicationProperties().getValue().get(Constants.AmqpPayloadKey) == null) {
+								|| p.getApplicationProperties().getValue().get(
+										Constants.AmqpPayloadKey) == null) {
 							logger.warn("Skipped message without a valid payload received.");
 							continue;
 						}
 						byte[] payload =
-								p.getApplicationProperties().getValue().get(Constants.AmqpPayloadKey).toString().getBytes();
+								p.getApplicationProperties().getValue().get(
+										Constants.AmqpPayloadKey).toString().getBytes();
 						// Map eventContext = new HashMap();
 						// eventContext.put("enqueueTime", data.getEnqueueTime());
-						onEventPayloadReceived(payload);
+						onEventPayloadReceived(payload, null);
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -202,11 +204,11 @@ public class EventHubInboundEventReceiver extends LifecycleComponent implements 
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object)
+	 * (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(byte[] payload) {
-		getEventSource().onEncodedEventReceived(EventHubInboundEventReceiver.this, payload);
+	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
+		getEventSource().onEncodedEventReceived(EventHubInboundEventReceiver.this, payload, metadata);
 	}
 
 	public IInboundEventSource<byte[]> getEventSource() {

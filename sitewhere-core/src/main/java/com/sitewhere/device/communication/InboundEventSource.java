@@ -9,6 +9,7 @@ package com.sitewhere.device.communication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -120,15 +121,17 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventSource#onEncodedEventReceived
-	 * (com.sitewhere.spi.device.communication.IInboundEventReceiver, java.lang.Object)
+	 * com.sitewhere.spi.device.communication.IInboundEventSource#onEncodedEventReceived(
+	 * com.sitewhere.spi.device.communication.IInboundEventReceiver, java.lang.Object,
+	 * java.util.Map)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload) {
+	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload,
+			Map<String, String> metadata) {
 		try {
 			LOGGER.debug("Device event receiver thread picked up event.");
-			List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload);
+			List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload, metadata);
 			if (requests != null) {
 				for (IDecodedDeviceRequest<?> decoded : requests) {
 					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
@@ -175,11 +178,13 @@ public class InboundEventSource<T> extends TenantLifecycleComponent implements I
 	 * Decode a payload into individual events.
 	 * 
 	 * @param encodedPayload
+	 * @param metadata
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected List<IDecodedDeviceRequest<?>> decodePayload(T encodedPayload) throws SiteWhereException {
-		return getDeviceEventDecoder().decode(encodedPayload);
+	protected List<IDecodedDeviceRequest<?>> decodePayload(T encodedPayload, Map<String, String> metadata)
+			throws SiteWhereException {
+		return getDeviceEventDecoder().decode(encodedPayload, metadata);
 	}
 
 	/**

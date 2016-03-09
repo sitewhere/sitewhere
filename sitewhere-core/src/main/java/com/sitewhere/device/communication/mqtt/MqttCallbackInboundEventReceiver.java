@@ -8,6 +8,7 @@
 package com.sitewhere.device.communication.mqtt;
 
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.fusesource.hawtbuf.Buffer;
@@ -31,8 +32,8 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MqttCallbackInboundEventReceiver extends LifecycleComponent implements
-		IInboundEventReceiver<byte[]> {
+public class MqttCallbackInboundEventReceiver extends LifecycleComponent
+		implements IInboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
@@ -135,7 +136,7 @@ public class MqttCallbackInboundEventReceiver extends LifecycleComponent impleme
 			 */
 			public void onPublish(UTF8Buffer topic, Buffer payload, Runnable ack) {
 				ack.run();
-				onEventPayloadReceived(payload.data);
+				onEventPayloadReceived(payload.data, null);
 			}
 
 			public void onFailure(Throwable value) {
@@ -179,11 +180,11 @@ public class MqttCallbackInboundEventReceiver extends LifecycleComponent impleme
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object)
+	 * (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(byte[] payload) {
-		getEventSource().onEncodedEventReceived(MqttCallbackInboundEventReceiver.this, payload);
+	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
+		getEventSource().onEncodedEventReceived(MqttCallbackInboundEventReceiver.this, payload, metadata);
 	}
 
 	/*
