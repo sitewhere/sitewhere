@@ -95,8 +95,8 @@ task serverZip(type: Zip, dependsOn: createServerDistro) {
 
 // Upload server zip file to Amazon S3
 task uploadServerZip(type: com.github.skhatri.s3aws.plugin.S3UploadTask, dependsOn: serverZip) {
-    key = serverZip.archiveName
-    file = serverZip.archivePath
+    key = "sitewhere-server-${project.version}.zip"
+    file = "$buildDir/distributions/sitewhere-server-${project.version}.zip"
     
     doLast {
     	println 'Uploaded server zip to Amazon S3.'
@@ -119,8 +119,8 @@ task serverTar(type: Tar, dependsOn: createServerDistro) {
 
 // Upload server tar file to Amazon S3
 task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, dependsOn: serverTar) {
-    key = serverTar.archiveName
-    file = serverTar.archivePath
+    key = "sitewhere-server-${project.version}.tgz"
+    file = "$buildDir/distributions/sitewhere-server-${project.version}.tgz"
     
     doLast {
     	println 'Uploaded server tar to Amazon S3.'
