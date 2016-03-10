@@ -90,10 +90,6 @@
 					<sw:json-batch-event-decoder/>
 				</sw:mqtt-event-source>
 
-				<sw:socket-event-source port="8484" sourceId="tata">
-					<sw:http-interaction-handler-factory/>
-				</sw:socket-event-source>
-
 			</sw:event-sources>
 			
 			<!-- Device services -->
