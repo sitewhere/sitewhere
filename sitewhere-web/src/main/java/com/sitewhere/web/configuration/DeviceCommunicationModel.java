@@ -40,6 +40,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 
 		// Socket event source.
 		addElement(createReadAllSocketInteractionHandlerElement());
+		addElement(createHttpSocketInteractionHandlerElement());
 		addElement(createSocketEventSourceElement());
 
 		// WebSocket event source.
@@ -298,12 +299,30 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	protected ElementNode createReadAllSocketInteractionHandlerElement() {
 		ElementNode.Builder builder =
 				new ElementNode.Builder("Read-All Socket Interaction Handler Factory",
-						"read-all-interaction-handler-factory", "cog",
-						ElementRole.EventSources_SocketInteractionHandlerFactory);
+						EventSourcesParser.BinarySocketInteractionHandlers.ReadAllInteractionHandlerFactory.getLocalName(),
+						"cog", ElementRole.EventSources_SocketInteractionHandlerFactory);
 
 		builder.description(
 				"Interaction handler that reads all content from the client socket and delivers it "
 						+ "to the decoder as a byte array.");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create HTTP socket interaction handler factory.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createHttpSocketInteractionHandlerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("HTTP Socket Interaction Handler Factory",
+						EventSourcesParser.BinarySocketInteractionHandlers.HttpInteractionHandlerFactory.getLocalName(),
+						"cog", ElementRole.EventSources_SocketInteractionHandlerFactory);
+
+		builder.description("Interaction handler that reads HTTP content from the client socket and delivers "
+				+ "the wrapped entity to the decoder as binary data. This interaction handler "
+				+ "always returns a 200 OK response on the socket.");
 
 		return builder.build();
 	}

@@ -35,6 +35,7 @@ import com.sitewhere.device.communication.json.JsonDeviceRequestDecoder;
 import com.sitewhere.device.communication.mqtt.MqttInboundEventReceiver;
 import com.sitewhere.device.communication.protobuf.ProtobufDeviceEventDecoder;
 import com.sitewhere.device.communication.socket.BinarySocketInboundEventReceiver;
+import com.sitewhere.device.communication.socket.HttpInteractionHandler;
 import com.sitewhere.device.communication.socket.ReadAllInteractionHandler;
 import com.sitewhere.device.communication.websocket.BinaryWebSocketEventReceiver;
 import com.sitewhere.device.communication.websocket.StringWebSocketEventReceiver;
@@ -630,6 +631,10 @@ public class EventSourcesParser {
 				parseReadAllFactory(parent, child, context, source);
 				return true;
 			}
+			case HttpInteractionHandlerFactory: {
+				parseHttpFactory(parent, child, context, source);
+				return true;
+			}
 			}
 		}
 		return false;
@@ -667,6 +672,25 @@ public class EventSourcesParser {
 				"Configuring 'read all' socket interaction handler factory for " + parent.getLocalName());
 		BeanDefinitionBuilder builder =
 				BeanDefinitionBuilder.rootBeanDefinition(ReadAllInteractionHandler.Factory.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("handlerFactory", name);
+	}
+
+	/**
+	 * Parse configuration for {@link HttpInteractionHandler} factory implementation.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseHttpFactory(Element parent, Element decoder, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring HTTP socket interaction handler factory for " + parent.getLocalName());
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition(HttpInteractionHandler.Factory.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -1237,10 +1261,11 @@ public class EventSourcesParser {
 		/** Reference to a socket interaction handler factory defined in a Spring bean */
 		InteractionHandlerFactoryReference("interaction-handler-factory"),
 
-		/**
-		 * Produces socket interaction handlers that read all data from the client socket
-		 */
-		ReadAllInteractionHandlerFactory("read-all-interaction-handler-factory");
+		/** Produces interaction handler that reads all data from the client socket */
+		ReadAllInteractionHandlerFactory("read-all-interaction-handler-factory"),
+
+		/** Produces interaction handler that reads HTTP data from the client socket */
+		HttpInteractionHandlerFactory("http-interaction-handler-factory");
 
 		/** Event code */
 		private String localName;

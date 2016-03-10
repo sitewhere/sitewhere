@@ -2077,6 +2077,10 @@
 	<xsd:complexType name="readAllInteractionHandlerFactoryType">
 	</xsd:complexType>
 
+	<!-- Treats socket input as HTTP request and processes entity payload -->
+	<xsd:complexType name="httpInteractionHandlerFactoryType">
+	</xsd:complexType>
+
 	<!-- Event source that pulls binary information from a server socket and decodes it -->
 	<xsd:element name="socket-event-source" type="socketEventSourceType"
 		substitutionGroup="abstract-event-source">
@@ -2103,6 +2107,14 @@
 							<xsd:annotation>
 								<xsd:documentation>Interaction handler that reads all content from the client
 									socket and delivers it to the decoder as a byte array.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="http-interaction-handler-factory" type="httpInteractionHandlerFactoryType">
+							<xsd:annotation>
+								<xsd:documentation>Interaction handler that treats a socket request as an HTTP
+									message and delivers the entity payload to the decoder as a byte array. A 200 OK
+									response is sent back to the requestor.
 								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
