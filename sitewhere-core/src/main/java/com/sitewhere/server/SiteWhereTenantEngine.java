@@ -367,6 +367,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 			// Initialize event processing subsystem.
 			setEventProcessing(initializeEventProcessingSubsystem());
+			if (getEventProcessing() instanceof ITenantHazelcastAware) {
+				((ITenantHazelcastAware) getEventProcessing()).setHazelcastConfiguration(
+						getHazelcastConfiguration());
+			}
 
 			// Initialize device communication subsystem.
 			setDeviceCommunication(initializeDeviceCommunicationSubsystem());
@@ -606,13 +610,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected IEventProcessing initializeEventProcessingSubsystem() throws SiteWhereException {
 		try {
-			IEventProcessing eventProcessing =
-					(IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
-			if (eventProcessing instanceof ITenantHazelcastAware) {
-				((ITenantHazelcastAware) eventProcessing).setHazelcastConfiguration(
-						getHazelcastConfiguration());
-			}
-			return eventProcessing;
+			return (IEventProcessing) tenantContext.getBean(SiteWhereServerBeans.BEAN_EVENT_PROCESSING);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No event processing subsystem implementation configured.");
 		}
