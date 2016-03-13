@@ -54,7 +54,7 @@ import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFa
  * 
  * @author Derek
  */
-public class EventSourcesParser {
+public class EventSourcesParser extends SiteWhereBeanListParser {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(EventSourcesParser.class);
@@ -62,12 +62,12 @@ public class EventSourcesParser {
 	/** Used to generate unique names for nested beans */
 	private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
 
-	/**
-	 * Parse the list of event sources.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param element
-	 * @param context
-	 * @return
+	 * @see
+	 * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.Element,
+	 * org.springframework.beans.factory.xml.ParserContext)
 	 */
 	public ManagedList<?> parse(Element element, ParserContext context) {
 		ManagedList<Object> result = new ManagedList<Object>();
@@ -143,15 +143,6 @@ public class EventSourcesParser {
 	}
 
 	/**
-	 * Get the MQTT event source implementation class.
-	 * 
-	 * @return
-	 */
-	protected Class<? extends IInboundEventSource<byte[]>> getMqttEventSourceImplementation() {
-		return BinaryInboundEventSource.class;
-	}
-
-	/**
 	 * Parse an MQTT event source.
 	 * 
 	 * @param element
@@ -159,8 +150,7 @@ public class EventSourcesParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseMqttEventSource(Element element, ParserContext context) {
-		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(getMqttEventSourceImplementation());
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
@@ -242,15 +232,6 @@ public class EventSourcesParser {
 	}
 
 	/**
-	 * Get the RabbitMQ event source implementation class.
-	 * 
-	 * @return
-	 */
-	protected Class<? extends IInboundEventSource<byte[]>> getRabbitMqEventSourceImplementation() {
-		return BinaryInboundEventSource.class;
-	}
-
-	/**
 	 * Parse an RabbitMQ event source.
 	 * 
 	 * @param element
@@ -258,8 +239,7 @@ public class EventSourcesParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseRabbitMqEventSource(Element element, ParserContext context) {
-		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(getRabbitMqEventSourceImplementation());
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
@@ -335,8 +315,7 @@ public class EventSourcesParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseAzureEventHubEventSource(Element element, ParserContext context) {
-		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(BinaryInboundEventSource.class);
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
@@ -418,15 +397,6 @@ public class EventSourcesParser {
 	}
 
 	/**
-	 * Get the ActiveMQ event source implementation class.
-	 * 
-	 * @return
-	 */
-	protected Class<? extends IInboundEventSource<byte[]>> getActiveMQEventSourceImplementation() {
-		return BinaryInboundEventSource.class;
-	}
-
-	/**
 	 * Parse an ActiveMQ event source.
 	 * 
 	 * @param element
@@ -434,8 +404,7 @@ public class EventSourcesParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseActiveMQEventSource(Element element, ParserContext context) {
-		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(getActiveMQEventSourceImplementation());
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
@@ -512,15 +481,6 @@ public class EventSourcesParser {
 	}
 
 	/**
-	 * Get the socket event source implementation class.
-	 * 
-	 * @return
-	 */
-	protected Class<? extends IInboundEventSource<byte[]>> getSocketEventSourceImplementation() {
-		return BinaryInboundEventSource.class;
-	}
-
-	/**
 	 * Parse a socket event source.
 	 * 
 	 * @param element
@@ -528,8 +488,7 @@ public class EventSourcesParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseSocketEventSource(Element element, ParserContext context) {
-		BeanDefinitionBuilder source =
-				BeanDefinitionBuilder.rootBeanDefinition(getSocketEventSourceImplementation());
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
 
 		// Verify that a sourceId was provided and set it on the bean.
 		parseEventSourceId(element, source);
