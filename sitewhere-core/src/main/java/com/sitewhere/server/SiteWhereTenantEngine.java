@@ -374,6 +374,10 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 			// Initialize device communication subsystem.
 			setDeviceCommunication(initializeDeviceCommunicationSubsystem());
+			if (getDeviceCommunication() instanceof ITenantHazelcastAware) {
+				((ITenantHazelcastAware) getDeviceCommunication()).setHazelcastConfiguration(
+						getHazelcastConfiguration());
+			}
 
 			// Initialize device management.
 			setDeviceManagement(initializeDeviceManagement());

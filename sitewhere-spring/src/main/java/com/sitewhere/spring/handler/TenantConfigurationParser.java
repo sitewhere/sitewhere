@@ -53,36 +53,96 @@ public class TenantConfigurationParser extends AbstractBeanDefinitionParser {
 			}
 			switch (type) {
 			case Globals: {
-				new GlobalsParser().parse(child, context);
+				parseGlobals(child, context);
 				break;
 			}
 			case TenantDatastore: {
-				new TenantDatastoreParser().parse(child, context);
+				parseTenantDatastore(child, context);
 				break;
 			}
 			case Provisioning: {
-				new DeviceCommunicationParser().parse(child, context);
+				parseDeviceCommunication(child, context);
 				break;
 			}
 			case DeviceCommunication: {
-				new DeviceCommunicationParser().parse(child, context);
+				parseDeviceCommunication(child, context);
 				break;
 			}
 			case EventProcessing: {
-				new EventProcessingParser().parse(child, context);
+				parseEventProcessing(child, context);
 				break;
 			}
 			case AssetManagement: {
-				new AssetManagementParser().parse(child, context);
+				parseAssetManagement(child, context);
 				break;
 			}
 			case SearchProviders: {
-				new SearchProvidersParser().parse(child, context);
+				parseSearchProviders(child, context);
 				break;
 			}
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Parse global elements.
+	 * 
+	 * @param child
+	 * @param context
+	 */
+	protected void parseGlobals(Element child, ParserContext context) {
+		new GlobalsParser().parse(child, context);
+	}
+
+	/**
+	 * Parse tenant datastore elements.
+	 * 
+	 * @param child
+	 * @param context
+	 */
+	protected void parseTenantDatastore(Element child, ParserContext context) {
+		new TenantDatastoreParser().parse(child, context);
+	}
+
+	/**
+	 * Parse device communication elements.
+	 * 
+	 * @param child
+	 * @param context
+	 */
+	protected void parseDeviceCommunication(Element child, ParserContext context) {
+		new DeviceCommunicationParser().parse(child, context);
+	}
+
+	/**
+	 * Parse event processing elements.
+	 * 
+	 * @param child
+	 * @param context
+	 */
+	protected void parseEventProcessing(Element child, ParserContext context) {
+		new EventProcessingParser().parse(child, context);
+	}
+
+	/**
+	 * Parse asset management elements.
+	 * 
+	 * @param child
+	 * @param context
+	 */
+	protected void parseAssetManagement(Element child, ParserContext context) {
+		new AssetManagementParser().parse(child, context);
+	}
+
+	/**
+	 * Parse search provider elements.
+	 * 
+	 * @param child
+	 * @param context
+	 */
+	protected void parseSearchProviders(Element child, ParserContext context) {
+		new SearchProvidersParser().parse(child, context);
 	}
 
 	/**
@@ -99,8 +159,7 @@ public class TenantConfigurationParser extends AbstractBeanDefinitionParser {
 		TenantDatastore("tenant-datastore"),
 
 		/** Provisioning (DEPRECATED) */
-		@Deprecated
-		Provisioning("provisioning"),
+		@Deprecated Provisioning("provisioning"),
 
 		/** Device Communication Subsystem */
 		DeviceCommunication("device-communication"),

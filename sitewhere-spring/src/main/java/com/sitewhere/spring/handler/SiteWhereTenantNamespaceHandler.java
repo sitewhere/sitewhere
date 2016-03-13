@@ -7,8 +7,11 @@
  */
 package com.sitewhere.spring.handler;
 
+import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+
+import com.sitewhere.SiteWhere;
 
 /**
  * Implementation of {@link NamespaceHandler} for supporting SiteWhere tenant
@@ -26,6 +29,24 @@ public class SiteWhereTenantNamespaceHandler extends NamespaceHandlerSupport {
 	@Override
 	public void init() {
 		registerBeanDefinitionParser(IConfigurationElements.TENANT_CONFIGURATION,
-				new TenantConfigurationParser());
+				getTenantBeanDefinitionParser());
+	}
+
+	/**
+	 * Create {@link BeanDefinitionParser} from class specified by server.
+	 * 
+	 * @return
+	 */
+	protected BeanDefinitionParser getTenantBeanDefinitionParser() {
+		try {
+			Class<?> clazz = Class.forName(SiteWhere.getServer().getTenantConfigurationParserClassname());
+			return (BeanDefinitionParser) clazz.newInstance();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Unable to find tenant configuration parser class.");
+		} catch (InstantiationException e) {
+			throw new RuntimeException("Could not create tenant configuration parser class.");
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Could not access tenant configuration parser class.");
+		}
 	}
 }

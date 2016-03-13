@@ -12,20 +12,24 @@ import java.util.List;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.communication.DefaultDeviceCommunication;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.spi.device.communication.IDeviceCommunication;
 
 /**
  * Parses configuration data from SiteWhere device communication subsystem.
  * 
  * @author Derek
  */
-public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
+public class DeviceCommunicationParser extends SiteWhereBeanDefinitionParser {
+
+	public DeviceCommunicationParser() {
+		getBeanMappings().put(IDeviceCommunication.class, DefaultDeviceCommunication.class);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -36,12 +40,13 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 	 */
 	@Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		BeanDefinitionBuilder communication = createBuilder();
+		BeanDefinitionBuilder communication = getBuilderFor(IDeviceCommunication.class);
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
 			if (type == null) {
-				throw new RuntimeException("Unknown communication subsystem element: " + child.getLocalName());
+				throw new RuntimeException(
+						"Unknown communication subsystem element: " + child.getLocalName());
 			}
 			switch (type) {
 			case EventSources: {
@@ -84,16 +89,6 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION,
 				communication.getBeanDefinition());
 		return null;
-	}
-
-	/**
-	 * Creates the {@link BeanDefinitionBuilder} that will be populated with nested
-	 * communication subsystem elements.
-	 * 
-	 * @return
-	 */
-	protected BeanDefinitionBuilder createBuilder() {
-		return BeanDefinitionBuilder.rootBeanDefinition(DefaultDeviceCommunication.class);
 	}
 
 	/**
@@ -184,16 +179,13 @@ public class DeviceCommunicationParser extends AbstractBeanDefinitionParser {
 		EventSources("event-sources"),
 
 		/** Inbound processing strategy (moved into event processing) */
-		@Deprecated
-		InboundProcessingStrategy("inbound-processing-strategy"),
+		@Deprecated InboundProcessingStrategy("inbound-processing-strategy"),
 
 		/** Outbound processing strategy (moved into event processing) */
-		@Deprecated
-		OutboundProcessingStrategy("outbound-processing-strategy"),
+		@Deprecated OutboundProcessingStrategy("outbound-processing-strategy"),
 
 		/** Device registration (renamed to device services) */
-		@Deprecated
-		Registration("registration"),
+		@Deprecated Registration("registration"),
 
 		/** Device services */
 		DeviceServices("device-services"),
