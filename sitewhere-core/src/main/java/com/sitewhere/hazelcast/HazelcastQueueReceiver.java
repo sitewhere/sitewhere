@@ -50,6 +50,9 @@ public class HazelcastQueueReceiver extends LifecycleComponent
 	/** Used to queue processing in a separate thread */
 	private ExecutorService executor;
 
+	/** Name of Hazelcast queue to listen on */
+	private String queueName = ISiteWhereHazelcast.QUEUE_ALL_EVENTS;
+
 	public HazelcastQueueReceiver() {
 		super(LifecycleComponentType.InboundEventReceiver);
 	}
@@ -64,9 +67,8 @@ public class HazelcastQueueReceiver extends LifecycleComponent
 		if (getHazelcastConfiguration() == null) {
 			throw new SiteWhereException("No Hazelcast configuration provided.");
 		}
-		this.eventQueue =
-				getHazelcastConfiguration().getHazelcastInstance().getQueue(
-						ISiteWhereHazelcast.QUEUE_ALL_EVENTS);
+		this.eventQueue = getHazelcastConfiguration().getHazelcastInstance().getQueue(getQueueName());
+		LOGGER.info("Receiver listening for events on Hazelcast queue: " + getQueueName());
 		this.executor = Executors.newSingleThreadExecutor(new ProcessorsThreadFactory());
 		executor.submit(new HazelcastQueueProcessor());
 	}
@@ -194,5 +196,13 @@ public class HazelcastQueueReceiver extends LifecycleComponent
 	 */
 	public void setHazelcastConfiguration(ITenantHazelcastConfiguration hazelcastConfiguration) {
 		this.hazelcastConfiguration = hazelcastConfiguration;
+	}
+
+	public String getQueueName() {
+		return queueName;
+	}
+
+	public void setQueueName(String queueName) {
+		this.queueName = queueName;
 	}
 }

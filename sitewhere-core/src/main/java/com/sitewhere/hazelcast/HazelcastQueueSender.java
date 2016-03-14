@@ -41,6 +41,9 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	/** Queue of events to be processed */
 	private IQueue<DecodedDeviceRequest<?>> eventQueue;
 
+	/** Name of Hazelcast queue receiving events */
+	private String queueName = ISiteWhereHazelcast.QUEUE_ALL_EVENTS;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -51,9 +54,8 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 		if (getHazelcastConfiguration() == null) {
 			throw new SiteWhereException("No Hazelcast configuration provided.");
 		}
-		this.eventQueue =
-				getHazelcastConfiguration().getHazelcastInstance().getQueue(
-						ISiteWhereHazelcast.QUEUE_ALL_EVENTS);
+		this.eventQueue = getHazelcastConfiguration().getHazelcastInstance().getQueue(getQueueName());
+		LOGGER.info("Sender posting events to Hazelcast queue: " + getQueueName());
 	}
 
 	/*
@@ -67,13 +69,7 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onRegistrationRequest(String hardwareId, String originator,
 			IDeviceRegistrationRequest request) throws SiteWhereException {
-		try {
-			getEventQueue().put(
-					new DecodedDeviceRequest<IDeviceRegistrationRequest>(hardwareId, originator, request));
-			LOGGER.debug("Sent event for " + hardwareId + " to Hazelcast event queue.");
-		} catch (InterruptedException e) {
-			handleInterrupted(e);
-		}
+		queueEvent(new DecodedDeviceRequest<IDeviceRegistrationRequest>(hardwareId, originator, request));
 	}
 
 	/*
@@ -86,12 +82,8 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
 			IDeviceCommandResponseCreateRequest request) throws SiteWhereException {
-		try {
-			getEventQueue().put(new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>(hardwareId,
-					originator, request));
-		} catch (InterruptedException e) {
-			handleInterrupted(e);
-		}
+		queueEvent(new DecodedDeviceRequest<IDeviceCommandResponseCreateRequest>(hardwareId, originator,
+				request));
 	}
 
 	/*
@@ -104,12 +96,8 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onDeviceMeasurementsCreateRequest(String hardwareId, String originator,
 			IDeviceMeasurementsCreateRequest request) throws SiteWhereException {
-		try {
-			getEventQueue().put(new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>(hardwareId,
-					originator, request));
-		} catch (InterruptedException e) {
-			handleInterrupted(e);
-		}
+		queueEvent(
+				new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>(hardwareId, originator, request));
 	}
 
 	/*
@@ -122,12 +110,7 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onDeviceLocationCreateRequest(String hardwareId, String originator,
 			IDeviceLocationCreateRequest request) throws SiteWhereException {
-		try {
-			getEventQueue().put(
-					new DecodedDeviceRequest<IDeviceLocationCreateRequest>(hardwareId, originator, request));
-		} catch (InterruptedException e) {
-			handleInterrupted(e);
-		}
+		queueEvent(new DecodedDeviceRequest<IDeviceLocationCreateRequest>(hardwareId, originator, request));
 	}
 
 	/*
@@ -140,12 +123,7 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
 			IDeviceAlertCreateRequest request) throws SiteWhereException {
-		try {
-			getEventQueue().put(
-					new DecodedDeviceRequest<IDeviceAlertCreateRequest>(hardwareId, originator, request));
-		} catch (InterruptedException e) {
-			handleInterrupted(e);
-		}
+		queueEvent(new DecodedDeviceRequest<IDeviceAlertCreateRequest>(hardwareId, originator, request));
 	}
 
 	/*
@@ -158,12 +136,7 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
 			IDeviceStreamCreateRequest request) throws SiteWhereException {
-		try {
-			getEventQueue().put(
-					new DecodedDeviceRequest<IDeviceStreamCreateRequest>(hardwareId, originator, request));
-		} catch (InterruptedException e) {
-			handleInterrupted(e);
-		}
+		queueEvent(new DecodedDeviceRequest<IDeviceStreamCreateRequest>(hardwareId, originator, request));
 	}
 
 	/*
@@ -176,12 +149,7 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onDeviceStreamDataCreateRequest(String hardwareId, String originator,
 			IDeviceStreamDataCreateRequest request) throws SiteWhereException {
-		try {
-			getEventQueue().put(new DecodedDeviceRequest<IDeviceStreamDataCreateRequest>(hardwareId,
-					originator, request));
-		} catch (InterruptedException e) {
-			handleInterrupted(e);
-		}
+		queueEvent(new DecodedDeviceRequest<IDeviceStreamDataCreateRequest>(hardwareId, originator, request));
 	}
 
 	/*
@@ -194,21 +162,21 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 	@Override
 	public void onSendDeviceStreamDataRequest(String hardwareId, String originator,
 			ISendDeviceStreamDataRequest request) throws SiteWhereException {
-		try {
-			getEventQueue().put(
-					new DecodedDeviceRequest<ISendDeviceStreamDataRequest>(hardwareId, originator, request));
-		} catch (InterruptedException e) {
-			handleInterrupted(e);
-		}
+		queueEvent(new DecodedDeviceRequest<ISendDeviceStreamDataRequest>(hardwareId, originator, request));
 	}
 
 	/**
-	 * Handle case where blocking call is interrupted.
+	 * Queue a decoded event.
 	 * 
-	 * @param e
+	 * @param decoded
+	 * @throws SiteWhereException
 	 */
-	protected void handleInterrupted(InterruptedException e) {
-		LOGGER.warn("Interrupted while putting event on queue.", e);
+	protected void queueEvent(DecodedDeviceRequest<?> decoded) throws SiteWhereException {
+		try {
+			getEventQueue().put(decoded);
+		} catch (InterruptedException e) {
+			LOGGER.warn("Interrupted while putting event on queue.", e);
+		}
 	}
 
 	/*
@@ -242,5 +210,13 @@ public class HazelcastQueueSender extends InboundEventProcessor implements ITena
 
 	public void setEventQueue(IQueue<DecodedDeviceRequest<?>> eventQueue) {
 		this.eventQueue = eventQueue;
+	}
+
+	public String getQueueName() {
+		return queueName;
+	}
+
+	public void setQueueName(String queueName) {
+		this.queueName = queueName;
 	}
 }
