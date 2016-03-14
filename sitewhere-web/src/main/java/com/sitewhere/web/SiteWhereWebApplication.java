@@ -78,6 +78,15 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	}
 
 	@Bean
+	public ServletRegistrationBean redirectServlet() {
+		RedirectServlet redirect = new RedirectServlet();
+		ServletRegistrationBean registration = new ServletRegistrationBean(redirect, "/admin");
+		registration.setName("sitewhereRedirect");
+		registration.setLoadOnStartup(3);
+		return registration;
+	}
+
+	@Bean
 	public FilterRegistrationBean methodOverrideFilter() {
 		MethodOverrideFilter filter = new MethodOverrideFilter();
 		FilterRegistrationBean registration = new FilterRegistrationBean();
