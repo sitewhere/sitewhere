@@ -24,16 +24,6 @@ public class DefaultDeviceCommunication extends DeviceCommunication {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.server.lifecycle.LifecycleComponent#getComponentName()
-	 */
-	@Override
-	public String getComponentName() {
-		return "CE Device Communication Subsystem";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override

@@ -768,7 +768,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	@Override
 	public String getComponentName() {
-		return "Tenant Engine: " + getTenant().getName();
+		return getClass().getSimpleName() + " '" + getTenant().getName() + "' (" + getTenant().getId() + ")";
 	}
 
 	/*

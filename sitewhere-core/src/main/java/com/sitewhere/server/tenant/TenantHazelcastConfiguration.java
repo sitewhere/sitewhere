@@ -9,8 +9,6 @@ package com.sitewhere.server.tenant;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
 import org.apache.log4j.Logger;
 
@@ -22,8 +20,6 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
 import com.hazelcast.core.LifecycleListener;
-import com.hazelcast.logging.LogEvent;
-import com.hazelcast.logging.LogListener;
 import com.hazelcast.util.ServiceLoader;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -36,7 +32,7 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * @author Derek
  */
 public class TenantHazelcastConfiguration extends TenantLifecycleComponent
-		implements ITenantHazelcastConfiguration, LifecycleListener, LogListener {
+		implements ITenantHazelcastConfiguration, LifecycleListener {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(TenantHazelcastConfiguration.class);
@@ -85,7 +81,6 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 			}
 
 			instance.getLifecycleService().addLifecycleListener(this);
-			instance.getLoggingService().addLogListener(Level.INFO, this);
 			LOGGER.info("Hazelcast instance '" + config.getInstanceName() + "' started.");
 		} catch (Exception e) {
 			throw new SiteWhereException("Unable to create tenant Hazelcast instance.", e);
@@ -151,23 +146,6 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	@Override
 	public void stateChanged(LifecycleEvent event) {
 		LOGGER.info("Hazelcast lifecycle changed to: " + event.getState().name());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.hazelcast.logging.LogListener#log(com.hazelcast.logging.LogEvent)
-	 */
-	@Override
-	public void log(LogEvent logEvent) {
-		LogRecord record = logEvent.getLogRecord();
-		if (record.getLevel() == Level.INFO) {
-			LOGGER.info(record.getMessage());
-		} else if (record.getLevel() == Level.WARNING) {
-			LOGGER.warn(record.getMessage());
-		} else if (record.getLevel() == Level.SEVERE) {
-			LOGGER.error(record.getMessage());
-		}
 	}
 
 	public HazelcastInstance getHazelcastInstance() {

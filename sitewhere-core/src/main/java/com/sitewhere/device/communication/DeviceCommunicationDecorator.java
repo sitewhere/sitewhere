@@ -23,6 +23,8 @@ import com.sitewhere.spi.device.communication.IRegistrationManager;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
+import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 import com.sitewhere.spi.user.ITenant;
 
 /**
@@ -32,7 +34,7 @@ import com.sitewhere.spi.user.ITenant;
  * @author Derek
  */
 public class DeviceCommunicationDecorator extends LifecycleComponentDecorator
-		implements IDeviceCommunication {
+		implements IDeviceCommunication, ITenantHazelcastAware {
 
 	/** Wrapped instance */
 	private IDeviceCommunication delegate;
@@ -61,6 +63,20 @@ public class DeviceCommunicationDecorator extends LifecycleComponentDecorator
 	@Override
 	public ITenant getTenant() {
 		return delegate.getTenant();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
+	 */
+	@Override
+	public void setHazelcastConfiguration(ITenantHazelcastConfiguration configuration) {
+		if (delegate instanceof ITenantHazelcastAware) {
+			((ITenantHazelcastAware) delegate).setHazelcastConfiguration(configuration);
+		}
 	}
 
 	/*
