@@ -13,6 +13,7 @@ include ':sitewhere-influx'
 include ':sitewhere-mongodb'
 include ':sitewhere-protobuf'
 include ':sitewhere-rabbit-mq'
+include ':sitewhere-rest'
 include ':sitewhere-server-api'
 include ':sitewhere-siddhi'
 include ':sitewhere-solr'
@@ -36,6 +37,7 @@ project(':sitewhere-influx').projectDir = "$rootDir/sitewhere-influx" as File
 project(':sitewhere-mongodb').projectDir = "$rootDir/sitewhere-mongodb" as File
 project(':sitewhere-protobuf').projectDir = "$rootDir/sitewhere-protobuf" as File
 project(':sitewhere-rabbit-mq').projectDir = "$rootDir/sitewhere-rabbit-mq" as File
+project(':sitewhere-rest').projectDir = "$rootDir/sitewhere-rest" as File
 project(':sitewhere-server-api').projectDir = "$rootDir/sitewhere-server-api" as File
 project(':sitewhere-siddhi').projectDir = "$rootDir/sitewhere-siddhi" as File
 project(':sitewhere-solr').projectDir = "$rootDir/sitewhere-solr" as File

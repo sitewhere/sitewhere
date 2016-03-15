@@ -23,6 +23,7 @@ dependencies {
     compile project(':sitewhere-mongodb')
     compile project(':sitewhere-protobuf')
     compile project(':sitewhere-rabbit-mq')
+    compile project(':sitewhere-rest')
     compile project(':sitewhere-siddhi')
     compile project(':sitewhere-solr')
     compile project(':sitewhere-spark')
@@ -48,10 +49,6 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava'
     compile group: 'commons-lang', name: 'commons-lang'
     compile group: 'javax.mail', name: 'mail', version: '1.4'
-
-    compile (group: 'org.reflections', name: 'reflections', version:'0.9.10');
-    compile group: 'org.pegdown', name: 'pegdown', version:'1.5.0'
-    compile group: 'com.thoughtworks.paranamer', name: 'paranamer', version:'2.8'
     
 	compile group: 'javax.servlet', name: 'javax.servlet-api'
 	compile group: 'javax.servlet', name: 'jstl'
