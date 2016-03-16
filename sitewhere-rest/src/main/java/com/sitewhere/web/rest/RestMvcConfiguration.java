@@ -16,4 +16,7 @@ import com.sitewhere.web.rest.controllers.AssetsController;
 @Configuration
 @ComponentScan(basePackageClasses = { AssetsController.class })
 public class RestMvcConfiguration extends WebMvcConfigurationSupport {
+
+	/** URL prefix for matching REST API calls */
+	public static final String REST_API_MATCHER = "/api/*";
 }

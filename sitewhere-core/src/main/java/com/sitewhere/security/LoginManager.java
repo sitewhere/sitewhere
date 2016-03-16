@@ -32,7 +32,7 @@ public class LoginManager {
 	public static IUser getCurrentlyLoggedInUser() throws SiteWhereException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null) {
-			throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR);
+			throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR, 401);
 		}
 		if (!(auth instanceof SitewhereAuthentication)) {
 			throw new SiteWhereException(

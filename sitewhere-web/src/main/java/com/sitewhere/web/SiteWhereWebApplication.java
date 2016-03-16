@@ -38,9 +38,6 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 	@SuppressWarnings("unused")
 	private static Logger LOGGER = Logger.getLogger(SiteWhereWebApplication.class);
 
-	/** URL prefix for matching REST API calls */
-	private static final String REST_API_MATCHER = "/api/*";
-
 	@Bean
 	public EmbeddedServletContainerFactory servletContainer() {
 		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
@@ -58,7 +55,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		applicationContext.register(RestMvcConfiguration.class, SiteWhereSwaggerConfig.class);
 		dispatcherServlet.setApplicationContext(applicationContext);
 		ServletRegistrationBean registration =
-				new ServletRegistrationBean(dispatcherServlet, REST_API_MATCHER);
+				new ServletRegistrationBean(dispatcherServlet, RestMvcConfiguration.REST_API_MATCHER);
 		registration.setName("sitewhereRestInterface");
 		registration.setLoadOnStartup(1);
 		return registration;
@@ -91,7 +88,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		MethodOverrideFilter filter = new MethodOverrideFilter();
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 		registration.setFilter(filter);
-		registration.addUrlPatterns(REST_API_MATCHER);
+		registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
 		return registration;
 	}
 
@@ -100,7 +97,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		ResponseTimerFilter filter = new ResponseTimerFilter();
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 		registration.setFilter(filter);
-		registration.addUrlPatterns(REST_API_MATCHER);
+		registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
 		return registration;
 	}
 
@@ -109,7 +106,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		NoCacheFilter filter = new NoCacheFilter();
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 		registration.setFilter(filter);
-		registration.addUrlPatterns(REST_API_MATCHER);
+		registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
 		return registration;
 	}
 
@@ -118,7 +115,7 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		JsonpFilter filter = new JsonpFilter();
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 		registration.setFilter(filter);
-		registration.addUrlPatterns(REST_API_MATCHER);
+		registration.addUrlPatterns(RestMvcConfiguration.REST_API_MATCHER);
 		return registration;
 	}
 
