@@ -30,7 +30,7 @@ import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.device.event.processor.multicast.IDeviceEventMulticaster;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Routes events to all devices that use a given specification. The list of devices is

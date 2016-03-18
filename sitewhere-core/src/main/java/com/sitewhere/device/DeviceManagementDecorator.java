@@ -45,7 +45,7 @@ import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Allows classes to inject themselves as a facade around an existing device management

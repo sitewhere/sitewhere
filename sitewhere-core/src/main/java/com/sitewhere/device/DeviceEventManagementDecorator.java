@@ -33,7 +33,7 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Allows classes to inject themselves as a facade around an existing device event

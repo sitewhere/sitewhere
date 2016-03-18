@@ -18,20 +18,15 @@ import com.sitewhere.hbase.ISiteWhereHBaseClient;
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.hbase.encoder.IPayloadMarshaler;
 import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
-import com.sitewhere.hbase.tenant.HBaseTenant;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
-import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
-import com.sitewhere.spi.user.request.ITenantCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**
@@ -97,7 +92,6 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
-		LOGGER.info("HBase user management stopped.");
 	}
 
 	/**
@@ -269,73 +263,6 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	@Override
 	public void deleteGrantedAuthority(String authority) throws SiteWhereException {
 		throw new SiteWhereException("Not implemented.");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#createTenant(com.sitewhere.spi.user.request
-	 * .ITenantCreateRequest)
-	 */
-	@Override
-	public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
-		return HBaseTenant.createTenant(context, request);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#updateTenant(java.lang.String,
-	 * com.sitewhere.spi.user.request.ITenantCreateRequest)
-	 */
-	@Override
-	public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
-		return HBaseTenant.updateTenant(context, id, request);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#getTenantById(java.lang.String)
-	 */
-	@Override
-	public ITenant getTenantById(String id) throws SiteWhereException {
-		return HBaseTenant.getTenantById(context, id);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#getTenantByAuthenticationToken(java.lang
-	 * .String)
-	 */
-	@Override
-	public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
-		return HBaseTenant.getTenantByAuthenticationToken(context, token);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#listTenants(com.sitewhere.spi.search.user
-	 * .ITenantSearchCriteria)
-	 */
-	@Override
-	public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
-		return HBaseTenant.listTenants(context, criteria);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#deleteTenant(java.lang.String, boolean)
-	 */
-	@Override
-	public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
-		return HBaseTenant.deleteTenant(context, tenantId, force);
 	}
 
 	public ISiteWhereHBaseClient getClient() {

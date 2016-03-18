@@ -16,7 +16,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.command.ICommandParameter;
 import com.sitewhere.spi.device.command.IDeviceCommand;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Builds the Google Protocol Buffer '.proto' file for a specification.

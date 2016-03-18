@@ -34,7 +34,7 @@ import com.sitewhere.spi.device.event.DeviceEventType;
 import com.sitewhere.spi.device.event.IDeviceEvent;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Manages mapping of time-series event data into Hazelcast maps.

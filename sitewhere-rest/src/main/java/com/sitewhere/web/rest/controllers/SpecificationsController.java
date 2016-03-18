@@ -51,7 +51,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.rest.RestController;
 import com.sitewhere.web.rest.annotations.Concerns;

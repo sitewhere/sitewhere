@@ -22,7 +22,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.server.tenant.ITenantAware;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Implementation of {@link StreamCallback} that hands off processing to a groovy script.

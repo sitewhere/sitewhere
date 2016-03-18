@@ -26,7 +26,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereRoles;
 
@@ -67,7 +67,7 @@ public class RestController {
 	 * @throws SiteWhereException
 	 */
 	protected ITenant assureAuthorizedTenantId(String tenantId) throws SiteWhereException {
-		ITenant tenant = SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
+		ITenant tenant = SiteWhere.getServer().getTenantManagement().getTenantById(tenantId);
 		if (tenant == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR);
 		}

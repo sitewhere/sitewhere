@@ -30,7 +30,7 @@ import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Implementation of {@link IScheduleManager} that uses Quartz to handle schedule

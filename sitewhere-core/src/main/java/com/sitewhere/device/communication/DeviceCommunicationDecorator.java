@@ -25,7 +25,7 @@ import com.sitewhere.spi.device.presence.IDevicePresenceManager;
 import com.sitewhere.spi.device.symbology.ISymbolGeneratorManager;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Uses decorator pattern to wrap a delegate {@link IDeviceCommunication} implementation

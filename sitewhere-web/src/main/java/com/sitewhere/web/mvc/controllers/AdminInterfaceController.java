@@ -46,7 +46,7 @@ import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.version.VersionHelper;
@@ -722,7 +722,7 @@ public class AdminInterfaceController extends MvcController {
 			String strRoles = MarshalUtils.marshalJsonAsString(rolesById);
 			data.put("roles", strRoles);
 
-			ITenant tenant = SiteWhere.getServer().getUserManagement().getTenantById(tenantId);
+			ITenant tenant = SiteWhere.getServer().getTenantManagement().getTenantById(tenantId);
 			if (tenant == null) {
 				showError("Invalid tenant id.");
 			}

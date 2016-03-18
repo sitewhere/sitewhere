@@ -22,7 +22,7 @@ import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Utility methods for maniupulating device groups.

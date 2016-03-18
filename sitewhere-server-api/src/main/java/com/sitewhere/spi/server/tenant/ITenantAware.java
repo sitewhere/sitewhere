@@ -7,7 +7,7 @@
  */
 package com.sitewhere.spi.server.tenant;
 
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Used by components that do not need to implement full lifecycle support, but should be

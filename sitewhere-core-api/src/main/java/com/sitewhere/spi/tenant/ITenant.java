@@ -5,18 +5,19 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.spi.user.request;
+package com.sitewhere.spi.tenant;
 
 import java.util.List;
 
-import com.sitewhere.spi.common.IMetadataProvider;
+import com.sitewhere.spi.common.IMetadataProviderEntity;
+import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 
 /**
- * Interface for arguments needed to create a tenant.
+ * Interface for information about a tenant.
  * 
  * @author Derek
  */
-public interface ITenantCreateRequest extends IMetadataProvider {
+public interface ITenant extends IMetadataProviderEntity {
 
 	/**
 	 * Get unique tenant id.
@@ -59,4 +60,11 @@ public interface ITenantCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public String getEngineConfiguration();
+
+	/**
+	 * Get runtime state of tenant engine.
+	 * 
+	 * @return
+	 */
+	public ISiteWhereTenantEngineState getEngineState();
 }

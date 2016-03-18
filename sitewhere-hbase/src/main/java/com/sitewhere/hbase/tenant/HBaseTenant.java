@@ -27,8 +27,8 @@ import com.sitewhere.spi.common.IFilter;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
-import com.sitewhere.spi.user.ITenant;
-import com.sitewhere.spi.user.request.ITenantCreateRequest;
+import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
 /**
  * HBase specifics for dealing with SiteWhere tenants.

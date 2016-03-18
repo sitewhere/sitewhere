@@ -43,7 +43,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.web.configuration.ConfigurationContentParser;
 import com.sitewhere.web.configuration.content.ElementContent;
@@ -90,7 +90,7 @@ public class TenantsController extends RestController {
 	public ITenant createTenant(@RequestBody TenantCreateRequest request) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createTenant", LOGGER);
 		try {
-			return SiteWhere.getServer().getUserManagement().createTenant(request);
+			return SiteWhere.getServer().getTenantManagement().createTenant(request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -116,7 +116,7 @@ public class TenantsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "updateTenant", LOGGER);
 		try {
 			assureAuthorizedTenantId(tenantId);
-			return SiteWhere.getServer().getUserManagement().updateTenant(tenantId, request);
+			return SiteWhere.getServer().getTenantManagement().updateTenant(tenantId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -138,7 +138,7 @@ public class TenantsController extends RestController {
 	public ITenant getTenantById(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantById", LOGGER);
 		try {
 			ITenant tenant = assureAuthorizedTenantId(tenantId);
@@ -163,7 +163,7 @@ public class TenantsController extends RestController {
 	public ICommandResponse issueTenantEngineCommand(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Command", required = true) @PathVariable String command)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "issueTenantEngineCommand", LOGGER);
 		try {
 			assureAuthorizedTenantId(tenantId);
@@ -191,7 +191,7 @@ public class TenantsController extends RestController {
 	@Documented
 	public String getTenantEngineConfiguration(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 		try {
 			assureAuthorizedTenantId(tenantId);
@@ -215,7 +215,7 @@ public class TenantsController extends RestController {
 	@Documented
 	public ElementContent getTenantEngineConfigurationAsJson(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
 		try {
 			assureAuthorizedTenantId(tenantId);
@@ -278,11 +278,11 @@ public class TenantsController extends RestController {
 			@Example(stage = Stage.Response, json = Tenants.CreateTenantResponse.class, description = "getTenantByAuthTokenResponse.md") })
 	public ITenant getTenantByAuthToken(
 			@ApiParam(value = "Authentication token", required = true) @PathVariable String authToken)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantByAuthToken", LOGGER);
 		try {
 			return assureAuthorizedTenant(
-					SiteWhere.getServer().getUserManagement().getTenantByAuthenticationToken(authToken));
+					SiteWhere.getServer().getTenantManagement().getTenantByAuthenticationToken(authToken));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -307,13 +307,14 @@ public class TenantsController extends RestController {
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
 					ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
-					ConcernType.Paging }) int pageSize) throws SiteWhereException {
+					ConcernType.Paging }) int pageSize)
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listTenants", LOGGER);
 		try {
 			TenantSearchCriteria criteria = new TenantSearchCriteria(page, pageSize);
 			criteria.setUserId(authUserId);
 			criteria.setIncludeRuntimeInfo(includeRuntimeInfo);
-			return SiteWhere.getServer().getUserManagement().listTenants(criteria);
+			return SiteWhere.getServer().getTenantManagement().listTenants(criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -336,11 +337,11 @@ public class TenantsController extends RestController {
 	public ITenant deleteTenantById(
 			@ApiParam(value = "Tenant id", required = true) @PathVariable String tenantId,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteTenantById", LOGGER);
 		try {
 			assureAuthorizedTenantId(tenantId);
-			return SiteWhere.getServer().getUserManagement().deleteTenant(tenantId, force);
+			return SiteWhere.getServer().getTenantManagement().deleteTenant(tenantId, force);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

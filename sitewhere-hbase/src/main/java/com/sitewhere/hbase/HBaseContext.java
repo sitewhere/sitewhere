@@ -15,7 +15,7 @@ import com.sitewhere.hbase.scheduling.IScheduleIdManager;
 import com.sitewhere.hbase.user.IUserIdManager;
 import com.sitewhere.spi.device.IAssignmentStateManager;
 import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Default implementation of {@link IHBaseContext}.

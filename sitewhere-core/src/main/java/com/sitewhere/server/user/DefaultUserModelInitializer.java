@@ -8,7 +8,6 @@
 package com.sitewhere.server.user;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,14 +15,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.rest.model.user.UserSearchCriteria;
 import com.sitewhere.rest.model.user.request.GrantedAuthorityCreateRequest;
-import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.user.AccountStatus;
 import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.SiteWhereAuthority;
@@ -48,27 +45,11 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 	/** Default username/password for user without admin privs */
 	public static final String NOADMIN_CREDENTIAL = "noadmin";
 
-	/** Default tenant id */
-	public static final String DEFAULT_TENANT_ID = "default";
-
-	/** Default tenant name */
-	public static final String DEFAULT_TENANT_NAME = "Default Tenant";
-
-	/** Default tenant logo URL */
-	public static final String DEFAULT_TENANT_LOGO =
-			"https://s3.amazonaws.com/sitewhere-demo/sitewhere-small.png";
-
-	/** Default tenant auth token */
-	public static final String DEFAULT_TENANT_TOKEN = "sitewhere1234567890";
-
 	/** Prefix for create authority */
 	public static final String PREFIX_CREATE_AUTH = "[Create Authority]";
 
 	/** Prefix for create user */
 	public static final String PREFIX_CREATE_USER = "[Create User]";
-
-	/** Prefix for create tenant */
-	public static final String PREFIX_CREATE_TENANT = "[Create Tenant]";
 
 	/** User management instance */
 	private IUserManagement userManagement;
@@ -135,18 +116,6 @@ public class DefaultUserModelInitializer implements IUserModelInitializer {
 
 		getUserManagement().createUser(nonadmin);
 		LOGGER.info(PREFIX_CREATE_USER + " " + nonadmin.getUsername());
-
-		ITenant tenant = getUserManagement().getTenantById(DEFAULT_TENANT_ID);
-		if (tenant == null) {
-			TenantCreateRequest treq = new TenantCreateRequest();
-			treq.setId(DEFAULT_TENANT_ID);
-			treq.setName(DEFAULT_TENANT_NAME);
-			treq.setLogoUrl(DEFAULT_TENANT_LOGO);
-			treq.setAuthorizedUserIds(Arrays.asList(new String[] { DEFAULT_USERNAME, NOADMIN_CREDENTIAL }));
-			treq.setAuthenticationToken(DEFAULT_TENANT_TOKEN);
-			tenant = getUserManagement().createTenant(treq);
-			LOGGER.info(PREFIX_CREATE_TENANT + " " + tenant.getId());
-		}
 	}
 
 	/**

@@ -19,11 +19,14 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import com.sitewhere.hbase.DefaultHBaseClient;
+import com.sitewhere.hbase.tenant.HBaseTenantManagement;
 import com.sitewhere.hbase.user.HBaseUserManagement;
 import com.sitewhere.mongodb.DockerMongoClient;
 import com.sitewhere.mongodb.SiteWhereMongoClient;
+import com.sitewhere.mongodb.tenant.MongoTenantManagement;
 import com.sitewhere.mongodb.user.MongoUserManagement;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.server.tenant.DefaultTenantModelInitializer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
 
 /**
@@ -52,8 +55,8 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 					nested.parse(child, context);
 					continue;
 				} else {
-					throw new RuntimeException("Invalid nested element found in 'datastore' section: "
-							+ child.toString());
+					throw new RuntimeException(
+							"Invalid nested element found in 'datastore' section: " + child.toString());
 				}
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -103,6 +106,12 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		um.addPropertyReference("mongoClient", "mongo");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
 				um.getBeanDefinition());
+
+		// Register Mongo tenant management implementation.
+		BeanDefinitionBuilder tm = BeanDefinitionBuilder.rootBeanDefinition(MongoTenantManagement.class);
+		tm.addPropertyReference("mongoClient", "mongo");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_TENANT_MANAGEMENT,
+				tm.getBeanDefinition());
 	}
 
 	/**
@@ -161,6 +170,12 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 		um.addPropertyReference("client", "hbase");
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MANAGEMENT,
 				um.getBeanDefinition());
+
+		// Register HBase tenant management implementation.
+		BeanDefinitionBuilder tm = BeanDefinitionBuilder.rootBeanDefinition(HBaseTenantManagement.class);
+		tm.addPropertyReference("client", "hbase");
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_TENANT_MANAGEMENT,
+				tm.getBeanDefinition());
 	}
 
 	/**
@@ -200,14 +215,20 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 	 * @param context
 	 */
 	protected void parseDefaultUserModelInitializer(Element element, ParserContext context) {
-		BeanDefinitionBuilder init =
+		BeanDefinitionBuilder uinit =
 				BeanDefinitionBuilder.rootBeanDefinition(DefaultUserModelInitializer.class);
 		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
 		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
-			init.addPropertyValue("initializeIfNoConsole", "true");
+			uinit.addPropertyValue("initializeIfNoConsole", "true");
 		}
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER,
-				init.getBeanDefinition());
+				uinit.getBeanDefinition());
+
+		// Add tenant model initializer for backward compatibility.
+		BeanDefinitionBuilder tinit =
+				BeanDefinitionBuilder.rootBeanDefinition(DefaultTenantModelInitializer.class);
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER,
+				tinit.getBeanDefinition());
 	}
 
 	/**

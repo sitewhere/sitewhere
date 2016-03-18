@@ -15,7 +15,7 @@ import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.CommandResult;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.web.rest.documentation.ExampleData.Tenant_Default;
 
 /**

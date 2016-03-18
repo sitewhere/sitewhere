@@ -12,7 +12,7 @@ import java.io.File;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Tenant configuration resolver that locates files relative to CATALINA_HOME for Tomcat.

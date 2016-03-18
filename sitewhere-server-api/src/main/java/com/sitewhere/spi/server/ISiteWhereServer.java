@@ -29,7 +29,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
@@ -150,6 +151,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * @return
 	 */
 	public IUserManagement getUserManagement();
+
+	/**
+	 * Get the tenant management implementation.
+	 * 
+	 * @return
+	 */
+	public ITenantManagement getTenantManagement();
 
 	/**
 	 * Get device management implementation for tenant.

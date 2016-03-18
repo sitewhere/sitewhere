@@ -20,7 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.sitewhere.hbase.common.SiteWhereTables;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Default SiteWhere HBase client implementation.

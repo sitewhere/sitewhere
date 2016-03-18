@@ -22,7 +22,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.configuration.IGlobalConfigurationResolver;
 import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
 import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Resolves tenant configuration settings via the filesystem.

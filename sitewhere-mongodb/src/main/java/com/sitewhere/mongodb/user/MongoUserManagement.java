@@ -26,24 +26,19 @@ import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.GrantedAuthoritySearchCriteria;
-import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
-import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IGrantedAuthoritySearchCriteria;
-import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.spi.user.IUserSearchCriteria;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
-import com.sitewhere.spi.user.request.ITenantCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**
@@ -76,6 +71,15 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+	 */
+	@Override
+	public void stop() throws SiteWhereException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#getLogger()
 	 */
 	@Override
@@ -93,19 +97,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 				new BasicDBObject("unique", true));
 		getMongoClient().getAuthoritiesCollection().createIndex(new BasicDBObject("authority", 1),
 				new BasicDBObject("unique", true));
-		getMongoClient().getTenantsCollection().createIndex(new BasicDBObject(MongoTenant.PROP_ID, 1),
-				new BasicDBObject("unique", true));
-		getMongoClient().getTenantsCollection().createIndex(
-				new BasicDBObject(MongoTenant.PROP_AUTH_TOKEN, 1), new BasicDBObject("unique", true));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
-	 */
-	public void stop() throws SiteWhereException {
-		LOGGER.info("Mongo user management stopped.");
 	}
 
 	/*
@@ -367,130 +358,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 		throw new SiteWhereException("Not implemented.");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#createTenant(com.sitewhere.spi.user.request
-	 * .ITenantCreateRequest)
-	 */
-	@Override
-	public ITenant createTenant(ITenantCreateRequest request) throws SiteWhereException {
-		ITenant existing = getTenantById(request.getId());
-		if (existing != null) {
-			throw new SiteWhereSystemException(ErrorCode.DuplicateTenantId, ErrorLevel.ERROR);
-		}
-
-		// Use common logic so all backend implementations work the same.
-		Tenant tenant = SiteWherePersistence.tenantCreateLogic(request);
-
-		DBCollection tenants = getMongoClient().getTenantsCollection();
-		DBObject created = MongoTenant.toDBObject(tenant);
-		MongoPersistence.insert(tenants, created);
-
-		return MongoTenant.fromDBObject(created);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#updateTenant(java.lang.String,
-	 * com.sitewhere.spi.user.request.ITenantCreateRequest)
-	 */
-	@Override
-	public ITenant updateTenant(String id, ITenantCreateRequest request) throws SiteWhereException {
-		DBObject dbExisting = assertTenant(id);
-		Tenant existing = MongoTenant.fromDBObject(dbExisting);
-
-		// Use common update logic so that backend implemetations act the same way.
-		SiteWherePersistence.tenantUpdateLogic(request, existing);
-		DBObject updated = MongoTenant.toDBObject(existing);
-
-		BasicDBObject query = new BasicDBObject(MongoTenant.PROP_ID, id);
-		DBCollection tenants = getMongoClient().getTenantsCollection();
-		MongoPersistence.update(tenants, query, updated);
-
-		return MongoTenant.fromDBObject(updated);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#getTenantById(java.lang.String)
-	 */
-	@Override
-	public ITenant getTenantById(String id) throws SiteWhereException {
-		DBObject dbExisting = getTenantObjectById(id);
-		if (dbExisting == null) {
-			return null;
-		}
-		return MongoTenant.fromDBObject(dbExisting);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#getTenantByAuthenticationToken(java.lang
-	 * .String)
-	 */
-	@Override
-	public ITenant getTenantByAuthenticationToken(String token) throws SiteWhereException {
-		try {
-			DBCollection tenants = getMongoClient().getTenantsCollection();
-			BasicDBObject query = new BasicDBObject(MongoTenant.PROP_AUTH_TOKEN, token);
-			DBObject match = tenants.findOne(query);
-			if (match == null) {
-				return null;
-			}
-			return MongoTenant.fromDBObject(match);
-		} catch (MongoTimeoutException e) {
-			throw new SiteWhereException("Connection to MongoDB lost.", e);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.user.IUserManagement#listTenants(com.sitewhere.spi.search.user
-	 * .ITenantSearchCriteria)
-	 */
-	@Override
-	public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
-		DBCollection tenants = getMongoClient().getTenantsCollection();
-		BasicDBObject dbCriteria = new BasicDBObject();
-		if (criteria.getUserId() != null) {
-			dbCriteria.append(MongoTenant.PROP_AUTH_USERS, criteria.getUserId());
-		}
-		BasicDBObject sort = new BasicDBObject(MongoTenant.PROP_NAME, 1);
-		ISearchResults<ITenant> list =
-				MongoPersistence.search(ITenant.class, tenants, dbCriteria, sort, criteria);
-		SiteWherePersistence.tenantListLogic(list.getResults(), criteria);
-		return list;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.user.IUserManagement#deleteTenant(java.lang.String, boolean)
-	 */
-	@Override
-	public ITenant deleteTenant(String tenantId, boolean force) throws SiteWhereException {
-		DBObject existing = assertTenant(tenantId);
-		if (force) {
-			DBCollection tenants = getMongoClient().getTenantsCollection();
-			MongoPersistence.delete(tenants, existing);
-			return MongoTenant.fromDBObject(existing);
-		} else {
-			MongoSiteWhereEntity.setDeleted(existing, true);
-			BasicDBObject query = new BasicDBObject(MongoTenant.PROP_ID, tenantId);
-			DBCollection tenants = getMongoClient().getTenantsCollection();
-			MongoPersistence.update(tenants, query, existing);
-			return MongoTenant.fromDBObject(existing);
-		}
-	}
-
 	/**
 	 * Get the {@link DBObject} for a User given username. Throw an exception if not
 	 * found.
@@ -554,39 +421,6 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 			DBCollection auths = getMongoClient().getAuthoritiesCollection();
 			BasicDBObject query = new BasicDBObject(MongoGrantedAuthority.PROP_AUTHORITY, name);
 			return auths.findOne(query);
-		} catch (MongoTimeoutException e) {
-			throw new SiteWhereException("Connection to MongoDB lost.", e);
-		}
-	}
-
-	/**
-	 * Get the {@link DBObject} for a tenant given id. Throw an exception if not found.
-	 * 
-	 * @param id
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected DBObject assertTenant(String id) throws SiteWhereException {
-		DBObject match = getTenantObjectById(id);
-		if (match == null) {
-			throw new SiteWhereSystemException(ErrorCode.InvalidTenantId, ErrorLevel.ERROR,
-					HttpServletResponse.SC_NOT_FOUND);
-		}
-		return match;
-	}
-
-	/**
-	 * Get the DBObject for a Tenant given unique id.
-	 * 
-	 * @param id
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected DBObject getTenantObjectById(String id) throws SiteWhereException {
-		try {
-			DBCollection tenants = getMongoClient().getTenantsCollection();
-			BasicDBObject query = new BasicDBObject(MongoTenant.PROP_ID, id);
-			return tenants.findOne(query);
 		} catch (MongoTimeoutException e) {
 			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}

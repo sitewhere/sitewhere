@@ -19,7 +19,7 @@ import org.springframework.core.io.InputStreamResource;
 
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Utility class for managing server configuration.

@@ -13,7 +13,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProvider;
-import com.sitewhere.spi.user.request.ITenantCreateRequest;
+import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 
 /**
  * Default implementation of {@link ITenantCreateRequest} for use in REST services.

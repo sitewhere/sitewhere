@@ -41,7 +41,7 @@ import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.server.jvm.JvmHistoryMonitor;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
-import com.sitewhere.server.user.UserManagementTriggers;
+import com.sitewhere.server.tenant.TenantManagementTriggers;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -69,11 +69,13 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.server.tenant.ITenantModelInitializer;
 import com.sitewhere.spi.server.user.IUserModelInitializer;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.system.IVersionChecker;
+import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUserManagement;
 import com.sitewhere.version.VersionHelper;
 
@@ -113,6 +115,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
+
+	/** Interface to tenant management implementation */
+	private ITenantManagement tenantManagement;
 
 	/** List of components registered to participate in SiteWhere server lifecycle */
 	private List<ITenantLifecycleComponent> registeredLifecycleComponents =
@@ -247,7 +252,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted)
 			throws SiteWhereException {
 		ISearchResults<ITenant> tenants =
-				SiteWhere.getServer().getUserManagement().listTenants(new TenantSearchCriteria(1, 0));
+				SiteWhere.getServer().getTenantManagement().listTenants(new TenantSearchCriteria(1, 0));
 		List<ITenant> matches = new ArrayList<ITenant>();
 		for (ITenant tenant : tenants.getResults()) {
 			if (tenant.getAuthorizedUserIds().contains(userId)) {
@@ -272,7 +277,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException {
 		ISiteWhereTenantEngine engine = tenantEnginesById.get(tenantId);
 		if (engine == null) {
-			ITenant tenant = getUserManagement().getTenantById(tenantId);
+			ITenant tenant = getTenantManagement().getTenantById(tenantId);
 			if (tenant == null) {
 				return null;
 			}
@@ -312,6 +317,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public IUserManagement getUserManagement() {
 		return userManagement;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantManagement()
+	 */
+	@Override
+	public ITenantManagement getTenantManagement() {
+		return tenantManagement;
 	}
 
 	/*
@@ -548,8 +563,14 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		// Start user management.
 		startNestedComponent(getUserManagement(), "User management startup failed.", true);
 
+		// Start tenant management.
+		startNestedComponent(getTenantManagement(), "Tenant management startup failed.", true);
+
 		// Populate user data if requested.
 		verifyUserModel();
+
+		// Populate tenant data if requested.
+		verifyTenantModel();
 
 		// Initialize and start tenant engines.
 		initializeTenantEngines();
@@ -657,6 +678,10 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			}
 		}
 
+		if (getTenantManagement() != null) {
+			getTenantManagement().lifecycleStop();
+		}
+
 		if (getUserManagement() != null) {
 			getUserManagement().lifecycleStop();
 		}
@@ -738,6 +763,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 
 		// Initialize user management.
 		initializeUserManagement();
+
+		// Initialize tenant management.
+		initializeTenantManagement();
 
 		// Show banner containing server information.
 		showServerBanner();
@@ -855,10 +883,25 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void initializeUserManagement() throws SiteWhereException {
 		try {
-			IUserManagement implementation =
+			this.userManagement =
 					(IUserManagement) SERVER_SPRING_CONTEXT.getBean(
 							SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
-			this.userManagement = new UserManagementTriggers(implementation);
+		} catch (NoSuchBeanDefinitionException e) {
+			throw new SiteWhereException("No user management implementation configured.");
+		}
+	}
+
+	/**
+	 * Verify and initialize tenant management implementation.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	protected void initializeTenantManagement() throws SiteWhereException {
+		try {
+			ITenantManagement implementation =
+					(ITenantManagement) SERVER_SPRING_CONTEXT.getBean(
+							SiteWhereServerBeans.BEAN_TENANT_MANAGEMENT);
+			this.tenantManagement = new TenantManagementTriggers(implementation);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No user management implementation configured.");
 		}
@@ -871,7 +914,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void initializeTenantEngines() throws SiteWhereException {
 		TenantSearchCriteria criteria = new TenantSearchCriteria(1, 0);
-		ISearchResults<ITenant> tenants = getUserManagement().listTenants(criteria);
+		ISearchResults<ITenant> tenants = getTenantManagement().listTenants(criteria);
 		for (ITenant tenant : tenants.getResults()) {
 			initializeTenantEngine(tenant);
 		}
@@ -937,7 +980,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	}
 
 	/**
-	 * Check whether user model is populated and offer to bootstrap system if not.
+	 * Check whether user model is populated and bootstrap system if not.
 	 */
 	protected void verifyUserModel() {
 		try {
@@ -950,6 +993,23 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 			return;
 		} catch (SiteWhereException e) {
 			LOGGER.warn("Error verifying user model.", e);
+		}
+	}
+
+	/**
+	 * Check whether tenant model is populated and bootstrap system if not.
+	 */
+	protected void verifyTenantModel() {
+		try {
+			ITenantModelInitializer init =
+					(ITenantModelInitializer) SERVER_SPRING_CONTEXT.getBean(
+							SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER);
+			init.initialize(getTenantManagement());
+		} catch (NoSuchBeanDefinitionException e) {
+			LOGGER.info("No tenant model initializer found in Spring bean configuration. Skipping.");
+			return;
+		} catch (SiteWhereException e) {
+			LOGGER.warn("Error verifying tenant model.", e);
 		}
 	}
 }

@@ -18,7 +18,7 @@ import com.sitewhere.spi.asset.IAssetModuleManager;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Configurable helper class that allows {@link DeviceGroupElement} model objects to be

@@ -28,7 +28,7 @@ import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.event.IDeviceCommandInvocation;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.scheduling.JobConstants;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Creates an {@link IDeviceCommandInvocation} as the result of a Quarz schedule.
@@ -65,7 +65,7 @@ public class CommandInvocationJob implements Job {
 		}
 		try {
 			ITenant tenant =
-					SiteWhere.getServer().getUserManagement().getTenantById(
+					SiteWhere.getServer().getTenantManagement().getTenantById(
 							context.getScheduler().getSchedulerName());
 			IDeviceManagement devices = SiteWhere.getServer().getDeviceManagement(tenant);
 			IDeviceEventManagement events = SiteWhere.getServer().getDeviceEventManagement(tenant);

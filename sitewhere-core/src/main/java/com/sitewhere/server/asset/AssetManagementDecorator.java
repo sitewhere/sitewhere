@@ -21,7 +21,7 @@ import com.sitewhere.spi.asset.request.ILocationAssetCreateRequest;
 import com.sitewhere.spi.asset.request.IPersonAssetCreateRequest;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Wraps an asset management implementation. Subclasses can implement only the methods

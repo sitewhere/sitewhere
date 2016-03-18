@@ -26,7 +26,7 @@ import com.sitewhere.rest.model.device.request.BatchCommandInvocationRequest;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.scheduling.JobConstants;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Creates a batch command invocation as the result of a Quartz schedule.
@@ -61,7 +61,7 @@ public class BatchCommandInvocationJob implements Job {
 		}
 		try {
 			ITenant tenant =
-					SiteWhere.getServer().getUserManagement().getTenantById(
+					SiteWhere.getServer().getTenantManagement().getTenantById(
 							context.getScheduler().getSchedulerName());
 
 			// Resolve hardware ids for devices matching criteria.
@@ -93,7 +93,8 @@ public class BatchCommandInvocationJob implements Job {
 	 * @param data
 	 * @throws JobExecutionException
 	 */
-	public static BatchCommandForCriteriaRequest parse(Map<String, String> data) throws JobExecutionException {
+	public static BatchCommandForCriteriaRequest parse(Map<String, String> data)
+			throws JobExecutionException {
 
 		String specificationToken = null;
 		String siteToken = null;

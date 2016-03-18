@@ -7,7 +7,7 @@
  */
 package com.sitewhere.spi.server.lifecycle;
 
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Extends {@link ILifecycleComponent} with tenant-specific functionality.

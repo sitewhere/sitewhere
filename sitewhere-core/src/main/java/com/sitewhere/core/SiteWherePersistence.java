@@ -114,9 +114,9 @@ import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
-import com.sitewhere.spi.user.request.ITenantCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
 /**

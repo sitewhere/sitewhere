@@ -58,8 +58,8 @@ import com.sitewhere.spi.device.event.IDeviceStreamData;
 import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
+import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.user.IGrantedAuthority;
-import com.sitewhere.spi.user.ITenant;
 import com.sitewhere.spi.user.IUser;
 
 /**

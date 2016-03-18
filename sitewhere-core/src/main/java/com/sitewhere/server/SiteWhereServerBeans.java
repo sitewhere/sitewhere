@@ -31,6 +31,9 @@ public interface SiteWhereServerBeans {
 	/** Bean id for user management in server configuration */
 	public static final String BEAN_USER_MANAGEMENT = "userManagement";
 
+	/** Bean id for tenant management in server configuration */
+	public static final String BEAN_TENANT_MANAGEMENT = "tenantManagement";
+
 	/** Bean id for device management in server configuration */
 	public static final String BEAN_DEVICE_MANAGEMENT = "deviceManagement";
 
@@ -72,6 +75,9 @@ public interface SiteWhereServerBeans {
 
 	/** Bean id for user management data initializer in server configuration */
 	public static final String BEAN_USER_MODEL_INITIALIZER = "userModelInitializer";
+
+	/** Bean id for tenant management data initializer in server configuration */
+	public static final String BEAN_TENANT_MODEL_INITIALIZER = "tenantModelInitializer";
 
 	/** Bean id for device management data initializer in server configuration */
 	public static final String BEAN_DEVICE_MODEL_INITIALIZER = "deviceModelInitializer";

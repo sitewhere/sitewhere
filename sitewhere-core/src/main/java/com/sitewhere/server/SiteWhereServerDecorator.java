@@ -33,7 +33,8 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.user.IUserManagement;
 
 /**
@@ -200,6 +201,16 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	@Override
 	public IUserManagement getUserManagement() {
 		return server.getUserManagement();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantManagement()
+	 */
+	@Override
+	public ITenantManagement getTenantManagement() {
+		return server.getTenantManagement();
 	}
 
 	/*

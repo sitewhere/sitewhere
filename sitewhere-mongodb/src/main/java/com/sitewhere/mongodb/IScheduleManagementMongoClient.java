@@ -8,7 +8,7 @@
 package com.sitewhere.mongodb;
 
 import com.mongodb.DBCollection;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Mongo client that provides schedule management collections.

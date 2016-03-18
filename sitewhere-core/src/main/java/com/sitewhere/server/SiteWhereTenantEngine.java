@@ -78,7 +78,7 @@ import com.sitewhere.spi.server.scheduling.IScheduleModelInitializer;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Default implementation of {@link ISiteWhereTenantEngine} for managing processing and

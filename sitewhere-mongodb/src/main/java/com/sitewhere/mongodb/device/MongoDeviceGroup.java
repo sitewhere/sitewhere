@@ -17,7 +17,7 @@ import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroup;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Used to load or save device group data to MongoDB.

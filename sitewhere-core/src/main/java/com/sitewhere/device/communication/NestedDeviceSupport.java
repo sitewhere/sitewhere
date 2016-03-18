@@ -13,7 +13,7 @@ import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceElementMapping;
 import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.util.DeviceUtils;
-import com.sitewhere.spi.user.ITenant;
+import com.sitewhere.spi.tenant.ITenant;
 
 /**
  * Provides support logic for handling interactions with nested devices.
