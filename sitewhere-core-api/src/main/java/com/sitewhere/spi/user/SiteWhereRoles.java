@@ -17,7 +17,7 @@ public interface SiteWhereRoles {
 	/** Group for system access authorities */
 	public static final String GRP_ACCESS = "GRP_ACCESS";
 
-	/** Authority to access REST serAUTH_RESTvices */
+	/** Authority to access REST services */
 	public static final String AUTH_REST = "REST";
 
 	/** Authority to access administrative console */
