@@ -92,6 +92,8 @@ public abstract class PollingInboundEventReceiver<T> extends LifecycleComponent
 					doPoll();
 				} catch (SiteWhereException e) {
 					LOGGER.error("Error executing polling logic.", e);
+				} catch (Exception e) {
+					LOGGER.error("Unhandled exception in polling operation.", e);
 				}
 				try {
 					Thread.sleep(getPollIntervalMs());
