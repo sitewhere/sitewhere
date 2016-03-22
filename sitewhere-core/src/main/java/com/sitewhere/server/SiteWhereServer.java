@@ -30,7 +30,7 @@ import com.sitewhere.configuration.ConfigurationMigrationSupport;
 import com.sitewhere.configuration.ConfigurationUtils;
 import com.sitewhere.configuration.DefaultGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
-import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
+import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.GeneralInformation;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime.JavaInformation;

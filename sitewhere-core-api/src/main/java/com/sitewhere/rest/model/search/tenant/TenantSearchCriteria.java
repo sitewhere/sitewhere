@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.search.user;
+package com.sitewhere.rest.model.search.tenant;
 
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;

@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
+import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.security.LoginManager;

@@ -19,7 +19,7 @@ import com.sitewhere.hbase.uid.UniqueIdCounterMap;
 import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
 import com.sitewhere.hbase.user.UserRecordType;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.search.user.TenantSearchCriteria;
+import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
