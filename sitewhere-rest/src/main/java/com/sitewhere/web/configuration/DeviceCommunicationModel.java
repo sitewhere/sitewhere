@@ -37,6 +37,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createAzureEventHubEventSourceElement());
 		addElement(createActiveMQEventSourceElement());
 		addElement(createHazelcastQueueEventSourceElement());
+		addElement(createPollingRestEventSourceElement());
 
 		// Socket event source.
 		addElement(createReadAllSocketInteractionHandlerElement());
@@ -418,6 +419,46 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				"Event source that pulls decoded events from a Hazelcast queue. Primarily used to "
 						+ "allow one instance of SiteWhere to decode events and feed them to multiple subordinate instances for processing.");
 		addEventSourceAttributes(builder);
+
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for Hazelcast queue event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createPollingRestEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Polling REST Event Source",
+						EventSourcesParser.Elements.PollingRestEventSource.getLocalName(), "sign-in",
+						ElementRole.EventSources_EventSource);
+
+		builder.description(
+				"Event source that polls a REST service at a given interval to generate payloads. "
+						+ "A groovy script is used to make the REST call(s) and parse the responses "
+						+ "into payloads to be decoded.");
+		addEventSourceAttributes(builder);
+		builder.attribute(
+				(new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+						"Path to Groovy script which makes REST calls and parses responses.").makeRequired().build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Base REST url", "baseUrl", AttributeType.String).description(
+						"Base URL for REST calls. All calls in the Groovy script are made "
+								+ "relative to this URL.").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Polling interval (ms)", "pollIntervalMs",
+				AttributeType.Integer).description(
+						"Time interval (in milliseconds) to wait between script executions.").makeRequired().defaultValue(
+								"10000").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Username", "username", AttributeType.String).description(
+						"Username used for basic authentication.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Password", "password", AttributeType.String).description(
+						"Password used for basic authentication.").build()));
 
 		// Only accept binary event decoders.
 		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);

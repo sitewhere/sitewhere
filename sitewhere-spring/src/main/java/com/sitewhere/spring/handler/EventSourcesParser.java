@@ -42,6 +42,7 @@ import com.sitewhere.device.communication.websocket.StringWebSocketEventReceiver
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
+import com.sitewhere.groovy.device.communication.rest.PollingRestInboundEventReceiver;
 import com.sitewhere.hazelcast.HazelcastQueueReceiver;
 import com.sitewhere.rabbitmq.RabbitMqInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
@@ -104,6 +105,10 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 			}
 			case SocketEventSource: {
 				result.add(parseSocketEventSource(child, context));
+				break;
+			}
+			case PollingRestEventSource: {
+				result.add(parsePollingRestEventSource(child, context));
 				break;
 			}
 			case MqttEventSource: {
@@ -657,6 +662,79 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 
 	/**
+	 * Parse a polling REST event source.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parsePollingRestEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create socket event receiver bean and register it.
+		AbstractBeanDefinition receiver = createPollingRestEventReceiver(element, context);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException(
+					"No event decoder specified for socket event source: " + element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Create polling REST event receiver from XML element.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition createPollingRestEventReceiver(Element element, ParserContext context) {
+		BeanDefinitionBuilder builder = getBuilderFor(PollingRestInboundEventReceiver.class);
+		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr pollIntervalMs = element.getAttributeNode("pollIntervalMs");
+		if (pollIntervalMs != null) {
+			builder.addPropertyValue("pollIntervalMs", pollIntervalMs.getValue());
+		}
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			builder.addPropertyValue("scriptPath", scriptPath.getValue());
+		}
+
+		Attr baseUrl = element.getAttributeNode("baseUrl");
+		if (baseUrl != null) {
+			builder.addPropertyValue("baseUrl", baseUrl.getValue());
+		}
+
+		Attr username = element.getAttributeNode("username");
+		if (username != null) {
+			builder.addPropertyValue("username", username.getValue());
+		}
+
+		Attr password = element.getAttributeNode("password");
+		if (password != null) {
+			builder.addPropertyValue("password", password.getValue());
+		}
+
+		return builder.getBeanDefinition();
+	}
+
+	/**
 	 * Configure components needed to realize a web socket event source.
 	 * 
 	 * @param element
@@ -1081,6 +1159,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 
 		/** Socket event source */
 		SocketEventSource("socket-event-source"),
+
+		/** Polling REST source */
+		PollingRestEventSource("polling-rest-event-source"),
 
 		/** MQTT event source */
 		MqttEventSource("mqtt-event-source"),

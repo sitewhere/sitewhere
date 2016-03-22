@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
@@ -23,12 +24,12 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 /**
- * Implementation of {@link IDeviceEventDecoder} that delegates parsing of a String
+ * Implementation of {@link IDeviceEventDecoder} that delegates parsing of a JsonNode
  * payload to a Groovy script.
  * 
  * @author Derek
  */
-public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
+public class GroovyJsonDecoder implements IDeviceEventDecoder<JsonNode> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GroovyStringEventDecoder.class);
@@ -48,7 +49,7 @@ public class GroovyStringEventDecoder implements IDeviceEventDecoder<String> {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<IDecodedDeviceRequest<?>> decode(String payload, Map<String, String> metadata)
+	public List<IDecodedDeviceRequest<?>> decode(JsonNode payload, Map<String, String> metadata)
 			throws SiteWhereException {
 		try {
 			Binding binding = new Binding();
