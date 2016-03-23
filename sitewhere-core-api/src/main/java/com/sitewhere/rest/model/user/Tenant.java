@@ -15,6 +15,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -140,5 +141,22 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
 
 	public void setEngineState(ISiteWhereTenantEngineState engineState) {
 		this.engineState = engineState;
+	}
+
+	/**
+	 * Copy contents from the SPI class.
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static Tenant copy(ITenant input) throws SiteWhereException {
+		Tenant result = new Tenant();
+		result.setId(input.getId());
+		result.setName(input.getName());
+		result.setLogoUrl(input.getLogoUrl());
+		result.setAuthenticationToken(input.getAuthenticationToken());
+		result.getAuthorizedUserIds().addAll(input.getAuthorizedUserIds());
+		MetadataProviderEntity.copy(input, result);
+		return result;
 	}
 }
