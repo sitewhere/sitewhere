@@ -85,6 +85,44 @@ public class HBaseUser {
 	}
 
 	/**
+	 * Import a user (including hashed password).
+	 * 
+	 * @param context
+	 * @param imported
+	 * @param overwrite
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static User importUser(IHBaseContext context, IUser imported, boolean overwrite)
+			throws SiteWhereException {
+		if (!overwrite) {
+			User existing = getUserByUsername(context, imported.getUsername());
+			if (existing != null) {
+				throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR,
+						HttpServletResponse.SC_CONFLICT);
+			}
+		}
+
+		User user = User.copy(imported);
+		byte[] primary = getUserRowKey(imported.getUsername());
+		byte[] payload = context.getPayloadMarshaler().encodeUser(user);
+
+		HTableInterface users = null;
+		try {
+			users = getUsersTableInterface(context);
+			Put put = new Put(primary);
+			HBaseUtils.addPayloadFields(context.getPayloadMarshaler().getEncoding(), put, payload);
+			users.put(put);
+		} catch (IOException e) {
+			throw new SiteWhereException("Unable to set JSON for user.", e);
+		} finally {
+			HBaseUtils.closeCleanly(users);
+		}
+
+		return user;
+	}
+
+	/**
 	 * Update an existing user.
 	 * 
 	 * @param context
@@ -271,7 +309,8 @@ public class HBaseUser {
 				byte[] payloadType = null;
 				byte[] payload = null;
 				for (byte[] qualifier : row.keySet()) {
-					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier)) && (!criteria.isIncludeDeleted())) {
+					if ((Bytes.equals(ISiteWhereHBase.DELETED, qualifier))
+							&& (!criteria.isIncludeDeleted())) {
 						shouldAdd = false;
 					}
 					if (Bytes.equals(ISiteWhereHBase.PAYLOAD_TYPE, qualifier)) {

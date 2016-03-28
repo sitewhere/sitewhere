@@ -123,6 +123,30 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.IUser,
+	 * boolean)
+	 */
+	@Override
+	public IUser importUser(IUser imported, boolean overwrite) throws SiteWhereException {
+		if (!overwrite) {
+			IUser existing = getUserByUsername(imported.getUsername());
+			if (existing != null) {
+				throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR,
+						HttpServletResponse.SC_CONFLICT);
+			}
+		}
+		User user = User.copy(imported);
+
+		DBCollection users = getMongoClient().getUsersCollection();
+		DBObject created = MongoUser.toDBObject(user);
+		MongoPersistence.insert(users, created);
+		return user;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
 	 * java.lang.String)
 	 */

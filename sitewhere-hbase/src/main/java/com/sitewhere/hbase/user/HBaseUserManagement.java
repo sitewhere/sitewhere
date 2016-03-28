@@ -119,6 +119,18 @@ public class HBaseUserManagement extends LifecycleComponent implements IUserMana
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * com.sitewhere.spi.user.IUserManagement#importUser(com.sitewhere.spi.user.IUser,
+	 * boolean)
+	 */
+	@Override
+	public IUser importUser(IUser user, boolean overwrite) throws SiteWhereException {
+		return HBaseUser.importUser(context, user, overwrite);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.user.IUserManagement#authenticate(java.lang.String,
 	 * java.lang.String)
 	 */
