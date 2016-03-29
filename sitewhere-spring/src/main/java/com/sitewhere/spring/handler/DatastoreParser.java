@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -34,7 +33,7 @@ import com.sitewhere.server.user.DefaultUserModelInitializer;
  * 
  * @author Derek
  */
-public class DatastoreParser extends AbstractBeanDefinitionParser {
+public class DatastoreParser extends SiteWhereBeanDefinitionParser {
 
 	/*
 	 * (non-Javadoc)
@@ -96,8 +95,7 @@ public class DatastoreParser extends AbstractBeanDefinitionParser {
 
 		// Register client bean.
 		BeanDefinitionBuilder client =
-				docker ? BeanDefinitionBuilder.rootBeanDefinition(DockerMongoClient.class)
-						: BeanDefinitionBuilder.rootBeanDefinition(SiteWhereMongoClient.class);
+				docker ? getBuilderFor(DockerMongoClient.class) : getBuilderFor(SiteWhereMongoClient.class);
 		parseMongoAttributes(element, context, client);
 		context.getRegistry().registerBeanDefinition("mongo", client.getBeanDefinition());
 

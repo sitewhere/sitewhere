@@ -55,8 +55,8 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 					nested.parse(child, context);
 					continue;
 				} else {
-					throw new RuntimeException("Invalid nested element found in 'configuration' section: "
-							+ child.toString());
+					throw new RuntimeException(
+							"Invalid nested element found in 'configuration' section: " + child.toString());
 				}
 			}
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -65,16 +65,36 @@ public class ConfigurationParser extends AbstractBeanDefinitionParser {
 			}
 			switch (type) {
 			case Globals: {
-				new GlobalsParser().parse(child, context);
+				parseGlobals(child, context);
 				break;
 			}
 			case Datastore: {
-				new DatastoreParser().parse(child, context);
+				parseDatastore(child, context);
 				break;
 			}
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Parse global elements.
+	 * 
+	 * @param child
+	 * @param context
+	 */
+	protected void parseGlobals(Element child, ParserContext context) {
+		new GlobalsParser().parse(child, context);
+	}
+
+	/**
+	 * Parse datastore elements.
+	 * 
+	 * @param child
+	 * @param context
+	 */
+	protected void parseDatastore(Element child, ParserContext context) {
+		new DatastoreParser().parse(child, context);
 	}
 
 	/**

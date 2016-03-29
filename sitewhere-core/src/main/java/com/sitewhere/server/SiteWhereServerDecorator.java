@@ -66,6 +66,16 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationParserClassname()
+	 */
+	@Override
+	public String getConfigurationParserClassname() {
+		return server.getConfigurationParserClassname();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * com.sitewhere.spi.server.ISiteWhereServer#getTenantConfigurationParserClassname()
 	 */

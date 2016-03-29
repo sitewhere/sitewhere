@@ -171,6 +171,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationParserClassname()
+	 */
+	@Override
+	public String getConfigurationParserClassname() {
+		return "com.sitewhere.spring.handler.ConfigurationParser";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * com.sitewhere.spi.server.ISiteWhereServer#getTenantConfigurationParserClassname()
 	 */

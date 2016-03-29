@@ -7,8 +7,11 @@
  */
 package com.sitewhere.spring.handler;
 
+import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandler;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
+
+import com.sitewhere.SiteWhere;
 
 /**
  * Implementation of {@link NamespaceHandler} for supporting SiteWhere configuration
@@ -25,6 +28,24 @@ public class SiteWhereNamespaceHandler extends NamespaceHandlerSupport {
 	 */
 	@Override
 	public void init() {
-		registerBeanDefinitionParser(IConfigurationElements.CONFIGURATION, new ConfigurationParser());
+		registerBeanDefinitionParser(IConfigurationElements.CONFIGURATION, getBeanDefinitionParser());
+	}
+
+	/**
+	 * Create {@link BeanDefinitionParser} from class specified by server.
+	 * 
+	 * @return
+	 */
+	protected BeanDefinitionParser getBeanDefinitionParser() {
+		try {
+			Class<?> clazz = Class.forName(SiteWhere.getServer().getConfigurationParserClassname());
+			return (BeanDefinitionParser) clazz.newInstance();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Unable to find configuration parser class.");
+		} catch (InstantiationException e) {
+			throw new RuntimeException("Could not create configuration parser class.");
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Could not access configuration parser class.");
+		}
 	}
 }

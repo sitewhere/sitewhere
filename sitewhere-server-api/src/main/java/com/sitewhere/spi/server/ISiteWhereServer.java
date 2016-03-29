@@ -52,6 +52,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * 
 	 * @return
 	 */
+	public String getConfigurationParserClassname();
+
+	/**
+	 * Get Spring parser class name for handling tenant bean definitions.
+	 * 
+	 * @return
+	 */
 	public String getTenantConfigurationParserClassname();
 
 	/**
