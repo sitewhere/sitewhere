@@ -129,12 +129,13 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	 */
 	@Override
 	public IUser importUser(IUser imported, boolean overwrite) throws SiteWhereException {
-		if (!overwrite) {
-			IUser existing = getUserByUsername(imported.getUsername());
-			if (existing != null) {
+		IUser existing = getUserByUsername(imported.getUsername());
+		if (existing != null) {
+			if (!overwrite) {
 				throw new SiteWhereSystemException(ErrorCode.DuplicateUser, ErrorLevel.ERROR,
 						HttpServletResponse.SC_CONFLICT);
 			}
+			deleteUser(imported.getUsername(), true);
 		}
 		User user = User.copy(imported);
 
