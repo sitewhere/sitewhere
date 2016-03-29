@@ -7,9 +7,6 @@
  */
 package com.sitewhere.server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -962,21 +959,6 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	protected void registerTenant(ITenant tenant, ISiteWhereTenantEngine engine) throws SiteWhereException {
 		tenantsByAuthToken.put(tenant.getAuthenticationToken(), tenant);
 		tenantEnginesById.put(tenant.getId(), engine);
-	}
-
-	/**
-	 * Read a line from standard in.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	protected String readLine() throws SiteWhereException {
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			return br.readLine();
-		} catch (IOException e) {
-			throw new SiteWhereException(e);
-		}
 	}
 
 	/**
