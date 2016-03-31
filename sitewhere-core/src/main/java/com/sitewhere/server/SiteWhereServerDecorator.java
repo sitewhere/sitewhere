@@ -30,7 +30,6 @@ import com.sitewhere.spi.server.ISiteWhereServerRuntime;
 import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.system.IVersion;
 import com.sitewhere.spi.tenant.ITenant;
@@ -350,7 +349,7 @@ public class SiteWhereServerDecorator extends LifecycleComponentDecorator implem
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getRegisteredLifecycleComponents()
 	 */
 	@Override
-	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents() {
+	public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
 		return server.getRegisteredLifecycleComponents();
 	}
 

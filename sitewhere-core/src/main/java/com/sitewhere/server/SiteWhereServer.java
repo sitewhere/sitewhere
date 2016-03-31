@@ -62,7 +62,6 @@ import com.sitewhere.spi.server.ISiteWhereServerState;
 import com.sitewhere.spi.server.debug.ITracer;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
-import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
@@ -117,8 +116,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	private ITenantManagement tenantManagement;
 
 	/** List of components registered to participate in SiteWhere server lifecycle */
-	private List<ITenantLifecycleComponent> registeredLifecycleComponents =
-			new ArrayList<ITenantLifecycleComponent>();
+	private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
 
 	/** Map of component ids to lifecycle components */
 	private Map<String, ILifecycleComponent> lifecycleComponentsById =
@@ -516,7 +514,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getRegisteredLifecycleComponents()
 	 */
-	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents() {
+	public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
 		return registeredLifecycleComponents;
 	}
 
@@ -794,7 +792,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 		messages.add("Operating System: " + os);
 		messages.add("Java Runtime: " + java);
 		messages.add("");
-		messages.add("Copyright (c) 2009-2015 SiteWhere, LLC");
+		messages.add("Copyright (c) 2009-2016 SiteWhere, LLC");
 		String message = Boilerplate.boilerplate(messages, '*', 60);
 		LOGGER.info("\n" + message + "\n");
 	}
