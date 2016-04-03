@@ -26,7 +26,10 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
+import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.TenantNotAvailableException;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereRoles;
 
@@ -53,6 +56,11 @@ public class RestController {
 		if (match == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantAuthToken, ErrorLevel.ERROR);
 		}
+		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(match.getId());
+		if ((engine == null) || (engine.getEngineState().getLifecycleStatus() != LifecycleStatus.Started)) {
+			throw new TenantNotAvailableException();
+		}
+
 		String username = LoginManager.getCurrentlyLoggedInUser().getUsername();
 		if (match.getAuthorizedUserIds().contains(username)) {
 			return match;
@@ -181,6 +189,24 @@ public class RestController {
 			LOGGER.error("Unhandled runtime exception.", e);
 		} catch (IOException e1) {
 			e1.printStackTrace();
+		}
+	}
+
+	/**
+	 * Handles exception thrown when a tenant operation is requested on an unavailable
+	 * tenant.
+	 * 
+	 * @param e
+	 * @param response
+	 */
+	@ExceptionHandler
+	protected void handleTenantNotAvailable(TenantNotAvailableException e, HttpServletResponse response) {
+		LOGGER.error("Operation invoked on unavailable tenant.", e);
+		try {
+			response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+					"The requested tenant is not available.");
+		} catch (IOException e1) {
+			LOGGER.error(e1);
 		}
 	}
 
