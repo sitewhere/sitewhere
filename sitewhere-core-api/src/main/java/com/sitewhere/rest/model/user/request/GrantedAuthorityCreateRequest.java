@@ -79,4 +79,33 @@ public class GrantedAuthorityCreateRequest implements IGrantedAuthorityCreateReq
 	public void setGroup(boolean group) {
 		this.group = group;
 	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private GrantedAuthorityCreateRequest request = new GrantedAuthorityCreateRequest();
+
+		public Builder(String authority) {
+			request.setAuthority(authority);
+		}
+
+		public Builder withDescription(String description) {
+			request.setDescription(description);
+			return this;
+		}
+
+		public Builder withParent(String parent) {
+			request.setParent(parent);
+			return this;
+		}
+
+		public Builder makeGroup(boolean group) {
+			request.setGroup(group);
+			return this;
+		}
+
+		public GrantedAuthorityCreateRequest build() {
+			return request;
+		}
+	}
 }

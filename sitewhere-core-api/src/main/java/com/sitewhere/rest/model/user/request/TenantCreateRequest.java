@@ -8,6 +8,8 @@
 package com.sitewhere.rest.model.user.request;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -120,5 +122,38 @@ public class TenantCreateRequest extends MetadataProvider implements ITenantCrea
 
 	public void setEngineConfiguration(String engineConfiguration) {
 		this.engineConfiguration = engineConfiguration;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private TenantCreateRequest request = new TenantCreateRequest();
+
+		public Builder(String id, String name, String authenticationToken, String logoUrl) {
+			request.setId(id);
+			request.setName(name);
+			request.setAuthenticationToken(authenticationToken);
+			request.setLogoUrl(logoUrl);
+		}
+
+		public Builder withAuthorizedUserId(String userId) {
+			if (request.getAuthorizedUserIds() == null) {
+				request.setAuthorizedUserIds(new ArrayList<String>());
+			}
+			request.getAuthorizedUserIds().add(userId);
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public TenantCreateRequest build() {
+			return request;
+		}
 	}
 }

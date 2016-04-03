@@ -375,7 +375,7 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<!-- Used as a placeholder for tenant datastores to allow substitutionGroups -->
+	<!-- Used as a placeholder for device model initializers to allow substitutionGroups -->
 	<xsd:element name="abstract-device-model-initializer" abstract="true"
 		type="abstractDeviceModelInitializerType">
 		<xsd:annotation>

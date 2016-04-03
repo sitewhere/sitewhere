@@ -8,6 +8,8 @@
 package com.sitewhere.rest.model.user.request;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -121,5 +123,51 @@ public class UserCreateRequest extends MetadataProvider implements IUserCreateRe
 
 	public void setAuthorities(List<String> authorities) {
 		this.authorities = authorities;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private UserCreateRequest request = new UserCreateRequest();
+
+		public Builder(String username, String password, String firstName, String lastName) {
+			request.setUsername(username);
+			request.setPassword(password);
+			request.setFirstName(firstName);
+			request.setLastName(lastName);
+		}
+
+		public Builder withStatus(AccountStatus status) {
+			request.setStatus(status);
+			return this;
+		}
+
+		public Builder withAuthority(String authority) {
+			if (request.getAuthorities() == null) {
+				request.setAuthorities(new ArrayList<String>());
+			}
+			request.getAuthorities().add(authority);
+			return this;
+		}
+
+		public Builder withAuthorities(List<String> auths) {
+			if (request.getAuthorities() == null) {
+				request.setAuthorities(new ArrayList<String>());
+			}
+			request.getAuthorities().addAll(auths);
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public UserCreateRequest build() {
+			return request;
+		}
 	}
 }

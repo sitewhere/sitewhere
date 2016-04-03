@@ -46,10 +46,17 @@
 	<xsd:complexType name="datastoreType">
 		<xsd:all>
 			<xsd:element ref="abstract-datastore"/>
-			<xsd:element minOccurs="0" name="default-user-model-initializer" type="defaultUserModelInitializerType">
+			<xsd:element ref="abstract-user-model-initializer" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>
 						Initializes user model with data if database is empty.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="abstract-tenant-model-initializer" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						Initializes tenant model with data if database is empty.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -160,10 +167,115 @@
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>
-
-	<!-- Creates default user model data -->
-	<xsd:complexType name="defaultUserModelInitializerType">
+	
+	<!-- Used as a placeholder for user model initializers to allow substitutionGroups -->
+	<xsd:element name="abstract-user-model-initializer" abstract="true"
+		type="abstractUserModelInitializerType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for user model initializer elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common user model initializer information -->
+	<xsd:complexType name="abstractUserModelInitializerType">
 		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- Default user model initializer -->
+	<xsd:element name="default-user-model-initializer" type="defaultUserModelInitializerType"
+		substitutionGroup="abstract-user-model-initializer">
+		<xsd:annotation>
+			<xsd:documentation>User model initializer that loads the default user data referenced
+				by examples.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultUserModelInitializerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractUserModelInitializerType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Groovy user model initializer -->
+	<xsd:element name="groovy-user-model-initializer" type="groovyUserModelInitializerType"
+		substitutionGroup="abstract-user-model-initializer">
+		<xsd:annotation>
+			<xsd:documentation>User model initializer that delegates creation logic to a Groovy
+				script.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyUserModelInitializerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractUserModelInitializerType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that executes logic needed to create user
+							model.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Used as a placeholder for tenant model initializers to allow substitutionGroups -->
+	<xsd:element name="abstract-tenant-model-initializer" abstract="true"
+		type="abstractTenantModelInitializerType">
+		<xsd:annotation>
+			<xsd:documentation>
+				A placeholder for tenant model initializer elements.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<!-- Common tenant model initializer information -->
+	<xsd:complexType name="abstractTenantModelInitializerType">
+		<xsd:attribute name="initializeIfNoConsole" type="xsd:boolean"></xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- Default tenant model initializer -->
+	<xsd:element name="default-tenant-model-initializer" type="defaultTenantModelInitializerType"
+		substitutionGroup="abstract-tenant-model-initializer">
+		<xsd:annotation>
+			<xsd:documentation>Tenant model initializer that loads the default tenant data
+				referenced by examples.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="defaultTenantModelInitializerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractTenantModelInitializerType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Groovy tenant model initializer -->
+	<xsd:element name="groovy-tenant-model-initializer" type="groovyTenantModelInitializerType"
+		substitutionGroup="abstract-tenant-model-initializer">
+		<xsd:annotation>
+			<xsd:documentation>Tenant model initializer that delegates creation logic to a Groovy
+				script.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="groovyTenantModelInitializerType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractTenantModelInitializerType">
+				<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Path to a Groovy script that executes logic needed to create
+							tenant model.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- Contains global configuration elements -->

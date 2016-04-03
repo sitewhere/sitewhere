@@ -35,7 +35,8 @@
 		<sw:datastore>
 		
 			<!-- MongoDB datastore used for global data model -->
-			<sw:mongo-datastore hostname="${datastore.host}" port="27017" databaseName="sitewhere"/>
+			<sw:mongo-datastore hostname="${datastore.host}" port="27017"
+				databaseName="sitewhere"/>
 		
 			<!-- Default HBase Datastore -->
 			<!--  
@@ -43,8 +44,11 @@
 				zookeeperZnodeParent="/hbase-unsecure"/>
 			-->
 			
-			<!-- Initializes users and tenant data if datastore is empty -->
-			<sw:default-user-model-initializer/>
+			<!-- Initializes user model from Groovy script -->
+			<sw:groovy-user-model-initializer scriptPath="initializer/userModel.groovy"/>
+			
+			<!-- Initializes tenant model from Groovy script -->
+			<sw:groovy-tenant-model-initializer scriptPath="initializer/tenantModel.groovy"/>
 
 		</sw:datastore>
 

@@ -17,6 +17,9 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.tenant.GroovyTenantModelInitializer;
+import com.sitewhere.groovy.user.GroovyUserModelInitializer;
 import com.sitewhere.hbase.DefaultHBaseClient;
 import com.sitewhere.hbase.tenant.HBaseTenantManagement;
 import com.sitewhere.hbase.user.HBaseUserManagement;
@@ -73,6 +76,18 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
 			}
 			case DefaultUserModelInitializer: {
 				parseDefaultUserModelInitializer(child, context);
+				break;
+			}
+			case GroovyUserModelInitializer: {
+				parseGroovyUserModelInitializer(child, context);
+				break;
+			}
+			case DefaultTenantModelInitializer: {
+				parseDefaultTenantModelInitializer(child, context);
+				break;
+			}
+			case GroovyTenantModelInitializer: {
+				parseGroovyTenantModelInitializer(child, context);
 				break;
 			}
 			}
@@ -221,12 +236,63 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
 		}
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER,
 				uinit.getBeanDefinition());
+	}
 
-		// Add tenant model initializer for backward compatibility.
+	/**
+	 * Parse configuration for Groovy user model initializer.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseGroovyUserModelInitializer(Element element, ParserContext context) {
+		BeanDefinitionBuilder init =
+				BeanDefinitionBuilder.rootBeanDefinition(GroovyUserModelInitializer.class);
+		init.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			init.addPropertyValue("scriptPath", scriptPath.getValue());
+		}
+
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER,
+				init.getBeanDefinition());
+	}
+
+	/**
+	 * Parse configuration for default asset model initializer.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseDefaultTenantModelInitializer(Element element, ParserContext context) {
 		BeanDefinitionBuilder tinit =
 				BeanDefinitionBuilder.rootBeanDefinition(DefaultTenantModelInitializer.class);
+		Attr initializeIfNoConsole = element.getAttributeNode("initializeIfNoConsole");
+		if ((initializeIfNoConsole == null) || ("true".equals(initializeIfNoConsole.getValue()))) {
+			tinit.addPropertyValue("initializeIfNoConsole", "true");
+		}
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER,
 				tinit.getBeanDefinition());
+	}
+
+	/**
+	 * Parse configuration for Groovy user model initializer.
+	 * 
+	 * @param element
+	 * @param context
+	 */
+	protected void parseGroovyTenantModelInitializer(Element element, ParserContext context) {
+		BeanDefinitionBuilder init =
+				BeanDefinitionBuilder.rootBeanDefinition(GroovyTenantModelInitializer.class);
+		init.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			init.addPropertyValue("scriptPath", scriptPath.getValue());
+		}
+
+		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER,
+				init.getBeanDefinition());
 	}
 
 	/**
@@ -243,7 +309,16 @@ public class DatastoreParser extends SiteWhereBeanDefinitionParser {
 		HBase("hbase-datastore"),
 
 		/** Creates sample data if no user data is present */
-		DefaultUserModelInitializer("default-user-model-initializer");
+		DefaultUserModelInitializer("default-user-model-initializer"),
+
+		/** Uses Groovy script to create user data */
+		GroovyUserModelInitializer("groovy-user-model-initializer"),
+
+		/** Creates sample data if no tenant data is present */
+		DefaultTenantModelInitializer("default-tenant-model-initializer"),
+
+		/** Uses Groovy script to create tenant data */
+		GroovyTenantModelInitializer("groovy-tenant-model-initializer");
 
 		/** Event code */
 		private String localName;
