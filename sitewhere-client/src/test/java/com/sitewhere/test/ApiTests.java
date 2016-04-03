@@ -19,6 +19,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sitewhere.rest.client.SiteWhereClient;
 import com.sitewhere.rest.model.common.Location;
 import com.sitewhere.rest.model.device.Device;
@@ -26,6 +29,9 @@ import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
+import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
@@ -48,6 +54,10 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.DeviceAssignmentType;
+import com.sitewhere.spi.device.event.AlertLevel;
+import com.sitewhere.spi.device.event.AlertSource;
+import com.sitewhere.spi.device.event.CommandInitiator;
+import com.sitewhere.spi.device.event.CommandTarget;
 import com.sitewhere.spi.device.group.GroupElementType;
 import com.sitewhere.spi.error.ErrorCode;
 
@@ -241,6 +251,61 @@ public class ApiTests {
 		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 100, monthAgo, new Date());
 		SearchResults<Device> devices = client.listDevices(false, false, true, true, criteria);
 		System.out.println("Found " + devices.getNumResults() + " devices.");
+	}
+
+	@Test
+	public void testCreateEvents() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		String assignment = "483e6ca1-026c-49c4-960b-402ced283f8b";
+
+		DeviceLocationCreateRequest location = new DeviceLocationCreateRequest();
+		location.setLatitude(33.7490);
+		location.setLongitude(-84.3880);
+		location.setElevation(0.0);
+		json(client.createDeviceLocation(assignment, location));
+
+		DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
+		mxs.addOrReplaceMeasurement("fuel.level", 77.0);
+		json(client.createDeviceMeasurements(assignment, mxs));
+
+		DeviceAlertCreateRequest alert = new DeviceAlertCreateRequest();
+		alert.setType("engine.overheat");
+		alert.setLevel(AlertLevel.Error);
+		alert.setSource(AlertSource.Device);
+		alert.setMessage("Engine is about to overheat.");
+		json(client.createDeviceAlert(assignment, alert));
+
+		DeviceCommandInvocationCreateRequest command = new DeviceCommandInvocationCreateRequest();
+		command.setInitiator(CommandInitiator.REST);
+		command.setInitiatorId("admin");
+		command.setCommandToken("ddf46ea2-bd91-4e40-a62d-18808b3827dc");
+		command.getParameterValues().put("color", "#ff0000");
+		command.setTarget(CommandTarget.Assignment);
+		command.setTargetId("483e6ca1-026c-49c4-960b-402ced283f8b");
+		json(client.createDeviceCommandInvocation(assignment, command));
+
+		DateRangeSearchCriteria criteria = new DateRangeSearchCriteria(1, 1, null, null);
+		json(client.listDeviceLocations(assignment, criteria));
+		json(client.listDeviceMeasurements(assignment, criteria));
+		json(client.listDeviceAlerts(assignment, criteria));
+		json(client.listDeviceCommandInvocations(assignment, criteria));
+	}
+
+	/**
+	 * Write object as JSON.
+	 * 
+	 * @param object
+	 * @throws SiteWhereException
+	 */
+	public static void json(Object object) throws SiteWhereException {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.enable(SerializationFeature.INDENT_OUTPUT);
+			System.out.println(mapper.writeValueAsString(object));
+		} catch (JsonProcessingException e) {
+			throw new SiteWhereException("Could not marshal object as JSON: " + object.getClass().getName(),
+					e);
+		}
 	}
 
 	@Test

@@ -19,11 +19,13 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
@@ -40,6 +42,7 @@ import com.sitewhere.rest.model.search.AssetSearchResults;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
+import com.sitewhere.rest.model.search.DeviceCommandInvocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceCommandSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
@@ -165,10 +168,8 @@ public interface ISiteWhereClient {
 	/**
 	 * Create a new zone associated with a site.
 	 * 
-	 * @param siteToken
-	 *            unique token for site
-	 * @param request
-	 *            information for new zone
+	 * @param siteToken unique token for site
+	 * @param request information for new zone
 	 * @return zone that was created.
 	 * @throws SiteWhereException
 	 */
@@ -186,8 +187,7 @@ public interface ISiteWhereClient {
 	/**
 	 * Create a new device.
 	 * 
-	 * @param request
-	 *            information about device to be created
+	 * @param request information about device to be created
 	 * @return the created device
 	 * @throws SiteWhereException
 	 */
@@ -196,8 +196,7 @@ public interface ISiteWhereClient {
 	/**
 	 * Get a device by its unique hardware id.
 	 * 
-	 * @param hardwareId
-	 *            hardware id of device to return
+	 * @param hardwareId hardware id of device to return
 	 * @return device if found or null if not
 	 * @throws SiteWhereException
 	 */
@@ -206,10 +205,8 @@ public interface ISiteWhereClient {
 	/**
 	 * Update information for an existing device.
 	 * 
-	 * @param hardwareId
-	 *            hardware id of device to update
-	 * @param request
-	 *            updated information
+	 * @param hardwareId hardware id of device to update
+	 * @param request updated information
 	 * @throws SiteWhereException
 	 */
 	public Device updateDevice(String hardwareId, DeviceCreateRequest request) throws SiteWhereException;
@@ -232,10 +229,8 @@ public interface ISiteWhereClient {
 	/**
 	 * Delete a device.
 	 * 
-	 * @param hardwareId
-	 *            hardware id of device to delete
-	 * @param force
-	 *            if true, data is deleted. if false, delete flag is set to true
+	 * @param hardwareId hardware id of device to delete
+	 * @param force if true, data is deleted. if false, delete flag is set to true
 	 * @return
 	 * @throws SiteWhereException
 	 */
@@ -244,8 +239,7 @@ public interface ISiteWhereClient {
 	/**
 	 * Get current device assignment for a device based on hardware id.
 	 * 
-	 * @param hardwareId
-	 *            unique hardware id of device
+	 * @param hardwareId unique hardware id of device
 	 * @return device assignment information
 	 * @throws SiteWhereException
 	 */
@@ -278,10 +272,8 @@ public interface ISiteWhereClient {
 	/**
 	 * Add a batch of events to the current assignment for the given hardware id.
 	 * 
-	 * @param hardwareId
-	 *            hardware id whose assignment will have events added
-	 * @param batch
-	 *            batch of events that will be added
+	 * @param hardwareId hardware id whose assignment will have events added
+	 * @param batch batch of events that will be added
 	 * @return response of events that were created
 	 * @throws SiteWhereException
 	 */
@@ -291,8 +283,7 @@ public interface ISiteWhereClient {
 	/**
 	 * Create a new device assignment based on the given inputs.
 	 * 
-	 * @param request
-	 *            information about the new assignment
+	 * @param request information about the new assignment
 	 * @return the assignment that was created.
 	 * @throws SiteWhereException
 	 */
@@ -302,8 +293,7 @@ public interface ISiteWhereClient {
 	/**
 	 * Get a device assignment by its unique token.
 	 * 
-	 * @param assignmentToken
-	 *            unique assignment token
+	 * @param assignmentToken unique assignment token
 	 * @return the device assignment
 	 * @throws SiteWhereException
 	 */
@@ -321,10 +311,8 @@ public interface ISiteWhereClient {
 	/**
 	 * Delete a device assignment based on its unique token.
 	 * 
-	 * @param assignmentToken
-	 *            unique assignment token
-	 * @param force
-	 *            value of false sets deleted flag, true deletes data.
+	 * @param assignmentToken unique assignment token
+	 * @param force value of false sets deleted flag, true deletes data.
 	 * @return assignment that was deleted
 	 * @throws SiteWhereException
 	 */
@@ -357,12 +345,12 @@ public interface ISiteWhereClient {
 	 * Get most recent device measurements for a given assignment.
 	 * 
 	 * @param assignmentToken
-         * @param searchCriteria
+	 * @param searchCriteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken, DateRangeSearchCriteria searchCriteria)
-			throws SiteWhereException;
+	public SearchResults<DeviceMeasurements> listDeviceMeasurements(String assignmentToken,
+			DateRangeSearchCriteria searchCriteria) throws SiteWhereException;
 
 	/**
 	 * Create a new device location for an assignment.
@@ -379,12 +367,12 @@ public interface ISiteWhereClient {
 	 * Get most recent device locations for a given assignment.
 	 * 
 	 * @param assignmentToken
-	 * @param maxCount
+	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public DeviceLocationSearchResults listDeviceLocations(String assignmentToken, int maxCount)
-			throws SiteWhereException;
+	public DeviceLocationSearchResults listDeviceLocations(String assignmentToken,
+			DateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**
 	 * Create a new alert for a device assignment.
@@ -401,12 +389,34 @@ public interface ISiteWhereClient {
 	 * Get most recent device alerts for a given assignment.
 	 * 
 	 * @param assignmentToken
-	 * @param maxCount
+	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public DeviceAlertSearchResults listDeviceAlerts(String assignmentToken, int maxCount)
+	public DeviceAlertSearchResults listDeviceAlerts(String assignmentToken, DateRangeSearchCriteria criteria)
 			throws SiteWhereException;
+
+	/**
+	 * Create a new device command invocation for a device assignment.
+	 * 
+	 * @param assignmentToken
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceCommandInvocation createDeviceCommandInvocation(String assignmentToken,
+			DeviceCommandInvocationCreateRequest request) throws SiteWhereException;
+
+	/**
+	 * List device command invocations that match the given criteria.
+	 * 
+	 * @param assignmentToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public DeviceCommandInvocationSearchResults listDeviceCommandInvocations(String assignmentToken,
+			DateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**
 	 * Create a stream that will be associated with a device assignment.

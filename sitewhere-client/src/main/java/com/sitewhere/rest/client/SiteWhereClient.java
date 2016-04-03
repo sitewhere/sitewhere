@@ -39,11 +39,13 @@ import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.device.batch.BatchOperation;
 import com.sitewhere.rest.model.device.command.DeviceCommand;
 import com.sitewhere.rest.model.device.event.DeviceAlert;
+import com.sitewhere.rest.model.device.event.DeviceCommandInvocation;
 import com.sitewhere.rest.model.device.event.DeviceEventBatch;
 import com.sitewhere.rest.model.device.event.DeviceEventBatchResponse;
 import com.sitewhere.rest.model.device.event.DeviceLocation;
 import com.sitewhere.rest.model.device.event.DeviceMeasurements;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
@@ -61,6 +63,7 @@ import com.sitewhere.rest.model.search.AssetSearchResults;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAlertSearchResults;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
+import com.sitewhere.rest.model.search.DeviceCommandInvocationSearchResults;
 import com.sitewhere.rest.model.search.DeviceCommandSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
@@ -630,15 +633,16 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceLocations(java.lang.String, int)
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceLocations(java.lang.String,
+	 * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
 	 */
 	@Override
-	public DeviceLocationSearchResults listDeviceLocations(String assignmentToken, int maxCount)
-			throws SiteWhereException {
+	public DeviceLocationSearchResults listDeviceLocations(String assignmentToken,
+			DateRangeSearchCriteria criteria) throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("token", assignmentToken);
-		vars.put("count", String.valueOf(maxCount));
-		String url = getBaseUrl() + "assignments/{token}/locations?count={count}";
+		addSearchCriteria(vars, criteria);
+		String url = getBaseUrl() + "assignments/{token}/locations?" + getSearchCriteriaFields(criteria);
 		return sendRest(url, HttpMethod.GET, null, DeviceLocationSearchResults.class, vars);
 	}
 
@@ -660,16 +664,50 @@ public class SiteWhereClient implements ISiteWhereClient {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceAlerts(java.lang.String, int)
+	 * @see com.sitewhere.spi.ISiteWhereClient#listDeviceAlerts(java.lang.String,
+	 * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
 	 */
 	@Override
-	public DeviceAlertSearchResults listDeviceAlerts(String assignmentToken, int maxCount)
+	public DeviceAlertSearchResults listDeviceAlerts(String assignmentToken, DateRangeSearchCriteria criteria)
 			throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("token", assignmentToken);
-		vars.put("count", String.valueOf(maxCount));
-		String url = getBaseUrl() + "assignments/{token}/alerts?count={count}";
+		addSearchCriteria(vars, criteria);
+		String url = getBaseUrl() + "assignments/{token}/alerts?" + getSearchCriteriaFields(criteria);
 		return sendRest(url, HttpMethod.GET, null, DeviceAlertSearchResults.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.ISiteWhereClient#createDeviceCommandInvocation(java.lang.String,
+	 * com.sitewhere.rest.model.device.event.request.DeviceCommandInvocationCreateRequest)
+	 */
+	@Override
+	public DeviceCommandInvocation createDeviceCommandInvocation(String assignmentToken,
+			DeviceCommandInvocationCreateRequest request) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", assignmentToken);
+		return sendRest(getBaseUrl() + "assignments/{token}/invocations", HttpMethod.POST, request,
+				DeviceCommandInvocation.class, vars);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.ISiteWhereClient#listDeviceCommandInvocations(java.lang.String,
+	 * com.sitewhere.rest.model.search.DateRangeSearchCriteria)
+	 */
+	@Override
+	public DeviceCommandInvocationSearchResults listDeviceCommandInvocations(String assignmentToken,
+			DateRangeSearchCriteria criteria) throws SiteWhereException {
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("token", assignmentToken);
+		addSearchCriteria(vars, criteria);
+		String url = getBaseUrl() + "assignments/{token}/invocations?" + getSearchCriteriaFields(criteria);
+		return sendRest(url, HttpMethod.GET, null, DeviceCommandInvocationSearchResults.class, vars);
 	}
 
 	/*
@@ -919,7 +957,13 @@ public class SiteWhereClient implements ISiteWhereClient {
 	protected String getSearchCriteriaFields(SearchCriteria criteria) {
 		String result = "page={page}&pageSize={pageSize}";
 		if (criteria instanceof DateRangeSearchCriteria) {
-			result += "&startDate={startDate}&endDate={endDate}";
+			DateRangeSearchCriteria dates = (DateRangeSearchCriteria) criteria;
+			if (dates.getStartDate() != null) {
+				result += "&startDate={startDate}";
+			}
+			if (dates.getEndDate() != null) {
+				result += "&endDate={endDate}";
+			}
 		}
 		return result;
 	}
