@@ -303,8 +303,8 @@ public class SiteWhereClient implements ISiteWhereClient {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("token", specificationToken);
 		vars.put("includeDeleted", String.valueOf(includeDeleted));
-		return sendRest(getBaseUrl() + "specifications/{token}/commands&includeDeleted={includeDeleted}",
-				HttpMethod.POST, null, DeviceCommandSearchResults.class, vars);
+		return sendRest(getBaseUrl() + "specifications/{token}/commands?includeDeleted={includeDeleted}",
+				HttpMethod.GET, null, DeviceCommandSearchResults.class, vars);
 	}
 
 	/*
@@ -402,7 +402,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	@Override
 	public DeviceSearchResults listDevices(boolean includeDeleted, boolean excludeAssigned,
 			boolean populateSpecification, boolean populateAssignment, DateRangeSearchCriteria criteria)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("includeDeleted", String.valueOf(includeDeleted));
 		vars.put("excludeAssigned", String.valueOf(excludeAssigned));
@@ -529,7 +529,7 @@ public class SiteWhereClient implements ISiteWhereClient {
 	@Override
 	public DeviceAssignmentSearchResults getAssignmentsForAsset(String siteToken, String assetModuleId,
 			String assetId, DeviceAssignmentStatus status, SearchCriteria criteria)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("assetModuleId", assetModuleId);
 		vars.put("assetId", assetId);

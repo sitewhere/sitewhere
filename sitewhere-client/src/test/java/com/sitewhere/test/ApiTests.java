@@ -37,6 +37,7 @@ import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.search.AssetSearchResults;
 import com.sitewhere.rest.model.search.DateRangeSearchCriteria;
 import com.sitewhere.rest.model.search.DeviceAssignmentSearchResults;
+import com.sitewhere.rest.model.search.DeviceCommandSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupElementSearchResults;
 import com.sitewhere.rest.model.search.DeviceGroupSearchResults;
 import com.sitewhere.rest.model.search.SearchCriteria;
@@ -265,6 +266,13 @@ public class ApiTests {
 				client.createBatchCommandInvocation(null, "17340bb1-8673-4fc9-8ed0-4f818acedaa5", parameters,
 						hwids);
 		System.out.println("Created operation: " + op.getToken());
+	}
+
+	@Test
+	public void listCommandsForSpecification() throws SiteWhereException {
+		SiteWhereClient client = new SiteWhereClient();
+		DeviceCommandSearchResults results = client.listDeviceCommands(ANDROID_SPEC_TOKEN, true);
+		System.out.println("Found " + results.getNumResults() + " commands.");
 	}
 
 	@Test
