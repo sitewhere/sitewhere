@@ -14,9 +14,18 @@ package com.sitewhere.spi.device.event.state;
  */
 public enum StateChangeType {
 
-	/** Device registration request */
-	Registration_Requested,
+	/** Device assignment was created */
+	Assignment_Created,
+
+	/** Device assignment was updated */
+	Assignment_Updated,
+
+	/** Device assignment was released */
+	Assignment_Released,
 
 	/** Presence status was updated */
 	Presence_Updated,
+
+	/** Device registration request */
+	Registration_Requested,
 }
