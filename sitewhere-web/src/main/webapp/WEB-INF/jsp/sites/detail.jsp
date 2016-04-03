@@ -203,7 +203,7 @@
 <%@ include file="../includes/siteCreateDialog.inc"%>
 <%@ include file="../includes/zoneCreateDialog.inc"%>
 <%@ include file="../includes/assignmentUpdateDialog.inc"%>
-<%@ include file="../includes/templateSiteEntry.inc"%>
+<%@ include file="../includes/templateSiteDetailHeader.inc"%>
 <%@ include file="../includes/templateAssignmentEntry.inc"%>
 <%@ include file="../includes/templateSiteLocationEntry.inc"%>
 <%@ include file="../includes/templateSiteMeasurementsEntry.inc"%>
@@ -587,7 +587,7 @@
 	/** Called on successful site load request */
 	function loadGetSuccess(data, status, jqXHR) {
 		site = data;
-		var template = kendo.template($("#tpl-site-entry").html());
+		var template = kendo.template($("#tpl-site-detail-header").html());
 		parseDeviceData(data);
 		data.inDetailView = true;
 		$('#site-details').html(template(data));
