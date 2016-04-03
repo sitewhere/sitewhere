@@ -28,9 +28,9 @@ if (!userBuilder.hasUsers()) {
 	logger.info "[Create User] ${adminUser.username}"
 	
 	// Remove non-admin authorities
-	allAuthorities -= SiteWhereAuthority.ViewServerInfo.name
-	allAuthorities -= SiteWhereAuthority.AdminTenants.name
-	allAuthorities -= SiteWhereAuthority.AdminUsers.name
+	authIds -= SiteWhereAuthority.ViewServerInfo.name
+	authIds -= SiteWhereAuthority.AdminTenants.name
+	authIds -= SiteWhereAuthority.AdminUsers.name
 	
 	
 	// Create the default non-admin user.
