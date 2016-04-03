@@ -208,6 +208,12 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 				(new AttributeNode.Builder("MQTT broker port", "port", AttributeType.Integer).description(
 						"Port number used for creating the MQTT broker connection.").defaultValue(
 								"1883").build()));
+		builder.attribute((new AttributeNode.Builder("MQTT broker username", "username",
+				AttributeType.String).description(
+						"Optional username for authenticating the MQTT broker connection.").build()));
+		builder.attribute((new AttributeNode.Builder("MQTT broker password", "password",
+				AttributeType.String).description(
+						"Optional password for authenticating the MQTT broker connection.").build()));
 		builder.attribute((new AttributeNode.Builder("Trust store path", "trustStorePath",
 				AttributeType.String).description(
 						"Fully-qualified path to trust store for secured connections.").build()));

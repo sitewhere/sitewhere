@@ -259,6 +259,16 @@ public class OutboundProcessingChainParser {
 		}
 		processor.addPropertyValue("port", port.getValue());
 
+		Attr username = element.getAttributeNode("username");
+		if (username != null) {
+			processor.addPropertyValue("username", username.getValue());
+		}
+
+		Attr password = element.getAttributeNode("password");
+		if (password != null) {
+			processor.addPropertyValue("password", password.getValue());
+		}
+
 		Attr trustStorePath = element.getAttributeNode("trustStorePath");
 		if (trustStorePath != null) {
 			processor.addPropertyValue("trustStorePath", trustStorePath.getValue());

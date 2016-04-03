@@ -36,6 +36,20 @@ public interface IMqttComponent {
 	public int getPort();
 
 	/**
+	 * Get broker username.
+	 * 
+	 * @return
+	 */
+	public String getUsername();
+
+	/**
+	 * Get broker password.
+	 * 
+	 * @return
+	 */
+	public String getPassword();
+
+	/**
 	 * Get full path to trust store for TLS/SSL.
 	 * 
 	 * @return

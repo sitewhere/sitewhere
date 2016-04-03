@@ -151,6 +151,16 @@ public class CommandDestinationsParser {
 		}
 		mqtt.addPropertyValue("port", port.getValue());
 
+		Attr username = element.getAttributeNode("username");
+		if (username != null) {
+			mqtt.addPropertyValue("username", username.getValue());
+		}
+
+		Attr password = element.getAttributeNode("password");
+		if (password != null) {
+			mqtt.addPropertyValue("password", password.getValue());
+		}
+
 		Attr trustStorePath = element.getAttributeNode("trustStorePath");
 		if (trustStorePath != null) {
 			mqtt.addPropertyValue("trustStorePath", trustStorePath.getValue());

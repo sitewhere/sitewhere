@@ -63,6 +63,12 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 	/** Topic events are posted to */
 	private String topic;
 
+	/** Broker username */
+	private String username;
+
+	/** Broker password */
+	private String password;
+
 	/** MQTT client */
 	private MQTT mqtt;
 
@@ -301,6 +307,32 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	/*

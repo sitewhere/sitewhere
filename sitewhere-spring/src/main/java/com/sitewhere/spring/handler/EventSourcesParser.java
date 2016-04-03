@@ -217,6 +217,16 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		}
 		mqtt.addPropertyValue("port", port.getValue());
 
+		Attr username = element.getAttributeNode("username");
+		if (username != null) {
+			mqtt.addPropertyValue("username", username.getValue());
+		}
+
+		Attr password = element.getAttributeNode("password");
+		if (password != null) {
+			mqtt.addPropertyValue("password", password.getValue());
+		}
+
 		Attr topic = element.getAttributeNode("topic");
 		if (topic == null) {
 			throw new RuntimeException("MQTT topic attribute not provided.");

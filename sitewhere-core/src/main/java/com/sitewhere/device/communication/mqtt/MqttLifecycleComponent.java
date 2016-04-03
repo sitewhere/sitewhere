@@ -22,6 +22,7 @@ import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
+import org.springframework.util.StringUtils;
 
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
@@ -63,6 +64,12 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 
 	/** TrustStore password */
 	private String trustStorePassword;
+
+	/** Username */
+	private String username;
+
+	/** Password */
+	private String password;
 
 	/** MQTT client */
 	private MQTT mqtt;
@@ -139,6 +146,14 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 				}
 			}
 		}
+		// Set username if provided.
+		if (!StringUtils.isEmpty(component.getUsername())) {
+			mqtt.setUserName(component.getUsername());
+		}
+		// Set password if provided.
+		if (!StringUtils.isEmpty(component.getPassword())) {
+			mqtt.setPassword(component.getPassword());
+		}
 		try {
 			mqtt.setHost(
 					component.getProtocol() + "://" + component.getHostname() + ":" + component.getPort());
@@ -207,6 +222,32 @@ public class MqttLifecycleComponent extends TenantLifecycleComponent implements 
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getUsername()
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPassword()
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	/*
