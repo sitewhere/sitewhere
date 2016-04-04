@@ -51,8 +51,10 @@ SiteWhere Complete Install for Ubuntu
 -------------------------------------
 
     sudo su
+    apt-get install -y software-properties-common
+    add-apt-repository ppa:openjdk-r/ppa
     apt-get update -y
-    apt-get install unzip openjdk-7-jdk
+    apt-get install -y unzip wget openjdk-8-jdk
 
 ###Install MongoDB
 
@@ -70,34 +72,20 @@ SiteWhere Complete Install for Ubuntu
 ###Install HiveMQ
 
     cd /opt
-    wget --content-disposition http://www.hivemq.com/downloads/releases/latest
-    unzip hivemq-2.2.1.zip
-    cd hivemq-2.2.1/bin
+    wget --content-disposition https://s3.amazonaws.com/sitewhere-hivemq/hivemq-3.0.2.zip
+    unzip hivemq-3.0.2.zip
+    cd hivemq-3.0.2/bin
     ./run.sh &
-
-###Install Solr
-
-> Optional if needed.
-
-    cd ~
-    wget http://archive.apache.org/dist/lucene/solr/4.7.2/solr-4.7.2.tgz
-    tar -xvf solr-4.7.2.tgz
-    cp -R solr-4.7.2/example /opt/solr
-    export PWD=/opt/solr/webapps
-    apt-get install rabbitmq-server -y
-    cd /opt/sitewhere/bin
-    ./startup.sh
 
 ###Install Sitewhere Release Version
 
 > Download a SiteWhere server release from the sitewhere.org website
 
     cd /opt
-    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.0.1.tar.gz
-    tar -zxvf sitewhere-server-1.0.1.tar.gz
-    mv sitewhere-server-1.0.1 /opt/sitewhere
-    sed -i -- 's/CATALINA_BASE/CATALINA_HOME/g' /opt/sitewhere/conf/sitewhere/sitewhere-server.xml
-    export CATALINA_HOME=/opt/sitewhere
+    wget https://s3.amazonaws.com/sitewhere/sitewhere-server-1.7.0.tgz
+    tar -zxvf sitewhere-server-1.7.0.tgz
+    mv sitewhere-server-1.7.0 /opt/sitewhere
+    export SITEWHERE_HOME=/opt/sitewhere
     cd /opt/sitewhere/bin
     sh startup.sh
 
@@ -115,4 +103,4 @@ SiteWhere Complete Install for Ubuntu
 
 * * * *
 
-Copyright (c) 2009-2015, [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.
+Copyright (c) 2009-2016, [SiteWhere LLC](http://www.sitewhere.com). All rights reserved.
