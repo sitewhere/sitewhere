@@ -3,5 +3,5 @@ description = 'SiteWhere ActiveMQ Integration'
 dependencies {
 	compile project(':sitewhere-client')
 	compile project(':sitewhere-core')
-	compile group: 'org.apache.activemq', name: 'activemq-broker'
+    compile group: 'org.apache.activemq', name: 'activemq-all', version:'5.10.0'
 }
