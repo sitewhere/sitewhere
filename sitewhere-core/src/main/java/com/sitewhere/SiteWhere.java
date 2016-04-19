@@ -52,6 +52,11 @@ public class SiteWhere {
 	 */
 	public static void stop() throws SiteWhereException {
 		getServer().lifecycleStop();
+
+		// Handle errors that prevent server shutdown.
+		if (SERVER.getLifecycleStatus() == LifecycleStatus.Error) {
+			throw SERVER.getLifecycleError();
+		}
 	}
 
 	/**
