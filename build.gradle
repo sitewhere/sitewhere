@@ -14,7 +14,7 @@ buildscript {
 }
 
 ext {
-	releaseBuild = project.hasProperty('releaseBuild') ? project.getProperty('releaseBuild') : false
+	releaseBuild = hasProperty('releaseBuild') ? releaseBuild : System.getenv('RELEASE_BUILD')
 }
 
 apply plugin: 's3'
