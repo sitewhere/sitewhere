@@ -5,17 +5,26 @@
 The Open Platform for the Internet of Things™
 -----------------------------------------------
 
-#### SiteWhere is an open source platform for storing, processing, and analyzing M2M device data. ####
+#### SiteWhere is an open source platform for caturing, storing, integrating, and analyzing data from IoT devices. ####
+SiteWhere is a server application and framework used to develop applications for the Internet of Things. 
+The core server uses the [Spring Boot](http://projects.spring.io/spring-boot/) architecture and provides
+the following list of features:
+
+* Support for multiple tenants with separate data storage and processing pipelines
+* Device management including specifications, device groups, asset assignment
+* Device connectivity via JSON, MQTT, AMQP, and most other common protocols
+* Big data storage for device event data with support for MongoDB, HBase, and InfluxDB
+* Configurable event-processing pipline
+* Integration with Apache Sprark, Apache Solr, Mule Anypoint, Amazon SQS, Azure EventHubs, and many others
 
 ### Installing a Packaged Version
-
-Most of the functionality provided by SiteWhere is contained in a web archive (WAR) which is installed on a customized version of [Tomcat] (http://tomcat.apache.org/). To download the latest version of SiteWhere server (including the latest WAR) check out the [downloads] (http://www.sitewhere.org/downloads) page on [sitewhere.org] (http://www.sitewhere.org/).
+To download the latest version of SiteWhere server check out the [downloads] (http://www.sitewhere.org/downloads) page on [sitewhere.org] (http://www.sitewhere.org/).
 
 ### Building from Source
 If you want to customize SiteWhere or otherwise have a need to build it from source code, use the following steps.
 
 #### Required Tools #####
-* [Apache Maven] (http://maven.apache.org/)
+* [Gradle] (http://gradle.org/)
 * A [GIT] (http://git-scm.com/) client
 
 #### Clone and Build #####
@@ -25,27 +34,13 @@ Clone this repository locally using:
     
 Navigate to the newly created directory and execute:
 
-    mvn clean install
+    gradle clean serverZip **For Windows**
+    gradle clean serverTar **For Unix**
 
-After the build completes, a file named **sitewhere.war** will have been created in the **deploy** 
-folder. 
-
-#### Building a Full Server #####
-Once the **sitewhere.war** file has been generated, you can create the full server distribution by using:
-
-	mvn -P buildServer clean install
-	
-This will download a copy of Tomcat, copy the WAR to the webapps folder, and copy the default 
-configuration files to the correct location. A zipped archive is generated and may be used 
-as the packaged version downloaded from the SiteWhere.org website.
-
-#### Copying into an Existing Tomcat Instance #####
-Alternatively, the **sitewhere.war** archive can be copied to the **webapps** directory of an existing
-Tomcat instance. The default SiteWhere loader expects configuration files to be available in the **TOMCAT/conf/sitewhere/** 
-folder. Copy the files from [here] (https://github.com/sitewhere/sitewhere/tree/sitewhere-1.0.2/sitewhere-core/config/sitewhere) 
-as a starting point. For more details, see the 
-[installation guide] (http://docs.sitewhere.org/current/userguide/installation.html#using-an-existing-tomcat-instance).
-
+After the build completes, a file named **sitewhere-server-x.x.x.zip/tar** will have been created in the 
+**build/distributions** folder. This archive is the equivalent of the archive that can be downloaded from
+the website. It can be installed by unzipping into a folder and running the startup script in the **bin**
+folder.
 
 SiteWhere Complete Install for Ubuntu
 -------------------------------------
