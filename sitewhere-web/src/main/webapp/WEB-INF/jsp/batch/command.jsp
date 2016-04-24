@@ -84,66 +84,67 @@
 	/** Datasource for elements */
 	var elementsDS;
 
-	$(document).ready(
-		function() {
+	$(document).ready(function() {
 
-			/** Create AJAX datasource for elements list */
-			elementsDS =
-					new kendo.data.DataSource({
-						transport : {
-							read : {
-								url : "${pageContext.request.contextPath}/api/batch/" + batchToken
-										+ "/elements?tenantAuthToken=${tenant.authenticationToken}",
-								dataType : "json",
-							}
-						},
-						schema : {
-							data : "results",
-							total : "numResults",
-							parse : function(response) {
-								$.each(response.results, function(index, item) {
-									parseBatchElementData(item);
-								});
-								return response;
-							}
-						},
-						serverPaging : true,
-						serverSorting : true,
-						pageSize : 50,
+		/** Create AJAX datasource for elements list */
+		elementsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/batch/" + batchToken + "/elements",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseBatchElementData(item);
 					});
+					return response;
+				}
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 50,
+		});
 
-			/** Create the elements grid */
-			$("#elements").kendoGrid({
-				dataSource : elementsDS,
-				rowTemplate : kendo.template($("#tpl-batch-command-invocation-element-entry").html()),
-				scrollable : true,
-				height : 400,
-			});
+		/** Create the elements grid */
+		$("#elements").kendoGrid({
+			dataSource : elementsDS,
+			rowTemplate : kendo.template($("#tpl-batch-command-invocation-element-entry").html()),
+			scrollable : true,
+			height : 400,
+		});
 
-			$("#elements-pager").kendoPager({
-				dataSource : elementsDS
-			});
+		$("#elements-pager").kendoPager({
+			dataSource : elementsDS
+		});
 
-			$("#btn-refresh-operation").click(function() {
-				loadBatchOperation();
-			});
-
-			$("#btn-refresh-elements").click(function() {
-				elementsDS.read();
-			});
-
-			/** Create the tab strip */
-			tabs = $("#tabs").kendoTabStrip({
-				animation : false
-			}).data("kendoTabStrip");
-
+		$("#btn-refresh-operation").click(function() {
 			loadBatchOperation();
 		});
 
+		$("#btn-refresh-elements").click(function() {
+			elementsDS.read();
+		});
+
+		/** Create the tab strip */
+		tabs = $("#tabs").kendoTabStrip({
+			animation : false
+		}).data("kendoTabStrip");
+
+		loadBatchOperation();
+	});
+
 	/** Loads information for the selected batch command invocation */
 	function loadBatchOperation() {
-		$.getJSON("${pageContext.request.contextPath}/api/batch/" + batchToken
-				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/batch/" + batchToken, "${basicAuth}",
+			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful batch operation load request */

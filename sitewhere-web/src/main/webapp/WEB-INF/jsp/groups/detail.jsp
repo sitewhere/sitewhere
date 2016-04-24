@@ -82,63 +82,65 @@
 	/** Datasource for elements */
 	var elementsDS;
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					/** Create AJAX datasource for elements list */
-					elementsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/devicegroups/"
-													+ groupToken
-													+ "/elements?includeDetails=true&tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : parseElementResults,
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 50,
-								});
-
-					/** Create the elements grid */
-					$("#elements").kendoGrid({
-						dataSource : elementsDS,
-						rowTemplate : kendo.template($("#tpl-device-group-element-entry").html()),
-						scrollable : true,
-						height : 400,
+			/** Create AJAX datasource for elements list */
+			elementsDS =
+					new kendo.data.DataSource({
+						transport : {
+							read : {
+								url : "${pageContext.request.contextPath}/api/devicegroups/" + groupToken
+										+ "/elements?includeDetails=true",
+								beforeSend : function(req) {
+									req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+									req.setRequestHeader('X-SiteWhere-Tenant',
+										"${tenant.authenticationToken}");
+								},
+								dataType : "json",
+							}
+						},
+						schema : {
+							data : "results",
+							total : "numResults",
+							parse : parseElementResults,
+						},
+						serverPaging : true,
+						serverSorting : true,
+						pageSize : 50,
 					});
 
-					$("#elements-pager").kendoPager({
-						dataSource : elementsDS
-					});
+			/** Create the elements grid */
+			$("#elements").kendoGrid({
+				dataSource : elementsDS,
+				rowTemplate : kendo.template($("#tpl-device-group-element-entry").html()),
+				scrollable : true,
+				height : 400,
+			});
 
-					$("#btn-refresh-elements").click(function() {
-						elementsDS.read();
-					});
+			$("#elements-pager").kendoPager({
+				dataSource : elementsDS
+			});
 
-					$("#btn-edit-device-group").click(function() {
-						dguOpen(groupToken, onDeviceGroupEditComplete);
-					});
+			$("#btn-refresh-elements").click(function() {
+				elementsDS.read();
+			});
 
-					$("#btn-add-element").click(function() {
-						geaOpen(groupToken, onAddElementComplete);
-					});
+			$("#btn-edit-device-group").click(function() {
+				dguOpen(groupToken, onDeviceGroupEditComplete);
+			});
 
-					/** Create the tab strip */
-					tabs = $("#tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			$("#btn-add-element").click(function() {
+				geaOpen(groupToken, onAddElementComplete);
+			});
 
-					loadDeviceGroup();
-				});
+			/** Create the tab strip */
+			tabs = $("#tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			loadDeviceGroup();
+		});
 
 	/** Called after device group is edited */
 	function onDeviceGroupEditComplete() {
@@ -162,8 +164,8 @@
 
 	/** Loads information for the selected device group */
 	function loadDeviceGroup() {
-		$.getJSON("${pageContext.request.contextPath}/api/devicegroups/" + groupToken
-				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/devicegroups/" + groupToken, "${basicAuth}",
+			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful device group load request */
@@ -188,8 +190,8 @@
 		swConfirm(i18next("groups.detail.DeleteDeviceGroupElement"), i18next("groups.detail.AYSTYWTDD")
 				+ " id " + elementId + "'?", function(result) {
 			if (result) {
-				$.deleteWithInputJSON("${pageContext.request.contextPath}/api/devicegroups/" + groupToken
-						+ "/elements?tenantAuthToken=${tenant.authenticationToken}", toDelete,
+				$.deleteWithInputAuthJSON("${pageContext.request.contextPath}/api/devicegroups/" + groupToken
+						+ "/elements", toDelete, "${basicAuth}", "${tenant.authenticationToken}",
 					elementDeleteSuccess, elementDeleteFailed);
 			}
 		});

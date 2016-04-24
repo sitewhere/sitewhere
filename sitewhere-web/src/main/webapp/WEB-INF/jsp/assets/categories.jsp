@@ -49,10 +49,9 @@
 		swConfirm(i18next("public.DeleteAssetCategory"), i18next("assetCategories.list.AYSD") + "?",
 			function(result) {
 				if (result) {
-					$
-							.deleteJSON("${pageContext.request.contextPath}/api/assets/categories/"
-									+ categoryId + "?tenantAuthToken=${tenant.authenticationToken}",
-								onDeleteSuccess, onDeleteFail);
+					$.deleteAuthJSON(
+						"${pageContext.request.contextPath}/api/assets/categories/" + categoryId,
+						"${basicAuth}", "${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
 				}
 			});
 	}
@@ -81,43 +80,43 @@
 		categoriesDS.read();
 	}
 
-	$(document)
-			.ready(
-				function() {
-					/** Create AJAX datasource for sites list */
-					categoriesDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/assets/categories?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 10
-								});
+	$(document).ready(function() {
+		/** Create AJAX datasource for sites list */
+		categoriesDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/assets/categories",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 10
+		});
 
-					/** Create the site list */
-					$("#categories").kendoListView({
-						dataSource : categoriesDS,
-						template : kendo.template($("#tpl-category-entry").html())
-					});
+		/** Create the site list */
+		$("#categories").kendoListView({
+			dataSource : categoriesDS,
+			template : kendo.template($("#tpl-category-entry").html())
+		});
 
-					$("#pager").kendoPager({
-						dataSource : categoriesDS
-					});
+		$("#pager").kendoPager({
+			dataSource : categoriesDS
+		});
 
-					/** Handle add category functionality */
-					$('#btn-add-category').click(function(event) {
-						ccOpen(event, onCategoryCreated);
-					});
-				});
+		/** Handle add category functionality */
+		$('#btn-add-category').click(function(event) {
+			ccOpen(event, onCategoryCreated);
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

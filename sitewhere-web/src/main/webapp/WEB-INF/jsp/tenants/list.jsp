@@ -46,48 +46,48 @@
 		tenantsDS.read();
 	}
 
-	$(document)
-			.ready(
-				function() {
-					/** Create AJAX datasource for sites list */
-					tenantsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/tenants?includeRuntimeInfo=true&tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 10
-								});
+	$(document).ready(function() {
+		/** Create AJAX datasource for sites list */
+		tenantsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/tenants?includeRuntimeInfo=true",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 10
+		});
 
-					/** Create the site list */
-					$("#tenants").kendoListView({
-						dataSource : tenantsDS,
-						template : kendo.template($("#tpl-tenant-entry").html())
-					});
+		/** Create the site list */
+		$("#tenants").kendoListView({
+			dataSource : tenantsDS,
+			template : kendo.template($("#tpl-tenant-entry").html())
+		});
 
-					$("#pager").kendoPager({
-						dataSource : tenantsDS
-					});
+		$("#pager").kendoPager({
+			dataSource : tenantsDS
+		});
 
-					/** Handle add tenant functionality */
-					$('#btn-add-tenant').click(function(event) {
-						tcOpen(event, onTenantCreated);
-					});
+		/** Handle add tenant functionality */
+		$('#btn-add-tenant').click(function(event) {
+			tcOpen(event, onTenantCreated);
+		});
 
-					/** Handle refresh functionality */
-					$('#btn-refresh-tenants').click(function(event) {
-						tenantsDS.read();
-					});
-				});
+		/** Handle refresh functionality */
+		$('#btn-refresh-tenants').click(function(event) {
+			tenantsDS.read();
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

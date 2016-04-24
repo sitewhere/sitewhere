@@ -104,72 +104,67 @@
 	/** Schedule start and end date widgets */
 	var startDate, endDate;
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					scTabs = $("#sc-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			scTabs = $("#sc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
 
-					schedTypesDD = $("#sc-schedule-type").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "value",
-						dataSource : scScheduleTypes,
-						index : 0,
-						change : scScheduleTypeChanged
-					}).data("kendoDropDownList");
+			schedTypesDD = $("#sc-schedule-type").kendoDropDownList({
+				dataTextField : "text",
+				dataValueField : "value",
+				dataSource : scScheduleTypes,
+				index : 0,
+				change : scScheduleTypeChanged
+			}).data("kendoDropDownList");
 
-					startDate = $("#sc-start-date").kendoDateTimePicker({
-						value : null
-					}).data("kendoDateTimePicker");
+			startDate = $("#sc-start-date").kendoDateTimePicker({
+				value : null
+			}).data("kendoDateTimePicker");
 
-					endDate = $("#sc-end-date").kendoDateTimePicker({
-						value : null
-					}).data("kendoDateTimePicker");
+			endDate = $("#sc-end-date").kendoDateTimePicker({
+				value : null
+			}).data("kendoDateTimePicker");
 
-					/** Handle dialog submit */
-					$('#sc-dialog-submit')
-							.click(
-								function(event) {
-									event.preventDefault();
-									if (!scValidate()) {
-										return;
-									}
-									var schedToken = $('#schedule-token').val();
-									var schedData = scCreateScheduleData();
-									if (schedToken == "") {
-										$
-												.postJSON(
-													"${pageContext.request.contextPath}/api/schedules?tenantAuthToken=${tenant.authenticationToken}",
-													schedData, onSuccess, onCreateFail);
-									} else {
-										schedData.token = schedToken;
-										$.putJSON("${pageContext.request.contextPath}/api/schedules/"
-												+ schedToken
-												+ "?tenantAuthToken=${tenant.authenticationToken}",
-											schedData, onSuccess, onUpdateFail);
-									}
-								});
-
-					/** Called on successful create/update */
-					function onSuccess() {
-						$('#sc-dialog').modal('hide');
-						if (scSubmitCallback != null) {
-							scSubmitCallback();
-						}
+			/** Handle dialog submit */
+			$('#sc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!scValidate()) {
+						return;
 					}
-
-					/** Handle failed call to create */
-					function onCreateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to create schedule.");
-					}
-
-					/** Handle failed call to update */
-					function onUpdateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to update schedule.");
+					var schedToken = $('#schedule-token').val();
+					var schedData = scCreateScheduleData();
+					if (schedToken == "") {
+						$.postAuthJSON("${pageContext.request.contextPath}/api/schedules", schedData,
+							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onCreateFail);
+					} else {
+						schedData.token = schedToken;
+						$.putAuthJSON("${pageContext.request.contextPath}/api/schedules/" + schedToken,
+							schedData, "${basicAuth}", "${tenant.authenticationToken}", onSuccess,
+							onUpdateFail);
 					}
 				});
+
+			/** Called on successful create/update */
+			function onSuccess() {
+				$('#sc-dialog').modal('hide');
+				if (scSubmitCallback != null) {
+					scSubmitCallback();
+				}
+			}
+
+			/** Handle failed call to create */
+			function onCreateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to create schedule.");
+			}
+
+			/** Handle failed call to update */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to update schedule.");
+			}
+		});
 
 	/** Create schedule data structure based on form input */
 	function scCreateScheduleData() {
@@ -254,10 +249,8 @@
 		scSubmitCallback = callback;
 
 		// Get site for edit.
-		$
-				.getJSON("${pageContext.request.contextPath}/api/schedules/" + scheduleToken
-						+ "?tenantAuthToken=${tenant.authenticationToken}", suScheduleGetSuccess,
-					suScheduleGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/schedules/" + scheduleToken, "${basicAuth}",
+			"${tenant.authenticationToken}", suScheduleGetSuccess, suScheduleGetFailed);
 	}
 
 	/** Called on successful schedule load request */

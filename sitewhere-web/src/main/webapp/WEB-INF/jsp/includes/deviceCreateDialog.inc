@@ -89,24 +89,29 @@
 					}).data("kendoTabStrip");
 
 					dcSitesDropdown =
-							$("#dc-site-token")
-									.kendoDropDownList(
-										{
-											dataTextField : "name",
-											dataValueField : "token",
-											dataSource : {
-												transport : {
-													read : {
-														url : "${pageContext.request.contextPath}/api/sites?tenantAuthToken=${tenant.authenticationToken}",
-														dataType : "json",
-													}
+							$("#dc-site-token").kendoDropDownList(
+								{
+									dataTextField : "name",
+									dataValueField : "token",
+									dataSource : {
+										transport : {
+											read : {
+												url : "${pageContext.request.contextPath}/api/sites",
+												beforeSend : function(req) {
+													req.setRequestHeader('Authorization',
+														"Basic ${basicAuth}");
+													req.setRequestHeader('X-SiteWhere-Tenant',
+														"${tenant.authenticationToken}");
 												},
-												schema : {
-													data : "results",
-													total : "numResults",
-												},
+												dataType : "json",
 											}
-										}).data("kendoDropDownList");
+										},
+										schema : {
+											data : "results",
+											total : "numResults",
+										},
+									}
+								}).data("kendoDropDownList");
 
 					/** Create AJAX datasource for specifications list */
 					dcSpecificationsDS =
@@ -114,7 +119,12 @@
 								{
 									transport : {
 										read : {
-											url : "${pageContext.request.contextPath}/api/specifications?tenantAuthToken=${tenant.authenticationToken}",
+											url : "${pageContext.request.contextPath}/api/specifications?tenantAuthToken",
+											beforeSend : function(req) {
+												req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+												req.setRequestHeader('X-SiteWhere-Tenant',
+													"${tenant.authenticationToken}");
+											},
 											dataType : "json",
 										}
 									},

@@ -133,7 +133,8 @@
 
 	/** Reload server runtime data */
 	function reloadData() {
-		$.getJSON("${pageContext.request.contextPath}/api/system/runtime", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/system/runtime", "${basicAuth}",
+			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful assignment load request */

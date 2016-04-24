@@ -298,7 +298,11 @@
 		devicesDS = new kendo.data.DataSource({
 			transport : {
 				read : {
-					url : dsUrl + "&tenantAuthToken=${tenant.authenticationToken}",
+					url : dsUrl,
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
 					dataType : "json",
 				}
 			},

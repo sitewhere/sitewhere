@@ -57,7 +57,12 @@ public class RestController {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantAuthToken, ErrorLevel.ERROR);
 		}
 		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(match.getId());
-		if ((engine == null) || (engine.getEngineState().getLifecycleStatus() != LifecycleStatus.Started)) {
+		if (engine == null) {
+			LOGGER.error("No tenant engine for tenant: " + match.getName());
+			throw new TenantNotAvailableException();
+		}
+		if (engine.getEngineState().getLifecycleStatus() != LifecycleStatus.Started) {
+			LOGGER.error("Engine not started for tenant: " + match.getName());
 			throw new TenantNotAvailableException();
 		}
 

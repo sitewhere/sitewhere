@@ -309,9 +309,9 @@ div.wz-button-bar {
 		swConfirm("Delete Tenant", "Are you sure you want to delete tenant '" + tenantId + "'?", function(
 				result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
-					onDeleteFail);
+				$.deleteAuthJSON(
+					"${pageContext.request.contextPath}/api/tenants/" + tenantId + "?force=true",
+					"${basicAuth}", "${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
 			}
 		});
 	}
@@ -348,9 +348,8 @@ div.wz-button-bar {
 
 	/** Called when stop button is clicked */
 	function onTenantStopClicked() {
-		$.postJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-				+ "/engine/stop?tenantAuthToken=${tenant.authenticationToken}", null, commandSuccess,
-			stopFailed);
+		$.postAuthJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId + "/engine/stop", null,
+			"${basicAuth}", "${tenant.authenticationToken}", commandSuccess, stopFailed);
 	}
 
 	/** Called after successfully starting or stopping tenant */
@@ -364,9 +363,8 @@ div.wz-button-bar {
 
 	/** Called when start button is clicked */
 	function onTenantStartClicked() {
-		$.postJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-				+ "/engine/start?tenantAuthToken=${tenant.authenticationToken}", null, commandSuccess,
-			startFailed);
+		$.postAuthJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId + "/engine/start", null,
+			"${basicAuth}", "${tenant.authenticationToken}", commandSuccess, startFailed);
 	}
 
 	function startFailed(jqXHR, textStatus, errorThrown) {
@@ -1159,9 +1157,9 @@ div.wz-button-bar {
 
 	/** Loads information for the selected tenant */
 	function loadTenant() {
-		$.getJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-				+ "?includeRuntimeInfo=true&tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess,
-			loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
+				+ "?includeRuntimeInfo=true", "${basicAuth}", "${tenant.authenticationToken}",
+			loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful tenant load request */
@@ -1222,9 +1220,9 @@ div.wz-button-bar {
 		swConfirm("Stage Configuration", "Are you sure you want to stage the updated tenant configuration?",
 			function(result) {
 				if (result) {
-					$.postJSON("${pageContext.request.contextPath}/api/tenants/" + tenant.id
-							+ "/engine/configuration/json?tenantAuthToken=${tenant.authenticationToken}",
-						config, stageSuccess, stageFail);
+					$.postAuthJSON("${pageContext.request.contextPath}/api/tenants/" + tenant.id
+							+ "/engine/configuration/json", config, "${basicAuth}",
+						"${tenant.authenticationToken}", stageSuccess, stageFail);
 				}
 			});
 	}
@@ -1271,8 +1269,8 @@ div.wz-button-bar {
 
 	/** Load the running engine configuration as JSON */
 	function loadEngineConfiguration() {
-		$.getJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-				+ "/engine/configuration/json?tenantAuthToken=${tenant.authenticationToken}",
+		$.getAuthJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
+				+ "/engine/configuration/json", "${basicAuth}", "${tenant.authenticationToken}",
 			jsonConfigGetSuccess, jsonConfigGetFailed);
 	}
 

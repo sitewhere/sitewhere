@@ -263,10 +263,10 @@
 
 	/** Device groups list */
 	var dflDeviceGroups;
-	
+
 	/** Datasource for sites */
 	var dflSitesDS;
-	
+
 	/** Sites list */
 	var dflSites;
 
@@ -297,145 +297,149 @@
 		value : "dfl-cdate-between"
 	}, ];
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(function() {
 
-					/** Create tab strip */
-					dflTabs = $("#dfl-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+		/** Create tab strip */
+		dflTabs = $("#dfl-tabs").kendoTabStrip({
+			animation : false
+		}).data("kendoTabStrip");
 
-					// Specification filter dropdown.
-					dflSpecFilterType = $("#dfl-spec-filter-type").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "value",
-						dataSource : dflSpecFilterTypes,
-						index : 0,
-						change : dflSpecFilterTypeChanged
-					}).data("kendoDropDownList");
+		// Specification filter dropdown.
+		dflSpecFilterType = $("#dfl-spec-filter-type").kendoDropDownList({
+			dataTextField : "text",
+			dataValueField : "value",
+			dataSource : dflSpecFilterTypes,
+			index : 0,
+			change : dflSpecFilterTypeChanged
+		}).data("kendoDropDownList");
 
-					/** Create AJAX datasource for specifications list */
-					dflSpecificationsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/specifications?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-									},
-								});
+		/** Create AJAX datasource for specifications list */
+		dflSpecificationsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/specifications",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+			},
+		});
 
-					/** Create the specifications list */
-					dflSpecifications = $("#dfl-specifications").kendoListView({
-						dataSource : dflSpecificationsDS,
-						selectable : "single",
-						template : kendo.template($("#dfl-specification-template").html()),
-						change : dflSpecificationChosen
-					}).data("kendoListView");
+		/** Create the specifications list */
+		dflSpecifications = $("#dfl-specifications").kendoListView({
+			dataSource : dflSpecificationsDS,
+			selectable : "single",
+			template : kendo.template($("#dfl-specification-template").html()),
+			change : dflSpecificationChosen
+		}).data("kendoListView");
 
-					// Group filter dropdown.
-					dflGroupFilterType = $("#dfl-group-filter-type").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "value",
-						dataSource : dflGroupFilterTypes,
-						index : 0,
-						change : dflGroupFilterTypeChanged
-					}).data("kendoDropDownList");
+		// Group filter dropdown.
+		dflGroupFilterType = $("#dfl-group-filter-type").kendoDropDownList({
+			dataTextField : "text",
+			dataValueField : "value",
+			dataSource : dflGroupFilterTypes,
+			index : 0,
+			change : dflGroupFilterTypeChanged
+		}).data("kendoDropDownList");
 
-					/** Create AJAX datasource for device groups list */
-					dflDeviceGroupsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/devicegroups?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-									},
-								});
+		/** Create AJAX datasource for device groups list */
+		dflDeviceGroupsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/devicegroups",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+			},
+		});
 
-					/** Create the specifications list */
-					dflDeviceGroups = $("#dfl-devicegroups").kendoListView({
-						dataSource : dflDeviceGroupsDS,
-						selectable : "single",
-						template : kendo.template($("#dfl-group-template").html()),
-						change : dflDeviceGroupChosen
-					}).data("kendoListView");
+		/** Create the specifications list */
+		dflDeviceGroups = $("#dfl-devicegroups").kendoListView({
+			dataSource : dflDeviceGroupsDS,
+			selectable : "single",
+			template : kendo.template($("#dfl-group-template").html()),
+			change : dflDeviceGroupChosen
+		}).data("kendoListView");
 
-					dflSiteFilterType = $("#dfl-site-filter-type").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "value",
-						dataSource : dflSiteFilterTypes,
-						index : 0,
-						change : dflSiteFilterTypeChanged
-					}).data("kendoDropDownList");
+		dflSiteFilterType = $("#dfl-site-filter-type").kendoDropDownList({
+			dataTextField : "text",
+			dataValueField : "value",
+			dataSource : dflSiteFilterTypes,
+			index : 0,
+			change : dflSiteFilterTypeChanged
+		}).data("kendoDropDownList");
 
-					dflSitesDS =
-							new kendo.data.DataSource({
-								transport : {
-									read : {
-										url : "${pageContext.request.contextPath}/api/sites"
-												+ "?tenantAuthToken=${tenant.authenticationToken}",
-										dataType : "json",
-									}
-								},
-								schema : {
-									data : "results",
-									total : "numResults",
-								},
-							});
+		dflSitesDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/sites",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+			},
+		});
 
-					dflSites = $("#dfl-sites").kendoListView({
-						dataSource : dflSitesDS,
-						selectable : "single",
-						template : kendo.template($("#dfl-site-template").html()),
-						change : dflSiteChosen
-					}).data("kendoListView");
+		dflSites = $("#dfl-sites").kendoListView({
+			dataSource : dflSitesDS,
+			selectable : "single",
+			template : kendo.template($("#dfl-site-template").html()),
+			change : dflSiteChosen
+		}).data("kendoListView");
 
-					/** Create dropdown list for choosing create date range */
-					dflCdateType = $("#dfl-cdate-type").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "value",
-						dataSource : dflDateRanges,
-						index : 0,
-						change : dflCreateDateTypeChanged
-					}).data("kendoDropDownList");
+		/** Create dropdown list for choosing create date range */
+		dflCdateType = $("#dfl-cdate-type").kendoDropDownList({
+			dataTextField : "text",
+			dataValueField : "value",
+			dataSource : dflDateRanges,
+			index : 0,
+			change : dflCreateDateTypeChanged
+		}).data("kendoDropDownList");
 
-					dflDateAfter = $("#dfl-cdate-after-date").kendoDateTimePicker({
-						value : new Date()
-					}).data("kendoDateTimePicker");
-					dflDateBefore = $("#dfl-cdate-before-date").kendoDateTimePicker({
-						value : new Date()
-					}).data("kendoDateTimePicker");
-					dflDateBetweenStart = $("#dfl-cdate-between-date-start").kendoDateTimePicker({
-						value : new Date()
-					}).data("kendoDateTimePicker");
-					dflDateBetweenEnd = $("#dfl-cdate-between-date-end").kendoDateTimePicker({
-						value : new Date()
-					}).data("kendoDateTimePicker");
+		dflDateAfter = $("#dfl-cdate-after-date").kendoDateTimePicker({
+			value : new Date()
+		}).data("kendoDateTimePicker");
+		dflDateBefore = $("#dfl-cdate-before-date").kendoDateTimePicker({
+			value : new Date()
+		}).data("kendoDateTimePicker");
+		dflDateBetweenStart = $("#dfl-cdate-between-date-start").kendoDateTimePicker({
+			value : new Date()
+		}).data("kendoDateTimePicker");
+		dflDateBetweenEnd = $("#dfl-cdate-between-date-end").kendoDateTimePicker({
+			value : new Date()
+		}).data("kendoDateTimePicker");
 
-					/** Handle dialog submit */
-					$('#dfl-dialog-submit').click(function(event) {
-						event.preventDefault();
-						if (!dflValidate()) {
-							return;
-						}
-						if (dflSubmitCallback != null) {
-							dflSubmitCallback(createFilterCriteria());
-						}
-						$('#dfl-dialog').modal('hide');
-					});
-				});
+		/** Handle dialog submit */
+		$('#dfl-dialog-submit').click(function(event) {
+			event.preventDefault();
+			if (!dflValidate()) {
+				return;
+			}
+			if (dflSubmitCallback != null) {
+				dflSubmitCallback(createFilterCriteria());
+			}
+			$('#dfl-dialog').modal('hide');
+		});
+	});
 
 	/** Create an object that describes chosen filter criteria */
 	function createFilterCriteria() {

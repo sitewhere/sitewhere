@@ -178,64 +178,59 @@
 	/** Map reference */
 	var scMap;
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					/** Create the tab strip */
-					scTabs = $("#sc-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			/** Create the tab strip */
+			scTabs = $("#sc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
 
-					// create DropDownList from input HTML element
-					$("#sc-map-type").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "value",
-						dataSource : scMapTypes,
-						index : 0,
-						change : scMapTypeChanged
-					});
+			// create DropDownList from input HTML element
+			$("#sc-map-type").kendoDropDownList({
+				dataTextField : "text",
+				dataValueField : "value",
+				dataSource : scMapTypes,
+				index : 0,
+				change : scMapTypeChanged
+			});
 
-					/** Handle dialog submit */
-					$('#sc-dialog-submit')
-							.click(
-								function(event) {
-									event.preventDefault();
-									if (!scValidate()) {
-										return;
-									}
-									var siteToken = $('#site-token').val();
-									var siteData = scCreateSiteData();
-									if (siteToken == "") {
-										$
-												.postJSON(
-													"${pageContext.request.contextPath}/api/sites?tenantAuthToken=${tenant.authenticationToken}",
-													siteData, onSuccess, onCreateFail);
-									} else {
-										$.putJSON("${pageContext.request.contextPath}/api/sites/" + siteToken
-												+ "?tenantAuthToken=${tenant.authenticationToken}", siteData,
-											onSuccess, onUpdateFail);
-									}
-								});
-
-					/** Called on successful create/update */
-					function onSuccess() {
-						$('#sc-dialog').modal('hide');
-						if (scSubmitCallback != null) {
-							scSubmitCallback();
-						}
+			/** Handle dialog submit */
+			$('#sc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!scValidate()) {
+						return;
 					}
-
-					/** Handle failed call to create site */
-					function onCreateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to create site.");
-					}
-
-					/** Handle failed call to update site */
-					function onUpdateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to update site.");
+					var siteToken = $('#site-token').val();
+					var siteData = scCreateSiteData();
+					if (siteToken == "") {
+						$.postAuthJSON("${pageContext.request.contextPath}/api/sites", siteData,
+							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onCreateFail);
+					} else {
+						$.putAuthJSON("${pageContext.request.contextPath}/api/sites/" + siteToken, siteData,
+							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onUpdateFail);
 					}
 				});
+
+			/** Called on successful create/update */
+			function onSuccess() {
+				$('#sc-dialog').modal('hide');
+				if (scSubmitCallback != null) {
+					scSubmitCallback();
+				}
+			}
+
+			/** Handle failed call to create site */
+			function onCreateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to create site.");
+			}
+
+			/** Handle failed call to update site */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to update site.");
+			}
+		});
 
 	/** Create site data structure based on form input */
 	function scCreateSiteData() {
@@ -326,8 +321,8 @@
 		scSubmitCallback = callback;
 
 		// Get site for edit.
-		$.getJSON("${pageContext.request.contextPath}/api/sites/" + siteToken
-				+ "?tenantAuthToken=${tenant.authenticationToken}", suSiteGetSuccess, suSiteGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/sites/" + siteToken, "${basicAuth}",
+			"${tenant.authenticationToken}", suSiteGetSuccess, suSiteGetFailed);
 	}
 
 	/** Called on successful site load request */

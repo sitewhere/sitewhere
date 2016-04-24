@@ -79,8 +79,8 @@
 					var specData = {
 						"deviceElementSchema" : ducElementSchema,
 					}
-					$.putJSON("${pageContext.request.contextPath}/api/specifications/" + ducSpecToken
-							+ "?tenantAuthToken=${tenant.authenticationToken}", specData, onCreateSuccess,
+					$.putAuthJSON("${pageContext.request.contextPath}/api/specifications/" + ducSpecToken,
+						specData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
 						onUpdateFail);
 				});
 

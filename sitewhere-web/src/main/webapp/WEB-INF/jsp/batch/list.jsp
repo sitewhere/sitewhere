@@ -67,48 +67,48 @@
 		}
 	}
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(function() {
 
-					/** Create AJAX datasource for devices list */
-					batchOpsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/batch?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseBatchOperationData(item);
-											});
-											return response;
-										}
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 50,
-								});
-
-					/** Create the list of batch operations */
-					$("#batchoperations").kendoGrid({
-						dataSource : batchOpsDS,
-						rowTemplate : kendo.template($("#tpl-batch-operation-entry").html()),
-						scrollable : true,
-						height : 400,
+		/** Create AJAX datasource for devices list */
+		batchOpsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/batch",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseBatchOperationData(item);
 					});
+					return response;
+				}
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 50,
+		});
 
-					/** Pager for batch operation list */
-					$("#pager").kendoPager({
-						dataSource : batchOpsDS
-					});
-				});
+		/** Create the list of batch operations */
+		$("#batchoperations").kendoGrid({
+			dataSource : batchOpsDS,
+			rowTemplate : kendo.template($("#tpl-batch-operation-entry").html()),
+			scrollable : true,
+			height : 400,
+		});
+
+		/** Pager for batch operation list */
+		$("#pager").kendoPager({
+			dataSource : batchOpsDS
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

@@ -84,7 +84,7 @@
 # } #
 		</div>
 		<div class="sw-assignment-header-symbol"
-			style="background-image: url(/sitewhere/api/assignments/#:token#/symbol?tenantAuthToken=${tenant.authenticationToken}); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
+			style="background-image: url(/sitewhere/api/assignments/#:token#/symbol); background-size: contain; background-repeat: no-repeat; background-position: 50% 50%;">
 		</div>
 		<div>
 			<div>

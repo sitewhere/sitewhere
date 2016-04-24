@@ -128,8 +128,8 @@
 
 	/** Called to load the given invocation */
 	function ivOpen(invocationId) {
-		$.getJSON("${pageContext.request.contextPath}/api/invocations/" + invocationId
-				+ "/summary?tenantAuthToken=${tenant.authenticationToken}", ivSuccess, ivFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/invocations/" + invocationId + "/summary",
+			"${basicAuth}", "${tenant.authenticationToken}", ivSuccess, ivFailed);
 	}
 
 	/** Called on successful invocation load */

@@ -16,6 +16,22 @@ $.postJSON = function(url, data, onSuccess, onFail) {
 	});
 };
 
+$.postAuthJSON = function(url, data, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'POST',
+		'url' : url,
+		'contentType' : 'application/json',
+		'data' : JSON.stringify(data),
+		'dataType' : 'json',
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
+		'success' : onSuccess,
+		'error' : onFail
+	});
+};
+
 $.putJSON = function(url, data, onSuccess, onFail) {
 	return jQuery.ajax({
 		'type' : 'PUT',
@@ -23,6 +39,22 @@ $.putJSON = function(url, data, onSuccess, onFail) {
 		'contentType' : 'application/json',
 		'data' : JSON.stringify(data),
 		'dataType' : 'json',
+		'success' : onSuccess,
+		'error' : onFail
+	});
+};
+
+$.putAuthJSON = function(url, data, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'PUT',
+		'url' : url,
+		'contentType' : 'application/json',
+		'data' : JSON.stringify(data),
+		'dataType' : 'json',
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
 		'success' : onSuccess,
 		'error' : onFail
 	});
@@ -38,6 +70,21 @@ $.getJSON = function(url, onSuccess, onFail) {
 	});
 }
 
+$.getAuthJSON = function(url, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'GET',
+		'url' : url,
+		'contentType' : 'application/json',
+		'async' : false,
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
+		'success' : onSuccess,
+		'error' : onFail
+	});
+}
+
 $.deleteJSON = function(url, onSuccess, onFail) {
 	return jQuery.ajax({
 		'type' : 'DELETE',
@@ -48,11 +95,40 @@ $.deleteJSON = function(url, onSuccess, onFail) {
 	});
 }
 
+$.deleteAuthJSON = function(url, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'DELETE',
+		'url' : url,
+		'contentType' : 'application/json',
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
+		'success' : onSuccess,
+		'error' : onFail
+	});
+}
+
 $.deleteWithInputJSON = function(url, data, onSuccess, onFail) {
 	return jQuery.ajax({
 		'type' : 'DELETE',
 		'url' : url,
 		'contentType' : 'application/json',
+		'data' : JSON.stringify(data),
+		'success' : onSuccess,
+		'error' : onFail
+	});
+}
+
+$.deleteWithInputAuthJSON = function(url, data, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'DELETE',
+		'url' : url,
+		'contentType' : 'application/json',
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
 		'data' : JSON.stringify(data),
 		'success' : onSuccess,
 		'error' : onFail

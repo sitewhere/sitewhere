@@ -146,72 +146,73 @@
 		assignmentsDS.read();
 	}
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					/** Create AJAX datasource for assignments list */
-					assignmentsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/devices/"
-													+ hardwareId
-													+ "/assignments?includeAsset=true&includeDevice=true&tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseAssignmentData(item);
-											});
-											return response;
-										}
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 15,
+			/** Create AJAX datasource for assignments list */
+			assignmentsDS =
+					new kendo.data.DataSource({
+						transport : {
+							read : {
+								url : "${pageContext.request.contextPath}/api/devices/" + hardwareId
+										+ "/assignments?includeAsset=true&includeDevice=true",
+								beforeSend : function(req) {
+									req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+									req.setRequestHeader('X-SiteWhere-Tenant',
+										"${tenant.authenticationToken}");
+								},
+								dataType : "json",
+							}
+						},
+						schema : {
+							data : "results",
+							total : "numResults",
+							parse : function(response) {
+								$.each(response.results, function(index, item) {
+									parseAssignmentData(item);
 								});
-
-					/** Create the assignments list */
-					$("#assignments").kendoListView({
-						dataSource : assignmentsDS,
-						template : kendo.template($("#tpl-assignment-entry").html())
+								return response;
+							}
+						},
+						serverPaging : true,
+						serverSorting : true,
+						pageSize : 15,
 					});
 
-					$("#assignments-pager").kendoPager({
-						dataSource : assignmentsDS
-					});
+			/** Create the assignments list */
+			$("#assignments").kendoListView({
+				dataSource : assignmentsDS,
+				template : kendo.template($("#tpl-assignment-entry").html())
+			});
 
-					$("#btn-refresh-assignments").click(function() {
-						assignmentsDS.read();
-					});
+			$("#assignments-pager").kendoPager({
+				dataSource : assignmentsDS
+			});
 
-					$("#btn-edit-device").click(function() {
-						duOpen(hardwareId, onDeviceEditSuccess);
-					});
+			$("#btn-refresh-assignments").click(function() {
+				assignmentsDS.read();
+			});
 
-					$("#btn-assign-device").click(function() {
-						acOpen(null, hardwareId, onAssignmentAdded);
-					});
+			$("#btn-edit-device").click(function() {
+				duOpen(hardwareId, onDeviceEditSuccess);
+			});
 
-					/** Create the tab strip */
-					tabs = $("#tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			$("#btn-assign-device").click(function() {
+				acOpen(null, hardwareId, onAssignmentAdded);
+			});
 
-					loadDevice();
-				});
+			/** Create the tab strip */
+			tabs = $("#tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
+
+			loadDevice();
+		});
 
 	/** Loads information for the selected device */
 	function loadDevice() {
-		$.getJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-				+ "?includeNested=true&tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess,
-			loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId + "?includeNested=true",
+			"${basicAuth}", "${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful device load request */
@@ -255,9 +256,8 @@
 			"deviceElementSchemaPath" : data.path,
 			"hardwareId" : target,
 		}
-		$.postJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-				+ "/mappings?tenantAuthToken=${tenant.authenticationToken}", mapping, onMappingCreateSuccess,
-			onMappingCreateFail);
+		$.postAuthJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId + "/mappings", mapping,
+			"${basicAuth}", "${tenant.authenticationToken}", onMappingCreateSuccess, onMappingCreateFail);
 	}
 
 	/** Called on successful call to create mapping */
@@ -275,8 +275,8 @@
 		swConfirm("Delete Device Element Mapping",
 			"Are you sure that you want to delete the device element mapping?", function(result) {
 				if (result) {
-					$.deleteJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-							+ "/mappings?path=" + path + "&tenantAuthToken=${tenant.authenticationToken}",
+					$.deleteAuthJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
+							+ "/mappings?path=" + path, "${basicAuth}", "${tenant.authenticationToken}",
 						onMappingDeleteSuccess, onMappingDeleteFail);
 				}
 			});

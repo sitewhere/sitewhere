@@ -107,6 +107,9 @@
 									read : {
 										url : "${pageContext.request.contextPath}/api/assets/modules"
 												+ "?tenantAuthToken=${tenant.authenticationToken}",
+										beforeSend : function(req) {
+											req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+										},
 										dataType : "json",
 									}
 								},
@@ -229,6 +232,9 @@
 							url : "${pageContext.request.contextPath}/api/assets/modules/" + assetModuleId
 									+ "/assets?criteria=" + criteria
 									+ "&tenantAuthToken=${tenant.authenticationToken}",
+							beforeSend : function(req) {
+								req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+							},
 							dataType : "json",
 						}
 					},

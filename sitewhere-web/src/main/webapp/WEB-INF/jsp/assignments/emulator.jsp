@@ -819,8 +819,8 @@
 
 	/** Loads information for the selected assignment */
 	function loadAssignment() {
-		$.getJSON("${pageContext.request.contextPath}/api/assignments/" + token
-				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/assignments/" + token, "${basicAuth}",
+			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful assignment load request */
@@ -859,7 +859,7 @@
 	function onMissingAssignmentComplete() {
 		loadAssignment();
 	}
-	
+
 	/** Save MQTT settings as cookies */
 	function setUpMqttCookies() {
 		/** Save MQTT host name if changed */
@@ -870,7 +870,7 @@
 		if (cookieMqttHostname) {
 			$('#mqtt-host-name').val(cookieMqttHostname);
 		}
-		
+
 		/** Save MQTT port if changed */
 		$('#mqtt-port').change(function(event) {
 			Cookies.set('sitewhere.mqtt.port', $('#mqtt-port').val());
@@ -879,7 +879,7 @@
 		if (cookieMqttPort) {
 			$('#mqtt-port').val(cookieMqttPort);
 		}
-		
+
 		/** Save MQTT client id if changed */
 		$('#mqtt-client-id').change(function(event) {
 			Cookies.set('sitewhere.mqtt.client.id', $('#mqtt-client-id').val());
@@ -888,7 +888,7 @@
 		if (cookieMqttClientId) {
 			$('#mqtt-client-id').val(cookieMqttClientId);
 		}
-		
+
 		/** Save MQTT topic if changed */
 		$('#mqtt-topic').change(function(event) {
 			Cookies.set('sitewhere.mqtt.topic', $('#mqtt-topic').val());
@@ -1004,7 +1004,7 @@
 				event.preventDefault();
 				doConnect();
 			});
-			
+
 			setUpMqttCookies();
 
 			/** Handle 'refresh locations' button */

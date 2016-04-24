@@ -20,6 +20,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.sitewhere.SiteWhere;
@@ -70,16 +71,10 @@ public class SiteWhereSecurity {
 		 * annotation.web.builders.HttpSecurity)
 		 */
 		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(new RequestMatcher() {
-				@Override
-				public boolean matches(HttpServletRequest request) {
-					System.out.println("\n\n\nMATCHING ON REST PATTERNS!!!!\n\n\n");
-					return true;
-				}
-			});
 			http.csrf().disable();
-			http.antMatcher("/api/**").authorizeRequests().antMatchers("/api/**").hasRole(
-					SiteWhereRoles.AUTH_REST).and().httpBasic();
+			http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher(
+					"/api/**").authorizeRequests().antMatchers("/api/**").hasRole(
+							SiteWhereRoles.AUTH_REST).and().httpBasic();
 		}
 	}
 

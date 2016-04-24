@@ -143,9 +143,9 @@
 					var data = {
 						"metadata" : swMetadataAsLookup(auMetadataDS.data()),
 					}
-					$.putJSON("${pageContext.request.contextPath}/api/assignments/" + token
-							+ "/metadata?tenantAuthToken=${tenant.authenticationToken}", data,
-						onUpdateSuccess, onUpdateFail);
+					$.putAuthJSON(
+						"${pageContext.request.contextPath}/api/assignments/" + token + "/metadata", data,
+						"${basicAuth}", "${tenant.authenticationToken}", onUpdateSuccess, onUpdateFail);
 				});
 
 			/** Called on successful update */
@@ -182,8 +182,8 @@
 		auSubmitCallback = callback;
 
 		// Get latest device data for hardware id.
-		$.getJSON("${pageContext.request.contextPath}/api/assignments/" + token
-				+ "?tenantAuthToken=${tenant.authenticationToken}", auUpdateGetSuccess, auUpdateGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/assignments/" + token, "${basicAuth}",
+			"${tenant.authenticationToken}", auUpdateGetSuccess, auUpdateGetFailed);
 	}
 
 	/** Called on successful assignment load request */

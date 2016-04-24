@@ -65,9 +65,8 @@
 		event.stopPropagation();
 		swConfirm(i18next("public.DeleteSite"), i18next("sites.list.AYSDTS") + "?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/sites/" + siteToken
-						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
-					onDeleteFail);
+				$.deleteAuthJSON("${pageContext.request.contextPath}/api/sites/" + siteToken + "?force=true",
+					"${basicAuth}", "${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
 			}
 		});
 	}
@@ -96,49 +95,49 @@
 		sitesDS.read();
 	}
 
-	$(document)
-			.ready(
-				function() {
-					/** Create AJAX datasource for sites list */
-					sitesDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/sites?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseSiteData(item);
-											});
-											return response;
-										}
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 10
-								});
-
-					/** Create the site list */
-					$("#sites").kendoListView({
-						dataSource : sitesDS,
-						template : kendo.template($("#tpl-site-entry").html())
+	$(document).ready(function() {
+		/** Create AJAX datasource for sites list */
+		sitesDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/sites",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseSiteData(item);
 					});
+					return response;
+				}
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 10
+		});
 
-					$("#pager").kendoPager({
-						dataSource : sitesDS
-					});
+		/** Create the site list */
+		$("#sites").kendoListView({
+			dataSource : sitesDS,
+			template : kendo.template($("#tpl-site-entry").html())
+		});
 
-					/** Handle add site functionality */
-					$('#btn-add-site').click(function(event) {
-						scOpen(event, onSiteCreated);
-					});
-				});
+		$("#pager").kendoPager({
+			dataSource : sitesDS
+		});
+
+		/** Handle add site functionality */
+		$('#btn-add-site').click(function(event) {
+			scOpen(event, onSiteCreated);
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

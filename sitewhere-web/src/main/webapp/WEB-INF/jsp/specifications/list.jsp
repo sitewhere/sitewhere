@@ -77,54 +77,54 @@
 		$('#view-spec-detail').submit();
 	}
 
-	$(document)
-			.ready(
-				function() {
-					/** Create AJAX datasource for specifications list */
-					specsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/specifications?includeAsset=true&tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseSpecificationData(item);
-											});
-											return response;
-										}
-									},
-									serverPaging : true,
-									autoSync : true,
-									serverSorting : true,
-									pageSize : 15,
-								});
-
-					/** Create the list of specifications */
-					$("#specifications").kendoListView({
-						dataSource : specsDS,
-						template : kendo.template($("#tpl-specification-entry").html()),
-						change : function(e) {
-							alert("ok");
-						}
+	$(document).ready(function() {
+		/** Create AJAX datasource for specifications list */
+		specsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/specifications?includeAsset=true",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseSpecificationData(item);
 					});
+					return response;
+				}
+			},
+			serverPaging : true,
+			autoSync : true,
+			serverSorting : true,
+			pageSize : 15,
+		});
 
-					/** Pager for specification list */
-					$("#pager").kendoPager({
-						dataSource : specsDS
-					});
+		/** Create the list of specifications */
+		$("#specifications").kendoListView({
+			dataSource : specsDS,
+			template : kendo.template($("#tpl-specification-entry").html()),
+			change : function(e) {
+				alert("ok");
+			}
+		});
 
-					/** Handle create dialog */
-					$('#btn-add-specification').click(function(event) {
-						spcOpen(event, onSpecificationCreated)
-					});
-				});
+		/** Pager for specification list */
+		$("#pager").kendoPager({
+			dataSource : specsDS
+		});
+
+		/** Handle create dialog */
+		$('#btn-add-specification').click(function(event) {
+			spcOpen(event, onSpecificationCreated)
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

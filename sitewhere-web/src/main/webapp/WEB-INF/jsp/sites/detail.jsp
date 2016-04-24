@@ -329,218 +329,226 @@
 		zonesDS.read();
 	}
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					/** Create AJAX datasource for assignments list */
-					assignmentsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/sites/"
-													+ siteToken
-													+ "/assignments?includeDevice=true&includeAsset=true&tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseAssignmentData(item);
-											});
-											return response;
-										}
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 15,
+			/** Create AJAX datasource for assignments list */
+			assignmentsDS =
+					new kendo.data.DataSource({
+						transport : {
+							read : {
+								url : "${pageContext.request.contextPath}/api/sites/" + siteToken
+										+ "/assignments?includeDevice=true&includeAsset=true",
+								beforeSend : function(req) {
+									req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+									req.setRequestHeader('X-SiteWhere-Tenant',
+										"${tenant.authenticationToken}");
+								},
+								dataType : "json",
+							}
+						},
+						schema : {
+							data : "results",
+							total : "numResults",
+							parse : function(response) {
+								$.each(response.results, function(index, item) {
+									parseAssignmentData(item);
 								});
-
-					/** Create the assignments list */
-					$("#assignments").kendoListView({
-						dataSource : assignmentsDS,
-						template : kendo.template($("#tpl-assignment-entry").html())
+								return response;
+							}
+						},
+						serverPaging : true,
+						serverSorting : true,
+						pageSize : 15,
 					});
 
-					$("#assignments-pager").kendoPager({
-						dataSource : assignmentsDS
-					});
+			/** Create the assignments list */
+			$("#assignments").kendoListView({
+				dataSource : assignmentsDS,
+				template : kendo.template($("#tpl-assignment-entry").html())
+			});
 
-					$("#btn-refresh-assignments").click(function() {
-						assignmentsDS.read();
-					});
+			$("#assignments-pager").kendoPager({
+				dataSource : assignmentsDS
+			});
 
-					/** Create AJAX datasource for locations list */
-					locationsDS =
-							new kendo.data.DataSource({
-								transport : {
-									read : {
-										url : "${pageContext.request.contextPath}/api/sites/" + siteToken
-												+ "/locations?tenantAuthToken=${tenant.authenticationToken}",
-										dataType : "json",
-									}
-								},
-								schema : {
-									data : "results",
-									total : "numResults",
-									parse : parseEventResults,
-								},
-								serverPaging : true,
-								serverSorting : true,
-								pageSize : pageSize,
-							});
+			$("#btn-refresh-assignments").click(function() {
+				assignmentsDS.read();
+			});
 
-					/** Create the location list */
-					$("#locations").kendoGrid({
-						dataSource : locationsDS,
-						rowTemplate : kendo.template($("#tpl-location-entry").html()),
-						scrollable : true,
-						height : gridHeight,
-					});
+			/** Create AJAX datasource for locations list */
+			locationsDS = new kendo.data.DataSource({
+				transport : {
+					read : {
+						url : "${pageContext.request.contextPath}/api/sites/" + siteToken + "/locations",
+						beforeSend : function(req) {
+							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+						},
+						dataType : "json",
+					}
+				},
+				schema : {
+					data : "results",
+					total : "numResults",
+					parse : parseEventResults,
+				},
+				serverPaging : true,
+				serverSorting : true,
+				pageSize : pageSize,
+			});
 
-					$("#locations-pager").kendoPager({
-						dataSource : locationsDS
-					});
+			/** Create the location list */
+			$("#locations").kendoGrid({
+				dataSource : locationsDS,
+				rowTemplate : kendo.template($("#tpl-location-entry").html()),
+				scrollable : true,
+				height : gridHeight,
+			});
 
-					$("#btn-refresh-locations").click(function() {
-						locationsDS.read();
-					});
+			$("#locations-pager").kendoPager({
+				dataSource : locationsDS
+			});
 
-					/** Create AJAX datasource for measurements list */
-					measurementsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/sites/"
-													+ siteToken
-													+ "/measurements?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : parseEventResults,
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : pageSize,
-								});
+			$("#btn-refresh-locations").click(function() {
+				locationsDS.read();
+			});
 
-					/** Create the measurements list */
-					$("#measurements").kendoGrid({
-						dataSource : measurementsDS,
-						rowTemplate : kendo.template($("#tpl-measurements-entry").html()),
-						scrollable : true,
-						height : gridHeight,
-					});
+			/** Create AJAX datasource for measurements list */
+			measurementsDS = new kendo.data.DataSource({
+				transport : {
+					read : {
+						url : "${pageContext.request.contextPath}/api/sites/" + siteToken + "/measurements",
+						beforeSend : function(req) {
+							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+						},
+						dataType : "json",
+					}
+				},
+				schema : {
+					data : "results",
+					total : "numResults",
+					parse : parseEventResults,
+				},
+				serverPaging : true,
+				serverSorting : true,
+				pageSize : pageSize,
+			});
 
-					$("#measurements-pager").kendoPager({
-						dataSource : measurementsDS
-					});
+			/** Create the measurements list */
+			$("#measurements").kendoGrid({
+				dataSource : measurementsDS,
+				rowTemplate : kendo.template($("#tpl-measurements-entry").html()),
+				scrollable : true,
+				height : gridHeight,
+			});
 
-					$("#btn-refresh-measurements").click(function() {
-						measurementsDS.read();
-					});
+			$("#measurements-pager").kendoPager({
+				dataSource : measurementsDS
+			});
 
-					/** Create AJAX datasource for alerts list */
-					alertsDS =
-							new kendo.data.DataSource({
-								transport : {
-									read : {
-										url : "${pageContext.request.contextPath}/api/sites/" + siteToken
-												+ "/alerts?tenantAuthToken=${tenant.authenticationToken}",
-										dataType : "json",
-									}
-								},
-								schema : {
-									data : "results",
-									total : "numResults",
-									parse : parseEventResults,
-								},
-								serverPaging : true,
-								serverSorting : true,
-								pageSize : pageSize,
-							});
+			$("#btn-refresh-measurements").click(function() {
+				measurementsDS.read();
+			});
 
-					/** Create the measurements list */
-					$("#alerts").kendoGrid({
-						dataSource : alertsDS,
-						rowTemplate : kendo.template($("#tpl-alert-entry").html()),
-						scrollable : true,
-						height : gridHeight,
-					});
+			/** Create AJAX datasource for alerts list */
+			alertsDS = new kendo.data.DataSource({
+				transport : {
+					read : {
+						url : "${pageContext.request.contextPath}/api/sites/" + siteToken + "/alerts",
+						beforeSend : function(req) {
+							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+						},
+						dataType : "json",
+					}
+				},
+				schema : {
+					data : "results",
+					total : "numResults",
+					parse : parseEventResults,
+				},
+				serverPaging : true,
+				serverSorting : true,
+				pageSize : pageSize,
+			});
 
-					$("#alerts-pager").kendoPager({
-						dataSource : alertsDS
-					});
+			/** Create the measurements list */
+			$("#alerts").kendoGrid({
+				dataSource : alertsDS,
+				rowTemplate : kendo.template($("#tpl-alert-entry").html()),
+				scrollable : true,
+				height : gridHeight,
+			});
 
-					$("#btn-refresh-alerts").click(function() {
-						alertsDS.read();
-					});
+			$("#alerts-pager").kendoPager({
+				dataSource : alertsDS
+			});
 
-					/** Create AJAX datasource for alerts list */
-					zonesDS =
-							new kendo.data.DataSource({
-								transport : {
-									read : {
-										url : "${pageContext.request.contextPath}/api/sites/" + siteToken
-												+ "/zones?tenantAuthToken=${tenant.authenticationToken}",
-										dataType : "json",
-									}
-								},
-								schema : {
-									data : "results",
-									total : "numResults",
-									parse : parseZoneResults,
-								},
-								serverPaging : true,
-								serverSorting : true,
-								pageSize : 20,
-							});
+			$("#btn-refresh-alerts").click(function() {
+				alertsDS.read();
+			});
 
-					/** Create the measurements list */
-					$("#zones").kendoGrid({
-						dataSource : zonesDS,
-						rowTemplate : kendo.template($("#tpl-zone-entry").html()),
-						scrollable : true,
-						height : gridHeight,
-					});
+			/** Create AJAX datasource for alerts list */
+			zonesDS = new kendo.data.DataSource({
+				transport : {
+					read : {
+						url : "${pageContext.request.contextPath}/api/sites/" + siteToken + "/zones",
+						beforeSend : function(req) {
+							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+						},
+						dataType : "json",
+					}
+				},
+				schema : {
+					data : "results",
+					total : "numResults",
+					parse : parseZoneResults,
+				},
+				serverPaging : true,
+				serverSorting : true,
+				pageSize : 20,
+			});
 
-					$("#zones-pager").kendoPager({
-						dataSource : zonesDS
-					});
+			/** Create the measurements list */
+			$("#zones").kendoGrid({
+				dataSource : zonesDS,
+				rowTemplate : kendo.template($("#tpl-zone-entry").html()),
+				scrollable : true,
+				height : gridHeight,
+			});
 
-					$("#btn-refresh-zones").click(function() {
-						zonesDS.read();
-					});
+			$("#zones-pager").kendoPager({
+				dataSource : zonesDS
+			});
 
-					$("#btn-add-zone").click(function() {
-						if (site) {
-							zcOpen(site, onZoneCreateSuccess);
-						} else {
-							swAlert("Error", "Site has not been loaded.");
-						}
-					});
+			$("#btn-refresh-zones").click(function() {
+				zonesDS.read();
+			});
 
-					/** Handle edit dialog */
-					$('#btn-edit-site').click(function(event) {
-						suOpen(siteToken, onSiteEditSuccess);
-					});
+			$("#btn-add-zone").click(function() {
+				if (site) {
+					zcOpen(site, onZoneCreateSuccess);
+				} else {
+					swAlert("Error", "Site has not been loaded.");
+				}
+			});
 
-					/** Create the tab strip */
-					tabs = $("#tabs").kendoTabStrip({
-						animation : false,
-						activate : onActivate
-					}).data("kendoTabStrip");
+			/** Handle edit dialog */
+			$('#btn-edit-site').click(function(event) {
+				suOpen(siteToken, onSiteEditSuccess);
+			});
 
-					loadSite();
-				});
+			/** Create the tab strip */
+			tabs = $("#tabs").kendoTabStrip({
+				animation : false,
+				activate : onActivate
+			}).data("kendoTabStrip");
+
+			loadSite();
+		});
 
 	/** Force grid refresh on first tab activate (KendoUI bug) */
 	function onActivate(e) {
@@ -580,8 +588,8 @@
 
 	/** Loads information for the selected site */
 	function loadSite() {
-		$.getJSON("${pageContext.request.contextPath}/api/sites/" + siteToken
-				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/sites/" + siteToken, "${basicAuth}",
+			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful site load request */

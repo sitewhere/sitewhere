@@ -165,8 +165,8 @@
 
 	/** Loads information for the selected specification */
 	function loadSpecification() {
-		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
-				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, "${basicAuth}",
+			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful specification load request */
@@ -191,9 +191,8 @@
 		swConfirm(i18next("includes.DeleteCommand"), i18next("specifications.detail.AYSTYWTDDCW")
 				+ " token '" + token + "'?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/commands/" + token
-						+ "?tenantAuthToken=${tenant.authenticationToken}", commandDeleteSuccess,
-					commandDeleteFailed);
+				$.deleteAuthJSON("${pageContext.request.contextPath}/api/commands/" + token, "${basicAuth}",
+					"${tenant.authenticationToken}", commandDeleteSuccess, commandDeleteFailed);
 			}
 		});
 	}
@@ -210,9 +209,8 @@
 
 	/** Loads commands for the selected specification */
 	function loadCommands() {
-		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
-				+ "/namespaces?tenantAuthToken=${tenant.authenticationToken}", loadCommandsSuccess,
-			loadCommandsFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/specifications/" + specToken + "/namespaces",
+			"${basicAuth}", "${tenant.authenticationToken}", loadCommandsSuccess, loadCommandsFailed);
 	}
 
 	/** Called on successful specification commands load request */
@@ -292,8 +290,8 @@
 
 	/** Reloads specification and routes to a callback that will execute updates. */
 	function loadSchemaForUpdate(callback) {
-		$.getJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
-				+ "?tenantAuthToken=${tenant.authenticationToken}", callback, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/specifications/" + specToken, "${basicAuth}",
+			"${tenant.authenticationToken}", callback, loadGetFailed);
 	}
 
 	/** Called on successful specification load request */
@@ -328,8 +326,8 @@
 						var specData = {
 							"deviceElementSchema" : updated,
 						}
-						$.putJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
-								+ "?tenantAuthToken=${tenant.authenticationToken}", specData,
+						$.putAuthJSON("${pageContext.request.contextPath}/api/specifications/" + specToken,
+							specData, "${basicAuth}", "${tenant.authenticationToken}",
 							refreshDeviceElementSchema, onDeleteSlotFail);
 					}
 				}
@@ -350,8 +348,8 @@
 						var specData = {
 							"deviceElementSchema" : updated,
 						}
-						$.putJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
-								+ "?tenantAuthToken=${tenant.authenticationToken}", specData,
+						$.putAuthJSON("${pageContext.request.contextPath}/api/specifications/" + specToken,
+							specData, "${basicAuth}", "${tenant.authenticationToken}",
 							refreshDeviceElementSchema, onDeleteUnitFail);
 					}
 				}

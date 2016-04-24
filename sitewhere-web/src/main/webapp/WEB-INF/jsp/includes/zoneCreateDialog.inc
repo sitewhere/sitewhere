@@ -135,13 +135,13 @@
 						"metadata" : swMetadataAsLookup(zcMetadataDS.data()),
 					}
 					if (zcZone) {
-						$.putJSON("${pageContext.request.contextPath}/api/zones/" + zcZone.token
-								+ "?tenantAuthToken=${tenant.authenticationToken}", zoneData,
-							onCreateSuccess, onCreateFail);
+						$.putAuthJSON("${pageContext.request.contextPath}/api/zones/" + zcZone.token,
+							zoneData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
+							onCreateFail);
 					} else {
-						$.postJSON("${pageContext.request.contextPath}/api/sites/" + zcSite.token
-								+ "/zones?tenantAuthToken=${tenant.authenticationToken}", zoneData,
-							onCreateSuccess, onCreateFail);
+						$.postAuthJSON("${pageContext.request.contextPath}/api/sites/" + zcSite.token,
+							zoneData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
+							onCreateFail);
 					}
 				});
 
@@ -272,7 +272,7 @@
 		zcSubmitCallback = callback;
 
 		// Asyncronously load zones and add layer to map.
-		$.getJSON("/sitewhere/api/zones/" + zoneToken + "?tenantAuthToken=${tenant.authenticationToken}",
+		$.getAuthJSON("/sitewhere/api/zones/" + zoneToken, "${basicAuth}", "${tenant.authenticationToken}",
 			zuOpenGetSuccess, function(jqXHR, textStatus, errorThrown) {
 				handleError(jqXHR, "Unable to get zone for update.");
 			});

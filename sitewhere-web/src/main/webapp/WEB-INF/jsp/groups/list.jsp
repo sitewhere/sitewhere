@@ -77,49 +77,49 @@
 		deviceGroupsDS.read();
 	}
 
-	$(document)
-			.ready(
-				function() {
-					/** Create AJAX datasource for device groups list */
-					deviceGroupsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/devicegroups?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseDeviceGroupData(item);
-											});
-											return response;
-										}
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 15,
-								});
-
-					/** Create the list of devices */
-					$("#groups").kendoListView({
-						dataSource : deviceGroupsDS,
-						template : kendo.template($("#tpl-device-group-entry").html()),
+	$(document).ready(function() {
+		/** Create AJAX datasource for device groups list */
+		deviceGroupsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/devicegroups",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseDeviceGroupData(item);
 					});
+					return response;
+				}
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 15,
+		});
 
-					/** Pager for device list */
-					$("#pager").kendoPager({
-						dataSource : deviceGroupsDS
-					});
+		/** Create the list of devices */
+		$("#groups").kendoListView({
+			dataSource : deviceGroupsDS,
+			template : kendo.template($("#tpl-device-group-entry").html()),
+		});
 
-					$("#btn-add-device-group").click(function(event) {
-						dgcOpen(event, onDeviceGroupAdded)
-					});
-				});
+		/** Pager for device list */
+		$("#pager").kendoPager({
+			dataSource : deviceGroupsDS
+		});
+
+		$("#btn-add-device-group").click(function(event) {
+			dgcOpen(event, onDeviceGroupAdded)
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

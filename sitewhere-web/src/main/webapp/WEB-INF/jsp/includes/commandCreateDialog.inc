@@ -210,13 +210,12 @@
 						"metadata" : swMetadataAsLookup(ccMetadataDS.data()),
 					};
 					if (isCreate) {
-						$.postJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
-								+ "/commands" + "?tenantAuthToken=${tenant.authenticationToken}", command,
+						$.postAuthJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
+								+ "/commands", command, "${basicAuth}", "${tenant.authenticationToken}",
 							onSuccess, onCreateFail);
 					} else {
-						$.putJSON("${pageContext.request.contextPath}/api/commands/" + token
-								+ "?tenantAuthToken=${tenant.authenticationToken}", command, onSuccess,
-							onUpdateFail);
+						$.putAuthJSON("${pageContext.request.contextPath}/api/commands/" + token, command,
+							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onUpdateFail);
 					}
 				});
 
@@ -330,8 +329,8 @@
 		ccSubmitCallback = callback;
 
 		// Get command for edit.
-		$.getJSON("${pageContext.request.contextPath}/api/commands/" + token
-				+ "?tenantAuthToken=${tenant.authenticationToken}", cuCommandGetSuccess, suCommandGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/commands/" + token, "${basicAuth}",
+			"${tenant.authenticationToken}", cuCommandGetSuccess, suCommandGetFailed);
 	}
 
 	/** Called on successful user load request */

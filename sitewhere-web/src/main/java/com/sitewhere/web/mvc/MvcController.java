@@ -7,12 +7,15 @@
  */
 package com.sitewhere.web.mvc;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitewhere.SiteWhere;
@@ -22,6 +25,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.user.IUser;
 import com.sitewhere.version.VersionHelper;
 
 /**
@@ -51,6 +55,9 @@ public class MvcController {
 
 	/** Redirect URL for tenant selection page */
 	public static final String DATA_REDIRECT = "redirect";
+
+	/** Encoded basic auth header information */
+	public static final String DATA_BASIC_AUTH = "basicAuth";
 
 	/**
 	 * Show error message for exception.
@@ -106,11 +113,21 @@ public class MvcController {
 	 */
 	protected Map<String, Object> createBaseData(HttpServletRequest request, boolean requireTenant)
 			throws SiteWhereException {
+		IUser user = LoginManager.getCurrentlyLoggedInUser();
+
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put(DATA_VERSION, VersionHelper.getVersion());
-		data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
+		data.put(DATA_CURRENT_USER, user);
 		data.put(DATA_AUTHORITIES, new AuthoritiesHelper(LoginManager.getCurrentlyLoggedInUser()));
 		data.put(DATA_TENANT, getChosenTenant(request, requireTenant));
+
+		if (user != null) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			String creds = user.getUsername() + ":" + auth.getCredentials();
+			String basicAuth = new String(Base64.getEncoder().encodeToString(creds.getBytes()));
+			data.put(DATA_BASIC_AUTH, basicAuth);
+		}
+
 		return data;
 	}
 

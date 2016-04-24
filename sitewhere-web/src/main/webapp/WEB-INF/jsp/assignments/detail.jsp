@@ -263,173 +263,180 @@ table#invocations tr td {
 		ivOpen(id);
 	}
 
-	$(document).ready(
-		function() {
+	$(document).ready(function() {
 
-			/** Create AJAX datasource for locations list */
-			locationsDS =
-					new kendo.data.DataSource({
-						transport : {
-							read : {
-								url : "${pageContext.request.contextPath}/api/assignments/" + token
-										+ "/locations?tenantAuthToken=${tenant.authenticationToken}",
-								dataType : "json",
-							}
-						},
-						schema : {
-							data : "results",
-							total : "numResults",
-							parse : parseEventResults,
-						},
-						serverPaging : true,
-						serverSorting : true,
-						pageSize : pageSize,
-					});
-
-			/** Create the location list */
-			$("#locations").kendoGrid({
-				dataSource : locationsDS,
-				rowTemplate : kendo.template($("#tpl-location-entry").html()),
-				scrollable : true,
-				height : gridHeight,
-			});
-
-			$("#locations-pager").kendoPager({
-				dataSource : locationsDS
-			});
-
-			$("#btn-refresh-locations").click(function() {
-				locationsDS.read();
-			});
-			$('#btn-filter-locations').attr('disabled', true);
-
-			/** Create AJAX datasource for measurements list */
-			measurementsDS =
-					new kendo.data.DataSource({
-						transport : {
-							read : {
-								url : "${pageContext.request.contextPath}/api/assignments/" + token
-										+ "/measurements?tenantAuthToken=${tenant.authenticationToken}",
-								dataType : "json",
-							}
-						},
-						schema : {
-							data : "results",
-							total : "numResults",
-							parse : parseEventResults,
-						},
-						serverPaging : true,
-						serverSorting : true,
-						pageSize : pageSize,
-					});
-
-			/** Create the measurements list */
-			$("#measurements").kendoGrid({
-				dataSource : measurementsDS,
-				rowTemplate : kendo.template($("#tpl-measurements-entry").html()),
-				scrollable : true,
-				height : gridHeight,
-			});
-
-			$("#measurements-pager").kendoPager({
-				dataSource : measurementsDS
-			});
-
-			$("#btn-refresh-measurements").click(function() {
-				measurementsDS.read();
-			});
-			$('#btn-filter-measurements').attr('disabled', true);
-
-			/** Create AJAX datasource for alerts list */
-			alertsDS =
-					new kendo.data.DataSource({
-						transport : {
-							read : {
-								url : "${pageContext.request.contextPath}/api/assignments/" + token
-										+ "/alerts?tenantAuthToken=${tenant.authenticationToken}",
-								dataType : "json",
-							}
-						},
-						schema : {
-							data : "results",
-							total : "numResults",
-							parse : parseEventResults,
-						},
-						serverPaging : true,
-						serverSorting : true,
-						pageSize : pageSize,
-					});
-
-			/** Create the alerts list */
-			$("#alerts").kendoGrid({
-				dataSource : alertsDS,
-				rowTemplate : kendo.template($("#tpl-alert-entry").html()),
-				scrollable : true,
-				height : gridHeight,
-			});
-
-			$("#alerts-pager").kendoPager({
-				dataSource : alertsDS
-			});
-
-			$("#btn-refresh-alerts").click(function() {
-				alertsDS.read();
-			});
-			$('#btn-filter-alerts').attr('disabled', true);
-
-			/** Create AJAX datasource for invocations list */
-			invocationsDS =
-					new kendo.data.DataSource({
-						transport : {
-							read : {
-								url : "${pageContext.request.contextPath}/api/assignments/" + token
-										+ "/invocations?tenantAuthToken=${tenant.authenticationToken}",
-								dataType : "json",
-							}
-						},
-						schema : {
-							data : "results",
-							total : "numResults",
-							parse : parseEventResults,
-						},
-						serverPaging : true,
-						serverSorting : true,
-						pageSize : pageSize,
-					});
-
-			/** Create the invocations list */
-			$("#invocations").kendoGrid({
-				dataSource : invocationsDS,
-				rowTemplate : kendo.template($("#tpl-invocation-entry").html()),
-				scrollable : true,
-				height : gridHeight,
-			});
-
-			$("#btn-refresh-invocations").click(function() {
-				invocationsDS.read();
-			});
-			$('#btn-filter-invocations').attr('disabled', true);
-
-			$("#btn-create-invocation").click(function() {
-				ciOpen(token, specificationToken, onInvokeCommandSuccess);
-			});
-
-			$("#invocations-pager").kendoPager({
-				dataSource : invocationsDS
-			});
-
-			$("#btn-edit-assignment").click(function() {
-				auOpen(token, onAssignmentEditSuccess);
-			});
-
-			/** Create the tab strip */
-			tabs = $("#tabs").kendoTabStrip({
-				animation : false,
-				activate : onActivate
-			}).data("kendoTabStrip");
-
-			loadAssignment();
+		/** Create AJAX datasource for locations list */
+		locationsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/locations",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : parseEventResults,
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : pageSize,
 		});
+
+		/** Create the location list */
+		$("#locations").kendoGrid({
+			dataSource : locationsDS,
+			rowTemplate : kendo.template($("#tpl-location-entry").html()),
+			scrollable : true,
+			height : gridHeight,
+		});
+
+		$("#locations-pager").kendoPager({
+			dataSource : locationsDS
+		});
+
+		$("#btn-refresh-locations").click(function() {
+			locationsDS.read();
+		});
+		$('#btn-filter-locations').attr('disabled', true);
+
+		/** Create AJAX datasource for measurements list */
+		measurementsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/measurements",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : parseEventResults,
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : pageSize,
+		});
+
+		/** Create the measurements list */
+		$("#measurements").kendoGrid({
+			dataSource : measurementsDS,
+			rowTemplate : kendo.template($("#tpl-measurements-entry").html()),
+			scrollable : true,
+			height : gridHeight,
+		});
+
+		$("#measurements-pager").kendoPager({
+			dataSource : measurementsDS
+		});
+
+		$("#btn-refresh-measurements").click(function() {
+			measurementsDS.read();
+		});
+		$('#btn-filter-measurements').attr('disabled', true);
+
+		/** Create AJAX datasource for alerts list */
+		alertsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/alerts",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : parseEventResults,
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : pageSize,
+		});
+
+		/** Create the alerts list */
+		$("#alerts").kendoGrid({
+			dataSource : alertsDS,
+			rowTemplate : kendo.template($("#tpl-alert-entry").html()),
+			scrollable : true,
+			height : gridHeight,
+		});
+
+		$("#alerts-pager").kendoPager({
+			dataSource : alertsDS
+		});
+
+		$("#btn-refresh-alerts").click(function() {
+			alertsDS.read();
+		});
+		$('#btn-filter-alerts').attr('disabled', true);
+
+		/** Create AJAX datasource for invocations list */
+		invocationsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/invocations",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : parseEventResults,
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : pageSize,
+		});
+
+		/** Create the invocations list */
+		$("#invocations").kendoGrid({
+			dataSource : invocationsDS,
+			rowTemplate : kendo.template($("#tpl-invocation-entry").html()),
+			scrollable : true,
+			height : gridHeight,
+		});
+
+		$("#btn-refresh-invocations").click(function() {
+			invocationsDS.read();
+		});
+		$('#btn-filter-invocations').attr('disabled', true);
+
+		$("#btn-create-invocation").click(function() {
+			ciOpen(token, specificationToken, onInvokeCommandSuccess);
+		});
+
+		$("#invocations-pager").kendoPager({
+			dataSource : invocationsDS
+		});
+
+		$("#btn-edit-assignment").click(function() {
+			auOpen(token, onAssignmentEditSuccess);
+		});
+
+		/** Create the tab strip */
+		tabs = $("#tabs").kendoTabStrip({
+			animation : false,
+			activate : onActivate
+		}).data("kendoTabStrip");
+
+		loadAssignment();
+	});
 
 	/** Force grid refresh on first tab activate (KendoUI bug) */
 	function onActivate(e) {
@@ -453,8 +460,8 @@ table#invocations tr td {
 
 	/** Loads information for the selected assignment */
 	function loadAssignment() {
-		$.getJSON("${pageContext.request.contextPath}/api/assignments/" + token
-				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/assignments/" + token, "${basicAuth}",
+			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful assignment load request */

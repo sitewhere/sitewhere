@@ -70,75 +70,71 @@
 	/** List containing roles */
 	var dgcRoles;
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					/** Create tab strip */
-					dgcTabs = $("#dgc-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			/** Create tab strip */
+			dgcTabs = $("#dgc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
 
-					/** Datasource for roles */
-					dgcRolesDS = new kendo.data.DataSource({
-						data : dgcRoles,
-					});
+			/** Datasource for roles */
+			dgcRolesDS = new kendo.data.DataSource({
+				data : dgcRoles,
+			});
 
-					/** Create the hardware match list */
-					dgcRoles = $("#dgc-roles").kendoListView({
-						dataSource : dgcRolesDS,
-						template : kendo.template($("#tpl-role-entry").html()),
-						height : 400,
-					}).data("kendoListView");
+			/** Create the hardware match list */
+			dgcRoles = $("#dgc-roles").kendoListView({
+				dataSource : dgcRolesDS,
+				template : kendo.template($("#tpl-role-entry").html()),
+				height : 400,
+			}).data("kendoListView");
 
-					/** Handle create dialog submit */
-					$('#dgc-dialog-submit')
-							.click(
-								function(event) {
-									event.preventDefault();
-									if (!dgcValidate()) {
-										return;
-									}
-
-									var groupData = {
-										"name" : $('#dgc-name').val(),
-										"description" : $('#dgc-description').val(),
-										"roles" : dgcRolesDS.data(),
-										"metadata" : swMetadataAsLookup(dgcMetadataDS.data()),
-									}
-
-									var token = $('#dgc-group-token').val();
-									if (token.length == 0) {
-										$
-												.postJSON(
-													"${pageContext.request.contextPath}/api/devicegroups?tenantAuthToken=${tenant.authenticationToken}",
-													groupData, onCreateSuccess, onCreateFail);
-									} else {
-										groupData.token = token;
-										$.putJSON("${pageContext.request.contextPath}/api/devicegroups/"
-												+ token + "?tenantAuthToken=${tenant.authenticationToken}",
-											groupData, onCreateSuccess, onUpdateFail);
-									}
-								});
-
-					/** Called on successful create */
-					function onCreateSuccess() {
-						$('#dgc-dialog').modal('hide');
-						if (dgcSubmitCallback != null) {
-							dgcSubmitCallback();
-						}
+			/** Handle create dialog submit */
+			$('#dgc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!dgcValidate()) {
+						return;
 					}
 
-					/** Handle failed call to create device group */
-					function onCreateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to create device group.");
+					var groupData = {
+						"name" : $('#dgc-name').val(),
+						"description" : $('#dgc-description').val(),
+						"roles" : dgcRolesDS.data(),
+						"metadata" : swMetadataAsLookup(dgcMetadataDS.data()),
 					}
 
-					/** Handle failed call to updated device group */
-					function onUpdateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to updated device group.");
+					var token = $('#dgc-group-token').val();
+					if (token.length == 0) {
+						$.postAuthJSON("${pageContext.request.contextPath}/api/devicegroups", groupData,
+							"${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess, onCreateFail);
+					} else {
+						groupData.token = token;
+						$.putAuthJSON("${pageContext.request.contextPath}/api/devicegroups/" + token,
+							groupData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
+							onUpdateFail);
 					}
 				});
+
+			/** Called on successful create */
+			function onCreateSuccess() {
+				$('#dgc-dialog').modal('hide');
+				if (dgcSubmitCallback != null) {
+					dgcSubmitCallback();
+				}
+			}
+
+			/** Handle failed call to create device group */
+			function onCreateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to create device group.");
+			}
+
+			/** Handle failed call to updated device group */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to updated device group.");
+			}
+		});
 
 	/** Validate everything */
 	function dgcValidate() {
@@ -190,8 +186,8 @@
 		dgcSubmitCallback = callback;
 
 		// Get device group for edit.
-		$.getJSON("${pageContext.request.contextPath}/api/devicegroups/" + token
-				+ "?tenantAuthToken=${tenant.authenticationToken}", dguGetSuccess, dguGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/devicegroups/" + token, "${basicAuth}",
+			"${tenant.authenticationToken}", dguGetSuccess, dguGetFailed);
 	}
 
 	/** Called on successful user load request */
