@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +55,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/authorities")
 @Api(value = "authorities", description = "Operations related to SiteWhere authorities.")
 @DocumentedController(name = "Granted Authorities")
@@ -98,7 +100,8 @@ public class AuthoritiesController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get authority by id")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "getAuthorityByNameResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Authorities.CreateAuthorityResponse.class, description = "getAuthorityByNameResponse.md") })
 	public GrantedAuthority getAuthorityByName(
 			@ApiParam(value = "Authority name", required = true) @PathVariable String name)
 			throws SiteWhereException {
@@ -126,7 +129,8 @@ public class AuthoritiesController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "List authorities that match criteria")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Authorities.ListAuthoritiesResponse.class, description = "listAuthoritiesResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Authorities.ListAuthoritiesResponse.class, description = "listAuthoritiesResponse.md") })
 	public SearchResults<GrantedAuthority> listAuthorities(
 			@ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
 			throws SiteWhereException {

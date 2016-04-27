@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,6 +78,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/sites")
 @Api(value = "sites", description = "Operations related to SiteWhere sites.")
 @DocumentedController(name = "Sites")
@@ -158,7 +160,7 @@ public class SitesController extends RestController {
 	public Site updateSite(
 			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
 			@RequestBody SiteCreateRequest request, HttpServletRequest servletRequest)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateSite", LOGGER);
 		try {
 			ISite site =
@@ -586,7 +588,7 @@ public class SitesController extends RestController {
 	public Zone createZone(
 			@ApiParam(value = "Unique site token", required = true) @PathVariable String siteToken,
 			@RequestBody ZoneCreateRequest request, HttpServletRequest servletRequest)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createZone", LOGGER);
 		try {
 			ISite site =

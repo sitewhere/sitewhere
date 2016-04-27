@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -73,8 +74,10 @@ public class SiteWhereSecurity {
 		protected void configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
 			http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher(
-					"/api/**").authorizeRequests().antMatchers("/api/**").hasRole(
-							SiteWhereRoles.AUTH_REST).and().httpBasic();
+					"/api/**").authorizeRequests().antMatchers(HttpMethod.OPTIONS,
+							"/api/**").permitAll().antMatchers(HttpMethod.GET,
+									"/api/**/symbol").permitAll().antMatchers("/api/**").hasRole(
+											SiteWhereRoles.AUTH_REST).and().httpBasic();
 		}
 	}
 

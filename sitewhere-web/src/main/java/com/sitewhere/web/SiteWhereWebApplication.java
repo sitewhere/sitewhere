@@ -17,6 +17,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.sitewhere.SiteWhereApplication;
@@ -63,6 +66,19 @@ public class SiteWhereWebApplication extends SiteWhereApplication {
 		registration.setName("sitewhereRestInterface");
 		registration.setLoadOnStartup(1);
 		return registration;
+	}
+
+	@Bean
+	public CorsFilter corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.addAllowedOrigin("*");
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("*");
+		config.addExposedHeader("Authorization");
+		config.addExposedHeader("Content-Type");
+		source.registerCorsConfiguration("/api/**", config);
+		return new CorsFilter(source);
 	}
 
 	@Bean

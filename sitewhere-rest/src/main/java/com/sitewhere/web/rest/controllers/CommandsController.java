@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +47,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/commands")
 @Api(value = "commands", description = "Operations related to SiteWhere device commands.")
 @DocumentedController(name = "Device Commands")
@@ -92,7 +94,8 @@ public class CommandsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get device command by unique token")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "getDeviceCommandByTokenResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "getDeviceCommandByTokenResponse.md") })
 	public IDeviceCommand getDeviceCommandByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -116,7 +119,8 @@ public class CommandsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Delete device command by unique token")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "deleteDeviceCommandResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Commands.DeviceCommandByTokenResponse.class, description = "deleteDeviceCommandResponse.md") })
 	public IDeviceCommand deleteDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,

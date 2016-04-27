@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +45,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/zones")
 @Api(value = "zones", description = "Operations related to SiteWhere zones")
 @DocumentedController(name = "Zones")
@@ -56,7 +58,8 @@ public class ZonesController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get zone by token")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.CreateZoneRequest.class, description = "getZoneResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Sites.CreateZoneRequest.class, description = "getZoneResponse.md") })
 	public Zone getZone(
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -91,8 +94,8 @@ public class ZonesController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "updateZone", LOGGER);
 		try {
 			IZone zone =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateZone(
-							zoneToken, request);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).updateZone(zoneToken,
+							request);
 			return Zone.copy(zone);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -110,7 +113,8 @@ public class ZonesController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Delete zone by unique token")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Sites.CreateZoneRequest.class, description = "deleteZoneResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Sites.CreateZoneRequest.class, description = "deleteZoneResponse.md") })
 	public Zone deleteZone(
 			@ApiParam(value = "Unique token that identifies zone", required = true) @PathVariable String zoneToken,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,
@@ -118,8 +122,8 @@ public class ZonesController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "deleteZone", LOGGER);
 		try {
 			IZone deleted =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteZone(
-							zoneToken, force);
+					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).deleteZone(zoneToken,
+							force);
 			return Zone.copy(deleted);
 		} finally {
 			Tracer.stop(LOGGER);
