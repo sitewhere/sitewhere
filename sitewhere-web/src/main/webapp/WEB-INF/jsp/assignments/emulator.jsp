@@ -510,6 +510,7 @@
 		locationsLayer = L.FeatureGroup.SiteWhere.assignmentLocations({
 			siteWhereApi : '${pageContext.request.contextPath}/api/',
 			assignmentToken : token,
+			basicAuth: '${basicAuth}',
 			tenantAuthToken : '${tenant.authenticationToken}',
 			onLocationsLoaded : onLocationsUpdated,
 		});
@@ -1019,6 +1020,7 @@
 			map = L.Map.siteWhere('emulator-map', {
 				siteWhereApi : '${pageContext.request.contextPath}/api/',
 				siteToken : siteToken,
+				basicAuth : '${basicAuth}',
 				tenantAuthToken : '${tenant.authenticationToken}',
 				onZonesLoaded : onZonesLoaded,
 			});

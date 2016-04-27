@@ -11,6 +11,7 @@ L.Map.SiteWhere = L.Map.extend({
 	options: {
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		siteToken: null,
+		basicAuth: null,
 		tenantAuthToken: null,
 		showZones: true,
 		onZonesLoaded: null,
@@ -36,7 +37,7 @@ L.Map.SiteWhere = L.Map.extend({
 		var self = this;
 		var url = this.options.siteWhereApi + 'sites/' + this.options.siteToken + 
 			'?tenantAuthToken=' + this.options.tenantAuthToken;
-		L.SiteWhere.Util.getJSON(url, 
+		L.SiteWhere.Util.getAuthJSON(url, this.options.basicAuth,
 				function(site, status, jqXHR) { self._onSiteLoaded(site); }, 
 				function(jqXHR, textStatus, errorThrown) { self._onSiteFailed(jqXHR, textStatus, errorThrown); }
 		);
@@ -54,6 +55,7 @@ L.Map.SiteWhere = L.Map.extend({
 			var zones = L.FeatureGroup.SiteWhere.zones({
 				siteWhereApi: this.options.siteWhereApi,
 				siteToken: this.options.siteToken,
+				basicAuth: this.options.basicAuth,
 				tenantAuthToken: this.options.tenantAuthToken,
 				onZonesLoaded: this.options.onZonesLoaded,
 			});
@@ -113,6 +115,7 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 	options: {
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		siteToken: null,
+		basicAuth: null,
 		tenantAuthToken: null,
 		onZonesLoaded: null,
 		zoneTokenToSkip: null,
@@ -137,7 +140,7 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 		var self = this;
 		var url = this.options.siteWhereApi + 'sites/' + this.options.siteToken + 
 			'/zones?tenantAuthToken=' + this.options.tenantAuthToken;
-		L.SiteWhere.Util.getJSON(url, 
+		L.SiteWhere.Util.getAuthJSON(url, this.options.basicAuth,
 				function(zones, status, jqXHR) { self._onZonesLoaded(zones); }, 
 				function(jqXHR, textStatus, errorThrown) { self._onZonesFailed(jqXHR, textStatus, errorThrown); }
 		);
@@ -211,6 +214,7 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 		// Data options.
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		assignmentToken: null,
+		basicAuth: null,
 		tenantAuthToken: null,
 		maxResults: 30,
 		
@@ -250,7 +254,7 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 		var self = this;
 		var url = this.options.siteWhereApi + 'assignments/' + this.options.assignmentToken + 
 			'/locations?tenantAuthToken=' + this.options.tenantAuthToken;
-		L.SiteWhere.Util.getJSON(url, 
+		L.SiteWhere.Util.getAuthJSON(url, this.options.basicAuth,
 			function(locations, status, jqXHR) { 
 				self._onLocationsLoaded(locations); }, 
 			function(jqXHR, textStatus, errorThrown) { 
@@ -358,6 +362,21 @@ L.SiteWhere.Util = L.Class.extend({
 				'type' : 'GET',
 				'dataType': 'jsonp',
 				'url' : url,
+				'contentType' : 'application/json',
+				'success' : onSuccess,
+				'error' : onFail
+			});
+		},
+		
+		/** Make a JSONP GET request */
+		getAuthJSON: function(url, basicAuth, onSuccess, onFail) {
+			return jQuery.ajax({
+				'type' : 'GET',
+				'dataType': 'jsonp',
+				'url' : url,
+				'beforeSend' : function(req) {
+					req.setRequestHeader('Authorization', "Basic " + basicAuth);
+				},
 				'contentType' : 'application/json',
 				'success' : onSuccess,
 				'error' : onFail
