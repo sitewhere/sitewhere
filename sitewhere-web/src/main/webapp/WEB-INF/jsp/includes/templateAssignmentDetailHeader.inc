@@ -109,7 +109,7 @@
 # }	#
 			<div>
 				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DUBA") #">#= i18next("includes.i18next.AssignedDevice") #:</span>
-				<span title="#:device.assetName#"><a href='/sitewhere/admin/devices/#:device.hardwareId#.html'>#:device.assetName#</a></span>
+				<span title="#:device.assetName#"><a href='/sitewhere/admin/${tenant.id}/devices/#:device.hardwareId#.html'>#:device.assetName#</a></span>
 			</div>
 			<div>
 				<span class="sw-assignment-header-label" title="#= i18next("includes.i18next.DAWC") #">#= i18next("public.CreatedDate") #:</span>

@@ -108,7 +108,7 @@
 			</div>
 			<p class="sw-device-list-entry-heading ellipsis">
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
-					href="/sitewhere/admin/assignments/#:assignment.token#.html">
+					href="/sitewhere/admin/${tenant.id}/assignments/#:assignment.token#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 				<span title="#:assignment.assetName#">#:assignment.assetName#</span>
 			</p>
@@ -119,7 +119,7 @@
 			</div>
 			<p class="sw-device-list-entry-heading ellipsis">
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
-					href="/sitewhere/admin/assignments/#:assignment.token#.html">
+					href="/sitewhere/admin/${tenant.id}/assignments/#:assignment.token#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 				Unassociated Device
 			</p>
@@ -164,7 +164,7 @@
 			<p class="sw-device-list-entry-heading ellipsis">
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
-					href="/sitewhere/admin/devices/#:hardwareId#.html">
+					href="/sitewhere/admin/${tenant.id}/devices/#:hardwareId#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenDevice") #"></i></a>
 # } #
 				<span title="#:specification.asset.name#">#:specification.asset.name#</span>

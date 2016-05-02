@@ -167,7 +167,7 @@
 			</div>
 			<p class="sw-assignment-list-entry-heading ellipsis" title="#:device.assetName#">
 				<a title="#:device.assetName#" class="sw-action-glyph sw-primary-glyph" 
-					style="color: \\#009;" href="/sitewhere/admin/devices/#:device.hardwareId#.html">
+					style="color: \\#009;" href="/sitewhere/admin/${tenant.id}/devices/#:device.hardwareId#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenDevice") #"></i></a>
 				<span title="#:device.assetName#">#:device.assetName#</span>
 			</p>
@@ -186,7 +186,7 @@
 			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedPerson.name#">
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
-					href="/sitewhere/admin/assignments/#:token#.html">
+					href="/sitewhere/admin/${tenant.id}/assignments/#:token#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
 				#:associatedPerson.name#
@@ -199,7 +199,7 @@
 			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedHardware.name#">
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
-					href="/sitewhere/admin/assignments/#:token#.html">
+					href="/sitewhere/admin/${tenant.id}/assignments/#:token#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
 				#:associatedHardware.name#
@@ -212,7 +212,7 @@
 			<p class="sw-assignment-list-entry-heading ellipsis" title="#:associatedLocation.name#">
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
-					href="/sitewhere/admin/assignments/#:token#.html">
+					href="/sitewhere/admin/${tenant.id}/assignments/#:token#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
 				#:associatedLocation.name#
@@ -225,7 +225,7 @@
 			<p class="sw-assignment-list-entry-heading ellipsis">
 # if (data.inDetailView == null) { #
 				<a class="sw-action-glyph sw-primary-glyph" style="color: \\#009;" 
-					href="/sitewhere/admin/assignments/#:token#.html">
+					href="/sitewhere/admin/${tenant.id}/assignments/#:token#.html">
 					<i class="fa fa-external-link fa-white" title="#= i18next("includes.i18next.OpenAssignment") #"></i></a>
 # } #
 				Unassociated Device

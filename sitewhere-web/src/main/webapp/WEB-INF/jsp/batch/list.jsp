@@ -62,7 +62,7 @@
 	function viewBatchOperation(type, token) {
 		if (type == "InvokeCommand") {
 			$("#view-batch-operation-detail").attr("action",
-				"${pageContext.request.contextPath}/admin/batch/command/" + token + ".html");
+				"${pageContext.request.contextPath}/admin/${tenant.id}/batch/command/" + token + ".html");
 			$("#view-batch-operation-detail").submit();
 		}
 	}

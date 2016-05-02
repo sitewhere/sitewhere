@@ -64,25 +64,14 @@
 				<div class="sw-main-nav">
 					<c:if test="${tenant != null}">
 						<ul class="nav nav-pills">
-							<c:if test="${authorities.viewServerInformation}">
-								<c:choose>
-									<c:when test="${sitewhere_section == 'server'}">
-										<li class="active"><a href="${pageContext.request.contextPath}/admin/server.html"
-											data-i18n="public.Server">Server</a></li>
-									</c:when>
-									<c:otherwise>
-										<li><a href="${pageContext.request.contextPath}/admin/server.html"
-											data-i18n="public.Server">Server</a></li>
-									</c:otherwise>
-								</c:choose>
-							</c:if>
 							<c:choose>
 								<c:when test="${sitewhere_section == 'sites'}">
-									<li class="active"><a href="${pageContext.request.contextPath}/admin/sites/list.html"
+									<li class="active"><a
+										href="${pageContext.request.contextPath}/admin/${tenant.id}/sites/list.html"
 										data-i18n="public.Sites"></a></li>
 								</c:when>
 								<c:otherwise>
-									<li><a href="${pageContext.request.contextPath}/admin/sites/list.html"
+									<li><a href="${pageContext.request.contextPath}/admin/${tenant.id}/sites/list.html"
 										data-i18n="public.Sites"></a></li>
 								</c:otherwise>
 							</c:choose>
@@ -93,11 +82,13 @@
 										data-i18n="[prepend]public.Devices" data-toggle="dropdown"> <span class="caret"></span>
 									</a>
 										<ul class="dropdown-menu">
-											<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html"
+											<li><a
+												href="${pageContext.request.contextPath}/admin/${tenant.id}/specifications/list.html"
 												data-i18n="public.Specifications"></a></li>
-											<li><a href="${pageContext.request.contextPath}/admin/devices/list.html"
+											<li><a
+												href="${pageContext.request.contextPath}/admin/${tenant.id}/devices/list.html"
 												data-i18n="public.Devices"></a></li>
-											<li><a href="${pageContext.request.contextPath}/admin/groups/list.html"
+											<li><a href="${pageContext.request.contextPath}/admin/${tenant.id}/groups/list.html"
 												data-i18n="public.DeviceGroups"></a></li>
 										</ul></li>
 								</c:when>
@@ -106,11 +97,13 @@
 										data-i18n="[prepend]public.Devices" data-toggle="dropdown"> <span class="caret"></span>
 									</a>
 										<ul class="dropdown-menu">
-											<li><a href="${pageContext.request.contextPath}/admin/specifications/list.html"
+											<li><a
+												href="${pageContext.request.contextPath}/admin/${tenant.id}/specifications/list.html"
 												data-i18n="public.Specifications"></a></li>
-											<li><a href="${pageContext.request.contextPath}/admin/devices/list.html"
+											<li><a
+												href="${pageContext.request.contextPath}/admin/${tenant.id}/devices/list.html"
 												data-i18n="public.Devices"></a></li>
-											<li><a href="${pageContext.request.contextPath}/admin/groups/list.html"
+											<li><a href="${pageContext.request.contextPath}/admin/${tenant.id}/groups/list.html"
 												data-i18n="public.DeviceGroups"></a></li>
 										</ul></li>
 								</c:otherwise>
@@ -118,21 +111,23 @@
 							<c:choose>
 								<c:when test="${sitewhere_section == 'assets'}">
 									<li class="active"><a
-										href="${pageContext.request.contextPath}/admin/assets/categories.html"
+										href="${pageContext.request.contextPath}/admin/${tenant.id}/assets/categories.html"
 										data-i18n="public.Assets">Assets</a></li>
 								</c:when>
 								<c:otherwise>
-									<li><a href="${pageContext.request.contextPath}/admin/assets/categories.html"
+									<li><a
+										href="${pageContext.request.contextPath}/admin/${tenant.id}/assets/categories.html"
 										data-i18n="public.Assets">Assets</a></li>
 								</c:otherwise>
 							</c:choose>
 							<c:choose>
 								<c:when test="${sitewhere_section == 'batch'}">
-									<li class="active"><a href="${pageContext.request.contextPath}/admin/batch/list.html"
+									<li class="active"><a
+										href="${pageContext.request.contextPath}/admin/${tenant.id}/batch/list.html"
 										data-i18n="public.Batch">Batch</a></li>
 								</c:when>
 								<c:otherwise>
-									<li><a href="${pageContext.request.contextPath}/admin/batch/list.html"
+									<li><a href="${pageContext.request.contextPath}/admin/${tenant.id}/batch/list.html"
 										data-i18n="public.Batch">Batch</a></li>
 								</c:otherwise>
 							</c:choose>
@@ -143,9 +138,10 @@
 										data-i18n="[prepend]public.Schedules" data-toggle="dropdown"> <span class="caret"></span>
 									</a>
 										<ul class="dropdown-menu">
-											<li><a href="${pageContext.request.contextPath}/admin/schedules/list.html"
+											<li><a
+												href="${pageContext.request.contextPath}/admin/${tenant.id}/schedules/list.html"
 												data-i18n="public.Schedules"></a></li>
-											<li><a href="${pageContext.request.contextPath}/admin/jobs/list.html"
+											<li><a href="${pageContext.request.contextPath}/admin/${tenant.id}/jobs/list.html"
 												data-i18n="public.ScheduledJobs"></a></li>
 										</ul></li>
 								</c:when>
@@ -154,9 +150,10 @@
 										data-i18n="[prepend]public.Schedules" data-toggle="dropdown"> <span class="caret"></span>
 									</a>
 										<ul class="dropdown-menu">
-											<li><a href="${pageContext.request.contextPath}/admin/schedules/list.html"
+											<li><a
+												href="${pageContext.request.contextPath}/admin/${tenant.id}/schedules/list.html"
 												data-i18n="public.Schedules"></a></li>
-											<li><a href="${pageContext.request.contextPath}/admin/jobs/list.html"
+											<li><a href="${pageContext.request.contextPath}/admin/${tenant.id}/jobs/list.html"
 												data-i18n="public.ScheduledJobs"></a></li>
 										</ul></li>
 								</c:otherwise>
@@ -188,7 +185,14 @@
 								</c:when>
 							</c:choose>
 							<c:choose>
-								<c:when test="${authorities.administerUsers or authorities.administerTenants}">
+								<c:when test="${authorities.viewServerInformation}">
+									<li><a href="${pageContext.request.contextPath}/admin/server.html">Server
+											Information</a></li>
+								</c:when>
+							</c:choose>
+							<c:choose>
+								<c:when
+									test="${authorities.administerUsers or authorities.administerTenants or authorities.viewServerInformation}">
 									<li class="divider"></li>
 								</c:when>
 							</c:choose>

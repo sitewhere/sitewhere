@@ -44,7 +44,7 @@
 		var event = e || window.event;
 		event.stopPropagation();
 		$("#view-device-group-detail").attr("action",
-			"${pageContext.request.contextPath}/admin/groups/" + token + ".html");
+			"${pageContext.request.contextPath}/admin/${tenant.id}/groups/" + token + ".html");
 		$('#view-device-group-detail').submit();
 	}
 

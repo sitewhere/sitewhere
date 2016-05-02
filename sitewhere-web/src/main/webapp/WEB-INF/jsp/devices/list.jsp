@@ -103,7 +103,7 @@
 		var event = e || window.event;
 		event.stopPropagation();
 		$("#view-device-detail").attr("action",
-			"${pageContext.request.contextPath}/admin/devices/" + hardwareId + ".html");
+			"${pageContext.request.contextPath}/admin/${tenant.id}/devices/" + hardwareId + ".html");
 		$('#view-device-detail').submit();
 	}
 

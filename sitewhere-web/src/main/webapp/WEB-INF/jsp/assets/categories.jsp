@@ -70,8 +70,11 @@
 	function onCategoryOpenClicked(e, categoryId, assetType) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$("#view-category-assets").attr("action",
-			"${pageContext.request.contextPath}/admin/assets/categories/" + categoryId + ".html");
+		$("#view-category-assets")
+				.attr(
+					"action",
+					"${pageContext.request.contextPath}/admin/${tenant.id}/assets/categories/" + categoryId
+							+ ".html");
 		$('#view-category-assets').submit();
 	}
 

@@ -273,7 +273,7 @@
 		var event = e || window.event;
 		event.stopPropagation();
 		$("#view-assignment-detail").attr("action",
-			"${pageContext.request.contextPath}/admin/assignments/" + token + ".html");
+			"${pageContext.request.contextPath}/admin/${tenant.id}/assignments/" + token + ".html");
 		$('#view-assignment-detail').submit();
 	}
 

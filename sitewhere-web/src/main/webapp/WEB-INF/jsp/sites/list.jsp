@@ -86,7 +86,7 @@
 		var event = e || window.event;
 		event.stopPropagation();
 		$("#view-site-detail").attr("action",
-			"${pageContext.request.contextPath}/admin/sites/" + siteToken + ".html");
+			"${pageContext.request.contextPath}/admin/${tenant.id}/sites/" + siteToken + ".html");
 		$('#view-site-detail').submit();
 	}
 

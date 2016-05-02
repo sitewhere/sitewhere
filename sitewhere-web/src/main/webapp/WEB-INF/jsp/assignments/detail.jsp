@@ -18,7 +18,7 @@ table#invocations tr td {
 	<h1 class="ellipsis" data-i18n="assignments.detail.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-emulator" class="btn"
-			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>/emulator.html">
+			href="${pageContext.request.contextPath}/admin/${tenant.id}/assignments/${assignment.token}/emulator.html">
 			<i class="fa fa-bolt sw-button-icon"></i> <span data-i18n="assignments.detail.EmulateAssignment">Emulate
 				Assignment</span>
 		</a> <a id="btn-edit-assignment" class="btn" href="javascript:void(0)"> <i

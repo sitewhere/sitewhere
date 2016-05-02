@@ -73,7 +73,7 @@
 		var event = e || window.event;
 		event.stopPropagation();
 		$("#view-spec-detail").attr("action",
-			"${pageContext.request.contextPath}/admin/specifications/" + token + ".html");
+			"${pageContext.request.contextPath}/admin/${tenant.id}/specifications/" + token + ".html");
 		$('#view-spec-detail').submit();
 	}
 

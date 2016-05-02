@@ -25,7 +25,7 @@
 	<h1 class="ellipsis" data-i18n="assignments.emulator.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-assignment-detail" class="btn"
-			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>.html">
+			href="${pageContext.request.contextPath}/admin/${tenant.id}/assignments/<c:out value="${assignment.token}"/>.html">
 			<i class="fa fa-arrow-circle-o-left sw-button-icon"></i><span
 			data-i18n="assignments.emulator.AssignmentDetails">Assignment Details</span>
 		</a>
