@@ -18,7 +18,7 @@ import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Provides a strategy for moving decoded events from an {@link IInboundEventSource} onto
@@ -26,7 +26,7 @@ import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
  * 
  * @author Derek
  */
-public interface IInboundProcessingStrategy extends ILifecycleComponent {
+public interface IInboundProcessingStrategy extends ITenantLifecycleComponent {
 
 	/**
 	 * Process an {@link IDeviceRegistrationRequest}.

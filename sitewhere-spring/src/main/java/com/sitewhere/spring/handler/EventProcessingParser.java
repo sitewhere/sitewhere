@@ -11,20 +11,24 @@ import java.util.List;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.event.EventProcessing;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.spi.device.event.IEventProcessing;
 
 /**
  * Parses configuration data from SiteWhere event processing subsystem.
  * 
  * @author Derek
  */
-public class EventProcessingParser extends AbstractBeanDefinitionParser {
+public class EventProcessingParser extends SiteWhereBeanDefinitionParser {
+
+	public EventProcessingParser() {
+		getBeanMappings().put(IEventProcessing.class, EventProcessing.class);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -35,7 +39,7 @@ public class EventProcessingParser extends AbstractBeanDefinitionParser {
 	 */
 	@Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		BeanDefinitionBuilder processing = createBuilder();
+		BeanDefinitionBuilder processing = getBuilderFor(IEventProcessing.class);
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -68,16 +72,6 @@ public class EventProcessingParser extends AbstractBeanDefinitionParser {
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_EVENT_PROCESSING,
 				processing.getBeanDefinition());
 		return null;
-	}
-
-	/**
-	 * Creates the {@link BeanDefinitionBuilder} that will be populated with nested
-	 * communication subsystem elements.
-	 * 
-	 * @return
-	 */
-	protected BeanDefinitionBuilder createBuilder() {
-		return BeanDefinitionBuilder.rootBeanDefinition(EventProcessing.class);
 	}
 
 	/**
