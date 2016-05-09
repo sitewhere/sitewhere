@@ -7,12 +7,14 @@
  */
 package com.sitewhere.spi.system;
 
+import java.io.Serializable;
+
 /**
  * Interface for getting version information.
  * 
  * @author Derek
  */
-public interface IVersion {
+public interface IVersion extends Serializable {
 
 	/**
 	 * Get full edition name.
