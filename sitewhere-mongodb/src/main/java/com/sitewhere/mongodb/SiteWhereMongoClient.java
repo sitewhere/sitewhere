@@ -24,6 +24,7 @@ import com.mongodb.ServerAddress;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.common.IInternetConnected;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
@@ -35,7 +36,7 @@ import com.sitewhere.spi.tenant.ITenant;
  */
 public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 		IDiscoverableTenantLifecycleComponent, IUserManagementMongoClient, IDeviceManagementMongoClient,
-		IAssetManagementMongoClient, IScheduleManagementMongoClient {
+		IAssetManagementMongoClient, IScheduleManagementMongoClient, IInternetConnected {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SiteWhereMongoClient.class);
@@ -193,8 +194,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 			messages.add("Events collection name: " + getEventsCollectionName());
 			messages.add("Streams collection name: " + getStreamsCollectionName());
 			messages.add("Batch operations collection name: " + getBatchOperationsCollectionName());
-			messages.add("Batch operation elements collection name: "
-					+ getBatchOperationElementsCollectionName());
+			messages.add(
+					"Batch operation elements collection name: " + getBatchOperationElementsCollectionName());
 			messages.add("");
 			messages.add("---------------------");
 			messages.add("-- User Management --");
@@ -267,9 +268,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceSpecificationsCollection
-	 * (com.sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+	 * getDeviceSpecificationsCollection (com.sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getDeviceSpecificationsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getDeviceSpecificationsCollectionName());
@@ -289,9 +289,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection(com.sitewhere
-	 * .spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection(com.
+	 * sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getDevicesCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getDevicesCollectionName());
@@ -355,9 +354,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getEventsCollection(com.sitewhere
-	 * .spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getEventsCollection(com.
+	 * sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getEventsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getEventsCollectionName());
@@ -366,9 +364,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamsCollection(com.sitewhere
-	 * .spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamsCollection(com.
+	 * sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getStreamsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getStreamsCollectionName());
@@ -399,9 +396,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getBatchOperationElementsCollection
-	 * (com.sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+	 * getBatchOperationElementsCollection (com.sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getBatchOperationElementsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getBatchOperationElementsCollectionName());
@@ -481,18 +477,38 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 		return getTenantDatabase(tenant).getCollection(getScheduledJobsCollectionName());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
+	 */
 	public String getHostname() {
 		return hostname;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
+	 */
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.common.IInternetConnected#getPort()
+	 */
 	public int getPort() {
 		return port;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.common.IInternetConnected#setPort(int)
+	 */
 	public void setPort(int port) {
 		this.port = port;
 	}
