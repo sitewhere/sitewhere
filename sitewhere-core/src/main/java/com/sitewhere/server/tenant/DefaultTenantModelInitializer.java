@@ -50,16 +50,6 @@ public class DefaultTenantModelInitializer implements ITenantModelInitializer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.IModelInitializer#isInitializeIfNoConsole()
-	 */
-	@Override
-	public boolean isInitializeIfNoConsole() throws SiteWhereException {
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.sitewhere.spi.server.tenant.ITenantModelInitializer#initialize(com.sitewhere.
 	 * spi.tenant.ITenantManagement)

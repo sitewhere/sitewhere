@@ -7,21 +7,10 @@
  */
 package com.sitewhere.spi.server;
 
-import com.sitewhere.spi.SiteWhereException;
-
 /**
  * Common interface for model initializers.
  * 
  * @author Derek
  */
 public interface IModelInitializer {
-
-	/**
-	 * Indicates whether model should be initialized if no console is available for user
-	 * input.
-	 * 
-	 * @return
-	 * @throws SiteWhereException
-	 */
-	public boolean isInitializeIfNoConsole() throws SiteWhereException;
 }

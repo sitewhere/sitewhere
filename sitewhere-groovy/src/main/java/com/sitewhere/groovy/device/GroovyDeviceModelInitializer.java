@@ -44,16 +44,6 @@ public class GroovyDeviceModelInitializer implements IDeviceModelInitializer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.IModelInitializer#isInitializeIfNoConsole()
-	 */
-	@Override
-	public boolean isInitializeIfNoConsole() throws SiteWhereException {
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.sitewhere.spi.server.device.IDeviceModelInitializer#initialize(com.sitewhere.
 	 * spi.device.IDeviceManagement,
