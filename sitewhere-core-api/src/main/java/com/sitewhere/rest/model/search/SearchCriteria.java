@@ -16,6 +16,9 @@ import com.sitewhere.spi.search.ISearchCriteria;
  * @author Derek
  */
 public class SearchCriteria implements ISearchCriteria {
+	
+	/** Search criteria for getting all records */
+	public static SearchCriteria ALL = new SearchCriteria(1, 0);
 
 	/** Page number to view */
 	private Integer pageNumber;
