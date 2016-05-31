@@ -2008,12 +2008,12 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
-	<!-- Event source that pulls binary information from an AcitveMQ queue and decodes it -->
+	<!-- Event source that creates an embedded ActiveMQ broker -->
 	<xsd:element name="activemq-event-source" type="activemqEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls binary information from an ActiveMQ queue
-				and decodes it.
+			<xsd:documentation>Event source that creates an embedded ActiveMQ broker and listens
+				for messages on a transport specified by the transport URI.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2027,7 +2027,7 @@
 				<xsd:attribute name="transportUri" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							URI used to configure the trasport for the embedded ActiveMQ
+							URI used to configure the transport for the embedded ActiveMQ
 							broker.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -2036,6 +2036,48 @@
 					<xsd:annotation>
 						<xsd:documentation>
 							Data directory used to store persistent message queues.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="queueName" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name of JMS queue for consumers to pull messages from.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="numConsumers" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Number of consumers used to read data from the queue into
+							SiteWhere.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Event source that reads messages from a remote ActiveMQ source -->
+	<xsd:element name="activemq-client-event-source" type="activeMQClientEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source connects to a remote broker and consumes messages from
+				it.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="activeMQClientEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="remoteUri" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							URI of remote broker to connect to.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>

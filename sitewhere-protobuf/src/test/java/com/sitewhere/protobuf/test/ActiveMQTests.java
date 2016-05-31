@@ -36,10 +36,10 @@ public class ActiveMQTests {
 	private static final String HARDWARE_ID = "4eceeda1-9ab2-4069-9372-7aa007a3dccc";
 
 	/** Nunber of threads for multithreaded tests */
-	private static final int NUM_THREADS = 150;
+	private static final int NUM_THREADS = 1;
 
 	/** Nunber of calls performed per thread */
-	private static final int NUM_CALLS_PER_THREAD = 400;
+	private static final int NUM_CALLS_PER_THREAD = 1;
 
 	@Test
 	public void doJMSTest() throws Exception {
@@ -108,21 +108,22 @@ public class ActiveMQTests {
 		@Override
 		public Void call() throws Exception {
 			ActiveMQConnectionFactory connectionFactory =
-					new ActiveMQConnectionFactory("tcp://localhost:1234");
+					new ActiveMQConnectionFactory("tcp://192.168.84.60:1099");
 			javax.jms.Connection connection = connectionFactory.createConnection();
 			connection.start();
 
 			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-			Destination destination = session.createQueue("SITEWHERE.IN");
+			Destination destination = session.createQueue("queue/SecondaryNodeMessageQueue");
 
 			MessageProducer producer = session.createProducer(destination);
 
-			for (int i = 0; i < messageCount; i++) {
-				BytesMessage message = session.createBytesMessage();
-				// message.writeBytes(EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID));
-				message.writeBytes(EventsHelper.generateEncodedRegistrationMessage());
-				producer.send(message);
-			}
+			// for (int i = 0; i < messageCount; i++) {
+			// BytesMessage message = session.createBytesMessage();
+			// //
+			// message.writeBytes(EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID));
+			// message.writeBytes(EventsHelper.generateEncodedRegistrationMessage());
+			// producer.send(message);
+			// }
 
 			session.close();
 			connection.close();

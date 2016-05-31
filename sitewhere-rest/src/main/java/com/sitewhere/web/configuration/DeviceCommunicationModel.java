@@ -36,6 +36,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createRabbitMqEventSourceElement());
 		addElement(createAzureEventHubEventSourceElement());
 		addElement(createActiveMQEventSourceElement());
+		addElement(createActiveMQClientEventSourceElement());
 		addElement(createHazelcastQueueEventSourceElement());
 		addElement(createPollingRestEventSourceElement());
 
@@ -288,6 +289,37 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		builder.attribute((new AttributeNode.Builder("Data directory", "dataDirectory",
 				AttributeType.String).description(
 						"Data directory used to store persistent message queues.").build()));
+		builder.attribute(
+				(new AttributeNode.Builder("Queue name", "queueName", AttributeType.String).description(
+						"Name of JMS queue for consumers to pull messages from.").makeRequired().build()));
+		builder.attribute((new AttributeNode.Builder("Number of consumers", "numConsumers",
+				AttributeType.Integer).description(
+						"Number of consumers used to read data from the queue into SiteWhere.").build()));
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for ActiveMQ client event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createActiveMQClientEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("ActiveMQ Client Event Source",
+						EventSourcesParser.Elements.ActiveMQClientEventSource.getLocalName(), "sign-in",
+						ElementRole.EventSources_EventSource);
+
+		builder.description("Event source that uses ActiveMQ consumers to ingest "
+				+ "messages from a remote broker and decodes them.");
+		addEventSourceAttributes(builder);
+
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
+		builder.attribute(
+				(new AttributeNode.Builder("Remote URI", "remoteUri", AttributeType.String).description(
+						"URI used to connect to remote message broker.").makeRequired().build()));
 		builder.attribute(
 				(new AttributeNode.Builder("Queue name", "queueName", AttributeType.String).description(
 						"Name of JMS queue for consumers to pull messages from.").makeRequired().build()));

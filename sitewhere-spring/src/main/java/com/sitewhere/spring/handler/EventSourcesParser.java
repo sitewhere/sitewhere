@@ -24,6 +24,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.activemq.ActiveMQClientEventReceiver;
 import com.sitewhere.activemq.ActiveMQInboundEventReceiver;
 import com.sitewhere.azure.device.communication.EventHubInboundEventReceiver;
 import com.sitewhere.device.communication.BinaryInboundEventSource;
@@ -101,6 +102,10 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 			}
 			case ActiveMQEventSource: {
 				result.add(parseActiveMQEventSource(child, context));
+				break;
+			}
+			case ActiveMQClientEventSource: {
+				result.add(parseActiveMQClientEventSource(child, context));
 				break;
 			}
 			case SocketEventSource: {
@@ -486,6 +491,80 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		if (dataDirectory != null) {
 			mq.addPropertyValue("dataDirectory", dataDirectory.getValue());
 		}
+
+		Attr numConsumers = element.getAttributeNode("numConsumers");
+		if (numConsumers != null) {
+			mq.addPropertyValue("numConsumers", numConsumers.getValue());
+		}
+
+		return mq.getBeanDefinition();
+	}
+
+	/**
+	 * Parse an event source that uses ActiveMQ to connect to a remote broker and ingest
+	 * messages.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseActiveMQClientEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create ActiveMQ event receiver bean and register it.
+		AbstractBeanDefinition receiver = createActiveMQClientEventReceiver(element);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException(
+					"No event decoder specified for ActiveMQ client event source: " + element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Get implementation class for ActiveMQ event receiver.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventReceiver<byte[]>> getActiveMQClientEventReceiverImplementation() {
+		return ActiveMQClientEventReceiver.class;
+	}
+
+	/**
+	 * Create ActiveMQ event receiver from XML element.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createActiveMQClientEventReceiver(Element element) {
+		BeanDefinitionBuilder mq =
+				BeanDefinitionBuilder.rootBeanDefinition(getActiveMQClientEventReceiverImplementation());
+
+		Attr remoteUri = element.getAttributeNode("remoteUri");
+		if (remoteUri == null) {
+			throw new RuntimeException("ActiveMQ 'remoteUri' attribute not provided.");
+		}
+		mq.addPropertyValue("remoteUri", remoteUri.getValue());
+
+		Attr queueName = element.getAttributeNode("queueName");
+		if (queueName == null) {
+			throw new RuntimeException("ActiveMQ 'queueName' attribute not provided.");
+		}
+		mq.addPropertyValue("queueName", queueName.getValue());
 
 		Attr numConsumers = element.getAttributeNode("numConsumers");
 		if (numConsumers != null) {
@@ -1166,6 +1245,9 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 
 		/** ActiveMQ event source */
 		ActiveMQEventSource("activemq-event-source"),
+
+		/** ActiveMQ client event source */
+		ActiveMQClientEventSource("activemq-client-event-source"),
 
 		/** Socket event source */
 		SocketEventSource("socket-event-source"),
