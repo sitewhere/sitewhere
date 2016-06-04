@@ -43,6 +43,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		// Socket event source.
 		addElement(createReadAllSocketInteractionHandlerElement());
 		addElement(createHttpSocketInteractionHandlerElement());
+		addElement(createGroovySocketInteractionHandlerElement());
 		addElement(createSocketEventSourceElement());
 
 		// WebSocket event source.
@@ -362,6 +363,25 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		builder.description("Interaction handler that reads HTTP content from the client socket and delivers "
 				+ "the wrapped entity to the decoder as binary data. This interaction handler "
 				+ "always returns a 200 OK response on the socket.");
+
+		return builder.build();
+	}
+
+	/**
+	 * Create Groovy socket interaction handler factory.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createGroovySocketInteractionHandlerElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("Groovy Socket Interaction Handler Factory",
+						EventSourcesParser.BinarySocketInteractionHandlers.GroovySocketInteractionHandlerFactory.getLocalName(),
+						"cog", ElementRole.EventSources_SocketInteractionHandlerFactory);
+
+		builder.description("Interaction handler uses a Groovy script to handle socket interactions.");
+		builder.attribute(
+				(new AttributeNode.Builder("Script path", "scriptPath", AttributeType.String).description(
+						"Path to Groovy script which handles socket interactions.").makeRequired().build()));
 
 		return builder.build();
 	}

@@ -44,6 +44,7 @@ import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
 import com.sitewhere.groovy.device.communication.rest.PollingRestInboundEventReceiver;
+import com.sitewhere.groovy.device.communication.socket.GroovySocketInteractionHandler;
 import com.sitewhere.hazelcast.HazelcastQueueReceiver;
 import com.sitewhere.rabbitmq.RabbitMqInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
@@ -688,6 +689,10 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 				parseHttpFactory(parent, child, context, source);
 				return true;
 			}
+			case GroovySocketInteractionHandlerFactory: {
+				parseGroovyFactory(parent, child, context, source);
+				return true;
+			}
 			}
 		}
 		return false;
@@ -744,6 +749,33 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		LOGGER.debug("Configuring HTTP socket interaction handler factory for " + parent.getLocalName());
 		BeanDefinitionBuilder builder =
 				BeanDefinitionBuilder.rootBeanDefinition(HttpInteractionHandler.Factory.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("handlerFactory", name);
+	}
+
+	/**
+	 * Parse configuration for {@link GroovySocketInteractionHandler} factory
+	 * implementation.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseGroovyFactory(Element parent, Element element, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring Groovy socket interaction handler factory for " + parent.getLocalName());
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition(GroovySocketInteractionHandler.Factory.class);
+		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			builder.addPropertyValue("scriptPath", scriptPath.getValue());
+		}
+
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -1397,7 +1429,10 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		ReadAllInteractionHandlerFactory("read-all-interaction-handler-factory"),
 
 		/** Produces interaction handler that reads HTTP data from the client socket */
-		HttpInteractionHandlerFactory("http-interaction-handler-factory");
+		HttpInteractionHandlerFactory("http-interaction-handler-factory"),
+
+		/** Produces interaction handler uses Groovy to interact with socket */
+		GroovySocketInteractionHandlerFactory("groovy-interaction-handler-factory");
 
 		/** Event code */
 		private String localName;

@@ -26,6 +26,36 @@ public class SocketTests {
 	public static final int SERVER_SOCKET_PORT = 8585;
 
 	@Test
+	public void doInteractiveSocketTest() throws Exception {
+		Socket socket = new Socket("localhost", 5432);
+
+		System.out.println("Sending header...");
+		byte[] header = { 0x01, 0x00, 0x01, 0x17 };
+		socket.getOutputStream().write(header);
+		socket.getInputStream().read();
+
+		System.out.println("Sending id...");
+		byte[] id = { 0x02, 0x00, 0x0a, 0x03, 0x55, 0x27, (byte) 0x80, 0x58, 0x28, 0x11, 0x25 };
+		socket.getOutputStream().write(id);
+		socket.getInputStream().read();
+
+		System.out.println("Sending data...");
+		byte[] data1 =
+				{ 0x02, 0x00, 0x17, 0x02, 0x01, 0x00, 0x01, 0x00, 0x0f, 0x0f, 0x00, 0x00, 0x03, 0x16, 0x05,
+						0x30, 0x16, 0x24, 0x6b, 0x01, 0x00, 0x00, 0x6c, 0x03 };
+		socket.getOutputStream().write(data1);
+		socket.getInputStream().read();
+
+		System.out.println("Closing session.");
+		byte[] end = { 0x03, 0x04 };
+		socket.getOutputStream().write(end);
+
+		socket.getOutputStream().flush();
+		socket.getOutputStream().close();
+		socket.close();
+	}
+
+	@Test
 	public void doSocketTest() throws Exception {
 		Socket socket = new Socket("localhost", SERVER_SOCKET_PORT);
 		byte[] encoded = EventsHelper.generateEncodedMeasurementsMessage(HARDWARE_ID);

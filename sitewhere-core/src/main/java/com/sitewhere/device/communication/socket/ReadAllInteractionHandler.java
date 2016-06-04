@@ -12,10 +12,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
+import org.apache.log4j.Logger;
+
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link ISocketInteractionHandler} that reads everything from the
@@ -53,7 +57,38 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
 	 * 
 	 * @author Derek
 	 */
-	public static class Factory implements ISocketInteractionHandlerFactory<byte[]> {
+	public static class Factory extends LifecycleComponent
+			implements ISocketInteractionHandlerFactory<byte[]> {
+
+		/** Static logger instance */
+		private static Logger LOGGER = Logger.getLogger(Factory.class);
+
+		public Factory() {
+			super(LifecycleComponentType.Other);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+		 */
+		@Override
+		public void start() throws SiteWhereException {
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+		 */
+		@Override
+		public void stop() throws SiteWhereException {
+		}
+
+		@Override
+		public Logger getLogger() {
+			return LOGGER;
+		}
 
 		/*
 		 * (non-Javadoc)

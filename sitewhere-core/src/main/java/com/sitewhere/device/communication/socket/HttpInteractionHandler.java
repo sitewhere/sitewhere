@@ -22,11 +22,14 @@ import org.apache.http.HttpVersion;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpServerConnection;
 import org.apache.http.message.BasicHttpResponse;
+import org.apache.log4j.Logger;
 
+import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
+import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Handles interactions where a remote client sends an HTTP request to be processed by
@@ -85,7 +88,38 @@ public class HttpInteractionHandler implements ISocketInteractionHandler<byte[]>
 	 * 
 	 * @author Derek
 	 */
-	public static class Factory implements ISocketInteractionHandlerFactory<byte[]> {
+	public static class Factory extends LifecycleComponent
+			implements ISocketInteractionHandlerFactory<byte[]> {
+
+		/** Static logger instance */
+		private static Logger LOGGER = Logger.getLogger(Factory.class);
+
+		public Factory() {
+			super(LifecycleComponentType.Other);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
+		 */
+		@Override
+		public void start() throws SiteWhereException {
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
+		 */
+		@Override
+		public void stop() throws SiteWhereException {
+		}
+
+		@Override
+		public Logger getLogger() {
+			return LOGGER;
+		}
 
 		/*
 		 * (non-Javadoc)

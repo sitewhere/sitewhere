@@ -2194,6 +2194,17 @@
 	<xsd:complexType name="httpInteractionHandlerFactoryType">
 	</xsd:complexType>
 
+	<!-- Hands off socket interaction processing to a Groovy script -->
+	<xsd:complexType name="groovyInteractionHandlerFactoryType">
+		<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Path to a Groovy script that handles socket interactions.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
 	<!-- Event source that pulls binary information from a server socket and decodes it -->
 	<xsd:element name="socket-event-source" type="socketEventSourceType"
 		substitutionGroup="abstract-event-source">
@@ -2228,6 +2239,13 @@
 								<xsd:documentation>Interaction handler that treats a socket request as an HTTP
 									message and delivers the entity payload to the decoder as a byte array. A 200 OK
 									response is sent back to the requestor.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="groovy-interaction-handler-factory" type="groovyInteractionHandlerFactoryType">
+							<xsd:annotation>
+								<xsd:documentation>Interaction handler that hands off socket interactions to a
+									Groovy script.
 								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>

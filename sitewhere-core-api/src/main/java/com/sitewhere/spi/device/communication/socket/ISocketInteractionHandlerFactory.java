@@ -7,6 +7,8 @@
  */
 package com.sitewhere.spi.device.communication.socket;
 
+import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+
 /**
  * Factory that produces {@link ISocketInteractionHandler} instances.
  * 
@@ -14,7 +16,7 @@ package com.sitewhere.spi.device.communication.socket;
  *
  * @param <T>
  */
-public interface ISocketInteractionHandlerFactory<T> {
+public interface ISocketInteractionHandlerFactory<T> extends ILifecycleComponent {
 
 	/**
 	 * Creates a new {@link ISocketInteractionHandler} instance.

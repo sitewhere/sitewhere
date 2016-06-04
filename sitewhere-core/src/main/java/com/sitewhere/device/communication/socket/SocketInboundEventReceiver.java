@@ -83,10 +83,13 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 	@Override
 	public void start() throws SiteWhereException {
 		try {
+			// Verify handler factory is set, then start it.
 			if (getHandlerFactory() == null) {
 				throw new SiteWhereException(
 						"No socket interaction handler factory configured for socket event source.");
 			}
+			getHandlerFactory().start();
+
 			LOGGER.info("Receiver creating server socket on " + getBindAddress() + ":" + getPort() + ".");
 			this.server = new ServerSocket(getPort());
 			this.processing = new ServerProcessingThread();
@@ -143,6 +146,10 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 				throw new SiteWhereException("Error shutting down server socket for event receiver.", e);
 			}
 		}
+		if (getHandlerFactory() != null) {
+			getHandlerFactory().stop();
+		}
+
 		LOGGER.info("Socket receiver processing stopped.");
 	}
 
