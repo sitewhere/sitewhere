@@ -286,7 +286,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getHostname()
+	 * @see com.sitewhere.spi.common.IInternetConnected#getHostname()
 	 */
 	public String getHostname() {
 		return hostname;
@@ -299,7 +299,7 @@ public class MqttOutboundEventProcessor extends FilteredOutboundEventProcessor
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.device.communication.mqtt.IMqttComponent#getPort()
+	 * @see com.sitewhere.spi.common.IInternetConnected#getPort()
 	 */
 	public int getPort() {
 		return port;
