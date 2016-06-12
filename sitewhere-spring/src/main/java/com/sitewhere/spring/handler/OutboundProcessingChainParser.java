@@ -53,7 +53,7 @@ import com.sitewhere.spi.geospatial.ZoneContainment;
  * 
  * @author Derek
  */
-public class OutboundProcessingChainParser {
+public class OutboundProcessingChainParser extends SiteWhereBeanDefinitionParser {
 
 	/**
 	 * Parse elements for the outbound processing chain.
@@ -62,9 +62,8 @@ public class OutboundProcessingChainParser {
 	 * @param context
 	 * @return
 	 */
-	protected Object parse(Element element, ParserContext context) {
-		BeanDefinitionBuilder chain =
-				BeanDefinitionBuilder.rootBeanDefinition(DefaultOutboundEventProcessorChain.class);
+	public AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
+		BeanDefinitionBuilder chain = getBuilderFor(DefaultOutboundEventProcessorChain.class);
 		List<Element> dsChildren = DomUtils.getChildElements(element);
 		List<Object> processors = new ManagedList<Object>();
 		for (Element child : dsChildren) {
@@ -239,8 +238,7 @@ public class OutboundProcessingChainParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseMqttEventProcessor(Element element, ParserContext context) {
-		BeanDefinitionBuilder processor =
-				BeanDefinitionBuilder.rootBeanDefinition(MqttOutboundEventProcessor.class);
+		BeanDefinitionBuilder processor = getBuilderFor(MqttOutboundEventProcessor.class);
 
 		Attr protocol = element.getAttributeNode("protocol");
 		if (protocol != null) {

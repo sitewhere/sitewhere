@@ -58,12 +58,12 @@ public class EventProcessingParser extends SiteWhereBeanDefinitionParser {
 				break;
 			}
 			case InboundProcessingChain: {
-				Object ichain = new InboundProcessingChainParser().parse(child, context);
+				Object ichain = parseInboundProcessingChain(child, context);
 				processing.addPropertyValue("inboundEventProcessorChain", ichain);
 				break;
 			}
 			case OutboundProcessingChain: {
-				Object ochain = new OutboundProcessingChainParser().parse(child, context);
+				Object ochain = parseOutboundProcessingChain(child, context);
 				processing.addPropertyValue("outboundEventProcessorChain", ochain);
 				break;
 			}
@@ -86,6 +86,17 @@ public class EventProcessingParser extends SiteWhereBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse the inbound processing strategy configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected Object parseInboundProcessingChain(Element element, ParserContext context) {
+		return new InboundProcessingChainParser().parse(element, context);
+	}
+
+	/**
 	 * Parse the outbound processing strategy configuration.
 	 * 
 	 * @param element
@@ -94,6 +105,17 @@ public class EventProcessingParser extends SiteWhereBeanDefinitionParser {
 	 */
 	protected Object parseOutboundProcessingStrategy(Element element, ParserContext context) {
 		return new OutboundProcessingStrategyParser().parse(element, context);
+	}
+
+	/**
+	 * Parse the outbound processing strategy configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected Object parseOutboundProcessingChain(Element element, ParserContext context) {
+		return new OutboundProcessingChainParser().parseInternal(element, context);
 	}
 
 	/**

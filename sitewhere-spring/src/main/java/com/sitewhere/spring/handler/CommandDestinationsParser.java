@@ -9,6 +9,7 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -39,19 +40,23 @@ import com.sitewhere.twilio.TwilioCommandDeliveryProvider;
  * 
  * @author Derek
  */
-public class CommandDestinationsParser {
+public class CommandDestinationsParser extends SiteWhereBeanListParser {
+
+	/** Static logger instance */
+	@SuppressWarnings("unused")
+	private static Logger LOGGER = Logger.getLogger(CommandDestinationsParser.class);
 
 	/** Used to generate unique names for nested beans */
 	private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
 
-	/**
-	 * Parse the list of command destinations.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param element
-	 * @param context
-	 * @return
+	 * @see
+	 * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.Element,
+	 * org.springframework.beans.factory.xml.ParserContext)
 	 */
-	protected ManagedList<?> parse(Element element, ParserContext context) {
+	public ManagedList<?> parse(Element element, ParserContext context) {
 		ManagedList<Object> result = new ManagedList<Object>();
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
@@ -101,7 +106,7 @@ public class CommandDestinationsParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseMqttCommandDestination(Element element, ParserContext context) {
-		BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDestination.class);
+		BeanDefinitionBuilder mqtt = getBuilderFor(MqttCommandDestination.class);
 		addCommonAttributes(mqtt, element, context);
 
 		// Add encoder reference.
@@ -131,8 +136,7 @@ public class CommandDestinationsParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createMqttDeliveryProvider(Element element) {
-		BeanDefinitionBuilder mqtt =
-				BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDeliveryProvider.class);
+		BeanDefinitionBuilder mqtt = getBuilderFor(MqttCommandDeliveryProvider.class);
 
 		Attr protocol = element.getAttributeNode("protocol");
 		if (protocol != null) {
@@ -244,7 +248,8 @@ public class CommandDestinationsParser {
 	 * @param element
 	 * @param context
 	 */
-	protected void addCommonAttributes(BeanDefinitionBuilder builder, Element element, ParserContext context) {
+	protected void addCommonAttributes(BeanDefinitionBuilder builder, Element element,
+			ParserContext context) {
 		Attr destinationId = element.getAttributeNode("destinationId");
 		if (destinationId == null) {
 			throw new RuntimeException("Command destination does not contain destinationId attribute.");
@@ -362,7 +367,8 @@ public class CommandDestinationsParser {
 	 * @param context
 	 * @param destination
 	 */
-	protected void parseEncoderRef(Element encoder, ParserContext context, BeanDefinitionBuilder destination) {
+	protected void parseEncoderRef(Element encoder, ParserContext context,
+			BeanDefinitionBuilder destination) {
 		Attr encoderRef = encoder.getAttributeNode("ref");
 		if (encoderRef == null) {
 			throw new RuntimeException("Command encoder 'ref' attribute is required.");
