@@ -232,11 +232,15 @@ public enum ElementRole {
 	/** Command destination. MQTT parameter extractor. */
 	CommandDestinations_SmsParameterExtractor("SMS Parameter Extractor", false, false, false),
 
+	/** Command destination. CoAP parameter extractor. */
+	CommandDestinations_CoapParameterExtractor("CoAP Parameter Extractor", false, false, false),
+
 	/** Command destination. Parameter extractor. */
 	CommandDestinations_ParameterExtractor("Parameter Extractor", false, false, false, new ElementRole[0],
 			new ElementRole[] {
 					CommandDestinations_MqttParameterExtractor,
-					CommandDestinations_SmsParameterExtractor }),
+					CommandDestinations_SmsParameterExtractor, 
+					CommandDestinations_CoapParameterExtractor }),
 
 	/** Command destinations. Command destination. */
 	CommandDestinations_CommandDestination("Command Destinations", true, true, true,

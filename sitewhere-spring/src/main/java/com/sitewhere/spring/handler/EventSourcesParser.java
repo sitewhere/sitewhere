@@ -31,6 +31,7 @@ import com.sitewhere.device.communication.BinaryInboundEventSource;
 import com.sitewhere.device.communication.DecodedInboundEventSource;
 import com.sitewhere.device.communication.EchoStringDecoder;
 import com.sitewhere.device.communication.StringInboundEventSource;
+import com.sitewhere.device.communication.coap.CoapServerEventReceiver;
 import com.sitewhere.device.communication.json.JsonBatchEventDecoder;
 import com.sitewhere.device.communication.json.JsonDeviceRequestDecoder;
 import com.sitewhere.device.communication.mqtt.MqttInboundEventReceiver;
@@ -97,10 +98,6 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 				result.add(parseEventSource(child, context));
 				break;
 			}
-			case AzureEventHubEventSource: {
-				result.add(parseAzureEventHubEventSource(child, context));
-				break;
-			}
 			case ActiveMQEventSource: {
 				result.add(parseActiveMQEventSource(child, context));
 				break;
@@ -109,28 +106,36 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 				result.add(parseActiveMQClientEventSource(child, context));
 				break;
 			}
-			case SocketEventSource: {
-				result.add(parseSocketEventSource(child, context));
+			case AzureEventHubEventSource: {
+				result.add(parseAzureEventHubEventSource(child, context));
 				break;
 			}
-			case PollingRestEventSource: {
-				result.add(parsePollingRestEventSource(child, context));
+			case CoapServerEventSource: {
+				result.add(parseCoapServerEventSource(child, context));
+				break;
+			}
+			case HazelcastQueueEventSource: {
+				result.add(parseHazelcastQueueEventSource(child, context));
 				break;
 			}
 			case MqttEventSource: {
 				result.add(parseMqttEventSource(child, context));
 				break;
 			}
+			case PollingRestEventSource: {
+				result.add(parsePollingRestEventSource(child, context));
+				break;
+			}
 			case RabbitMqEventSource: {
 				result.add(parseRabbitMqEventSource(child, context));
 				break;
 			}
-			case WebSocketEventSource: {
-				result.add(parseWebSocketEventSource(child, context));
+			case SocketEventSource: {
+				result.add(parseSocketEventSource(child, context));
 				break;
 			}
-			case HazelcastQueueEventSource: {
-				result.add(parseHazelcastQueueEventSource(child, context));
+			case WebSocketEventSource: {
+				result.add(parseWebSocketEventSource(child, context));
 				break;
 			}
 			}
@@ -955,6 +960,58 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 
 	/**
+	 * Configure components needed to realize a CoAP server event source.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseCoapServerEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create event receiver bean and register it.
+		AbstractBeanDefinition receiver = createCoapServerEventReceiver(element, context);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException(
+					"No event decoder specified for CoAP server event source: " + element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Create CoAP server event receiver.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition createCoapServerEventReceiver(Element element, ParserContext context) {
+		BeanDefinitionBuilder receiver = getBuilderFor(CoapServerEventReceiver.class);
+
+		Attr hostname = element.getAttributeNode("hostname");
+		if (hostname != null) {
+			receiver.addPropertyValue("hostname", hostname.getValue());
+		}
+
+		return receiver.getBeanDefinition();
+	}
+
+	/**
 	 * Configure components needed to realize a Hazelcast queue event source.
 	 * 
 	 * @param element
@@ -1272,32 +1329,35 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		/** Event source */
 		EventSource("event-source"),
 
-		/** Azure EventHub event source */
-		AzureEventHubEventSource("azure-eventhub-event-source"),
-
 		/** ActiveMQ event source */
 		ActiveMQEventSource("activemq-event-source"),
 
 		/** ActiveMQ client event source */
 		ActiveMQClientEventSource("activemq-client-event-source"),
 
-		/** Socket event source */
-		SocketEventSource("socket-event-source"),
+		/** Azure EventHub event source */
+		AzureEventHubEventSource("azure-eventhub-event-source"),
 
-		/** Polling REST source */
-		PollingRestEventSource("polling-rest-event-source"),
+		/** CoAP server event source */
+		CoapServerEventSource("coap-server-event-source"),
+
+		/** Hazelcast queue event source */
+		HazelcastQueueEventSource("hazelcast-queue-event-source"),
 
 		/** MQTT event source */
 		MqttEventSource("mqtt-event-source"),
 
+		/** Polling REST source */
+		PollingRestEventSource("polling-rest-event-source"),
+
 		/** RabbitMQ event source */
 		RabbitMqEventSource("rabbit-mq-event-source"),
 
-		/** Web socket event source */
-		WebSocketEventSource("web-socket-event-source"),
+		/** Socket event source */
+		SocketEventSource("socket-event-source"),
 
-		/** Hazelcast queue event source */
-		HazelcastQueueEventSource("hazelcast-queue-event-source");
+		/** Web socket event source */
+		WebSocketEventSource("web-socket-event-source");
 
 		/** Event code */
 		private String localName;

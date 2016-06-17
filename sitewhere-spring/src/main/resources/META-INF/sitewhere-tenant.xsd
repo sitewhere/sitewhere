@@ -2331,6 +2331,32 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<!-- Event source that accepts CoAP requests for SiteWhere resources -->
+	<xsd:element name="coap-server-event-source" type="coapServerEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that accepts CoAP requests for SiteWhere resources.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="coapServerEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="hostname" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Hostname used when binding CoAP server socket.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="deviceServicesType">
 		<xsd:sequence>
 			<xsd:element ref="abstract-registration-manager" minOccurs="0"/>
@@ -2652,6 +2678,13 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
+				<xsd:element name="coap-command-destination" type="coapCommandDestinationType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Destination that delivers commands via CoAP client request.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 				<xsd:element name="twilio-command-destination" type="twilioCommandDestinationType">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -2789,6 +2822,57 @@
 	<xsd:complexType name="hardwareIdMqttParameterExtractorType">
 		<xsd:attribute name="commandTopicExpr" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="systemTopicExpr" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Command destination that delivers commands via CoAP -->
+	<xsd:complexType name="coapCommandDestinationType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-command-encoder"/>
+			<xsd:choice minOccurs="0">
+				<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom command delivery parameter extractor
+							implementation that extracts CoAP delivery information from the
+							device.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="metadata-coap-parameter-extractor" type="metadataCoapParameterExtractorType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Extracts CoAP connection information from device metadata.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="command-destination-attributes"/>
+	</xsd:complexType>
+
+	<!-- CoAP parameter extractor that pulls connection information from device metadata -->
+	<xsd:complexType name="metadataCoapParameterExtractorType">
+		<xsd:attribute name="hostnameMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds hostname for CoAP client connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="portMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds port for CoAP client connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="urlMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds URL for CoAP client connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<!-- Command destination that delivers commands via Twilio SMS message -->

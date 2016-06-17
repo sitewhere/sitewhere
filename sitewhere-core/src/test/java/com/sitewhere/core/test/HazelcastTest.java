@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.core;
+package com.sitewhere.core.test;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +37,11 @@ public class HazelcastTest {
 	public void setup() throws Exception {
 
 		try {
-	        Config config = new Config();
-	        config.getGroupConfig().setName(SITEWHERE_USERNAME);
-	        config.getGroupConfig().setPassword(SITEWHERE_PASSWORD);
-	        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
-	        config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
+			Config config = new Config();
+			config.getGroupConfig().setName(SITEWHERE_USERNAME);
+			config.getGroupConfig().setPassword(SITEWHERE_PASSWORD);
+			config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+			config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
 			hazelcast = Hazelcast.newHazelcastInstance(config);
 		} catch (Exception e) {
 			throw new Exception("Unable to connect to SiteWhere Hazelcast cluster.", e);

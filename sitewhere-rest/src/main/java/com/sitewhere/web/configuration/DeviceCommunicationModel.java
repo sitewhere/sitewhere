@@ -39,6 +39,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createActiveMQClientEventSourceElement());
 		addElement(createHazelcastQueueEventSourceElement());
 		addElement(createPollingRestEventSourceElement());
+		addElement(createCoapServerEventSourceElement());
 
 		// Socket event source.
 		addElement(createReadAllSocketInteractionHandlerElement());
@@ -79,6 +80,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		// Command destinations.
 		addElement(createCommandDestinationsElement());
 		addElement(createMqttCommandDestinationElement());
+		addElement(createCoapCommandDestinationElement());
 		addElement(createTwilioCommandDestinationElement());
 
 		// Binary command encoders.
@@ -87,6 +89,7 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		addElement(createJsonCommandEncoderElement());
 
 		addElement(createHardwareIdParameterExtractorElement());
+		addElement(createCoapMetadataParameterExtractorElement());
 	}
 
 	/**
@@ -476,6 +479,27 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		builder.description(
 				"Event source that pulls decoded events from a Hazelcast queue. Primarily used to "
 						+ "allow one instance of SiteWhere to decode events and feed them to multiple subordinate instances for processing.");
+		addEventSourceAttributes(builder);
+
+		// Only accept binary event decoders.
+		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for CoAP server event source.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createCoapServerEventSourceElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("CoAP Server Event Source",
+						EventSourcesParser.Elements.CoapServerEventSource.getLocalName(), "sign-in",
+						ElementRole.EventSources_EventSource);
+
+		builder.description("Event source that acts as a CoAP server, allowing events to be created "
+				+ "by posting data to well-known system URLs.");
 		addEventSourceAttributes(builder);
 
 		// Only accept binary event decoders.
@@ -905,6 +929,36 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 	}
 
 	/**
+	 * Create element configuration for MQTT command destination.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createCoapCommandDestinationElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("CoAP Command Destination",
+						CommandDestinationsParser.Elements.CoapCommandDestination.getLocalName(), "sign-out",
+						ElementRole.CommandDestinations_CommandDestination);
+
+		builder.description(
+				"Sends commands to remote devices using the CoAP protocol. Commands are first encoded "
+						+ "using a binary encoder, then a parameter extractor is used to determine the connection "
+						+ "information to make a client request to the device.");
+
+		// Add common command destination attributes.
+		addCommandDestinationAttributes(builder);
+
+		// Only allow binary command encoders.
+		builder.specializes(ElementRole.CommandDestinations_CommandEncoder,
+				ElementRole.CommandDestinations_BinaryCommandEncoder);
+
+		// Only allow MQTT parameter extractors
+		builder.specializes(ElementRole.CommandDestinations_ParameterExtractor,
+				ElementRole.CommandDestinations_CoapParameterExtractor);
+
+		return builder.build();
+	}
+
+	/**
 	 * Create element configuration for Twilio command destination.
 	 * 
 	 * @return
@@ -1015,6 +1069,32 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 						"Expression for building topic name to which system commands are sent. "
 								+ "Add a '%s' where the hardware id should be inserted.").defaultValue(
 										"SiteWhere/system/%s").build()));
+
+		return builder.build();
+	}
+
+	/**
+	 * Create element configuration for CoAP metadata parameter extractor.
+	 * 
+	 * @return
+	 */
+	protected ElementNode createCoapMetadataParameterExtractorElement() {
+		ElementNode.Builder builder =
+				new ElementNode.Builder("CoAP Device Metadata Extractor", "metadata-coap-parameter-extractor",
+						"cogs", ElementRole.CommandDestinations_CoapParameterExtractor);
+
+		builder.description("Extracts CoAP connection information from metadata associated with a device.");
+		builder.attribute((new AttributeNode.Builder("Hostname metadata", "hostnameMetadataField",
+				AttributeType.String).description(
+						"Metadata field that holds hostname information for the CoAP connection.").defaultValue(
+								"hostname").build()));
+		builder.attribute((new AttributeNode.Builder("Port metadata", "portMetadataField",
+				AttributeType.String).description(
+						"Metadata field that holds port information for the CoAP connection.").defaultValue(
+								"port").build()));
+		builder.attribute((new AttributeNode.Builder("URL metadata", "urlMetadataField",
+				AttributeType.String).description(
+						"Metadata field that holds information about the relative URL for the CoAP client request.").build()));
 
 		return builder.build();
 	}

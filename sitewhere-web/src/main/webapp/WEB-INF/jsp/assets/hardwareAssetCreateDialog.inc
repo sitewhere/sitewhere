@@ -190,8 +190,8 @@
 					}
 					if (isCreate) {
 						$.postAuthJSON("${pageContext.request.contextPath}/api/assets/categories/"
-								+ categoryId, assetData, "${basicAuth}", "${tenant.authenticationToken}",
-							onCreateSuccess, onCreateFail);
+								+ categoryId + "/hardware/", assetData, "${basicAuth}",
+							"${tenant.authenticationToken}", onCreateSuccess, onCreateFail);
 					} else {
 						$.putAuthJSON("${pageContext.request.contextPath}/api/assets/categories/"
 								+ categoryId + "/hardware/" + initAssetId, assetData, "${basicAuth}",
