@@ -201,6 +201,7 @@ public class HBaseUser {
 				HBaseUtils.closeCleanly(users);
 			}
 		}
+		SiteWherePersistence.userDeleteLogic(username);
 		return existing;
 	}
 

@@ -52,9 +52,11 @@ import com.sitewhere.rest.model.device.request.DeviceCreateRequest;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
+import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.user.GrantedAuthority;
 import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
+import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -112,9 +114,11 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.scheduling.ScheduledJobState;
 import com.sitewhere.spi.scheduling.request.IScheduleCreateRequest;
 import com.sitewhere.spi.scheduling.request.IScheduledJobCreateRequest;
+import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
@@ -259,7 +263,7 @@ public class SiteWherePersistence {
 	 */
 	public static DeviceCommand deviceCommandCreateLogic(IDeviceSpecification spec,
 			IDeviceCommandCreateRequest request, String token, List<IDeviceCommand> existing)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		DeviceCommand command = new DeviceCommand();
 
 		// Token is required.
@@ -1237,6 +1241,27 @@ public class SiteWherePersistence {
 			MetadataProvider.copy(source, target);
 		}
 		SiteWherePersistence.setUpdatedEntityMetadata(target);
+	}
+
+	/**
+	 * Common logic for deleting a user. Takes care of related tasks such as deleting user
+	 * id from tenant authorized users.
+	 * 
+	 * @param username
+	 * @throws SiteWhereException
+	 */
+	public static void userDeleteLogic(String username) throws SiteWhereException {
+		ITenantManagement management = SiteWhere.getServer().getTenantManagement();
+		ISearchResults<ITenant> tenants = management.listTenants(new TenantSearchCriteria(1, 0));
+		for (ITenant tenant : tenants.getResults()) {
+			if (tenant.getAuthorizedUserIds().contains(username)) {
+				TenantCreateRequest request = new TenantCreateRequest();
+				List<String> ids = tenant.getAuthorizedUserIds();
+				ids.remove(username);
+				request.setAuthorizedUserIds(ids);
+				management.updateTenant(tenant.getId(), request);
+			}
+		}
 	}
 
 	/**

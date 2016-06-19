@@ -289,6 +289,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 		if (force) {
 			DBCollection users = getMongoClient().getUsersCollection();
 			MongoPersistence.delete(users, existing);
+			SiteWherePersistence.userDeleteLogic(username);
 			return MongoUser.fromDBObject(existing);
 		} else {
 			MongoSiteWhereEntity.setDeleted(existing, true);
