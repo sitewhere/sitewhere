@@ -26,6 +26,13 @@
 			</ul>
 			<div>
 				<form id="cc-general-form" class="form-horizontal" style="padding-top: 20px;">
+					<div id="cc-display-token-section" class="control-group"
+						style="display: none; line-height: 2.1em;">
+						<label class="control-label" for="cc-display-token" data-i18n="public.Token"></label>
+						<div class="controls">
+							<span id="cc-display-token" title="Token"></span>
+						</div>
+					</div>
 					<div class="control-group">
 						<label class="control-label" for="cc-name" data-i18n="public.Name"></label>
 						<div class="controls">
@@ -305,6 +312,7 @@
 
 		$('#cc-dialog-header').html(i18next("includes.commandCreateDialog.CreateDeviceCommand"));
 		$('#cc-dialog-submit').html(i18next("public.Create"));
+		$('#cc-display-token-section').hide();
 
 		paramsDS.data(new Array());
 		ccMetadataDS.data(new Array());
@@ -333,13 +341,15 @@
 			"${tenant.authenticationToken}", cuCommandGetSuccess, suCommandGetFailed);
 	}
 
-	/** Called on successful user load request */
+	/** Called on successful command load request */
 	function cuCommandGetSuccess(data, status, jqXHR) {
 		$('#cc-dialog-header').html(i18next("includes.commandCreateDialog.EditDeviceCommand"));
 		$('#cc-dialog-submit').html(i18next("public.Save"));
+		$('#cc-display-token-section').show();
 
 		// Load hidden fields for tokens.
 		$('#cc-specification-token').val(data.specificationToken);
+		$('#cc-display-token').html(data.token);
 		$('#cc-command-token').val(data.token);
 
 		// Load form fields.
