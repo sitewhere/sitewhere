@@ -318,7 +318,7 @@ public class HBaseSite {
 	 */
 	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsWithLastInteraction(
 			IHBaseContext context, String siteToken, IDateRangeSearchCriteria criteria)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall,
 				"listDeviceAssignmentsWithLastInteraction (HBase) " + siteToken, LOGGER);
 		HTableInterface sites = null;
@@ -367,6 +367,75 @@ public class HBaseSite {
 							if ((criteria.getEndDate() != null) && (criteria.getEndDate().before(last))) {
 								continue;
 							}
+							pager.process(assignment);
+						}
+					}
+				}
+			}
+			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
+		} catch (IOException e) {
+			throw new SiteWhereException("Error scanning site rows.", e);
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+			HBaseUtils.closeCleanly(sites);
+			Tracer.pop(LOGGER);
+		}
+	}
+
+	/**
+	 * List all device assignments for a site that have been marked as missing.
+	 * 
+	 * @param context
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceAssignment> listMissingDeviceAssignments(IHBaseContext context,
+			String siteToken, ISearchCriteria criteria) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall,
+				"listMissingDeviceAssignments (HBase) " + siteToken, LOGGER);
+		HTableInterface sites = null;
+		ResultScanner scanner = null;
+		try {
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
+			if (siteId == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+			}
+			byte[] assnPrefix = getAssignmentRowKey(siteId);
+			byte[] after = getAfterAssignmentRowKey(siteId);
+
+			sites = getSitesTableInterface(context);
+
+			Scan scan = new Scan();
+			scan.setStartRow(assnPrefix);
+			scan.setStopRow(after);
+			scanner = sites.getScanner(scan);
+
+			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
+			for (Result result : scanner) {
+				// TODO: This is inefficient. There should be a filter on the scanner
+				// instead.
+				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
+					continue;
+				}
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] state =
+						result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
+
+				if ((type != null) && (payload != null)) {
+					DeviceAssignment assignment =
+							(DeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
+									type).decode(payload, DeviceAssignment.class);
+					if (state != null) {
+						DeviceAssignmentState assnState =
+								PayloadMarshalerResolver.getInstance().getMarshaler(
+										type).decodeDeviceAssignmentState(state);
+						assignment.setState(assnState);
+						if (assignment.getState().getPresenceMissingDate() != null) {
 							pager.process(assignment);
 						}
 					}

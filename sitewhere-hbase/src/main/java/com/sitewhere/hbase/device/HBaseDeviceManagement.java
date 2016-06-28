@@ -523,6 +523,19 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getMissingDeviceAssignments(java.lang.
+	 * String, com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return HBaseSite.listMissingDeviceAssignments(context, siteToken, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.lang
 	 * .String, java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.DeviceAssignmentStatus,
@@ -531,7 +544,7 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
 	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		return HBaseSite.listDeviceAssignmentsForAsset(context, siteToken, assetModuleId, assetId, status,
 				criteria);
 	}

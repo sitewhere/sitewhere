@@ -353,6 +353,17 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**
+	 * Find all device assignments that have been marked missing by the presence manager.
+	 * 
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken,
+			ISearchCriteria criteria) throws SiteWhereException;
+
+	/**
 	 * Get a list of device assignments associated with a given asset.
 	 * 
 	 * @param siteToken
@@ -365,7 +376,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 */
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-					throws SiteWhereException;
+			throws SiteWhereException;
 
 	/**
 	 * Create a new {@link IDeviceStream} associated with an assignment.

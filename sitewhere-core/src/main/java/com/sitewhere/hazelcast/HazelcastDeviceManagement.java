@@ -376,9 +376,16 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
+	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken,
+			ISearchCriteria criteria) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}

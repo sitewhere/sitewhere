@@ -572,6 +572,47 @@ public class SitesController extends RestController {
 	}
 
 	/**
+	 * List device assignments marked as missing by the presence manager.
+	 * 
+	 * @param siteToken
+	 * @param page
+	 * @param pageSize
+	 * @param servletRequest
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	@RequestMapping(value = "/{siteToken}/assignments/missing", method = RequestMethod.GET)
+	@ResponseBody
+	@ApiOperation(value = "List device assignments marked as missing")
+	@Secured({ SiteWhereRoles.REST })
+	public ISearchResults<DeviceAssignment> listMissingDeviceAssignments(
+			@ApiParam(value = "Unique token that identifies site", required = true) @PathVariable String siteToken,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+					ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+					ConcernType.Paging }) int pageSize,
+			HttpServletRequest servletRequest) throws SiteWhereException {
+		Tracer.start(TracerCategory.RestApiCall, "listMissingDeviceAssignments", LOGGER);
+		try {
+			SearchCriteria criteria = new SearchCriteria(page, pageSize);
+			ISearchResults<IDeviceAssignment> matches =
+					SiteWhere.getServer().getDeviceManagement(
+							getTenant(servletRequest)).getMissingDeviceAssignments(siteToken, criteria);
+			DeviceAssignmentMarshalHelper helper =
+					new DeviceAssignmentMarshalHelper(getTenant(servletRequest));
+			helper.setIncludeAsset(false);
+			List<DeviceAssignment> converted = new ArrayList<DeviceAssignment>();
+			for (IDeviceAssignment assignment : matches.getResults()) {
+				converted.add(helper.convert(assignment,
+						SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))));
+			}
+			return new SearchResults<DeviceAssignment>(converted, matches.getNumResults());
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Create a new zone for a site.
 	 * 
 	 * @param input

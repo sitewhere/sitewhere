@@ -239,6 +239,12 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
+	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken,
+			ISearchCriteria criteria) throws SiteWhereException {
+		return delegate.getMissingDeviceAssignments(siteToken, criteria);
+	}
+
+	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId,
 			ISearchCriteria criteria) throws SiteWhereException {
 		return delegate.getDeviceAssignmentHistory(hardwareId, criteria);
@@ -253,7 +259,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		return delegate.getDeviceAssignmentsForAsset(siteToken, assetModuleId, assetId, status, criteria);
 	}
 

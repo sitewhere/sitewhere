@@ -977,6 +977,26 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * com.sitewhere.spi.device.IDeviceManagement#getMissingDeviceAssignments(java.lang.
+	 * String, com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken,
+			ISearchCriteria criteria) throws SiteWhereException {
+		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
+		BasicDBObject query = new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken);
+		query.append(
+				MongoDeviceAssignment.PROP_STATE + "."
+						+ MongoDeviceAssignmentState.PROP_PRESENCE_MISSING_DATE,
+				new BasicDBObject("$exists", true));
+		BasicDBObject sort = new BasicDBObject(MongoDeviceAssignment.PROP_ACTIVE_DATE, -1);
+		return MongoPersistence.search(IDeviceAssignment.class, assignments, query, sort, criteria);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForAsset(java.lang
 	 * .String, java.lang.String, java.lang.String,
 	 * com.sitewhere.spi.device.DeviceAssignmentStatus,
@@ -985,7 +1005,7 @@ public class MongoDeviceManagement extends TenantLifecycleComponent
 	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
 			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		DBCollection assignments = getMongoClient().getDeviceAssignmentsCollection(getTenant());
 		BasicDBObject query =
 				new BasicDBObject(MongoDeviceAssignment.PROP_SITE_TOKEN, siteToken).append(
