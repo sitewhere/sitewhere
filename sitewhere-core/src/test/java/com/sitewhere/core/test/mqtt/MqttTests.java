@@ -22,10 +22,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sitewhere.rest.model.device.communication.DeviceRequest;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 
 public class MqttTests {
@@ -81,6 +84,44 @@ public class MqttTests {
 		request.setRequest(location);
 		try {
 			String payload = (new ObjectMapper()).writeValueAsString(request);
+			System.out.println("Payload:\n\n" + payload);
+			Future<Void> future =
+					getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
+							false);
+			future.await(3, TimeUnit.SECONDS);
+			System.out.println("Message sent successfully.");
+		} catch (JsonProcessingException e) {
+			throw new SiteWhereException(e);
+		} catch (Exception e) {
+			throw new SiteWhereException(e);
+		}
+	}
+
+	/**
+	 * Send device measurements request with non-numeric measurement values.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	@Test
+	public void sendNonStandardMeasurements() throws SiteWhereException {
+		DeviceRequest request = new DeviceRequest();
+		request.setHardwareId("123-TEST-4567890");
+		request.setType(Type.DeviceMeasurements);
+		DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
+		mxs.addOrReplaceMeasurement("normal", 1.234);
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put("fromMQTT", "true");
+		mxs.setMetadata(metadata);
+		mxs.setUpdateState(true);
+		request.setRequest(mxs);
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode json = mapper.convertValue(request, JsonNode.class);
+			ObjectNode mxsNode = (ObjectNode) json.get("request").get("measurements");
+			mxsNode.put("stringTest", "value");
+			mxsNode.put("booleanTest", true);
+			String payload = mapper.writeValueAsString(json);
+
 			System.out.println("Payload:\n\n" + payload);
 			Future<Void> future =
 					getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,

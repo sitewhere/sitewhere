@@ -8,10 +8,14 @@
 package com.sitewhere.device.communication.json;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,6 +24,7 @@ import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.rest.model.device.event.request.DeviceAlertCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceCommandResponseCreateRequest;
+import com.sitewhere.rest.model.device.event.request.DeviceEventCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
@@ -116,8 +121,7 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 					new DecodedDeviceRequest<IDeviceMeasurementsCreateRequest>();
 			decoded.setHardwareId(hardwareId);
 			decoded.setOriginator(originator);
-			IDeviceMeasurementsCreateRequest req =
-					MAPPER.treeToValue(json, DeviceMeasurementsCreateRequest.class);
+			IDeviceMeasurementsCreateRequest req = parseMeasurementsRequest(json);
 			decoded.setRequest(req);
 			return decoded;
 		}
@@ -162,6 +166,53 @@ public class JsonDeviceRequestMarshaler extends JsonDeserializer<DecodedDeviceRe
 		default: {
 			throw new JsonMappingException("Unhandled event type: " + type.name());
 		}
+		}
+	}
+
+	/**
+	 * Support JSON representations of device measurements that do not necessarily conform
+	 * to object model. Converts boolean values to 1.0 or 0.0. Adds String values as
+	 * metadata.
+	 * 
+	 * @param json
+	 * @return
+	 * @throws JsonProcessingException
+	 */
+	protected IDeviceMeasurementsCreateRequest parseMeasurementsRequest(JsonNode json)
+			throws JsonProcessingException {
+		try {
+			return MAPPER.treeToValue(json, DeviceMeasurementsCreateRequest.class);
+		} catch (JsonProcessingException e) {
+			DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
+			try {
+				MAPPER.readerForUpdating(mxs).forType(DeviceEventCreateRequest.class).without(
+						DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).readValue(json);
+				JsonNode mxsJson = json.get("measurements");
+				if (mxsJson != null) {
+					Iterator<String> mxNames = mxsJson.fieldNames();
+					Map<String, String> metadata = new HashMap<String, String>();
+					while (mxNames.hasNext()) {
+						String mxName = mxNames.next();
+						JsonNode mxJson = mxsJson.get(mxName);
+						if (mxJson.isFloatingPointNumber()) {
+							mxs.addOrReplaceMeasurement(mxName, mxJson.asDouble());
+						} else if (mxJson.isBoolean()) {
+							boolean mxBoolean = mxJson.asBoolean();
+							mxs.addOrReplaceMeasurement(mxName, (mxBoolean) ? 1.0 : 0.0);
+						} else if (mxJson.isTextual()) {
+							metadata.put(mxName, mxJson.asText());
+						}
+					}
+					if (metadata.size() > 0) {
+						mxs.setMetadata(metadata);
+					}
+				}
+				return mxs;
+			} catch (IOException ioe) {
+				throw new JsonMappingException("Error parsing device event fields.", ioe);
+			} catch (Throwable t) {
+				throw new JsonMappingException("Error parsing device measurements.", t);
+			}
 		}
 	}
 }
