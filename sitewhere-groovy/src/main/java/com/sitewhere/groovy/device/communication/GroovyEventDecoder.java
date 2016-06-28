@@ -12,9 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.sitewhere.groovy.GroovyConfiguration;
-import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
@@ -49,7 +50,7 @@ public class GroovyEventDecoder implements IDeviceEventDecoder<byte[]> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
-			throws SiteWhereException {
+			throws EventDecodeException {
 		try {
 			Binding binding = new Binding();
 			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
@@ -61,9 +62,13 @@ public class GroovyEventDecoder implements IDeviceEventDecoder<byte[]> {
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 			return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
 		} catch (ResourceException e) {
-			throw new SiteWhereException("Unable to access Groovy decoder script.", e);
+			throw new EventDecodeException("Unable to access Groovy decoder script.", e);
 		} catch (ScriptException e) {
-			throw new SiteWhereException("Unable to run Groovy decoder script.", e);
+			throw new EventDecodeException("Unable to run Groovy decoder script.", e);
+		} catch (CompilationFailedException e) {
+			throw new EventDecodeException("Error compiling Groovy script.", e);
+		} catch (Throwable e) {
+			throw new EventDecodeException("Unhandled exception in Groovy decoder script.", e);
 		}
 	}
 

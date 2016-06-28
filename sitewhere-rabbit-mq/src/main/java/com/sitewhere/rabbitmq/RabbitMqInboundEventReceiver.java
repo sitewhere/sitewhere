@@ -8,7 +8,6 @@
 package com.sitewhere.rabbitmq;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,19 +20,16 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
+import com.sitewhere.device.communication.EventProcessingLogic;
+import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Binary inbound event source that consumes messages from a RabbitMQ broker.
  * 
  * @author Derek
  */
-public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent
-		implements IInboundEventReceiver<byte[]> {
+public class RabbitMqInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(RabbitMqInboundEventReceiver.class);
@@ -46,9 +42,6 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent
 
 	/** Default number of consumers if not specified */
 	private static final int DEFAULT_NUM_CONSUMERS = 5;
-
-	/** Parent event source */
-	private IInboundEventSource<byte[]> eventSource;
 
 	/** Connection URI */
 	private String connectionUri = DEFAULT_CONNECTION_URI;
@@ -70,10 +63,6 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent
 
 	/** Used for consumer thread pool */
 	private ExecutorService executors;
-
-	public RabbitMqInboundEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -102,7 +91,7 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent
 				@Override
 				public void handleDelivery(String consumerTag, Envelope envelope,
 						AMQP.BasicProperties properties, byte[] body) throws IOException {
-					onEventPayloadReceived(body, null);
+					EventProcessingLogic.processRawPayload(RabbitMqInboundEventReceiver.this, body, null);
 				}
 			};
 			channel.basicConsume(getQueueName(), true, consumer);
@@ -149,40 +138,6 @@ public class RabbitMqInboundEventReceiver extends TenantLifecycleComponent
 	@Override
 	public String getDisplayName() {
 		return "RabbitMQ uri=" + getConnectionUri() + " queue=" + getQueueName();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
-		getEventSource().onEncodedEventReceived(this, payload, metadata);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com
-	 * .sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	@Override
-	public void setEventSource(IInboundEventSource<byte[]> source) {
-		this.eventSource = source;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	@Override
-	public IInboundEventSource<byte[]> getEventSource() {
-		return eventSource;
 	}
 
 	public String getConnectionUri() {

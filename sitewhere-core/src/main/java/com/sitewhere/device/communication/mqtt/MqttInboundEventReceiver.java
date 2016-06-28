@@ -21,7 +21,9 @@ import org.fusesource.mqtt.client.Message;
 import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
+import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -127,7 +129,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 	 * (java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
+	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata)
+			throws EventDecodeException {
 		getEventSource().onEncodedEventReceived(MqttInboundEventReceiver.this, payload, metadata);
 	}
 
@@ -146,7 +149,8 @@ public class MqttInboundEventReceiver extends MqttLifecycleComponent
 					Future<Message> future = connection.receive();
 					Message message = future.await();
 					message.ack();
-					onEventPayloadReceived(message.getPayload(), null);
+					EventProcessingLogic.processRawPayload(MqttInboundEventReceiver.this,
+							message.getPayload(), null);
 				} catch (InterruptedException e) {
 					break;
 				} catch (Throwable e) {

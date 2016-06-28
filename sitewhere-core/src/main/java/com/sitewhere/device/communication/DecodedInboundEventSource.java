@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
-import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
@@ -44,7 +44,7 @@ public class DecodedInboundEventSource extends InboundEventSource<DecodedDeviceR
 		 */
 		@Override
 		public List<IDecodedDeviceRequest<?>> decode(DecodedDeviceRequest<?> payload,
-				Map<String, String> metadata) throws SiteWhereException {
+				Map<String, String> metadata) throws EventDecodeException {
 			List<IDecodedDeviceRequest<?>> results = new ArrayList<IDecodedDeviceRequest<?>>();
 			results.add(payload);
 			return results;

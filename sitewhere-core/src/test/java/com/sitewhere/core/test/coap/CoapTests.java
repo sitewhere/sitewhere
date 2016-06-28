@@ -29,7 +29,7 @@ public class CoapTests {
 
 	@Test
 	public void testRegisterDevice() {
-		CoapClient client = createClientFor("default/devices");
+		CoapClient client = createClientFor("devices");
 		DeviceRegistrationRequest registration = new DeviceRegistrationRequest();
 		registration.setHardwareId("111-COAP-TEST-444");
 		registration.setSpecificationToken("da05f689-2056-4786-ac9f-4f25b406369a");
@@ -50,7 +50,7 @@ public class CoapTests {
 
 	@Test
 	public void testAddDeviceMeasurements() {
-		CoapClient client = createClientFor("default/devices/111-COAP-TEST-444/measurements");
+		CoapClient client = createClientFor("devices/111-COAP-TEST-444/measurements");
 		DeviceMeasurementsCreateRequest mxs = new DeviceMeasurementsCreateRequest();
 		mxs.addOrReplaceMeasurement("pwr", 38.23);
 		mxs.addOrReplaceMeasurement("fln", 59.95);

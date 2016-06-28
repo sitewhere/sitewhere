@@ -14,7 +14,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.core.DataUtils;
-import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
@@ -39,7 +39,7 @@ public class PayloadLoggerEventDecoder implements IDeviceEventDecoder<byte[]> {
 	 */
 	@Override
 	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
-			throws SiteWhereException {
+			throws EventDecodeException {
 		LOGGER.info("=== EVENT DATA BEGIN ===");
 		LOGGER.info(new String(payload));
 		LOGGER.info("(hex) " + DataUtils.bytesToHex(payload));

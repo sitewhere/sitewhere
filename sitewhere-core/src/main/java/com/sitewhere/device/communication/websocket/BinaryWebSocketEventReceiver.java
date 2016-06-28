@@ -17,6 +17,7 @@ import javax.websocket.Session;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
@@ -62,7 +63,7 @@ public class BinaryWebSocketEventReceiver extends WebSocketEventReceiver<byte[]>
 					IInboundEventReceiver<byte[]> receiver =
 							(IInboundEventReceiver<byte[]>) config.getUserProperties().get(
 									WebSocketEventReceiver.PROP_EVENT_RECEIVER);
-					receiver.onEventPayloadReceived(payload.array(), null);
+					EventProcessingLogic.processRawPayload(receiver, payload.array(), null);
 				}
 			});
 		}

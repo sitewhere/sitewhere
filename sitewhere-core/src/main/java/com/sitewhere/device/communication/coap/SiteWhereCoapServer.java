@@ -11,7 +11,6 @@ import java.net.InetSocketAddress;
 
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.CoapEndpoint;
-import org.eclipse.californium.core.network.config.NetworkConfig;
 
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
@@ -22,36 +21,10 @@ import com.sitewhere.spi.device.communication.IInboundEventReceiver;
  */
 public class SiteWhereCoapServer extends CoapServer {
 
-	/** Supplies standard CoAP port */
-	private static final int COAP_PORT = NetworkConfig.getStandard().getInt(NetworkConfig.Keys.COAP_PORT);
-
-	/** Default hostname */
-	private static final String DEFAULT_HOSTNAME = "localhost";
-
-	/** Hostname for binding socket */
-	private String hostname = DEFAULT_HOSTNAME;
-
-	public SiteWhereCoapServer(IInboundEventReceiver<byte[]> receiver) {
+	public SiteWhereCoapServer(IInboundEventReceiver<byte[]> receiver, String hostname, int port) {
 		super();
 		setMessageDeliverer(new SiteWhereMessageDeliverer(receiver));
-	}
-
-	/**
-	 * Instructs server to listen on the given hostname.
-	 * 
-	 * @param hostname
-	 */
-	public void listenOn(String hostname) {
-		this.hostname = hostname;
-		InetSocketAddress bindToAddress = new InetSocketAddress(getHostname(), COAP_PORT);
+		InetSocketAddress bindToAddress = new InetSocketAddress(hostname, port);
 		addEndpoint(new CoapEndpoint(bindToAddress));
-	}
-
-	public String getHostname() {
-		return hostname;
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
 	}
 }

@@ -7,15 +7,12 @@
  */
 package com.sitewhere.device.communication.coap;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
+import org.eclipse.californium.core.network.config.NetworkConfig;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that starts a CoAP server using the
@@ -23,26 +20,25 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class CoapServerEventReceiver extends LifecycleComponent implements IInboundEventReceiver<byte[]> {
+public class CoapServerEventReceiver extends InboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(CoapServerEventReceiver.class);
 
+	/** Supplies standard CoAP port */
+	private static final int COAP_PORT = NetworkConfig.getStandard().getInt(NetworkConfig.Keys.COAP_PORT);
+
 	/** Default hostname */
 	private static final String DEFAULT_HOSTNAME = "localhost";
-
-	/** Parent event source */
-	private IInboundEventSource<byte[]> eventSource;
-
-	/** Customized SiteWhere CoAP server */
-	private SiteWhereCoapServer server;
 
 	/** Hostname for binding socket */
 	private String hostname = DEFAULT_HOSTNAME;
 
-	public CoapServerEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
+	/** Port for binding socket */
+	private int port = COAP_PORT;
+
+	/** Customized SiteWhere CoAP server */
+	private SiteWhereCoapServer server;
 
 	/*
 	 * (non-Javadoc)
@@ -52,8 +48,7 @@ public class CoapServerEventReceiver extends LifecycleComponent implements IInbo
 	@Override
 	public void start() throws SiteWhereException {
 		if (server == null) {
-			server = new SiteWhereCoapServer(this);
-			server.listenOn(getHostname());
+			server = new SiteWhereCoapServer(this, getHostname(), getPort());
 		}
 		server.start();
 	}
@@ -88,40 +83,6 @@ public class CoapServerEventReceiver extends LifecycleComponent implements IInbo
 		return "coap:" + getHostname();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
-		getEventSource().onEncodedEventReceived(CoapServerEventReceiver.this, payload, metadata);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com.
-	 * sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	@Override
-	public void setEventSource(IInboundEventSource<byte[]> source) {
-		this.eventSource = source;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	@Override
-	public IInboundEventSource<byte[]> getEventSource() {
-		return eventSource;
-	}
-
 	public SiteWhereCoapServer getServer() {
 		return server;
 	}
@@ -136,5 +97,13 @@ public class CoapServerEventReceiver extends LifecycleComponent implements IInbo
 
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 }

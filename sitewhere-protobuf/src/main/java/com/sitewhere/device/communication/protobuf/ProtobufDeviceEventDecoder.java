@@ -39,6 +39,7 @@ import com.sitewhere.rest.model.device.event.request.DeviceStreamDataCreateReque
 import com.sitewhere.rest.model.device.event.request.SendDeviceStreamDataRequest;
 import com.sitewhere.rest.model.device.request.DeviceStreamCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.device.event.AlertLevel;
@@ -71,7 +72,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 	 */
 	@Override
 	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> payloadMetadata)
-			throws SiteWhereException {
+			throws EventDecodeException {
 		try {
 			ByteArrayInputStream stream = new ByteArrayInputStream(payload);
 			Header header = SiteWhere.Header.parseDelimitedFrom(stream);
@@ -294,7 +295,7 @@ public class ProtobufDeviceEventDecoder implements IDeviceEventDecoder<byte[]> {
 			}
 			}
 		} catch (IOException e) {
-			throw new SiteWhereException("Unable to decode protobuf message.", e);
+			throw new EventDecodeException("Unable to decode protobuf message.", e);
 		}
 	}
 }

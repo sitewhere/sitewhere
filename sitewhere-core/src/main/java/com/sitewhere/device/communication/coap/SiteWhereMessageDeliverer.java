@@ -7,7 +7,9 @@
  */
 package com.sitewhere.device.communication.coap;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
@@ -17,13 +19,11 @@ import org.eclipse.californium.core.network.Exchange;
 import org.eclipse.californium.core.server.MessageDeliverer;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.rest.model.device.communication.DeviceRequest;
+import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
-import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
-import com.sitewhere.rest.model.device.event.request.DeviceRegistrationRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.IDevice;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 import com.sitewhere.spi.tenant.ITenant;
 
@@ -35,8 +35,13 @@ import com.sitewhere.spi.tenant.ITenant;
 public class SiteWhereMessageDeliverer implements MessageDeliverer {
 
 	/** Static logger instance */
-	@SuppressWarnings("unused")
 	private static Logger LOGGER = Logger.getLogger(SiteWhereMessageDeliverer.class);
+
+	/** Indicates type of event (detected from URI) */
+	private static final String META_EVENT_TYPE = "eventType";
+
+	/** Indicates device hardware id (detected from URI) */
+	private static final String META_HARDWARE_ID = "hardwareId";
 
 	/** Receiver that handles incoming events */
 	private IInboundEventReceiver<byte[]> eventReceiver;
@@ -56,17 +61,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	public void deliverRequest(Exchange exchange) {
 		OptionSet options = exchange.getRequest().getOptions();
 		List<String> paths = options.getUriPath();
-		if (paths.size() == 0) {
-			createAndSendResponse(ResponseCode.BAD_REQUEST, "No path provided for CoAP processing.",
-					exchange);
-		}
-		try {
-			String tenantId = paths.remove(0);
-			ITenant tenant = SiteWhere.getServer().getTenantManagement().getTenantById(tenantId);
-			handleTenantRequest(tenant, paths, exchange);
-		} catch (SiteWhereException e) {
-			createAndSendResponse(ResponseCode.BAD_REQUEST, "Tenant id was invalid.", exchange);
-		}
+		handleTenantRequest(getEventReceiver().getTenant(), paths, exchange);
 	}
 
 	/**
@@ -96,19 +91,15 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 		if (paths.size() == 0) {
 			switch (exchange.getRequest().getCode()) {
 			case POST: {
+				Map<String, String> metadata = new HashMap<String, String>();
+				metadata.put(META_EVENT_TYPE, Type.RegisterDevice.name());
 				try {
-					DeviceRegistrationRequest registration =
-							MarshalUtils.unmarshalJson(exchange.getRequest().getPayload(),
-									DeviceRegistrationRequest.class);
-					DeviceRequest request = new DeviceRequest();
-					request.setHardwareId(registration.getHardwareId());
-					request.setType(Type.RegisterDevice);
-					request.setRequest(registration);
-					getEventReceiver().onEventPayloadReceived(MarshalUtils.marshalJson(request), null);
+					EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
+							exchange.getRequest().getPayload(), metadata);
 					createAndSendResponse(ResponseCode.CONTENT, "Device created successfully.", exchange);
-				} catch (SiteWhereException e) {
-					createAndSendResponse(ResponseCode.BAD_REQUEST,
-							"Device registration request was invalid.", exchange);
+				} catch (EventDecodeException e) {
+					LOGGER.error("Unable to decode CoAP registration payload.", e);
+					createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
 				}
 				break;
 			}
@@ -143,6 +134,8 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 			if ("measurements".equals(operation)) {
 				handleDeviceMeasurements(tenant, device, paths, exchange);
 			}
+		} else {
+			createAndSendResponse(ResponseCode.BAD_REQUEST, "No device request type specified.", exchange);
 		}
 	}
 
@@ -156,22 +149,19 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	 */
 	protected void handleDeviceMeasurements(ITenant tenant, IDevice device, List<String> paths,
 			Exchange exchange) {
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put(META_EVENT_TYPE, Type.DeviceMeasurements.name());
+		metadata.put(META_HARDWARE_ID, device.getHardwareId());
 		switch (exchange.getRequest().getCode()) {
 		case POST: {
 			try {
-				DeviceMeasurementsCreateRequest mxs =
-						MarshalUtils.unmarshalJson(exchange.getRequest().getPayload(),
-								DeviceMeasurementsCreateRequest.class);
-				DeviceRequest request = new DeviceRequest();
-				request.setHardwareId(device.getHardwareId());
-				request.setType(Type.DeviceMeasurements);
-				request.setRequest(mxs);
-				getEventReceiver().onEventPayloadReceived(MarshalUtils.marshalJson(request), null);
+				EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
+						exchange.getRequest().getPayload(), metadata);
 				createAndSendResponse(ResponseCode.CONTENT, "Device measurements created successfully.",
 						exchange);
-			} catch (SiteWhereException e) {
-				createAndSendResponse(ResponseCode.BAD_REQUEST, "Device measurements request was invalid.",
-						exchange);
+			} catch (EventDecodeException e) {
+				LOGGER.error("Unable to decode CoAP measurements payload.", e);
+				createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
 			}
 			break;
 		}

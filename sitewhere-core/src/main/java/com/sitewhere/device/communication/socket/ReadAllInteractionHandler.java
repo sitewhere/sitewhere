@@ -14,6 +14,7 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
+import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
@@ -46,7 +47,7 @@ public class ReadAllInteractionHandler implements ISocketInteractionHandler<byte
 				output.write(value);
 			}
 			input.close();
-			receiver.onEventPayloadReceived(output.toByteArray(), null);
+			EventProcessingLogic.processRawPayload(receiver, output.toByteArray(), null);
 		} catch (IOException e) {
 			throw new SiteWhereException("Exception processing request in socket interaction handler.", e);
 		}

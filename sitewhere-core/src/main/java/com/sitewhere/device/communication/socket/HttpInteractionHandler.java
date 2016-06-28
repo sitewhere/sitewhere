@@ -24,6 +24,7 @@ import org.apache.http.impl.DefaultBHttpServerConnection;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.log4j.Logger;
 
+import com.sitewhere.device.communication.EventProcessingLogic;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
@@ -63,7 +64,7 @@ public class HttpInteractionHandler implements ISocketInteractionHandler<byte[]>
 						out.write(data);
 					}
 					out.close();
-					receiver.onEventPayloadReceived(out.toByteArray(), null);
+					EventProcessingLogic.processRawPayload(receiver, out.toByteArray(), null);
 				}
 			}
 			HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, 200, "OK");
