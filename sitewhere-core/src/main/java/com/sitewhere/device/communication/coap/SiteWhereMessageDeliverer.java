@@ -133,6 +133,10 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 			String operation = paths.remove(0);
 			if ("measurements".equals(operation)) {
 				handleDeviceMeasurements(tenant, device, paths, exchange);
+			} else if ("alerts".equals(operation)) {
+				handleDeviceAlerts(tenant, device, paths, exchange);
+			} else if ("locations".equals(operation)) {
+				handleDeviceLocations(tenant, device, paths, exchange);
 			}
 		} else {
 			createAndSendResponse(ResponseCode.BAD_REQUEST, "No device request type specified.", exchange);
@@ -167,6 +171,70 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 		}
 		default: {
 			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device measurements operation not available.",
+					exchange);
+		}
+		}
+	}
+
+	/**
+	 * Handle operations related to device alerts.
+	 * 
+	 * @param tenant
+	 * @param device
+	 * @param paths
+	 * @param exchange
+	 */
+	protected void handleDeviceAlerts(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put(META_EVENT_TYPE, Type.DeviceAlert.name());
+		metadata.put(META_HARDWARE_ID, device.getHardwareId());
+		switch (exchange.getRequest().getCode()) {
+		case POST: {
+			try {
+				EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
+						exchange.getRequest().getPayload(), metadata);
+				createAndSendResponse(ResponseCode.CONTENT, "Device alert created successfully.", exchange);
+			} catch (EventDecodeException e) {
+				LOGGER.error("Unable to decode CoAP alert payload.", e);
+				createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
+			}
+			break;
+		}
+		default: {
+			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device alert operation not available.",
+					exchange);
+		}
+		}
+	}
+
+	/**
+	 * Handle operations related to device locations.
+	 * 
+	 * @param tenant
+	 * @param device
+	 * @param paths
+	 * @param exchange
+	 */
+	protected void handleDeviceLocations(ITenant tenant, IDevice device, List<String> paths,
+			Exchange exchange) {
+		Map<String, String> metadata = new HashMap<String, String>();
+		metadata.put(META_EVENT_TYPE, Type.DeviceLocation.name());
+		metadata.put(META_HARDWARE_ID, device.getHardwareId());
+		switch (exchange.getRequest().getCode()) {
+		case POST: {
+			try {
+				EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
+						exchange.getRequest().getPayload(), metadata);
+				createAndSendResponse(ResponseCode.CONTENT, "Device location created successfully.",
+						exchange);
+			} catch (EventDecodeException e) {
+				LOGGER.error("Unable to decode CoAP location payload.", e);
+				createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
+			}
+			break;
+		}
+		default: {
+			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device location operation not available.",
 					exchange);
 		}
 		}

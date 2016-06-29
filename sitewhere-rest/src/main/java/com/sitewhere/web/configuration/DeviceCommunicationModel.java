@@ -505,6 +505,12 @@ public class DeviceCommunicationModel extends ConfigurationModel {
 		// Only accept binary event decoders.
 		builder.specializes(ElementRole.EventSource_EventDecoder, ElementRole.EventSource_BinaryEventDecoder);
 
+		builder.attribute(
+				(new AttributeNode.Builder("Hostname", "hostname", AttributeType.String).description(
+						"Host name used when binding server socket.").defaultValue("localhost").build()));
+		builder.attribute((new AttributeNode.Builder("Port", "port", AttributeType.Integer).description(
+				"Port used when binding server socket.").defaultValue("5683").build()));
+
 		return builder.build();
 	}
 

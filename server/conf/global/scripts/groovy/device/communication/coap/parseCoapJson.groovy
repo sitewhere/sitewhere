@@ -12,7 +12,7 @@ if (DeviceRequest.Type.RegisterDevice.name().equals(type)) {
 	request.setHardwareId(registration.getHardwareId())
 	request.setRequest(registration)
 	events.add(request)
-	logger.info("Added device measurements request.")
+	logger.info("Added device registration request.")
 }
 
 // Parse device measurements message.
@@ -23,4 +23,24 @@ else if (DeviceRequest.Type.DeviceMeasurements.name().equals(type)) {
 	request.setRequest(mxs)
 	events.add(request)
 	logger.info("Added device measurements request for ${hwid}.")
+}
+
+// Parse device alert message.
+else if (DeviceRequest.Type.DeviceAlert.name().equals(type)) {
+	def alert = MarshalUtils.unmarshalJson(payload, DeviceAlertCreateRequest.class)
+	DecodedDeviceRequest<DeviceAlertCreateRequest> request = new DecodedDeviceRequest<DeviceAlertCreateRequest>()
+	request.setHardwareId(hwid)
+	request.setRequest(alert)
+	events.add(request)
+	logger.info("Added device alert request for ${hwid}.")
+}
+
+// Parse device location message.
+else if (DeviceRequest.Type.DeviceLocation.name().equals(type)) {
+	def location = MarshalUtils.unmarshalJson(payload, DeviceLocationCreateRequest.class)
+	DecodedDeviceRequest<DeviceLocationCreateRequest> request = new DecodedDeviceRequest<DeviceLocationCreateRequest>()
+	request.setHardwareId(hwid)
+	request.setRequest(location)
+	events.add(request)
+	logger.info("Added device location request for ${hwid}.")
 }
