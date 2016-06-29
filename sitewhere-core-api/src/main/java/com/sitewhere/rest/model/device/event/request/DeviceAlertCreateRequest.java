@@ -33,7 +33,7 @@ public class DeviceAlertCreateRequest extends DeviceEventCreateRequest
 	private AlertSource source = AlertSource.Device;
 
 	/** Alert level */
-	private AlertLevel level;
+	private AlertLevel level = AlertLevel.Info;
 
 	/** Alert type */
 	private String type;
