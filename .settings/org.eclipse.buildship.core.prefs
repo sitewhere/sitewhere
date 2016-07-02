@@ -1,0 +1,13 @@
+GRADLE_BUILD_COMMANDS=org.eclipse.jdt.core.javabuilder
+GRADLE_FILTERS=1.0-projectRelativePath-matches-false-false-sitewhere-activemq,1.0-projectRelativePath-matches-false-false-sitewhere-azure,1.0-projectRelativePath-matches-false-false-sitewhere-client,1.0-projectRelativePath-matches-false-false-sitewhere-cloud,1.0-projectRelativePath-matches-false-false-sitewhere-core,1.0-projectRelativePath-matches-false-false-sitewhere-core-api,1.0-projectRelativePath-matches-false-false-sitewhere-ehcache,1.0-projectRelativePath-matches-false-false-sitewhere-gnuhealth,1.0-projectRelativePath-matches-false-false-sitewhere-groovy,1.0-projectRelativePath-matches-false-false-sitewhere-hbase,1.0-projectRelativePath-matches-false-false-sitewhere-influx,1.0-projectRelativePath-matches-false-false-sitewhere-magento,1.0-projectRelativePath-matches-false-false-sitewhere-mongodb,1.0-projectRelativePath-matches-false-false-sitewhere-protobuf,1.0-projectRelativePath-matches-false-false-sitewhere-rabbit-mq,1.0-projectRelativePath-matches-false-false-sitewhere-server-api,1.0-projectRelativePath-matches-false-false-sitewhere-siddhi,1.0-projectRelativePath-matches-false-false-sitewhere-solr,1.0-projectRelativePath-matches-false-false-sitewhere-spark,1.0-projectRelativePath-matches-false-false-sitewhere-spring,1.0-projectRelativePath-matches-false-false-sitewhere-twilio,1.0-projectRelativePath-matches-false-false-sitewhere-web,1.0-projectRelativePath-matches-false-false-sitewhere-wso2,1.0-projectRelativePath-matches-false-false-build,1.0-projectRelativePath-matches-false-false-.gradle,1.0-projectRelativePath-matches-false-false-sitewhere-aws,1.0-projectRelativePath-matches-false-false-sitewhere-rest
+GRADLE_NATURES=org.eclipse.jdt.core.javanature
+build.commands=org.eclipse.jdt.core.javabuilder
+connection.arguments=
+connection.gradle.distribution=GRADLE_DISTRIBUTION(WRAPPER)
+connection.gradle.user.home=null
+connection.java.home=null
+connection.jvm.arguments=
+connection.project.dir=..\\sitewhere-cluster-manager
+eclipse.preferences.version=1
+natures=org.eclipse.jdt.core.javanature
+project.path=\:sitewhere
