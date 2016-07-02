@@ -125,6 +125,14 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/** Injected name used for tenants collection */
 	private String tenantsCollectionName = IUserManagementMongoClient.DEFAULT_TENANTS_COLLECTION_NAME;
 
+	/** Injected name used for tenant groups collection */
+	private String tenantGroupsCollectionName =
+			IUserManagementMongoClient.DEFAULT_TENANT_GROUPS_COLLECTION_NAME;
+
+	/** Injected name used for tenant group elements collection */
+	private String tenantGroupElementsCollectionName =
+			IUserManagementMongoClient.DEFAULT_TENANT_GROUP_ELEMENTS_COLLECTION_NAME;
+
 	/** Injected name used for asset categories collection */
 	private String assetCategoriesCollectionName =
 			IAssetManagementMongoClient.DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME;
@@ -202,6 +210,13 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 			messages.add("---------------------");
 			messages.add("Users collection name: " + getUsersCollectionName());
 			messages.add("Authorities collection name: " + getAuthoritiesCollectionName());
+			messages.add("");
+			messages.add("-----------------------");
+			messages.add("-- Tenant Management --");
+			messages.add("-----------------------");
+			messages.add("Tenants collection name: " + getTenantsCollectionName());
+			messages.add("Tenant groups collection name: " + getTenantGroupsCollectionName());
+			messages.add("Tenant group elements collection name: " + getTenantGroupElementsCollectionName());
 			messages.add("");
 			messages.add("----------------------");
 			messages.add("-- Asset Management --");
@@ -434,6 +449,27 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.mongodb.IUserManagementMongoClient#getTenantGroupsCollection()
+	 */
+	@Override
+	public DBCollection getTenantGroupsCollection() {
+		return getGlobalDatabase().getCollection(getTenantGroupsCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.mongodb.IUserManagementMongoClient#getTenantGroupElementsCollection()
+	 */
+	@Override
+	public DBCollection getTenantGroupElementsCollection() {
+		return getGlobalDatabase().getCollection(getTenantGroupElementsCollectionName());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetCategoriesCollection(
 	 * com.sitewhere.spi.user.ITenant)
@@ -659,6 +695,22 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 
 	public String getTenantsCollectionName() {
 		return tenantsCollectionName;
+	}
+
+	public String getTenantGroupsCollectionName() {
+		return tenantGroupsCollectionName;
+	}
+
+	public void setTenantGroupsCollectionName(String tenantGroupsCollectionName) {
+		this.tenantGroupsCollectionName = tenantGroupsCollectionName;
+	}
+
+	public String getTenantGroupElementsCollectionName() {
+		return tenantGroupElementsCollectionName;
+	}
+
+	public void setTenantGroupElementsCollectionName(String tenantGroupElementsCollectionName) {
+		this.tenantGroupElementsCollectionName = tenantGroupElementsCollectionName;
 	}
 
 	public void setTenantsCollectionName(String tenantsCollectionName) {

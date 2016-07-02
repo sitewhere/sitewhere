@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.rest.model.user.request;
+package com.sitewhere.rest.model.tenant.request;
 
 import java.io.Serializable;
 import java.util.ArrayList;

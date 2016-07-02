@@ -25,6 +25,12 @@ public interface IUserManagementMongoClient {
 	/** Default collection name for SiteWhere tenants */
 	public static final String DEFAULT_TENANTS_COLLECTION_NAME = "tenants";
 
+	/** Default collection name for SiteWhere tenant groups */
+	public static final String DEFAULT_TENANT_GROUPS_COLLECTION_NAME = "tgroups";
+
+	/** Default collection name for SiteWhere tenant group elements */
+	public static final String DEFAULT_TENANT_GROUP_ELEMENTS_COLLECTION_NAME = "tgroupelements";
+
 	/**
 	 * Get the collection for users.
 	 * 
@@ -45,4 +51,18 @@ public interface IUserManagementMongoClient {
 	 * @return
 	 */
 	public DBCollection getTenantsCollection();
+
+	/**
+	 * Get the collection for tenant groups.
+	 * 
+	 * @return
+	 */
+	public DBCollection getTenantGroupsCollection();
+
+	/**
+	 * Get the collection for tenant group elements.
+	 * 
+	 * @return
+	 */
+	public DBCollection getTenantGroupElementsCollection();
 }

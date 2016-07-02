@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.user.Tenant;
+import com.sitewhere.rest.model.tenant.Tenant;
 
 /**
  * Search results that contain tenants. Needed so that JSON marshaling has a concrete

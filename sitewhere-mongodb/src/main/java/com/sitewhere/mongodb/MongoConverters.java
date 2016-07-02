@@ -35,7 +35,7 @@ import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
 import com.sitewhere.mongodb.scheduling.MongoSchedule;
 import com.sitewhere.mongodb.scheduling.MongoScheduledJob;
-import com.sitewhere.mongodb.user.MongoTenant;
+import com.sitewhere.mongodb.tenant.MongoTenant;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IHardwareAsset;

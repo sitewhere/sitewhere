@@ -7,31 +7,42 @@
  */
 package com.sitewhere.mongodb.tenant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
+import com.mongodb.WriteResult;
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.mongodb.IUserManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
-import com.sitewhere.mongodb.user.MongoTenant;
-import com.sitewhere.rest.model.user.Tenant;
+import com.sitewhere.rest.model.tenant.Tenant;
+import com.sitewhere.rest.model.tenant.TenantGroup;
+import com.sitewhere.rest.model.tenant.TenantGroupElement;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantGroup;
+import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
+import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
+import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 
 /**
  * Tenant management implementation that uses MongoDB for persistence.
@@ -216,6 +227,169 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.tenant.ITenantManagement#createTenantGroup(com.sitewhere.spi.
+	 * tenant.request.ITenantGroupCreateRequest)
+	 */
+	@Override
+	public ITenantGroup createTenantGroup(ITenantGroupCreateRequest request) throws SiteWhereException {
+		ITenantGroup existing = getTenantGroupById(request.getId());
+		if (existing != null) {
+			throw new SiteWhereSystemException(ErrorCode.DuplicateTenantGroupId, ErrorLevel.ERROR);
+		}
+
+		// Use common logic so all backend implementations work the same.
+		TenantGroup group = SiteWherePersistence.tenantGroupCreateLogic(request);
+
+		DBCollection tgroups = getMongoClient().getTenantGroupsCollection();
+		DBObject created = MongoTenantGroup.toDBObject(group);
+		MongoPersistence.insert(tgroups, created);
+
+		return MongoTenantGroup.fromDBObject(created);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.tenant.ITenantManagement#updateTenantGroup(java.lang.String,
+	 * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest)
+	 */
+	@Override
+	public ITenantGroup updateTenantGroup(String id, ITenantGroupCreateRequest request)
+			throws SiteWhereException {
+		DBObject dbExisting = assertTenantGroup(id);
+		TenantGroup existing = MongoTenantGroup.fromDBObject(dbExisting);
+
+		// Use common update logic so that backend implemetations act the same way.
+		SiteWherePersistence.tenantGroupUpdateLogic(request, existing);
+		DBObject updated = MongoTenantGroup.toDBObject(existing);
+
+		BasicDBObject query = new BasicDBObject(MongoTenantGroup.PROP_ID, id);
+		DBCollection tgroups = getMongoClient().getTenantGroupsCollection();
+		MongoPersistence.update(tgroups, query, updated);
+
+		return MongoTenantGroup.fromDBObject(updated);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.tenant.ITenantManagement#getTenantGroupById(java.lang.String)
+	 */
+	@Override
+	public ITenantGroup getTenantGroupById(String id) throws SiteWhereException {
+		DBObject dbExisting = getTenantGroupObjectById(id);
+		if (dbExisting == null) {
+			return null;
+		}
+		return MongoTenantGroup.fromDBObject(dbExisting);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.tenant.ITenantManagement#listTenantGroups(com.sitewhere.spi.
+	 * search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<ITenantGroup> listTenantGroups(ISearchCriteria criteria) throws SiteWhereException {
+		DBCollection tgroups = getMongoClient().getTenantGroupsCollection();
+		BasicDBObject dbCriteria = new BasicDBObject();
+		BasicDBObject sort = new BasicDBObject(MongoTenantGroup.PROP_NAME, 1);
+		ISearchResults<ITenantGroup> list =
+				MongoPersistence.search(ITenantGroup.class, tgroups, dbCriteria, sort, criteria);
+		return list;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.tenant.ITenantManagement#deleteTenantGroup(java.lang.String,
+	 * boolean)
+	 */
+	@Override
+	public ITenantGroup deleteTenantGroup(String groupId, boolean force) throws SiteWhereException {
+		DBObject existing = assertTenantGroup(groupId);
+		if (force) {
+			DBCollection tgroups = getMongoClient().getTenantGroupsCollection();
+			MongoPersistence.delete(tgroups, existing);
+			return MongoTenantGroup.fromDBObject(existing);
+		} else {
+			MongoSiteWhereEntity.setDeleted(existing, true);
+			BasicDBObject query = new BasicDBObject(MongoTenantGroup.PROP_ID, groupId);
+			DBCollection tgroups = getMongoClient().getTenantGroupsCollection();
+			MongoPersistence.update(tgroups, query, existing);
+			return MongoTenantGroup.fromDBObject(existing);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.tenant.ITenantManagement#addTenantGroupElements(java.lang.String,
+	 * java.util.List)
+	 */
+	@Override
+	public List<ITenantGroupElement> addTenantGroupElements(String groupId,
+			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
+		List<ITenantGroupElement> results = new ArrayList<ITenantGroupElement>();
+		for (ITenantGroupElementCreateRequest request : elements) {
+			TenantGroupElement element = SiteWherePersistence.tenantGroupElementCreateLogic(request);
+			DBObject created = MongoTenantGroupElement.toDBObject(element);
+			MongoPersistence.insert(getMongoClient().getTenantGroupElementsCollection(), created);
+			results.add(MongoTenantGroupElement.fromDBObject(created));
+		}
+		return results;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.tenant.ITenantManagement#removeTenantGroupElements(java.lang.
+	 * String, java.util.List)
+	 */
+	@Override
+	public List<ITenantGroupElement> removeTenantGroupElements(String groupId,
+			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
+		List<ITenantGroupElement> deleted = new ArrayList<ITenantGroupElement>();
+		for (ITenantGroupElementCreateRequest request : elements) {
+			BasicDBObject match =
+					new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_ID, groupId).append(
+							MongoTenantGroupElement.PROP_TENANT_ID, request.getTenantId());
+			DBCursor found = getMongoClient().getTenantGroupElementsCollection().find(match);
+			while (found.hasNext()) {
+				DBObject current = found.next();
+				WriteResult result =
+						MongoPersistence.delete(getMongoClient().getTenantGroupElementsCollection(), current);
+				if (result.getN() > 0) {
+					deleted.add(MongoTenantGroupElement.fromDBObject(current));
+				}
+			}
+		}
+		return deleted;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.tenant.ITenantManagement#listTenantGroupElements(java.lang.
+	 * String, com.sitewhere.spi.search.ISearchCriteria)
+	 */
+	@Override
+	public ISearchResults<ITenantGroupElement> listTenantGroupElements(String groupId,
+			ISearchCriteria criteria) throws SiteWhereException {
+		BasicDBObject match = new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_ID, groupId);
+		BasicDBObject sort = new BasicDBObject(MongoTenantGroupElement.PROP_TENANT_ID, 1);
+		return MongoPersistence.search(ITenantGroupElement.class,
+				getMongoClient().getTenantGroupElementsCollection(), match, sort, criteria);
+	}
+
 	/**
 	 * Get the {@link DBObject} for a tenant given id. Throw an exception if not found.
 	 * 
@@ -244,6 +418,40 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 			DBCollection tenants = getMongoClient().getTenantsCollection();
 			BasicDBObject query = new BasicDBObject(MongoTenant.PROP_ID, id);
 			return tenants.findOne(query);
+		} catch (MongoTimeoutException e) {
+			throw new SiteWhereException("Connection to MongoDB lost.", e);
+		}
+	}
+
+	/**
+	 * Get the {@link DBObject} for a tenant group given id. Throw an exception if not
+	 * found.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject assertTenantGroup(String id) throws SiteWhereException {
+		DBObject match = getTenantGroupObjectById(id);
+		if (match == null) {
+			throw new SiteWhereSystemException(ErrorCode.InvalidTenantGroupId, ErrorLevel.ERROR,
+					HttpServletResponse.SC_NOT_FOUND);
+		}
+		return match;
+	}
+
+	/**
+	 * Get the DBObject for a TenantGroup given unique id.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected DBObject getTenantGroupObjectById(String id) throws SiteWhereException {
+		try {
+			DBCollection tgroups = getMongoClient().getTenantGroupsCollection();
+			BasicDBObject query = new BasicDBObject(MongoTenantGroup.PROP_ID, id);
+			return tgroups.findOne(query);
 		} catch (MongoTimeoutException e) {
 			throw new SiteWhereException("Connection to MongoDB lost.", e);
 		}

@@ -7,6 +7,8 @@
  */
 package com.sitewhere.hbase.tenant;
 
+import java.util.List;
+
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.log4j.Logger;
 
@@ -19,12 +21,17 @@ import com.sitewhere.hbase.encoder.JsonPayloadMarshaler;
 import com.sitewhere.hbase.user.UserIdManager;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantGroup;
+import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
+import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
+import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 
 /**
  * HBase implementation of SiteWhere tenant management.
@@ -146,6 +153,58 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
 	@Override
 	public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
 		return HBaseTenant.listTenants(context, criteria);
+	}
+
+	@Override
+	public ITenantGroup createTenantGroup(ITenantGroupCreateRequest request) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ITenantGroup updateTenantGroup(String id, ITenantGroupCreateRequest request)
+			throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ITenantGroup getTenantGroupById(String id) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISearchResults<ITenantGroup> listTenantGroups(ISearchCriteria criteria) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ITenantGroup deleteTenantGroup(String groupId, boolean force) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ITenantGroupElement> addTenantGroupElements(String groupId,
+			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ITenantGroupElement> removeTenantGroupElements(String groupId,
+			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISearchResults<ITenantGroupElement> listTenantGroupElements(String groupId,
+			ISearchCriteria criteria) throws SiteWhereException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/*

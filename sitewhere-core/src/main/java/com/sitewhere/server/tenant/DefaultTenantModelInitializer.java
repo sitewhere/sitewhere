@@ -12,7 +12,7 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.rest.model.user.request.TenantCreateRequest;
+import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
 import com.sitewhere.spi.SiteWhereException;

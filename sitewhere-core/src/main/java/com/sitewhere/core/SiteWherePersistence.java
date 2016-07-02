@@ -53,10 +53,12 @@ import com.sitewhere.rest.model.device.streaming.DeviceStream;
 import com.sitewhere.rest.model.scheduling.Schedule;
 import com.sitewhere.rest.model.scheduling.ScheduledJob;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
+import com.sitewhere.rest.model.tenant.Tenant;
+import com.sitewhere.rest.model.tenant.TenantGroup;
+import com.sitewhere.rest.model.tenant.TenantGroupElement;
+import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.rest.model.user.GrantedAuthority;
-import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
-import com.sitewhere.rest.model.user.request.TenantCreateRequest;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
@@ -120,6 +122,8 @@ import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantManagement;
 import com.sitewhere.spi.tenant.request.ITenantCreateRequest;
+import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
+import com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest;
 import com.sitewhere.spi.user.request.IGrantedAuthorityCreateRequest;
 import com.sitewhere.spi.user.request.IUserCreateRequest;
 
@@ -1377,6 +1381,73 @@ public class SiteWherePersistence {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Common logic for creating a tenant group.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static TenantGroup tenantGroupCreateLogic(ITenantGroupCreateRequest request)
+			throws SiteWhereException {
+		TenantGroup group = new TenantGroup();
+
+		// Id is required.
+		assureData(request.getId());
+		group.setId(request.getId());
+
+		// Name is required.
+		assureData(request.getName());
+		group.setName(request.getName());
+
+		MetadataProvider.copy(request.getMetadata(), group);
+		SiteWherePersistence.initializeEntityMetadata(group);
+
+		return group;
+	}
+
+	/**
+	 * Common logic for updating an existing tenant group.
+	 * 
+	 * @param request
+	 * @param existing
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static TenantGroup tenantGroupUpdateLogic(ITenantGroupCreateRequest request, TenantGroup existing)
+			throws SiteWhereException {
+		if ((request.getId() != null) && (!request.getId().equals(existing.getId()))) {
+			throw new SiteWhereException("Can not change the id of an existing tenant group.");
+		}
+
+		if (request.getName() != null) {
+			existing.setName(request.getName());
+		}
+
+		if (request.getMetadata() != null) {
+			existing.getMetadata().clear();
+			MetadataProvider.copy(request.getMetadata(), existing);
+		}
+		SiteWherePersistence.setUpdatedEntityMetadata(existing);
+
+		return existing;
+	}
+
+	/**
+	 * Common logic for creating a new tenant group element.
+	 * 
+	 * @param request
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static TenantGroupElement tenantGroupElementCreateLogic(ITenantGroupElementCreateRequest request)
+			throws SiteWhereException {
+		TenantGroupElement element = new TenantGroupElement();
+		element.setTenantGroupId(request.getTenantGroupId());
+		element.setTenantId(request.getTenantId());
+		return element;
 	}
 
 	/**

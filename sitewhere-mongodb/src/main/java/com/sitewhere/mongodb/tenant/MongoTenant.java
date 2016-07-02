@@ -5,7 +5,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package com.sitewhere.mongodb.user;
+package com.sitewhere.mongodb.tenant;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import com.mongodb.DBObject;
 import com.sitewhere.mongodb.MongoConverter;
 import com.sitewhere.mongodb.common.MongoMetadataProvider;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
-import com.sitewhere.rest.model.user.Tenant;
+import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
