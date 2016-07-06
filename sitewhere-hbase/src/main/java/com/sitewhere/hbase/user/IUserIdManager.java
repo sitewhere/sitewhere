@@ -18,4 +18,5 @@ public interface IUserIdManager {
 
 	public UniqueIdCounterMap getTenantKeys();
 
+	public UniqueIdCounterMap getTenantGroupKeys();
 }

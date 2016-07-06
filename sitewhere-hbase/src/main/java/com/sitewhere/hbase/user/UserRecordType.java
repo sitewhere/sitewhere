@@ -23,8 +23,11 @@ public enum UserRecordType {
 	/** Tenant record */
 	Tenant((byte) 0x03),
 
+	/** Tenant group record */
+	TenantGroup((byte) 0x04),
+
 	/** Marker for scans */
-	End((byte) 0x03);
+	End((byte) 0x05);
 
 	/** Type indicator */
 	private byte type;
