@@ -266,7 +266,7 @@
 			zcMap.remove();
 		}
 		zcMap = L.map('zc-map');
-		swInitMapForSite(zcMap, zcSite, '${tenant.authenticationToken}', zoneToken);
+		swInitMapForSite(zcMap, zcSite, '${basicAuth}', '${tenant.authenticationToken}', zoneToken);
 
 		// Function called on submit.
 		zcSubmitCallback = callback;
