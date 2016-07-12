@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.sitewhere.groovy.GroovyConfiguration;
-import com.sitewhere.rest.model.tenant.request.TenantManagementRequestBuilder;
+import com.sitewhere.rest.model.tenant.request.scripting.TenantManagementRequestBuilder;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.tenant.ITenantModelInitializer;

@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.tenant.request;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import com.sitewhere.rest.model.common.MetadataProvider;
 import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
@@ -17,8 +18,7 @@ import com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest;
  * 
  * @author Derek
  */
-public class TenantGroupCreateRequest extends MetadataProvider
-		implements ITenantGroupCreateRequest, Serializable {
+public class TenantGroupCreateRequest extends MetadataProvider implements ITenantGroupCreateRequest, Serializable {
 
 	/** Serial version UID */
 	private static final long serialVersionUID = -6593183022611071721L;
@@ -28,6 +28,9 @@ public class TenantGroupCreateRequest extends MetadataProvider
 
 	/** Group name */
 	private String name;
+
+	/** Group image URL */
+	private String imageUrl;
 
 	/*
 	 * (non-Javadoc)
@@ -53,5 +56,47 @@ public class TenantGroupCreateRequest extends MetadataProvider
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getImageUrl()
+	 */
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private TenantGroupCreateRequest request = new TenantGroupCreateRequest();
+
+		public Builder(String id, String name) {
+			request.setId(id);
+			request.setName(name);
+		}
+
+		public Builder withImageUrl(String imageUrl) {
+			request.setImageUrl(imageUrl);
+			return this;
+		}
+
+		public Builder metadata(String name, String value) {
+			if (request.getMetadata() == null) {
+				request.setMetadata(new HashMap<String, String>());
+			}
+			request.getMetadata().put(name, value);
+			return this;
+		}
+
+		public TenantGroupCreateRequest build() {
+			return request;
+		}
 	}
 }

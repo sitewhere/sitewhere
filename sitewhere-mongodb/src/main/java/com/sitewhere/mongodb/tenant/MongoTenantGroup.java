@@ -28,6 +28,9 @@ public class MongoTenantGroup implements MongoConverter<ITenantGroup> {
 	/** Property for group name */
 	public static final String PROP_NAME = "name";
 
+	/** Property for group image URL */
+	public static final String PROP_IMAGE_URL = "imageUrl";
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -57,6 +60,7 @@ public class MongoTenantGroup implements MongoConverter<ITenantGroup> {
 	public static void toDBObject(ITenantGroup source, BasicDBObject target) {
 		target.append(PROP_ID, source.getId());
 		target.append(PROP_NAME, source.getName());
+		target.append(PROP_IMAGE_URL, source.getImageUrl());
 
 		MongoSiteWhereEntity.toDBObject(source, target);
 		MongoMetadataProvider.toDBObject(source, target);
@@ -71,9 +75,11 @@ public class MongoTenantGroup implements MongoConverter<ITenantGroup> {
 	public static void fromDBObject(DBObject source, TenantGroup target) {
 		String id = (String) source.get(PROP_ID);
 		String name = (String) source.get(PROP_NAME);
+		String imageUrl = (String) source.get(PROP_IMAGE_URL);
 
 		target.setId(id);
 		target.setName(name);
+		target.setImageUrl(imageUrl);
 
 		MongoSiteWhereEntity.fromDBObject(source, target);
 		MongoMetadataProvider.fromDBObject(source, target);

@@ -10,6 +10,7 @@ package com.sitewhere.rest.model.tenant;
 import java.io.Serializable;
 
 import com.sitewhere.rest.model.common.MetadataProviderEntity;
+import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.tenant.ITenantGroup;
 
 /**
@@ -27,6 +28,9 @@ public class TenantGroup extends MetadataProviderEntity implements ITenantGroup,
 
 	/** Group name */
 	private String name;
+
+	/** Group image URL */
+	private String imageUrl;
 
 	/*
 	 * (non-Javadoc)
@@ -52,5 +56,27 @@ public class TenantGroup extends MetadataProviderEntity implements ITenantGroup,
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.tenant.ITenantGroup#getImageUrl()
+	 */
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public static TenantGroup copy(ITenantGroup input) throws SiteWhereException {
+		TenantGroup result = new TenantGroup();
+		result.setId(input.getId());
+		result.setName(input.getName());
+		result.setImageUrl(input.getImageUrl());
+		MetadataProviderEntity.copy(input, result);
+		return result;
 	}
 }

@@ -9,6 +9,8 @@ package com.sitewhere.rest.model.tenant;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.sitewhere.spi.tenant.ITenantGroupElement;
 
 /**
@@ -16,6 +18,7 @@ import com.sitewhere.spi.tenant.ITenantGroupElement;
  * 
  * @author Derek
  */
+@JsonInclude(Include.NON_NULL)
 public class TenantGroupElement implements ITenantGroupElement, Serializable {
 
 	/** Serial version UID */
@@ -26,6 +29,11 @@ public class TenantGroupElement implements ITenantGroupElement, Serializable {
 
 	/** Tenant associated with element */
 	private String tenantId;
+
+	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+
+	/** Device specification */
+	private Tenant tenant;
 
 	/*
 	 * (non-Javadoc)
@@ -51,5 +59,13 @@ public class TenantGroupElement implements ITenantGroupElement, Serializable {
 
 	public void setTenantId(String tenantId) {
 		this.tenantId = tenantId;
+	}
+
+	public Tenant getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(Tenant tenant) {
+		this.tenant = tenant;
 	}
 }

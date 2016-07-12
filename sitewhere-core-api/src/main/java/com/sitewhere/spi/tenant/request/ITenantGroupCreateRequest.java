@@ -29,4 +29,11 @@ public interface ITenantGroupCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public String getName();
+
+	/**
+	 * Get URL for image associated with group.
+	 * 
+	 * @return
+	 */
+	public String getImageUrl();
 }

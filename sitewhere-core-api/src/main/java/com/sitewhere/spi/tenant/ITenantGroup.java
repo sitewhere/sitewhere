@@ -29,4 +29,11 @@ public interface ITenantGroup extends IMetadataProviderEntity {
 	 * @return
 	 */
 	public String getName();
+
+	/**
+	 * Get URL for image associated with group.
+	 * 
+	 * @return
+	 */
+	public String getImageUrl();
 }

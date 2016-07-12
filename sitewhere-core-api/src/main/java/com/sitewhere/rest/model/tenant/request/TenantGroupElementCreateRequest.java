@@ -30,9 +30,8 @@ public class TenantGroupElementCreateRequest implements ITenantGroupElementCreat
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest#getTenantGroupId(
-	 * )
+	 * @see com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest#
+	 * getTenantGroupId( )
 	 */
 	public String getTenantGroupId() {
 		return tenantGroupId;
@@ -45,8 +44,8 @@ public class TenantGroupElementCreateRequest implements ITenantGroupElementCreat
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest#getTenantId()
+	 * @see com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest#
+	 * getTenantId()
 	 */
 	public String getTenantId() {
 		return tenantId;
@@ -54,5 +53,20 @@ public class TenantGroupElementCreateRequest implements ITenantGroupElementCreat
 
 	public void setTenantId(String tenantId) {
 		this.tenantId = tenantId;
+	}
+
+	public static class Builder {
+
+		/** Request being built */
+		private TenantGroupElementCreateRequest request = new TenantGroupElementCreateRequest();
+
+		public Builder(String tenantGroupId, String tenantId) {
+			request.setTenantGroupId(tenantGroupId);
+			request.setTenantId(tenantId);
+		}
+
+		public TenantGroupElementCreateRequest build() {
+			return request;
+		}
 	}
 }
