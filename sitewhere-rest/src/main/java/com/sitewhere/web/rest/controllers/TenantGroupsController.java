@@ -48,8 +48,8 @@ import com.wordnik.swagger.annotations.ApiParam;
  */
 @Controller
 @CrossOrigin
-@RequestMapping(value = "/tenantgroups")
-@Api(value = "tenantgroups", description = "Operations related to SiteWhere tenant groups.")
+@RequestMapping(value = "/tgroups")
+@Api(value = "tgroups", description = "Operations related to SiteWhere tenant groups.")
 @DocumentedController(name = "Tenant Groups")
 public class TenantGroupsController extends RestController {
 

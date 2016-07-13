@@ -289,8 +289,8 @@ public class AdminInterfaceController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/{tenantId}/assignments/{token}")
-	public ModelAndView assignmentDetail(@PathVariable("tenantId") String tenantId,
-			@PathVariable("token") String token, HttpServletRequest request) {
+	public ModelAndView assignmentDetail(@PathVariable("tenantId") String tenantId, @PathVariable("token") String token,
+			HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "assignmentDetail", LOGGER);
 		try {
 			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
@@ -353,8 +353,7 @@ public class AdminInterfaceController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/{tenantId}/specifications/list")
-	public ModelAndView listSpecifications(@PathVariable("tenantId") String tenantId,
-			HttpServletRequest request) {
+	public ModelAndView listSpecifications(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listSpecifications", LOGGER);
 		try {
 			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
@@ -416,13 +415,11 @@ public class AdminInterfaceController extends MvcController {
 	 */
 	@RequestMapping("/{tenantId}/devices/list")
 	public ModelAndView listDevices(@PathVariable("tenantId") String tenantId,
-			@RequestParam(required = false) String specification,
-			@RequestParam(required = false) String group,
-			@RequestParam(required = false) String groupsWithRole,
-			@RequestParam(required = false) String site, @RequestParam(required = false) String dateRange,
-			@RequestParam(required = false) String beforeDate,
-			@RequestParam(required = false) String afterDate,
-			@RequestParam(required = false) boolean excludeAssigned, HttpServletRequest request) {
+			@RequestParam(required = false) String specification, @RequestParam(required = false) String group,
+			@RequestParam(required = false) String groupsWithRole, @RequestParam(required = false) String site,
+			@RequestParam(required = false) String dateRange, @RequestParam(required = false) String beforeDate,
+			@RequestParam(required = false) String afterDate, @RequestParam(required = false) boolean excludeAssigned,
+			HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listDevices", LOGGER);
 		try {
 			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
@@ -430,9 +427,8 @@ public class AdminInterfaceController extends MvcController {
 
 			// Look up specification that will be used for filtering.
 			if (specification != null) {
-				IDeviceSpecification found =
-						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceSpecificationByToken(
-								specification);
+				IDeviceSpecification found = SiteWhere.getServer().getDeviceManagement(tenant)
+						.getDeviceSpecificationByToken(specification);
 				if (found == null) {
 					throw new SiteWhereException("Specification token was not valid.");
 				}
@@ -493,8 +489,8 @@ public class AdminInterfaceController extends MvcController {
 			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(tenant);
 			IDevice device = management.getDeviceByHardwareId(hardwareId);
 			if (device != null) {
-				IDeviceSpecification specification =
-						management.getDeviceSpecificationByToken(device.getSpecificationToken());
+				IDeviceSpecification specification = management
+						.getDeviceSpecificationByToken(device.getSpecificationToken());
 				data.put("device", device);
 				data.put("specification", specification);
 				return new ModelAndView("devices/detail", data);
@@ -517,8 +513,7 @@ public class AdminInterfaceController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/{tenantId}/groups/list")
-	public ModelAndView listDeviceGroups(@PathVariable("tenantId") String tenantId,
-			HttpServletRequest request) {
+	public ModelAndView listDeviceGroups(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listDeviceGroups", LOGGER);
 		try {
 			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
@@ -571,8 +566,7 @@ public class AdminInterfaceController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/{tenantId}/assets/categories")
-	public ModelAndView listAssetCategories(@PathVariable("tenantId") String tenantId,
-			HttpServletRequest request) {
+	public ModelAndView listAssetCategories(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listAssetCategories", LOGGER);
 		try {
 			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
@@ -601,8 +595,7 @@ public class AdminInterfaceController extends MvcController {
 		try {
 			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
-			IAssetCategory category =
-					SiteWhere.getServer().getAssetManagement(tenant).getAssetCategory(categoryId);
+			IAssetCategory category = SiteWhere.getServer().getAssetManagement(tenant).getAssetCategory(categoryId);
 			data.put("category", category);
 			return new ModelAndView("assets/categoryAssets", data);
 		} catch (NoTenantException e) {
@@ -622,8 +615,7 @@ public class AdminInterfaceController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/{tenantId}/batch/list")
-	public ModelAndView listBatchOperations(@PathVariable("tenantId") String tenantId,
-			HttpServletRequest request) {
+	public ModelAndView listBatchOperations(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listBatchOperations", LOGGER);
 		try {
 			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
@@ -656,8 +648,7 @@ public class AdminInterfaceController extends MvcController {
 			IBatchOperation operation = management.getBatchOperation(batchToken);
 			if (operation != null) {
 				data.put("operation", operation);
-				String commandToken =
-						operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
+				String commandToken = operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
 				if (commandToken == null) {
 					return showError("No command token set for batch operation.");
 				}
@@ -705,8 +696,7 @@ public class AdminInterfaceController extends MvcController {
 	 * @return
 	 */
 	@RequestMapping("/{tenantId}/jobs/list")
-	public ModelAndView listScheduledjobs(@PathVariable("tenantId") String tenantId,
-			HttpServletRequest request) {
+	public ModelAndView listScheduledjobs(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listScheduledjobs", LOGGER);
 		try {
 			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
@@ -804,6 +794,26 @@ public class AdminInterfaceController extends MvcController {
 	}
 
 	/**
+	 * Display the "list tenant groups" page.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/tgroups/list")
+	@Secured({ SiteWhereRoles.ADMINISTER_TENANTS })
+	public ModelAndView listTenantGroups(HttpServletRequest request) {
+		Tracer.start(TracerCategory.AdminUserInterface, "listTenantGroups", LOGGER);
+		try {
+			Map<String, Object> data = createBaseData(request);
+			return new ModelAndView("tgroups/list", data);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Add site and specification data if tenant is active.
 	 * 
 	 * @param tenant
@@ -811,14 +821,13 @@ public class AdminInterfaceController extends MvcController {
 	 * @throws SiteWhereException
 	 */
 	protected void addTenantData(ITenant tenant, Map<String, Object> data) throws SiteWhereException {
-		ISiteWhereTenantEngineState state =
-				SiteWhere.getServer().getTenantEngine(tenant.getId()).getEngineState();
+		ISiteWhereTenantEngineState state = SiteWhere.getServer().getTenantEngine(tenant.getId()).getEngineState();
 
 		// Only attempt to load data if engine is started.
 		if (state.getLifecycleStatus() == LifecycleStatus.Started) {
 			// Pass JSON representation of sites list.
-			ISearchResults<ISite> sites =
-					SiteWhere.getServer().getDeviceManagement(tenant).listSites(new SearchCriteria(1, 0));
+			ISearchResults<ISite> sites = SiteWhere.getServer().getDeviceManagement(tenant)
+					.listSites(new SearchCriteria(1, 0));
 			List<TokenNamePair> sitesList = new ArrayList<TokenNamePair>();
 			for (ISite site : sites.getResults()) {
 				TokenNamePair pair = new TokenNamePair();
@@ -831,9 +840,8 @@ public class AdminInterfaceController extends MvcController {
 			data.put("sites", strSites);
 
 			// Pass JSON representation of specifications list.
-			ISearchResults<IDeviceSpecification> specs =
-					SiteWhere.getServer().getDeviceManagement(tenant).listDeviceSpecifications(false,
-							new SearchCriteria(1, 0));
+			ISearchResults<IDeviceSpecification> specs = SiteWhere.getServer().getDeviceManagement(tenant)
+					.listDeviceSpecifications(false, new SearchCriteria(1, 0));
 			List<TokenNamePair> specsList = new ArrayList<TokenNamePair>();
 			for (IDeviceSpecification spec : specs.getResults()) {
 				TokenNamePair pair = new TokenNamePair();
