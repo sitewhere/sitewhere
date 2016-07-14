@@ -43,6 +43,7 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -252,8 +253,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken, ISearchCriteria criteria)
-			throws SiteWhereException {
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
+			IAssignmentSearchCriteria criteria) throws SiteWhereException {
 		return delegate.getDeviceAssignmentsForSite(siteToken, criteria);
 	}
 

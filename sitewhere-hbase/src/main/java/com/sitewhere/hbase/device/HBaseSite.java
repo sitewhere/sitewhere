@@ -50,6 +50,7 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.server.debug.TracerCategory;
 
@@ -248,7 +249,7 @@ public class HBaseSite {
 	 * @throws SiteWhereException
 	 */
 	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context, String siteToken,
-			ISearchCriteria criteria) throws SiteWhereException {
+			IAssignmentSearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForSite (HBase) " + siteToken,
 				LOGGER);
 		HTableInterface sites = null;
@@ -288,7 +289,9 @@ public class HBaseSite {
 								.decodeDeviceAssignmentState(state);
 						assignment.setState(assnState);
 					}
-					pager.process(assignment);
+					if ((criteria.getStatus() == null) || (criteria.getStatus().equals(assignment.getStatus()))) {
+						pager.process(assignment);
+					}
 				}
 			}
 			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());

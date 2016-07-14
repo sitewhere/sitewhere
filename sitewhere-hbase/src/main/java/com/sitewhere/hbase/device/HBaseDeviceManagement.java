@@ -60,6 +60,7 @@ import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
 import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
@@ -500,10 +501,11 @@ public class HBaseDeviceManagement extends TenantLifecycleComponent
 	 * 
 	 * @see
 	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceAssignmentsForSite(
-	 * java.lang .String, com.sitewhere.spi.common.ISearchCriteria)
+	 * java.lang.String,
+	 * com.sitewhere.spi.search.device.IAssignmentSearchCriteria)
 	 */
-	public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken, ISearchCriteria criteria)
-			throws SiteWhereException {
+	public SearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
+			IAssignmentSearchCriteria criteria) throws SiteWhereException {
 		return HBaseSite.listDeviceAssignmentsForSite(context, siteToken, criteria);
 	}
 
