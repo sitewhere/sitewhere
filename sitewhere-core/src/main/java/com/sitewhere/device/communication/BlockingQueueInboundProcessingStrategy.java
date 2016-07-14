@@ -26,6 +26,7 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -96,13 +97,12 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	@Override
 	public void start() throws SiteWhereException {
 		this.queue = new ArrayBlockingQueue<PerformanceWrapper>(getMaxQueueSize());
-		processorPool =
-				Executors.newFixedThreadPool(getEventProcessorThreadCount(), new ProcessorsThreadFactory());
+		processorPool = Executors.newFixedThreadPool(getEventProcessorThreadCount(), new ProcessorsThreadFactory());
 		for (int i = 0; i < getEventProcessorThreadCount(); i++) {
 			processorPool.execute(new BlockingMessageProcessor(queue));
 		}
-		LOGGER.info("Started blocking queue inbound processing strategy with queue size of "
-				+ getMaxQueueSize() + " and " + getEventProcessorThreadCount() + " threads.");
+		LOGGER.info("Started blocking queue inbound processing strategy with queue size of " + getMaxQueueSize()
+				+ " and " + getEventProcessorThreadCount() + " threads.");
 
 		// Only show monitoring data if enabled.
 		if (isEnableMonitoring()) {
@@ -127,8 +127,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 		private AtomicInteger counter = new AtomicInteger();
 
 		public Thread newThread(Runnable r) {
-			return new Thread(r, "SiteWhere BlockingQueueInboundProcessingStrategy Processor "
-					+ counter.incrementAndGet());
+			return new Thread(r,
+					"SiteWhere BlockingQueueInboundProcessingStrategy Processor " + counter.incrementAndGet());
 		}
 	}
 
@@ -152,7 +152,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
-	 * processRegistration (com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
+	 * processRegistration
+	 * (com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
 	 */
 	@Override
 	public void processRegistration(IDecodedDeviceRequest<IDeviceRegistrationRequest> request)
@@ -168,8 +169,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
 	 */
 	@Override
-	public void processDeviceCommandResponse(
-			IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request) throws SiteWhereException {
+	public void processDeviceCommandResponse(IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request)
+			throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -207,8 +208,7 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	 * (com.sitewhere.spi.device.communication.IDecodedDeviceEventRequest)
 	 */
 	@Override
-	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request)
-			throws SiteWhereException {
+	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request) throws SiteWhereException {
 		addRequestToQueue(request);
 	}
 
@@ -264,9 +264,22 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 		addRequestToQueue(request);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processCreateDeviceMapping(com.sitewhere.spi.device.communication.
+	 * IDecodedDeviceRequest)
+	 */
+	@Override
+	public void processCreateDeviceMapping(IDecodedDeviceRequest<IDeviceMappingCreateRequest> request)
+			throws SiteWhereException {
+		addRequestToQueue(request);
+	}
+
 	/**
-	 * Adds an {@link IDecodedDeviceRequest} to the queue, blocking if no space is
-	 * available.
+	 * Adds an {@link IDecodedDeviceRequest} to the queue, blocking if no space
+	 * is available.
 	 * 
 	 * @param request
 	 * @throws SiteWhereException
@@ -423,11 +436,9 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 					long avgWaitTime = getAverageProcessingWaitTime();
 					long avgProcessingTime = getAverageProcessingTime();
 					long avgDownstreamTime = getAverageDownstreamProcessingTime();
-					String message =
-							String.format(
-									"Count(%5d) Errors(%5d) Backlog(%5d) AvgWait(%5d ms) AvgProc(%5d ms) AvgDS(%5d ms)",
-									eventCount, errorCount, backlog, avgWaitTime, avgProcessingTime,
-									avgDownstreamTime);
+					String message = String.format(
+							"Count(%5d) Errors(%5d) Backlog(%5d) AvgWait(%5d ms) AvgProc(%5d ms) AvgDS(%5d ms)",
+							eventCount, errorCount, backlog, avgWaitTime, avgProcessingTime, avgDownstreamTime);
 					LOGGER.info(message);
 				} catch (Throwable e) {
 					LOGGER.error(e);
@@ -441,7 +452,8 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 	}
 
 	/**
-	 * Blocking thread that processes {@link IDecodedDeviceRequest} from a queue.
+	 * Blocking thread that processes {@link IDecodedDeviceRequest} from a
+	 * queue.
 	 * 
 	 * @author Derek
 	 * 
@@ -458,18 +470,16 @@ public class BlockingQueueInboundProcessingStrategy extends InboundProcessingStr
 
 		@Override
 		public void run() {
-			// Event creation APIs expect an authenticated user in order to check
-			// permissions and log who creates events. When called in this context, the
-			// authenticated user will always be 'system'.
-			//
-			// TODO: Alternatively, we may want the client to authenticate on registration
-			// and pass a token on each request.
+			// Event creation APIs expect an authenticated user in order to
+			// check permissions and log who creates events. When called in this
+			// context, the authenticated user will always be 'system'.
+			// TODO: Alternatively, we may want the client to authenticate on
+			// registration and pass a token on each request.
 			try {
-				SecurityContextHolder.getContext().setAuthentication(
-						SiteWhereServer.getSystemAuthentication());
+				SecurityContextHolder.getContext().setAuthentication(SiteWhereServer.getSystemAuthentication());
 			} catch (SiteWhereException e) {
-				throw new RuntimeException("Unable to use system authentication for inbound device "
-						+ " event processor thread.", e);
+				throw new RuntimeException(
+						"Unable to use system authentication for inbound device " + " event processor thread.", e);
 			}
 			while (true) {
 				try {

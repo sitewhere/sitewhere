@@ -29,6 +29,7 @@ import com.sitewhere.rest.model.device.communication.DeviceRequest;
 import com.sitewhere.rest.model.device.communication.DeviceRequest.Type;
 import com.sitewhere.rest.model.device.event.request.DeviceLocationCreateRequest;
 import com.sitewhere.rest.model.device.event.request.DeviceMeasurementsCreateRequest;
+import com.sitewhere.rest.model.device.request.DeviceMappingCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 
 public class MqttTests {
@@ -85,9 +86,8 @@ public class MqttTests {
 		try {
 			String payload = (new ObjectMapper()).writeValueAsString(request);
 			System.out.println("Payload:\n\n" + payload);
-			Future<Void> future =
-					getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
-							false);
+			Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
+					false);
 			future.await(3, TimeUnit.SECONDS);
 			System.out.println("Message sent successfully.");
 		} catch (JsonProcessingException e) {
@@ -123,9 +123,36 @@ public class MqttTests {
 			String payload = mapper.writeValueAsString(json);
 
 			System.out.println("Payload:\n\n" + payload);
-			Future<Void> future =
-					getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
-							false);
+			Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
+					false);
+			future.await(3, TimeUnit.SECONDS);
+			System.out.println("Message sent successfully.");
+		} catch (JsonProcessingException e) {
+			throw new SiteWhereException(e);
+		} catch (Exception e) {
+			throw new SiteWhereException(e);
+		}
+	}
+
+	/**
+	 * Send request for mapping a device as an element of a composite device.
+	 * 
+	 * @throws SiteWhereException
+	 */
+	@Test
+	public void sendDeviceMappingCreateRequest() throws SiteWhereException {
+		DeviceRequest request = new DeviceRequest();
+		request.setHardwareId("19c5a02a-a9a9-4b39-ad4e-1066bb464141");
+		request.setType(Type.MapDevice);
+		DeviceMappingCreateRequest mapping = new DeviceMappingCreateRequest();
+		mapping.setCompositeDeviceHardwareId("072d6db9-5349-4162-bfbe-e4990a101f29");
+		mapping.setMappingPath("/default/pci/pci1");
+		request.setRequest(mapping);
+		try {
+			String payload = (new ObjectMapper()).writeValueAsString(request);
+			System.out.println("Payload:\n\n" + payload);
+			Future<Void> future = getConnection().publish("SiteWhere/input/json", payload.getBytes(), QoS.AT_LEAST_ONCE,
+					false);
 			future.await(3, TimeUnit.SECONDS);
 			System.out.println("Message sent successfully.");
 		} catch (JsonProcessingException e) {

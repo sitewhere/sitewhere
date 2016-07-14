@@ -19,6 +19,7 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -85,8 +86,8 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	@Override
@@ -106,8 +107,8 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
 	 * com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
 	 */
 	@Override
-	public void onRegistrationRequest(String hardwareId, String originator,
-			IDeviceRegistrationRequest request) throws SiteWhereException {
+	public void onRegistrationRequest(String hardwareId, String originator, IDeviceRegistrationRequest request)
+			throws SiteWhereException {
 		for (IInboundEventProcessor processor : getProcessors()) {
 			try {
 				processor.onRegistrationRequest(hardwareId, originator, request);
@@ -122,7 +123,8 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
 	 * 
 	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
 	 * onDeviceCommandResponseRequest(java.lang.String, java.lang.String,
-	 * com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest)
+	 * com.sitewhere.spi.device.event.request.
+	 * IDeviceCommandResponseCreateRequest)
 	 */
 	@Override
 	public void onDeviceCommandResponseRequest(String hardwareId, String originator,
@@ -182,8 +184,8 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
 	 * com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest)
 	 */
 	@Override
-	public void onDeviceAlertCreateRequest(String hardwareId, String originator,
-			IDeviceAlertCreateRequest request) throws SiteWhereException {
+	public void onDeviceAlertCreateRequest(String hardwareId, String originator, IDeviceAlertCreateRequest request)
+			throws SiteWhereException {
 		for (IInboundEventProcessor processor : getProcessors()) {
 			try {
 				processor.onDeviceAlertCreateRequest(hardwareId, originator, request);
@@ -220,8 +222,8 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
 	 * com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest)
 	 */
 	@Override
-	public void onDeviceStreamCreateRequest(String hardwareId, String originator,
-			IDeviceStreamCreateRequest request) throws SiteWhereException {
+	public void onDeviceStreamCreateRequest(String hardwareId, String originator, IDeviceStreamCreateRequest request)
+			throws SiteWhereException {
 		for (IInboundEventProcessor processor : getProcessors()) {
 			try {
 				processor.onDeviceStreamCreateRequest(hardwareId, originator, request);
@@ -272,9 +274,28 @@ public class DefaultInboundEventProcessorChain extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.device.event.processor.IInboundEventProcessor#
+	 * onDeviceMappingCreateRequest(java.lang.String, java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest)
+	 */
+	@Override
+	public void onDeviceMappingCreateRequest(String hardwareId, String originator, IDeviceMappingCreateRequest request)
+			throws SiteWhereException {
+		for (IInboundEventProcessor processor : getProcessors()) {
+			try {
+				processor.onDeviceMappingCreateRequest(hardwareId, originator, request);
+			} catch (SiteWhereException e) {
+				LOGGER.error("Processor failed to process device mapping create request.", e);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see
-	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain#getProcessors
-	 * ()
+	 * com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain#
+	 * getProcessors ()
 	 */
 	public List<IInboundEventProcessor> getProcessors() {
 		return processors;

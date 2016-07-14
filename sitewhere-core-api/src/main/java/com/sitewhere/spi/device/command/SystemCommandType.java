@@ -24,5 +24,8 @@ public enum SystemCommandType {
 	DeviceStreamAck,
 
 	/** Sends a chunk of device stream data */
-	SendDeviceStreamData;
+	SendDeviceStreamData,
+
+	/** Acknowledges response of device mapping operation */
+	DeviceMappingAck;
 }

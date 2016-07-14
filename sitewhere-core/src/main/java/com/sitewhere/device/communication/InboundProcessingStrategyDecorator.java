@@ -14,6 +14,7 @@ import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -23,8 +24,8 @@ import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Allows additional functionality to be triggered as part of the inbound processing
- * strategy.
+ * Allows additional functionality to be triggered as part of the inbound
+ * processing strategy.
  * 
  * @author Derek
  */
@@ -42,8 +43,9 @@ public class InboundProcessingStrategyDecorator extends LifecycleComponentDecora
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(com.
-	 * sitewhere.spi.tenant.ITenant)
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
+	 * com. sitewhere.spi.tenant.ITenant)
 	 */
 	@Override
 	public void setTenant(ITenant tenant) {
@@ -53,7 +55,8 @@ public class InboundProcessingStrategyDecorator extends LifecycleComponentDecora
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
 	 */
 	@Override
 	public ITenant getTenant() {
@@ -64,7 +67,8 @@ public class InboundProcessingStrategyDecorator extends LifecycleComponentDecora
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
-	 * processRegistration(com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
+	 * processRegistration(com.sitewhere.spi.device.communication.
+	 * IDecodedDeviceRequest)
 	 */
 	@Override
 	public void processRegistration(IDecodedDeviceRequest<IDeviceRegistrationRequest> request)
@@ -80,8 +84,8 @@ public class InboundProcessingStrategyDecorator extends LifecycleComponentDecora
 	 * IDecodedDeviceRequest)
 	 */
 	@Override
-	public void processDeviceCommandResponse(
-			IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request) throws SiteWhereException {
+	public void processDeviceCommandResponse(IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request)
+			throws SiteWhereException {
 		delegate.processDeviceCommandResponse(request);
 	}
 
@@ -102,7 +106,8 @@ public class InboundProcessingStrategyDecorator extends LifecycleComponentDecora
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
-	 * processDeviceLocation(com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
+	 * processDeviceLocation(com.sitewhere.spi.device.communication.
+	 * IDecodedDeviceRequest)
 	 */
 	@Override
 	public void processDeviceLocation(IDecodedDeviceRequest<IDeviceLocationCreateRequest> request)
@@ -114,11 +119,11 @@ public class InboundProcessingStrategyDecorator extends LifecycleComponentDecora
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
-	 * processDeviceAlert(com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
+	 * processDeviceAlert(com.sitewhere.spi.device.communication.
+	 * IDecodedDeviceRequest)
 	 */
 	@Override
-	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request)
-			throws SiteWhereException {
+	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request) throws SiteWhereException {
 		delegate.processDeviceAlert(request);
 	}
 
@@ -139,7 +144,8 @@ public class InboundProcessingStrategyDecorator extends LifecycleComponentDecora
 	 * (non-Javadoc)
 	 * 
 	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
-	 * processDeviceStream(com.sitewhere.spi.device.communication.IDecodedDeviceRequest)
+	 * processDeviceStream(com.sitewhere.spi.device.communication.
+	 * IDecodedDeviceRequest)
 	 */
 	@Override
 	public void processDeviceStream(IDecodedDeviceRequest<IDeviceStreamCreateRequest> request)
@@ -171,6 +177,19 @@ public class InboundProcessingStrategyDecorator extends LifecycleComponentDecora
 	public void processSendDeviceStreamData(IDecodedDeviceRequest<ISendDeviceStreamDataRequest> request)
 			throws SiteWhereException {
 		delegate.processSendDeviceStreamData(request);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.communication.IInboundProcessingStrategy#
+	 * processCreateDeviceMapping(com.sitewhere.spi.device.communication.
+	 * IDecodedDeviceRequest)
+	 */
+	@Override
+	public void processCreateDeviceMapping(IDecodedDeviceRequest<IDeviceMappingCreateRequest> request)
+			throws SiteWhereException {
+		delegate.processCreateDeviceMapping(request);
 	}
 
 	/*

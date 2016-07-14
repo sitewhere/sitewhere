@@ -85,5 +85,8 @@ public class DeviceRequest {
 
 		/** Send a command acknowledgement */
 		Acknowledge,
+
+		/** Map a device to a slot on a composite device */
+		MapDevice,
 	}
 }
