@@ -57,14 +57,15 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Implementation of {@link IDeviceManagement} that stores data in a Hazelcast in-memory
- * data grid. This implementation works on ephemeral data and does not offer long-term
- * peristence.
+ * Implementation of {@link IDeviceManagement} that stores data in a Hazelcast
+ * in-memory data grid. This implementation works on ephemeral data and does not
+ * offer long-term peristence.
  * 
  * @author Derek
  */
@@ -141,15 +142,14 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceSpecification(com.sitewhere.
-	 * spi.device.request.IDeviceSpecificationCreateRequest)
+	 * com.sitewhere.spi.device.IDeviceManagement#createDeviceSpecification(com.
+	 * sitewhere. spi.device.request.IDeviceSpecificationCreateRequest)
 	 */
 	@Override
 	public IDeviceSpecification createDeviceSpecification(IDeviceSpecificationCreateRequest request)
 			throws SiteWhereException {
 		String uuid = (request.getToken() != null) ? request.getToken() : UUID.randomUUID().toString();
-		DeviceSpecification specification =
-				SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
+		DeviceSpecification specification = SiteWherePersistence.deviceSpecificationCreateLogic(request, uuid);
 		return getSpecifications().put(specification.getToken(), specification);
 	}
 
@@ -157,8 +157,8 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceSpecificationByToken(java.lang.
-	 * String)
+	 * com.sitewhere.spi.device.IDeviceManagement#getDeviceSpecificationByToken(
+	 * java.lang. String)
 	 */
 	@Override
 	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException {
@@ -169,12 +169,13 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IDeviceManagement#updateDeviceSpecification(java.lang.
-	 * String, com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest)
+	 * com.sitewhere.spi.device.IDeviceManagement#updateDeviceSpecification(java
+	 * .lang. String,
+	 * com.sitewhere.spi.device.request.IDeviceSpecificationCreateRequest)
 	 */
 	@Override
-	public IDeviceSpecification updateDeviceSpecification(String token,
-			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
+	public IDeviceSpecification updateDeviceSpecification(String token, IDeviceSpecificationCreateRequest request)
+			throws SiteWhereException {
 		DeviceSpecification specification = getSpecifications().get(token);
 		SiteWherePersistence.deviceSpecificationUpdateLogic(request, specification);
 		return getSpecifications().put(specification.getToken(), specification);
@@ -183,8 +184,8 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceSpecifications(boolean,
-	 * com.sitewhere.spi.search.ISearchCriteria)
+	 * @see com.sitewhere.spi.device.IDeviceManagement#listDeviceSpecifications(
+	 * boolean, com.sitewhere.spi.search.ISearchCriteria)
 	 */
 	@Override
 	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
@@ -201,14 +202,12 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 		return getSearchResults(list, criteria, IDeviceSpecification.class);
 	}
 
-	protected <T, I> ISearchResults<I> getSearchResults(List<T> all, ISearchCriteria criteria,
-			Class<I> type) {
+	protected <T, I> ISearchResults<I> getSearchResults(List<T> all, ISearchCriteria criteria, Class<I> type) {
 		return null;
 	}
 
 	@Override
-	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
-			throws SiteWhereException {
+	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -234,8 +233,7 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public List<IDeviceCommand> listDeviceCommands(String specToken, boolean includeDeleted)
-			throws SiteWhereException {
+	public List<IDeviceCommand> listDeviceCommands(String specToken, boolean includeDeleted) throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -297,8 +295,7 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
-			throws SiteWhereException {
+	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -355,15 +352,15 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId,
-			ISearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
+			throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
-			ISearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken, ISearchCriteria criteria)
+			throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -376,16 +373,15 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken,
-			ISearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
+			throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
-			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-			throws SiteWhereException {
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+			IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -459,8 +455,7 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria)
-			throws SiteWhereException {
+	public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria) throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -478,8 +473,7 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request)
-			throws SiteWhereException {
+	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request) throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -525,15 +519,14 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
-			ISearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken, ISearchCriteria criteria)
+			throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
-			throws SiteWhereException {
+	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -552,8 +545,8 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
-			ISearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
+			throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -565,15 +558,15 @@ public class HazelcastDeviceManagement extends TenantLifecycleComponent implemen
 	}
 
 	@Override
-	public ISearchResults<IBatchElement> listBatchElements(String batchToken,
-			IBatchElementSearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
+			throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public IBatchElement updateBatchElement(String operationToken, long index,
-			IBatchElementUpdateRequest request) throws SiteWhereException {
+	public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
+			throws SiteWhereException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -32,6 +32,7 @@ import com.sitewhere.rest.model.asset.request.LocationAssetCreateRequest;
 import com.sitewhere.rest.model.asset.request.PersonAssetCreateRequest;
 import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
+import com.sitewhere.rest.model.search.device.AssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.asset.AssetType;
@@ -77,7 +78,8 @@ public class AssetsController extends RestController {
 	private static Logger LOGGER = Logger.getLogger(AssetsController.class);
 
 	/**
-	 * Search for assets in an {@link IAssetModule} that meet the given criteria.
+	 * Search for assets in an {@link IAssetModule} that meet the given
+	 * criteria.
 	 * 
 	 * @param assetModuleId
 	 * @param criteria
@@ -96,15 +98,15 @@ public class AssetsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetModule", LOGGER);
 		try {
 			return AssetModule.copy(
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getModule(
-							assetModuleId));
+					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getModule(assetModuleId));
 		} finally {
 			Tracer.stop(LOGGER);
 		}
 	}
 
 	/**
-	 * Search for assets in an {@link IAssetModule} that meet the given criteria.
+	 * Search for assets in an {@link IAssetModule} that meet the given
+	 * criteria.
 	 * 
 	 * @param assetModuleId
 	 * @param criteria
@@ -123,9 +125,8 @@ public class AssetsController extends RestController {
 			@ApiParam(value = "Criteria for search", required = false) @RequestParam(defaultValue = "") String criteria,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "searchAssets", LOGGER);
-		List<? extends IAsset> found =
-				SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).search(assetModuleId,
-						criteria);
+		List<? extends IAsset> found = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))
+				.search(assetModuleId, criteria);
 		SearchResults<? extends IAsset> results = new SearchResults(found);
 		Tracer.stop(LOGGER);
 		return results;
@@ -153,8 +154,8 @@ public class AssetsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getAssetById(
-					assetModuleId, assetId);
+			return SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).getAssetById(assetModuleId,
+					assetId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -181,8 +182,8 @@ public class AssetsController extends RestController {
 	public ISearchResults<IDeviceAssignment> getAssignmentsForAsset(
 			@ApiParam(value = "Unique asset module id", required = true) @PathVariable String assetModuleId,
 			@ApiParam(value = "Unique asset id", required = true) @PathVariable String assetId,
-			@ApiParam(value = "Unique token that identifies site", required = true) @RequestParam String siteToken,
-			@ApiParam(value = "Assignment status", required = false) @RequestParam(required = false) String status,
+			@ApiParam(value = "Limit results to the given site", required = false) @RequestParam(required = false) String siteToken,
+			@ApiParam(value = "Limit results to the given status", required = false) @RequestParam(required = false) String status,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
 					ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
@@ -190,12 +191,13 @@ public class AssetsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetById", LOGGER);
 		try {
-			DeviceAssignmentStatus decodedStatus =
-					(status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
-			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getDeviceManagement(
-					getTenant(servletRequest)).getDeviceAssignmentsForAsset(siteToken, assetModuleId, assetId,
-							decodedStatus, criteria);
+			AssignmentsForAssetSearchCriteria criteria = new AssignmentsForAssetSearchCriteria(page, pageSize);
+			DeviceAssignmentStatus decodedStatus = (status != null) ? DeviceAssignmentStatus.valueOf(status) : null;
+			criteria.setStatus(decodedStatus);
+			criteria.setSiteToken(siteToken);
+
+			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
 		} catch (IllegalArgumentException e) {
 			throw new SiteWhereException("Invalid device assignment status: " + status);
 		} finally {
@@ -222,8 +224,8 @@ public class AssetsController extends RestController {
 		try {
 			AssetType type = (assetType == null) ? null : AssetType.valueOf(assetType);
 			List<AssetModule> converted = new ArrayList<AssetModule>();
-			List<IAssetModule<?>> modules =
-					SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).listModules();
+			List<IAssetModule<?>> modules = SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest))
+					.listModules();
 			for (IAssetModule<?> module : modules) {
 				if ((type == null) || (type == module.getAssetType())) {
 					converted.add(AssetModule.copy(module));
@@ -249,8 +251,7 @@ public class AssetsController extends RestController {
 	@Secured({ SiteWhereRoles.REST })
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Assets.RefreshAssetModules.class, description = "refreshModules.md") })
-	public List<ICommandResponse> refreshModules(HttpServletRequest servletRequest)
-			throws SiteWhereException {
+	public List<ICommandResponse> refreshModules(HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "refreshModules", LOGGER);
 		try {
 			return SiteWhere.getServer().getAssetModuleManager(getTenant(servletRequest)).refreshModules();
@@ -276,8 +277,7 @@ public class AssetsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createAssetCategory", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createAssetCategory(
-					request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createAssetCategory(request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -303,8 +303,8 @@ public class AssetsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateAssetCategory", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateAssetCategory(
-					categoryId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateAssetCategory(categoryId,
+					request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -328,8 +328,7 @@ public class AssetsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAssetCategoryById", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).getAssetCategory(
-					categoryId);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).getAssetCategory(categoryId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -353,8 +352,7 @@ public class AssetsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteAssetCategory", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).deleteAssetCategory(
-					categoryId);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).deleteAssetCategory(categoryId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -383,16 +381,15 @@ public class AssetsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "listAssetCategories", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).listAssetCategories(
-					criteria);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).listAssetCategories(criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
 	}
 
 	/**
-	 * Creates a new person asset in the category. If the category does not support person
-	 * assets, an exception will be thrown.
+	 * Creates a new person asset in the category. If the category does not
+	 * support person assets, an exception will be thrown.
 	 * 
 	 * @param categoryId
 	 * @param request
@@ -411,8 +408,8 @@ public class AssetsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createPersonAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createPersonAsset(
-					categoryId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createPersonAsset(categoryId,
+					request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -440,16 +437,16 @@ public class AssetsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updatePersonAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updatePersonAsset(
-					categoryId, assetId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updatePersonAsset(categoryId,
+					assetId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
 	}
 
 	/**
-	 * Creates a new hardware asset in the category. If the category does not support
-	 * hardware assets, an exception will be thrown.
+	 * Creates a new hardware asset in the category. If the category does not
+	 * support hardware assets, an exception will be thrown.
 	 * 
 	 * @param categoryId
 	 * @param request
@@ -468,8 +465,8 @@ public class AssetsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createHardwareAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createHardwareAsset(
-					categoryId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createHardwareAsset(categoryId,
+					request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -497,16 +494,16 @@ public class AssetsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateHardwareAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateHardwareAsset(
-					categoryId, assetId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateHardwareAsset(categoryId,
+					assetId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
 	}
 
 	/**
-	 * Creates a new location asset in the category. If the category does not support
-	 * location assets, an exception will be thrown.
+	 * Creates a new location asset in the category. If the category does not
+	 * support location assets, an exception will be thrown.
 	 * 
 	 * @param categoryId
 	 * @param request
@@ -525,8 +522,8 @@ public class AssetsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createLocationAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createLocationAsset(
-					categoryId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).createLocationAsset(categoryId,
+					request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -554,8 +551,8 @@ public class AssetsController extends RestController {
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateLocationAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateLocationAsset(
-					categoryId, assetId, request);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).updateLocationAsset(categoryId,
+					assetId, request);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -583,8 +580,7 @@ public class AssetsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getCategoryAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).getAsset(categoryId,
-					assetId);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).getAsset(categoryId, assetId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -612,8 +608,7 @@ public class AssetsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteCategoryAsset", LOGGER);
 		try {
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).deleteAsset(categoryId,
-					assetId);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).deleteAsset(categoryId, assetId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -644,8 +639,7 @@ public class AssetsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "listCategoryAssets", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).listAssets(categoryId,
-					criteria);
+			return SiteWhere.getServer().getAssetManagement(getTenant(servletRequest)).listAssets(categoryId, criteria);
 		} finally {
 			Tracer.stop(LOGGER);
 		}
