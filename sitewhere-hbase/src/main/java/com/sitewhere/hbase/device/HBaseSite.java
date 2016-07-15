@@ -272,8 +272,7 @@ public class HBaseSite {
 			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
 			for (Result result : scanner) {
 				// TODO: This is inefficient. There should be a filter on the
-				// scanner
-				// instead.
+				// scanner instead.
 				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
 					continue;
 				}
@@ -341,8 +340,7 @@ public class HBaseSite {
 			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
 			for (Result result : scanner) {
 				// TODO: This is inefficient. There should be a filter on the
-				// scanner
-				// instead.
+				// scanner instead.
 				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
 					continue;
 				}
