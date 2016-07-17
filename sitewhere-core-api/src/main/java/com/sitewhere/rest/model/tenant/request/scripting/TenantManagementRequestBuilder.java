@@ -81,14 +81,25 @@ public class TenantManagementRequestBuilder {
 	}
 
 	/**
-	 * Create builder for new tenant group request.
+	 * Create builder for new tenant group request. This version allows a token
+	 * to be auto-generated.
 	 * 
-	 * @param id
 	 * @param name
 	 * @return
 	 */
-	public TenantGroupCreateRequest.Builder newTenantGroup(String id, String name) {
-		return new TenantGroupCreateRequest.Builder(id, name);
+	public TenantGroupCreateRequest.Builder newTenantGroup(String name) {
+		return new TenantGroupCreateRequest.Builder(name);
+	}
+
+	/**
+	 * Create builder for new tenant group request.
+	 * 
+	 * @param token
+	 * @param name
+	 * @return
+	 */
+	public TenantGroupCreateRequest.Builder newTenantGroup(String token, String name) {
+		return new TenantGroupCreateRequest.Builder(token, name);
 	}
 
 	/**
@@ -103,14 +114,14 @@ public class TenantManagementRequestBuilder {
 	}
 
 	/**
-	 * Get a tenant group by id.
+	 * Get a tenant group by token.
 	 * 
-	 * @param id
+	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ITenantGroup getTenantGroup(String id) throws SiteWhereException {
-		return getTenantManagement().getTenantGroupById(id);
+	public ITenantGroup getTenantGroup(String token) throws SiteWhereException {
+		return getTenantManagement().getTenantGroupByToken(token);
 	}
 
 	/**
@@ -149,7 +160,7 @@ public class TenantManagementRequestBuilder {
 		for (TenantGroupElementCreateRequest.Builder builder : builders) {
 			elements.add(builder.build());
 		}
-		return getTenantManagement().addTenantGroupElements(group.getId(), elements);
+		return getTenantManagement().addTenantGroupElements(group.getToken(), elements);
 	}
 
 	public ITenantManagement getTenantManagement() {

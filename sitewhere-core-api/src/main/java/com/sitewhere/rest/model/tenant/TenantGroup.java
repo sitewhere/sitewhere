@@ -23,11 +23,14 @@ public class TenantGroup extends MetadataProviderEntity implements ITenantGroup,
 	/** Serial version UID */
 	private static final long serialVersionUID = 8286511120595519596L;
 
-	/** Unique tenant group id */
-	private String id;
+	/** Unique tenant group token */
+	private String token;
 
 	/** Group name */
 	private String name;
+
+	/** Group description */
+	private String description;
 
 	/** Group image URL */
 	private String imageUrl;
@@ -35,14 +38,14 @@ public class TenantGroup extends MetadataProviderEntity implements ITenantGroup,
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.tenant.ITenantGroup#getId()
+	 * @see com.sitewhere.spi.tenant.ITenantGroup#getToken()
 	 */
-	public String getId() {
-		return id;
+	public String getToken() {
+		return token;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	/*
@@ -61,6 +64,19 @@ public class TenantGroup extends MetadataProviderEntity implements ITenantGroup,
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.tenant.ITenantGroup#getDescription()
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.tenant.ITenantGroup#getImageUrl()
 	 */
 	public String getImageUrl() {
@@ -73,8 +89,9 @@ public class TenantGroup extends MetadataProviderEntity implements ITenantGroup,
 
 	public static TenantGroup copy(ITenantGroup input) throws SiteWhereException {
 		TenantGroup result = new TenantGroup();
-		result.setId(input.getId());
+		result.setToken(input.getToken());
 		result.setName(input.getName());
+		result.setDescription(input.getDescription());
 		result.setImageUrl(input.getImageUrl());
 		MetadataProviderEntity.copy(input, result);
 		return result;

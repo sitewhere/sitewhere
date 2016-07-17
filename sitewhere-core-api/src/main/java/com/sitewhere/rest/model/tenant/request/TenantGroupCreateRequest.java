@@ -23,11 +23,14 @@ public class TenantGroupCreateRequest extends MetadataProvider implements ITenan
 	/** Serial version UID */
 	private static final long serialVersionUID = -6593183022611071721L;
 
-	/** Unique tenant group id */
-	private String id;
+	/** Unqiue token. Leave null to auto-generate */
+	private String token;
 
 	/** Group name */
 	private String name;
+
+	/** Group description */
+	private String description;
 
 	/** Group image URL */
 	private String imageUrl;
@@ -35,14 +38,15 @@ public class TenantGroupCreateRequest extends MetadataProvider implements ITenan
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getId()
+	 * @see
+	 * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getToken()
 	 */
-	public String getId() {
-		return id;
+	public String getToken() {
+		return token;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	/*
@@ -56,6 +60,21 @@ public class TenantGroupCreateRequest extends MetadataProvider implements ITenan
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sitewhere.spi.tenant.request.ITenantGroupCreateRequest#getDescription
+	 * ()
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	/*
@@ -77,9 +96,18 @@ public class TenantGroupCreateRequest extends MetadataProvider implements ITenan
 		/** Request being built */
 		private TenantGroupCreateRequest request = new TenantGroupCreateRequest();
 
-		public Builder(String id, String name) {
-			request.setId(id);
+		public Builder(String name) {
 			request.setName(name);
+		}
+
+		public Builder(String token, String name) {
+			request.setToken(token);
+			request.setName(name);
+		}
+
+		public Builder withDescription(String description) {
+			request.setDescription(description);
+			return this;
 		}
 
 		public Builder withImageUrl(String imageUrl) {

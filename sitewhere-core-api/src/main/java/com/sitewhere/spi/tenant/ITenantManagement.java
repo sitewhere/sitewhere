@@ -93,22 +93,21 @@ public interface ITenantManagement extends ILifecycleComponent {
 	/**
 	 * Update an existing tenant group.
 	 * 
-	 * @param id
+	 * @param token
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ITenantGroup updateTenantGroup(String id, ITenantGroupCreateRequest request)
-			throws SiteWhereException;
+	public ITenantGroup updateTenantGroup(String token, ITenantGroupCreateRequest request) throws SiteWhereException;
 
 	/**
-	 * Get a tenant group by unique id.
+	 * Get a tenant group by unique token.
 	 * 
-	 * @param id
+	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ITenantGroup getTenantGroupById(String id) throws SiteWhereException;
+	public ITenantGroup getTenantGroupByToken(String token) throws SiteWhereException;
 
 	/**
 	 * List tenant groups that meet the given criteria.
@@ -132,34 +131,34 @@ public interface ITenantManagement extends ILifecycleComponent {
 	/**
 	 * Add elements to a tenant group.
 	 * 
-	 * @param groupId
+	 * @param token
 	 * @param elements
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<ITenantGroupElement> addTenantGroupElements(String groupId,
+	public List<ITenantGroupElement> addTenantGroupElements(String token,
 			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException;
 
 	/**
 	 * Remove elements from a tenant group.
 	 * 
-	 * @param groupToken
+	 * @param token
 	 * @param elements
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<ITenantGroupElement> removeTenantGroupElements(String groupId,
+	public List<ITenantGroupElement> removeTenantGroupElements(String token,
 			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException;
 
 	/**
 	 * List elements in a tenant group.
 	 * 
-	 * @param groupToken
+	 * @param token
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<ITenantGroupElement> listTenantGroupElements(String groupId,
-			ISearchCriteria criteria) throws SiteWhereException;
+	public ISearchResults<ITenantGroupElement> listTenantGroupElements(String token, ISearchCriteria criteria)
+			throws SiteWhereException;
 
 }

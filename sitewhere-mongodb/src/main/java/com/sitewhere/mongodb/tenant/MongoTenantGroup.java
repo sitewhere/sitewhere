@@ -22,11 +22,14 @@ import com.sitewhere.spi.tenant.ITenantGroup;
  */
 public class MongoTenantGroup implements MongoConverter<ITenantGroup> {
 
-	/** Property for group id */
-	public static final String PROP_ID = "id";
+	/** Property for group token */
+	public static final String PROP_TOKEN = "token";
 
 	/** Property for group name */
 	public static final String PROP_NAME = "name";
+
+	/** Property for group description */
+	public static final String PROP_DESCRIPTION = "description";
 
 	/** Property for group image URL */
 	public static final String PROP_IMAGE_URL = "imageUrl";
@@ -58,8 +61,9 @@ public class MongoTenantGroup implements MongoConverter<ITenantGroup> {
 	 * @param target
 	 */
 	public static void toDBObject(ITenantGroup source, BasicDBObject target) {
-		target.append(PROP_ID, source.getId());
+		target.append(PROP_TOKEN, source.getToken());
 		target.append(PROP_NAME, source.getName());
+		target.append(PROP_DESCRIPTION, source.getDescription());
 		target.append(PROP_IMAGE_URL, source.getImageUrl());
 
 		MongoSiteWhereEntity.toDBObject(source, target);
@@ -73,12 +77,14 @@ public class MongoTenantGroup implements MongoConverter<ITenantGroup> {
 	 * @param target
 	 */
 	public static void fromDBObject(DBObject source, TenantGroup target) {
-		String id = (String) source.get(PROP_ID);
+		String token = (String) source.get(PROP_TOKEN);
 		String name = (String) source.get(PROP_NAME);
+		String description = (String) source.get(PROP_DESCRIPTION);
 		String imageUrl = (String) source.get(PROP_IMAGE_URL);
 
-		target.setId(id);
+		target.setToken(token);
 		target.setName(name);
+		target.setDescription(description);
 		target.setImageUrl(imageUrl);
 
 		MongoSiteWhereEntity.fromDBObject(source, target);

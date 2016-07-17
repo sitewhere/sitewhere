@@ -81,21 +81,21 @@ public class HBaseTenantGroup {
 	 */
 	public static ITenantGroup createTenantGroup(IHBaseContext context, ITenantGroupCreateRequest request)
 			throws SiteWhereException {
-		String groupId = null;
-		if (request.getId() != null) {
-			groupId = KEY_BUILDER.getMap(context).useExistingId(request.getId());
+		String token = null;
+		if (request.getToken() != null) {
+			token = KEY_BUILDER.getMap(context).useExistingId(request.getToken());
 		} else {
-			groupId = KEY_BUILDER.getMap(context).createUniqueId();
+			token = KEY_BUILDER.getMap(context).createUniqueId();
 		}
 
 		// Use common logic so all backend implementations work the same.
-		TenantGroup group = SiteWherePersistence.tenantGroupCreateLogic(request);
+		TenantGroup group = SiteWherePersistence.tenantGroupCreateLogic(token, request);
 
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
 		byte[] zero = Bytes.toBytes((long) 0);
 		qualifiers.put(ENTRY_COUNTER, zero);
 		return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(), ISiteWhereHBase.USERS_TABLE_NAME,
-				group, groupId, KEY_BUILDER, qualifiers);
+				group, token, KEY_BUILDER, qualifiers);
 	}
 
 	/**
@@ -116,15 +116,15 @@ public class HBaseTenantGroup {
 	}
 
 	/**
-	 * Get a {@link TenantGroup} by unique token. *
+	 * Get a {@link TenantGroup} by unique token.
 	 * 
 	 * @param context
-	 * @param groupId
+	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static TenantGroup getTenantGroupById(IHBaseContext context, String groupId) throws SiteWhereException {
-		return HBaseUtils.get(context, ISiteWhereHBase.USERS_TABLE_NAME, groupId, KEY_BUILDER, TenantGroup.class);
+	public static TenantGroup getTenantGroupByToken(IHBaseContext context, String token) throws SiteWhereException {
+		return HBaseUtils.get(context, ISiteWhereHBase.USERS_TABLE_NAME, token, KEY_BUILDER, TenantGroup.class);
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class HBaseTenantGroup {
 	 * @throws SiteWhereException
 	 */
 	public static TenantGroup assertTenantGroup(IHBaseContext context, String groupId) throws SiteWhereException {
-		TenantGroup existing = getTenantGroupById(context, groupId);
+		TenantGroup existing = getTenantGroupByToken(context, groupId);
 		if (existing == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantGroupId, ErrorLevel.ERROR);
 		}

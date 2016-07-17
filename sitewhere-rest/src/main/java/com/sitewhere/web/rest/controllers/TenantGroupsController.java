@@ -83,16 +83,16 @@ public class TenantGroupsController extends RestController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	@RequestMapping(value = "/{groupId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{token}", method = RequestMethod.GET)
 	@ResponseBody
-	@ApiOperation(value = "Get a tenant group by unique id")
+	@ApiOperation(value = "Get a tenant group by unique token")
 	@Secured({ SiteWhereRoles.REST })
 	public ITenantGroup getTenantGroupById(
-			@ApiParam(value = "Unique id that identifies group", required = true) @PathVariable String groupId)
+			@ApiParam(value = "Unique token that identifies group", required = true) @PathVariable String token)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantGroupById", LOGGER);
 		try {
-			ITenantGroup group = SiteWhere.getServer().getTenantManagement().getTenantGroupById(groupId);
+			ITenantGroup group = SiteWhere.getServer().getTenantManagement().getTenantGroupByToken(token);
 			if (group == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidTenantGroupId, ErrorLevel.ERROR);
 			}

@@ -17,11 +17,11 @@ import com.sitewhere.spi.common.IMetadataProvider;
 public interface ITenantGroupCreateRequest extends IMetadataProvider {
 
 	/**
-	 * Get unique id for group.
+	 * Get unique token for group. Leave null to auto-generate.
 	 * 
 	 * @return
 	 */
-	public String getId();
+	public String getToken();
 
 	/**
 	 * Get name for group.
@@ -29,6 +29,13 @@ public interface ITenantGroupCreateRequest extends IMetadataProvider {
 	 * @return
 	 */
 	public String getName();
+
+	/**
+	 * Get description for group.
+	 * 
+	 * @return
+	 */
+	public String getDescription();
 
 	/**
 	 * Get URL for image associated with group.

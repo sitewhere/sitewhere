@@ -161,15 +161,16 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common logic for creating new device specification and populating it from request.
+	 * Common logic for creating new device specification and populating it from
+	 * request.
 	 * 
 	 * @param request
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceSpecification deviceSpecificationCreateLogic(
-			IDeviceSpecificationCreateRequest request, String token) throws SiteWhereException {
+	public static DeviceSpecification deviceSpecificationCreateLogic(IDeviceSpecificationCreateRequest request,
+			String token) throws SiteWhereException {
 		DeviceSpecification spec = new DeviceSpecification();
 
 		// Unique token is required.
@@ -202,7 +203,8 @@ public class SiteWherePersistence {
 		}
 		spec.setContainerPolicy(request.getContainerPolicy());
 
-		// If composite container policy and no device element schema, create an empty
+		// If composite container policy and no device element schema, create an
+		// empty
 		// schema.
 		if (request.getContainerPolicy() == DeviceContainerPolicy.Composite) {
 			IDeviceElementSchema schema = request.getDeviceElementSchema();
@@ -232,7 +234,8 @@ public class SiteWherePersistence {
 		if (request.getContainerPolicy() != null) {
 			target.setContainerPolicy(request.getContainerPolicy());
 		}
-		// Only allow schema to be set if new or existing container policy is 'composite'.
+		// Only allow schema to be set if new or existing container policy is
+		// 'composite'.
 		if (target.getContainerPolicy() == DeviceContainerPolicy.Composite) {
 			if (request.getContainerPolicy() == DeviceContainerPolicy.Standalone) {
 				target.setDeviceElementSchema(null);
@@ -258,16 +261,16 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common logic for creating new device command and populating it from request.
+	 * Common logic for creating new device command and populating it from
+	 * request.
 	 * 
 	 * @param request
 	 * @param token
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceCommand deviceCommandCreateLogic(IDeviceSpecification spec,
-			IDeviceCommandCreateRequest request, String token, List<IDeviceCommand> existing)
-			throws SiteWhereException {
+	public static DeviceCommand deviceCommandCreateLogic(IDeviceSpecification spec, IDeviceCommandCreateRequest request,
+			String token, List<IDeviceCommand> existing) throws SiteWhereException {
 		DeviceCommand command = new DeviceCommand();
 
 		// Token is required.
@@ -295,7 +298,8 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Checks whether a command is already in the given list (same name and namespace).
+	 * Checks whether a command is already in the given list (same name and
+	 * namespace).
 	 * 
 	 * @param command
 	 * @param existing
@@ -357,7 +361,8 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common logic for creating new device object and populating it from request.
+	 * Common logic for creating new device object and populating it from
+	 * request.
 	 * 
 	 * @param request
 	 * @return
@@ -395,8 +400,7 @@ public class SiteWherePersistence {
 	 * @param target
 	 * @throws SiteWhereException
 	 */
-	public static void deviceUpdateLogic(IDeviceCreateRequest request, Device target)
-			throws SiteWhereException {
+	public static void deviceUpdateLogic(IDeviceCreateRequest request, Device target) throws SiteWhereException {
 		// Can not update the hardware id on a device.
 		if ((request.getHardwareId() != null) && (!request.getHardwareId().equals(target.getHardwareId()))) {
 			throw new SiteWhereSystemException(ErrorCode.DeviceHardwareIdCanNotBeChanged, ErrorLevel.ERROR);
@@ -405,8 +409,7 @@ public class SiteWherePersistence {
 			// Can not change the site for an assigned device.
 			if (target.getAssignmentToken() != null) {
 				if (!target.getSiteToken().equals(request.getSiteToken())) {
-					throw new SiteWhereSystemException(ErrorCode.DeviceSiteCanNotBeChangedIfAssigned,
-							ErrorLevel.ERROR);
+					throw new SiteWhereSystemException(ErrorCode.DeviceSiteCanNotBeChangedIfAssigned, ErrorLevel.ERROR);
 				}
 			}
 			target.setSiteToken(request.getSiteToken());
@@ -466,8 +469,7 @@ public class SiteWherePersistence {
 		}
 
 		// Verify that requested path is valid on device specification.
-		IDeviceSpecification specification =
-				management.getDeviceSpecificationByToken(device.getSpecificationToken());
+		IDeviceSpecification specification = management.getDeviceSpecificationByToken(device.getSpecificationToken());
 		DeviceSpecificationUtils.getDeviceSlotByPath(specification, request.getDeviceElementSchemaPath());
 
 		// Verify that there is not an existing mapping for the path.
@@ -503,8 +505,8 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IDevice deviceElementMappingDeleteLogic(IDeviceManagement management, String hardwareId,
-			String path) throws SiteWhereException {
+	public static IDevice deviceElementMappingDeleteLogic(IDeviceManagement management, String hardwareId, String path)
+			throws SiteWhereException {
 		IDevice device = management.getDeviceByHardwareId(hardwareId);
 		if (device == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidHardwareId, ErrorLevel.ERROR);
@@ -602,8 +604,8 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source,
-			IDevice device, String uuid) throws SiteWhereException {
+	public static DeviceAssignment deviceAssignmentCreateLogic(IDeviceAssignmentCreateRequest source, IDevice device,
+			String uuid) throws SiteWhereException {
 		DeviceAssignment newAssignment = new DeviceAssignment();
 
 		if (uuid == null) {
@@ -654,12 +656,11 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceEventBatchResponse deviceEventBatchLogic(String assignmentToken,
-			IDeviceEventBatch batch, IDeviceEventManagement management) throws SiteWhereException {
+	public static DeviceEventBatchResponse deviceEventBatchLogic(String assignmentToken, IDeviceEventBatch batch,
+			IDeviceEventManagement management) throws SiteWhereException {
 		DeviceEventBatchResponse response = new DeviceEventBatchResponse();
 		for (IDeviceMeasurementsCreateRequest measurements : batch.getMeasurements()) {
-			response.getCreatedMeasurements().add(
-					management.addDeviceMeasurements(assignmentToken, measurements));
+			response.getCreatedMeasurements().add(management.addDeviceMeasurements(assignmentToken, measurements));
 		}
 		for (IDeviceLocationCreateRequest location : batch.getLocations()) {
 			response.getCreatedLocations().add(management.addDeviceLocation(assignmentToken, location));
@@ -741,8 +742,8 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceAlert deviceAlertCreateLogic(IDeviceAssignment assignment,
-			IDeviceAlertCreateRequest request) throws SiteWhereException {
+	public static DeviceAlert deviceAlertCreateLogic(IDeviceAssignment assignment, IDeviceAlertCreateRequest request)
+			throws SiteWhereException {
 		DeviceAlert alert = new DeviceAlert();
 		deviceEventCreateLogic(request, assignment, alert);
 
@@ -772,8 +773,8 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static DeviceStream deviceStreamCreateLogic(IDeviceAssignment assignment,
-			IDeviceStreamCreateRequest request) throws SiteWhereException {
+	public static DeviceStream deviceStreamCreateLogic(IDeviceAssignment assignment, IDeviceStreamCreateRequest request)
+			throws SiteWhereException {
 		DeviceStream stream = new DeviceStream();
 		stream.setAssignmentToken(assignment.getToken());
 
@@ -861,8 +862,7 @@ public class SiteWherePersistence {
 	 * @param values
 	 * @throws SiteWhereException
 	 */
-	protected static void checkData(ICommandParameter parameter, Map<String, String> values)
-			throws SiteWhereException {
+	protected static void checkData(ICommandParameter parameter, Map<String, String> values) throws SiteWhereException {
 		// Make sure required fields are passed.
 		if (parameter.isRequired()) {
 			if (values.get(parameter.getName()) == null) {
@@ -989,7 +989,8 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common code for copying information from an update request to an existing zone.
+	 * Common code for copying information from an update request to an existing
+	 * zone.
 	 * 
 	 * @param request
 	 * @param target
@@ -1135,8 +1136,8 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static BatchElement batchElementCreateLogic(String batchOperationToken, String hardwareId,
-			long index) throws SiteWhereException {
+	public static BatchElement batchElementCreateLogic(String batchOperationToken, String hardwareId, long index)
+			throws SiteWhereException {
 		BatchElement element = new BatchElement();
 		element.setBatchOperationToken(batchOperationToken);
 		element.setHardwareId(hardwareId);
@@ -1176,14 +1177,13 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static IBatchOperationCreateRequest batchCommandInvocationCreateLogic(
-			IBatchCommandInvocationRequest request, String uuid) throws SiteWhereException {
+	public static IBatchOperationCreateRequest batchCommandInvocationCreateLogic(IBatchCommandInvocationRequest request,
+			String uuid) throws SiteWhereException {
 		BatchOperationCreateRequest batch = new BatchOperationCreateRequest();
 		batch.setToken(uuid);
 		batch.setOperationType(OperationType.InvokeCommand);
 		batch.setHardwareIds(request.getHardwareIds());
-		batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN,
-				request.getCommandToken());
+		batch.getParameters().put(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN, request.getCommandToken());
 		Map<String, String> params = new HashMap<String, String>();
 		for (String key : request.getParameterValues().keySet()) {
 			params.put(key, request.getParameterValues().get(key));
@@ -1215,7 +1215,8 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common code for copying information from an update request to an existing user.
+	 * Common code for copying information from an update request to an existing
+	 * user.
 	 * 
 	 * @param source
 	 * @param target
@@ -1248,8 +1249,8 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common logic for deleting a user. Takes care of related tasks such as deleting user
-	 * id from tenant authorized users.
+	 * Common logic for deleting a user. Takes care of related tasks such as
+	 * deleting user id from tenant authorized users.
 	 * 
 	 * @param username
 	 * @throws SiteWhereException
@@ -1269,7 +1270,8 @@ public class SiteWherePersistence {
 	}
 
 	/**
-	 * Common logic for creating a granted authority based on an incoming request.
+	 * Common logic for creating a granted authority based on an incoming
+	 * request.
 	 * 
 	 * @param source
 	 * @return
@@ -1328,8 +1330,7 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing)
-			throws SiteWhereException {
+	public static Tenant tenantUpdateLogic(ITenantCreateRequest request, Tenant existing) throws SiteWhereException {
 		if ((request.getId() != null) && (!request.getId().equals(existing.getId()))) {
 			throw new SiteWhereException("Can not change the id of an existing tenant.");
 		}
@@ -1386,21 +1387,25 @@ public class SiteWherePersistence {
 	/**
 	 * Common logic for creating a tenant group.
 	 * 
+	 * @param token
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static TenantGroup tenantGroupCreateLogic(ITenantGroupCreateRequest request)
+	public static TenantGroup tenantGroupCreateLogic(String token, ITenantGroupCreateRequest request)
 			throws SiteWhereException {
 		TenantGroup group = new TenantGroup();
-
-		// Id is required.
-		assureData(request.getId());
-		group.setId(request.getId());
+		group.setToken(token);
 
 		// Name is required.
 		assureData(request.getName());
 		group.setName(request.getName());
+
+		// Description is optional.
+		group.setDescription(request.getDescription());
+
+		// Image URL is optional.
+		group.setImageUrl(request.getImageUrl());
 
 		MetadataProvider.copy(request.getMetadata(), group);
 		SiteWherePersistence.initializeEntityMetadata(group);
@@ -1418,12 +1423,12 @@ public class SiteWherePersistence {
 	 */
 	public static TenantGroup tenantGroupUpdateLogic(ITenantGroupCreateRequest request, TenantGroup existing)
 			throws SiteWhereException {
-		if ((request.getId() != null) && (!request.getId().equals(existing.getId()))) {
-			throw new SiteWhereException("Can not change the id of an existing tenant group.");
-		}
-
 		if (request.getName() != null) {
 			existing.setName(request.getName());
+		}
+
+		if (request.getImageUrl() != null) {
+			existing.setImageUrl(request.getImageUrl());
 		}
 
 		if (request.getMetadata() != null) {
@@ -1483,8 +1488,8 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static AssetCategory assetCategoryUpdateLogic(IAssetCategoryCreateRequest request,
-			AssetCategory existing) throws SiteWhereException {
+	public static AssetCategory assetCategoryUpdateLogic(IAssetCategoryCreateRequest request, AssetCategory existing)
+			throws SiteWhereException {
 		if (!request.getId().equals(existing.getId())) {
 			throw new SiteWhereException("Can not change the id of an existing asset category.");
 		}
@@ -1559,8 +1564,8 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static PersonAsset personAssetCreateLogic(IAssetCategory category,
-			IPersonAssetCreateRequest request) throws SiteWhereException {
+	public static PersonAsset personAssetCreateLogic(IAssetCategory category, IPersonAssetCreateRequest request)
+			throws SiteWhereException {
 		if (category.getAssetType() != AssetType.Person) {
 			throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
 		}
@@ -1606,10 +1611,9 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static HardwareAsset hardwareAssetCreateLogic(IAssetCategory category,
-			IHardwareAssetCreateRequest request) throws SiteWhereException {
-		if ((category.getAssetType() != AssetType.Hardware)
-				&& (category.getAssetType() != AssetType.Device)) {
+	public static HardwareAsset hardwareAssetCreateLogic(IAssetCategory category, IHardwareAssetCreateRequest request)
+			throws SiteWhereException {
+		if ((category.getAssetType() != AssetType.Hardware) && (category.getAssetType() != AssetType.Device)) {
 			throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
 		}
 
@@ -1649,8 +1653,8 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static LocationAsset locationAssetCreateLogic(IAssetCategory category,
-			ILocationAssetCreateRequest request) throws SiteWhereException {
+	public static LocationAsset locationAssetCreateLogic(IAssetCategory category, ILocationAssetCreateRequest request)
+			throws SiteWhereException {
 		if (category.getAssetType() != AssetType.Location) {
 			throw new SiteWhereSystemException(ErrorCode.AssetTypeNotAllowed, ErrorLevel.ERROR);
 		}
@@ -1695,8 +1699,7 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Schedule scheduleCreateLogic(IScheduleCreateRequest request, String token)
-			throws SiteWhereException {
+	public static Schedule scheduleCreateLogic(IScheduleCreateRequest request, String token) throws SiteWhereException {
 		Schedule schedule = new Schedule();
 
 		// Unique token is required.

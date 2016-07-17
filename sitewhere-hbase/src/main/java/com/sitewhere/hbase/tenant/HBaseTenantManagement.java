@@ -200,8 +200,8 @@ public class HBaseTenantManagement extends LifecycleComponent implements ITenant
 	 * String)
 	 */
 	@Override
-	public ITenantGroup getTenantGroupById(String id) throws SiteWhereException {
-		return HBaseTenantGroup.getTenantGroupById(context, id);
+	public ITenantGroup getTenantGroupByToken(String token) throws SiteWhereException {
+		return HBaseTenantGroup.getTenantGroupByToken(context, token);
 	}
 
 	/*

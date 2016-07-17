@@ -17,7 +17,7 @@
 	<h1 class="ellipsis" data-i18n="tgroups.list.title">Manage Tenant
 		Groups</h1>
 	<div class="sw-title-bar-right">
-		<a id="btn-add-tenant" class="btn" href="javascript:void(0)"> <i
+		<a id="btn-add-tgroup" class="btn" href="javascript:void(0)"> <i
 			class="fa fa-plus sw-button-icon"></i> <span
 			data-i18n="tgroups.list.AddNew">Add Tenant Group</span>
 		</a> <a id="btn-refresh-tgroups" class="btn" href="javascript:void(0)">
