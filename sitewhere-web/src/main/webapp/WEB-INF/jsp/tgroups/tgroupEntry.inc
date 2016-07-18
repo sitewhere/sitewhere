@@ -58,7 +58,7 @@
 .sw-tgroup-list-entry-label {
 	font-size: 12pt;
 	font-weight: bold;
-	min-width: 190px;
+	min-width: 110px;
 	display: inline-block;
 	line-height: 1.5;
 }
@@ -88,7 +88,7 @@
 			</div>
 			<div>
 				<span class="sw-tgroup-list-entry-label" title="Group name">Description:</span>
-				<span class="ellipsis" style="max-width: 350px; line-height: 1; vertical-align: middle; display: inline-block;" 
+				<span class="ellipsis" style="max-width: 400px; line-height: 1; vertical-align: middle; display: inline-block;" 
 					title="#:description#">#:description#</span>
 			</div>
 		</div>

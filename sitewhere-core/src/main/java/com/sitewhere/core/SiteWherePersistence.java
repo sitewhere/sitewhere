@@ -1427,6 +1427,10 @@ public class SiteWherePersistence {
 			existing.setName(request.getName());
 		}
 
+		if (request.getDescription() != null) {
+			existing.setDescription(request.getDescription());
+		}
+
 		if (request.getImageUrl() != null) {
 			existing.setImageUrl(request.getImageUrl());
 		}

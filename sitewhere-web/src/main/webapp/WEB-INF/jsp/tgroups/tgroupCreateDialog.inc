@@ -15,31 +15,39 @@
 			<div>
 				<form id="tgc-general-form" class="form-horizontal"
 					style="padding-top: 20px;">
-					<div class="control-group" id="tgc-tenant-group-id-row">
-						<label class="control-label" for="tgc-tgroup-id"
-							data-i18n="public.TenantGroupId">Group Id</label>
+					<div class="control-group" id="tgc-tenant-group-token-row">
+						<label class="control-label" for="tgc-tgroup-token"
+							data-i18n="public.TenantGroupId">Token</label>
 						<div class="controls">
-							<input type="text" id="tgc-tgroup-id" title="Tenant Group Id"
-								class="input-xlarge">
+							<span id="tgc-tgroup-token" style="line-height: 2.0em;"
+								title="Tenant Group Token"></span>
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="tgc-tgroup-name"
-							data-i18n="public.TenantGroupName">Group Name</label>
+							data-i18n="public.Name">Name</label>
 						<div class="controls">
 							<input type="text" id="tgc-tgroup-name" title="Tenant Group Name"
 								class="input-xlarge">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="tgc-image-url"
+						<label class="control-label" for="tgc-tgroup-description"
+							data-i18n="public.Description">Description</label>
+						<div class="controls">
+							<textarea id="tgc-tgroup-description" class="input-xlarge"
+								style="height: 10em;"></textarea>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="tgc-tgroup-image-url"
 							data-i18n="public.TenantGroupImageUrl">Image URL</label>
 						<div class="controls">
-							<input type="text" id="tgc-image-url" title="Image URL"
+							<input type="text" id="tgc-tgroup-image-url" title="Image URL"
 								class="input-xlarge">
 						</div>
 					</div>
-					<input id="tgc-init-tgroup-id" type="hidden" value="" />
+					<input id="tgc-init-tgroup-token" type="hidden" value="" />
 				</form>
 			</div>
 		</div>
@@ -77,16 +85,18 @@
 											if (!tgcValidate()) {
 												return;
 											}
-											var initTenantGroupId = $(
-													'#tgc-init-tgroup-id')
+											var initTenantGroupToken = $(
+													'#tgc-init-tgroup-token')
 													.val();
-											var isCreate = (initTenantGroupId.length == 0);
+											var isCreate = (initTenantGroupToken.length == 0);
 											var tgroupData = {
-												"id" : $('#tgc-tgroup-id')
-														.val(),
 												"name" : $('#tgc-tgroup-name')
 														.val(),
-												"imageUrl" : $('#tgc-image-url')
+												"description" : $(
+														'#tgc-tgroup-description')
+														.val(),
+												"imageUrl" : $(
+														'#tgc-tgroup-image-url')
 														.val(),
 											}
 											if (isCreate) {
@@ -102,7 +112,7 @@
 												$
 														.putAuthJSON(
 																"${pageContext.request.contextPath}/api/tgroups/"
-																		+ initTenantGroupId,
+																		+ initTenantGroupToken,
 																tgroupData,
 																"${basicAuth}",
 																"${tenant.authenticationToken}",
@@ -137,12 +147,8 @@
 		});
 		$.validity.start();
 
-		$("#tgc-tgroup-id").require();
 		$("#tgc-tgroup-name").require();
 		$("#tgc-image-url").require();
-
-		$('#tgc-tgroup-id').match(/^[\w\-]+$/,
-				"Ids are alphanumeric with dashes or underscores.");
 
 		var result = $.validity.end();
 		return result.valid;
@@ -153,23 +159,25 @@
 		var event = e || window.event;
 		event.stopPropagation();
 
-		// Indicates an update operation.
-		$('#tgc-tgroup-id').val("");
-		$('#tgc-tenant-group-id-row').show();
+		// Indicates a create operation.
+		$('#tgc-tgroup-token').html("");
+		$('#tgc-init-tgroup-token').val("");
+		$('#tgc-tenant-group-token-row').hide();
 
 		$('#tgc-dialog-header')
 				.html(i18next("public.Create") + " Tenant Group");
 		$('#tgc-dialog-submit').html(i18next("public.Create"));
 
 		$('#tgc-tgroup-name').val("");
-		$('#tgc-image-url').val("");
+		$('#tgc-tgroup-description').val("");
+		$('#tgc-tgroup-image-url').val("");
 
 		// Function called on submit.
 		tgcSubmitCallback = callback;
 
 		// Clear old validation errors and show dialog.
 		$.validity.clear();
-		$('#tc-dialog').modal('show');
+		$('#tgc-dialog').modal('show');
 	}
 
 	/** Called to edit existing */
@@ -186,8 +194,9 @@
 	/** Called on successful tenant group load request */
 	function tguUpdateGetSuccess(data, status, jqXHR) {
 		// Indicates an update operation.
-		$('#tgc-init-tgroup-id').val(data.id);
-		$('#tgc-tenant-group-id-row').hide();
+		$('#tgc-tgroup-token').html(data.token);
+		$('#tgc-init-tgroup-token').val(data.token);
+		$('#tgc-tenant-group-token-row').show();
 
 		$('#tgc-dialog-header')
 				.html(i18next("public.Update") + " Tenant Group");
@@ -195,9 +204,9 @@
 
 		tgcTabs.select(0);
 
-		$('#tgc-tgroup-id').val(data.id);
 		$('#tgc-tgroup-name').val(data.name);
-		$('#tgc-image-url').val(data.imageUrl);
+		$('#tgc-tgroup-description').val(data.description);
+		$('#tgc-tgroup-image-url').val(data.imageUrl);
 
 		// Clear old validation errors and show dialog.
 		$.validity.clear();

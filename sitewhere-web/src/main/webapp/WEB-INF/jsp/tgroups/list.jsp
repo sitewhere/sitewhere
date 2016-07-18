@@ -36,14 +36,55 @@
 	var tgroupsDS;
 
 	/** Called when open button is clicked */
-	function onTenantGroupOpenClicked(e, tenantId) {
+	function onTenantGroupOpenClicked(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
 		$("#view-tgroup").attr(
 				"action",
-				"${pageContext.request.contextPath}/admin/tgroups/" + tenantId
+				"${pageContext.request.contextPath}/admin/tgroups/" + token
 						+ ".html");
 		$('#view-tgroup').submit();
+	}
+
+	/** Called when edit button is clicked */
+	function onTenantGroupEditClicked(e, token) {
+		var event = e || window.event;
+		event.stopPropagation();
+		tguOpen(token, onTenantGroupEditComplete)
+	}
+
+	/** Called when 'delete' button is pressed */
+	function onTenantGroupDeleteClicked(e, token) {
+		var event = e || window.event;
+		event.stopPropagation();
+		swConfirm("Delete Tenant Group",
+				"Are you sure you want to delete this tenant group?", function(
+						result) {
+					if (result) {
+						$.deleteAuthJSON(
+								"${pageContext.request.contextPath}/api/tgroups/"
+										+ token + "?force=true",
+								"${basicAuth}",
+								"${tenant.authenticationToken}",
+								onTenantGroupDeleteComplete,
+								onTenantGroupDeleteFail);
+					}
+				});
+	}
+
+	/** Called after a tenant group is edited successfully */
+	function onTenantGroupEditComplete() {
+		tgroupsDS.read();
+	}
+
+	/** Called after a tenant group is deleted */
+	function onTenantGroupDeleteComplete() {
+		tgroupsDS.read();
+	}
+
+	/** Called if tenant group delete fails */
+	function onTenantGroupDeleteFail(jqXHR, textStatus, errorThrown) {
+		handleError(jqXHR, "Unable to delete tenant group.");
 	}
 
 	/** Called after a new tenant group has been created */
