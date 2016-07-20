@@ -94,7 +94,7 @@
 							</div>
 						</div>
 					</form>
-					<form id="mapquest" class="form-horizontal">
+					<form id="mapquest" class="form-horizontal hide">
 						<div class="control-group">
 							<label class="control-label" for="mq-center-latitude"
 								data-i18n="includes.siteCreateDialog.CenterLatitude"></label>
