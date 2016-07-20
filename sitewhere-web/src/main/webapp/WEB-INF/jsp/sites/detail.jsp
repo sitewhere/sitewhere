@@ -20,7 +20,8 @@
 	<h1 class="ellipsis" data-i18n="sites.detail.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-edit-site" class="btn" href="javascript:void(0)"> <i
-			class="fa fa-edit sw-button-icon"></i> <span data-i18n="public.EditSite">Edit Site</span></a>
+			class="fa fa-edit sw-button-icon"></i> <span
+			data-i18n="public.EditSite">Edit Site</span></a>
 	</div>
 </div>
 
@@ -30,7 +31,8 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">&nbsp;<font data-i18n="sites.detail.Assignments"></font></li>
+		<li class="k-state-active">&nbsp;<font
+			data-i18n="sites.detail.Assignments"></font></li>
 		<li>&nbsp;<font data-i18n="public.Locations"></font></li>
 		<li>&nbsp;<font data-i18n="public.Measurements"></font></li>
 		<li>&nbsp;<font data-i18n="public.Alerts"></font></li>
@@ -38,12 +40,16 @@
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title" data-i18n="sites.detail.DeviceAssignments"></div>
+			<div class="sw-button-bar-title"
+				data-i18n="sites.detail.DeviceAssignments"></div>
 			<div>
-				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span></a> <a id="btn-refresh-assignments" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-filter-assignments" class="btn" href="javascript:void(0)">
+					<i class="fa fa-filter sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span>
+				</a> <a id="btn-refresh-assignments" class="btn"
+					href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -54,10 +60,12 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceLocations"></div>
 			<div>
-				<a id="btn-filter-locations" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span></a> <a id="btn-refresh-locations" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-filter-locations" class="btn" href="javascript:void(0)">
+					<i class="fa fa-filter sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span>
+				</a> <a id="btn-refresh-locations" class="btn" href="javascript:void(0)">
+					<i class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -71,7 +79,8 @@
 			<thead>
 				<tr>
 					<th data-i18n="public.Asset"></th>
-					<th><font data-i18n="sites.detail.Location"></font> (Lat/Long/Elevation)</th>
+					<th><font data-i18n="sites.detail.Location"></font>
+						(Lat/Long/Elevation)</th>
 					<th data-i18n="public.EventDate"></th>
 					<th data-i18n="sites.detail.ReceivedDate"></th>
 				</tr>
@@ -86,12 +95,16 @@
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title" data-i18n="public.DeviceMeasurements"></div>
+			<div class="sw-button-bar-title"
+				data-i18n="public.DeviceMeasurements"></div>
 			<div>
-				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span></a> <a id="btn-refresh-measurements" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-filter-measurements" class="btn"
+					href="javascript:void(0)"> <i
+					class="fa fa-filter sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span></a> <a
+					id="btn-refresh-measurements" class="btn" href="javascript:void(0)">
+					<i class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -122,11 +135,12 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceAlerts"></div>
 			<div>
-				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span>
-				</a> <a id="btn-refresh-alerts" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)">
+					<i class="fa fa-filter sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span>
+				</a> <a id="btn-refresh-alerts" class="btn" href="javascript:void(0)">
+					<i class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -161,11 +175,12 @@
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="sites.detail.Zones"></div>
 			<div>
-				<a id="btn-refresh-zones" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-refresh-zones" class="btn" href="javascript:void(0)">
+					<i class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a> <a id="btn-add-zone" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-plus sw-button-icon"></i> <span data-i18n="sites.detail.AddNewZone">Add New
-						Zone</span>
+					class="fa fa-plus sw-button-icon"></i> <span
+					data-i18n="sites.detail.AddNewZone">Add New Zone</span>
 				</a>
 			</div>
 		</div>
@@ -248,7 +263,8 @@
 	function onDeleteAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentDelete(token, '${tenant.authenticationToken}', onDeleteAssignmentComplete);
+		swAssignmentDelete(token, "${basicAuth}",
+				"${tenant.authenticationToken}", onDeleteAssignmentComplete);
 	}
 
 	/** Called after successful delete assignment */
@@ -272,8 +288,10 @@
 	function onViewAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$("#view-assignment-detail").attr("action",
-			"${pageContext.request.contextPath}/admin/${tenant.id}/assignments/" + token + ".html");
+		$("#view-assignment-detail").attr(
+				"action",
+				"${pageContext.request.contextPath}/admin/${tenant.id}/assignments/"
+						+ token + ".html");
 		$('#view-assignment-detail').submit();
 	}
 
@@ -281,7 +299,8 @@
 	function onReleaseAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swReleaseAssignment(token, '${tenant.authenticationToken}', onReleaseAssignmentComplete);
+		swReleaseAssignment(token, "${basicAuth}",
+				"${tenant.authenticationToken}", onReleaseAssignmentComplete);
 	}
 
 	/** Called after successful release assignment */
@@ -293,7 +312,8 @@
 	function onMissingAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentMissing(token, '${tenant.authenticationToken}', onMissingAssignmentComplete);
+		swAssignmentMissing(token, "${basicAuth}",
+				"${tenant.authenticationToken}", onMissingAssignmentComplete);
 	}
 
 	/** Called after successful missing assignment */
@@ -305,7 +325,8 @@
 	function onDeleteZone(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swZoneDelete(token, '${tenant.authenticationToken}', onDeleteZoneComplete);
+		swZoneDelete(token, "${basicAuth}", "${tenant.authenticationToken}",
+				onDeleteZoneComplete);
 	}
 
 	/** Called after successful delete zone */
@@ -329,226 +350,272 @@
 		zonesDS.read();
 	}
 
-	$(document).ready(
-		function() {
+	$(document)
+			.ready(
+					function() {
 
-			/** Create AJAX datasource for assignments list */
-			assignmentsDS =
-					new kendo.data.DataSource({
-						transport : {
-							read : {
-								url : "${pageContext.request.contextPath}/api/sites/" + siteToken
-										+ "/assignments?includeDevice=true&includeAsset=true",
-								beforeSend : function(req) {
-									req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-									req.setRequestHeader('X-SiteWhere-Tenant',
-										"${tenant.authenticationToken}");
-								},
-								dataType : "json",
-							}
-						},
-						schema : {
-							data : "results",
-							total : "numResults",
-							parse : function(response) {
-								$.each(response.results, function(index, item) {
-									parseAssignmentData(item);
+						/** Create AJAX datasource for assignments list */
+						assignmentsDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/sites/"
+													+ siteToken
+													+ "/assignments?includeDevice=true&includeAsset=true",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : function(response) {
+											$.each(response.results, function(
+													index, item) {
+												parseAssignmentData(item);
+											});
+											return response;
+										}
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : 15,
 								});
-								return response;
+
+						/** Create the assignments list */
+						$("#assignments").kendoListView(
+								{
+									dataSource : assignmentsDS,
+									template : kendo.template($(
+											"#tpl-assignment-entry").html())
+								});
+
+						$("#assignments-pager").kendoPager({
+							dataSource : assignmentsDS
+						});
+
+						$("#btn-refresh-assignments").click(function() {
+							assignmentsDS.read();
+						});
+
+						/** Create AJAX datasource for locations list */
+						locationsDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/sites/"
+													+ siteToken + "/locations",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : parseEventResults,
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : pageSize,
+								});
+
+						/** Create the location list */
+						$("#locations").kendoGrid(
+								{
+									dataSource : locationsDS,
+									rowTemplate : kendo.template($(
+											"#tpl-location-entry").html()),
+									scrollable : true,
+									height : gridHeight,
+								});
+
+						$("#locations-pager").kendoPager({
+							dataSource : locationsDS
+						});
+
+						$("#btn-refresh-locations").click(function() {
+							locationsDS.read();
+						});
+
+						/** Create AJAX datasource for measurements list */
+						measurementsDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/sites/"
+													+ siteToken
+													+ "/measurements",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : parseEventResults,
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : pageSize,
+								});
+
+						/** Create the measurements list */
+						$("#measurements").kendoGrid(
+								{
+									dataSource : measurementsDS,
+									rowTemplate : kendo.template($(
+											"#tpl-measurements-entry").html()),
+									scrollable : true,
+									height : gridHeight,
+								});
+
+						$("#measurements-pager").kendoPager({
+							dataSource : measurementsDS
+						});
+
+						$("#btn-refresh-measurements").click(function() {
+							measurementsDS.read();
+						});
+
+						/** Create AJAX datasource for alerts list */
+						alertsDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/sites/"
+													+ siteToken + "/alerts",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : parseEventResults,
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : pageSize,
+								});
+
+						/** Create the measurements list */
+						$("#alerts").kendoGrid(
+								{
+									dataSource : alertsDS,
+									rowTemplate : kendo.template($(
+											"#tpl-alert-entry").html()),
+									scrollable : true,
+									height : gridHeight,
+								});
+
+						$("#alerts-pager").kendoPager({
+							dataSource : alertsDS
+						});
+
+						$("#btn-refresh-alerts").click(function() {
+							alertsDS.read();
+						});
+
+						/** Create AJAX datasource for alerts list */
+						zonesDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/sites/"
+													+ siteToken + "/zones",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : parseZoneResults,
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : 20,
+								});
+
+						/** Create the measurements list */
+						$("#zones").kendoGrid(
+								{
+									dataSource : zonesDS,
+									rowTemplate : kendo.template($(
+											"#tpl-zone-entry").html()),
+									scrollable : true,
+									height : gridHeight,
+								});
+
+						$("#zones-pager").kendoPager({
+							dataSource : zonesDS
+						});
+
+						$("#btn-refresh-zones").click(function() {
+							zonesDS.read();
+						});
+
+						$("#btn-add-zone").click(function() {
+							if (site) {
+								zcOpen(site, onZoneCreateSuccess);
+							} else {
+								swAlert("Error", "Site has not been loaded.");
 							}
-						},
-						serverPaging : true,
-						serverSorting : true,
-						pageSize : 15,
+						});
+
+						/** Handle edit dialog */
+						$('#btn-edit-site').click(function(event) {
+							suOpen(siteToken, onSiteEditSuccess);
+						});
+
+						/** Create the tab strip */
+						tabs = $("#tabs").kendoTabStrip({
+							animation : false,
+							activate : onActivate
+						}).data("kendoTabStrip");
+
+						loadSite();
 					});
-
-			/** Create the assignments list */
-			$("#assignments").kendoListView({
-				dataSource : assignmentsDS,
-				template : kendo.template($("#tpl-assignment-entry").html())
-			});
-
-			$("#assignments-pager").kendoPager({
-				dataSource : assignmentsDS
-			});
-
-			$("#btn-refresh-assignments").click(function() {
-				assignmentsDS.read();
-			});
-
-			/** Create AJAX datasource for locations list */
-			locationsDS = new kendo.data.DataSource({
-				transport : {
-					read : {
-						url : "${pageContext.request.contextPath}/api/sites/" + siteToken + "/locations",
-						beforeSend : function(req) {
-							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
-						},
-						dataType : "json",
-					}
-				},
-				schema : {
-					data : "results",
-					total : "numResults",
-					parse : parseEventResults,
-				},
-				serverPaging : true,
-				serverSorting : true,
-				pageSize : pageSize,
-			});
-
-			/** Create the location list */
-			$("#locations").kendoGrid({
-				dataSource : locationsDS,
-				rowTemplate : kendo.template($("#tpl-location-entry").html()),
-				scrollable : true,
-				height : gridHeight,
-			});
-
-			$("#locations-pager").kendoPager({
-				dataSource : locationsDS
-			});
-
-			$("#btn-refresh-locations").click(function() {
-				locationsDS.read();
-			});
-
-			/** Create AJAX datasource for measurements list */
-			measurementsDS = new kendo.data.DataSource({
-				transport : {
-					read : {
-						url : "${pageContext.request.contextPath}/api/sites/" + siteToken + "/measurements",
-						beforeSend : function(req) {
-							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
-						},
-						dataType : "json",
-					}
-				},
-				schema : {
-					data : "results",
-					total : "numResults",
-					parse : parseEventResults,
-				},
-				serverPaging : true,
-				serverSorting : true,
-				pageSize : pageSize,
-			});
-
-			/** Create the measurements list */
-			$("#measurements").kendoGrid({
-				dataSource : measurementsDS,
-				rowTemplate : kendo.template($("#tpl-measurements-entry").html()),
-				scrollable : true,
-				height : gridHeight,
-			});
-
-			$("#measurements-pager").kendoPager({
-				dataSource : measurementsDS
-			});
-
-			$("#btn-refresh-measurements").click(function() {
-				measurementsDS.read();
-			});
-
-			/** Create AJAX datasource for alerts list */
-			alertsDS = new kendo.data.DataSource({
-				transport : {
-					read : {
-						url : "${pageContext.request.contextPath}/api/sites/" + siteToken + "/alerts",
-						beforeSend : function(req) {
-							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
-						},
-						dataType : "json",
-					}
-				},
-				schema : {
-					data : "results",
-					total : "numResults",
-					parse : parseEventResults,
-				},
-				serverPaging : true,
-				serverSorting : true,
-				pageSize : pageSize,
-			});
-
-			/** Create the measurements list */
-			$("#alerts").kendoGrid({
-				dataSource : alertsDS,
-				rowTemplate : kendo.template($("#tpl-alert-entry").html()),
-				scrollable : true,
-				height : gridHeight,
-			});
-
-			$("#alerts-pager").kendoPager({
-				dataSource : alertsDS
-			});
-
-			$("#btn-refresh-alerts").click(function() {
-				alertsDS.read();
-			});
-
-			/** Create AJAX datasource for alerts list */
-			zonesDS = new kendo.data.DataSource({
-				transport : {
-					read : {
-						url : "${pageContext.request.contextPath}/api/sites/" + siteToken + "/zones",
-						beforeSend : function(req) {
-							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
-						},
-						dataType : "json",
-					}
-				},
-				schema : {
-					data : "results",
-					total : "numResults",
-					parse : parseZoneResults,
-				},
-				serverPaging : true,
-				serverSorting : true,
-				pageSize : 20,
-			});
-
-			/** Create the measurements list */
-			$("#zones").kendoGrid({
-				dataSource : zonesDS,
-				rowTemplate : kendo.template($("#tpl-zone-entry").html()),
-				scrollable : true,
-				height : gridHeight,
-			});
-
-			$("#zones-pager").kendoPager({
-				dataSource : zonesDS
-			});
-
-			$("#btn-refresh-zones").click(function() {
-				zonesDS.read();
-			});
-
-			$("#btn-add-zone").click(function() {
-				if (site) {
-					zcOpen(site, onZoneCreateSuccess);
-				} else {
-					swAlert("Error", "Site has not been loaded.");
-				}
-			});
-
-			/** Handle edit dialog */
-			$('#btn-edit-site').click(function(event) {
-				suOpen(siteToken, onSiteEditSuccess);
-			});
-
-			/** Create the tab strip */
-			tabs = $("#tabs").kendoTabStrip({
-				animation : false,
-				activate : onActivate
-			}).data("kendoTabStrip");
-
-			loadSite();
-		});
 
 	/** Force grid refresh on first tab activate (KendoUI bug) */
 	function onActivate(e) {
@@ -588,8 +655,9 @@
 
 	/** Loads information for the selected site */
 	function loadSite() {
-		$.getAuthJSON("${pageContext.request.contextPath}/api/sites/" + siteToken, "${basicAuth}",
-			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/sites/"
+				+ siteToken, "${basicAuth}", "${tenant.authenticationToken}",
+				loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful site load request */

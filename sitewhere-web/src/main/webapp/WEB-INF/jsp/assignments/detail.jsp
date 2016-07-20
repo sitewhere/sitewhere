@@ -19,11 +19,12 @@ table#invocations tr td {
 	<div class="sw-title-bar-right">
 		<a id="btn-emulator" class="btn"
 			href="${pageContext.request.contextPath}/admin/${tenant.id}/assignments/${assignment.token}/emulator.html">
-			<i class="fa fa-bolt sw-button-icon"></i> <span data-i18n="assignments.detail.EmulateAssignment">Emulate
+			<i class="fa fa-bolt sw-button-icon"></i> <span
+			data-i18n="assignments.detail.EmulateAssignment">Emulate
 				Assignment</span>
-		</a> <a id="btn-edit-assignment" class="btn" href="javascript:void(0)"> <i
-			class="fa fa-edit sw-button-icon"></i> <span data-i18n="public.EditAssignment">Edit
-				Assignment</span>
+		</a> <a id="btn-edit-assignment" class="btn" href="javascript:void(0)">
+			<i class="fa fa-edit sw-button-icon"></i> <span
+			data-i18n="public.EditAssignment">Edit Assignment</span>
 		</a>
 	</div>
 </div>
@@ -34,7 +35,8 @@ table#invocations tr td {
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">&nbsp;<font data-i18n="public.Locations"></font></li>
+		<li class="k-state-active">&nbsp;<font
+			data-i18n="public.Locations"></font></li>
 		<li>&nbsp;<font data-i18n="public.Measurements"></font></li>
 		<li>&nbsp;<font data-i18n="public.Alerts"></font></li>
 		<li>&nbsp;<font data-i18n="public.CommandInvocations"></font></li>
@@ -43,10 +45,12 @@ table#invocations tr td {
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceLocations"></div>
 			<div>
-				<a id="btn-filter-locations" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-filter sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span></a> <a id="btn-refresh-locations" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-filter-locations" class="btn" href="javascript:void(0)">
+					<i class="fa fa-filter sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span>
+				</a> <a id="btn-refresh-locations" class="btn" href="javascript:void(0)">
+					<i class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -75,12 +79,16 @@ table#invocations tr td {
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title" data-i18n="public.DeviceMeasurements"></div>
+			<div class="sw-button-bar-title"
+				data-i18n="public.DeviceMeasurements"></div>
 			<div>
-				<a id="btn-filter-measurements" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span></a> <a id="btn-refresh-measurements" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-filter-measurements" class="btn"
+					href="javascript:void(0)"> <i
+					class="fa fa-search sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span></a> <a
+					id="btn-refresh-measurements" class="btn" href="javascript:void(0)">
+					<i class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -107,11 +115,12 @@ table#invocations tr td {
 		<div class="k-header sw-button-bar">
 			<div class="sw-button-bar-title" data-i18n="public.DeviceAlerts"></div>
 			<div>
-				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span>
-				</a> <a id="btn-refresh-alerts" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-filter-alerts" class="btn" href="javascript:void(0)">
+					<i class="fa fa-search sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span>
+				</a> <a id="btn-refresh-alerts" class="btn" href="javascript:void(0)">
+					<i class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -140,15 +149,20 @@ table#invocations tr td {
 	</div>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title" data-i18n="assignments.detail.DeviceCommandInvocations"></div>
+			<div class="sw-button-bar-title"
+				data-i18n="assignments.detail.DeviceCommandInvocations"></div>
 			<div>
-				<a id="btn-filter-invocations" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span></a> <a id="btn-refresh-invocations" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
-				</a> <a id="btn-create-invocation" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-bolt sw-button-icon"></i> <span data-i18n="assignments.detail.InvokeCommand">Invoke
-						Command</span></a>
+				<a id="btn-filter-invocations" class="btn" href="javascript:void(0)">
+					<i class="fa fa-search sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span>
+				</a> <a id="btn-refresh-invocations" class="btn"
+					href="javascript:void(0)"> <i
+					class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
+				</a> <a id="btn-create-invocation" class="btn" href="javascript:void(0)">
+					<i class="fa fa-bolt sw-button-icon"></i> <span
+					data-i18n="assignments.detail.InvokeCommand">Invoke Command</span>
+				</a>
 			</div>
 		</div>
 		<table id="invocations">
@@ -238,7 +252,8 @@ table#invocations tr td {
 	function onReleaseAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swReleaseAssignment(token, '${tenant.authenticationToken}', onReleaseAssignmentComplete);
+		swReleaseAssignment(token, "${basicAuth}",
+				"${tenant.authenticationToken}", onReleaseAssignmentComplete);
 	}
 
 	/** Called after successful release assignment */
@@ -250,7 +265,8 @@ table#invocations tr td {
 	function onMissingAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentMissing(token, '${tenant.authenticationToken}', onMissingAssignmentComplete);
+		swAssignmentMissing(token, "${basicAuth}",
+				"${tenant.authenticationToken}", onMissingAssignmentComplete);
 	}
 
 	/** Called after successful missing assignment */
@@ -263,180 +279,220 @@ table#invocations tr td {
 		ivOpen(id);
 	}
 
-	$(document).ready(function() {
+	$(document)
+			.ready(
+					function() {
 
-		/** Create AJAX datasource for locations list */
-		locationsDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/locations",
-					beforeSend : function(req) {
-						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
-					},
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-				parse : parseEventResults,
-			},
-			serverPaging : true,
-			serverSorting : true,
-			pageSize : pageSize,
-		});
+						/** Create AJAX datasource for locations list */
+						locationsDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/assignments/"
+													+ token + "/locations",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : parseEventResults,
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : pageSize,
+								});
 
-		/** Create the location list */
-		$("#locations").kendoGrid({
-			dataSource : locationsDS,
-			rowTemplate : kendo.template($("#tpl-location-entry").html()),
-			scrollable : true,
-			height : gridHeight,
-		});
+						/** Create the location list */
+						$("#locations").kendoGrid(
+								{
+									dataSource : locationsDS,
+									rowTemplate : kendo.template($(
+											"#tpl-location-entry").html()),
+									scrollable : true,
+									height : gridHeight,
+								});
 
-		$("#locations-pager").kendoPager({
-			dataSource : locationsDS
-		});
+						$("#locations-pager").kendoPager({
+							dataSource : locationsDS
+						});
 
-		$("#btn-refresh-locations").click(function() {
-			locationsDS.read();
-		});
-		$('#btn-filter-locations').attr('disabled', true);
+						$("#btn-refresh-locations").click(function() {
+							locationsDS.read();
+						});
+						$('#btn-filter-locations').attr('disabled', true);
 
-		/** Create AJAX datasource for measurements list */
-		measurementsDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/measurements",
-					beforeSend : function(req) {
-						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
-					},
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-				parse : parseEventResults,
-			},
-			serverPaging : true,
-			serverSorting : true,
-			pageSize : pageSize,
-		});
+						/** Create AJAX datasource for measurements list */
+						measurementsDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/assignments/"
+													+ token + "/measurements",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : parseEventResults,
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : pageSize,
+								});
 
-		/** Create the measurements list */
-		$("#measurements").kendoGrid({
-			dataSource : measurementsDS,
-			rowTemplate : kendo.template($("#tpl-measurements-entry").html()),
-			scrollable : true,
-			height : gridHeight,
-		});
+						/** Create the measurements list */
+						$("#measurements").kendoGrid(
+								{
+									dataSource : measurementsDS,
+									rowTemplate : kendo.template($(
+											"#tpl-measurements-entry").html()),
+									scrollable : true,
+									height : gridHeight,
+								});
 
-		$("#measurements-pager").kendoPager({
-			dataSource : measurementsDS
-		});
+						$("#measurements-pager").kendoPager({
+							dataSource : measurementsDS
+						});
 
-		$("#btn-refresh-measurements").click(function() {
-			measurementsDS.read();
-		});
-		$('#btn-filter-measurements').attr('disabled', true);
+						$("#btn-refresh-measurements").click(function() {
+							measurementsDS.read();
+						});
+						$('#btn-filter-measurements').attr('disabled', true);
 
-		/** Create AJAX datasource for alerts list */
-		alertsDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/alerts",
-					beforeSend : function(req) {
-						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
-					},
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-				parse : parseEventResults,
-			},
-			serverPaging : true,
-			serverSorting : true,
-			pageSize : pageSize,
-		});
+						/** Create AJAX datasource for alerts list */
+						alertsDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/assignments/"
+													+ token + "/alerts",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : parseEventResults,
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : pageSize,
+								});
 
-		/** Create the alerts list */
-		$("#alerts").kendoGrid({
-			dataSource : alertsDS,
-			rowTemplate : kendo.template($("#tpl-alert-entry").html()),
-			scrollable : true,
-			height : gridHeight,
-		});
+						/** Create the alerts list */
+						$("#alerts").kendoGrid(
+								{
+									dataSource : alertsDS,
+									rowTemplate : kendo.template($(
+											"#tpl-alert-entry").html()),
+									scrollable : true,
+									height : gridHeight,
+								});
 
-		$("#alerts-pager").kendoPager({
-			dataSource : alertsDS
-		});
+						$("#alerts-pager").kendoPager({
+							dataSource : alertsDS
+						});
 
-		$("#btn-refresh-alerts").click(function() {
-			alertsDS.read();
-		});
-		$('#btn-filter-alerts').attr('disabled', true);
+						$("#btn-refresh-alerts").click(function() {
+							alertsDS.read();
+						});
+						$('#btn-filter-alerts').attr('disabled', true);
 
-		/** Create AJAX datasource for invocations list */
-		invocationsDS = new kendo.data.DataSource({
-			transport : {
-				read : {
-					url : "${pageContext.request.contextPath}/api/assignments/" + token + "/invocations",
-					beforeSend : function(req) {
-						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
-						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
-					},
-					dataType : "json",
-				}
-			},
-			schema : {
-				data : "results",
-				total : "numResults",
-				parse : parseEventResults,
-			},
-			serverPaging : true,
-			serverSorting : true,
-			pageSize : pageSize,
-		});
+						/** Create AJAX datasource for invocations list */
+						invocationsDS = new kendo.data.DataSource(
+								{
+									transport : {
+										read : {
+											url : "${pageContext.request.contextPath}/api/assignments/"
+													+ token + "/invocations",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
+											dataType : "json",
+										}
+									},
+									schema : {
+										data : "results",
+										total : "numResults",
+										parse : parseEventResults,
+									},
+									serverPaging : true,
+									serverSorting : true,
+									pageSize : pageSize,
+								});
 
-		/** Create the invocations list */
-		$("#invocations").kendoGrid({
-			dataSource : invocationsDS,
-			rowTemplate : kendo.template($("#tpl-invocation-entry").html()),
-			scrollable : true,
-			height : gridHeight,
-		});
+						/** Create the invocations list */
+						$("#invocations").kendoGrid(
+								{
+									dataSource : invocationsDS,
+									rowTemplate : kendo.template($(
+											"#tpl-invocation-entry").html()),
+									scrollable : true,
+									height : gridHeight,
+								});
 
-		$("#btn-refresh-invocations").click(function() {
-			invocationsDS.read();
-		});
-		$('#btn-filter-invocations').attr('disabled', true);
+						$("#btn-refresh-invocations").click(function() {
+							invocationsDS.read();
+						});
+						$('#btn-filter-invocations').attr('disabled', true);
 
-		$("#btn-create-invocation").click(function() {
-			ciOpen(token, specificationToken, onInvokeCommandSuccess);
-		});
+						$("#btn-create-invocation").click(
+								function() {
+									ciOpen(token, specificationToken,
+											onInvokeCommandSuccess);
+								});
 
-		$("#invocations-pager").kendoPager({
-			dataSource : invocationsDS
-		});
+						$("#invocations-pager").kendoPager({
+							dataSource : invocationsDS
+						});
 
-		$("#btn-edit-assignment").click(function() {
-			auOpen(token, onAssignmentEditSuccess);
-		});
+						$("#btn-edit-assignment").click(function() {
+							auOpen(token, onAssignmentEditSuccess);
+						});
 
-		/** Create the tab strip */
-		tabs = $("#tabs").kendoTabStrip({
-			animation : false,
-			activate : onActivate
-		}).data("kendoTabStrip");
+						/** Create the tab strip */
+						tabs = $("#tabs").kendoTabStrip({
+							animation : false,
+							activate : onActivate
+						}).data("kendoTabStrip");
 
-		loadAssignment();
-	});
+						loadAssignment();
+					});
 
 	/** Force grid refresh on first tab activate (KendoUI bug) */
 	function onActivate(e) {
@@ -460,13 +516,15 @@ table#invocations tr td {
 
 	/** Loads information for the selected assignment */
 	function loadAssignment() {
-		$.getAuthJSON("${pageContext.request.contextPath}/api/assignments/" + token, "${basicAuth}",
-			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/assignments/"
+				+ token, "${basicAuth}", "${tenant.authenticationToken}",
+				loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful assignment load request */
 	function loadGetSuccess(data, status, jqXHR) {
-		var template = kendo.template($("#tpl-assignment-detail-header").html());
+		var template = kendo
+				.template($("#tpl-assignment-detail-header").html());
 		parseAssignmentData(data);
 		data.inDetailView = true;
 		$('#assignment-details').html(template(data));
