@@ -156,6 +156,7 @@ public class Tenant extends MetadataProviderEntity implements ITenant, Serializa
 		result.setLogoUrl(input.getLogoUrl());
 		result.setAuthenticationToken(input.getAuthenticationToken());
 		result.getAuthorizedUserIds().addAll(input.getAuthorizedUserIds());
+		result.setEngineState(input.getEngineState());
 		MetadataProviderEntity.copy(input, result);
 		return result;
 	}

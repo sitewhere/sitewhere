@@ -21,25 +21,8 @@ public class TenantGroupElementCreateRequest implements ITenantGroupElementCreat
 	/** Serial version UID */
 	private static final long serialVersionUID = 1931203730982333819L;
 
-	/** Tenant group associated with element */
-	private String tenantGroupId;
-
 	/** Tenant associated with element */
 	private String tenantId;
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.tenant.request.ITenantGroupElementCreateRequest#
-	 * getTenantGroupId( )
-	 */
-	public String getTenantGroupId() {
-		return tenantGroupId;
-	}
-
-	public void setTenantGroupId(String tenantGroupId) {
-		this.tenantGroupId = tenantGroupId;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -60,8 +43,7 @@ public class TenantGroupElementCreateRequest implements ITenantGroupElementCreat
 		/** Request being built */
 		private TenantGroupElementCreateRequest request = new TenantGroupElementCreateRequest();
 
-		public Builder(String tenantGroupId, String tenantId) {
-			request.setTenantGroupId(tenantGroupId);
+		public Builder(String tenantId) {
 			request.setTenantId(tenantId);
 		}
 

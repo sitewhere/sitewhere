@@ -1451,10 +1451,10 @@ public class SiteWherePersistence {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static TenantGroupElement tenantGroupElementCreateLogic(ITenantGroupElementCreateRequest request)
-			throws SiteWhereException {
+	public static TenantGroupElement tenantGroupElementCreateLogic(String groupToken,
+			ITenantGroupElementCreateRequest request) throws SiteWhereException {
 		TenantGroupElement element = new TenantGroupElement();
-		element.setTenantGroupId(request.getTenantGroupId());
+		element.setTenantGroupToken(groupToken);
 		element.setTenantId(request.getTenantId());
 		return element;
 	}

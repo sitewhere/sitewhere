@@ -19,7 +19,7 @@ if (group == null) {
 	group = tenantBuilder.persist group
 	
 	def elements = []
-	elements << tenantBuilder.newTenantGroupElement(group.getToken(), tenant.getId())
+	elements << tenantBuilder.newTenantGroupElement(tenant.getId())
 	tenantBuilder.persist group, elements
 	
 	logger.info "[Create Tenant Group] ${group.token}"

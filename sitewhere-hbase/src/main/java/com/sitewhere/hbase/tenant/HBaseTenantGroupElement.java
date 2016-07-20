@@ -63,17 +63,17 @@ public class HBaseTenantGroupElement {
 	 * Create a new tenant group element.
 	 * 
 	 * @param context
-	 * @param groupId
+	 * @param groupToken
 	 * @param index
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static ITenantGroupElement createTenantGroupElement(IHBaseContext context, String groupId, Long index,
+	public static ITenantGroupElement createTenantGroupElement(IHBaseContext context, String groupToken, Long index,
 			ITenantGroupElementCreateRequest request) throws SiteWhereException {
-		byte[] elementKey = getElementRowKey(context, groupId, index);
+		byte[] elementKey = getElementRowKey(context, groupToken, index);
 
-		TenantGroupElement element = SiteWherePersistence.tenantGroupElementCreateLogic(request);
+		TenantGroupElement element = SiteWherePersistence.tenantGroupElementCreateLogic(groupToken, request);
 
 		byte[] payload = context.getPayloadMarshaler().encodeTenantGroupElement(element);
 

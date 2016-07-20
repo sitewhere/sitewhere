@@ -6,6 +6,7 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.tenant.TenantGroupElement;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
 import com.sitewhere.spi.tenant.ITenant;
 import com.sitewhere.spi.tenant.ITenantGroupElement;
 
@@ -34,12 +35,16 @@ public class TenantGroupElementMarshalHelper {
 	 */
 	public TenantGroupElement convert(ITenantGroupElement element) throws SiteWhereException {
 		TenantGroupElement result = new TenantGroupElement();
-		result.setTenantGroupId(element.getTenantGroupId());
+		result.setTenantGroupToken(element.getTenantGroupToken());
 		if (isIncludeTenantDetails()) {
 			ITenant tenant = SiteWhere.getServer().getTenantManagement().getTenantById(element.getTenantId());
 			if (tenant == null) {
 				throw new SiteWhereException(
 						"Unable to find referenced tenant for tenant group: " + element.getTenantId());
+			}
+			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
+			if (engine != null) {
+				((Tenant) tenant).setEngineState(engine.getEngineState());
 			}
 			result.setTenant(Tenant.copy(tenant));
 		} else {

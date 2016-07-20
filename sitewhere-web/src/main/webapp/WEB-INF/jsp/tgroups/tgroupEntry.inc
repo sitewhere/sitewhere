@@ -92,6 +92,7 @@
 					title="#:description#">#:description#</span>
 			</div>
 		</div>
+# if (data.inDetailView == null) { #
 		<div class="btn-group btn-group-vertical" style="position: absolute; right: 10px; top: 7px;">
 			<a class="btn btn-small sw-action-glyph sw-primary-glyph" title="Edit Tenant Group" style="color: \\#009;" 
 				href="javascript:void(0)" onclick="onTenantGroupEditClicked(event, '#:token#');">
@@ -103,5 +104,6 @@
 				href="javascript:void(0)" onclick="onTenantGroupOpenClicked(event, '#:token#')">
 				<i class="fa fa-chevron-right fa-white"></i></a>
 		</div>
+# } #
 	</div>
 </script>

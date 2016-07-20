@@ -10,11 +10,14 @@ package com.sitewhere.mongodb.tenant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -92,6 +95,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 				new BasicDBObject("unique", true));
 		getMongoClient().getTenantsCollection().createIndex(new BasicDBObject(MongoTenant.PROP_AUTH_TOKEN, 1),
 				new BasicDBObject("unique", true));
+		getMongoClient().getTenantGroupsCollection().createIndex(new BasicDBObject(MongoTenantGroup.PROP_TOKEN, 1),
+				new BasicDBObject("unique", true));
+		getMongoClient().getTenantGroupElementsCollection()
+				.createIndex(new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_TOKEN, 1)
+						.append(MongoTenantGroupElement.PROP_TENANT_ID, 1), new BasicDBObject("unique", true));
 	}
 
 	/*
@@ -199,6 +207,19 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	public ISearchResults<ITenant> listTenants(ITenantSearchCriteria criteria) throws SiteWhereException {
 		DBCollection tenants = getMongoClient().getTenantsCollection();
 		BasicDBObject dbCriteria = new BasicDBObject();
+		if (criteria.getTextSearch() != null) {
+			try {
+				Pattern regex = Pattern.compile(Pattern.quote(criteria.getTextSearch()));
+				DBObject idSearch = new BasicDBObject(MongoTenant.PROP_ID, regex);
+				DBObject nameSearch = new BasicDBObject(MongoTenant.PROP_NAME, regex);
+				BasicDBList or = new BasicDBList();
+				or.add(idSearch);
+				or.add(nameSearch);
+				dbCriteria.append("$or", or);
+			} catch (PatternSyntaxException e) {
+				LOGGER.warn("Invalid regex for searching tenant list. Ignoring.");
+			}
+		}
 		if (criteria.getUserId() != null) {
 			dbCriteria.append(MongoTenant.PROP_AUTH_USERS, criteria.getUserId());
 		}
@@ -337,11 +358,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	 * lang.String, java.util.List)
 	 */
 	@Override
-	public List<ITenantGroupElement> addTenantGroupElements(String groupId,
+	public List<ITenantGroupElement> addTenantGroupElements(String groupToken,
 			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
 		List<ITenantGroupElement> results = new ArrayList<ITenantGroupElement>();
 		for (ITenantGroupElementCreateRequest request : elements) {
-			TenantGroupElement element = SiteWherePersistence.tenantGroupElementCreateLogic(request);
+			TenantGroupElement element = SiteWherePersistence.tenantGroupElementCreateLogic(groupToken, request);
 			DBObject created = MongoTenantGroupElement.toDBObject(element);
 			MongoPersistence.insert(getMongoClient().getTenantGroupElementsCollection(), created);
 			results.add(MongoTenantGroupElement.fromDBObject(created));
@@ -361,7 +382,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
 		List<ITenantGroupElement> deleted = new ArrayList<ITenantGroupElement>();
 		for (ITenantGroupElementCreateRequest request : elements) {
-			BasicDBObject match = new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_ID, groupId)
+			BasicDBObject match = new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_TOKEN, groupId)
 					.append(MongoTenantGroupElement.PROP_TENANT_ID, request.getTenantId());
 			DBCursor found = getMongoClient().getTenantGroupElementsCollection().find(match);
 			while (found.hasNext()) {
@@ -386,7 +407,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	@Override
 	public ISearchResults<ITenantGroupElement> listTenantGroupElements(String groupId, ISearchCriteria criteria)
 			throws SiteWhereException {
-		BasicDBObject match = new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_ID, groupId);
+		BasicDBObject match = new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_TOKEN, groupId);
 		BasicDBObject sort = new BasicDBObject(MongoTenantGroupElement.PROP_TENANT_ID, 1);
 		return MongoPersistence.search(ITenantGroupElement.class, getMongoClient().getTenantGroupElementsCollection(),
 				match, sort, criteria);

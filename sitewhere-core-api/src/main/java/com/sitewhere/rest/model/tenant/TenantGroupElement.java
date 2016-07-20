@@ -25,7 +25,7 @@ public class TenantGroupElement implements ITenantGroupElement, Serializable {
 	private static final long serialVersionUID = -4104618841338632112L;
 
 	/** Tenant group associated with element */
-	private String tenantGroupId;
+	private String tenantGroupToken;
 
 	/** Tenant associated with element */
 	private String tenantId;
@@ -38,14 +38,14 @@ public class TenantGroupElement implements ITenantGroupElement, Serializable {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.tenant.ITenantGroupElement#getTenantGroupId()
+	 * @see com.sitewhere.spi.tenant.ITenantGroupElement#getTenantGroupToken()
 	 */
-	public String getTenantGroupId() {
-		return tenantGroupId;
+	public String getTenantGroupToken() {
+		return tenantGroupToken;
 	}
 
-	public void setTenantGroupId(String tenantGroupId) {
-		this.tenantGroupId = tenantGroupId;
+	public void setTenantGroupToken(String tenantGroupToken) {
+		this.tenantGroupToken = tenantGroupToken;
 	}
 
 	/*

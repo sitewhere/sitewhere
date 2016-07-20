@@ -142,8 +142,8 @@ public class TenantManagementRequestBuilder {
 	 * @param tenantId
 	 * @return
 	 */
-	public TenantGroupElementCreateRequest.Builder newTenantGroupElement(String tenantGroupId, String tenantId) {
-		return new TenantGroupElementCreateRequest.Builder(tenantGroupId, tenantId);
+	public TenantGroupElementCreateRequest.Builder newTenantGroupElement(String tenantId) {
+		return new TenantGroupElementCreateRequest.Builder(tenantId);
 	}
 
 	/**

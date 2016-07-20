@@ -15,11 +15,11 @@ package com.sitewhere.spi.tenant;
 public interface ITenantGroupElement {
 
 	/**
-	 * Get id of tenant group element belongs to.
+	 * Get token of tenant group element belongs to.
 	 * 
 	 * @return
 	 */
-	public String getTenantGroupId();
+	public String getTenantGroupToken();
 
 	/**
 	 * Get id of tenant referenced by element.

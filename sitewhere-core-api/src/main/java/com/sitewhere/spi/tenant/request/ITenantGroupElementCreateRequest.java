@@ -15,13 +15,6 @@ package com.sitewhere.spi.tenant.request;
 public interface ITenantGroupElementCreateRequest {
 
 	/**
-	 * Get id of tenant group element belongs to.
-	 * 
-	 * @return
-	 */
-	public String getTenantGroupId();
-
-	/**
 	 * Get id of tenant referenced by element.
 	 * 
 	 * @return

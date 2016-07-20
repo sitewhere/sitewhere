@@ -14,14 +14,15 @@ import com.sitewhere.rest.model.tenant.TenantGroupElement;
 import com.sitewhere.spi.tenant.ITenantGroupElement;
 
 /**
- * Provides methods for loading and storing {@link TenantGroupElement} data in MongoDB.
+ * Provides methods for loading and storing {@link TenantGroupElement} data in
+ * MongoDB.
  * 
  * @author Derek
  */
 public class MongoTenantGroupElement implements MongoConverter<ITenantGroupElement> {
 
 	/** Property for tenant group id */
-	public static final String PROP_GROUP_ID = "groupId";
+	public static final String PROP_GROUP_TOKEN = "groupToken";
 
 	/** Property for tenant id */
 	public static final String PROP_TENANT_ID = "tenantId";
@@ -53,7 +54,7 @@ public class MongoTenantGroupElement implements MongoConverter<ITenantGroupEleme
 	 * @param target
 	 */
 	public static void toDBObject(ITenantGroupElement source, BasicDBObject target) {
-		target.append(PROP_GROUP_ID, source.getTenantGroupId());
+		target.append(PROP_GROUP_TOKEN, source.getTenantGroupToken());
 		target.append(PROP_TENANT_ID, source.getTenantId());
 	}
 
@@ -64,10 +65,10 @@ public class MongoTenantGroupElement implements MongoConverter<ITenantGroupEleme
 	 * @param target
 	 */
 	public static void fromDBObject(DBObject source, TenantGroupElement target) {
-		String groupId = (String) source.get(PROP_GROUP_ID);
+		String groupToken = (String) source.get(PROP_GROUP_TOKEN);
 		String tenantId = (String) source.get(PROP_TENANT_ID);
 
-		target.setTenantGroupId(groupId);
+		target.setTenantGroupToken(groupToken);
 		target.setTenantId(tenantId);
 	}
 

@@ -17,6 +17,13 @@ import com.sitewhere.spi.search.ISearchCriteria;
 public interface ITenantSearchCriteria extends ISearchCriteria {
 
 	/**
+	 * Get text search phrase to match against tenant id and name.
+	 * 
+	 * @return
+	 */
+	public String getTextSearch();
+
+	/**
 	 * Search for tenants for which the given user is authorized.
 	 * 
 	 * @return
@@ -24,8 +31,8 @@ public interface ITenantSearchCriteria extends ISearchCriteria {
 	public String getUserId();
 
 	/**
-	 * Indicates whether runtime information should be included for the corresponding
-	 * tenant engine.
+	 * Indicates whether runtime information should be included for the
+	 * corresponding tenant engine.
 	 * 
 	 * @return
 	 */
