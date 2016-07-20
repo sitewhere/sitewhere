@@ -207,11 +207,11 @@
 	}
 
 	/** Called when a group element is to be deleted */
-	function onDeleteTenantGroupElement(event, type, tenantId) {
+	function onDeleteTenantGroupElement(event, tenantId) {
 		var toDelete = [ {
 			"tenantId" : tenantId
 		} ];
-		swConfirm("Remove Tenant"), i18next(
+		swConfirm("Remove Tenant",
 				"Are you sure you want to remove this tenant from the group?",
 				function(result) {
 					if (result) {

@@ -378,11 +378,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	 * .lang. String, java.util.List)
 	 */
 	@Override
-	public List<ITenantGroupElement> removeTenantGroupElements(String groupId,
+	public List<ITenantGroupElement> removeTenantGroupElements(String groupToken,
 			List<ITenantGroupElementCreateRequest> elements) throws SiteWhereException {
 		List<ITenantGroupElement> deleted = new ArrayList<ITenantGroupElement>();
 		for (ITenantGroupElementCreateRequest request : elements) {
-			BasicDBObject match = new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_TOKEN, groupId)
+			BasicDBObject match = new BasicDBObject(MongoTenantGroupElement.PROP_GROUP_TOKEN, groupToken)
 					.append(MongoTenantGroupElement.PROP_TENANT_ID, request.getTenantId());
 			DBCursor found = getMongoClient().getTenantGroupElementsCollection().find(match);
 			while (found.hasNext()) {
