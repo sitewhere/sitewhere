@@ -139,7 +139,7 @@
 							zoneData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
 							onCreateFail);
 					} else {
-						$.postAuthJSON("${pageContext.request.contextPath}/api/sites/" + zcSite.token,
+						$.postAuthJSON("${pageContext.request.contextPath}/api/sites/" + zcSite.token + "/zones",
 							zoneData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
 							onCreateFail);
 					}
@@ -241,7 +241,7 @@
 			zcNewZoneLayer = e.layer;
 			zcMap.addLayer(zcNewZoneLayer);
 		});
-		swInitMapForSite(zcMap, zcSite, '${tenant.authenticationToken}');
+		swInitMapForSite(zcMap, zcSite, '${basicAuth}', '${tenant.authenticationToken}');
 
 		// Function called on submit.
 		zcSubmitCallback = callback;

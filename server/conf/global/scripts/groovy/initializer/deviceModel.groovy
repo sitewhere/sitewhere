@@ -29,7 +29,7 @@ The system provides location tracking for the assets and notifies administrators
 outside of the general site area or into areas where they are not allowed.'''
 
 site.withImageUrl 'https://s3.amazonaws.com/sitewhere-demo/construction/construction.jpg'
-site.mapquestMap 34.10469794977326, -84.23966646194458, 15
+site.openStreetMap 34.10469794977326, -84.23966646194458, 15
 site = deviceBuilder.persist site
 logger.info "[Create Site] ${site.name}"
 

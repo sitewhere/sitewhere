@@ -147,6 +147,20 @@ public class SiteCreateRequest implements ISiteCreateRequest, Serializable {
 			return this;
 		}
 
+		public Builder openStreetMap(double latitude, double longitude, int zoomLevel) {
+			SiteMapData map = new SiteMapData();
+			try {
+				map.setType("openstreetmap");
+				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LATITUDE, String.valueOf(latitude));
+				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_CENTER_LONGITUDE, String.valueOf(longitude));
+				map.addOrReplaceMetadata(ISiteMapMetadata.MAP_ZOOM_LEVEL, String.valueOf(zoomLevel));
+				request.setMap(map);
+			} catch (SiteWhereException e) {
+				throw new RuntimeException(e);
+			}
+			return this;
+		}
+
 		public Builder mapquestMap(double latitude, double longitude, int zoomLevel) {
 			SiteMapData map = new SiteMapData();
 			try {

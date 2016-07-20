@@ -6,6 +6,7 @@ L.Map.SiteWhere = L.Map.extend({
 	statics: {
 		MAP_TYPE_MAPQUEST: "mapquest",
 		MAP_TYPE_GEOSERVER: "geoserver",
+		MAP_TYPE_OPENSTREETMAP: "openstreetmap",
 	},
 
 	options: {
@@ -65,12 +66,12 @@ L.Map.SiteWhere = L.Map.extend({
 	
 	/** Loads a TileLayer based on map type and metadata associated with site */
 	_loadMapTileLayer: function(site, mapInfo) {
-		if (site.map.type == L.Map.SiteWhere.MAP_TYPE_MAPQUEST) {
-			var mapquestUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
-			var subDomains = ['otile1','otile2','otile3','otile4'];
-			var mapquestAttrib = 'MapQuest data';
-			var mapquest = new L.TileLayer(mapquestUrl, {maxZoom: 18, attribution: mapquestAttrib, subdomains: subDomains});		
-			mapquest.addTo(this);
+		// OpenStreetMap also handles MapQuest tiles since they are no longer supported.
+		if ((site.map.type == L.Map.SiteWhere.MAP_TYPE_OPENSTREETMAP) || 
+				(site.map.type == L.Map.SiteWhere.MAP_TYPE_MAPQUEST)) {
+			var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+			var osm = new L.TileLayer(osmUrl, {maxZoom: 20});		
+			osm.addTo(this);
 		} else if (site.map.type == L.Map.SiteWhere.MAP_TYPE_GEOSERVER) {
 			var gsBaseUrl = (mapInfo.geoserverBaseUrl ? mapInfo.geoserverBaseUrl : "http://localhost:8080/geoserver/");
 			var gsRelativeUrl = "geoserver/gwc/service/gmaps?layers=";
@@ -379,8 +380,8 @@ L.SiteWhere.Util = L.Class.extend({
 				},
 				'contentType' : 'application/json',
 				'success' : onSuccess,
-				'error' : onFail
-			});
+						'error' : onFail
+					});
 		},
 	},
 })

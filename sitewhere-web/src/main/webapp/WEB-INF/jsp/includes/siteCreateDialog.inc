@@ -9,51 +9,91 @@
 <!-- Dialog for create/update -->
 <div id="sc-dialog" class="modal hide">
 	<div class="modal-header k-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h3 id="sc-dialog-header" data-i18n="includes.siteCreateDialog.CreateSite"></h3>
+		<button type="button" class="close" data-dismiss="modal"
+			aria-hidden="true">&times;</button>
+		<h3 id="sc-dialog-header"
+			data-i18n="includes.siteCreateDialog.CreateSite"></h3>
 	</div>
 	<div class="modal-body">
 		<div id="sc-tabs">
 			<ul>
-				<li class="k-state-active">&nbsp;<font data-i18n="includes.siteCreateDialog.SiteDetails"></font></li>
-				<li>&nbsp;<font data-i18n="includes.siteCreateDialog.MapInformation"></font></li>
+				<li class="k-state-active">&nbsp;<font
+					data-i18n="includes.siteCreateDialog.SiteDetails"></font></li>
+				<li>&nbsp;<font
+					data-i18n="includes.siteCreateDialog.MapInformation"></font></li>
 				<li>&nbsp;<font data-i18n="public.Metadata"></font></li>
 			</ul>
 			<div>
-				<form id="general-form" class="form-horizontal" style="padding-top: 20px;">
+				<form id="general-form" class="form-horizontal"
+					style="padding-top: 20px;">
 					<div class="control-group">
 						<label class="control-label" for="gen-site-name"
 							data-i18n="includes.siteCreateDialog.SiteName"></label>
 						<div class="controls">
-							<input type="text" id="gen-site-name" class="input-xlarge" title="Site name">
+							<input type="text" id="gen-site-name" class="input-xlarge"
+								title="Site name">
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="gen-site-desc"
 							data-i18n="includes.siteCreateDialog.SiteDescription"></label>
 						<div class="controls">
-							<textarea id="gen-site-desc" name="siteDesc" class="input-xlarge" style="height: 120px;"></textarea>
+							<textarea id="gen-site-desc" name="siteDesc" class="input-xlarge"
+								style="height: 120px;"></textarea>
 						</div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="gen-site-image-url"
 							data-i18n="includes.siteCreateDialog.ImageURL"></label>
 						<div class="controls">
-							<input type="text" id="gen-site-image-url" name="siteImageUrl" class="input-xlarge">
+							<input type="text" id="gen-site-image-url" name="siteImageUrl"
+								class="input-xlarge">
 						</div>
 					</div>
 				</form>
 			</div>
 			<div>
 				<form class="form-horizontal" style="padding-top: 15px;">
-					<div class="control-group" style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
-						<label class="control-label" for="sc-map-type" data-i18n="includes.siteCreateDialog.MapType"></label>
+					<div class="control-group"
+						style="border-bottom: 1px solid #eeeeee; padding-bottom: 10px;">
+						<label class="control-label" for="sc-map-type"
+							data-i18n="includes.siteCreateDialog.MapType"></label>
 						<div class="controls">
 							<input id="sc-map-type" />
 						</div>
 					</div>
 				</form>
 				<div id="map-type-forms">
+					<form id="openstreetmap" class="form-horizontal">
+						<div class="control-group">
+							<label class="control-label" for="osm-center-latitude"
+								data-i18n="includes.siteCreateDialog.CenterLatitude"></label>
+							<div class="controls">
+								<input type="text" id="osm-center-latitude" class="input-large">
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label" for="osm-center-longitude"
+								data-i18n="includes.siteCreateDialog.CenterLongitude"></label>
+							<div class="controls">
+								<input type="text" id="osm-center-longitude" class="input-large">
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label" for="osm-zoom-level"
+								data-i18n="includes.siteCreateDialog.ZoomLevel"></label>
+							<div class="controls">
+								<input type="text" id="osm-zoom-level" class="input-large">
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label"></label>
+							<div class="controls">
+								<a href="javascript:void(0)" onclick="scShowMap()"
+									data-i18n="includes.siteCreateDialog.CLAZOM"> </a>
+							</div>
+						</div>
+					</form>
 					<form id="mapquest" class="form-horizontal">
 						<div class="control-group">
 							<label class="control-label" for="mq-center-latitude"
@@ -86,15 +126,19 @@
 					</form>
 					<form id="geoserver" class="form-horizontal hide">
 						<div class="control-group">
-							<label class="control-label" for="gs-base-url">GeoServer Base URL</label>
+							<label class="control-label" for="gs-base-url">GeoServer
+								Base URL</label>
 							<div class="controls">
-								<input type="text" id="gs-base-url" title="GeoServer base url" class="input-xlarge">
+								<input type="text" id="gs-base-url" title="GeoServer base url"
+									class="input-xlarge">
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="gs-layer-name">GeoServer Layer</label>
+							<label class="control-label" for="gs-layer-name">GeoServer
+								Layer</label>
 							<div class="controls">
-								<input type="text" id="gs-layer-name" title="Layer name" class="input-xlarge">
+								<input type="text" id="gs-layer-name" title="Layer name"
+									class="input-xlarge">
 							</div>
 						</div>
 						<div class="control-group">
@@ -143,13 +187,15 @@
 	<input id="site-token" type="hidden" value="" />
 	<div class="modal-footer">
 		<div id="sc-buttons">
-			<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
-				id="sc-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+			<a href="javascript:void(0)" class="btn" data-dismiss="modal"
+				data-i18n="public.Cancel"></a> <a id="sc-dialog-submit"
+				href="javascript:void(0)" class="btn btn-primary"
 				data-i18n="public.Create"></a>
 		</div>
 		<div id="sc-map-buttons" class="hide">
-			<a href="javascript:void(0)" class="btn" onclick="scHideMap(false)" data-i18n="public.Cancel"></a>
-			<a href="javascript:void(0)" class="btn btn-primary" onclick="scHideMap(true)"
+			<a href="javascript:void(0)" class="btn" onclick="scHideMap(false)"
+				data-i18n="public.Cancel"></a> <a href="javascript:void(0)"
+				class="btn btn-primary" onclick="scHideMap(true)"
 				data-i18n="includes.siteCreateDialog.UseTheseSettings"></a>
 		</div>
 	</div>
@@ -168,6 +214,9 @@
 
 	/** Available map types shown in dropdown */
 	var scMapTypes = [ {
+		text : "OpenStreetMap",
+		value : "openstreetmap"
+	}, {
 		text : "MapQuest World Map",
 		value : "mapquest"
 	}, {
@@ -178,59 +227,75 @@
 	/** Map reference */
 	var scMap;
 
-	$(document).ready(
-		function() {
+	$(document)
+			.ready(
+					function() {
 
-			/** Create the tab strip */
-			scTabs = $("#sc-tabs").kendoTabStrip({
-				animation : false
-			}).data("kendoTabStrip");
+						/** Create the tab strip */
+						scTabs = $("#sc-tabs").kendoTabStrip({
+							animation : false
+						}).data("kendoTabStrip");
 
-			// create DropDownList from input HTML element
-			$("#sc-map-type").kendoDropDownList({
-				dataTextField : "text",
-				dataValueField : "value",
-				dataSource : scMapTypes,
-				index : 0,
-				change : scMapTypeChanged
-			});
+						// create DropDownList from input HTML element
+						$("#sc-map-type").kendoDropDownList({
+							dataTextField : "text",
+							dataValueField : "value",
+							dataSource : scMapTypes,
+							index : 0,
+							change : scMapTypeChanged
+						});
 
-			/** Handle dialog submit */
-			$('#sc-dialog-submit').click(
-				function(event) {
-					event.preventDefault();
-					if (!scValidate()) {
-						return;
-					}
-					var siteToken = $('#site-token').val();
-					var siteData = scCreateSiteData();
-					if (siteToken == "") {
-						$.postAuthJSON("${pageContext.request.contextPath}/api/sites", siteData,
-							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onCreateFail);
-					} else {
-						$.putAuthJSON("${pageContext.request.contextPath}/api/sites/" + siteToken, siteData,
-							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onUpdateFail);
-					}
-				});
+						/** Handle dialog submit */
+						$('#sc-dialog-submit')
+								.click(
+										function(event) {
+											event.preventDefault();
+											if (!scValidate()) {
+												return;
+											}
+											var siteToken = $('#site-token')
+													.val();
+											var siteData = scCreateSiteData();
+											if (siteToken == "") {
+												$
+														.postAuthJSON(
+																"${pageContext.request.contextPath}/api/sites",
+																siteData,
+																"${basicAuth}",
+																"${tenant.authenticationToken}",
+																onSuccess,
+																onCreateFail);
+											} else {
+												$
+														.putAuthJSON(
+																"${pageContext.request.contextPath}/api/sites/"
+																		+ siteToken,
+																siteData,
+																"${basicAuth}",
+																"${tenant.authenticationToken}",
+																onSuccess,
+																onUpdateFail);
+											}
+										});
 
-			/** Called on successful create/update */
-			function onSuccess() {
-				$('#sc-dialog').modal('hide');
-				if (scSubmitCallback != null) {
-					scSubmitCallback();
-				}
-			}
+						/** Called on successful create/update */
+						function onSuccess() {
+							$('#sc-dialog').modal('hide');
+							if (scSubmitCallback != null) {
+								scSubmitCallback();
+							}
+						}
 
-			/** Handle failed call to create site */
-			function onCreateFail(jqXHR, textStatus, errorThrown) {
-				handleError(jqXHR, "Unable to create site.");
-			}
+						/** Handle failed call to create site */
+						function onCreateFail(jqXHR, textStatus, errorThrown) {
+							handleError(jqXHR, "Unable to create site.");
+						}
 
-			/** Handle failed call to update site */
-			function onUpdateFail(jqXHR, textStatus, errorThrown) {
-				handleError(jqXHR, "Unable to update site.");
-			}
-		});
+						/** Handle failed call to update site */
+						function onUpdateFail(jqXHR, textStatus, errorThrown) {
+							handleError(jqXHR, "Unable to update site.");
+						}
+					});
 
 	/** Create site data structure based on form input */
 	function scCreateSiteData() {
@@ -273,7 +338,8 @@
 	/** Open the site create dialog */
 	function scOpen(e, callback) {
 		scClearDialog();
-		$('#sc-dialog-header').html(i18next("includes.siteCreateDialog.CreateSite"));
+		$('#sc-dialog-header').html(
+				i18next("includes.siteCreateDialog.CreateSite"));
 		$('#sc-dialog-submit').html(i18next("public.Create"));
 		$('#site-token').val("");
 		scMetadataDS.data(new Array());
@@ -301,6 +367,15 @@
 		}
 		scMap = L.map('sc-map');
 		swInitMapForSite(scMap, siteData);
+
+		scMap = L.Map.siteWhere('emulator-map', {
+			siteWhereApi : '${pageContext.request.contextPath}/api/',
+			siteToken : siteToken,
+			basicAuth : '${basicAuth}',
+			tenantAuthToken : '${tenant.authenticationToken}',
+			onZonesLoaded : onZonesLoaded,
+		});
+
 	}
 
 	/** Show map for current info */
@@ -321,8 +396,9 @@
 		scSubmitCallback = callback;
 
 		// Get site for edit.
-		$.getAuthJSON("${pageContext.request.contextPath}/api/sites/" + siteToken, "${basicAuth}",
-			"${tenant.authenticationToken}", suSiteGetSuccess, suSiteGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/sites/"
+				+ siteToken, "${basicAuth}", "${tenant.authenticationToken}",
+				suSiteGetSuccess, suSiteGetFailed);
 	}
 
 	/** Called on successful site load request */
@@ -352,15 +428,27 @@
 	function scLoadMapFormFromMetadata(map) {
 		var lookup = map.metadata;
 
-		if (map.type == "mapquest") {
-			$('#mq-center-latitude').val(scGetMetadataValue(lookup, 'centerLatitude'));
-			$('#mq-center-longitude').val(scGetMetadataValue(lookup, 'centerLongitude'));
+		if (map.type == "openstreetmap") {
+			$('#osm-center-latitude').val(
+					scGetMetadataValue(lookup, 'centerLatitude'));
+			$('#osm-center-longitude').val(
+					scGetMetadataValue(lookup, 'centerLongitude'));
+			$('#osm-zoom-level').val(scGetMetadataValue(lookup, 'zoomLevel'));
+		} else if (map.type == "mapquest") {
+			$('#mq-center-latitude').val(
+					scGetMetadataValue(lookup, 'centerLatitude'));
+			$('#mq-center-longitude').val(
+					scGetMetadataValue(lookup, 'centerLongitude'));
 			$('#mq-zoom-level').val(scGetMetadataValue(lookup, 'zoomLevel'));
 		} else if (map.type == "geoserver") {
-			$('#gs-base-url').val(scGetMetadataValue(lookup, 'geoserverBaseUrl'));
-			$('#gs-layer-name').val(scGetMetadataValue(lookup, 'geoserverLayerName'));
-			$('#gs-center-latitude').val(scGetMetadataValue(lookup, 'centerLatitude'));
-			$('#gs-center-longitude').val(scGetMetadataValue(lookup, 'centerLongitude'));
+			$('#gs-base-url').val(
+					scGetMetadataValue(lookup, 'geoserverBaseUrl'));
+			$('#gs-layer-name').val(
+					scGetMetadataValue(lookup, 'geoserverLayerName'));
+			$('#gs-center-latitude').val(
+					scGetMetadataValue(lookup, 'centerLatitude'));
+			$('#gs-center-longitude').val(
+					scGetMetadataValue(lookup, 'centerLongitude'));
 			$('#gs-zoom-level').val(scGetMetadataValue(lookup, 'zoomLevel'));
 		}
 	}
@@ -370,16 +458,31 @@
 		var metadata = {};
 		var mapType = $("#sc-map-type").val();
 
-		if (mapType == "mapquest") {
-			scAddMapMetadataEntry(metadata, 'centerLatitude', $('#mq-center-latitude').val());
-			scAddMapMetadataEntry(metadata, 'centerLongitude', $('#mq-center-longitude').val());
-			scAddMapMetadataEntry(metadata, 'zoomLevel', $('#mq-zoom-level').val());
+		if (mapType == "openstreetmap") {
+			scAddMapMetadataEntry(metadata, 'centerLatitude', $(
+					'#osm-center-latitude').val());
+			scAddMapMetadataEntry(metadata, 'centerLongitude', $(
+					'#osm-center-longitude').val());
+			scAddMapMetadataEntry(metadata, 'zoomLevel', $('#osm-zoom-level')
+					.val());
+		} else if (mapType == "mapquest") {
+			scAddMapMetadataEntry(metadata, 'centerLatitude', $(
+					'#mq-center-latitude').val());
+			scAddMapMetadataEntry(metadata, 'centerLongitude', $(
+					'#mq-center-longitude').val());
+			scAddMapMetadataEntry(metadata, 'zoomLevel', $('#mq-zoom-level')
+					.val());
 		} else if (mapType == "geoserver") {
-			scAddMapMetadataEntry(metadata, 'geoserverBaseUrl', $('#gs-base-url').val());
-			scAddMapMetadataEntry(metadata, 'geoserverLayerName', $('#gs-layer-name').val());
-			scAddMapMetadataEntry(metadata, 'centerLatitude', $('#gs-center-latitude').val());
-			scAddMapMetadataEntry(metadata, 'centerLongitude', $('#gs-center-longitude').val());
-			scAddMapMetadataEntry(metadata, 'zoomLevel', $('#gs-zoom-level').val());
+			scAddMapMetadataEntry(metadata, 'geoserverBaseUrl', $(
+					'#gs-base-url').val());
+			scAddMapMetadataEntry(metadata, 'geoserverLayerName', $(
+					'#gs-layer-name').val());
+			scAddMapMetadataEntry(metadata, 'centerLatitude', $(
+					'#gs-center-latitude').val());
+			scAddMapMetadataEntry(metadata, 'centerLongitude', $(
+					'#gs-center-longitude').val());
+			scAddMapMetadataEntry(metadata, 'zoomLevel', $('#gs-zoom-level')
+					.val());
 		}
 		return metadata;
 	}
@@ -414,6 +517,7 @@
 	/** Clear all dialog fields */
 	function scClearDialog() {
 		$('#general-form')[0].reset();
+		$('#openstreetmap')[0].reset();
 		$('#mapquest')[0].reset();
 		$('#geoserver')[0].reset();
 	}

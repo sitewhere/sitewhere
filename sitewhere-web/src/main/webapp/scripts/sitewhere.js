@@ -1,3 +1,6 @@
+/** Value that indicates a OpenStreetMap map type */
+var MAP_TYPE_OPENSTREETMAP = "openstreetmap";
+
 /** Value that indicates a MapQuest map type */
 var MAP_TYPE_MAPQUEST = "mapquest";
 
@@ -601,16 +604,15 @@ function swInitMapForSite(map, site, basicAuth, tenantAuthToken, tokenToSkip,
 			: -104.6688);
 	var zoomLevel = (lookup.zoomLevel ? lookup.zoomLevel : 10);
 	var map = map.setView([ latitude, longitude ], zoomLevel);
-	if (site.map.type === MAP_TYPE_MAPQUEST) {
-		var mapquestUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
-		var subDomains = [ 'otile1', 'otile2', 'otile3', 'otile4' ];
-		var mapquestAttrib = 'MapQuest data';
-		var mapquest = new L.TileLayer(mapquestUrl, {
-			maxZoom : 18,
-			attribution : mapquestAttrib,
-			subdomains : subDomains
+	
+	// MapQuest tiles no longer available. Use OSM.
+	if ((site.map.type == MAP_TYPE_OPENSTREETMAP)
+			|| (site.map.type == MAP_TYPE_MAPQUEST)) {
+		var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+		var osm = new L.TileLayer(osmUrl, {
+			maxZoom : 20
 		});
-		mapquest.addTo(map);
+		osm.addTo(map);
 	} else if (site.map.type == MAP_TYPE_GEOSERVER) {
 		var gsBaseUrl = (lookup.geoserverBaseUrl ? lookup.geoserverBaseUrl
 				: "http://localhost:8080/geoserver/");
