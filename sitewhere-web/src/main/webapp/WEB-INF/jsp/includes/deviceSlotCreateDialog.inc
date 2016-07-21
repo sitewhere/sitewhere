@@ -1,7 +1,8 @@
 <!-- Dialog for creating a device slot -->
 <div id="dsc-dialog" class="modal hide">
 	<div class="modal-header k-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<button type="button" class="close" data-dismiss="modal"
+			aria-hidden="true">&times;</button>
 		<h3>Create Device Slot</h3>
 	</div>
 	<div class="modal-body">
@@ -10,17 +11,22 @@
 				<li class="k-state-active">Slot Details</li>
 			</ul>
 			<div>
-				<form id="dsc-general-form" class="form-horizontal" style="padding-top: 20px;">
+				<form id="dsc-general-form" class="form-horizontal"
+					style="padding-top: 20px;">
 					<div class="control-group">
-						<label class="control-label" for="dsc-slot-name" data-i18n="public.Name"></label>
+						<label class="control-label" for="dsc-slot-name"
+							data-i18n="public.Name"></label>
 						<div class="controls">
-							<input type="text" id="dsc-slot-name" title="Slot name" class="input-xlarge">
+							<input type="text" id="dsc-slot-name" title="Slot name"
+								class="input-xlarge">
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="dsc-path" data-i18n="includes.RelativePath"></label>
+						<label class="control-label" for="dsc-path"
+							data-i18n="includes.RelativePath"></label>
 						<div class="controls">
-							<input type="text" id="dsc-path" title="Relative path" class="input-xlarge">
+							<input type="text" id="dsc-path" title="Relative path"
+								class="input-xlarge">
 						</div>
 					</div>
 				</form>
@@ -28,8 +34,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
-			id="dsc-dialog-submit" href="javascript:void(0)" class="btn btn-primary"
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal"
+			data-i18n="public.Cancel"></a> <a id="dsc-dialog-submit"
+			href="javascript:void(0)" class="btn btn-primary"
 			data-i18n="public.Create"></a>
 	</div>
 </div>
@@ -52,49 +59,53 @@
 	var dscElementSchema;
 
 	$(document).ready(
-		function() {
+			function() {
 
-			/** Create tab strip */
-			dscTabs = $("#dsc-tabs").kendoTabStrip({
-				animation : false
-			}).data("kendoTabStrip");
+				/** Create tab strip */
+				dscTabs = $("#dsc-tabs").kendoTabStrip({
+					animation : false
+				}).data("kendoTabStrip");
 
-			/** Handle create dialog submit */
-			$('#dsc-dialog-submit').click(
-				function(event) {
-					event.preventDefault();
-					if (!dscValidate()) {
-						return;
+				/** Handle create dialog submit */
+				$('#dsc-dialog-submit').click(
+						function(event) {
+							event.preventDefault();
+							if (!dscValidate()) {
+								return;
+							}
+							var name = $("#dsc-slot-name").val();
+							var path = $("#dsc-path").val();
+							var unit = swGetDeviceUnitForContext(dscContext,
+									dscElementSchema);
+							var slot = {
+								"name" : name,
+								"path" : path
+							};
+							unit.deviceSlots.push(slot);
+							var specData = {
+								"deviceElementSchema" : dscElementSchema,
+							}
+							$.putAuthJSON(
+									"${pageContext.request.contextPath}/api/specifications/"
+											+ dscSpecToken, specData,
+									"${basicAuth}",
+									"${tenant.authenticationToken}",
+									onCreateSuccess, onUpdateFail);
+						});
+
+				/** Called on successful create */
+				function onCreateSuccess() {
+					$('#dsc-dialog').modal('hide');
+					if (dscSubmitCallback != null) {
+						dscSubmitCallback();
 					}
-					var name = $("#dsc-slot-name").val();
-					var path = $("#dsc-path").val();
-					var unit = swGetDeviceUnitForContext(dscContext, dscElementSchema);
-					var slot = {
-						"name" : name,
-						"path" : path
-					};
-					unit.deviceSlots.push(slot);
-					var specData = {
-						"deviceElementSchema" : dscElementSchema,
-					}
-					$.putJSON("${pageContext.request.contextPath}/api/specifications/" + dscSpecToken
-							+ "?tenantAuthToken=${tenant.authenticationToken}", specData, onCreateSuccess,
-						onUpdateFail);
-				});
-
-			/** Called on successful create */
-			function onCreateSuccess() {
-				$('#dsc-dialog').modal('hide');
-				if (dscSubmitCallback != null) {
-					dscSubmitCallback();
 				}
-			}
 
-			/** Handle failed call to create device slot */
-			function onUpdateFail(jqXHR, textStatus, errorThrown) {
-				handleError(jqXHR, "Unable to add device slot.");
-			}
-		});
+				/** Handle failed call to create device slot */
+				function onUpdateFail(jqXHR, textStatus, errorThrown) {
+					handleError(jqXHR, "Unable to add device slot.");
+				}
+			});
 
 	/** Perform validation */
 	function dscValidate() {
@@ -108,7 +119,8 @@
 		$("#dsc-path").require();
 
 		/** Make sure path is not already used */
-		$("#dsc-path").assert(dscSlotNameValidate, "Path is already being used.");
+		$("#dsc-path").assert(dscSlotNameValidate,
+				"Path is already being used.");
 
 		var result = $.validity.end();
 		return result.valid;

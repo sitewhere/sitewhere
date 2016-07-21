@@ -75,7 +75,7 @@
 						data-i18n="specifications.detail.DeviceElementSchema"></div>
 					<div>
 						<a id="btn-add-unit" class="btn" href="javascript:void(0)"> <i
-							class="fa fa-folder-close sw-button-icon"></i> <span
+							class="fa fa-folder sw-button-icon"></i> <span
 							data-i18n="specifications.detail.AddDeviceUnit">Add Device
 								Unit</span></a> <a id="btn-add-slot" class="btn" href="javascript:void(0)">
 							<i class="fa fa-link sw-button-icon"></i> <span
@@ -445,7 +445,7 @@
 		var uhtml = "";
 		var slength = unit.deviceSlots.length;
 		uhtml += "<div class='sw-device-slot-container'>";
-		uhtml += "<div class='sw-device-slot-header'><i class='f fa-link sw-button-icon'></i> Device Slots</div>";
+		uhtml += "<div class='sw-device-slot-header'><i class='fa fa-link sw-button-icon'></i> Device Slots</div>";
 		if (slength == 0) {
 			uhtml += "<div class='sw-nodata-container'<span class='sw-nodata-message'>No Slots Currently Configured</span></div>";
 		} else {
@@ -467,12 +467,12 @@
 
 	/** Create HTML for device unit header bar */
 	function getUnitHeaderHtml(unit, relContext) {
-		var uhtml = "<div class='sw-device-unit-header'><i class='fa fa-folder-close sw-button-icon'></i>"
+		var uhtml = "<div class='sw-device-unit-header'><i class='fa fa-folder sw-button-icon'></i>"
 				+ unit.name
 				+ " (<span class='sw-device-unit-path'>"
 				+ relContext + "</span>)";
 		uhtml += "<div class='sw-device-unit-buttons'>"
-				+ "<i class='fa fa-folder-close sw-button-icon sw-action-glyph sw-normal-glyph' "
+				+ "<i class='fa fa-folder sw-button-icon sw-action-glyph sw-normal-glyph' "
 				+ "style='padding-right: 5px;' title='Add Nested Device Unit' onclick=\"createUnit('"
 				+ relContext
 				+ "');\"></i>"
