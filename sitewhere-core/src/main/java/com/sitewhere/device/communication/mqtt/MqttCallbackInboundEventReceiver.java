@@ -8,7 +8,6 @@
 package com.sitewhere.device.communication.mqtt;
 
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.fusesource.hawtbuf.Buffer;
@@ -20,11 +19,10 @@ import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.device.communication.EventProcessingLogic;
+import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that uses the Fuse MQTT callback APIs.
@@ -32,8 +30,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class MqttCallbackInboundEventReceiver extends LifecycleComponent
-		implements IInboundEventReceiver<byte[]> {
+public class MqttCallbackInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MqttInboundEventReceiver.class);
@@ -50,9 +47,6 @@ public class MqttCallbackInboundEventReceiver extends LifecycleComponent
 	/** Default subscribed topic name */
 	public static final String DEFAULT_TOPIC = "SiteWhere/input/protobuf";
 
-	/** Parent event source */
-	private IInboundEventSource<byte[]> eventSource;
-
 	/** Host name */
 	private String hostname = DEFAULT_HOSTNAME;
 
@@ -67,10 +61,6 @@ public class MqttCallbackInboundEventReceiver extends LifecycleComponent
 
 	/** Shared MQTT connection */
 	private CallbackConnection connection;
-
-	public MqttCallbackInboundEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -136,7 +126,8 @@ public class MqttCallbackInboundEventReceiver extends LifecycleComponent
 			 */
 			public void onPublish(UTF8Buffer topic, Buffer payload, Runnable ack) {
 				ack.run();
-				onEventPayloadReceived(payload.data, null);
+				EventProcessingLogic.processRawPayload(MqttCallbackInboundEventReceiver.this, payload.data,
+						null);
 			}
 
 			public void onFailure(Throwable value) {
@@ -178,18 +169,6 @@ public class MqttCallbackInboundEventReceiver extends LifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
-		getEventSource().onEncodedEventReceived(MqttCallbackInboundEventReceiver.this, payload, metadata);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#stop()
 	 */
 	@Override
@@ -218,26 +197,6 @@ public class MqttCallbackInboundEventReceiver extends LifecycleComponent
 				LOGGER.error("Error shutting down MQTT device event receiver.", e);
 			}
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	public IInboundEventSource<byte[]> getEventSource() {
-		return eventSource;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com
-	 * .sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	public void setEventSource(IInboundEventSource<byte[]> eventSource) {
-		this.eventSource = eventSource;
 	}
 
 	public String getHostname() {

@@ -5,14 +5,19 @@
 	/** Delete a specification based on its token */
 	function swSpecificationDelete(token, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("public.DeleteSpecification"), i18next("includes.commonFunctions.AYSTYWTDDSW")
-				+ " " + "token '" + token + "'?", function(result) {
-			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/specifications/" + token
-						+ "?force=true&tenantAuthToken=" + tenantAuthToken, swSpecificationDeleteSuccess,
-					swSpecificationDeleteFail);
-			}
-		});
+		swConfirm(i18next("public.DeleteSpecification"),
+				i18next("includes.commonFunctions.AYSTYWTDDSW") + " "
+						+ "token '" + token + "'?", function(result) {
+					if (result) {
+						$.deleteAuthJSON(
+								"${pageContext.request.contextPath}/api/specifications/"
+										+ token + "?force=true",
+								"${basicAuth}",
+								"${tenant.authenticationToken}",
+								swSpecificationDeleteSuccess,
+								swSpecificationDeleteFail);
+					}
+				});
 	}
 
 	/** Handle successful specification delete */
@@ -30,14 +35,18 @@
 	/** Delete a device based on its hardware id */
 	function swDeviceDelete(hardwareId, tenantAuthToken, successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.commonFunctions.DD"), i18next("includes.commonFunctions.AYSTYWTDDWD")
-				+ " id " + hardwareId + "'?", function(result) {
-			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-						+ "?force=true&tenantAuthToken=" + tenantAuthToken, swDeviceDeleteSuccess,
-					swDeviceDeleteFail);
-			}
-		});
+		swConfirm(i18next("includes.commonFunctions.DD"),
+				i18next("includes.commonFunctions.AYSTYWTDDWD") + " id "
+						+ hardwareId + "'?", function(result) {
+					if (result) {
+						$.deleteAuthJSON(
+								"${pageContext.request.contextPath}/api/devices/"
+										+ hardwareId + "?force=true",
+								"${basicAuth}",
+								"${tenant.authenticationToken}",
+								swDeviceDeleteSuccess, swDeviceDeleteFail);
+					}
+				});
 	}
 
 	/** Handle successful device delete */
@@ -53,16 +62,20 @@
 	}
 
 	/** Delete a device assignment based on its token */
-	function swAssignmentDelete(token, tenantAuthToken, successCallback) {
+	function swAssignmentDelete(token, basicAuth, tenantAuthToken,
+			successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("public.DeleteAssignment"), i18next("includes.commonFunctions.AYSYWTDTDA"),
-			function(result) {
-				if (result) {
-					$.deleteJSON("${pageContext.request.contextPath}/api/assignments/" + token
-							+ "?force=true&tenantAuthToken=" + tenantAuthToken, swAssignmentDeleteSuccess,
-						swAssignmentDeleteFail);
-				}
-			});
+		swConfirm(i18next("public.DeleteAssignment"),
+				i18next("includes.commonFunctions.AYSYWTDTDA"),
+				function(result) {
+					if (result) {
+						$.deleteAuthJSON(
+								"${pageContext.request.contextPath}/api/assignments/"
+										+ token + "?force=true", basicAuth,
+								tenantAuthToken, swAssignmentDeleteSuccess,
+								swAssignmentDeleteFail);
+					}
+				});
 	}
 
 	/** Handle successful device assignment delete */
@@ -78,16 +91,20 @@
 	}
 
 	/** Release an assignment based on its unique token */
-	function swReleaseAssignment(token, tenantAuthToken, successCallback) {
+	function swReleaseAssignment(token, basicAuth, tenantAuthToken,
+			successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.commonFunctions.RA"), i18next("includes.commonFunctions.AYSYWTRTDA"),
-			function(result) {
-				if (result) {
-					$.postJSON("${pageContext.request.contextPath}/api/assignments/" + token
-							+ "/end?tenantAuthToken=" + tenantAuthToken, null, swReleaseSuccess,
-						swReleaseFail);
-				}
-			});
+		swConfirm(i18next("includes.commonFunctions.RA"),
+				i18next("includes.commonFunctions.AYSYWTRTDA"),
+				function(result) {
+					if (result) {
+						$.postAuthJSON(
+								"${pageContext.request.contextPath}/api/assignments/"
+										+ token + "/end", null, basicAuth,
+								tenantAuthToken, swReleaseSuccess,
+								swReleaseFail);
+					}
+				});
 	}
 
 	/** Handle successful assignment release */
@@ -103,16 +120,20 @@
 	}
 
 	/** Report assignment missing based on its unique token */
-	function swAssignmentMissing(token, tenantAuthToken, successCallback) {
+	function swAssignmentMissing(token, basicAuth, tenantAuthToken,
+			successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.ReportMissing"), i18next("includes.commonFunctions.AYSYWTRTAM"),
-			function(result) {
-				if (result) {
-					$.postJSON("${pageContext.request.contextPath}/api/assignments/" + token
-							+ "/missing?tenantAuthToken=" + tenantAuthToken, null,
-						swAssignmentMissingSuccess, swAssignmentMissingFail);
-				}
-			});
+		swConfirm(i18next("includes.ReportMissing"),
+				i18next("includes.commonFunctions.AYSYWTRTAM"),
+				function(result) {
+					if (result) {
+						$.postAuthJSON(
+								"${pageContext.request.contextPath}/api/assignments/"
+										+ token + "/missing", null, basicAuth,
+								tenantAuthToken, swAssignmentMissingSuccess,
+								swAssignmentMissingFail);
+					}
+				});
 	}
 
 	/** Handle successful missing report */
@@ -128,16 +149,20 @@
 	}
 
 	/** Delete a zone based on its unique token */
-	function swZoneDelete(zoneToken, tenantAuthToken, successCallback) {
+	function swZoneDelete(zoneToken, basicAuth, tenantAuthToken,
+			successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.DeleteZone"), i18next("includes.commonFunctions.AYSYWTDTZ"), function(
-				result) {
-			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/zones/" + zoneToken
-						+ "?force=true&tenantAuthToken=" + tenantAuthToken, swZoneDeleteSuccess,
-					swZoneDeleteFail);
-			}
-		});
+		swConfirm(i18next("includes.DeleteZone"),
+				i18next("includes.commonFunctions.AYSYWTDTZ"),
+				function(result) {
+					if (result) {
+						$.deleteAuthJSON(
+								"${pageContext.request.contextPath}/api/zones/"
+										+ zoneToken + "?force=true", basicAuth,
+								tenantAuthToken, swZoneDeleteSuccess,
+								swZoneDeleteFail);
+					}
+				});
 	}
 
 	/** Handle successful zone delete */
@@ -153,16 +178,20 @@
 	}
 
 	/** Delete a device group based on its token */
-	function swDeviceGroupDelete(token, tenantAuthToken, successCallback) {
+	function swDeviceGroupDelete(token, basicAuth, tenantAuthToken,
+			successCallback) {
 		swSuccessCallback = successCallback;
-		swConfirm(i18next("includes.DeleteDeviceGroup"), i18next("includes.commonFunctions.AYSYWTDDGWT")
-				+ " '" + token + "'?", function(result) {
-			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/devicegroups/" + token
-						+ "?force=true&tenantAuthToken=" + tenantAuthToken, swDeviceGroupDeleteSuccess,
-					swDeviceGroupDeleteFail);
-			}
-		});
+		swConfirm(i18next("includes.DeleteDeviceGroup"),
+				i18next("includes.commonFunctions.AYSYWTDDGWT") + " '" + token
+						+ "'?", function(result) {
+					if (result) {
+						$.deleteAuthJSON(
+								"${pageContext.request.contextPath}/api/devicegroups/"
+										+ token + "?force=true", basicAuth,
+								tenantAuthToken, swDeviceGroupDeleteSuccess,
+								swDeviceGroupDeleteFail);
+					}
+				});
 	}
 
 	/** Handle successful device group delete */

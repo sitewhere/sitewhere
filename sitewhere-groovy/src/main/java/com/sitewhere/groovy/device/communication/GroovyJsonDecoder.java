@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sitewhere.groovy.GroovyConfiguration;
-import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
@@ -50,7 +50,7 @@ public class GroovyJsonDecoder implements IDeviceEventDecoder<JsonNode> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<IDecodedDeviceRequest<?>> decode(JsonNode payload, Map<String, String> metadata)
-			throws SiteWhereException {
+			throws EventDecodeException {
 		try {
 			Binding binding = new Binding();
 			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
@@ -61,9 +61,9 @@ public class GroovyJsonDecoder implements IDeviceEventDecoder<JsonNode> {
 			getConfiguration().getGroovyScriptEngine().run(getScriptPath(), binding);
 			return (List<IDecodedDeviceRequest<?>>) binding.getVariable(IGroovyVariables.VAR_DECODED_EVENTS);
 		} catch (ResourceException e) {
-			throw new SiteWhereException("Unable to access Groovy decoder script.", e);
+			throw new EventDecodeException("Unable to access Groovy decoder script.", e);
 		} catch (ScriptException e) {
-			throw new SiteWhereException("Unable to run Groovy decoder script.", e);
+			throw new EventDecodeException("Unable to run Groovy decoder script.", e);
 		}
 	}
 

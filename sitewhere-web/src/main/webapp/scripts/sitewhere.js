@@ -1,3 +1,6 @@
+/** Value that indicates a OpenStreetMap map type */
+var MAP_TYPE_OPENSTREETMAP = "openstreetmap";
+
 /** Value that indicates a MapQuest map type */
 var MAP_TYPE_MAPQUEST = "mapquest";
 
@@ -16,6 +19,22 @@ $.postJSON = function(url, data, onSuccess, onFail) {
 	});
 };
 
+$.postAuthJSON = function(url, data, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'POST',
+		'url' : url,
+		'contentType' : 'application/json',
+		'data' : JSON.stringify(data),
+		'dataType' : 'json',
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
+		'success' : onSuccess,
+		'error' : onFail
+	});
+};
+
 $.putJSON = function(url, data, onSuccess, onFail) {
 	return jQuery.ajax({
 		'type' : 'PUT',
@@ -23,6 +42,22 @@ $.putJSON = function(url, data, onSuccess, onFail) {
 		'contentType' : 'application/json',
 		'data' : JSON.stringify(data),
 		'dataType' : 'json',
+		'success' : onSuccess,
+		'error' : onFail
+	});
+};
+
+$.putAuthJSON = function(url, data, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'PUT',
+		'url' : url,
+		'contentType' : 'application/json',
+		'data' : JSON.stringify(data),
+		'dataType' : 'json',
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
 		'success' : onSuccess,
 		'error' : onFail
 	});
@@ -38,6 +73,21 @@ $.getJSON = function(url, onSuccess, onFail) {
 	});
 }
 
+$.getAuthJSON = function(url, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'GET',
+		'url' : url,
+		'contentType' : 'application/json',
+		'async' : false,
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
+		'success' : onSuccess,
+		'error' : onFail
+	});
+}
+
 $.deleteJSON = function(url, onSuccess, onFail) {
 	return jQuery.ajax({
 		'type' : 'DELETE',
@@ -48,11 +98,41 @@ $.deleteJSON = function(url, onSuccess, onFail) {
 	});
 }
 
+$.deleteAuthJSON = function(url, basicToken, tenantToken, onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'DELETE',
+		'url' : url,
+		'contentType' : 'application/json',
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
+		'success' : onSuccess,
+		'error' : onFail
+	});
+}
+
 $.deleteWithInputJSON = function(url, data, onSuccess, onFail) {
 	return jQuery.ajax({
 		'type' : 'DELETE',
 		'url' : url,
 		'contentType' : 'application/json',
+		'data' : JSON.stringify(data),
+		'success' : onSuccess,
+		'error' : onFail
+	});
+}
+
+$.deleteWithInputAuthJSON = function(url, data, basicToken, tenantToken,
+		onSuccess, onFail) {
+	return jQuery.ajax({
+		'type' : 'DELETE',
+		'url' : url,
+		'contentType' : 'application/json',
+		'headers' : {
+			"Authorization" : "Basic " + basicToken,
+			"X-SiteWhere-Tenant" : tenantToken
+		},
 		'data' : JSON.stringify(data),
 		'success' : onSuccess,
 		'error' : onFail
@@ -108,7 +188,8 @@ function formattedDate(date) {
 /** Format date as ISO 8601 */
 function asISO8601(date) {
 	var utc = date.getTime() + (date.getTimezoneOffset() * 60000);
-	return kendo.toString(new Date(utc), "yyyy'-'MM'-'ddTHH':'mm':'ss'.'fff'Z'");
+	return kendo
+			.toString(new Date(utc), "yyyy'-'MM'-'ddTHH':'mm':'ss'.'fff'Z'");
 }
 
 /** Formats metadata array into a comma-delimited string */
@@ -150,8 +231,10 @@ function parseSpecificationData(item) {
 function parseDeviceData(item) {
 	parseEntityData(item);
 	if (item.assignment) {
-		if (item.assignment.activeDate && typeof item.assignment.activeDate === "string") {
-			item.assignment.activeDate = kendo.parseDate(item.assignment.activeDate);
+		if (item.assignment.activeDate
+				&& typeof item.assignment.activeDate === "string") {
+			item.assignment.activeDate = kendo
+					.parseDate(item.assignment.activeDate);
 		}
 	}
 }
@@ -193,10 +276,13 @@ function parseZoneData(item) {
 /** Converts fields that need to be parsed in a batch operation */
 function parseBatchOperationData(item) {
 	parseEntityData(item);
-	if (item.processingStartedDate && typeof item.processingStartedDate === "string") {
-		item.processingStartedDate = kendo.parseDate(item.processingStartedDate);
+	if (item.processingStartedDate
+			&& typeof item.processingStartedDate === "string") {
+		item.processingStartedDate = kendo
+				.parseDate(item.processingStartedDate);
 	}
-	if (item.processingEndedDate && typeof item.processingEndedDate === "string") {
+	if (item.processingEndedDate
+			&& typeof item.processingEndedDate === "string") {
 		item.processingEndedDate = kendo.parseDate(item.processingEndedDate);
 	}
 }
@@ -293,10 +379,11 @@ function swMetadataGridOptions(datasource, title) {
 		editable : "inline",
 		edit : function(e) {
 			var commandCell = e.container.find("td:last");
-			commandCell.html('<a class="btn k-grid-update" href="javascript:void(0)">'
-					+ '<i class="icon-check sw-button-icon"></i> Update</a>'
-					+ '<a class="btn k-grid-cancel" href="javascript:void(0)" style="margin-left: 5px;">'
-					+ '<i class="icon-remove sw-button-icon"></i> Cancel</a>');
+			commandCell
+					.html('<a class="btn k-grid-update" href="javascript:void(0)">'
+							+ '<i class="icon-check sw-button-icon"></i> Update</a>'
+							+ '<a class="btn k-grid-cancel" href="javascript:void(0)" style="margin-left: 5px;">'
+							+ '<i class="icon-remove sw-button-icon"></i> Cancel</a>');
 		}
 	}
 }
@@ -340,9 +427,8 @@ function swHtmlifyCommand(command) {
 		chtml += "<div class='sw-spec-command-desc'>";
 		chtml += "/** " + command.description + " **/</div>"
 	}
-	chtml +=
-			"<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '" + command.token + "')\">"
-					+ command.name + "</span>(";
+	chtml += "<span class=\"sw-spec-command-name\" onclick=\"onEditCommand(event, '"
+			+ command.token + "')\">" + command.name + "</span>(";
 	for (var i = 0, param; param = command.parameters[i]; i++) {
 		if (param.required) {
 			chtml += "<strong>"
@@ -350,8 +436,10 @@ function swHtmlifyCommand(command) {
 		if (i > 0) {
 			chtml += ", ";
 		}
-		chtml += " <span class='sw-spec-command-param-name'>" + param.name + "</span>";
-		chtml += ":<span class='sw-spec-command-param-type'>" + param.type + "</span> ";
+		chtml += " <span class='sw-spec-command-param-name'>" + param.name
+				+ "</span>";
+		chtml += ":<span class='sw-spec-command-param-type'>" + param.type
+				+ "</span> ";
 		if (param.required) {
 			chtml += "</strong>"
 		}
@@ -367,7 +455,8 @@ function swHtmlifyCommandWithValues(command, values) {
 		chtml += "<div class='sw-spec-command-desc'>";
 		chtml += "/** " + command.description + " **/</div>"
 	}
-	chtml += "<span class=\"sw-spec-command-name\">" + command.name + "</span>(";
+	chtml += "<span class=\"sw-spec-command-name\">" + command.name
+			+ "</span>(";
 	for (var i = 0, param; param = command.parameters[i]; i++) {
 		if (param.required) {
 			chtml += "<strong>"
@@ -375,8 +464,10 @@ function swHtmlifyCommandWithValues(command, values) {
 		if (i > 0) {
 			chtml += ", ";
 		}
-		chtml += " <span class='sw-spec-command-param-name'>" + param.name + "</span>";
-		chtml += ":<span class='sw-spec-command-param-type'>" + values[param.name] + "</span> ";
+		chtml += " <span class='sw-spec-command-param-name'>" + param.name
+				+ "</span>";
+		chtml += ":<span class='sw-spec-command-param-type'>"
+				+ values[param.name] + "</span> ";
 		if (param.required) {
 			chtml += "</strong>"
 		}
@@ -505,27 +596,29 @@ function swRemoveDeviceSlotForUnit(unit, slotPath) {
 
 /** Initializes a map based on site map metadata */
 /** TODO: This should be replaced by the sitewhere Leaflet library!! */
-function swInitMapForSite(map, site, tenantAuthToken, tokenToSkip, onLoaded) {
+function swInitMapForSite(map, site, basicAuth, tenantAuthToken, tokenToSkip,
+		onLoaded) {
 	var lookup = site.map.metadata;
 	var latitude = (lookup.centerLatitude ? lookup.centerLatitude : 39.9853);
-	var longitude = (lookup.centerLongitude ? lookup.centerLongitude : -104.6688);
+	var longitude = (lookup.centerLongitude ? lookup.centerLongitude
+			: -104.6688);
 	var zoomLevel = (lookup.zoomLevel ? lookup.zoomLevel : 10);
 	var map = map.setView([ latitude, longitude ], zoomLevel);
-	if (site.map.type === MAP_TYPE_MAPQUEST) {
-		var mapquestUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
-		var subDomains = [ 'otile1', 'otile2', 'otile3', 'otile4' ];
-		var mapquestAttrib = 'MapQuest data';
-		var mapquest = new L.TileLayer(mapquestUrl, {
-			maxZoom : 18,
-			attribution : mapquestAttrib,
-			subdomains : subDomains
+	
+	// MapQuest tiles no longer available. Use OSM.
+	if ((site.map.type == MAP_TYPE_OPENSTREETMAP)
+			|| (site.map.type == MAP_TYPE_MAPQUEST)) {
+		var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+		var osm = new L.TileLayer(osmUrl, {
+			maxZoom : 20
 		});
-		mapquest.addTo(map);
+		osm.addTo(map);
 	} else if (site.map.type == MAP_TYPE_GEOSERVER) {
-		var gsBaseUrl =
-				(lookup.geoserverBaseUrl ? lookup.geoserverBaseUrl : "http://localhost:8080/geoserver/");
+		var gsBaseUrl = (lookup.geoserverBaseUrl ? lookup.geoserverBaseUrl
+				: "http://localhost:8080/geoserver/");
 		var gsRelativeUrl = "geoserver/gwc/service/gmaps?layers=";
-		var gsLayerName = (lookup.geoserverLayerName ? lookup.geoserverLayerName : "tiger:tiger_roads");
+		var gsLayerName = (lookup.geoserverLayerName ? lookup.geoserverLayerName
+				: "tiger:tiger_roads");
 		var gsParams = "&zoom={z}&x={x}&y={y}&format=image/png";
 		var gsUrl = gsBaseUrl + gsRelativeUrl + gsLayerName + gsParams;
 		var geoserver = new L.TileLayer(gsUrl, {
@@ -537,12 +630,13 @@ function swInitMapForSite(map, site, tenantAuthToken, tokenToSkip, onLoaded) {
 	if (site.token) {
 		var featureGroup = new L.FeatureGroup();
 		map.addLayer(featureGroup);
-		$.getJSON("/sitewhere/api/sites/" + site.token + "/zones?tenantAuthToken=" + tenantAuthToken,
-			function(zones) {
-				swAddZonesToFeatureGroup(featureGroup, zones, tokenToSkip, onLoaded)
-			}, function(jqXHR, textStatus, errorThrown) {
-				handleError(jqXHR, "Unable to load zone data.");
-			});
+		$.getAuthJSON("/sitewhere/api/sites/" + site.token + "/zones",
+				basicAuth, tenantAuthToken, function(zones) {
+					swAddZonesToFeatureGroup(featureGroup, zones, tokenToSkip,
+							onLoaded)
+				}, function(jqXHR, textStatus, errorThrown) {
+					handleError(jqXHR, "Unable to load zone data.");
+				});
 	}
 	return map;
 }

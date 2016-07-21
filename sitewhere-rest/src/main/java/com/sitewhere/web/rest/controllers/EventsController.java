@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,6 +40,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/events")
 @Api(value = "events", description = "Operations related to SiteWhere device events.")
 @DocumentedController(name = "Events")
@@ -66,8 +68,8 @@ public class EventsController extends RestController {
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getEventById", LOGGER);
 		try {
-			return SiteWhere.getServer().getDeviceEventManagement(getTenant(servletRequest)).getDeviceEventById(
-					eventId);
+			return SiteWhere.getServer().getDeviceEventManagement(
+					getTenant(servletRequest)).getDeviceEventById(eventId);
 		} finally {
 			Tracer.stop(LOGGER);
 		}

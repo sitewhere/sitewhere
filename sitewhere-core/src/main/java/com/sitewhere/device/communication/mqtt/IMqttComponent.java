@@ -7,12 +7,14 @@
  */
 package com.sitewhere.device.communication.mqtt;
 
+import com.sitewhere.spi.common.IInternetConnected;
+
 /**
  * Allows MQTT settings to be configured consistently across components.
  * 
  * @author Derek
  */
-public interface IMqttComponent {
+public interface IMqttComponent extends IInternetConnected {
 
 	/**
 	 * Get protocol used to access the broker.
@@ -20,20 +22,6 @@ public interface IMqttComponent {
 	 * @return
 	 */
 	public String getProtocol();
-
-	/**
-	 * Get broker hostname.
-	 * 
-	 * @return
-	 */
-	public String getHostname();
-
-	/**
-	 * Get broker port.
-	 * 
-	 * @return
-	 */
-	public int getPort();
 
 	/**
 	 * Get broker username.

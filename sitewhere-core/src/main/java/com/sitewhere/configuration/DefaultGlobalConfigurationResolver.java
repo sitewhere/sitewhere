@@ -33,15 +33,22 @@ public class DefaultGlobalConfigurationResolver extends FileSystemGlobalConfigur
 	public File getGlobalConfigurationFolder() throws SiteWhereException {
 		String sitewhere = System.getProperty(SITEWHERE_HOME);
 		if (sitewhere == null) {
-			throw new SiteWhereException("SITEWHERE_HOME not set.");
+			// Support fallback environment variable name.
+			sitewhere = System.getProperty("SITEWHERE_HOME");
+			if (sitewhere == null) {
+				throw new SiteWhereException(
+						"SiteWhere home environment variable (" + SITEWHERE_HOME + ") not set.");
+			}
 		}
 		File swFolder = new File(sitewhere);
 		if (!swFolder.exists()) {
-			throw new SiteWhereException("SITEWHERE_HOME folder does not exist.");
+			throw new SiteWhereException(
+					"SiteWhere home folder does not exist. Looking in: " + swFolder.getAbsolutePath());
 		}
 		File confDir = new File(swFolder, "conf");
 		if (!confDir.exists()) {
-			throw new SiteWhereException("SITEWHERE_HOME conf folder does not exist.");
+			throw new SiteWhereException("'SiteWhere configuration folder does not exist. Looking in: "
+					+ confDir.getAbsolutePath());
 		}
 		return confDir;
 	}

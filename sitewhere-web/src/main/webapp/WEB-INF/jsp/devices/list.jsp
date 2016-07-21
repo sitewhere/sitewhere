@@ -103,7 +103,7 @@
 		var event = e || window.event;
 		event.stopPropagation();
 		$("#view-device-detail").attr("action",
-			"${pageContext.request.contextPath}/admin/devices/" + hardwareId + ".html");
+			"${pageContext.request.contextPath}/admin/${tenant.id}/devices/" + hardwareId + ".html");
 		$('#view-device-detail').submit();
 	}
 
@@ -298,7 +298,11 @@
 		devicesDS = new kendo.data.DataSource({
 			transport : {
 				read : {
-					url : dsUrl + "&tenantAuthToken=${tenant.authenticationToken}",
+					url : dsUrl,
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
 					dataType : "json",
 				}
 			},

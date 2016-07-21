@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,6 +50,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/search")
 @Api(value = "search", description = "Operations related to external search providers.")
 @DocumentedController(name = "External Search")
@@ -61,13 +63,15 @@ public class SearchController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "List available search providers")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Search.ListSearchProvidersResponse.class, description = "listSearchProvidersResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Search.ListSearchProvidersResponse.class, description = "listSearchProvidersResponse.md") })
 	public List<SearchProvider> listSearchProviders(HttpServletRequest servletRequest)
 			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listSearchProviders", LOGGER);
 		try {
 			List<ISearchProvider> providers =
-					SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest)).getSearchProviders();
+					SiteWhere.getServer().getSearchProviderManager(
+							getTenant(servletRequest)).getSearchProviders();
 			List<SearchProvider> retval = new ArrayList<SearchProvider>();
 			for (ISearchProvider provider : providers) {
 				retval.add(SearchProvider.copy(provider));
@@ -82,15 +86,16 @@ public class SearchController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Search for events in provider")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Search.ListExternalEventsResponse.class, description = "searchDeviceEventsResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Search.ListExternalEventsResponse.class, description = "searchDeviceEventsResponse.md") })
 	public List<IDeviceEvent> searchDeviceEvents(
 			@ApiParam(value = "Search provider id", required = true) @PathVariable String providerId,
 			HttpServletRequest request, HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "searchDeviceEvents", LOGGER);
 		try {
 			ISearchProvider provider =
-					SiteWhere.getServer().getSearchProviderManager(getTenant(servletRequest)).getSearchProvider(
-							providerId);
+					SiteWhere.getServer().getSearchProviderManager(
+							getTenant(servletRequest)).getSearchProvider(providerId);
 			if (provider == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSearchProviderId, ErrorLevel.ERROR,
 						HttpServletResponse.SC_NOT_FOUND);

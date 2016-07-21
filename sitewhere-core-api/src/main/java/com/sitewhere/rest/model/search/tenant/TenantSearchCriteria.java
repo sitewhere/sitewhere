@@ -11,11 +11,15 @@ import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.spi.search.user.ITenantSearchCriteria;
 
 /**
- * Default implementation of {@link ITenantSearchCriteria} used by REST services.
+ * Default implementation of {@link ITenantSearchCriteria} used by REST
+ * services.
  * 
  * @author Derek
  */
 public class TenantSearchCriteria extends SearchCriteria implements ITenantSearchCriteria {
+
+	/** Search for text in tenant id or name */
+	private String textSearch;
 
 	/** User id */
 	private String userId;
@@ -25,6 +29,19 @@ public class TenantSearchCriteria extends SearchCriteria implements ITenantSearc
 
 	public TenantSearchCriteria(int pageNumber, int pageSize) {
 		super(pageNumber, pageSize);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.search.user.ITenantSearchCriteria#getTextSearch()
+	 */
+	public String getTextSearch() {
+		return textSearch;
+	}
+
+	public void setTextSearch(String textSearch) {
+		this.textSearch = textSearch;
 	}
 
 	/*
@@ -43,7 +60,9 @@ public class TenantSearchCriteria extends SearchCriteria implements ITenantSearc
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.search.user.ITenantSearchCriteria#isIncludeRuntimeInfo()
+	 * @see
+	 * com.sitewhere.spi.search.user.ITenantSearchCriteria#isIncludeRuntimeInfo(
+	 * )
 	 */
 	public boolean isIncludeRuntimeInfo() {
 		return includeRuntimeInfo;

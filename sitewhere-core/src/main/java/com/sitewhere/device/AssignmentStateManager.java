@@ -40,8 +40,8 @@ import com.sitewhere.spi.device.event.state.StateChangeType;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Manages concurrent updates to assignment state to prevent thrashing as the result of
- * high event throughput with state updates.
+ * Manages concurrent updates to assignment state to prevent thrashing as the
+ * result of high event throughput with state updates.
  * 
  * @author Derek
  */
@@ -103,8 +103,9 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IAssignmentStateManager#addLocation(java.lang.String,
-	 * com.sitewhere.spi.device.event.IDeviceLocation)
+	 * @see
+	 * com.sitewhere.spi.device.IAssignmentStateManager#addLocation(java.lang.
+	 * String, com.sitewhere.spi.device.event.IDeviceLocation)
 	 */
 	public void addLocation(String token, IDeviceLocation location) throws SiteWhereException {
 		List<IDeviceEvent> events = getEventsFor(token);
@@ -115,8 +116,8 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IAssignmentStateManager#addMeasurements(java.lang.String,
-	 * com.sitewhere.spi.device.event.IDeviceMeasurements)
+	 * com.sitewhere.spi.device.IAssignmentStateManager#addMeasurements(java.
+	 * lang.String, com.sitewhere.spi.device.event.IDeviceMeasurements)
 	 */
 	public void addMeasurements(String token, IDeviceMeasurements measurements) throws SiteWhereException {
 		List<IDeviceEvent> events = getEventsFor(token);
@@ -126,8 +127,8 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.IAssignmentStateManager#addAlert(java.lang.String,
-	 * com.sitewhere.spi.device.event.IDeviceAlert)
+	 * @see com.sitewhere.spi.device.IAssignmentStateManager#addAlert(java.lang.
+	 * String, com.sitewhere.spi.device.event.IDeviceAlert)
 	 */
 	public void addAlert(String token, IDeviceAlert alert) throws SiteWhereException {
 		List<IDeviceEvent> events = getEventsFor(token);
@@ -138,8 +139,8 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.IAssignmentStateManager#addStateChange(java.lang.String,
-	 * com.sitewhere.spi.device.event.IDeviceStateChange)
+	 * com.sitewhere.spi.device.IAssignmentStateManager#addStateChange(java.lang
+	 * .String, com.sitewhere.spi.device.event.IDeviceStateChange)
 	 */
 	@Override
 	public void addStateChange(String token, IDeviceStateChange state) throws SiteWhereException {
@@ -187,15 +188,15 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 				for (String key : keys) {
 					try {
 						IDeviceAssignment assignment = getDeviceManagement().getDeviceAssignmentByToken(key);
-						DeviceAssignmentState state =
-								(assignment.getState() != null)
-										? DeviceAssignmentState.copy(assignment.getState())
-										: new DeviceAssignmentState();
+						DeviceAssignmentState state = (assignment.getState() != null)
+								? DeviceAssignmentState.copy(assignment.getState()) : new DeviceAssignmentState();
 						List<IDeviceEvent> events = working.get(key);
 						mergeEvents(state, events);
 						getDeviceManagement().updateDeviceAssignmentState(key, state);
 					} catch (SiteWhereException e) {
-						LOGGER.warn("Unable to update device assignment state.", e);
+						LOGGER.error("Unable to update device assignment state.", e);
+					} catch (Throwable t) {
+						LOGGER.error("Unhandled exeception while updating assignment state.", t);
 					}
 				}
 
@@ -218,8 +219,7 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 		 * @param events
 		 * @throws SiteWhereException
 		 */
-		protected void mergeEvents(DeviceAssignmentState state, List<IDeviceEvent> events)
-				throws SiteWhereException {
+		protected void mergeEvents(DeviceAssignmentState state, List<IDeviceEvent> events) throws SiteWhereException {
 			for (IDeviceEvent event : events) {
 				switch (event.getEventType()) {
 				case Location: {
@@ -306,8 +306,7 @@ public class AssignmentStateManager extends TenantLifecycleComponent implements 
 		 * @param alert
 		 * @throws SiteWhereException
 		 */
-		private void updateWithAlert(DeviceAssignmentState state, IDeviceAlert alert)
-				throws SiteWhereException {
+		private void updateWithAlert(DeviceAssignmentState state, IDeviceAlert alert) throws SiteWhereException {
 			state.setLastInteractionDate(new Date());
 
 			Map<String, IDeviceAlert> alertsById = new HashMap<String, IDeviceAlert>();

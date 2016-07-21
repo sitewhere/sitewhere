@@ -8,6 +8,7 @@
 package com.sitewhere.spi.device.communication;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
@@ -19,24 +20,25 @@ import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 public interface IRegistrationManager extends ITenantLifecycleComponent {
 
 	/**
-	 * Indicates whether the registration manager allows new devices to be created as a
-	 * byproduct of the registration process.
+	 * Indicates whether the registration manager allows new devices to be
+	 * created as a byproduct of the registration process.
 	 * 
 	 * @return
 	 */
 	public boolean isAllowNewDevices();
 
 	/**
-	 * Indicates whether all new regsitrations can be automatically assigned to a given
-	 * site. If not, the site token must be passed as part of the registration payload.
+	 * Indicates whether all new regsitrations can be automatically assigned to
+	 * a given site. If not, the site token must be passed as part of the
+	 * registration payload.
 	 * 
 	 * @return
 	 */
 	public boolean isAutoAssignSite();
 
 	/**
-	 * Gets the token used for automatic site assignment. This only applies when 'auto
-	 * assign site' is set to true.
+	 * Gets the token used for automatic site assignment. This only applies when
+	 * 'auto assign site' is set to true.
 	 * 
 	 * @return
 	 */
@@ -49,4 +51,13 @@ public interface IRegistrationManager extends ITenantLifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException;
+
+	/**
+	 * Handle mapping of a device to a path on a composite device.
+	 * 
+	 * @param hardwareId
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void handleDeviceMapping(String hardwareId, IDeviceMappingCreateRequest request) throws SiteWhereException;
 }

@@ -9,14 +9,15 @@ package com.sitewhere.spi.device.communication;
 
 import java.util.Map;
 
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
  * Handles receipt of device event information from an underlying transport.
  * 
  * @author Derek
  */
-public interface IInboundEventReceiver<T> extends ILifecycleComponent {
+public interface IInboundEventReceiver<T> extends ITenantLifecycleComponent {
 
 	/**
 	 * Get name shown in user interfaces when referencing receiver.
@@ -30,8 +31,9 @@ public interface IInboundEventReceiver<T> extends ILifecycleComponent {
 	 * 
 	 * @param payload
 	 * @param metadata
+	 * @throws SiteWhereException
 	 */
-	public void onEventPayloadReceived(T payload, Map<String, String> metadata);
+	public void onEventPayloadReceived(T payload, Map<String, String> metadata) throws EventDecodeException;
 
 	/**
 	 * Set the parent event source that will process events.

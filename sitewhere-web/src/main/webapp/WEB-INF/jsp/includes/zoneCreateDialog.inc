@@ -135,13 +135,13 @@
 						"metadata" : swMetadataAsLookup(zcMetadataDS.data()),
 					}
 					if (zcZone) {
-						$.putJSON("${pageContext.request.contextPath}/api/zones/" + zcZone.token
-								+ "?tenantAuthToken=${tenant.authenticationToken}", zoneData,
-							onCreateSuccess, onCreateFail);
+						$.putAuthJSON("${pageContext.request.contextPath}/api/zones/" + zcZone.token,
+							zoneData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
+							onCreateFail);
 					} else {
-						$.postJSON("${pageContext.request.contextPath}/api/sites/" + zcSite.token
-								+ "/zones?tenantAuthToken=${tenant.authenticationToken}", zoneData,
-							onCreateSuccess, onCreateFail);
+						$.postAuthJSON("${pageContext.request.contextPath}/api/sites/" + zcSite.token + "/zones",
+							zoneData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
+							onCreateFail);
 					}
 				});
 
@@ -241,7 +241,7 @@
 			zcNewZoneLayer = e.layer;
 			zcMap.addLayer(zcNewZoneLayer);
 		});
-		swInitMapForSite(zcMap, zcSite, '${tenant.authenticationToken}');
+		swInitMapForSite(zcMap, zcSite, '${basicAuth}', '${tenant.authenticationToken}');
 
 		// Function called on submit.
 		zcSubmitCallback = callback;
@@ -266,13 +266,13 @@
 			zcMap.remove();
 		}
 		zcMap = L.map('zc-map');
-		swInitMapForSite(zcMap, zcSite, '${tenant.authenticationToken}', zoneToken);
+		swInitMapForSite(zcMap, zcSite, '${basicAuth}', '${tenant.authenticationToken}', zoneToken);
 
 		// Function called on submit.
 		zcSubmitCallback = callback;
 
 		// Asyncronously load zones and add layer to map.
-		$.getJSON("/sitewhere/api/zones/" + zoneToken + "?tenantAuthToken=${tenant.authenticationToken}",
+		$.getAuthJSON("/sitewhere/api/zones/" + zoneToken, "${basicAuth}", "${tenant.authenticationToken}",
 			zuOpenGetSuccess, function(jqXHR, textStatus, errorThrown) {
 				handleError(jqXHR, "Unable to get zone for update.");
 			});

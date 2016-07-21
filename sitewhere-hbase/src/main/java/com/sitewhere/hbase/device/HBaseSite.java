@@ -38,10 +38,10 @@ import com.sitewhere.rest.model.device.DeviceAssignmentState;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
 import com.sitewhere.rest.model.search.Pager;
+import com.sitewhere.rest.model.search.SearchCriteria;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
-import com.sitewhere.spi.device.DeviceAssignmentStatus;
 import com.sitewhere.spi.device.IDeviceAssignment;
 import com.sitewhere.spi.device.ISite;
 import com.sitewhere.spi.device.IZone;
@@ -50,6 +50,8 @@ import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
+import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
+import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.server.debug.TracerCategory;
 
 /**
@@ -85,8 +87,7 @@ public class HBaseSite {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static ISite createSite(IHBaseContext context, ISiteCreateRequest request)
-			throws SiteWhereException {
+	public static ISite createSite(IHBaseContext context, ISiteCreateRequest request) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "createSite (HBase)", LOGGER);
 		try {
 			// Use common logic so all backend implementations work the same.
@@ -189,7 +190,8 @@ public class HBaseSite {
 				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
 			}
 
-			// Use common update logic so that backend implemetations act the same way.
+			// Use common update logic so that backend implemetations act the
+			// same way.
 			SiteWherePersistence.siteUpdateLogic(request, updated);
 
 			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(token);
@@ -229,9 +231,8 @@ public class HBaseSite {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "listSites (HBase)", LOGGER);
 		try {
 			RegexStringComparator comparator = new RegexStringComparator(REGEX_SITE);
-			Pager<ISite> pager =
-					getFilteredSiteRows(context, false, criteria, comparator, null, null, Site.class,
-							ISite.class);
+			Pager<ISite> pager = getFilteredSiteRows(context, false, criteria, comparator, null, null, Site.class,
+					ISite.class);
 			return new SearchResults<ISite>(pager.getResults());
 		} finally {
 			Tracer.pop(LOGGER);
@@ -247,10 +248,10 @@ public class HBaseSite {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context,
-			String siteToken, ISearchCriteria criteria) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall,
-				"listDeviceAssignmentsForSite (HBase) " + siteToken, LOGGER);
+	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForSite(IHBaseContext context, String siteToken,
+			IAssignmentSearchCriteria criteria) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForSite (HBase) " + siteToken,
+				LOGGER);
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
@@ -270,27 +271,26 @@ public class HBaseSite {
 
 			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
 			for (Result result : scanner) {
-				// TODO: This is inefficient. There should be a filter on the scanner
-				// instead.
+				// TODO: This is inefficient. There should be a filter on the
+				// scanner instead.
 				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
 					continue;
 				}
 				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
-				byte[] state =
-						result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
+				byte[] state = result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
 
 				if ((type != null) && (payload != null)) {
-					DeviceAssignment assignment =
-							(DeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
-									type).decode(payload, DeviceAssignment.class);
+					DeviceAssignment assignment = (DeviceAssignment) PayloadMarshalerResolver.getInstance()
+							.getMarshaler(type).decode(payload, DeviceAssignment.class);
 					if (state != null) {
-						DeviceAssignmentState assnState =
-								PayloadMarshalerResolver.getInstance().getMarshaler(
-										type).decodeDeviceAssignmentState(state);
+						DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
+								.decodeDeviceAssignmentState(state);
 						assignment.setState(assnState);
 					}
-					pager.process(assignment);
+					if ((criteria.getStatus() == null) || (criteria.getStatus().equals(assignment.getStatus()))) {
+						pager.process(assignment);
+					}
 				}
 			}
 			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
@@ -306,9 +306,9 @@ public class HBaseSite {
 	}
 
 	/**
-	 * List device assignments for a site that have state attached and have a last
-	 * interaction date within a given date range. TODO: This is not efficient since it
-	 * iterates through all assignments for a site.
+	 * List device assignments for a site that have state attached and have a
+	 * last interaction date within a given date range. TODO: This is not
+	 * efficient since it iterates through all assignments for a site.
 	 * 
 	 * @param context
 	 * @param siteToken
@@ -316,9 +316,8 @@ public class HBaseSite {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsWithLastInteraction(
-			IHBaseContext context, String siteToken, IDateRangeSearchCriteria criteria)
-					throws SiteWhereException {
+	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsWithLastInteraction(IHBaseContext context,
+			String siteToken, IDateRangeSearchCriteria criteria) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall,
 				"listDeviceAssignmentsWithLastInteraction (HBase) " + siteToken, LOGGER);
 		HTableInterface sites = null;
@@ -340,24 +339,21 @@ public class HBaseSite {
 
 			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
 			for (Result result : scanner) {
-				// TODO: This is inefficient. There should be a filter on the scanner
-				// instead.
+				// TODO: This is inefficient. There should be a filter on the
+				// scanner instead.
 				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
 					continue;
 				}
 				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
-				byte[] state =
-						result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
+				byte[] state = result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
 
 				if ((type != null) && (payload != null)) {
-					DeviceAssignment assignment =
-							(DeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
-									type).decode(payload, DeviceAssignment.class);
+					DeviceAssignment assignment = (DeviceAssignment) PayloadMarshalerResolver.getInstance()
+							.getMarshaler(type).decode(payload, DeviceAssignment.class);
 					if (state != null) {
-						DeviceAssignmentState assnState =
-								PayloadMarshalerResolver.getInstance().getMarshaler(
-										type).decodeDeviceAssignmentState(state);
+						DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
+								.decodeDeviceAssignmentState(state);
 						assignment.setState(assnState);
 						if (assignment.getState().getLastInteractionDate() != null) {
 							Date last = assignment.getState().getLastInteractionDate();
@@ -367,6 +363,73 @@ public class HBaseSite {
 							if ((criteria.getEndDate() != null) && (criteria.getEndDate().before(last))) {
 								continue;
 							}
+							pager.process(assignment);
+						}
+					}
+				}
+			}
+			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
+		} catch (IOException e) {
+			throw new SiteWhereException("Error scanning site rows.", e);
+		} finally {
+			if (scanner != null) {
+				scanner.close();
+			}
+			HBaseUtils.closeCleanly(sites);
+			Tracer.pop(LOGGER);
+		}
+	}
+
+	/**
+	 * List all device assignments for a site that have been marked as missing.
+	 * 
+	 * @param context
+	 * @param siteToken
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public static SearchResults<IDeviceAssignment> listMissingDeviceAssignments(IHBaseContext context, String siteToken,
+			ISearchCriteria criteria) throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "listMissingDeviceAssignments (HBase) " + siteToken,
+				LOGGER);
+		HTableInterface sites = null;
+		ResultScanner scanner = null;
+		try {
+			Long siteId = context.getDeviceIdManager().getSiteKeys().getValue(siteToken);
+			if (siteId == null) {
+				throw new SiteWhereSystemException(ErrorCode.InvalidSiteToken, ErrorLevel.ERROR);
+			}
+			byte[] assnPrefix = getAssignmentRowKey(siteId);
+			byte[] after = getAfterAssignmentRowKey(siteId);
+
+			sites = getSitesTableInterface(context);
+
+			Scan scan = new Scan();
+			scan.setStartRow(assnPrefix);
+			scan.setStopRow(after);
+			scanner = sites.getScanner(scan);
+
+			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
+			for (Result result : scanner) {
+				// TODO: This is inefficient. There should be a filter on the
+				// scanner
+				// instead.
+				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
+					continue;
+				}
+				byte[] type = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD_TYPE);
+				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
+				byte[] state = result.getValue(ISiteWhereHBase.FAMILY_ID, HBaseDeviceAssignment.ASSIGNMENT_STATE);
+
+				if ((type != null) && (payload != null)) {
+					DeviceAssignment assignment = (DeviceAssignment) PayloadMarshalerResolver.getInstance()
+							.getMarshaler(type).decode(payload, DeviceAssignment.class);
+					if (state != null) {
+						DeviceAssignmentState assnState = PayloadMarshalerResolver.getInstance().getMarshaler(type)
+								.decodeDeviceAssignmentState(state);
+						assignment.setState(assnState);
+						if (assignment.getState().getPresenceMissingDate() != null) {
 							pager.process(assignment);
 						}
 					}
@@ -396,10 +459,36 @@ public class HBaseSite {
 	 * @throws SiteWhereException
 	 */
 	public static SearchResults<IDeviceAssignment> listDeviceAssignmentsForAsset(IHBaseContext context,
-			String siteToken, String assetModuleId, String assetId, DeviceAssignmentStatus status,
-			ISearchCriteria criteria) throws SiteWhereException {
-		Tracer.push(TracerCategory.DeviceManagementApiCall,
-				"listDeviceAssignmentsForAsset (HBase) " + siteToken, LOGGER);
+			String assetModuleId, String assetId, IAssignmentsForAssetSearchCriteria criteria)
+			throws SiteWhereException {
+		Tracer.push(TracerCategory.DeviceManagementApiCall, "listDeviceAssignmentsForAsset (HBase) ", LOGGER);
+		Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
+		if (criteria.getSiteToken() != null) {
+			locateDeviceAssignmentsForAsset(context, pager, criteria.getSiteToken(), assetModuleId, assetId, criteria);
+		} else {
+			SearchResults<ISite> sites = HBaseSite.listSites(context, SearchCriteria.ALL);
+			for (ISite site : sites.getResults()) {
+				locateDeviceAssignmentsForAsset(context, pager, site.getToken(), assetModuleId, assetId, criteria);
+			}
+		}
+		return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
+	}
+
+	/**
+	 * Find assignments using the given asset type and add matching items to the
+	 * given pager.
+	 * 
+	 * @param context
+	 * @param pager
+	 * @param siteToken
+	 * @param assetModuleId
+	 * @param assetId
+	 * @param criteria
+	 * @throws SiteWhereException
+	 */
+	public static void locateDeviceAssignmentsForAsset(IHBaseContext context, Pager<IDeviceAssignment> pager,
+			String siteToken, String assetModuleId, String assetId, IAssignmentsForAssetSearchCriteria criteria)
+			throws SiteWhereException {
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
@@ -417,10 +506,9 @@ public class HBaseSite {
 			scan.setStopRow(after);
 			scanner = sites.getScanner(scan);
 
-			Pager<IDeviceAssignment> pager = new Pager<IDeviceAssignment>(criteria);
 			for (Result result : scanner) {
-				// TODO: This is inefficient. There should be a filter on the scanner
-				// instead.
+				// TODO: This is inefficient. There should be a filter on the
+				// scanner instead.
 				if (result.getRow()[7] != DeviceAssignmentRecordType.DeviceAssignment.getType()) {
 					continue;
 				}
@@ -428,18 +516,17 @@ public class HBaseSite {
 				byte[] payload = result.getValue(ISiteWhereHBase.FAMILY_ID, ISiteWhereHBase.PAYLOAD);
 
 				if ((payloadType != null) && (payload != null)) {
-					IDeviceAssignment assignment =
-							(IDeviceAssignment) PayloadMarshalerResolver.getInstance().getMarshaler(
-									payloadType).decode(payload, DeviceAssignment.class);
+					IDeviceAssignment assignment = (IDeviceAssignment) PayloadMarshalerResolver.getInstance()
+							.getMarshaler(payloadType).decode(payload, DeviceAssignment.class);
 					boolean sameAssetModule = assetModuleId.equals(assignment.getAssetModuleId());
 					boolean sameAssetId = assetId.equals(assignment.getAssetId());
-					boolean matchingStatus = (status == null) || (status == assignment.getStatus());
+					boolean matchingStatus = (criteria.getStatus() == null)
+							|| (criteria.getStatus() == assignment.getStatus());
 					if (sameAssetModule && sameAssetId && matchingStatus) {
 						pager.process(assignment);
 					}
 				}
 			}
-			return new SearchResults<IDeviceAssignment>(pager.getResults(), pager.getTotal());
 		} catch (IOException e) {
 			throw new SiteWhereException("Error scanning site rows.", e);
 		} finally {
@@ -471,9 +558,8 @@ public class HBaseSite {
 			byte[] zonePrefix = getZoneRowKey(siteId);
 			byte[] after = getAssignmentRowKey(siteId);
 			BinaryPrefixComparator comparator = new BinaryPrefixComparator(zonePrefix);
-			Pager<IZone> pager =
-					getFilteredSiteRows(context, false, criteria, comparator, zonePrefix, after, Zone.class,
-							IZone.class);
+			Pager<IZone> pager = getFilteredSiteRows(context, false, criteria, comparator, zonePrefix, after,
+					Zone.class, IZone.class);
 			return new SearchResults<IZone>(pager.getResults());
 		} finally {
 			Tracer.pop(LOGGER);
@@ -495,8 +581,8 @@ public class HBaseSite {
 	 */
 	@SuppressWarnings("unchecked")
 	protected static <T, I> Pager<I> getFilteredSiteRows(IHBaseContext context, boolean includeDeleted,
-			ISearchCriteria criteria, ByteArrayComparable comparator, byte[] startRow, byte[] stopRow,
-			Class<T> type, Class<I> iface) throws SiteWhereException {
+			ISearchCriteria criteria, ByteArrayComparable comparator, byte[] startRow, byte[] stopRow, Class<T> type,
+			Class<I> iface) throws SiteWhereException {
 		HTableInterface sites = null;
 		ResultScanner scanner = null;
 		try {
@@ -524,8 +610,8 @@ public class HBaseSite {
 				}
 
 				if ((shouldAdd) && (payloadType != null) && (payload != null)) {
-					pager.process((I) PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(
-							payload, type));
+					pager.process(
+							(I) PayloadMarshalerResolver.getInstance().getMarshaler(payloadType).decode(payload, type));
 				}
 			}
 			return pager;
@@ -548,8 +634,7 @@ public class HBaseSite {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Site deleteSite(IHBaseContext context, String token, boolean force)
-			throws SiteWhereException {
+	public static Site deleteSite(IHBaseContext context, String token, boolean force) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "deleteSite (HBase) " + token, LOGGER);
 		try {
 			Site existing = getSiteByToken(context, token);
@@ -602,7 +687,8 @@ public class HBaseSite {
 	}
 
 	/**
-	 * Allocate the next zone id and return the new value. (Each id is less than the last)
+	 * Allocate the next zone id and return the new value. (Each id is less than
+	 * the last)
 	 * 
 	 * @param context
 	 * @param siteId
@@ -631,16 +717,15 @@ public class HBaseSite {
 	}
 
 	/**
-	 * Allocate the next assignment id and return the new value. (Each id is less than the
-	 * last)
+	 * Allocate the next assignment id and return the new value. (Each id is
+	 * less than the last)
 	 * 
 	 * @param context
 	 * @param siteId
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Long allocateNextAssignmentId(IHBaseContext context, Long siteId)
-			throws SiteWhereException {
+	public static Long allocateNextAssignmentId(IHBaseContext context, Long siteId) throws SiteWhereException {
 		Tracer.push(TracerCategory.DeviceManagementApiCall, "allocateNextAssignmentId (HBase)", LOGGER);
 		try {
 			byte[] primary = getPrimaryRowkey(siteId);
@@ -662,8 +747,8 @@ public class HBaseSite {
 	}
 
 	/**
-	 * Get the unique site identifier based on the long value associated with the site
-	 * UUID. This will be a subset of the full 8-bit long value.
+	 * Get the unique site identifier based on the long value associated with
+	 * the site UUID. This will be a subset of the full 8-bit long value.
 	 * 
 	 * @param value
 	 * @return

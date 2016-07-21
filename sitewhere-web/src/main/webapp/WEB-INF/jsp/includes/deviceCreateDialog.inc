@@ -79,93 +79,92 @@
 	/** Specifications list */
 	var dcSpecifications;
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					/** Create tab strip */
-					dcTabs = $("#dc-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			/** Create tab strip */
+			dcTabs = $("#dc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
 
-					dcSitesDropdown =
-							$("#dc-site-token")
-									.kendoDropDownList(
-										{
-											dataTextField : "name",
-											dataValueField : "token",
-											dataSource : {
-												transport : {
-													read : {
-														url : "${pageContext.request.contextPath}/api/sites?tenantAuthToken=${tenant.authenticationToken}",
-														dataType : "json",
-													}
-												},
-												schema : {
-													data : "results",
-													total : "numResults",
-												},
-											}
-										}).data("kendoDropDownList");
-
-					/** Create AJAX datasource for specifications list */
-					dcSpecificationsDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/specifications?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-									},
-								});
-
-					/** Create the hardware match list */
-					dcSpecifications = $("#dc-specifications").kendoListView({
-						dataSource : dcSpecificationsDS,
-						selectable : "single",
-						template : kendo.template($("#specification-entry-small").html()),
-						change : dcSpecificationChosen
-					}).data("kendoListView");
-
-					/** Handle create dialog submit */
-					$('#dc-dialog-submit')
-							.click(
-								function(event) {
-									event.preventDefault();
-									if (!dcValidate()) {
-										return;
-									}
-									var deviceData = {
-										"hardwareId" : $('#dc-hardware-id').val(),
-										"siteToken" : $('#dc-site-token').val(),
-										"comments" : $('#dc-comments').val(),
-										"specificationToken" : $('#dc-chosen-specification-token').val(),
-										"metadata" : swMetadataAsLookup(dcMetadataDS.data()),
-									}
-									$
-											.postJSON(
-												"${pageContext.request.contextPath}/api/devices?tenantAuthToken=${tenant.authenticationToken}",
-												deviceData, onCreateSuccess, onCreateFail);
-								});
-
-					/** Called on successful create */
-					function onCreateSuccess() {
-						$('#dc-dialog').modal('hide');
-						if (dcSubmitCallback != null) {
-							dcSubmitCallback();
+			dcSitesDropdown = $("#dc-site-token").kendoDropDownList({
+				dataTextField : "name",
+				dataValueField : "token",
+				dataSource : {
+					transport : {
+						read : {
+							url : "${pageContext.request.contextPath}/api/sites",
+							beforeSend : function(req) {
+								req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+								req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+							},
+							dataType : "json",
 						}
-					}
+					},
+					schema : {
+						data : "results",
+						total : "numResults",
+					},
+				}
+			}).data("kendoDropDownList");
 
-					/** Handle failed call to create device */
-					function onCreateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, i18next("includes.deviceCreateDialog.UTCD"));
+			/** Create AJAX datasource for specifications list */
+			dcSpecificationsDS = new kendo.data.DataSource({
+				transport : {
+					read : {
+						url : "${pageContext.request.contextPath}/api/specifications?tenantAuthToken",
+						beforeSend : function(req) {
+							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+						},
+						dataType : "json",
 					}
+				},
+				schema : {
+					data : "results",
+					total : "numResults",
+				},
+			});
+
+			/** Create the hardware match list */
+			dcSpecifications = $("#dc-specifications").kendoListView({
+				dataSource : dcSpecificationsDS,
+				selectable : "single",
+				template : kendo.template($("#specification-entry-small").html()),
+				change : dcSpecificationChosen
+			}).data("kendoListView");
+
+			/** Handle create dialog submit */
+			$('#dc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!dcValidate()) {
+						return;
+					}
+					var deviceData = {
+						"hardwareId" : $('#dc-hardware-id').val(),
+						"siteToken" : $('#dc-site-token').val(),
+						"comments" : $('#dc-comments').val(),
+						"specificationToken" : $('#dc-chosen-specification-token').val(),
+						"metadata" : swMetadataAsLookup(dcMetadataDS.data()),
+					}
+					$.postAuthJSON("${pageContext.request.contextPath}/api/devices", deviceData,
+						"${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess, onCreateFail);
 				});
+
+			/** Called on successful create */
+			function onCreateSuccess() {
+				$('#dc-dialog').modal('hide');
+				if (dcSubmitCallback != null) {
+					dcSubmitCallback();
+				}
+			}
+
+			/** Handle failed call to create device */
+			function onCreateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, i18next("includes.deviceCreateDialog.UTCD"));
+			}
+		});
 
 	/** Validate everything */
 	function dcValidate() {

@@ -12,7 +12,7 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.sitewhere.rest.model.user.request.TenantCreateRequest;
+import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.server.SiteWhereServer;
 import com.sitewhere.server.user.DefaultUserModelInitializer;
 import com.sitewhere.spi.SiteWhereException;
@@ -46,16 +46,6 @@ public class DefaultTenantModelInitializer implements ITenantModelInitializer {
 
 	/** Prefix for create tenant */
 	public static final String PREFIX_CREATE_TENANT = "[Create Tenant]";
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.server.IModelInitializer#isInitializeIfNoConsole()
-	 */
-	@Override
-	public boolean isInitializeIfNoConsole() throws SiteWhereException {
-		return false;
-	}
 
 	/*
 	 * (non-Javadoc)

@@ -30,8 +30,10 @@ import com.sitewhere.rest.model.device.event.DeviceStreamData;
 import com.sitewhere.rest.model.device.group.DeviceGroup;
 import com.sitewhere.rest.model.device.group.DeviceGroupElement;
 import com.sitewhere.rest.model.device.streaming.DeviceStream;
+import com.sitewhere.rest.model.tenant.Tenant;
+import com.sitewhere.rest.model.tenant.TenantGroup;
+import com.sitewhere.rest.model.tenant.TenantGroupElement;
 import com.sitewhere.rest.model.user.GrantedAuthority;
-import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetCategory;
@@ -58,6 +60,8 @@ import com.sitewhere.spi.device.group.IDeviceGroup;
 import com.sitewhere.spi.device.group.IDeviceGroupElement;
 import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantGroup;
+import com.sitewhere.spi.tenant.ITenantGroupElement;
 import com.sitewhere.spi.user.IGrantedAuthority;
 import com.sitewhere.spi.user.IUser;
 
@@ -300,8 +304,7 @@ public interface IPayloadMarshaler {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] encodeDeviceCommandInvocation(IDeviceCommandInvocation invocation)
-			throws SiteWhereException;
+	public byte[] encodeDeviceCommandInvocation(IDeviceCommandInvocation invocation) throws SiteWhereException;
 
 	/**
 	 * Decode a {@link DeviceCommandInvocation} from the binary payload.
@@ -563,4 +566,40 @@ public interface IPayloadMarshaler {
 	 * @throws SiteWhereException
 	 */
 	public Tenant decodeTenant(byte[] payload) throws SiteWhereException;
+
+	/**
+	 * Encode an {@link ITenantGroup}.
+	 * 
+	 * @param group
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] encodeTenantGroup(ITenantGroup group) throws SiteWhereException;
+
+	/**
+	 * Decode a {@link TenantGroup}.
+	 * 
+	 * @param payload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public TenantGroup decodeTenantGroup(byte[] payload) throws SiteWhereException;
+
+	/**
+	 * Encode an {@link ITenantGroupElement}.
+	 * 
+	 * @param element
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public byte[] encodeTenantGroupElement(ITenantGroupElement element) throws SiteWhereException;
+
+	/**
+	 * Decode a {@link TenantGroupElement}.
+	 * 
+	 * @param payload
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public TenantGroupElement decodeTenantGroupElement(byte[] payload) throws SiteWhereException;
 }

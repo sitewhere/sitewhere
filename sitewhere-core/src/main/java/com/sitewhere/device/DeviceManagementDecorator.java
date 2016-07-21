@@ -43,13 +43,16 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
+import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Allows classes to inject themselves as a facade around an existing device management
- * implementation. By default all methods just pass calls to the underlying delegate.
+ * Allows classes to inject themselves as a facade around an existing device
+ * management implementation. By default all methods just pass calls to the
+ * underlying delegate.
  * 
  * @author Derek
  */
@@ -66,8 +69,9 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(com.
-	 * sitewhere .spi.user.ITenant)
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#setTenant(
+	 * com. sitewhere .spi.user.ITenant)
 	 */
 	@Override
 	public void setTenant(ITenant tenant) {
@@ -77,7 +81,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
+	 * @see
+	 * com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent#getTenant()
 	 */
 	@Override
 	public ITenant getTenant() {
@@ -96,8 +101,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public IDeviceSpecification updateDeviceSpecification(String token,
-			IDeviceSpecificationCreateRequest request) throws SiteWhereException {
+	public IDeviceSpecification updateDeviceSpecification(String token, IDeviceSpecificationCreateRequest request)
+			throws SiteWhereException {
 		return delegate.updateDeviceSpecification(token, request);
 	}
 
@@ -108,8 +113,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
-			throws SiteWhereException {
+	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException {
 		return delegate.deleteDeviceSpecification(token, force);
 	}
 
@@ -131,8 +135,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted)
-			throws SiteWhereException {
+	public List<IDeviceCommand> listDeviceCommands(String token, boolean includeDeleted) throws SiteWhereException {
 		return delegate.listDeviceCommands(token, includeDeleted);
 	}
 
@@ -184,8 +187,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
-			throws SiteWhereException {
+	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException {
 		return delegate.createDeviceAssignment(request);
 	}
 
@@ -239,22 +241,27 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId,
-			ISearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
+			throws SiteWhereException {
+		return delegate.getMissingDeviceAssignments(siteToken, criteria);
+	}
+
+	@Override
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
+			throws SiteWhereException {
 		return delegate.getDeviceAssignmentHistory(hardwareId, criteria);
 	}
 
 	@Override
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
-			ISearchCriteria criteria) throws SiteWhereException {
+			IAssignmentSearchCriteria criteria) throws SiteWhereException {
 		return delegate.getDeviceAssignmentsForSite(siteToken, criteria);
 	}
 
 	@Override
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
-			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-					throws SiteWhereException {
-		return delegate.getDeviceAssignmentsForAsset(siteToken, assetModuleId, assetId, status, criteria);
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+			IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException {
+		return delegate.getDeviceAssignmentsForAsset(assetModuleId, assetId, criteria);
 	}
 
 	@Override
@@ -315,8 +322,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria)
-			throws SiteWhereException {
+	public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria) throws SiteWhereException {
 		return delegate.listZones(siteToken, criteria);
 	}
 
@@ -331,8 +337,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request)
-			throws SiteWhereException {
+	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request) throws SiteWhereException {
 		return delegate.updateDeviceGroup(token, request);
 	}
 
@@ -366,8 +371,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
-			ISearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken, ISearchCriteria criteria)
+			throws SiteWhereException {
 		return delegate.listDeviceGroupElements(groupToken, criteria);
 	}
 
@@ -377,8 +382,7 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
-			throws SiteWhereException {
+	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException {
 		return delegate.createBatchOperation(request);
 	}
 
@@ -394,8 +398,8 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
-			ISearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
+			throws SiteWhereException {
 		return delegate.listBatchOperations(includeDeleted, criteria);
 	}
 
@@ -405,14 +409,14 @@ public class DeviceManagementDecorator extends LifecycleComponentDecorator imple
 	}
 
 	@Override
-	public ISearchResults<IBatchElement> listBatchElements(String batchToken,
-			IBatchElementSearchCriteria criteria) throws SiteWhereException {
+	public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
+			throws SiteWhereException {
 		return delegate.listBatchElements(batchToken, criteria);
 	}
 
 	@Override
-	public IBatchElement updateBatchElement(String operationToken, long index,
-			IBatchElementUpdateRequest request) throws SiteWhereException {
+	public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
+			throws SiteWhereException {
 		return delegate.updateBatchElement(operationToken, index, request);
 	}
 

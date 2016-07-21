@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +64,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/batch")
 @Api(value = "batch", description = "Operations related to SiteWhere batch operations.")
 @DocumentedController(name = "Batch Operations")
@@ -75,7 +77,8 @@ public class BatchOperationsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get batch operation by unique token")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "getBatchOperationByTokenResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = BatchOperations.GetBatchOperationResponse.class, description = "getBatchOperationByTokenResponse.md") })
 	public IBatchOperation getBatchOperationByToken(
 			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String batchToken,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -97,11 +100,14 @@ public class BatchOperationsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "List batch operations")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationsResponse.class, description = "listBatchOperationsResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationsResponse.class, description = "listBatchOperationsResponse.md") })
 	public ISearchResults<IBatchOperation> listBatchOperations(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+					ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+					ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroups", LOGGER);
 		try {
@@ -123,11 +129,14 @@ public class BatchOperationsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "List batch operation elements")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationElementsResponse.class, description = "listBatchOperationElementsResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = BatchOperations.ListBatchOperationElementsResponse.class, description = "listBatchOperationElementsResponse.md") })
 	public ISearchResults<IBatchElement> listBatchOperationElements(
 			@ApiParam(value = "Unique token that identifies batch operation", required = true) @PathVariable String operationToken,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+					ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+					ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listDeviceGroupElements", LOGGER);
 		try {
@@ -153,8 +162,8 @@ public class BatchOperationsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "createBatchCommandInvocation", LOGGER);
 		try {
 			IBatchOperation result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createBatchCommandInvocation(
-							request);
+					SiteWhere.getServer().getDeviceManagement(
+							getTenant(servletRequest)).createBatchCommandInvocation(request);
 			return BatchOperation.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -194,8 +203,8 @@ public class BatchOperationsController extends RestController {
 			invoke.setHardwareIds(hardwareIds);
 
 			IBatchOperation result =
-					SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).createBatchCommandInvocation(
-							invoke);
+					SiteWhere.getServer().getDeviceManagement(
+							getTenant(servletRequest)).createBatchCommandInvocation(invoke);
 			return BatchOperation.copy(result);
 		} finally {
 			Tracer.stop(LOGGER);
@@ -224,8 +233,8 @@ public class BatchOperationsController extends RestController {
 		try {
 			assureDeviceCommand(request.getCommandToken(), servletRequest);
 			IScheduledJobCreateRequest job =
-					ScheduledJobHelper.createBatchCommandInvocationJobByCriteria(
-							UUID.randomUUID().toString(), request, scheduleToken);
+					ScheduledJobHelper.createBatchCommandInvocationJobByCriteria(UUID.randomUUID().toString(),
+							request, scheduleToken);
 			return SiteWhere.getServer().getScheduleManagement(getTenant(servletRequest)).createScheduledJob(
 					job);
 		} finally {

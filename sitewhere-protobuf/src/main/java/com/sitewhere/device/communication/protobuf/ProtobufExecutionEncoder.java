@@ -13,6 +13,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import com.google.protobuf.ByteString;
+import com.sitewhere.common.MarshalUtils;
 import com.sitewhere.core.DataUtils;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.Command;
 import com.sitewhere.device.communication.protobuf.proto.Sitewhere.Device.DeviceStreamAck;
@@ -37,13 +38,12 @@ import com.sitewhere.spi.device.communication.ICommandExecutionEncoder;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Implementation of {@link ICommandExecutionEncoder} that uses Google Protocol Buffers to
- * encode the execution.
+ * Implementation of {@link ICommandExecutionEncoder} that uses Google Protocol
+ * Buffers to encode the execution.
  * 
  * @author Derek
  */
-public class ProtobufExecutionEncoder extends TenantLifecycleComponent implements
-		ICommandExecutionEncoder<byte[]> {
+public class ProtobufExecutionEncoder extends TenantLifecycleComponent implements ICommandExecutionEncoder<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ProtobufExecutionEncoder.class);
@@ -56,14 +56,14 @@ public class ProtobufExecutionEncoder extends TenantLifecycleComponent implement
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(com.sitewhere
-	 * .spi.device.command.IDeviceCommandExecution,
+	 * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encode(
+	 * com.sitewhere .spi.device.command.IDeviceCommandExecution,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
 	@Override
-	public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested,
-			IDeviceAssignment assignment) throws SiteWhereException {
+	public byte[] encode(IDeviceCommandExecution execution, IDeviceNestingContext nested, IDeviceAssignment assignment)
+			throws SiteWhereException {
 		byte[] encoded = ProtobufMessageBuilder.createMessage(execution, nested, assignment, getTenant());
 		LOGGER.debug("Protobuf message: 0x" + DataUtils.bytesToHex(encoded));
 		return encoded;
@@ -72,9 +72,8 @@ public class ProtobufExecutionEncoder extends TenantLifecycleComponent implement
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.ICommandExecutionEncoder#encodeSystemCommand
-	 * (com.sitewhere.spi.device.command.ISystemCommand,
+	 * @see com.sitewhere.spi.device.communication.ICommandExecutionEncoder#
+	 * encodeSystemCommand (com.sitewhere.spi.device.command.ISystemCommand,
 	 * com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment)
 	 */
@@ -146,6 +145,12 @@ public class ProtobufExecutionEncoder extends TenantLifecycleComponent implement
 			builder.setSequenceNumber(send.getSequenceNumber());
 			builder.setData(ByteString.copyFrom(send.getData()));
 			return encodeSendDeviceStreamData(builder.build());
+		}
+		case DeviceMappingAck: {
+			String json = MarshalUtils.marshalJsonAsPrettyString(command);
+			LOGGER.warn("No protocol buffer encoding implemented for sending device mapping acknowledgement.");
+			LOGGER.info("JSON representation of command is:\n" + json + "\n");
+			return new byte[0];
 		}
 		}
 		throw new SiteWhereException("Unable to encode command: " + command.getClass().getName());

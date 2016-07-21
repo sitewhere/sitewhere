@@ -10,8 +10,6 @@ package com.sitewhere.spi.device.communication;
 import java.util.List;
 import java.util.Map;
 
-import com.sitewhere.spi.SiteWhereException;
-
 /**
  * Decodes inbound device event messages.
  * 
@@ -25,8 +23,8 @@ public interface IDeviceEventDecoder<T> {
 	 * @param payload the payload that will be decoded
 	 * @param metadata extra information associated with the payload
 	 * @return a list of decoded device requests to be processed
-	 * @throws SiteWhereException if the payload can not be decoded
+	 * @throws EventDecodeException if the payload can not be decoded
 	 */
 	public List<IDecodedDeviceRequest<?>> decode(T payload, Map<String, String> metadata)
-			throws SiteWhereException;
+			throws EventDecodeException;
 }

@@ -62,9 +62,8 @@ table#jobs tr td {
 	function onDeleteJob(token) {
 		swConfirm(i18next("jobs.list.DeleteJob"), i18next("jobs.list.AYSD") + "?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/jobs/" + token
-						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
-					onDeleteFail);
+				$.deleteAuthJSON("${pageContext.request.contextPath}/api/jobs/" + token + "?force=true",
+					"${basicAuth}", "${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
 			}
 		});
 	}
@@ -79,46 +78,47 @@ table#jobs tr td {
 		handleError(jqXHR, i18next("jobs.list.UTD"));
 	}
 
-	$(document).ready(
-		function() {
+	$(document).ready(function() {
 
-			jobsDS =
-					new kendo.data.DataSource({
-						transport : {
-							read : {
-								url : "${pageContext.request.contextPath}/api/jobs?includeContext=true&"
-										+ "tenantAuthToken=${tenant.authenticationToken}",
-								dataType : "json",
-							}
-						},
-						schema : {
-							data : "results",
-							total : "numResults",
-							parse : function(response) {
-								$.each(response.results, function(index, item) {
-									parseEntityData(item);
-								});
-								return response;
-							}
-						},
-						serverPaging : true,
-						serverSorting : true,
-						pageSize : 50,
+		jobsDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/jobs?includeContext=true",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseEntityData(item);
 					});
-
-			/** Create the list */
-			$("#jobs").kendoGrid({
-				dataSource : jobsDS,
-				rowTemplate : kendo.template($("#tpl-scheduled-job-entry").html()),
-				scrollable : true,
-				height : 400,
-			});
-
-			/** Pager for list */
-			$("#pager").kendoPager({
-				dataSource : jobsDS
-			});
+					return response;
+				}
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 50,
 		});
+
+		/** Create the list */
+		$("#jobs").kendoGrid({
+			dataSource : jobsDS,
+			rowTemplate : kendo.template($("#tpl-scheduled-job-entry").html()),
+			scrollable : true,
+			height : 400,
+		});
+
+		/** Pager for list */
+		$("#pager").kendoPager({
+			dataSource : jobsDS
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

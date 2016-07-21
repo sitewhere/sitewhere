@@ -64,6 +64,9 @@ public enum ErrorCode {
 	/** Invalid tenant engine command */
 	InvalidTenantEngineCommand(145, "Invalid tenant engine command."),
 
+	/** Invalid tenant group reference */
+	InvalidTenantGroupId(150, "Tenant group does not exist."),
+
 	/***************************
 	 * INVALID OR DUPLICATE ID *
 	 ***************************/
@@ -128,17 +131,20 @@ public enum ErrorCode {
 	/** Attempting to create a tenant with an id already in use */
 	DuplicateTenantId(540, "Tenant id already in use."),
 
-	/** Invalid schedule token */
-	InvalidScheduleToken(530, "Schedule not found."),
-
-	/** Invalid scheduled job token */
-	InvalidScheduledJobToken(531, "Scheduled job not found."),
+	/** Attempting to create a tenant group with an id already in use */
+	DuplicateTenantGroupId(543, "Tenant group id already in use."),
 
 	/** Invalid schedule token */
-	DuplicateScheduleToken(535, "Schedule token already in use."),
+	InvalidScheduleToken(545, "Schedule not found."),
 
 	/** Invalid scheduled job token */
-	DuplicateScheduledJobToken(536, "Scheduled job token already in use."),
+	InvalidScheduledJobToken(546, "Scheduled job not found."),
+
+	/** Invalid schedule token */
+	DuplicateScheduleToken(547, "Schedule token already in use."),
+
+	/** Invalid scheduled job token */
+	DuplicateScheduledJobToken(548, "Scheduled job token already in use."),
 
 	/******************
 	 * DEVICE COMMAND *
@@ -167,8 +173,7 @@ public enum ErrorCode {
 	DeviceSiteCanNotBeChangedIfAssigned(604, "Device site can not be changed if it is currently assigned."),
 
 	/** Attempting to create a device element mapping for a path that is already mapped */
-	DeviceElementMappingExists(610,
-			"Device has an existing mapping for the given device element schema path."),
+	DeviceElementMappingExists(610, "Device has an existing mapping for the given device element schema path."),
 
 	/** Attempting to refrence a device element mapping that does not exist */
 	DeviceElementMappingDoesNotExist(611, "Device element mapping does not exist."),
@@ -176,7 +181,9 @@ public enum ErrorCode {
 	/** Path references a non-existent slot or a device unit */
 	InvalidDeviceSlotPath(612, "Path does not correspond to a valid device slot."),
 
-	/** Attempting to create a device element mapping for a device that is already mapped */
+	/**
+	 * Attempting to create a device element mapping for a device that is already mapped
+	 */
 	DeviceParentMappingExists(613, "Target device is already in use by an existing mapping."),
 
 	/***********

@@ -73,6 +73,10 @@
 													read : {
 														url : "${pageContext.request.contextPath}/api/users/${currentUser.username}/tenants"
 																+ "?includeRuntimeInfo=true",
+														beforeSend : function(req) {
+															req.setRequestHeader('Authorization',
+																"Basic ${basicAuth}");
+														},
 														dataType : "json",
 													}
 												},

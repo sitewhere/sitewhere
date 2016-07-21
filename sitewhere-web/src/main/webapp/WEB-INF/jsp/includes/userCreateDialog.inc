@@ -89,116 +89,113 @@
 	/** Dropdown list of account statuses */
 	var ucStatusList;
 
-	$(document)
-			.ready(
-				function() {
-					var ucAccountStatuses = [ {
-						text : i18next("includes.Active"),
-						status : "Active"
-					}, {
-						text : i18next("includes.Expired"),
-						status : "Expired"
-					}, {
-						text : i18next("includes.Locked"),
-						status : "Locked"
-					}, ];
+	$(document).ready(
+		function() {
+			var ucAccountStatuses = [ {
+				text : i18next("includes.Active"),
+				status : "Active"
+			}, {
+				text : i18next("includes.Expired"),
+				status : "Expired"
+			}, {
+				text : i18next("includes.Locked"),
+				status : "Locked"
+			}, ];
 
-					/** Create the tab strip */
-					ucTabs = $("#uc-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			/** Create the tab strip */
+			ucTabs = $("#uc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
 
-					// create DropDownList from input HTML element
-					ucStatusList = $("#uc-account-status").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "status",
-						dataSource : ucAccountStatuses,
-					}).data("kendoDropDownList");
+			// create DropDownList from input HTML element
+			ucStatusList = $("#uc-account-status").kendoDropDownList({
+				dataTextField : "text",
+				dataValueField : "status",
+				dataSource : ucAccountStatuses,
+			}).data("kendoDropDownList");
 
-					/** Create AJAX datasource for authorities list */
-					authsDS =
-							new kendo.data.HierarchicalDataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/authorities/hierarchy?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										model : {
-											id : "id",
-											hasChildren : "group",
-											children : "items",
-										}
-									}
-								});
-
-					/** Create the authorities tree */
-					authsTree = $("#uc-permissions").kendoTreeView({
-						loadOnDemand : false,
-						dataSource : authsDS,
-						checkboxes : {
-							checkChildren : true
+			/** Create AJAX datasource for authorities list */
+			authsDS = new kendo.data.HierarchicalDataSource({
+				transport : {
+					read : {
+						url : "${pageContext.request.contextPath}/api/authorities/hierarchy",
+						beforeSend : function(req) {
+							req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+							req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
 						},
-					}).data("kendoTreeView");
-
-					/** Handle dialog submit */
-					$('#uc-dialog-submit')
-							.click(
-								function(event) {
-									event.preventDefault();
-									var username = $('#uc-original-username').val();
-									var password = $('#uc-password').val();
-									var isCreate = (username.length == 0);
-									if ((isCreate) && (!ucValidateForCreate())) {
-										return;
-									}
-									if ((!isCreate) && (!ucValidateForUpdate())) {
-										return;
-									}
-									var auths = ucGetCheckedAuths();
-									var userdata = {
-										"username" : $('#uc-username').val(),
-										"firstName" : $('#uc-first-name').val(),
-										"lastName" : $('#uc-last-name').val(),
-										"authorities" : auths,
-										"status" : ucStatusList.dataItem().status,
-										"metadata" : swMetadataAsLookup(ucMetadataDS.data()),
-									};
-									if (password.length > 0) {
-										userdata.password = password;
-									}
-									if (isCreate) {
-										$
-												.postJSON(
-													"${pageContext.request.contextPath}/api/users?tenantAuthToken=${tenant.authenticationToken}",
-													userdata, onSuccess, onCreateFail);
-									} else {
-										$.putJSON("${pageContext.request.contextPath}/api/users/" + username
-												+ "?tenantAuthToken=${tenant.authenticationToken}", userdata,
-											onSuccess, onUpdateFail);
-									}
-								});
-
-					/** Called on successful create/update */
-					function onSuccess() {
-						$('#uc-dialog').modal('hide');
-						if (ucSubmitCallback != null) {
-							ucSubmitCallback();
-						}
+						dataType : "json",
 					}
-
-					/** Handle failed call to create user */
-					function onCreateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to create user.");
+				},
+				schema : {
+					model : {
+						id : "id",
+						hasChildren : "group",
+						children : "items",
 					}
+				}
+			});
 
-					/** Handle failed call to update user */
-					function onUpdateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to update user.");
+			/** Create the authorities tree */
+			authsTree = $("#uc-permissions").kendoTreeView({
+				loadOnDemand : false,
+				dataSource : authsDS,
+				checkboxes : {
+					checkChildren : true
+				},
+			}).data("kendoTreeView");
+
+			/** Handle dialog submit */
+			$('#uc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					var username = $('#uc-original-username').val();
+					var password = $('#uc-password').val();
+					var isCreate = (username.length == 0);
+					if ((isCreate) && (!ucValidateForCreate())) {
+						return;
+					}
+					if ((!isCreate) && (!ucValidateForUpdate())) {
+						return;
+					}
+					var auths = ucGetCheckedAuths();
+					var userdata = {
+						"username" : $('#uc-username').val(),
+						"firstName" : $('#uc-first-name').val(),
+						"lastName" : $('#uc-last-name').val(),
+						"authorities" : auths,
+						"status" : ucStatusList.dataItem().status,
+						"metadata" : swMetadataAsLookup(ucMetadataDS.data()),
+					};
+					if (password.length > 0) {
+						userdata.password = password;
+					}
+					if (isCreate) {
+						$.postAuthJSON("${pageContext.request.contextPath}/api/users", userdata,
+							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onCreateFail);
+					} else {
+						$.putAuthJSON("${pageContext.request.contextPath}/api/users/" + username, userdata,
+							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onUpdateFail);
 					}
 				});
+
+			/** Called on successful create/update */
+			function onSuccess() {
+				$('#uc-dialog').modal('hide');
+				if (ucSubmitCallback != null) {
+					ucSubmitCallback();
+				}
+			}
+
+			/** Handle failed call to create user */
+			function onCreateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to create user.");
+			}
+
+			/** Handle failed call to update user */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to update user.");
+			}
+		});
 
 	function uncheckNodes(nodes) {
 		for (var i = 0; i < nodes.length; i++) {
@@ -323,8 +320,8 @@
 		ucSubmitCallback = callback;
 
 		// Get site for edit.
-		$.getJSON("${pageContext.request.contextPath}/api/users/" + username
-				+ "?tenantAuthToken=${tenant.authenticationToken}", uuUserGetSuccess, uuUserGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/users/" + username, "${basicAuth}",
+			"${tenant.authenticationToken}", uuUserGetSuccess, uuUserGetFailed);
 	}
 
 	/** Called on successful user load request */

@@ -33,6 +33,8 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.search.IDateRangeSearchCriteria;
 import com.sitewhere.spi.search.ISearchCriteria;
 import com.sitewhere.spi.search.ISearchResults;
+import com.sitewhere.spi.search.device.IAssignmentSearchCriteria;
+import com.sitewhere.spi.search.device.IAssignmentsForAssetSearchCriteria;
 import com.sitewhere.spi.search.device.IBatchElementSearchCriteria;
 import com.sitewhere.spi.search.device.IDeviceSearchCriteria;
 import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
@@ -47,7 +49,8 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	/**
 	 * Create a new device specification.
 	 * 
-	 * @param request information about new specification
+	 * @param request
+	 *            information about new specification
 	 * @return device specification that was created
 	 * @throws SiteWhereException
 	 */
@@ -57,30 +60,38 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	/**
 	 * Get a device specification by unique token.
 	 * 
-	 * @param token unique device specification token
+	 * @param token
+	 *            unique device specification token
 	 * @return corresponding specification or null if not found
-	 * @throws SiteWhereException if implementation encountered an error
+	 * @throws SiteWhereException
+	 *             if implementation encountered an error
 	 */
 	public IDeviceSpecification getDeviceSpecificationByToken(String token) throws SiteWhereException;
 
 	/**
 	 * Update an existing device specification.
 	 * 
-	 * @param token unique specification token
-	 * @param request updated information
+	 * @param token
+	 *            unique specification token
+	 * @param request
+	 *            updated information
 	 * @return updated device specification
-	 * @throws SiteWhereException if implementation encountered an error
+	 * @throws SiteWhereException
+	 *             if implementation encountered an error
 	 */
-	public IDeviceSpecification updateDeviceSpecification(String token,
-			IDeviceSpecificationCreateRequest request) throws SiteWhereException;
+	public IDeviceSpecification updateDeviceSpecification(String token, IDeviceSpecificationCreateRequest request)
+			throws SiteWhereException;
 
 	/**
 	 * List device specifications that match the search criteria.
 	 * 
-	 * @param includeDeleted include specifications marked as deleted
-	 * @param criteria search criteria
+	 * @param includeDeleted
+	 *            include specifications marked as deleted
+	 * @param criteria
+	 *            search criteria
 	 * @return results corresponding to search criteria
-	 * @throws SiteWhereException if implementation encountered an error
+	 * @throws SiteWhereException
+	 *             if implementation encountered an error
 	 */
 	public ISearchResults<IDeviceSpecification> listDeviceSpecifications(boolean includeDeleted,
 			ISearchCriteria criteria) throws SiteWhereException;
@@ -88,16 +99,19 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	/**
 	 * Delete an existing device specification.
 	 * 
-	 * @param token unique specification token
-	 * @param force if true, deletes specification. if false, marks as deleted.
+	 * @param token
+	 *            unique specification token
+	 * @param force
+	 *            if true, deletes specification. if false, marks as deleted.
 	 * @return the deleted specification
-	 * @throws SiteWhereException if implementation encountered an error
+	 * @throws SiteWhereException
+	 *             if implementation encountered an error
 	 */
-	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force)
-			throws SiteWhereException;
+	public IDeviceSpecification deleteDeviceSpecification(String token, boolean force) throws SiteWhereException;
 
 	/**
-	 * Creates a device command associated with an existing device specification.
+	 * Creates a device command associated with an existing device
+	 * specification.
 	 * 
 	 * @param spec
 	 * @param request
@@ -135,8 +149,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<IDeviceCommand> listDeviceCommands(String specToken, boolean includeDeleted)
-			throws SiteWhereException;
+	public List<IDeviceCommand> listDeviceCommands(String specToken, boolean includeDeleted) throws SiteWhereException;
 
 	/**
 	 * Delete an existing device command.
@@ -234,8 +247,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request)
-			throws SiteWhereException;
+	public IDeviceAssignment createDeviceAssignment(IDeviceAssignmentCreateRequest request) throws SiteWhereException;
 
 	/**
 	 * Get a device assignment by unique token.
@@ -247,8 +259,8 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	public IDeviceAssignment getDeviceAssignmentByToken(String token) throws SiteWhereException;
 
 	/**
-	 * Delete a device assignment. Depending on 'force' flag the assignment will be marked
-	 * for delete or actually be deleted.
+	 * Delete a device assignment. Depending on 'force' flag the assignment will
+	 * be marked for delete or actually be deleted.
 	 * 
 	 * @param token
 	 * @param force
@@ -325,8 +337,8 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId,
-			ISearchCriteria criteria) throws SiteWhereException;
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentHistory(String hardwareId, ISearchCriteria criteria)
+			throws SiteWhereException;
 
 	/**
 	 * Get a list of device assignments for a site.
@@ -337,12 +349,13 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForSite(String siteToken,
-			ISearchCriteria criteria) throws SiteWhereException;
+			IAssignmentSearchCriteria criteria) throws SiteWhereException;
 
 	/**
-	 * Finds all device assignments for a site with a last interaction date in the given
-	 * date range. Note that events must be posted with the 'updateState' option in order
-	 * for the last interaction date to be updated.
+	 * Finds all device assignments for a site with a last interaction date in
+	 * the given date range. Note that events must be posted with the
+	 * 'updateState' option in order for the last interaction date to be
+	 * updated.
 	 * 
 	 * @param siteToken
 	 * @param criteria
@@ -353,19 +366,28 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 			IDateRangeSearchCriteria criteria) throws SiteWhereException;
 
 	/**
-	 * Get a list of device assignments associated with a given asset.
+	 * Find all device assignments that have been marked missing by the presence
+	 * manager.
 	 * 
 	 * @param siteToken
-	 * @param assetModuleId
-	 * @param assetId
-	 * @param status
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String siteToken,
-			String assetModuleId, String assetId, DeviceAssignmentStatus status, ISearchCriteria criteria)
-					throws SiteWhereException;
+	public ISearchResults<IDeviceAssignment> getMissingDeviceAssignments(String siteToken, ISearchCriteria criteria)
+			throws SiteWhereException;
+
+	/**
+	 * Get a list of device assignments associated with a given asset.
+	 * 
+	 * @param assetModuleId
+	 * @param assetId
+	 * @param criteria
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public ISearchResults<IDeviceAssignment> getDeviceAssignmentsForAsset(String assetModuleId, String assetId,
+			IAssignmentsForAssetSearchCriteria criteria) throws SiteWhereException;
 
 	/**
 	 * Create a new {@link IDeviceStream} associated with an assignment.
@@ -379,8 +401,8 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 			throws SiteWhereException;
 
 	/**
-	 * Get an exsiting {@link IDeviceStream} for an assignment based on unique stream id.
-	 * Returns null if not found.
+	 * Get an exsiting {@link IDeviceStream} for an assignment based on unique
+	 * stream id. Returns null if not found.
 	 * 
 	 * @param assignmentToken
 	 * @param streamId
@@ -410,8 +432,9 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	public ISite createSite(ISiteCreateRequest request) throws SiteWhereException;
 
 	/**
-	 * Delete a site based on unique site token. If 'force' is specified, the database
-	 * object will be deleted, otherwise the deleted flag will be set to true.
+	 * Delete a site based on unique site token. If 'force' is specified, the
+	 * database object will be deleted, otherwise the deleted flag will be set
+	 * to true.
 	 * 
 	 * @param siteToken
 	 * @param force
@@ -485,8 +508,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria)
-			throws SiteWhereException;
+	public ISearchResults<IZone> listZones(String siteToken, ISearchCriteria criteria) throws SiteWhereException;
 
 	/**
 	 * Delete a zone given its unique token.
@@ -515,8 +537,7 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request)
-			throws SiteWhereException;
+	public IDeviceGroup updateDeviceGroup(String token, IDeviceGroupCreateRequest request) throws SiteWhereException;
 
 	/**
 	 * Get a device network by unique token.
@@ -590,18 +611,18 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken,
-			ISearchCriteria criteria) throws SiteWhereException;
+	public ISearchResults<IDeviceGroupElement> listDeviceGroupElements(String groupToken, ISearchCriteria criteria)
+			throws SiteWhereException;
 
 	/**
-	 * Creates an {@link IBatchOperation} to perform an operation on multiple devices.
+	 * Creates an {@link IBatchOperation} to perform an operation on multiple
+	 * devices.
 	 * 
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
-			throws SiteWhereException;
+	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request) throws SiteWhereException;
 
 	/**
 	 * Update an existing {@link IBatchOperation}.
@@ -631,8 +652,8 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted,
-			ISearchCriteria criteria) throws SiteWhereException;
+	public ISearchResults<IBatchOperation> listBatchOperations(boolean includeDeleted, ISearchCriteria criteria)
+			throws SiteWhereException;
 
 	/**
 	 * Deletes a batch operation and its elements.
@@ -645,15 +666,16 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	public IBatchOperation deleteBatchOperation(String token, boolean force) throws SiteWhereException;
 
 	/**
-	 * Lists elements for an {@link IBatchOperation} that meet the given criteria.
+	 * Lists elements for an {@link IBatchOperation} that meet the given
+	 * criteria.
 	 * 
 	 * @param batchToken
 	 * @param criteria
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISearchResults<IBatchElement> listBatchElements(String batchToken,
-			IBatchElementSearchCriteria criteria) throws SiteWhereException;
+	public ISearchResults<IBatchElement> listBatchElements(String batchToken, IBatchElementSearchCriteria criteria)
+			throws SiteWhereException;
 
 	/**
 	 * Updates an existing batch operation element.
@@ -664,11 +686,12 @@ public interface IDeviceManagement extends ITenantLifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IBatchElement updateBatchElement(String operationToken, long index,
-			IBatchElementUpdateRequest request) throws SiteWhereException;
+	public IBatchElement updateBatchElement(String operationToken, long index, IBatchElementUpdateRequest request)
+			throws SiteWhereException;
 
 	/**
-	 * Creates an {@link ISearchResults} that will invoke a command on multiple devices.
+	 * Creates an {@link ISearchResults} that will invoke a command on multiple
+	 * devices.
 	 * 
 	 * @param request
 	 * @return

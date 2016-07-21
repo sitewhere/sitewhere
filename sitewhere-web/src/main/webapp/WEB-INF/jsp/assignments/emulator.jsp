@@ -25,7 +25,7 @@
 	<h1 class="ellipsis" data-i18n="assignments.emulator.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-assignment-detail" class="btn"
-			href="${pageContext.request.contextPath}/admin/assignments/<c:out value="${assignment.token}"/>.html">
+			href="${pageContext.request.contextPath}/admin/${tenant.id}/assignments/<c:out value="${assignment.token}"/>.html">
 			<i class="fa fa-arrow-circle-o-left sw-button-icon"></i><span
 			data-i18n="assignments.emulator.AssignmentDetails">Assignment Details</span>
 		</a>
@@ -510,6 +510,7 @@
 		locationsLayer = L.FeatureGroup.SiteWhere.assignmentLocations({
 			siteWhereApi : '${pageContext.request.contextPath}/api/',
 			assignmentToken : token,
+			basicAuth: '${basicAuth}',
 			tenantAuthToken : '${tenant.authenticationToken}',
 			onLocationsLoaded : onLocationsUpdated,
 		});
@@ -819,8 +820,8 @@
 
 	/** Loads information for the selected assignment */
 	function loadAssignment() {
-		$.getJSON("${pageContext.request.contextPath}/api/assignments/" + token
-				+ "?tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/assignments/" + token, "${basicAuth}",
+			"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful assignment load request */
@@ -859,7 +860,7 @@
 	function onMissingAssignmentComplete() {
 		loadAssignment();
 	}
-	
+
 	/** Save MQTT settings as cookies */
 	function setUpMqttCookies() {
 		/** Save MQTT host name if changed */
@@ -870,7 +871,7 @@
 		if (cookieMqttHostname) {
 			$('#mqtt-host-name').val(cookieMqttHostname);
 		}
-		
+
 		/** Save MQTT port if changed */
 		$('#mqtt-port').change(function(event) {
 			Cookies.set('sitewhere.mqtt.port', $('#mqtt-port').val());
@@ -879,7 +880,7 @@
 		if (cookieMqttPort) {
 			$('#mqtt-port').val(cookieMqttPort);
 		}
-		
+
 		/** Save MQTT client id if changed */
 		$('#mqtt-client-id').change(function(event) {
 			Cookies.set('sitewhere.mqtt.client.id', $('#mqtt-client-id').val());
@@ -888,7 +889,7 @@
 		if (cookieMqttClientId) {
 			$('#mqtt-client-id').val(cookieMqttClientId);
 		}
-		
+
 		/** Save MQTT topic if changed */
 		$('#mqtt-topic').change(function(event) {
 			Cookies.set('sitewhere.mqtt.topic', $('#mqtt-topic').val());
@@ -1004,7 +1005,7 @@
 				event.preventDefault();
 				doConnect();
 			});
-			
+
 			setUpMqttCookies();
 
 			/** Handle 'refresh locations' button */
@@ -1019,6 +1020,7 @@
 			map = L.Map.siteWhere('emulator-map', {
 				siteWhereApi : '${pageContext.request.contextPath}/api/',
 				siteToken : siteToken,
+				basicAuth : '${basicAuth}',
 				tenantAuthToken : '${tenant.authenticationToken}',
 				onZonesLoaded : onZonesLoaded,
 			});

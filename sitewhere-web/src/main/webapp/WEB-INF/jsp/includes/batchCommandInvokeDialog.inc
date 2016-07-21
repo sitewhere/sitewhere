@@ -114,30 +114,32 @@
 				}
 			});
 
-			$("#chosen-schedule").kendoDropDownList(
-				{
-					dataTextField : "name",
-					dataValueField : "token",
-					dataSource : {
-						transport : {
-							read : {
-								url : "${pageContext.request.contextPath}/api/schedules"
-										+ "?tenantAuthToken=${tenant.authenticationToken}",
-								dataType : "json",
-							}
-						},
-						schema : {
-							data : "results",
-							total : "numResults",
-							parse : function(response) {
-								$.each(response.results, function(index, item) {
-									parseEntityData(item);
-								});
-								return response;
-							}
-						},
-					}
-				});
+			$("#chosen-schedule").kendoDropDownList({
+				dataTextField : "name",
+				dataValueField : "token",
+				dataSource : {
+					transport : {
+						read : {
+							url : "${pageContext.request.contextPath}/api/schedules",
+							beforeSend : function(req) {
+								req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+								req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+							},
+							dataType : "json",
+						}
+					},
+					schema : {
+						data : "results",
+						total : "numResults",
+						parse : function(response) {
+							$.each(response.results, function(index, item) {
+								parseEntityData(item);
+							});
+							return response;
+						}
+					},
+				}
+			});
 
 			/** Handle create dialog submit */
 			$('#bci-dialog-submit').click(
@@ -169,13 +171,14 @@
 
 					if ($("#use-schedule").is(':checked')) {
 						var scheduleToken = $("#chosen-schedule").val();
-						$.postJSON("${pageContext.request.contextPath}/api/batch/command/criteria/schedules/"
-								+ scheduleToken + "?tenantAuthToken=${tenant.authenticationToken}",
-							invocationData, onCreateSuccess, onScheduleFail);
+						$.postAuthJSON(
+							"${pageContext.request.contextPath}/api/batch/command/criteria/schedules/"
+									+ scheduleToken, invocationData, "${basicAuth}",
+							"${tenant.authenticationToken}", onCreateSuccess, onScheduleFail);
 					} else {
-						$.postJSON("${pageContext.request.contextPath}/api/batch/command/criteria"
-								+ "?tenantAuthToken=${tenant.authenticationToken}", invocationData,
-							onCreateSuccess, onCreateFail);
+						$.postAuthJSON("${pageContext.request.contextPath}/api/batch/command/criteria",
+							invocationData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
+							onCreateFail);
 					}
 				});
 

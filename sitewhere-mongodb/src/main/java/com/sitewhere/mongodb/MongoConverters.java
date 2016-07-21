@@ -35,7 +35,9 @@ import com.sitewhere.mongodb.device.MongoSite;
 import com.sitewhere.mongodb.device.MongoZone;
 import com.sitewhere.mongodb.scheduling.MongoSchedule;
 import com.sitewhere.mongodb.scheduling.MongoScheduledJob;
-import com.sitewhere.mongodb.user.MongoTenant;
+import com.sitewhere.mongodb.tenant.MongoTenant;
+import com.sitewhere.mongodb.tenant.MongoTenantGroup;
+import com.sitewhere.mongodb.tenant.MongoTenantGroupElement;
 import com.sitewhere.spi.asset.IAsset;
 import com.sitewhere.spi.asset.IAssetCategory;
 import com.sitewhere.spi.asset.IHardwareAsset;
@@ -62,6 +64,8 @@ import com.sitewhere.spi.device.streaming.IDeviceStream;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduledJob;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantGroup;
+import com.sitewhere.spi.tenant.ITenantGroupElement;
 
 /**
  * Manages classes used to convert between Mongo and SPI objects.
@@ -95,8 +99,10 @@ public class MongoConverters implements IMongoConverterLookup {
 		CONVERTERS.put(IBatchOperation.class, new MongoBatchOperation());
 		CONVERTERS.put(IBatchElement.class, new MongoBatchElement());
 
-		// Converters for user management.
+		// Converters for tenant management.
 		CONVERTERS.put(ITenant.class, new MongoTenant());
+		CONVERTERS.put(ITenantGroup.class, new MongoTenantGroup());
+		CONVERTERS.put(ITenantGroupElement.class, new MongoTenantGroupElement());
 
 		// Converters for asset management.
 		CONVERTERS.put(IAssetCategory.class, new MongoAssetCategory());
@@ -113,7 +119,9 @@ public class MongoConverters implements IMongoConverterLookup {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.Class)
+	 * @see
+	 * com.sitewhere.mongodb.IMongoConverterLookup#getConverterFor(java.lang.
+	 * Class)
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> MongoConverter<T> getConverterFor(Class<T> api) {

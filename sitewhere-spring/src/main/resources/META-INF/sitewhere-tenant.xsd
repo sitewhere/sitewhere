@@ -2008,12 +2008,12 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 
-	<!-- Event source that pulls binary information from an AcitveMQ queue and decodes it -->
+	<!-- Event source that creates an embedded ActiveMQ broker -->
 	<xsd:element name="activemq-event-source" type="activemqEventSourceType"
 		substitutionGroup="abstract-event-source">
 		<xsd:annotation>
-			<xsd:documentation>Event source that pulls binary information from an ActiveMQ queue
-				and decodes it.
+			<xsd:documentation>Event source that creates an embedded ActiveMQ broker and listens
+				for messages on a transport specified by the transport URI.
 			</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
@@ -2027,7 +2027,7 @@
 				<xsd:attribute name="transportUri" type="xsd:string" use="required">
 					<xsd:annotation>
 						<xsd:documentation>
-							URI used to configure the trasport for the embedded ActiveMQ
+							URI used to configure the transport for the embedded ActiveMQ
 							broker.
 						</xsd:documentation>
 					</xsd:annotation>
@@ -2036,6 +2036,48 @@
 					<xsd:annotation>
 						<xsd:documentation>
 							Data directory used to store persistent message queues.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="queueName" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							Name of JMS queue for consumers to pull messages from.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="numConsumers" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Number of consumers used to read data from the queue into
+							SiteWhere.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Event source that reads messages from a remote ActiveMQ source -->
+	<xsd:element name="activemq-client-event-source" type="activeMQClientEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source connects to a remote broker and consumes messages from
+				it.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="activeMQClientEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="remoteUri" type="xsd:string" use="required">
+					<xsd:annotation>
+						<xsd:documentation>
+							URI of remote broker to connect to.
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
@@ -2152,6 +2194,17 @@
 	<xsd:complexType name="httpInteractionHandlerFactoryType">
 	</xsd:complexType>
 
+	<!-- Hands off socket interaction processing to a Groovy script -->
+	<xsd:complexType name="groovyInteractionHandlerFactoryType">
+		<xsd:attribute name="scriptPath" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation>
+					Path to a Groovy script that handles socket interactions.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
 	<!-- Event source that pulls binary information from a server socket and decodes it -->
 	<xsd:element name="socket-event-source" type="socketEventSourceType"
 		substitutionGroup="abstract-event-source">
@@ -2186,6 +2239,13 @@
 								<xsd:documentation>Interaction handler that treats a socket request as an HTTP
 									message and delivers the entity payload to the decoder as a byte array. A 200 OK
 									response is sent back to the requestor.
+								</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="groovy-interaction-handler-factory" type="groovyInteractionHandlerFactoryType">
+							<xsd:annotation>
+								<xsd:documentation>Interaction handler that hands off socket interactions to a
+									Groovy script.
 								</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
@@ -2267,6 +2327,39 @@
 					</xsd:annotation>
 				</xsd:attribute>
 				<xsd:attribute name="payloadType" type="webSocketPayloadType" use="required"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- Event source that accepts CoAP requests for SiteWhere resources -->
+	<xsd:element name="coap-server-event-source" type="coapServerEventSourceType"
+		substitutionGroup="abstract-event-source">
+		<xsd:annotation>
+			<xsd:documentation>Event source that accepts CoAP requests for SiteWhere resources.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="coapServerEventSourceType">
+		<xsd:complexContent>
+			<xsd:extension base="abstractEventSourceType">
+				<xsd:sequence>
+					<xsd:element ref="abstract-decoder"/>
+				</xsd:sequence>
+				<xsd:attributeGroup ref="event-source-attributes"/>
+				<xsd:attribute name="hostname" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Hostname used when binding CoAP server socket.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="port" type="xsd:integer" use="optional">
+					<xsd:annotation>
+						<xsd:documentation>
+							Port used when binding CoAP server socket.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -2592,6 +2685,13 @@
 						</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
+				<xsd:element name="coap-command-destination" type="coapCommandDestinationType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Destination that delivers commands via CoAP client request.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 				<xsd:element name="twilio-command-destination" type="twilioCommandDestinationType">
 					<xsd:annotation>
 						<xsd:documentation>
@@ -2729,6 +2829,57 @@
 	<xsd:complexType name="hardwareIdMqttParameterExtractorType">
 		<xsd:attribute name="commandTopicExpr" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="systemTopicExpr" type="xsd:string"></xsd:attribute>
+	</xsd:complexType>
+
+	<!-- Command destination that delivers commands via CoAP -->
+	<xsd:complexType name="coapCommandDestinationType">
+		<xsd:sequence>
+			<xsd:element ref="abstract-command-encoder"/>
+			<xsd:choice minOccurs="0">
+				<xsd:element name="parameter-extractor" type="commandDeliveryParameterExtractorReferenceType">
+					<xsd:annotation>
+						<xsd:documentation>
+							References a custom command delivery parameter extractor
+							implementation that extracts CoAP delivery information from the
+							device.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element name="metadata-coap-parameter-extractor" type="metadataCoapParameterExtractorType">
+					<xsd:annotation>
+						<xsd:documentation>
+							Extracts CoAP connection information from device metadata.
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="command-destination-attributes"/>
+	</xsd:complexType>
+
+	<!-- CoAP parameter extractor that pulls connection information from device metadata -->
+	<xsd:complexType name="metadataCoapParameterExtractorType">
+		<xsd:attribute name="hostnameMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds hostname for CoAP client connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="portMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds port for CoAP client connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="urlMetadataField" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Metadata field that holds URL for CoAP client connection.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<!-- Command destination that delivers commands via Twilio SMS message -->

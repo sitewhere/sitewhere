@@ -12,11 +12,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Abstract base class for event receivers that poll an external source at a given
@@ -26,8 +22,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  *
  * @param <T>
  */
-public abstract class PollingInboundEventReceiver<T> extends LifecycleComponent
-		implements IInboundEventReceiver<T> {
+public abstract class PollingInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(PollingInboundEventReceiver.class);
@@ -35,18 +30,11 @@ public abstract class PollingInboundEventReceiver<T> extends LifecycleComponent
 	/** Default polling interval in milliseconds */
 	private static final int DEFAULT_POLL_INTERVAL_MS = 10000;
 
-	/** Parent event source */
-	private IInboundEventSource<T> eventSource;
-
 	/** Polling interval in milliseconds */
 	private int pollIntervalMs = DEFAULT_POLL_INTERVAL_MS;
 
 	/** Handles poller threading */
 	private ExecutorService executor;
-
-	public PollingInboundEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
 
 	/**
 	 * Implemented in subclass to do work when polling occurs.
@@ -113,26 +101,6 @@ public abstract class PollingInboundEventReceiver<T> extends LifecycleComponent
 	@Override
 	public Logger getLogger() {
 		return LOGGER;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	public IInboundEventSource<T> getEventSource() {
-		return eventSource;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com.
-	 * sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	public void setEventSource(IInboundEventSource<T> eventSource) {
-		this.eventSource = eventSource;
 	}
 
 	public int getPollIntervalMs() {

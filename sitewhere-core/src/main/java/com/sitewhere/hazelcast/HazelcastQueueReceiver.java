@@ -7,7 +7,6 @@
  */
 package com.sitewhere.hazelcast;
 
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -16,13 +15,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 
 import com.hazelcast.core.IQueue;
+import com.sitewhere.device.communication.EventProcessingLogic;
+import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.server.hazelcast.ISiteWhereHazelcast;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastAware;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
@@ -32,14 +30,11 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
  * 
  * @author Derek
  */
-public class HazelcastQueueReceiver extends LifecycleComponent
-		implements IInboundEventReceiver<DecodedDeviceRequest<?>>, ITenantHazelcastAware {
+public class HazelcastQueueReceiver extends InboundEventReceiver<DecodedDeviceRequest<?>>
+		implements ITenantHazelcastAware {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(HazelcastQueueReceiver.class);
-
-	/** Parent event source */
-	private IInboundEventSource<DecodedDeviceRequest<?>> eventSource;
 
 	/** Queue of events to be processed */
 	private IQueue<DecodedDeviceRequest<?>> eventQueue;
@@ -52,10 +47,6 @@ public class HazelcastQueueReceiver extends LifecycleComponent
 
 	/** Name of Hazelcast queue to listen on */
 	private String queueName = ISiteWhereHazelcast.QUEUE_ALL_EVENTS;
-
-	public HazelcastQueueReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -98,7 +89,7 @@ public class HazelcastQueueReceiver extends LifecycleComponent
 			while (true) {
 				try {
 					DecodedDeviceRequest<?> payload = getEventQueue().take();
-					onEventPayloadReceived(payload, null);
+					EventProcessingLogic.processRawPayload(HazelcastQueueReceiver.this, payload, null);
 					LOGGER.debug("Processed event from " + payload.getHardwareId()
 							+ " from Hazelcast event queue.");
 				} catch (InterruptedException e) {
@@ -127,40 +118,6 @@ public class HazelcastQueueReceiver extends LifecycleComponent
 	@Override
 	public String getDisplayName() {
 		return "Hazelcast";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(DecodedDeviceRequest<?> payload, Map<String, String> metadata) {
-		getEventSource().onEncodedEventReceived(this, payload, metadata);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com
-	 * .sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	@Override
-	public void setEventSource(IInboundEventSource<DecodedDeviceRequest<?>> source) {
-		this.eventSource = source;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	@Override
-	public IInboundEventSource<DecodedDeviceRequest<?>> getEventSource() {
-		return eventSource;
 	}
 
 	/** Used for naming processor threads */

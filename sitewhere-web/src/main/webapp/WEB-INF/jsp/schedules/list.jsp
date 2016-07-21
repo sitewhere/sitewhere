@@ -76,9 +76,8 @@
 	function onDeleteSchedule(token) {
 		swConfirm(i18next("public.DeleteSchedule"), i18next("schedules.list.AYSDTS") + "?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/schedules/" + token
-						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
-					onDeleteFail);
+				$.deleteAuthJSON("${pageContext.request.contextPath}/api/schedules/" + token + "?force=true",
+					"${basicAuth}", "${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
 			}
 		});
 	}
@@ -93,52 +92,52 @@
 		handleError(jqXHR, i18next("sites.list.UTDS"));
 	}
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(function() {
 
-					schedDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/schedules?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseEntityData(item);
-											});
-											return response;
-										}
-									},
-									serverPaging : true,
-									serverSorting : true,
-									pageSize : 50,
-								});
-
-					/** Create the list */
-					$("#schedules").kendoGrid({
-						dataSource : schedDS,
-						rowTemplate : kendo.template($("#tpl-schedule-entry").html()),
-						scrollable : true,
-						height : 400,
+		schedDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/schedules",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseEntityData(item);
 					});
+					return response;
+				}
+			},
+			serverPaging : true,
+			serverSorting : true,
+			pageSize : 50,
+		});
 
-					/** Pager for list */
-					$("#pager").kendoPager({
-						dataSource : schedDS
-					});
+		/** Create the list */
+		$("#schedules").kendoGrid({
+			dataSource : schedDS,
+			rowTemplate : kendo.template($("#tpl-schedule-entry").html()),
+			scrollable : true,
+			height : 400,
+		});
 
-					/** Handle add site functionality */
-					$('#btn-add-schedule').click(function(event) {
-						scOpen(event, onScheduleCreated);
-					});
-				});
+		/** Pager for list */
+		$("#pager").kendoPager({
+			dataSource : schedDS
+		});
+
+		/** Handle add site functionality */
+		$('#btn-add-schedule').click(function(event) {
+			scOpen(event, onScheduleCreated);
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

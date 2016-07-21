@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.sitewhere.rest.model.command.CommandResponse;
 import com.sitewhere.rest.model.search.SearchResults;
-import com.sitewhere.rest.model.user.request.TenantCreateRequest;
+import com.sitewhere.rest.model.tenant.request.TenantCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.tenant.ITenant;

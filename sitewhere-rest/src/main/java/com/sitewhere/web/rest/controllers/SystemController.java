@@ -10,6 +10,7 @@ package com.sitewhere.web.rest.controllers;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,6 +37,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/system")
 @Api(value = "system", description = "Operations related to SiteWhere CE system management.")
 @DocumentedController(name = "System Information")
@@ -54,7 +56,8 @@ public class SystemController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get version information")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = SystemInfo.GetVersionResponse.class, description = "getVersionResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = SystemInfo.GetVersionResponse.class, description = "getVersionResponse.md") })
 	public IVersion getVersion() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getVersion", LOGGER);
 		try {
@@ -74,7 +77,8 @@ public class SystemController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get server runtime information")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = SystemInfo.GetServerRuntimeResponse.class, description = "getServerStateResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = SystemInfo.GetServerRuntimeResponse.class, description = "getServerStateResponse.md") })
 	public ISiteWhereServerRuntime getServerRuntimeInformation() throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getServerRuntimeInformation", LOGGER);
 		try {

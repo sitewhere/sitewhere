@@ -23,11 +23,8 @@ import javax.websocket.WebSocketContainer;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Event receiver that pulls data from a web socket.
@@ -36,17 +33,13 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  *
  * @param <T>
  */
-public abstract class WebSocketEventReceiver<T> extends LifecycleComponent
-		implements IInboundEventReceiver<T> {
+public abstract class WebSocketEventReceiver<T> extends InboundEventReceiver<T> {
 
 	/** Static logger */
 	private static Logger LOGGER = Logger.getLogger(WebSocketEventReceiver.class);
 
 	/** User property that references the event reciever */
 	public static final String PROP_EVENT_RECEIVER = "sw.event.receiver";
-
-	/** Parent event source */
-	private IInboundEventSource<T> eventSource;
 
 	/** Web socket session */
 	private Session session;
@@ -56,10 +49,6 @@ public abstract class WebSocketEventReceiver<T> extends LifecycleComponent
 
 	/** Headers passed in web socket configuration */
 	private Map<String, String> headers = new HashMap<String, String>();
-
-	public WebSocketEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
 
 	/**
 	 * Get concrete {@link Endpoint} implementation class.
@@ -122,40 +111,6 @@ public abstract class WebSocketEventReceiver<T> extends LifecycleComponent
 	@Override
 	public String getDisplayName() {
 		return "WebSocket()";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(T payload, Map<String, String> metadata) {
-		getEventSource().onEncodedEventReceived(this, payload, metadata);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com
-	 * .sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	@Override
-	public void setEventSource(IInboundEventSource<T> source) {
-		this.eventSource = source;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	@Override
-	public IInboundEventSource<T> getEventSource() {
-		return eventSource;
 	}
 
 	/**

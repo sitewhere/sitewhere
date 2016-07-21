@@ -84,9 +84,8 @@
 		event.stopPropagation();
 		swConfirm(i18next("public.DeleteUser"), i18next("users.list.AYSYWTDTU"), function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/users/" + username
-						+ "?force=true&tenantAuthToken=${tenant.authenticationToken}", onDeleteSuccess,
-					onDeleteFail);
+				$.deleteAuthJSON("${pageContext.request.contextPath}/api/users/" + username + "?force=true",
+					"${basicAuth}", "${tenant.authenticationToken}", onDeleteSuccess, onDeleteFail);
 			}
 		});
 	}
@@ -101,49 +100,49 @@
 		handleError(jqXHR, i18next("users.list.UTDU"));
 	}
 
-	$(document)
-			.ready(
-				function() {
-					/** Create AJAX datasource for users list */
-					usersDS =
-							new kendo.data.DataSource(
-								{
-									transport : {
-										read : {
-											url : "${pageContext.request.contextPath}/api/users?tenantAuthToken=${tenant.authenticationToken}",
-											dataType : "json",
-										}
-									},
-									schema : {
-										data : "results",
-										total : "numResults",
-										parse : function(response) {
-											$.each(response.results, function(index, item) {
-												parseUserData(item);
-											});
-											return response;
-										}
-									},
-									pageSize : 10
-								});
-
-					/** Create the location list */
-					$("#users").kendoGrid({
-						dataSource : usersDS,
-						rowTemplate : kendo.template($("#tpl-user-entry").html()),
-						scrollable : false,
+	$(document).ready(function() {
+		/** Create AJAX datasource for users list */
+		usersDS = new kendo.data.DataSource({
+			transport : {
+				read : {
+					url : "${pageContext.request.contextPath}/api/users",
+					beforeSend : function(req) {
+						req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+						req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+					},
+					dataType : "json",
+				}
+			},
+			schema : {
+				data : "results",
+				total : "numResults",
+				parse : function(response) {
+					$.each(response.results, function(index, item) {
+						parseUserData(item);
 					});
+					return response;
+				}
+			},
+			pageSize : 10
+		});
 
-					/** Pager for device list */
-					$("#pager").kendoPager({
-						dataSource : usersDS
-					});
+		/** Create the location list */
+		$("#users").kendoGrid({
+			dataSource : usersDS,
+			rowTemplate : kendo.template($("#tpl-user-entry").html()),
+			scrollable : false,
+		});
 
-					/** Handle create dialog */
-					$('#btn-add-user').click(function(event) {
-						ucOpen(onUserCreated);
-					});
-				});
+		/** Pager for device list */
+		$("#pager").kendoPager({
+			dataSource : usersDS
+		});
+
+		/** Handle create dialog */
+		$('#btn-add-user').click(function(event) {
+			ucOpen(onUserCreated);
+		});
+	});
 </script>
 
 <%@ include file="../includes/bottom.inc"%>

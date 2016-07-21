@@ -11,7 +11,6 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -33,11 +32,10 @@ import org.apache.activemq.broker.TransportConnector;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.device.communication.EventProcessingLogic;
+import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that uses an ActiveMQ broker to listen
@@ -45,17 +43,13 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class ActiveMQInboundEventReceiver extends LifecycleComponent
-		implements IInboundEventReceiver<byte[]> {
+public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(ActiveMQInboundEventReceiver.class);
 
 	/** Number of consumers reading messages from the queue */
 	private static final int DEFAULT_NUM_CONSUMERS = 3;
-
-	/** Parent event source */
-	private IInboundEventSource<byte[]> eventSource;
 
 	/** ActiveMQ broker service */
 	private BrokerService brokerService;
@@ -82,7 +76,6 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent
 	private ExecutorService consumersPool;
 
 	public ActiveMQInboundEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
 		this.brokerService = new BrokerService();
 	}
 
@@ -191,18 +184,6 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
-		getEventSource().onEncodedEventReceived(ActiveMQInboundEventReceiver.this, payload, metadata);
-	}
-
 	/** Used for naming consumer threads */
 	private class ConsumersThreadFactory implements ThreadFactory {
 
@@ -276,12 +257,14 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent
 					}
 					if (message instanceof TextMessage) {
 						TextMessage textMessage = (TextMessage) message;
-						onEventPayloadReceived(textMessage.getText().getBytes(), null);
+						EventProcessingLogic.processRawPayload(ActiveMQInboundEventReceiver.this,
+								textMessage.getText().getBytes(), null);
 					} else if (message instanceof BytesMessage) {
 						BytesMessage bytesMessage = (BytesMessage) message;
 						byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 						bytesMessage.readBytes(buffer);
-						onEventPayloadReceived(buffer, null);
+						EventProcessingLogic.processRawPayload(ActiveMQInboundEventReceiver.this, buffer,
+								null);
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}
@@ -304,26 +287,6 @@ public class ActiveMQInboundEventReceiver extends LifecycleComponent
 			} catch (SiteWhereException e1) {
 			}
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	public IInboundEventSource<byte[]> getEventSource() {
-		return eventSource;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com
-	 * .sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	public void setEventSource(IInboundEventSource<byte[]> eventSource) {
-		this.eventSource = eventSource;
 	}
 
 	public String getBrokerName() {

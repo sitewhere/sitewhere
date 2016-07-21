@@ -16,6 +16,7 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -29,8 +30,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public abstract class InboundProcessingStrategy extends TenantLifecycleComponent
-		implements IInboundProcessingStrategy {
+public abstract class InboundProcessingStrategy extends TenantLifecycleComponent implements IInboundProcessingStrategy {
 
 	public InboundProcessingStrategy() {
 		super(LifecycleComponentType.InboundProcessingStrategy);
@@ -49,32 +49,34 @@ public abstract class InboundProcessingStrategy extends TenantLifecycleComponent
 			getInboundProcessorChain().onRegistrationRequest(decoded.getHardwareId(), decoded.getOriginator(),
 					((IDeviceRegistrationRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
-			getInboundProcessorChain().onDeviceCommandResponseRequest(decoded.getHardwareId(),
-					decoded.getOriginator(), ((IDeviceCommandResponseCreateRequest) decoded.getRequest()));
+			getInboundProcessorChain().onDeviceCommandResponseRequest(decoded.getHardwareId(), decoded.getOriginator(),
+					((IDeviceCommandResponseCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceMeasurementsCreateRequest) {
 			getInboundProcessorChain().onDeviceMeasurementsCreateRequest(decoded.getHardwareId(),
 					decoded.getOriginator(), ((IDeviceMeasurementsCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
-			getInboundProcessorChain().onDeviceLocationCreateRequest(decoded.getHardwareId(),
-					decoded.getOriginator(), ((IDeviceLocationCreateRequest) decoded.getRequest()));
+			getInboundProcessorChain().onDeviceLocationCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
+					((IDeviceLocationCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
-			getInboundProcessorChain().onDeviceAlertCreateRequest(decoded.getHardwareId(),
-					decoded.getOriginator(), ((IDeviceAlertCreateRequest) decoded.getRequest()));
+			getInboundProcessorChain().onDeviceAlertCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
+					((IDeviceAlertCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceStateChangeCreateRequest) {
 			getInboundProcessorChain().onDeviceStateChangeCreateRequest(decoded.getHardwareId(),
 					decoded.getOriginator(), ((IDeviceStateChangeCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {
-			getInboundProcessorChain().onDeviceStreamCreateRequest(decoded.getHardwareId(),
-					decoded.getOriginator(), ((IDeviceStreamCreateRequest) decoded.getRequest()));
+			getInboundProcessorChain().onDeviceStreamCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
+					((IDeviceStreamCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof IDeviceStreamDataCreateRequest) {
-			getInboundProcessorChain().onDeviceStreamDataCreateRequest(decoded.getHardwareId(),
-					decoded.getOriginator(), ((IDeviceStreamDataCreateRequest) decoded.getRequest()));
+			getInboundProcessorChain().onDeviceStreamDataCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
+					((IDeviceStreamDataCreateRequest) decoded.getRequest()));
 		} else if (decoded.getRequest() instanceof ISendDeviceStreamDataRequest) {
-			getInboundProcessorChain().onSendDeviceStreamDataRequest(decoded.getHardwareId(),
-					decoded.getOriginator(), ((ISendDeviceStreamDataRequest) decoded.getRequest()));
+			getInboundProcessorChain().onSendDeviceStreamDataRequest(decoded.getHardwareId(), decoded.getOriginator(),
+					((ISendDeviceStreamDataRequest) decoded.getRequest()));
+		} else if (decoded.getRequest() instanceof IDeviceMappingCreateRequest) {
+			getInboundProcessorChain().onDeviceMappingCreateRequest(decoded.getHardwareId(), decoded.getOriginator(),
+					((IDeviceMappingCreateRequest) decoded.getRequest()));
 		} else {
-			throw new RuntimeException(
-					"Unknown device event type: " + decoded.getRequest().getClass().getName());
+			throw new RuntimeException("Unknown device event type: " + decoded.getRequest().getClass().getName());
 		}
 	}
 

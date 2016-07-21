@@ -10,19 +10,16 @@ package com.sitewhere.device.communication.socket;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandler;
 import com.sitewhere.spi.device.communication.socket.ISocketInteractionHandlerFactory;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
  * Implementation of {@link IInboundEventReceiver} that creates a server socket and spawns
@@ -30,7 +27,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  * 
  * @author Derek
  */
-public class SocketInboundEventReceiver<T> extends LifecycleComponent implements IInboundEventReceiver<T> {
+public class SocketInboundEventReceiver<T> extends InboundEventReceiver<T> {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(SocketInboundEventReceiver.class);
@@ -53,9 +50,6 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 	/** Port used for server socket */
 	private int port = DEFAULT_PORT;
 
-	/** Parent event source */
-	private IInboundEventSource<T> eventSource;
-
 	/** Factory that produces {@link ISocketInteractionHandler} instances */
 	private ISocketInteractionHandlerFactory<T> handlerFactory;
 
@@ -71,10 +65,6 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 	/** Handles processing of server requests */
 	private ServerProcessingThread processing;
 
-	public SocketInboundEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -83,10 +73,13 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 	@Override
 	public void start() throws SiteWhereException {
 		try {
+			// Verify handler factory is set, then start it.
 			if (getHandlerFactory() == null) {
 				throw new SiteWhereException(
 						"No socket interaction handler factory configured for socket event source.");
 			}
+			getHandlerFactory().start();
+
 			LOGGER.info("Receiver creating server socket on " + getBindAddress() + ":" + getPort() + ".");
 			this.server = new ServerSocket(getPort());
 			this.processing = new ServerProcessingThread();
@@ -143,6 +136,10 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 				throw new SiteWhereException("Error shutting down server socket for event receiver.", e);
 			}
 		}
+		if (getHandlerFactory() != null) {
+			getHandlerFactory().stop();
+		}
+
 		LOGGER.info("Socket receiver processing stopped.");
 	}
 
@@ -176,18 +173,6 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(T payload, Map<String, String> metadata) {
-		getEventSource().onEncodedEventReceived(SocketInboundEventReceiver.this, payload, metadata);
-	}
-
 	/**
 	 * Handles processing for a single request.
 	 * 
@@ -212,26 +197,6 @@ public class SocketInboundEventReceiver<T> extends LifecycleComponent implements
 				LOGGER.error("Exception processing request in event receiver server socket.", e);
 			}
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getEventSource()
-	 */
-	public IInboundEventSource<T> getEventSource() {
-		return eventSource;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#setEventSource(com
-	 * .sitewhere.spi.device.communication.IInboundEventSource)
-	 */
-	public void setEventSource(IInboundEventSource<T> eventSource) {
-		this.eventSource = eventSource;
 	}
 
 	public int getNumThreads() {

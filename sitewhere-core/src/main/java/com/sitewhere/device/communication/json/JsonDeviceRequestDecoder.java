@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.sitewhere.rest.model.device.communication.DecodedDeviceRequest;
-import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 
@@ -40,18 +40,18 @@ public class JsonDeviceRequestDecoder implements IDeviceEventDecoder<byte[]> {
 	 */
 	@Override
 	public List<IDecodedDeviceRequest<?>> decode(byte[] payload, Map<String, String> metadata)
-			throws SiteWhereException {
+			throws EventDecodeException {
 		try {
 			List<IDecodedDeviceRequest<?>> events = new ArrayList<IDecodedDeviceRequest<?>>();
 			DecodedDeviceRequest<?> decoded = MAPPER.readValue(payload, DecodedDeviceRequest.class);
 			events.add(decoded);
 			return events;
 		} catch (JsonParseException e) {
-			throw new SiteWhereException(e);
+			throw new EventDecodeException(e);
 		} catch (JsonMappingException e) {
-			throw new SiteWhereException(e);
+			throw new EventDecodeException(e);
 		} catch (IOException e) {
-			throw new SiteWhereException(e);
+			throw new EventDecodeException(e);
 		}
 	}
 

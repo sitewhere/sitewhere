@@ -54,82 +54,78 @@
 	/** Dropdown with list of asset types */
 	var ccAssetTypesDropdown;
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					/** Available asset types shown in dropdown */
-					var ccAssetTypes = [ {
-						text : "Device",
-						value : "Device"
-					}, {
-						text : "Hardware",
-						value : "Hardware"
-					}, {
-						text : "Person",
-						value : "Person"
-					}, {
-						text : "Location",
-						value : "Location"
-					}, ];
+			/** Available asset types shown in dropdown */
+			var ccAssetTypes = [ {
+				text : "Device",
+				value : "Device"
+			}, {
+				text : "Hardware",
+				value : "Hardware"
+			}, {
+				text : "Person",
+				value : "Person"
+			}, {
+				text : "Location",
+				value : "Location"
+			}, ];
 
-					/** Create tab strip */
-					ccTabs = $("#cc-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			/** Create tab strip */
+			ccTabs = $("#cc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
 
-					ccAssetTypesDropdown = $("#cc-asset-type").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "value",
-						dataSource : ccAssetTypes,
-					}).data("kendoDropDownList");
+			ccAssetTypesDropdown = $("#cc-asset-type").kendoDropDownList({
+				dataTextField : "text",
+				dataValueField : "value",
+				dataSource : ccAssetTypes,
+			}).data("kendoDropDownList");
 
-					/** Handle create dialog submit */
-					$('#cc-dialog-submit')
-							.click(
-								function(event) {
-									event.preventDefault();
-									if (!ccValidate()) {
-										return;
-									}
-									var initCategoryId = $('#cc-init-category-id').val();
-									var isCreate = (initCategoryId.length == 0);
-									var categoryData = {
-										"id" : $('#cc-category-id').val(),
-										"name" : $('#cc-category-name').val(),
-										"assetType" : $('#cc-asset-type').val(),
-									}
-									if (isCreate) {
-										$
-												.postJSON(
-													"${pageContext.request.contextPath}/api/assets/categories?tenantAuthToken=${tenant.authenticationToken}",
-													categoryData, onCreateSuccess, onCreateFail);
-									} else {
-										$.putJSON("${pageContext.request.contextPath}/api/assets/categories/"
-												+ initCategoryId
-												+ "?tenantAuthToken=${tenant.authenticationToken}",
-											categoryData, onCreateSuccess, onUpdateFail);
-									}
-								});
-
-					/** Called on successful create */
-					function onCreateSuccess() {
-						$('#cc-dialog').modal('hide');
-						if (ccSubmitCallback != null) {
-							ccSubmitCallback();
-						}
+			/** Handle create dialog submit */
+			$('#cc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!ccValidate()) {
+						return;
 					}
-
-					/** Handle failed call to create category */
-					function onCreateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to create asset category.");
+					var initCategoryId = $('#cc-init-category-id').val();
+					var isCreate = (initCategoryId.length == 0);
+					var categoryData = {
+						"id" : $('#cc-category-id').val(),
+						"name" : $('#cc-category-name').val(),
+						"assetType" : $('#cc-asset-type').val(),
 					}
-
-					/** Handle failed call to update category */
-					function onUpdateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to update asset category.");
+					if (isCreate) {
+						$.postAuthJSON("${pageContext.request.contextPath}/api/assets/categories",
+							categoryData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
+							onCreateFail);
+					} else {
+						$.putAuthJSON("${pageContext.request.contextPath}/api/assets/categories/"
+								+ initCategoryId, categoryData, "${basicAuth}",
+							"${tenant.authenticationToken}", onCreateSuccess, onUpdateFail);
 					}
 				});
+
+			/** Called on successful create */
+			function onCreateSuccess() {
+				$('#cc-dialog').modal('hide');
+				if (ccSubmitCallback != null) {
+					ccSubmitCallback();
+				}
+			}
+
+			/** Handle failed call to create category */
+			function onCreateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to create asset category.");
+			}
+
+			/** Handle failed call to update category */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to update asset category.");
+			}
+		});
 
 	/** Validate everything */
 	function ccValidate() {
@@ -177,8 +173,8 @@
 		ccSubmitCallback = callback;
 
 		// Get latest device data for hardware id.
-		$.getJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-				+ "?tenantAuthToken=${tenant.authenticationToken}", cuUpdateGetSuccess, cuUpdateGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId,
+			"${basicAuth}", "${tenant.authenticationToken}", cuUpdateGetSuccess, cuUpdateGetFailed);
 	}
 
 	/** Called on successful category load request */

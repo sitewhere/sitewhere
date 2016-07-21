@@ -468,19 +468,41 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 * @throws SiteWhereException
 	 */
 	protected ITenantHazelcastConfiguration initializeHazelcastConfiguration() throws SiteWhereException {
-		File root = new File(getGlobalConfigurationResolver().getConfigurationRoot());
-		File config = new File(root, TenantHazelcastConfiguration.CONFIG_FILE_NAME);
-		ITenantHazelcastConfiguration hazelcast = new TenantHazelcastConfiguration(config);
+		ITenantHazelcastConfiguration hazelcast = createHazelcastConfiguration();
 
 		// Dynamically inject configuration into interested beans.
+		injectHazelcastConfiguration(hazelcast);
+
+		return hazelcast;
+	}
+
+	/**
+	 * Create the {@link ITenantHazelcastConfiguration} implementation.
+	 * 
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ITenantHazelcastConfiguration createHazelcastConfiguration() throws SiteWhereException {
+		File root = new File(getGlobalConfigurationResolver().getConfigurationRoot());
+		File config = new File(root, TenantHazelcastConfiguration.CONFIG_FILE_NAME);
+		return new TenantHazelcastConfiguration(config);
+	}
+
+	/**
+	 * Finds beans that implement the {@link ITenantHazelcastAware} interface and injects
+	 * the tenant Hazelcast configuration.
+	 * 
+	 * @param hazelcast
+	 * @throws SiteWhereException
+	 */
+	protected void injectHazelcastConfiguration(ITenantHazelcastConfiguration hazelcast)
+			throws SiteWhereException {
 		Map<String, ITenantHazelcastAware> beans =
 				getSpringContext().getBeansOfType(ITenantHazelcastAware.class);
 		for (String key : beans.keySet()) {
 			ITenantHazelcastAware aware = beans.get(key);
 			aware.setHazelcastConfiguration(hazelcast);
 		}
-
-		return hazelcast;
 	}
 
 	/**

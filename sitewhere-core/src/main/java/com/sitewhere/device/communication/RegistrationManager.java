@@ -10,6 +10,8 @@ package com.sitewhere.device.communication;
 import org.apache.log4j.Logger;
 
 import com.sitewhere.SiteWhere;
+import com.sitewhere.rest.model.device.DeviceElementMapping;
+import com.sitewhere.rest.model.device.command.DeviceMappingAckCommand;
 import com.sitewhere.rest.model.device.command.RegistrationAckCommand;
 import com.sitewhere.rest.model.device.command.RegistrationFailureCommand;
 import com.sitewhere.rest.model.device.request.DeviceAssignmentCreateRequest;
@@ -21,9 +23,11 @@ import com.sitewhere.spi.device.DeviceAssignmentType;
 import com.sitewhere.spi.device.IDevice;
 import com.sitewhere.spi.device.IDeviceSpecification;
 import com.sitewhere.spi.device.ISite;
+import com.sitewhere.spi.device.command.DeviceMappingResult;
 import com.sitewhere.spi.device.command.RegistrationFailureReason;
 import com.sitewhere.spi.device.command.RegistrationSuccessReason;
 import com.sitewhere.spi.device.communication.IRegistrationManager;
+import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
@@ -54,19 +58,17 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IRegistrationManager#handleDeviceRegistration
+	 * @see com.sitewhere.spi.device.communication.IRegistrationManager#
+	 * handleDeviceRegistration
 	 * (com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest)
 	 */
 	@Override
 	public void handleDeviceRegistration(IDeviceRegistrationRequest request) throws SiteWhereException {
 		LOGGER.debug("Handling device registration request.");
-		IDevice device =
-				SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceByHardwareId(
-						request.getHardwareId());
-		IDeviceSpecification specification =
-				SiteWhere.getServer().getDeviceManagement(getTenant()).getDeviceSpecificationByToken(
-						request.getSpecificationToken());
+		IDevice device = SiteWhere.getServer().getDeviceManagement(getTenant())
+				.getDeviceByHardwareId(request.getHardwareId());
+		IDeviceSpecification specification = SiteWhere.getServer().getDeviceManagement(getTenant())
+				.getDeviceSpecificationByToken(request.getSpecificationToken());
 
 		// If a site token is passed, verify it is valid.
 		if (request.getSiteToken() != null) {
@@ -95,8 +97,7 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 					throw new SiteWhereException("Unable to register device. No sites are configured.");
 				}
 			}
-			String siteToken =
-					(request.getSiteToken() != null) ? request.getSiteToken() : getAutoAssignSiteToken();
+			String siteToken = (request.getSiteToken() != null) ? request.getSiteToken() : getAutoAssignSiteToken();
 			LOGGER.debug("Creating new device as part of registration.");
 			DeviceCreateRequest deviceCreate = new DeviceCreateRequest();
 			deviceCreate.setHardwareId(request.getHardwareId());
@@ -136,8 +137,8 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 	}
 
 	/**
-	 * Send a message indicating that the registration manager does not allow registration
-	 * of new devices.
+	 * Send a message indicating that the registration manager does not allow
+	 * registration of new devices.
 	 * 
 	 * @param hardwareId
 	 * @throws SiteWhereException
@@ -150,8 +151,8 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 	}
 
 	/**
-	 * Send a message indicating invalid specification id or one that does not match
-	 * existing device.
+	 * Send a message indicating invalid specification id or one that does not
+	 * match existing device.
 	 * 
 	 * @param hardwareId
 	 * @throws SiteWhereException
@@ -164,7 +165,8 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 	}
 
 	/**
-	 * Send information indicating a site token must be passed (if not auto-assigned).
+	 * Send information indicating a site token must be passed (if not
+	 * auto-assigned).
 	 * 
 	 * @param hardwareId
 	 * @throws SiteWhereException
@@ -179,6 +181,29 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.device.communication.IRegistrationManager#
+	 * handleDeviceMapping(java.lang.String,
+	 * com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest)
+	 */
+	@Override
+	public void handleDeviceMapping(String hardwareId, IDeviceMappingCreateRequest request) throws SiteWhereException {
+		DeviceElementMapping mapping = new DeviceElementMapping();
+		mapping.setHardwareId(hardwareId);
+		mapping.setDeviceElementSchemaPath(request.getMappingPath());
+		DeviceMappingAckCommand command = new DeviceMappingAckCommand();
+		try {
+			SiteWhere.getServer().getDeviceManagement(getTenant())
+					.createDeviceElementMapping(request.getCompositeDeviceHardwareId(), mapping);
+			command.setResult(DeviceMappingResult.MappingCreated);
+		} catch (SiteWhereException e) {
+			command.setResult(DeviceMappingResult.MappingFailedDueToExisting);
+		}
+		SiteWhere.getServer().getDeviceCommunication(getTenant()).deliverSystemCommand(hardwareId, command);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.lifecycle.ILifecycleComponent#start()
 	 */
 	@Override
@@ -187,12 +212,10 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 			if (getAutoAssignSiteToken() == null) {
 				updateAutoAssignToFirstSite();
 			} else {
-				ISite site =
-						SiteWhere.getServer().getDeviceManagement(getTenant()).getSiteByToken(
-								getAutoAssignSiteToken());
+				ISite site = SiteWhere.getServer().getDeviceManagement(getTenant())
+						.getSiteByToken(getAutoAssignSiteToken());
 				if (site == null) {
-					throw new SiteWhereException(
-							"Registration manager auto assignment site token is invalid.");
+					throw new SiteWhereException("Registration manager auto assignment site token is invalid.");
 				}
 			}
 		}
@@ -214,8 +237,8 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 	 * @throws SiteWhereException
 	 */
 	protected void updateAutoAssignToFirstSite() throws SiteWhereException {
-		ISearchResults<ISite> sites =
-				SiteWhere.getServer().getDeviceManagement(getTenant()).listSites(new SearchCriteria(1, 1));
+		ISearchResults<ISite> sites = SiteWhere.getServer().getDeviceManagement(getTenant())
+				.listSites(new SearchCriteria(1, 1));
 		if (sites.getResults().isEmpty()) {
 			LOGGER.warn("Registration manager configured for auto-assign site, but no sites were found.");
 			setAutoAssignSiteToken(null);

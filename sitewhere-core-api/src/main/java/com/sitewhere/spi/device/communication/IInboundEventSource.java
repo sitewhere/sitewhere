@@ -54,7 +54,8 @@ public interface IInboundEventSource<T> extends ITenantLifecycleComponent {
 	 * @param receiver
 	 * @param encodedEvent
 	 * @param metadata
+	 * @throws EventDecodeException
 	 */
 	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedEvent,
-			Map<String, String> metadata);
+			Map<String, String> metadata) throws EventDecodeException;
 }

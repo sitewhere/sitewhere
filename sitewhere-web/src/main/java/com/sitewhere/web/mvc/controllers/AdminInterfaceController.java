@@ -47,6 +47,7 @@ import com.sitewhere.spi.server.ISiteWhereTenantEngineState;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.tenant.ITenantGroup;
 import com.sitewhere.spi.user.IUser;
 import com.sitewhere.spi.user.SiteWhereRoles;
 import com.sitewhere.version.VersionHelper;
@@ -116,7 +117,7 @@ public class AdminInterfaceController extends MvcController {
 			List<ITenant> matches = SiteWhere.getServer().getAuthorizedTenants(user.getUsername(), true);
 
 			// Create standard data objects, but do not require tenant.
-			Map<String, Object> data = createBaseData(servletRequest, false);
+			Map<String, Object> data = createBaseData(servletRequest);
 
 			// Handle cases where there are no tenants or exactly one.
 			if (matches.size() == 0) {
@@ -160,13 +161,9 @@ public class AdminInterfaceController extends MvcController {
 
 			// If no redirect specified, show server info page.
 			IUser user = LoginManager.getCurrentlyLoggedInUser();
-			AuthoritiesHelper auths = new AuthoritiesHelper(user);
+			// AuthoritiesHelper auths = new AuthoritiesHelper(user);
 			if ((redirect == null) || (redirect.length() == 0)) {
-				if (auths.isViewServerInformation()) {
-					redirect = "/admin/server.html";
-				} else {
-					redirect = "/admin/sites/list.html";
-				}
+				redirect = "/admin/" + tenantId + "/sites/list.html";
 			}
 
 			// Find tenants the logged in user is able to view.
@@ -183,7 +180,6 @@ public class AdminInterfaceController extends MvcController {
 				return showError("Invalid tenant choice.");
 			}
 
-			setChosenTenant(chosen, servletRequest);
 			return new ModelAndView("redirect:" + redirect);
 		} catch (SiteWhereException e) {
 			return showError(e);
@@ -235,14 +231,15 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "list sites" page.
 	 * 
+	 * @param tenantId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/sites/list")
-	public ModelAndView listSites(HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/sites/list")
+	public ModelAndView listSites(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listSites", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			return new ModelAndView("sites/list", data);
 		} catch (NoTenantException e) {
 			return showTenantChoices(getUrl(request), request);
@@ -256,15 +253,17 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "site detail" page.
 	 * 
+	 * @param tenantId
 	 * @param siteToken
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/sites/{siteToken}")
-	public ModelAndView siteDetail(@PathVariable("siteToken") String siteToken, HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/sites/{siteToken}")
+	public ModelAndView siteDetail(@PathVariable("tenantId") String tenantId,
+			@PathVariable("siteToken") String siteToken, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "siteDetail", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
 			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(tenant);
 			ISite site = management.getSiteByToken(siteToken);
@@ -285,15 +284,17 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "assignment detail" page.
 	 * 
+	 * @param tenantId
 	 * @param token
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/assignments/{token}")
-	public ModelAndView assignmentDetail(@PathVariable("token") String token, HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/assignments/{token}")
+	public ModelAndView assignmentDetail(@PathVariable("tenantId") String tenantId, @PathVariable("token") String token,
+			HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "assignmentDetail", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
 			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(tenant);
 			IDeviceAssignment assignment = management.getDeviceAssignmentByToken(token);
@@ -317,15 +318,17 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "assignment emulator" page.
 	 * 
+	 * @param tenantId
 	 * @param token
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/assignments/{token}/emulator")
-	public ModelAndView assignmentEmulator(@PathVariable("token") String token, HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/assignments/{token}/emulator")
+	public ModelAndView assignmentEmulator(@PathVariable("tenantId") String tenantId,
+			@PathVariable("token") String token, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "assignmentEmulator", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
 			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(tenant);
 			IDeviceAssignment assignment = management.getDeviceAssignmentByToken(token);
@@ -346,14 +349,15 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "list device specifications" page.
 	 * 
+	 * @param tenantId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/specifications/list")
-	public ModelAndView listSpecifications(HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/specifications/list")
+	public ModelAndView listSpecifications(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listSpecifications", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			return new ModelAndView("specifications/list", data);
 		} catch (NoTenantException e) {
 			return showTenantChoices(getUrl(request), request);
@@ -367,15 +371,17 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "specification detail" page.
 	 * 
+	 * @param tenantId
 	 * @param token
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/specifications/{token}")
-	public ModelAndView specificationDetail(@PathVariable("token") String token, HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/specifications/{token}")
+	public ModelAndView specificationDetail(@PathVariable("tenantId") String tenantId,
+			@PathVariable("token") String token, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "specificationDetail", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
 			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(tenant);
 			IDeviceSpecification spec = management.getDeviceSpecificationByToken(token);
@@ -396,9 +402,11 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "list devices" page.
 	 * 
+	 * @param tenantId
 	 * @param specification
 	 * @param group
 	 * @param groupsWithRole
+	 * @param site
 	 * @param dateRange
 	 * @param beforeDate
 	 * @param afterDate
@@ -406,24 +414,22 @@ public class AdminInterfaceController extends MvcController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/devices/list")
-	public ModelAndView listDevices(@RequestParam(required = false) String specification,
-			@RequestParam(required = false) String group,
-			@RequestParam(required = false) String groupsWithRole,
-			@RequestParam(required = false) String site, @RequestParam(required = false) String dateRange,
-			@RequestParam(required = false) String beforeDate,
-			@RequestParam(required = false) String afterDate,
-			@RequestParam(required = false) boolean excludeAssigned, HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/devices/list")
+	public ModelAndView listDevices(@PathVariable("tenantId") String tenantId,
+			@RequestParam(required = false) String specification, @RequestParam(required = false) String group,
+			@RequestParam(required = false) String groupsWithRole, @RequestParam(required = false) String site,
+			@RequestParam(required = false) String dateRange, @RequestParam(required = false) String beforeDate,
+			@RequestParam(required = false) String afterDate, @RequestParam(required = false) boolean excludeAssigned,
+			HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listDevices", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
 
 			// Look up specification that will be used for filtering.
 			if (specification != null) {
-				IDeviceSpecification found =
-						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceSpecificationByToken(
-								specification);
+				IDeviceSpecification found = SiteWhere.getServer().getDeviceManagement(tenant)
+						.getDeviceSpecificationByToken(specification);
 				if (found == null) {
 					throw new SiteWhereException("Specification token was not valid.");
 				}
@@ -469,22 +475,23 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "device detail" page.
 	 * 
+	 * @param tenantId
 	 * @param hardwareId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/devices/{hardwareId}")
-	public ModelAndView deviceDetail(@PathVariable("hardwareId") String hardwareId,
-			HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/devices/{hardwareId}")
+	public ModelAndView deviceDetail(@PathVariable("tenantId") String tenantId,
+			@PathVariable("hardwareId") String hardwareId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "deviceDetail", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
 			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(tenant);
 			IDevice device = management.getDeviceByHardwareId(hardwareId);
 			if (device != null) {
-				IDeviceSpecification specification =
-						management.getDeviceSpecificationByToken(device.getSpecificationToken());
+				IDeviceSpecification specification = management
+						.getDeviceSpecificationByToken(device.getSpecificationToken());
 				data.put("device", device);
 				data.put("specification", specification);
 				return new ModelAndView("devices/detail", data);
@@ -502,14 +509,15 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "list device groups" page.
 	 * 
+	 * @param tenantId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/groups/list")
-	public ModelAndView listDeviceGroups(HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/groups/list")
+	public ModelAndView listDeviceGroups(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listDeviceGroups", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			return new ModelAndView("groups/list", data);
 		} catch (NoTenantException e) {
 			return showTenantChoices(getUrl(request), request);
@@ -523,16 +531,17 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "device group detail" page.
 	 * 
+	 * @param tenantId
 	 * @param groupToken
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/groups/{groupToken}")
-	public ModelAndView deviceGroupDetail(@PathVariable("groupToken") String groupToken,
-			HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/groups/{groupToken}")
+	public ModelAndView deviceGroupDetail(@PathVariable("tenantId") String tenantId,
+			@PathVariable("groupToken") String groupToken, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "deviceGroupDetail", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
 			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(tenant);
 			IDeviceGroup group = management.getDeviceGroup(groupToken);
@@ -553,14 +562,15 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "asset categories" page.
 	 * 
+	 * @param tenantId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/assets/categories")
-	public ModelAndView listAssetCategories(HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/assets/categories")
+	public ModelAndView listAssetCategories(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listAssetCategories", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			return new ModelAndView("assets/categories", data);
 		} catch (NoTenantException e) {
 			return showTenantChoices(getUrl(request), request);
@@ -574,19 +584,19 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "category person assets" page.
 	 * 
+	 * @param tenantId
 	 * @param categoryId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/assets/categories/{categoryId}")
-	public ModelAndView listCategoryAssets(@PathVariable("categoryId") String categoryId,
-			HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/assets/categories/{categoryId}")
+	public ModelAndView listCategoryAssets(@PathVariable("tenantId") String tenantId,
+			@PathVariable("categoryId") String categoryId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listCategoryAssets", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
-			IAssetCategory category =
-					SiteWhere.getServer().getAssetManagement(tenant).getAssetCategory(categoryId);
+			IAssetCategory category = SiteWhere.getServer().getAssetManagement(tenant).getAssetCategory(categoryId);
 			data.put("category", category);
 			return new ModelAndView("assets/categoryAssets", data);
 		} catch (NoTenantException e) {
@@ -601,14 +611,15 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * Display the "list batch operations" page.
 	 * 
+	 * @param tenantId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/batch/list")
-	public ModelAndView listBatchOperations(HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/batch/list")
+	public ModelAndView listBatchOperations(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listBatchOperations", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			return new ModelAndView("batch/list", data);
 		} catch (NoTenantException e) {
 			return showTenantChoices(getUrl(request), request);
@@ -622,23 +633,23 @@ public class AdminInterfaceController extends MvcController {
 	/**
 	 * View details about a batch command invocation.
 	 * 
+	 * @param tenantId
 	 * @param batchToken
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/batch/command/{token}")
-	public ModelAndView batchCommandInvocationDetail(@PathVariable("token") String batchToken,
-			HttpServletRequest request) {
+	@RequestMapping("/{tenantId}/batch/command/{token}")
+	public ModelAndView batchCommandInvocationDetail(@PathVariable("tenantId") String tenantId,
+			@PathVariable("token") String batchToken, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "batchCommandInvocationDetail", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request);
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
 			ITenant tenant = (ITenant) data.get(DATA_TENANT);
 			IDeviceManagement management = SiteWhere.getServer().getDeviceManagement(tenant);
 			IBatchOperation operation = management.getBatchOperation(batchToken);
 			if (operation != null) {
 				data.put("operation", operation);
-				String commandToken =
-						operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
+				String commandToken = operation.getParameters().get(IBatchCommandInvocationRequest.PARAM_COMMAND_TOKEN);
 				if (commandToken == null) {
 					return showError("No command token set for batch operation.");
 				}
@@ -647,6 +658,50 @@ public class AdminInterfaceController extends MvcController {
 				return new ModelAndView("batch/command", data);
 			}
 			return showError("Batch operation for token '" + batchToken + "' not found.");
+		} catch (NoTenantException e) {
+			return showTenantChoices(getUrl(request), request);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Display the "list schedules" page.
+	 * 
+	 * @param tenantId
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/{tenantId}/schedules/list")
+	public ModelAndView listSchedules(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
+		Tracer.start(TracerCategory.AdminUserInterface, "listSchedules", LOGGER);
+		try {
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
+			return new ModelAndView("schedules/list", data);
+		} catch (NoTenantException e) {
+			return showTenantChoices(getUrl(request), request);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
+	 * Display the "list scheduled jobs" page.
+	 * 
+	 * @param tenantId
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/{tenantId}/jobs/list")
+	public ModelAndView listScheduledjobs(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
+		Tracer.start(TracerCategory.AdminUserInterface, "listScheduledjobs", LOGGER);
+		try {
+			Map<String, Object> data = createTenantPageBaseData(tenantId, request);
+			return new ModelAndView("jobs/list", data);
 		} catch (NoTenantException e) {
 			return showTenantChoices(getUrl(request), request);
 		} catch (SiteWhereException e) {
@@ -666,7 +721,7 @@ public class AdminInterfaceController extends MvcController {
 	public ModelAndView listUsers(HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listUsers", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request, false);
+			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("users/list", data);
 		} catch (SiteWhereException e) {
 			return showError(e);
@@ -686,7 +741,7 @@ public class AdminInterfaceController extends MvcController {
 	public ModelAndView listTenants(HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "listTenants", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request, false);
+			Map<String, Object> data = createBaseData(request);
 			return new ModelAndView("tenants/list", data);
 		} catch (SiteWhereException e) {
 			return showError(e);
@@ -706,7 +761,7 @@ public class AdminInterfaceController extends MvcController {
 	public ModelAndView viewTenant(@PathVariable("tenantId") String tenantId, HttpServletRequest request) {
 		Tracer.start(TracerCategory.AdminUserInterface, "viewTenant", LOGGER);
 		try {
-			Map<String, Object> data = createBaseData(request, false);
+			Map<String, Object> data = createBaseData(request);
 
 			// Pass JSON representation of tenant configuration model.
 			TenantConfigurationModel configModel = new TenantConfigurationModel();
@@ -740,6 +795,46 @@ public class AdminInterfaceController extends MvcController {
 	}
 
 	/**
+	 * Display the "list tenant groups" page.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/tgroups/list")
+	@Secured({ SiteWhereRoles.ADMINISTER_TENANTS })
+	public ModelAndView listTenantGroups(HttpServletRequest request) {
+		Tracer.start(TracerCategory.AdminUserInterface, "listTenantGroups", LOGGER);
+		try {
+			Map<String, Object> data = createBaseData(request);
+			return new ModelAndView("tgroups/list", data);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	@RequestMapping("/tgroups/{token}")
+	public ModelAndView viewTenantGroup(@PathVariable("token") String token, HttpServletRequest request) {
+		Tracer.start(TracerCategory.AdminUserInterface, "viewTenantGroup", LOGGER);
+		try {
+			Map<String, Object> data = createBaseData(request);
+
+			ITenantGroup tgroup = SiteWhere.getServer().getTenantManagement().getTenantGroupByToken(token);
+			if (tgroup == null) {
+				showError("Invalid tenant group token.");
+			}
+			data.put("tgroup", tgroup);
+
+			return new ModelAndView("tgroups/detail", data);
+		} catch (SiteWhereException e) {
+			return showError(e);
+		} finally {
+			Tracer.stop(LOGGER);
+		}
+	}
+
+	/**
 	 * Add site and specification data if tenant is active.
 	 * 
 	 * @param tenant
@@ -747,14 +842,13 @@ public class AdminInterfaceController extends MvcController {
 	 * @throws SiteWhereException
 	 */
 	protected void addTenantData(ITenant tenant, Map<String, Object> data) throws SiteWhereException {
-		ISiteWhereTenantEngineState state =
-				SiteWhere.getServer().getTenantEngine(tenant.getId()).getEngineState();
+		ISiteWhereTenantEngineState state = SiteWhere.getServer().getTenantEngine(tenant.getId()).getEngineState();
 
 		// Only attempt to load data if engine is started.
 		if (state.getLifecycleStatus() == LifecycleStatus.Started) {
 			// Pass JSON representation of sites list.
-			ISearchResults<ISite> sites =
-					SiteWhere.getServer().getDeviceManagement(tenant).listSites(new SearchCriteria(1, 0));
+			ISearchResults<ISite> sites = SiteWhere.getServer().getDeviceManagement(tenant)
+					.listSites(new SearchCriteria(1, 0));
 			List<TokenNamePair> sitesList = new ArrayList<TokenNamePair>();
 			for (ISite site : sites.getResults()) {
 				TokenNamePair pair = new TokenNamePair();
@@ -767,9 +861,8 @@ public class AdminInterfaceController extends MvcController {
 			data.put("sites", strSites);
 
 			// Pass JSON representation of specifications list.
-			ISearchResults<IDeviceSpecification> specs =
-					SiteWhere.getServer().getDeviceManagement(tenant).listDeviceSpecifications(false,
-							new SearchCriteria(1, 0));
+			ISearchResults<IDeviceSpecification> specs = SiteWhere.getServer().getDeviceManagement(tenant)
+					.listDeviceSpecifications(false, new SearchCriteria(1, 0));
 			List<TokenNamePair> specsList = new ArrayList<TokenNamePair>();
 			for (IDeviceSpecification spec : specs.getResults()) {
 				TokenNamePair pair = new TokenNamePair();
@@ -783,48 +876,6 @@ public class AdminInterfaceController extends MvcController {
 		} else {
 			data.put("sites", "null");
 			data.put("specifications", "null");
-		}
-	}
-
-	/**
-	 * Display the "list schedules" page.
-	 * 
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping("/schedules/list")
-	public ModelAndView listSchedules(HttpServletRequest request) {
-		Tracer.start(TracerCategory.AdminUserInterface, "listSchedules", LOGGER);
-		try {
-			Map<String, Object> data = createBaseData(request);
-			return new ModelAndView("schedules/list", data);
-		} catch (NoTenantException e) {
-			return showTenantChoices(getUrl(request), request);
-		} catch (SiteWhereException e) {
-			return showError(e);
-		} finally {
-			Tracer.stop(LOGGER);
-		}
-	}
-
-	/**
-	 * Display the "list scheduled jobs" page.
-	 * 
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping("/jobs/list")
-	public ModelAndView listScheduledjobs(HttpServletRequest request) {
-		Tracer.start(TracerCategory.AdminUserInterface, "listScheduledjobs", LOGGER);
-		try {
-			Map<String, Object> data = createBaseData(request);
-			return new ModelAndView("jobs/list", data);
-		} catch (NoTenantException e) {
-			return showTenantChoices(getUrl(request), request);
-		} catch (SiteWhereException e) {
-			return showError(e);
-		} finally {
-			Tracer.stop(LOGGER);
 		}
 	}
 }

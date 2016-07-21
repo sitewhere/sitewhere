@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +28,8 @@ import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.user.UserSearchCriteria;
+import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.rest.model.user.GrantedAuthority;
-import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.rest.model.user.User;
 import com.sitewhere.rest.model.user.request.UserCreateRequest;
 import com.sitewhere.spi.SiteWhereException;
@@ -59,6 +60,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/users")
 @Api(value = "users", description = "Operations related to SiteWhere users.")
 @DocumentedController(name = "Users")
@@ -139,7 +141,7 @@ public class UsersController extends RestController {
 			@Example(stage = Stage.Response, json = Users.CreateUserResponse.class, description = "getUserByUsernameResponse.md") })
 	public User getUserByUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getUserByUsername", LOGGER);
 		try {
 			IUser user =
@@ -172,7 +174,7 @@ public class UsersController extends RestController {
 	public User deleteUserByUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "deleteUserByUsername", LOGGER);
 		try {
 			IUser user = SiteWhere.getServer().getUserManagement().deleteUser(username, force);
@@ -197,7 +199,7 @@ public class UsersController extends RestController {
 			@Example(stage = Stage.Response, json = Users.ListAuthoritiesForUserResponse.class, description = "getAuthoritiesForUsernameResponse.md") })
 	public SearchResults<GrantedAuthority> getAuthoritiesForUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
 		try {
 			List<IGrantedAuthority> matches =
@@ -227,7 +229,7 @@ public class UsersController extends RestController {
 	public SearchResults<User> listUsers(
 			@ApiParam(value = "Include deleted", required = false) @RequestParam(defaultValue = "false") boolean includeDeleted,
 			@ApiParam(value = "Max records to return", required = false) @RequestParam(defaultValue = "100") int count)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listUsers", LOGGER);
 		try {
 			List<User> usersConv = new ArrayList<User>();
@@ -260,7 +262,7 @@ public class UsersController extends RestController {
 	public List<ITenant> getTenantsForUsername(
 			@ApiParam(value = "Unique username", required = true) @PathVariable String username,
 			@ApiParam(value = "Include runtime info", required = false) @RequestParam(required = false, defaultValue = "false") boolean includeRuntimeInfo)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "getAuthoritiesForUsername", LOGGER);
 		try {
 			List<ITenant> results = SiteWhere.getServer().getAuthorizedTenants(username, false);

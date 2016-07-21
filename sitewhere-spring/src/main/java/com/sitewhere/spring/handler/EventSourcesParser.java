@@ -24,12 +24,14 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.activemq.ActiveMQClientEventReceiver;
 import com.sitewhere.activemq.ActiveMQInboundEventReceiver;
 import com.sitewhere.azure.device.communication.EventHubInboundEventReceiver;
 import com.sitewhere.device.communication.BinaryInboundEventSource;
 import com.sitewhere.device.communication.DecodedInboundEventSource;
 import com.sitewhere.device.communication.EchoStringDecoder;
 import com.sitewhere.device.communication.StringInboundEventSource;
+import com.sitewhere.device.communication.coap.CoapServerEventReceiver;
 import com.sitewhere.device.communication.json.JsonBatchEventDecoder;
 import com.sitewhere.device.communication.json.JsonDeviceRequestDecoder;
 import com.sitewhere.device.communication.mqtt.MqttInboundEventReceiver;
@@ -43,6 +45,7 @@ import com.sitewhere.groovy.GroovyConfiguration;
 import com.sitewhere.groovy.device.communication.GroovyEventDecoder;
 import com.sitewhere.groovy.device.communication.GroovyStringEventDecoder;
 import com.sitewhere.groovy.device.communication.rest.PollingRestInboundEventReceiver;
+import com.sitewhere.groovy.device.communication.socket.GroovySocketInteractionHandler;
 import com.sitewhere.hazelcast.HazelcastQueueReceiver;
 import com.sitewhere.rabbitmq.RabbitMqInboundEventReceiver;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
@@ -95,36 +98,44 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 				result.add(parseEventSource(child, context));
 				break;
 			}
-			case AzureEventHubEventSource: {
-				result.add(parseAzureEventHubEventSource(child, context));
-				break;
-			}
 			case ActiveMQEventSource: {
 				result.add(parseActiveMQEventSource(child, context));
 				break;
 			}
-			case SocketEventSource: {
-				result.add(parseSocketEventSource(child, context));
+			case ActiveMQClientEventSource: {
+				result.add(parseActiveMQClientEventSource(child, context));
 				break;
 			}
-			case PollingRestEventSource: {
-				result.add(parsePollingRestEventSource(child, context));
+			case AzureEventHubEventSource: {
+				result.add(parseAzureEventHubEventSource(child, context));
+				break;
+			}
+			case CoapServerEventSource: {
+				result.add(parseCoapServerEventSource(child, context));
+				break;
+			}
+			case HazelcastQueueEventSource: {
+				result.add(parseHazelcastQueueEventSource(child, context));
 				break;
 			}
 			case MqttEventSource: {
 				result.add(parseMqttEventSource(child, context));
 				break;
 			}
+			case PollingRestEventSource: {
+				result.add(parsePollingRestEventSource(child, context));
+				break;
+			}
 			case RabbitMqEventSource: {
 				result.add(parseRabbitMqEventSource(child, context));
 				break;
 			}
-			case WebSocketEventSource: {
-				result.add(parseWebSocketEventSource(child, context));
+			case SocketEventSource: {
+				result.add(parseSocketEventSource(child, context));
 				break;
 			}
-			case HazelcastQueueEventSource: {
-				result.add(parseHazelcastQueueEventSource(child, context));
+			case WebSocketEventSource: {
+				result.add(parseWebSocketEventSource(child, context));
 				break;
 			}
 			}
@@ -496,6 +507,80 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 	}
 
 	/**
+	 * Parse an event source that uses ActiveMQ to connect to a remote broker and ingest
+	 * messages.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseActiveMQClientEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create ActiveMQ event receiver bean and register it.
+		AbstractBeanDefinition receiver = createActiveMQClientEventReceiver(element);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException(
+					"No event decoder specified for ActiveMQ client event source: " + element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Get implementation class for ActiveMQ event receiver.
+	 * 
+	 * @return
+	 */
+	protected Class<? extends IInboundEventReceiver<byte[]>> getActiveMQClientEventReceiverImplementation() {
+		return ActiveMQClientEventReceiver.class;
+	}
+
+	/**
+	 * Create ActiveMQ event receiver from XML element.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createActiveMQClientEventReceiver(Element element) {
+		BeanDefinitionBuilder mq =
+				BeanDefinitionBuilder.rootBeanDefinition(getActiveMQClientEventReceiverImplementation());
+
+		Attr remoteUri = element.getAttributeNode("remoteUri");
+		if (remoteUri == null) {
+			throw new RuntimeException("ActiveMQ 'remoteUri' attribute not provided.");
+		}
+		mq.addPropertyValue("remoteUri", remoteUri.getValue());
+
+		Attr queueName = element.getAttributeNode("queueName");
+		if (queueName == null) {
+			throw new RuntimeException("ActiveMQ 'queueName' attribute not provided.");
+		}
+		mq.addPropertyValue("queueName", queueName.getValue());
+
+		Attr numConsumers = element.getAttributeNode("numConsumers");
+		if (numConsumers != null) {
+			mq.addPropertyValue("numConsumers", numConsumers.getValue());
+		}
+
+		return mq.getBeanDefinition();
+	}
+
+	/**
 	 * Parse a socket event source.
 	 * 
 	 * @param element
@@ -609,6 +694,10 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 				parseHttpFactory(parent, child, context, source);
 				return true;
 			}
+			case GroovySocketInteractionHandlerFactory: {
+				parseGroovyFactory(parent, child, context, source);
+				return true;
+			}
 			}
 		}
 		return false;
@@ -665,6 +754,33 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		LOGGER.debug("Configuring HTTP socket interaction handler factory for " + parent.getLocalName());
 		BeanDefinitionBuilder builder =
 				BeanDefinitionBuilder.rootBeanDefinition(HttpInteractionHandler.Factory.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		source.addPropertyReference("handlerFactory", name);
+	}
+
+	/**
+	 * Parse configuration for {@link GroovySocketInteractionHandler} factory
+	 * implementation.
+	 * 
+	 * @param parent
+	 * @param decoder
+	 * @param context
+	 * @param source
+	 */
+	protected void parseGroovyFactory(Element parent, Element element, ParserContext context,
+			BeanDefinitionBuilder source) {
+		LOGGER.debug("Configuring Groovy socket interaction handler factory for " + parent.getLocalName());
+		BeanDefinitionBuilder builder =
+				BeanDefinitionBuilder.rootBeanDefinition(GroovySocketInteractionHandler.Factory.class);
+		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = element.getAttributeNode("scriptPath");
+		if (scriptPath != null) {
+			builder.addPropertyValue("scriptPath", scriptPath.getValue());
+		}
+
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -839,6 +955,58 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 			}
 		}
 		receiver.addPropertyValue("headers", headers);
+
+		return receiver.getBeanDefinition();
+	}
+
+	/**
+	 * Configure components needed to realize a CoAP server event source.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseCoapServerEventSource(Element element, ParserContext context) {
+		BeanDefinitionBuilder source = getBuilderFor(BinaryInboundEventSource.class);
+
+		// Verify that a sourceId was provided and set it on the bean.
+		parseEventSourceId(element, source);
+
+		// Create event receiver bean and register it.
+		AbstractBeanDefinition receiver = createCoapServerEventReceiver(element, context);
+		String receiverName = nameGenerator.generateBeanName(receiver, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(receiverName, receiver);
+
+		// Create list with bean reference and add it as property.
+		ManagedList<Object> list = new ManagedList<Object>();
+		RuntimeBeanReference ref = new RuntimeBeanReference(receiverName);
+		list.add(ref);
+		source.addPropertyValue("inboundEventReceivers", list);
+
+		// Add decoder reference.
+		boolean hadDecoder = parseBinaryDecoder(element, context, source);
+		if (!hadDecoder) {
+			throw new RuntimeException(
+					"No event decoder specified for CoAP server event source: " + element.toString());
+		}
+
+		return source.getBeanDefinition();
+	}
+
+	/**
+	 * Create CoAP server event receiver.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition createCoapServerEventReceiver(Element element, ParserContext context) {
+		BeanDefinitionBuilder receiver = getBuilderFor(CoapServerEventReceiver.class);
+
+		Attr hostname = element.getAttributeNode("hostname");
+		if (hostname != null) {
+			receiver.addPropertyValue("hostname", hostname.getValue());
+		}
 
 		return receiver.getBeanDefinition();
 	}
@@ -1161,29 +1329,35 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		/** Event source */
 		EventSource("event-source"),
 
-		/** Azure EventHub event source */
-		AzureEventHubEventSource("azure-eventhub-event-source"),
-
 		/** ActiveMQ event source */
 		ActiveMQEventSource("activemq-event-source"),
 
-		/** Socket event source */
-		SocketEventSource("socket-event-source"),
+		/** ActiveMQ client event source */
+		ActiveMQClientEventSource("activemq-client-event-source"),
 
-		/** Polling REST source */
-		PollingRestEventSource("polling-rest-event-source"),
+		/** Azure EventHub event source */
+		AzureEventHubEventSource("azure-eventhub-event-source"),
+
+		/** CoAP server event source */
+		CoapServerEventSource("coap-server-event-source"),
+
+		/** Hazelcast queue event source */
+		HazelcastQueueEventSource("hazelcast-queue-event-source"),
 
 		/** MQTT event source */
 		MqttEventSource("mqtt-event-source"),
 
+		/** Polling REST source */
+		PollingRestEventSource("polling-rest-event-source"),
+
 		/** RabbitMQ event source */
 		RabbitMqEventSource("rabbit-mq-event-source"),
 
-		/** Web socket event source */
-		WebSocketEventSource("web-socket-event-source"),
+		/** Socket event source */
+		SocketEventSource("socket-event-source"),
 
-		/** Hazelcast queue event source */
-		HazelcastQueueEventSource("hazelcast-queue-event-source");
+		/** Web socket event source */
+		WebSocketEventSource("web-socket-event-source");
 
 		/** Event code */
 		private String localName;
@@ -1315,7 +1489,10 @@ public class EventSourcesParser extends SiteWhereBeanListParser {
 		ReadAllInteractionHandlerFactory("read-all-interaction-handler-factory"),
 
 		/** Produces interaction handler that reads HTTP data from the client socket */
-		HttpInteractionHandlerFactory("http-interaction-handler-factory");
+		HttpInteractionHandlerFactory("http-interaction-handler-factory"),
+
+		/** Produces interaction handler uses Groovy to interact with socket */
+		GroovySocketInteractionHandlerFactory("groovy-interaction-handler-factory");
 
 		/** Event code */
 		private String localName;

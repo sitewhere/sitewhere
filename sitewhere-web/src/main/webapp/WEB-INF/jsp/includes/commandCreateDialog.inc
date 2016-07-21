@@ -26,6 +26,13 @@
 			</ul>
 			<div>
 				<form id="cc-general-form" class="form-horizontal" style="padding-top: 20px;">
+					<div id="cc-display-token-section" class="control-group"
+						style="display: none; line-height: 2.1em;">
+						<label class="control-label" for="cc-display-token" data-i18n="public.Token"></label>
+						<div class="controls">
+							<span id="cc-display-token" title="Token"></span>
+						</div>
+					</div>
 					<div class="control-group">
 						<label class="control-label" for="cc-name" data-i18n="public.Name"></label>
 						<div class="controls">
@@ -210,13 +217,12 @@
 						"metadata" : swMetadataAsLookup(ccMetadataDS.data()),
 					};
 					if (isCreate) {
-						$.postJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
-								+ "/commands" + "?tenantAuthToken=${tenant.authenticationToken}", command,
+						$.postAuthJSON("${pageContext.request.contextPath}/api/specifications/" + specToken
+								+ "/commands", command, "${basicAuth}", "${tenant.authenticationToken}",
 							onSuccess, onCreateFail);
 					} else {
-						$.putJSON("${pageContext.request.contextPath}/api/commands/" + token
-								+ "?tenantAuthToken=${tenant.authenticationToken}", command, onSuccess,
-							onUpdateFail);
+						$.putAuthJSON("${pageContext.request.contextPath}/api/commands/" + token, command,
+							"${basicAuth}", "${tenant.authenticationToken}", onSuccess, onUpdateFail);
 					}
 				});
 
@@ -306,6 +312,7 @@
 
 		$('#cc-dialog-header').html(i18next("includes.commandCreateDialog.CreateDeviceCommand"));
 		$('#cc-dialog-submit').html(i18next("public.Create"));
+		$('#cc-display-token-section').hide();
 
 		paramsDS.data(new Array());
 		ccMetadataDS.data(new Array());
@@ -330,17 +337,19 @@
 		ccSubmitCallback = callback;
 
 		// Get command for edit.
-		$.getJSON("${pageContext.request.contextPath}/api/commands/" + token
-				+ "?tenantAuthToken=${tenant.authenticationToken}", cuCommandGetSuccess, suCommandGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/commands/" + token, "${basicAuth}",
+			"${tenant.authenticationToken}", cuCommandGetSuccess, suCommandGetFailed);
 	}
 
-	/** Called on successful user load request */
+	/** Called on successful command load request */
 	function cuCommandGetSuccess(data, status, jqXHR) {
 		$('#cc-dialog-header').html(i18next("includes.commandCreateDialog.EditDeviceCommand"));
 		$('#cc-dialog-submit').html(i18next("public.Save"));
+		$('#cc-display-token-section').show();
 
 		// Load hidden fields for tokens.
 		$('#cc-specification-token').val(data.specificationToken);
+		$('#cc-display-token').html(data.token);
 		$('#cc-command-token').val(data.token);
 
 		// Load form fields.

@@ -109,7 +109,7 @@
 
 	/** Properties list */
 	var acProperties;
-	
+
 	var acLatitude;
 	var acLongitude;
 	var acElevation;
@@ -213,14 +213,13 @@
 						"properties" : swMetadataAsLookup(acPropertiesDS.data()),
 					}
 					if (isCreate) {
-						$.postJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-								+ "/locations?tenantAuthToken=${tenant.authenticationToken}", assetData,
+						$.postAuthJSON("${pageContext.request.contextPath}/api/assets/categories/"
+								+ categoryId, assetData, "${basicAuth}", "${tenant.authenticationToken}",
 							onCreateSuccess, onCreateFail);
 					} else {
-						$.putJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-								+ "/locations/" + initAssetId
-								+ "?tenantAuthToken=${tenant.authenticationToken}", assetData,
-							onCreateSuccess, onUpdateFail);
+						$.putAuthJSON("${pageContext.request.contextPath}/api/assets/categories/"
+								+ categoryId + "/locations/" + initAssetId, assetData, "${basicAuth}",
+							"${tenant.authenticationToken}", onCreateSuccess, onUpdateFail);
 					}
 				});
 
@@ -296,8 +295,8 @@
 		acSubmitCallback = callback;
 
 		// Get latest device data for hardware id.
-		$.getJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId + "/assets/"
-				+ assetId + "?tenantAuthToken=${tenant.authenticationToken}", auUpdateGetSuccess,
+		$.getAuthJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId + "/assets/"
+				+ assetId, "${basicAuth}", "${tenant.authenticationToken}", auUpdateGetSuccess,
 			auUpdateGetFailed);
 	}
 

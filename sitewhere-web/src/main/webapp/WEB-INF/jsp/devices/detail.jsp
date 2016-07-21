@@ -14,7 +14,8 @@
 	<h1 class="ellipsis" data-i18n="devices.detail.title"></h1>
 	<div class="sw-title-bar-right">
 		<a id="btn-edit-device" class="btn" href="javascript:void(0)"> <i
-			class="fa fa-pencil sw-button-icon"></i> <span data-i18n="public.EditDevice">Edit Device</span></a>
+			class="fa fa-pencil sw-button-icon"></i> <span
+			data-i18n="public.EditDevice">Edit Device</span></a>
 	</div>
 </div>
 
@@ -24,7 +25,8 @@
 <!-- Tab panel -->
 <div id="tabs">
 	<ul>
-		<li class="k-state-active">&nbsp;<font data-i18n="devices.detail.AssignmentHistory"></font></li>
+		<li class="k-state-active">&nbsp;<font
+			data-i18n="devices.detail.AssignmentHistory"></font></li>
 		<c:choose>
 			<c:when test="${specification.containerPolicy == 'Composite'}">
 				<li>&nbsp;<font data-i18n="public.Composition"></font></li>
@@ -33,14 +35,19 @@
 	</ul>
 	<div>
 		<div class="k-header sw-button-bar">
-			<div class="sw-button-bar-title" data-i18n="devices.detail.DeviceAssignmentHistory"></div>
+			<div class="sw-button-bar-title"
+				data-i18n="devices.detail.DeviceAssignmentHistory"></div>
 			<div>
-				<a id="btn-assign-device" class="btn hide" href="javascript:void(0)"> <i
-					class="fa fa-tag sw-button-icon"></i> <span data-i18n="devices.detail.AssignDevice">Assign
-						Device</span></a> <a id="btn-filter-assignments" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-search sw-button-icon"></i> <span data-i18n="public.FilterResults">Filter
-						Results</span></a> <a id="btn-refresh-assignments" class="btn" href="javascript:void(0)"> <i
-					class="fa fa-refresh sw-button-icon"></i> <span data-i18n="public.Refresh">Refresh</span>
+				<a id="btn-assign-device" class="btn hide" href="javascript:void(0)">
+					<i class="fa fa-tag sw-button-icon"></i> <span
+					data-i18n="devices.detail.AssignDevice">Assign Device</span>
+				</a> <a id="btn-filter-assignments" class="btn"
+					href="javascript:void(0)"> <i
+					class="fa fa-search sw-button-icon"></i> <span
+					data-i18n="public.FilterResults">Filter Results</span></a> <a
+					id="btn-refresh-assignments" class="btn" href="javascript:void(0)">
+					<i class="fa fa-refresh sw-button-icon"></i> <span
+					data-i18n="public.Refresh">Refresh</span>
 				</a>
 			</div>
 		</div>
@@ -85,7 +92,8 @@
 	function onDeleteAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentDelete(token, '${tenant.authenticationToken}', onDeleteAssignmentComplete);
+		swAssignmentDelete(token, "${basicAuth}",
+				"${tenant.authenticationToken}", onDeleteAssignmentComplete);
 	}
 
 	/** Called after successful delete assignment */
@@ -109,8 +117,10 @@
 	function onViewAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		$("#view-assignment-detail").attr("action",
-			"${pageContext.request.contextPath}/admin/assignments/" + token + ".html");
+		$("#view-assignment-detail").attr(
+				"action",
+				"${pageContext.request.contextPath}/admin/${tenant.id}/assignments/"
+						+ token + ".html");
 		$('#view-assignment-detail').submit();
 	}
 
@@ -118,7 +128,8 @@
 	function onReleaseAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swReleaseAssignment(token, '${tenant.authenticationToken}', onReleaseAssignmentComplete);
+		swReleaseAssignment(token, "${basicAuth}",
+				"${tenant.authenticationToken}", onReleaseAssignmentComplete);
 	}
 
 	/** Called after successful release assignment */
@@ -131,7 +142,8 @@
 	function onMissingAssignment(e, token) {
 		var event = e || window.event;
 		event.stopPropagation();
-		swAssignmentMissing(token, '${tenant.authenticationToken}', onMissingAssignmentComplete);
+		swAssignmentMissing(token, "${basicAuth}",
+				"${tenant.authenticationToken}", onMissingAssignmentComplete);
 	}
 
 	/** Called after successful missing assignment */
@@ -148,17 +160,25 @@
 
 	$(document)
 			.ready(
-				function() {
+					function() {
 
-					/** Create AJAX datasource for assignments list */
-					assignmentsDS =
-							new kendo.data.DataSource(
+						/** Create AJAX datasource for assignments list */
+						assignmentsDS = new kendo.data.DataSource(
 								{
 									transport : {
 										read : {
 											url : "${pageContext.request.contextPath}/api/devices/"
 													+ hardwareId
-													+ "/assignments?includeAsset=true&includeDevice=true&tenantAuthToken=${tenant.authenticationToken}",
+													+ "/assignments?includeAsset=true&includeDevice=true",
+											beforeSend : function(req) {
+												req.setRequestHeader(
+														'Authorization',
+														"Basic ${basicAuth}");
+												req
+														.setRequestHeader(
+																'X-SiteWhere-Tenant',
+																"${tenant.authenticationToken}");
+											},
 											dataType : "json",
 										}
 									},
@@ -166,7 +186,8 @@
 										data : "results",
 										total : "numResults",
 										parse : function(response) {
-											$.each(response.results, function(index, item) {
+											$.each(response.results, function(
+													index, item) {
 												parseAssignmentData(item);
 											});
 											return response;
@@ -177,41 +198,43 @@
 									pageSize : 15,
 								});
 
-					/** Create the assignments list */
-					$("#assignments").kendoListView({
-						dataSource : assignmentsDS,
-						template : kendo.template($("#tpl-assignment-entry").html())
+						/** Create the assignments list */
+						$("#assignments").kendoListView(
+								{
+									dataSource : assignmentsDS,
+									template : kendo.template($(
+											"#tpl-assignment-entry").html())
+								});
+
+						$("#assignments-pager").kendoPager({
+							dataSource : assignmentsDS
+						});
+
+						$("#btn-refresh-assignments").click(function() {
+							assignmentsDS.read();
+						});
+
+						$("#btn-edit-device").click(function() {
+							duOpen(hardwareId, onDeviceEditSuccess);
+						});
+
+						$("#btn-assign-device").click(function() {
+							acOpen(null, hardwareId, onAssignmentAdded);
+						});
+
+						/** Create the tab strip */
+						tabs = $("#tabs").kendoTabStrip({
+							animation : false
+						}).data("kendoTabStrip");
+
+						loadDevice();
 					});
-
-					$("#assignments-pager").kendoPager({
-						dataSource : assignmentsDS
-					});
-
-					$("#btn-refresh-assignments").click(function() {
-						assignmentsDS.read();
-					});
-
-					$("#btn-edit-device").click(function() {
-						duOpen(hardwareId, onDeviceEditSuccess);
-					});
-
-					$("#btn-assign-device").click(function() {
-						acOpen(null, hardwareId, onAssignmentAdded);
-					});
-
-					/** Create the tab strip */
-					tabs = $("#tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
-
-					loadDevice();
-				});
 
 	/** Loads information for the selected device */
 	function loadDevice() {
-		$.getJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-				+ "?includeNested=true&tenantAuthToken=${tenant.authenticationToken}", loadGetSuccess,
-			loadGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/devices/"
+				+ hardwareId + "?includeNested=true", "${basicAuth}",
+				"${tenant.authenticationToken}", loadGetSuccess, loadGetFailed);
 	}
 
 	/** Called on successful device load request */
@@ -255,9 +278,10 @@
 			"deviceElementSchemaPath" : data.path,
 			"hardwareId" : target,
 		}
-		$.postJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-				+ "/mappings?tenantAuthToken=${tenant.authenticationToken}", mapping, onMappingCreateSuccess,
-			onMappingCreateFail);
+		$.postAuthJSON("${pageContext.request.contextPath}/api/devices/"
+				+ hardwareId + "/mappings", mapping, "${basicAuth}",
+				"${tenant.authenticationToken}", onMappingCreateSuccess,
+				onMappingCreateFail);
 	}
 
 	/** Called on successful call to create mapping */
@@ -272,14 +296,22 @@
 
 	/** Delete an existing device element mapping */
 	function deleteMapping(path) {
-		swConfirm("Delete Device Element Mapping",
-			"Are you sure that you want to delete the device element mapping?", function(result) {
-				if (result) {
-					$.deleteJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-							+ "/mappings?path=" + path + "&tenantAuthToken=${tenant.authenticationToken}",
-						onMappingDeleteSuccess, onMappingDeleteFail);
-				}
-			});
+		swConfirm(
+				"Delete Device Element Mapping",
+				"Are you sure that you want to delete the device element mapping?",
+				function(result) {
+					if (result) {
+						$
+								.deleteAuthJSON(
+										"${pageContext.request.contextPath}/api/devices/"
+												+ hardwareId
+												+ "/mappings?path=" + path,
+										"${basicAuth}",
+										"${tenant.authenticationToken}",
+										onMappingDeleteSuccess,
+										onMappingDeleteFail);
+					}
+				});
 	}
 
 	/** Called on successful call to delete mapping */
@@ -309,8 +341,7 @@
 		var slength = unit.deviceSlots.length;
 		if (slength > 0) {
 			uhtml += "<div class='sw-device-slot-container'>";
-			uhtml +=
-					"<div class='sw-device-slot-header'><i class='fa fa-link sw-button-icon'></i> Device Slots</div>";
+			uhtml += "<div class='sw-device-slot-header'><i class='fa fa-link sw-button-icon'></i> Device Slots</div>";
 			for (var i = 0; i < slength; i++) {
 				uhtml += getSlotHtml(unit.deviceSlots[i], context);
 			}
@@ -329,9 +360,10 @@
 
 	/** Create HTML for device unit header bar */
 	function getUnitHeaderHtml(unit, relContext) {
-		var uhtml =
-				"<div class='sw-device-unit-header'><i class='fa fa-folder-close sw-button-icon'></i>"
-						+ unit.name + " (<span class='sw-device-unit-path'>" + relContext + "</span>)</div>";
+		var uhtml = "<div class='sw-device-unit-header'><i class='fa fa-folder-close sw-button-icon'></i>"
+				+ unit.name
+				+ " (<span class='sw-device-unit-path'>"
+				+ relContext + "</span>)</div>";
 		return uhtml;
 	}
 
@@ -341,30 +373,32 @@
 		var mapping = mappings[relContext];
 		var shtml;
 		if (mapping) {
-			shtml =
-					"<div class='sw-device-slot' style='border: 2px solid #006; background-color: #ddf;'>"
-							+ "<i class='fa fa-link sw-button-icon' style='padding-right: 5px'></i>"
-							+ slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
-			shtml +=
-					"<div class='sw-device-slot-buttons'>"
-							+ "<i class='fa fa-link sw-button-icon' style='color: #030; margin-right: 1px;'></i>"
-							+ "<a class='sw-device-slot-mapped-device' href='${pageContext.request.contextPath}/admin/devices/detail.html?hardwareId="
-							+ mapping.hardwareId
-							+ "'>"
-							+ mapping.specification.assetName
-							+ "</a>"
-							+ "<i class='fa fa-remove sw-button-icon sw-action-glyph sw-delete-glyph' style='margin-top: -2px;' "
-							+ "onclick=\"deleteMapping('" + relContext
-							+ "');\" title='Delete Device Element Mapping'></i>" + "</div></div>";
+			shtml = "<div class='sw-device-slot' style='border: 2px solid #006; background-color: #ddf;'>"
+					+ "<i class='fa fa-link sw-button-icon' style='padding-right: 5px'></i>"
+					+ slot.name
+					+ " (<span class='sw-device-slot-path'>"
+					+ relContext + "</span>)";
+			shtml += "<div class='sw-device-slot-buttons'>"
+					+ "<i class='fa fa-link sw-button-icon' style='color: #030; margin-right: 1px;'></i>"
+					+ "<a class='sw-device-slot-mapped-device' href='${pageContext.request.contextPath}/admin/devices/detail.html?hardwareId="
+					+ mapping.hardwareId
+					+ "'>"
+					+ mapping.specification.assetName
+					+ "</a>"
+					+ "<i class='fa fa-remove sw-button-icon sw-action-glyph sw-delete-glyph' style='margin-top: -2px;' "
+					+ "onclick=\"deleteMapping('" + relContext
+					+ "');\" title='Delete Device Element Mapping'></i>"
+					+ "</div></div>";
 		} else {
-			shtml =
-					"<div class='sw-device-slot'><i class='fa fa-link sw-button-icon' style='padding-right: 5px'></i>"
-							+ slot.name + " (<span class='sw-device-slot-path'>" + relContext + "</span>)";
-			shtml +=
-					"<div class='sw-device-slot-buttons'>"
-							+ "<i class='fa fa-plus sw-button-icon sw-action-glyph sw-view-glyph' "
-							+ "onclick=\"addMapping('" + relContext
-							+ "');\" title='Add Device Element Mapping'></i>" + "</div></div>";
+			shtml = "<div class='sw-device-slot'><i class='fa fa-link sw-button-icon' style='padding-right: 5px'></i>"
+					+ slot.name
+					+ " (<span class='sw-device-slot-path'>"
+					+ relContext + "</span>)";
+			shtml += "<div class='sw-device-slot-buttons'>"
+					+ "<i class='fa fa-plus sw-button-icon sw-action-glyph sw-view-glyph' "
+					+ "onclick=\"addMapping('" + relContext
+					+ "');\" title='Add Device Element Mapping'></i>"
+					+ "</div></div>";
 		}
 		return shtml;
 	}

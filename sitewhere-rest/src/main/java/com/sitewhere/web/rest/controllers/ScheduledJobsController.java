@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +53,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/jobs")
 @Api(value = "jobs", description = "Operations related to SiteWhere scheduled jobs.")
 @DocumentedController(name = "Scheduled Jobs")
@@ -89,7 +91,8 @@ public class ScheduledJobsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Get scheduled job by token")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "getScheduledJobByTokenResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "getScheduledJobByTokenResponse.md") })
 	public IScheduledJob getScheduledJobByToken(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			HttpServletRequest servletRequest) throws SiteWhereException {
@@ -142,11 +145,14 @@ public class ScheduledJobsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "List scheduled jobs matching criteria")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.ListScheduledjobsResponse.class, description = "listScheduledJobsResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Schedules.ListScheduledjobsResponse.class, description = "listScheduledJobsResponse.md") })
 	public ISearchResults<IScheduledJob> listScheduledJobs(
 			@ApiParam(value = "Include context information", required = false) @RequestParam(defaultValue = "false") boolean includeContext,
-			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = { ConcernType.Paging }) int page,
-			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = { ConcernType.Paging }) int pageSize,
+			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
+					ConcernType.Paging }) int page,
+			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
+					ConcernType.Paging }) int pageSize,
 			HttpServletRequest servletRequest) throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "listScheduledJobs", LOGGER);
 		try {
@@ -182,7 +188,8 @@ public class ScheduledJobsController extends RestController {
 	@ResponseBody
 	@ApiOperation(value = "Delete scheduled job")
 	@Secured({ SiteWhereRoles.REST })
-	@Documented(examples = { @Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "deleteScheduledJobResponse.md") })
+	@Documented(examples = {
+			@Example(stage = Stage.Response, json = Schedules.CreateScheduledJobResponse.class, description = "deleteScheduledJobResponse.md") })
 	public IScheduledJob deleteScheduledJob(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@ApiParam(value = "Delete permanently", required = false) @RequestParam(defaultValue = "false") boolean force,

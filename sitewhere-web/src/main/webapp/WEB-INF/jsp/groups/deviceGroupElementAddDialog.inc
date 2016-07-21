@@ -115,8 +115,8 @@
 						"roles" : geaRolesDS.data(),
 					}
 
-					$.putJSON("${pageContext.request.contextPath}/api/devicegroups/" + geaGroupToken
-							+ "/elements?tenantAuthToken=${tenant.authenticationToken}", [ elementData ],
+					$.putAuthJSON("${pageContext.request.contextPath}/api/devicegroups/" + geaGroupToken
+							+ "/elements", [ elementData ], "${basicAuth}", "${tenant.authenticationToken}",
 						onAddSuccess, onAddFail);
 				});
 

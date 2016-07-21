@@ -44,28 +44,50 @@ public class RestController {
 	private static Logger LOGGER = Logger.getLogger(RestController.class);
 
 	/**
-	 * Get a tenant based on the authentication token passed.
+	 * Get a tenant based on the authentication token passed. Assume that the current user
+	 * should be validated for access to the given tenant.
 	 * 
 	 * @param request
 	 * @return
 	 * @throws SiteWhereException
 	 */
 	protected ITenant getTenant(HttpServletRequest request) throws SiteWhereException {
+		return getTenant(request, true);
+	}
+
+	/**
+	 * Get a tenant based on the authentication token passed.
+	 * 
+	 * @param request
+	 * @param checkAuthUser
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	protected ITenant getTenant(HttpServletRequest request, boolean checkAuthUser) throws SiteWhereException {
 		String token = getTenantAuthToken(request);
 		ITenant match = SiteWhere.getServer().getTenantByAuthToken(token);
 		if (match == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantAuthToken, ErrorLevel.ERROR);
 		}
 		ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(match.getId());
-		if ((engine == null) || (engine.getEngineState().getLifecycleStatus() != LifecycleStatus.Started)) {
+		if (engine == null) {
+			LOGGER.error("No tenant engine for tenant: " + match.getName());
+			throw new TenantNotAvailableException();
+		}
+		if (engine.getEngineState().getLifecycleStatus() != LifecycleStatus.Started) {
+			LOGGER.error("Engine not started for tenant: " + match.getName());
 			throw new TenantNotAvailableException();
 		}
 
-		String username = LoginManager.getCurrentlyLoggedInUser().getUsername();
-		if (match.getAuthorizedUserIds().contains(username)) {
+		if (checkAuthUser) {
+			String username = LoginManager.getCurrentlyLoggedInUser().getUsername();
+			if (match.getAuthorizedUserIds().contains(username)) {
+				return match;
+			}
+			throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
+		} else {
 			return match;
 		}
-		throw new SiteWhereSystemException(ErrorCode.NotAuthorizedForTenant, ErrorLevel.ERROR);
 	}
 
 	/**

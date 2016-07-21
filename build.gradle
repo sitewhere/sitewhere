@@ -25,7 +25,7 @@ s3 {
 
 allprojects {
     group = 'com.sitewhere'
-	version = '1.7.0'
+	version = '1.8.0'
 	
     repositories {
         maven { url "http://repo.maven.apache.org/maven2" }

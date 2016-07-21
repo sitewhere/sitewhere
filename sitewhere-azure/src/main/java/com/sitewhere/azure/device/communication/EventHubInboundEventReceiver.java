@@ -39,14 +39,11 @@ import com.sitewhere.azure.device.communication.client.Constants;
 import com.sitewhere.azure.device.communication.client.EventData;
 import com.sitewhere.azure.device.communication.client.EventHubReceiverTask;
 import com.sitewhere.azure.device.communication.client.EventHubReceiverTaskConfig;
-import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.device.communication.EventProcessingLogic;
+import com.sitewhere.device.communication.InboundEventReceiver;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.device.communication.IInboundEventReceiver;
-import com.sitewhere.spi.device.communication.IInboundEventSource;
-import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
-public class EventHubInboundEventReceiver extends LifecycleComponent
-		implements IInboundEventReceiver<byte[]> {
+public class EventHubInboundEventReceiver extends InboundEventReceiver<byte[]> {
 
 	private static final Logger logger = Logger.getLogger(EventHubInboundEventReceiver.class);
 	private static String username = "";
@@ -58,18 +55,9 @@ public class EventHubInboundEventReceiver extends LifecycleComponent
 	private static String targetFqn = "";
 	private ArrayList<EventHubReceiverTask> taskPool = new ArrayList<EventHubReceiverTask>();
 
-	/**
-	 * Parent event source
-	 */
-	private IInboundEventSource<byte[]> eventSource;
-
 	private static EventHubReceiverTaskConfig config;
 
 	private ExecutorService executor = Executors.newCachedThreadPool(new ReceiverThreadFactory());
-
-	public EventHubInboundEventReceiver() {
-		super(LifecycleComponentType.InboundEventReceiver);
-	}
 
 	/**
 	 * Used for naming consumer threads
@@ -87,6 +75,11 @@ public class EventHubInboundEventReceiver extends LifecycleComponent
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.InboundEventReceiver#start()
+	 */
 	@Override
 	public void start() throws SiteWhereException {
 		config =
@@ -99,6 +92,11 @@ public class EventHubInboundEventReceiver extends LifecycleComponent
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.InboundEventReceiver#stop()
+	 */
 	@Override
 	public void stop() throws SiteWhereException {
 		for (EventHubReceiverTask task : taskPool) {
@@ -107,6 +105,11 @@ public class EventHubInboundEventReceiver extends LifecycleComponent
 		executor.shutdownNow();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.device.communication.InboundEventReceiver#getLogger()
+	 */
 	@Override
 	public Logger getLogger() {
 		return logger;
@@ -168,7 +171,8 @@ public class EventHubInboundEventReceiver extends LifecycleComponent
 										Constants.AmqpPayloadKey).toString().getBytes();
 						// Map eventContext = new HashMap();
 						// eventContext.put("enqueueTime", data.getEnqueueTime());
-						onEventPayloadReceived(payload, null);
+						EventProcessingLogic.processRawPayload(EventHubInboundEventReceiver.this, payload,
+								null);
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -197,26 +201,6 @@ public class EventHubInboundEventReceiver extends LifecycleComponent
 				}
 			}
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver#onEventPayloadReceived
-	 * (java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void onEventPayloadReceived(byte[] payload, Map<String, String> metadata) {
-		getEventSource().onEncodedEventReceived(EventHubInboundEventReceiver.this, payload, metadata);
-	}
-
-	public IInboundEventSource<byte[]> getEventSource() {
-		return eventSource;
-	}
-
-	public void setEventSource(IInboundEventSource<byte[]> eventSource) {
-		this.eventSource = eventSource;
 	}
 
 	public static void setUsername(String username) {

@@ -68,8 +68,8 @@
 		event.stopPropagation();
 		swConfirm("Delete Asset", "Are you sure you want to delete this asset?", function(result) {
 			if (result) {
-				$.deleteJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
-						+ "/assets/" + assetId + "?tenantAuthToken=${tenant.authenticationToken}",
+				$.deleteAuthJSON("${pageContext.request.contextPath}/api/assets/categories/" + categoryId
+						+ "/assets/" + assetId, "${basicAuth}", "${tenant.authenticationToken}",
 					onDeleteSuccess, onDeleteFail);
 			}
 		});
@@ -98,8 +98,12 @@
 						transport : {
 							read : {
 								url : "${pageContext.request.contextPath}/api/assets/categories/"
-										+ categoryId
-										+ "/assets?tenantAuthToken=${tenant.authenticationToken}",
+										+ categoryId + "/assets",
+								beforeSend : function(req) {
+									req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+									req.setRequestHeader('X-SiteWhere-Tenant',
+										"${tenant.authenticationToken}");
+								},
 								dataType : "json",
 							}
 						},

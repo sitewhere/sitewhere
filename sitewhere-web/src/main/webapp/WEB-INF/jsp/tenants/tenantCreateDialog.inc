@@ -78,105 +78,101 @@
 	/** Chooser for picking authorized users */
 	var tcAuthUsersChooser;
 
-	$(document)
-			.ready(
-				function() {
+	$(document).ready(
+		function() {
 
-					/** Available asset types shown in dropdown */
-					var ccConfigTypes = [ {
-						text : "Default",
-						value : "default"
-					} ];
+			/** Available asset types shown in dropdown */
+			var ccConfigTypes = [ {
+				text : "Default",
+				value : "default"
+			} ];
 
-					/** Create tab strip */
-					tcTabs = $("#tc-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+			/** Create tab strip */
+			tcTabs = $("#tc-tabs").kendoTabStrip({
+				animation : false
+			}).data("kendoTabStrip");
 
-					tcConfigTypesDropdown = $("#tc-configuration-type").kendoDropDownList({
-						dataTextField : "text",
-						dataValueField : "value",
-						dataSource : ccConfigTypes,
-					}).data("kendoDropDownList");
+			tcConfigTypesDropdown = $("#tc-configuration-type").kendoDropDownList({
+				dataTextField : "text",
+				dataValueField : "value",
+				dataSource : ccConfigTypes,
+			}).data("kendoDropDownList");
 
-					/** Chooser for authorized users */
-					tcAuthUsersChooser =
-							$("#tc-auth-users").kendoMultiSelect(
-								{
-									placeholder : "Select users...",
-									dataTextField : "username",
-									dataValueField : "username",
-									dataSource : {
-										transport : {
-											read : {
-												url : "${pageContext.request.contextPath}/api/users"
-														+ "?tenantAuthToken=${tenant.authenticationToken}",
-												dataType : "json",
-											}
-										},
-										schema : {
-											data : "results",
-											total : "numResults",
-											parse : function(response) {
-												$.each(response.results, function(index, item) {
-													parseUserData(item);
-												});
-												return response;
-											}
-										},
-										pageSize : 10
-									},
-								}).data("kendoMultiSelect");
-
-					/** Handle dialog submit */
-					$('#tc-dialog-submit')
-							.click(
-								function(event) {
-									event.preventDefault();
-									if (!tcValidate()) {
-										return;
-									}
-									var initTenantId = $('#tc-init-tenant-id').val();
-									var isCreate = (initTenantId.length == 0);
-									var configType = $('#tc-configuration-type').val();
-									var tenantData = {
-										"id" : $('#tc-tenant-id').val(),
-										"name" : $('#tc-tenant-name').val(),
-										"logoUrl" : $('#tc-tenant-logo').val(),
-										"authenticationToken" : $('#tc-tenant-auth-token').val(),
-										"authorizedUserIds" : tcAuthUsersChooser.value(),
-									}
-									if (isCreate) {
-										$
-												.postJSON(
-													"${pageContext.request.contextPath}/api/tenants?tenantAuthToken=${tenant.authenticationToken}",
-													tenantData, onCreateSuccess, onCreateFail);
-									} else {
-										$.putJSON("${pageContext.request.contextPath}/api/tenants/"
-												+ initTenantId
-												+ "?tenantAuthToken=${tenant.authenticationToken}",
-											tenantData, onCreateSuccess, onUpdateFail);
-									}
-								});
-
-					/** Called on successful create */
-					function onCreateSuccess() {
-						$('#tc-dialog').modal('hide');
-						if (tcSubmitCallback != null) {
-							tcSubmitCallback();
+			/** Chooser for authorized users */
+			tcAuthUsersChooser = $("#tc-auth-users").kendoMultiSelect({
+				placeholder : "Select users...",
+				dataTextField : "username",
+				dataValueField : "username",
+				dataSource : {
+					transport : {
+						read : {
+							url : "${pageContext.request.contextPath}/api/users",
+							beforeSend : function(req) {
+								req.setRequestHeader('Authorization', "Basic ${basicAuth}");
+								req.setRequestHeader('X-SiteWhere-Tenant', "${tenant.authenticationToken}");
+							},
+							dataType : "json",
 						}
-					}
+					},
+					schema : {
+						data : "results",
+						total : "numResults",
+						parse : function(response) {
+							$.each(response.results, function(index, item) {
+								parseUserData(item);
+							});
+							return response;
+						}
+					},
+					pageSize : 10
+				},
+			}).data("kendoMultiSelect");
 
-					/** Handle failed call to create tenant */
-					function onCreateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to create tenant.");
+			/** Handle dialog submit */
+			$('#tc-dialog-submit').click(
+				function(event) {
+					event.preventDefault();
+					if (!tcValidate()) {
+						return;
 					}
-
-					/** Handle failed call to update tenant */
-					function onUpdateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to update tenant.");
+					var initTenantId = $('#tc-init-tenant-id').val();
+					var isCreate = (initTenantId.length == 0);
+					var configType = $('#tc-configuration-type').val();
+					var tenantData = {
+						"id" : $('#tc-tenant-id').val(),
+						"name" : $('#tc-tenant-name').val(),
+						"logoUrl" : $('#tc-tenant-logo').val(),
+						"authenticationToken" : $('#tc-tenant-auth-token').val(),
+						"authorizedUserIds" : tcAuthUsersChooser.value(),
+					}
+					if (isCreate) {
+						$.postAuthJSON("${pageContext.request.contextPath}/api/tenants", tenantData,
+							"${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess, onCreateFail);
+					} else {
+						$.putAuthJSON("${pageContext.request.contextPath}/api/tenants/" + initTenantId,
+							tenantData, "${basicAuth}", "${tenant.authenticationToken}", onCreateSuccess,
+							onUpdateFail);
 					}
 				});
+
+			/** Called on successful create */
+			function onCreateSuccess() {
+				$('#tc-dialog').modal('hide');
+				if (tcSubmitCallback != null) {
+					tcSubmitCallback();
+				}
+			}
+
+			/** Handle failed call to create tenant */
+			function onCreateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to create tenant.");
+			}
+
+			/** Handle failed call to update tenant */
+			function onUpdateFail(jqXHR, textStatus, errorThrown) {
+				handleError(jqXHR, "Unable to update tenant.");
+			}
+		});
 
 	/** Validate everything */
 	function tcValidate() {
@@ -230,8 +226,8 @@
 		tcSubmitCallback = callback;
 
 		// Get latest device data for hardware id.
-		$.getJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId
-				+ "?tenantAuthToken=${tenant.authenticationToken}", tuUpdateGetSuccess, tuUpdateGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/tenants/" + tenantId, "${basicAuth}",
+			"${tenant.authenticationToken}", tuUpdateGetSuccess, tuUpdateGetFailed);
 	}
 
 	/** Called on successful tenant load request */

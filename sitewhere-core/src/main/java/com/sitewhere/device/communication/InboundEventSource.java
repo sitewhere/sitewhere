@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.device.communication.EventDecodeException;
 import com.sitewhere.spi.device.communication.IDecodedDeviceRequest;
 import com.sitewhere.spi.device.communication.IDeviceEventDecoder;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
@@ -24,6 +25,7 @@ import com.sitewhere.spi.device.communication.IInboundProcessingStrategy;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
@@ -123,23 +125,23 @@ public class InboundEventSource<T> extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventSource#onEncodedEventReceived(
-	 * com.sitewhere.spi.device.communication.IInboundEventReceiver, java.lang.Object,
-	 * java.util.Map)
+	 * @see com.sitewhere.spi.device.communication.IInboundEventSource#
+	 * onEncodedEventReceived(
+	 * com.sitewhere.spi.device.communication.IInboundEventReceiver,
+	 * java.lang.Object, java.util.Map)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public void onEncodedEventReceived(IInboundEventReceiver<T> receiver, T encodedPayload,
-			Map<String, String> metadata) {
+			Map<String, String> metadata) throws EventDecodeException {
+		LOGGER.debug("Device event receiver thread picked up event.");
+		List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload, metadata);
 		try {
-			LOGGER.debug("Device event receiver thread picked up event.");
-			List<IDecodedDeviceRequest<?>> requests = decodePayload(encodedPayload, metadata);
 			if (requests != null) {
 				for (IDecodedDeviceRequest<?> decoded : requests) {
 					if (decoded.getRequest() instanceof IDeviceRegistrationRequest) {
-						getInboundProcessingStrategy().processRegistration(
-								(IDecodedDeviceRequest<IDeviceRegistrationRequest>) decoded);
+						getInboundProcessingStrategy()
+								.processRegistration((IDecodedDeviceRequest<IDeviceRegistrationRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceCommandResponseCreateRequest) {
 						getInboundProcessingStrategy().processDeviceCommandResponse(
 								(IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest>) decoded);
@@ -147,23 +149,26 @@ public class InboundEventSource<T> extends TenantLifecycleComponent
 						getInboundProcessingStrategy().processDeviceMeasurements(
 								(IDecodedDeviceRequest<IDeviceMeasurementsCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceLocationCreateRequest) {
-						getInboundProcessingStrategy().processDeviceLocation(
-								(IDecodedDeviceRequest<IDeviceLocationCreateRequest>) decoded);
+						getInboundProcessingStrategy()
+								.processDeviceLocation((IDecodedDeviceRequest<IDeviceLocationCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceAlertCreateRequest) {
-						getInboundProcessingStrategy().processDeviceAlert(
-								(IDecodedDeviceRequest<IDeviceAlertCreateRequest>) decoded);
+						getInboundProcessingStrategy()
+								.processDeviceAlert((IDecodedDeviceRequest<IDeviceAlertCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStateChangeCreateRequest) {
 						getInboundProcessingStrategy().processDeviceStateChange(
 								(IDecodedDeviceRequest<IDeviceStateChangeCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStreamCreateRequest) {
-						getInboundProcessingStrategy().processDeviceStream(
-								(IDecodedDeviceRequest<IDeviceStreamCreateRequest>) decoded);
+						getInboundProcessingStrategy()
+								.processDeviceStream((IDecodedDeviceRequest<IDeviceStreamCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof IDeviceStreamDataCreateRequest) {
 						getInboundProcessingStrategy().processDeviceStreamData(
 								(IDecodedDeviceRequest<IDeviceStreamDataCreateRequest>) decoded);
 					} else if (decoded.getRequest() instanceof ISendDeviceStreamDataRequest) {
 						getInboundProcessingStrategy().processSendDeviceStreamData(
 								(IDecodedDeviceRequest<ISendDeviceStreamDataRequest>) decoded);
+					} else if (decoded.getRequest() instanceof IDeviceMappingCreateRequest) {
+						getInboundProcessingStrategy().processCreateDeviceMapping(
+								(IDecodedDeviceRequest<IDeviceMappingCreateRequest>) decoded);
 					} else {
 						LOGGER.error("Decoded device event request could not be routed: "
 								+ decoded.getRequest().getClass().getName());
@@ -183,10 +188,10 @@ public class InboundEventSource<T> extends TenantLifecycleComponent
 	 * @param encodedPayload
 	 * @param metadata
 	 * @return
-	 * @throws SiteWhereException
+	 * @throws EventDecodeException
 	 */
 	protected List<IDecodedDeviceRequest<?>> decodePayload(T encodedPayload, Map<String, String> metadata)
-			throws SiteWhereException {
+			throws EventDecodeException {
 		return getDeviceEventDecoder().decode(encodedPayload, metadata);
 	}
 
@@ -218,8 +223,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ITenantHazelcastAware#setHazelcastConfiguration(com
+	 * @see com.sitewhere.spi.server.tenant.ITenantHazelcastAware#
+	 * setHazelcastConfiguration(com
 	 * .sitewhere.spi.server.tenant.ITenantHazelcastConfiguration)
 	 */
 	@Override
@@ -234,7 +239,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventSource#getSourceId()
+	 * @see
+	 * com.sitewhere.spi.device.communication.IInboundEventSource#getSourceId()
 	 */
 	public String getSourceId() {
 		return sourceId;
@@ -247,8 +253,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventSource#setDeviceEventDecoder
+	 * @see com.sitewhere.spi.device.communication.IInboundEventSource#
+	 * setDeviceEventDecoder
 	 * (com.sitewhere.spi.device.communication.IDeviceEventDecoder)
 	 */
 	public void setDeviceEventDecoder(IDeviceEventDecoder<T> deviceEventDecoder) {
@@ -277,9 +283,8 @@ public class InboundEventSource<T> extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.device.communication.IInboundEventSource#setInboundEventReceivers
-	 * (java.util.List)
+	 * @see com.sitewhere.spi.device.communication.IInboundEventSource#
+	 * setInboundEventReceivers (java.util.List)
 	 */
 	public void setInboundEventReceivers(List<IInboundEventReceiver<T>> inboundEventReceivers) {
 		this.inboundEventReceivers = inboundEventReceivers;

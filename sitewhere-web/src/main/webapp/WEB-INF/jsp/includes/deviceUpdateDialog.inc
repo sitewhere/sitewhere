@@ -29,7 +29,8 @@
 <!-- Dialog for device update -->
 <div id="du-dialog" class="modal hide">
 	<div class="modal-header k-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<button type="button" class="close" data-dismiss="modal"
+			aria-hidden="true">&times;</button>
 		<h3 data-i18n="includes.deviceUpdateDialog.UpdateDevice"></h3>
 	</div>
 	<div class="modal-body">
@@ -42,20 +43,25 @@
 				<div style="padding-top: 20px;">
 					<div id="du-static-header"></div>
 				</div>
-				<form id="du-general-form" class="form-horizontal" style="padding-top: 10px;">
+				<form id="du-general-form" class="form-horizontal"
+					style="padding-top: 10px;">
 					<div class="control-group">
-						<label class="control-label" for="du-site-token" data-i18n="public.Site"></label>
+						<label class="control-label" for="du-site-token"
+							data-i18n="public.Site"></label>
 						<div class="controls">
 							<select id="du-site-token"></select>
 						</div>
 					</div>
 					<div class="control-group">
-						<label class="control-label" for="du-comments" data-i18n="includes.Comments"></label>
+						<label class="control-label" for="du-comments"
+							data-i18n="includes.Comments"></label>
 						<div class="controls">
-							<textarea id="du-comments" class="input-xlarge" style="height: 8em;"></textarea>
+							<textarea id="du-comments" class="input-xlarge"
+								style="height: 8em;"></textarea>
 						</div>
 					</div>
-					<input type="hidden" id="du-hardware-id" /> <input type="hidden" id="du-specification-token" />
+					<input type="hidden" id="du-hardware-id" /> <input type="hidden"
+						id="du-specification-token" />
 				</form>
 			</div>
 			<div>
@@ -68,8 +74,10 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="javascript:void(0)" class="btn" data-dismiss="modal" data-i18n="public.Cancel"></a> <a
-			id="du-dialog-submit" href="javascript:void(0)" class="btn btn-primary" data-i18n="public.Save"></a>
+		<a href="javascript:void(0)" class="btn" data-dismiss="modal"
+			data-i18n="public.Cancel"></a> <a id="du-dialog-submit"
+			href="javascript:void(0)" class="btn btn-primary"
+			data-i18n="public.Save"></a>
 	</div>
 </div>
 
@@ -96,22 +104,32 @@
 
 	$(document)
 			.ready(
-				function() {
-					/** Create tab strip for the update dialog */
-					duTabs = $("#du-tabs").kendoTabStrip({
-						animation : false
-					}).data("kendoTabStrip");
+					function() {
+						/** Create tab strip for the update dialog */
+						duTabs = $("#du-tabs").kendoTabStrip({
+							animation : false
+						}).data("kendoTabStrip");
 
-					duSitesDropdown =
-							$("#du-site-token")
-									.kendoDropDownList(
+						duSitesDropdown = $("#du-site-token")
+								.kendoDropDownList(
 										{
 											dataTextField : "name",
 											dataValueField : "token",
 											dataSource : {
 												transport : {
 													read : {
-														url : "${pageContext.request.contextPath}/api/sites?tenantAuthToken=${tenant.authenticationToken}",
+														url : "${pageContext.request.contextPath}/api/sites",
+														beforeSend : function(
+																req) {
+															req
+																	.setRequestHeader(
+																			'Authorization',
+																			"Basic ${basicAuth}");
+															req
+																	.setRequestHeader(
+																			'X-SiteWhere-Tenant',
+																			"${tenant.authenticationToken}");
+														},
 														dataType : "json",
 													}
 												},
@@ -125,39 +143,52 @@
 											}
 										}).data("kendoDropDownList");
 
-					/** Handle update dialog submit */
-					$('#du-dialog-submit').click(
-						function(event) {
-							event.preventDefault();
-							if (!duValidate()) {
-								return;
-							}
-							var hardwareId = $('#du-hardware-id').val();
-							var deviceData = {
-								"hardwareId" : hardwareId,
-								"siteToken" : $('#du-site-token').val(),
-								"specificationToken" : $('#du-specification-token').val(),
-								"comments" : $('#du-comments').val(),
-								"metadata" : swMetadataAsLookup(duMetadataDS.data()),
-							}
-							$.putJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-									+ "?tenantAuthToken=${tenant.authenticationToken}", deviceData,
-								onUpdateSuccess, onUpdateFail);
-						});
+						/** Handle update dialog submit */
+						$('#du-dialog-submit')
+								.click(
+										function(event) {
+											event.preventDefault();
+											if (!duValidate()) {
+												return;
+											}
+											var hardwareId = $(
+													'#du-hardware-id').val();
+											var deviceData = {
+												"hardwareId" : hardwareId,
+												"siteToken" : $(
+														'#du-site-token').val(),
+												"specificationToken" : $(
+														'#du-specification-token')
+														.val(),
+												"comments" : $('#du-comments')
+														.val(),
+												"metadata" : swMetadataAsLookup(duMetadataDS
+														.data()),
+											}
+											$
+													.putAuthJSON(
+															"${pageContext.request.contextPath}/api/devices/"
+																	+ hardwareId,
+															deviceData,
+															"${basicAuth}",
+															"${tenant.authenticationToken}",
+															onUpdateSuccess,
+															onUpdateFail);
+										});
 
-					/** Called on successful update */
-					function onUpdateSuccess() {
-						$('#du-dialog').modal('hide');
-						if (duSubmitCallback != null) {
-							duSubmitCallback();
+						/** Called on successful update */
+						function onUpdateSuccess() {
+							$('#du-dialog').modal('hide');
+							if (duSubmitCallback != null) {
+								duSubmitCallback();
+							}
 						}
-					}
 
-					/** Handle failed call to update device */
-					function onUpdateFail(jqXHR, textStatus, errorThrown) {
-						handleError(jqXHR, "Unable to update device.");
-					}
-				});
+						/** Handle failed call to update device */
+						function onUpdateFail(jqXHR, textStatus, errorThrown) {
+							handleError(jqXHR, "Unable to update device.");
+						}
+					});
 
 	/** Validate fields for update */
 	function duValidate() {
@@ -180,8 +211,9 @@
 		duSubmitCallback = callback;
 
 		// Get latest device data for hardware id.
-		$.getJSON("${pageContext.request.contextPath}/api/devices/" + hardwareId
-				+ "?tenantAuthToken=${tenant.authenticationToken}", duUpdateGetSuccess, duUpdateGetFailed);
+		$.getAuthJSON("${pageContext.request.contextPath}/api/devices/"
+				+ hardwareId, "${basicAuth}", "${tenant.authenticationToken}",
+				duUpdateGetSuccess, duUpdateGetFailed);
 	}
 
 	/** Called on successful device load request */

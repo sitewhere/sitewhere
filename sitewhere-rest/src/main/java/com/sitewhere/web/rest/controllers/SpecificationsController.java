@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,6 +72,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @author Derek Adams
  */
 @Controller
+@CrossOrigin
 @RequestMapping(value = "/specifications")
 @Api(value = "specifications", description = "Operations related to SiteWhere device specifications.")
 @DocumentedController(name = "Device Specifications")
@@ -94,7 +96,7 @@ public class SpecificationsController extends RestController {
 			@Example(stage = Stage.Response, json = Specifications.CreateSpecificationResponse.class, description = "createDeviceSpecificationResponse.md") })
 	public IDeviceSpecification createDeviceSpecification(
 			@RequestBody DeviceSpecificationCreateRequest request, HttpServletRequest servletRequest)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDeviceSpecification", LOGGER);
 		try {
 			IAsset asset =
@@ -222,7 +224,7 @@ public class SpecificationsController extends RestController {
 	public IDeviceSpecification updateDeviceSpecification(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceSpecificationCreateRequest request, HttpServletRequest servletRequest)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "updateDeviceSpecification", LOGGER);
 		try {
 			IDeviceSpecification result =
@@ -346,7 +348,7 @@ public class SpecificationsController extends RestController {
 	public IDeviceCommand createDeviceCommand(
 			@ApiParam(value = "Token", required = true) @PathVariable String token,
 			@RequestBody DeviceCommandCreateRequest request, HttpServletRequest servletRequest)
-					throws SiteWhereException {
+			throws SiteWhereException {
 		Tracer.start(TracerCategory.RestApiCall, "createDeviceCommand", LOGGER);
 		try {
 			IDeviceSpecification spec = assertDeviceSpecificationByToken(token, servletRequest);

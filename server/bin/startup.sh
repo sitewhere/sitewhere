@@ -5,8 +5,8 @@ echo ""
 
 if hash java 2>/dev/null; then
 
-	JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
-	JAVA_OPTS="$JAVA_OPTS -XX:-UseSplitVerifier -noverify"
+#	JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
+#	JAVA_OPTS="$JAVA_OPTS -XX:-UseSplitVerifier -noverify"
 
 	if [ -z "$SITEWHERE_HOME" ]; then
 		SITEWHERE_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"

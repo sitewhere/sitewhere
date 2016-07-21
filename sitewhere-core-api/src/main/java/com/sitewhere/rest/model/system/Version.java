@@ -16,6 +16,9 @@ import com.sitewhere.spi.system.IVersion;
  */
 public class Version implements IVersion {
 
+	/** Serial version UID */
+	private static final long serialVersionUID = -1056887925751094237L;
+
 	/** Full edition */
 	private String edition;
 

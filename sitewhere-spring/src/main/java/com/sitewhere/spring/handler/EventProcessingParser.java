@@ -11,20 +11,24 @@ import java.util.List;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import com.sitewhere.device.event.EventProcessing;
 import com.sitewhere.server.SiteWhereServerBeans;
+import com.sitewhere.spi.device.event.IEventProcessing;
 
 /**
  * Parses configuration data from SiteWhere event processing subsystem.
  * 
  * @author Derek
  */
-public class EventProcessingParser extends AbstractBeanDefinitionParser {
+public class EventProcessingParser extends SiteWhereBeanDefinitionParser {
+
+	public EventProcessingParser() {
+		getBeanMappings().put(IEventProcessing.class, EventProcessing.class);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -35,7 +39,7 @@ public class EventProcessingParser extends AbstractBeanDefinitionParser {
 	 */
 	@Override
 	protected AbstractBeanDefinition parseInternal(Element element, ParserContext context) {
-		BeanDefinitionBuilder processing = createBuilder();
+		BeanDefinitionBuilder processing = getBuilderFor(IEventProcessing.class);
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
 			Elements type = Elements.getByLocalName(child.getLocalName());
@@ -54,12 +58,12 @@ public class EventProcessingParser extends AbstractBeanDefinitionParser {
 				break;
 			}
 			case InboundProcessingChain: {
-				Object ichain = new InboundProcessingChainParser().parse(child, context);
+				Object ichain = parseInboundProcessingChain(child, context);
 				processing.addPropertyValue("inboundEventProcessorChain", ichain);
 				break;
 			}
 			case OutboundProcessingChain: {
-				Object ochain = new OutboundProcessingChainParser().parse(child, context);
+				Object ochain = parseOutboundProcessingChain(child, context);
 				processing.addPropertyValue("outboundEventProcessorChain", ochain);
 				break;
 			}
@@ -68,16 +72,6 @@ public class EventProcessingParser extends AbstractBeanDefinitionParser {
 		context.getRegistry().registerBeanDefinition(SiteWhereServerBeans.BEAN_EVENT_PROCESSING,
 				processing.getBeanDefinition());
 		return null;
-	}
-
-	/**
-	 * Creates the {@link BeanDefinitionBuilder} that will be populated with nested
-	 * communication subsystem elements.
-	 * 
-	 * @return
-	 */
-	protected BeanDefinitionBuilder createBuilder() {
-		return BeanDefinitionBuilder.rootBeanDefinition(EventProcessing.class);
 	}
 
 	/**
@@ -92,6 +86,17 @@ public class EventProcessingParser extends AbstractBeanDefinitionParser {
 	}
 
 	/**
+	 * Parse the inbound processing strategy configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected Object parseInboundProcessingChain(Element element, ParserContext context) {
+		return new InboundProcessingChainParser().parse(element, context);
+	}
+
+	/**
 	 * Parse the outbound processing strategy configuration.
 	 * 
 	 * @param element
@@ -100,6 +105,17 @@ public class EventProcessingParser extends AbstractBeanDefinitionParser {
 	 */
 	protected Object parseOutboundProcessingStrategy(Element element, ParserContext context) {
 		return new OutboundProcessingStrategyParser().parse(element, context);
+	}
+
+	/**
+	 * Parse the outbound processing strategy configuration.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected Object parseOutboundProcessingChain(Element element, ParserContext context) {
+		return new OutboundProcessingChainParser().parseInternal(element, context);
 	}
 
 	/**

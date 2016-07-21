@@ -9,6 +9,7 @@ package com.sitewhere.spring.handler;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -21,6 +22,10 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import com.sitewhere.device.communication.coap.CoapCommandDeliveryProvider;
+import com.sitewhere.device.communication.coap.CoapCommandDestination;
+import com.sitewhere.device.communication.coap.CoapParameters;
+import com.sitewhere.device.communication.coap.MetadataCoapParameterExtractor;
 import com.sitewhere.device.communication.json.JsonCommandExecutionEncoder;
 import com.sitewhere.device.communication.mqtt.HardwareIdMqttParameterExtractor;
 import com.sitewhere.device.communication.mqtt.MqttCommandDeliveryProvider;
@@ -39,19 +44,23 @@ import com.sitewhere.twilio.TwilioCommandDeliveryProvider;
  * 
  * @author Derek
  */
-public class CommandDestinationsParser {
+public class CommandDestinationsParser extends SiteWhereBeanListParser {
+
+	/** Static logger instance */
+	@SuppressWarnings("unused")
+	private static Logger LOGGER = Logger.getLogger(CommandDestinationsParser.class);
 
 	/** Used to generate unique names for nested beans */
 	private DefaultBeanNameGenerator nameGenerator = new DefaultBeanNameGenerator();
 
-	/**
-	 * Parse the list of command destinations.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param element
-	 * @param context
-	 * @return
+	 * @see
+	 * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.Element,
+	 * org.springframework.beans.factory.xml.ParserContext)
 	 */
-	protected ManagedList<?> parse(Element element, ParserContext context) {
+	public ManagedList<?> parse(Element element, ParserContext context) {
 		ManagedList<Object> result = new ManagedList<Object>();
 		List<Element> children = DomUtils.getChildElements(element);
 		for (Element child : children) {
@@ -66,6 +75,10 @@ public class CommandDestinationsParser {
 			}
 			case MqttCommandDestination: {
 				result.add(parseMqttCommandDestination(child, context));
+				break;
+			}
+			case CoapCommandDestination: {
+				result.add(parseCoapCommandDestination(child, context));
 				break;
 			}
 			case TwilioCommandDestination: {
@@ -101,7 +114,7 @@ public class CommandDestinationsParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition parseMqttCommandDestination(Element element, ParserContext context) {
-		BeanDefinitionBuilder mqtt = BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDestination.class);
+		BeanDefinitionBuilder mqtt = getBuilderFor(MqttCommandDestination.class);
 		addCommonAttributes(mqtt, element, context);
 
 		// Add encoder reference.
@@ -131,8 +144,7 @@ public class CommandDestinationsParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createMqttDeliveryProvider(Element element) {
-		BeanDefinitionBuilder mqtt =
-				BeanDefinitionBuilder.rootBeanDefinition(MqttCommandDeliveryProvider.class);
+		BeanDefinitionBuilder mqtt = getBuilderFor(MqttCommandDeliveryProvider.class);
 
 		Attr protocol = element.getAttributeNode("protocol");
 		if (protocol != null) {
@@ -171,6 +183,49 @@ public class CommandDestinationsParser {
 			mqtt.addPropertyValue("trustStorePassword", trustStorePassword.getValue());
 		}
 
+		return mqtt.getBeanDefinition();
+	}
+
+	/**
+	 * Parse the CoAP command destination configuration and create beans necessary for
+	 * implementation.
+	 * 
+	 * @param element
+	 * @param context
+	 * @return
+	 */
+	protected AbstractBeanDefinition parseCoapCommandDestination(Element element, ParserContext context) {
+		BeanDefinitionBuilder mqtt = getBuilderFor(CoapCommandDestination.class);
+		addCommonAttributes(mqtt, element, context);
+
+		// Add encoder reference.
+		if (!parseBinaryCommandEncoder(element, context, mqtt)) {
+			throw new RuntimeException(
+					"Command encoder required for CoAP command destination but was not specified.");
+		}
+
+		// Add CoAP command delivery provider bean.
+		AbstractBeanDefinition delivery = createCoapDeliveryProvider(element);
+		String deliveryName = nameGenerator.generateBeanName(delivery, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(deliveryName, delivery);
+		mqtt.addPropertyReference("commandDeliveryProvider", deliveryName);
+
+		// Locate parameter extractor reference.
+		if (!addParameterExtractor(mqtt, element, context, CoapParameters.class)) {
+			throw new RuntimeException("Parameter extractor required but not specified.");
+		}
+
+		return mqtt.getBeanDefinition();
+	}
+
+	/**
+	 * Create MQTT command delivery provider from XML element.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createCoapDeliveryProvider(Element element) {
+		BeanDefinitionBuilder mqtt = getBuilderFor(CoapCommandDeliveryProvider.class);
 		return mqtt.getBeanDefinition();
 	}
 
@@ -244,7 +299,8 @@ public class CommandDestinationsParser {
 	 * @param element
 	 * @param context
 	 */
-	protected void addCommonAttributes(BeanDefinitionBuilder builder, Element element, ParserContext context) {
+	protected void addCommonAttributes(BeanDefinitionBuilder builder, Element element,
+			ParserContext context) {
 		Attr destinationId = element.getAttributeNode("destinationId");
 		if (destinationId == null) {
 			throw new RuntimeException("Command destination does not contain destinationId attribute.");
@@ -362,7 +418,8 @@ public class CommandDestinationsParser {
 	 * @param context
 	 * @param destination
 	 */
-	protected void parseEncoderRef(Element encoder, ParserContext context, BeanDefinitionBuilder destination) {
+	protected void parseEncoderRef(Element encoder, ParserContext context,
+			BeanDefinitionBuilder destination) {
 		Attr encoderRef = encoder.getAttributeNode("ref");
 		if (encoderRef == null) {
 			throw new RuntimeException("Command encoder 'ref' attribute is required.");
@@ -400,6 +457,15 @@ public class CommandDestinationsParser {
 				builder.addPropertyReference("commandDeliveryParameterExtractor", xname);
 				return true;
 			}
+		} else if (paramType == CoapParameters.class) {
+			extractor = DomUtils.getChildElementByTagName(element, "metadata-coap-parameter-extractor");
+			if (extractor != null) {
+				AbstractBeanDefinition xref = createCoapMetadataParameterExtractor(extractor);
+				String xname = nameGenerator.generateBeanName(xref, context.getRegistry());
+				context.getRegistry().registerBeanDefinition(xname, xref);
+				builder.addPropertyReference("commandDeliveryParameterExtractor", xname);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -427,6 +493,34 @@ public class CommandDestinationsParser {
 	}
 
 	/**
+	 * Create CoAP device metadata extractor.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	protected AbstractBeanDefinition createCoapMetadataParameterExtractor(Element element) {
+		BeanDefinitionBuilder extractor =
+				BeanDefinitionBuilder.rootBeanDefinition(MetadataCoapParameterExtractor.class);
+
+		Attr hostnameMetadataField = element.getAttributeNode("hostnameMetadataField");
+		if (hostnameMetadataField != null) {
+			extractor.addPropertyValue("hostnameMetadataField", hostnameMetadataField.getValue());
+		}
+
+		Attr portMetadataField = element.getAttributeNode("portMetadataField");
+		if (portMetadataField != null) {
+			extractor.addPropertyValue("portMetadataField", portMetadataField.getValue());
+		}
+
+		Attr urlMetadataField = element.getAttributeNode("urlMetadataField");
+		if (urlMetadataField != null) {
+			extractor.addPropertyValue("urlMetadataField", urlMetadataField.getValue());
+		}
+
+		return extractor.getBeanDefinition();
+	}
+
+	/**
 	 * Expected child elements.
 	 * 
 	 * @author Derek
@@ -438,6 +532,9 @@ public class CommandDestinationsParser {
 
 		/** MQTT command destination */
 		MqttCommandDestination("mqtt-command-destination"),
+
+		/** CoAP command destination */
+		CoapCommandDestination("coap-command-destination"),
 
 		/** Twilio command destination */
 		TwilioCommandDestination("twilio-command-destination");

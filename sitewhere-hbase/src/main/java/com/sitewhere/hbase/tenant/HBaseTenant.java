@@ -10,6 +10,7 @@ package com.sitewhere.hbase.tenant;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.sitewhere.core.SiteWherePersistence;
 import com.sitewhere.hbase.IHBaseContext;
@@ -20,7 +21,7 @@ import com.sitewhere.hbase.uid.UniqueIdCounterMapRowKeyBuilder;
 import com.sitewhere.hbase.user.UserRecordType;
 import com.sitewhere.rest.model.search.SearchResults;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
-import com.sitewhere.rest.model.user.Tenant;
+import com.sitewhere.rest.model.tenant.Tenant;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.common.IFilter;
@@ -77,8 +78,7 @@ public class HBaseTenant {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Tenant createTenant(IHBaseContext context, ITenantCreateRequest request)
-			throws SiteWhereException {
+	public static Tenant createTenant(IHBaseContext context, ITenantCreateRequest request) throws SiteWhereException {
 		if (getTenantById(context, request.getId()) != null) {
 			throw new SiteWhereSystemException(ErrorCode.DuplicateTenantId, ErrorLevel.ERROR);
 		}
@@ -90,8 +90,8 @@ public class HBaseTenant {
 		Tenant tenant = SiteWherePersistence.tenantCreateLogic(request);
 
 		Map<byte[], byte[]> qualifiers = new HashMap<byte[], byte[]>();
-		return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(),
-				ISiteWhereHBase.USERS_TABLE_NAME, tenant, id, KEY_BUILDER, qualifiers);
+		return HBaseUtils.createOrUpdate(context, context.getPayloadMarshaler(), ISiteWhereHBase.USERS_TABLE_NAME,
+				tenant, id, KEY_BUILDER, qualifiers);
 	}
 
 	/**
@@ -122,8 +122,8 @@ public class HBaseTenant {
 			throws SiteWhereException {
 		Tenant updated = assertTenant(context, id);
 		SiteWherePersistence.tenantUpdateLogic(request, updated);
-		return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.USERS_TABLE_NAME,
-				updated, id, KEY_BUILDER);
+		return HBaseUtils.put(context, context.getPayloadMarshaler(), ISiteWhereHBase.USERS_TABLE_NAME, updated, id,
+				KEY_BUILDER);
 	}
 
 	/**
@@ -153,8 +153,8 @@ public class HBaseTenant {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static SearchResults<ITenant> listTenants(IHBaseContext context,
-			final ITenantSearchCriteria criteria) throws SiteWhereException {
+	public static SearchResults<ITenant> listTenants(IHBaseContext context, final ITenantSearchCriteria criteria)
+			throws SiteWhereException {
 		Comparator<Tenant> comparator = new Comparator<Tenant>() {
 
 			public int compare(Tenant a, Tenant b) {
@@ -164,7 +164,16 @@ public class HBaseTenant {
 		};
 		IFilter<Tenant> filter = new IFilter<Tenant>() {
 
+			// Regular expression used for searching name and id.
+			Pattern regex = criteria.getTextSearch() != null ? Pattern.compile(Pattern.quote(criteria.getTextSearch()))
+					: null;
+
 			public boolean isExcluded(Tenant item) {
+				if (regex != null) {
+					if ((!regex.matcher(item.getId()).matches()) && (!regex.matcher(item.getName()).matches())) {
+						return true;
+					}
+				}
 				if (criteria.getUserId() != null) {
 					if (item.getAuthorizedUserIds().contains(criteria.getUserId())) {
 						return false;
@@ -175,9 +184,8 @@ public class HBaseTenant {
 				return false;
 			}
 		};
-		SearchResults<ITenant> list =
-				HBaseUtils.getFilteredList(context, ISiteWhereHBase.USERS_TABLE_NAME, KEY_BUILDER, true,
-						ITenant.class, Tenant.class, filter, criteria, comparator);
+		SearchResults<ITenant> list = HBaseUtils.getFilteredList(context, ISiteWhereHBase.USERS_TABLE_NAME, KEY_BUILDER,
+				true, ITenant.class, Tenant.class, filter, criteria, comparator);
 		SiteWherePersistence.tenantListLogic(list.getResults(), criteria);
 		return list;
 	}
@@ -191,10 +199,9 @@ public class HBaseTenant {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static Tenant deleteTenant(IHBaseContext context, String id, boolean force)
-			throws SiteWhereException {
-		return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.USERS_TABLE_NAME,
-				id, force, KEY_BUILDER, Tenant.class);
+	public static Tenant deleteTenant(IHBaseContext context, String id, boolean force) throws SiteWhereException {
+		return HBaseUtils.delete(context, context.getPayloadMarshaler(), ISiteWhereHBase.USERS_TABLE_NAME, id, force,
+				KEY_BUILDER, Tenant.class);
 	}
 
 	/**

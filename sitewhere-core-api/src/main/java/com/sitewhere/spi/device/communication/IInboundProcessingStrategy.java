@@ -12,21 +12,22 @@ import com.sitewhere.spi.device.event.processor.IInboundEventProcessorChain;
 import com.sitewhere.spi.device.event.request.IDeviceAlertCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceCommandResponseCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceLocationCreateRequest;
+import com.sitewhere.spi.device.event.request.IDeviceMappingCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceMeasurementsCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceRegistrationRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStateChangeCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamCreateRequest;
 import com.sitewhere.spi.device.event.request.IDeviceStreamDataCreateRequest;
 import com.sitewhere.spi.device.event.request.ISendDeviceStreamDataRequest;
-import com.sitewhere.spi.server.lifecycle.ILifecycleComponent;
+import com.sitewhere.spi.server.lifecycle.ITenantLifecycleComponent;
 
 /**
- * Provides a strategy for moving decoded events from an {@link IInboundEventSource} onto
- * the {@link IInboundEventProcessorChain}.
+ * Provides a strategy for moving decoded events from an
+ * {@link IInboundEventSource} onto the {@link IInboundEventProcessorChain}.
  * 
  * @author Derek
  */
-public interface IInboundProcessingStrategy extends ILifecycleComponent {
+public interface IInboundProcessingStrategy extends ITenantLifecycleComponent {
 
 	/**
 	 * Process an {@link IDeviceRegistrationRequest}.
@@ -43,8 +44,8 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processDeviceCommandResponse(
-			IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request) throws SiteWhereException;
+	public void processDeviceCommandResponse(IDecodedDeviceRequest<IDeviceCommandResponseCreateRequest> request)
+			throws SiteWhereException;
 
 	/**
 	 * Process an {@link IDeviceMeasurementsCreateRequest}.
@@ -70,8 +71,7 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @param request
 	 * @throws SiteWhereException
 	 */
-	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request)
-			throws SiteWhereException;
+	public void processDeviceAlert(IDecodedDeviceRequest<IDeviceAlertCreateRequest> request) throws SiteWhereException;
 
 	/**
 	 * Process an {@link IDeviceStateChangeCreateRequest}.
@@ -107,6 +107,15 @@ public interface IInboundProcessingStrategy extends ILifecycleComponent {
 	 * @throws SiteWhereException
 	 */
 	public void processSendDeviceStreamData(IDecodedDeviceRequest<ISendDeviceStreamDataRequest> request)
+			throws SiteWhereException;
+
+	/**
+	 * Process an {@link IDeviceMappingCreateRequest}.
+	 * 
+	 * @param request
+	 * @throws SiteWhereException
+	 */
+	public void processCreateDeviceMapping(IDecodedDeviceRequest<IDeviceMappingCreateRequest> request)
 			throws SiteWhereException;
 
 	/**

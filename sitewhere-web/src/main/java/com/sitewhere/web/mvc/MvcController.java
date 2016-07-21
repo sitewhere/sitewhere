@@ -7,21 +7,26 @@
  */
 package com.sitewhere.web.mvc;
 
+import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitewhere.SiteWhere;
-import com.sitewhere.rest.model.user.Tenant;
 import com.sitewhere.security.LoginManager;
 import com.sitewhere.spi.SiteWhereException;
-import com.sitewhere.spi.server.lifecycle.LifecycleStatus;
-import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.error.ErrorCode;
+import com.sitewhere.spi.error.ErrorLevel;
 import com.sitewhere.spi.tenant.ITenant;
+import com.sitewhere.spi.user.IUser;
 import com.sitewhere.version.VersionHelper;
 
 /**
@@ -33,9 +38,6 @@ public class MvcController {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(MvcController.class);
-
-	/** Session attribute for tenant */
-	public static final String SESSION_TENANT = "com.sitewhere.Tenant";
 
 	/** Version information sent in request */
 	public static final String DATA_VERSION = "version";
@@ -51,6 +53,9 @@ public class MvcController {
 
 	/** Redirect URL for tenant selection page */
 	public static final String DATA_REDIRECT = "redirect";
+
+	/** Encoded basic auth header information */
+	public static final String DATA_BASIC_AUTH = "basicAuth";
 
 	/**
 	 * Show error message for exception.
@@ -92,8 +97,21 @@ public class MvcController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected Map<String, Object> createBaseData(HttpServletRequest request) throws SiteWhereException {
-		return createBaseData(request, true);
+	protected Map<String, Object> createTenantPageBaseData(String tenantId, HttpServletRequest request)
+			throws SiteWhereException {
+		Map<String, Object> data = createBaseData(request);
+		IUser user = LoginManager.getCurrentlyLoggedInUser();
+		if (user == null) {
+			throw new SiteWhereSystemException(ErrorCode.NotLoggedIn, ErrorLevel.ERROR);
+		}
+		List<ITenant> authed = SiteWhere.getServer().getAuthorizedTenants(user.getUsername(), true);
+		for (ITenant tenant : authed) {
+			if (tenant.getId().equals(tenantId)) {
+				data.put(DATA_TENANT, tenant);
+				break;
+			}
+		}
+		return data;
 	}
 
 	/**
@@ -104,69 +122,22 @@ public class MvcController {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected Map<String, Object> createBaseData(HttpServletRequest request, boolean requireTenant)
-			throws SiteWhereException {
+	protected Map<String, Object> createBaseData(HttpServletRequest request) throws SiteWhereException {
+		IUser user = LoginManager.getCurrentlyLoggedInUser();
+
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put(DATA_VERSION, VersionHelper.getVersion());
-		data.put(DATA_CURRENT_USER, LoginManager.getCurrentlyLoggedInUser());
+		data.put(DATA_CURRENT_USER, user);
 		data.put(DATA_AUTHORITIES, new AuthoritiesHelper(LoginManager.getCurrentlyLoggedInUser()));
-		data.put(DATA_TENANT, getChosenTenant(request, requireTenant));
+
+		if (user != null) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			String creds = user.getUsername() + ":" + auth.getCredentials();
+			String basicAuth = new String(Base64.getEncoder().encodeToString(creds.getBytes()));
+			data.put(DATA_BASIC_AUTH, basicAuth);
+		}
+
 		return data;
-	}
-
-	/**
-	 * Store the chosen tenant in the session.
-	 * 
-	 * @param tenant
-	 * @param request
-	 * @throws SiteWhereException
-	 */
-	protected void setChosenTenant(ITenant tenant, HttpServletRequest request) throws SiteWhereException {
-		request.getSession().setAttribute(SESSION_TENANT, tenant);
-	}
-
-	/**
-	 * Get the chosen tenant assocaited with the session. If require is flagged, throw an
-	 * exception if no tenant is chosen.
-	 * 
-	 * @param request
-	 * @param require
-	 * @return
-	 * @throws NoTenantException
-	 */
-	protected ITenant getChosenTenant(HttpServletRequest request, boolean require) throws NoTenantException {
-		Tenant tenant = (Tenant) request.getSession().getAttribute(SESSION_TENANT);
-		if (tenant == null) {
-			if (require) {
-				throw new NoTenantException("Tenant not found in session.");
-			}
-			return null;
-		}
-
-		try {
-			ISiteWhereTenantEngine engine = SiteWhere.getServer().getTenantEngine(tenant.getId());
-			if (engine == null) {
-				request.getSession().removeAttribute(SESSION_TENANT);
-				if (require) {
-					throw new NoTenantException("Engine not found for tenant.");
-				}
-				return null;
-			}
-			tenant.setEngineState(engine.getEngineState());
-
-			// If session contains tenant, but engine not started, remove tenant.
-			if ((tenant.getEngineState() != null)
-					&& (tenant.getEngineState().getLifecycleStatus() != LifecycleStatus.Started)) {
-				request.getSession().removeAttribute(SESSION_TENANT);
-				if (require) {
-					throw new NoTenantException("Tenant engine not started.");
-				}
-				return null;
-			}
-			return tenant;
-		} catch (SiteWhereException e) {
-			throw new NoTenantException("Error loading tenant state.", e);
-		}
 	}
 
 	/**

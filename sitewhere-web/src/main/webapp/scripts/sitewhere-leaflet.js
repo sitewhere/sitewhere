@@ -6,11 +6,13 @@ L.Map.SiteWhere = L.Map.extend({
 	statics: {
 		MAP_TYPE_MAPQUEST: "mapquest",
 		MAP_TYPE_GEOSERVER: "geoserver",
+		MAP_TYPE_OPENSTREETMAP: "openstreetmap",
 	},
 
 	options: {
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		siteToken: null,
+		basicAuth: null,
 		tenantAuthToken: null,
 		showZones: true,
 		onZonesLoaded: null,
@@ -36,7 +38,7 @@ L.Map.SiteWhere = L.Map.extend({
 		var self = this;
 		var url = this.options.siteWhereApi + 'sites/' + this.options.siteToken + 
 			'?tenantAuthToken=' + this.options.tenantAuthToken;
-		L.SiteWhere.Util.getJSON(url, 
+		L.SiteWhere.Util.getAuthJSON(url, this.options.basicAuth,
 				function(site, status, jqXHR) { self._onSiteLoaded(site); }, 
 				function(jqXHR, textStatus, errorThrown) { self._onSiteFailed(jqXHR, textStatus, errorThrown); }
 		);
@@ -54,6 +56,7 @@ L.Map.SiteWhere = L.Map.extend({
 			var zones = L.FeatureGroup.SiteWhere.zones({
 				siteWhereApi: this.options.siteWhereApi,
 				siteToken: this.options.siteToken,
+				basicAuth: this.options.basicAuth,
 				tenantAuthToken: this.options.tenantAuthToken,
 				onZonesLoaded: this.options.onZonesLoaded,
 			});
@@ -63,12 +66,12 @@ L.Map.SiteWhere = L.Map.extend({
 	
 	/** Loads a TileLayer based on map type and metadata associated with site */
 	_loadMapTileLayer: function(site, mapInfo) {
-		if (site.map.type == L.Map.SiteWhere.MAP_TYPE_MAPQUEST) {
-			var mapquestUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
-			var subDomains = ['otile1','otile2','otile3','otile4'];
-			var mapquestAttrib = 'MapQuest data';
-			var mapquest = new L.TileLayer(mapquestUrl, {maxZoom: 18, attribution: mapquestAttrib, subdomains: subDomains});		
-			mapquest.addTo(this);
+		// OpenStreetMap also handles MapQuest tiles since they are no longer supported.
+		if ((site.map.type == L.Map.SiteWhere.MAP_TYPE_OPENSTREETMAP) || 
+				(site.map.type == L.Map.SiteWhere.MAP_TYPE_MAPQUEST)) {
+			var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+			var osm = new L.TileLayer(osmUrl, {maxZoom: 20});		
+			osm.addTo(this);
 		} else if (site.map.type == L.Map.SiteWhere.MAP_TYPE_GEOSERVER) {
 			var gsBaseUrl = (mapInfo.geoserverBaseUrl ? mapInfo.geoserverBaseUrl : "http://localhost:8080/geoserver/");
 			var gsRelativeUrl = "geoserver/gwc/service/gmaps?layers=";
@@ -113,6 +116,7 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 	options: {
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		siteToken: null,
+		basicAuth: null,
 		tenantAuthToken: null,
 		onZonesLoaded: null,
 		zoneTokenToSkip: null,
@@ -137,7 +141,7 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 		var self = this;
 		var url = this.options.siteWhereApi + 'sites/' + this.options.siteToken + 
 			'/zones?tenantAuthToken=' + this.options.tenantAuthToken;
-		L.SiteWhere.Util.getJSON(url, 
+		L.SiteWhere.Util.getAuthJSON(url, this.options.basicAuth,
 				function(zones, status, jqXHR) { self._onZonesLoaded(zones); }, 
 				function(jqXHR, textStatus, errorThrown) { self._onZonesFailed(jqXHR, textStatus, errorThrown); }
 		);
@@ -211,6 +215,7 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 		// Data options.
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		assignmentToken: null,
+		basicAuth: null,
 		tenantAuthToken: null,
 		maxResults: 30,
 		
@@ -250,7 +255,7 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 		var self = this;
 		var url = this.options.siteWhereApi + 'assignments/' + this.options.assignmentToken + 
 			'/locations?tenantAuthToken=' + this.options.tenantAuthToken;
-		L.SiteWhere.Util.getJSON(url, 
+		L.SiteWhere.Util.getAuthJSON(url, this.options.basicAuth,
 			function(locations, status, jqXHR) { 
 				self._onLocationsLoaded(locations); }, 
 			function(jqXHR, textStatus, errorThrown) { 
@@ -362,6 +367,21 @@ L.SiteWhere.Util = L.Class.extend({
 				'success' : onSuccess,
 				'error' : onFail
 			});
+		},
+		
+		/** Make a JSONP GET request */
+		getAuthJSON: function(url, basicAuth, onSuccess, onFail) {
+			return jQuery.ajax({
+				'type' : 'GET',
+				'dataType': 'jsonp',
+				'url' : url,
+				'beforeSend' : function(req) {
+					req.setRequestHeader('Authorization', "Basic " + basicAuth);
+				},
+				'contentType' : 'application/json',
+				'success' : onSuccess,
+						'error' : onFail
+					});
 		},
 	},
 })

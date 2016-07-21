@@ -98,3 +98,11 @@
 		</div>
 	</div>
 </script>
+
+<!-- Template for tenant row (small representation) -->
+<script type="text/x-kendo-tmpl" id="tpl-tenant-entry-small">
+	<tr>
+		<td>#:id#</td>
+		<td>#:name#</td>
+	</tr>
+</script>
