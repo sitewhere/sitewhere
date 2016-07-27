@@ -64,6 +64,59 @@ subprojects {
     	failOnError = false
         options.footer = '<script>(function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,"script","//www.google-analytics.com/analytics.js","ga");ga("create", "UA-42457307-1", {"cookieDomain": "sitewhere.org"});ga("send", "pageview");</script>'
     }
+    
+	if (!releaseBuild) {
+		apply plugin: 'distribution'
+    } else {
+    	apply plugin: 'com.bmuschko.nexus'
+
+		// Upload archives to Amazon S3
+		uploadArchives {
+//			dependsOn uploadServerZip
+//			dependsOn uploadServerTar
+		}
+		
+		// Set up default POM to be uploaded to Nexus.
+		modifyPom {
+			project {
+				name project.description
+				description project.description
+				url 'http://www.sitewhere.org/'
+				inceptionYear '2009'
+				
+				scm {
+					url 'https://github.com/sitewhere/sitewhere'
+					connection 'https://github.com/sitewhere/sitewhere.git'
+				}
+	
+				issueManagement {
+					system 'Jira'
+					url 'https://sitewhere.atlassian.net'
+				}
+				
+				organization {
+					name 'SiteWhere, LLC.'
+					url 'http://www.sitewhere.com/'
+				}
+	
+				licenses {
+					license {
+						name 'Common Public Attribution License Version 1.0 (CPAL-1.0)'
+						url 'http://opensource.org/licenses/CPAL-1.0'
+						distribution 'repo'
+					}
+				}
+	
+				developers {
+					developer {
+						id 'derekadams'
+						name 'Derek Adams'
+						email 'derek.adams@sitewhere.com'
+					}
+				}
+			}
+		}
+    }
 }
 
 // Arranges files to be packaged as a distribution.
@@ -127,57 +180,3 @@ task uploadServerTar(type: com.github.skhatri.s3aws.plugin.S3UploadTask, depends
     }
 }
 
-allprojects {
-	if (!releaseBuild) {
-		apply plugin: 'distribution'
-    } else {
-    	apply plugin: 'com.bmuschko.nexus'
-
-		// Upload archives to Amazon S3
-		uploadArchives {
-//			dependsOn uploadServerZip
-//			dependsOn uploadServerTar
-		}
-		
-		// Set up default POM to be uploaded to Nexus.
-		modifyPom {
-			project {
-				name project.description
-				description project.description
-				url 'http://www.sitewhere.org/'
-				inceptionYear '2009'
-				
-				scm {
-					url 'https://github.com/sitewhere/sitewhere'
-					connection 'https://github.com/sitewhere/sitewhere.git'
-				}
-	
-				issueManagement {
-					system 'Jira'
-					url 'https://sitewhere.atlassian.net'
-				}
-				
-				organization {
-					name 'SiteWhere, LLC.'
-					url 'http://www.sitewhere.com/'
-				}
-	
-				licenses {
-					license {
-						name 'Common Public Attribution License Version 1.0 (CPAL-1.0)'
-						url 'http://opensource.org/licenses/CPAL-1.0'
-						distribution 'repo'
-					}
-				}
-	
-				developers {
-					developer {
-						id 'derekadams'
-						name 'Derek Adams'
-						email 'derek.adams@sitewhere.com'
-					}
-				}
-			}
-		}
-    }
-}
