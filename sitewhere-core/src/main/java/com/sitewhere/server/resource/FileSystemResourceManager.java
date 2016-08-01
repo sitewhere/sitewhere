@@ -5,13 +5,24 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -67,6 +78,9 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	/** Tenant resource maps by tenant id */
 	private Map<String, ResourceMap> tenantResourceMaps = new HashMap<String, ResourceMap>();
 
+	/** Executor for file watcher */
+	private ExecutorService executor;
+
 	public FileSystemResourceManager() {
 		super(LifecycleComponentType.ResourceManager);
 	}
@@ -88,6 +102,10 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 			throw new SiteWhereException("Root folder for file system resource manager is not a directory.");
 		}
 		cacheConfigurationResources();
+
+		// Start watching for filesystem changes in background.
+		executor = Executors.newSingleThreadExecutor();
+		executor.execute(new FileSystemWatcher());
 	}
 
 	/*
@@ -97,6 +115,9 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	 */
 	@Override
 	public void stop() throws SiteWhereException {
+		if (executor != null) {
+			executor.shutdownNow();
+		}
 	}
 
 	/**
@@ -202,7 +223,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	protected void cacheGlobalFile(String relativePath, File file) throws SiteWhereException {
 		IResource resource = createResourceFromFile(relativePath, file);
 		getGlobalResourceMap().put(relativePath, resource);
-		LOGGER.info("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+		LOGGER.debug("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
 				+ resource.getContent().length + " bytes");
 	}
 
@@ -222,7 +243,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		}
 		IResource resource = createResourceFromFile(relativePath, file);
 		tenant.put(relativePath, resource);
-		LOGGER.info("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+		LOGGER.debug("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
 				+ resource.getContent().length + " bytes");
 	}
 
@@ -238,13 +259,17 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		Resource resource = new Resource();
 		resource.setPath(relativePath);
 		resource.setResourceType(findResourceType(file));
+		FileInputStream input = null;
 		try {
-			byte[] content = IOUtils.toByteArray(new FileInputStream(file));
+			input = new FileInputStream(file);
+			byte[] content = IOUtils.toByteArray(input);
 			resource.setContent(content);
 		} catch (FileNotFoundException e) {
 			throw new SiteWhereException("Resource file not found.", e);
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to read resource file.", e);
+		} finally {
+			IOUtils.closeQuietly(input);
 		}
 		return resource;
 	}
@@ -393,7 +418,9 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	 */
 	@Override
 	public IResource deleteGlobalResource(String path) throws SiteWhereException {
-		return deleteResource(null, getGlobalResource(path));
+		IResource deleted = deleteResource(null, getGlobalResource(path));
+		globalResourceMap.remove(path);
+		return deleted;
 	}
 
 	/**
@@ -416,7 +443,34 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		if (!rfile.delete()) {
 			throw new SiteWhereException("Unable to delete resource.");
 		}
+		uncacheFile(rfile);
 		return resource;
+	}
+
+	/**
+	 * Remove a managed resource based on file information.
+	 * 
+	 * @param file
+	 * @throws SiteWhereException
+	 */
+	protected void uncacheFile(File file) throws SiteWhereException {
+		Path path = file.toPath();
+		Path relative = getRootFolder().toPath().relativize(path);
+		if (relative.startsWith(TENANTS_FOLDER_NAME)) {
+			Path tenantsRelative = relative.subpath(1, relative.getNameCount());
+			if (tenantsRelative.getNameCount() > 0) {
+				String tenantId = tenantsRelative.getName(0).toString();
+				Path tenantRelative = tenantsRelative.subpath(1, tenantsRelative.getNameCount());
+				if (tenantRelative.getNameCount() > 0) {
+					ResourceMap map = tenantResourceMaps.get(tenantId);
+					if (map != null) {
+						map.remove(tenantRelative.toString());
+					}
+				}
+			}
+		} else {
+			globalResourceMap.remove(relative.toString());
+		}
 	}
 
 	/*
@@ -533,6 +587,105 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	@Override
 	public IResource deleteTenantResource(String tenantId, String path) throws SiteWhereException {
 		return deleteResource(TENANTS_FOLDER_NAME + File.separator + tenantId, getTenantResource(tenantId, path));
+	}
+
+	/**
+	 * Watches for file system changes in another thread.
+	 * 
+	 * @author Derek
+	 */
+	private class FileSystemWatcher implements Runnable {
+
+		/** Watches for changes on filesystem */
+		private WatchService watcher;
+
+		/** Used to determine which path is generating events */
+		private Map<WatchKey, Path> keysToPaths = new HashMap<WatchKey, Path>();
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void run() {
+			try {
+				this.watcher = FileSystems.getDefault().newWatchService();
+				registerRecursively();
+
+				while (true) {
+					WatchKey key;
+					try {
+						key = watcher.take();
+					} catch (InterruptedException x) {
+						return;
+					}
+
+					Path basePath = keysToPaths.get(key);
+					for (WatchEvent<?> event : key.pollEvents()) {
+						WatchEvent.Kind<?> kind = event.kind();
+
+						if (kind == StandardWatchEventKinds.OVERFLOW) {
+							continue;
+						}
+
+						WatchEvent<Path> ev = (WatchEvent<Path>) event;
+						Path relativePath = ev.context();
+						Path fullPath = basePath.resolve(relativePath);
+						File file = fullPath.toFile();
+						if ((!file.isDirectory())) {
+							if ((kind == StandardWatchEventKinds.ENTRY_CREATE)
+									|| (kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
+								cacheFile(file);
+								LOGGER.debug("Created/updated resource: " + file.getAbsolutePath());
+							} else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+								uncacheFile(file);
+								LOGGER.debug("Deleted resource: " + file.getAbsolutePath());
+							}
+						}
+					}
+
+					boolean valid = key.reset();
+					if (!valid) {
+						LOGGER.warn("Watch key no longer valid. No longer watching for file system changes.");
+						return;
+					}
+				}
+			} catch (IOException e) {
+				LOGGER.error("Unable to create watcher for file updates.", e);
+			}
+		}
+
+		/**
+		 * Recursively register filesystem events for all folders under the
+		 * configuration root.
+		 * 
+		 * @throws IOException
+		 */
+		protected void registerRecursively() throws IOException {
+			Files.walkFileTree(getRootFolder().toPath(), new FileVisitor<Path>() {
+
+				@Override
+				public FileVisitResult postVisitDirectory(Path path, IOException e) throws IOException {
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attr) throws IOException {
+					WatchKey key = path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,
+							StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+					keysToPaths.put(key, path);
+					LOGGER.debug("Listening for changes to: " + path.toFile().getAbsolutePath());
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFile(Path path, BasicFileAttributes attr) throws IOException {
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFileFailed(Path path, IOException e) throws IOException {
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		}
 	}
 
 	/*
