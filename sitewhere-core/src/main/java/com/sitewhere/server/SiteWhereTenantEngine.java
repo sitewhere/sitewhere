@@ -8,7 +8,6 @@
 package com.sitewhere.server;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.sitewhere.SiteWhere;
 import com.sitewhere.configuration.ConfigurationUtils;
-import com.sitewhere.configuration.DefaultTenantConfigurationResolver;
+import com.sitewhere.configuration.ResourceManagerTenantConfigurationResolver;
 import com.sitewhere.device.DeviceEventManagementTriggers;
 import com.sitewhere.device.DeviceManagementTriggers;
 import com.sitewhere.rest.model.command.CommandResponse;
@@ -60,6 +59,7 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.scheduling.ISchedule;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
@@ -81,8 +81,8 @@ import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 import com.sitewhere.spi.tenant.ITenant;
 
 /**
- * Default implementation of {@link ISiteWhereTenantEngine} for managing processing and
- * data for a SiteWhere tenant.
+ * Default implementation of {@link ISiteWhereTenantEngine} for managing
+ * processing and data for a SiteWhere tenant.
  * 
  * @author Derek
  */
@@ -106,9 +106,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** Tenant Hazelcast configuration */
 	private ITenantHazelcastConfiguration hazelcastConfiguration;
 
-	/** List of components registered to participate in SiteWhere server lifecycle */
-	private List<ITenantLifecycleComponent> registeredLifecycleComponents =
-			new ArrayList<ITenantLifecycleComponent>();
+	/**
+	 * List of components registered to participate in SiteWhere server
+	 * lifecycle
+	 */
+	private List<ITenantLifecycleComponent> registeredLifecycleComponents = new ArrayList<ITenantLifecycleComponent>();
 
 	/** Device management cache provider implementation */
 	private IDeviceManagementCacheProvider deviceManagementCacheProvider;
@@ -143,14 +145,13 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/** Threads used to issue engine commands */
 	private ExecutorService commandExecutor = Executors.newSingleThreadExecutor();
 
-	public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent,
-			IGlobalConfigurationResolver global) {
+	public SiteWhereTenantEngine(ITenant tenant, ApplicationContext parent, IGlobalConfigurationResolver global) {
 		super(LifecycleComponentType.TenantEngine);
 		setTenant(tenant);
 		this.globalContext = parent;
 		this.globalConfigurationResolver = global;
-		this.tenantConfigurationResolver =
-				new DefaultTenantConfigurationResolver(tenant, SiteWhere.getServer().getVersion(), global);
+		this.tenantConfigurationResolver = new ResourceManagerTenantConfigurationResolver(tenant,
+				SiteWhere.getServer().getVersion(), global);
 	}
 
 	/*
@@ -188,8 +189,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 
 		// Start device management cache provider if specificed.
 		if (getDeviceManagementCacheProvider() != null) {
-			startNestedComponent(getDeviceManagementCacheProvider(),
-					"Device management cache provider startup failed.", true);
+			startNestedComponent(getDeviceManagementCacheProvider(), "Device management cache provider startup failed.",
+					true);
 		}
 
 		// Populate asset data if requested.
@@ -206,8 +207,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 		startNestedComponent(getEventProcessing(), "Event processing subsystem startup failed.", true);
 
 		// Start device communication subsystem.
-		startNestedComponent(getDeviceCommunication(), "Device communication subsystem startup failed.",
-				true);
+		startNestedComponent(getDeviceCommunication(), "Device communication subsystem startup failed.", true);
 
 		// Start schedule manager.
 		startNestedComponent(getScheduleManager(), "Schedule manager startup failed.", true);
@@ -251,8 +251,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getRegisteredLifecycleComponents()
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#
+	 * getRegisteredLifecycleComponents()
 	 */
 	public List<ITenantLifecycleComponent> getRegisteredLifecycleComponents() {
 		return registeredLifecycleComponents;
@@ -300,8 +300,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 * @param parent
 	 * @param results
 	 */
-	protected void getComponentHierarchyState(ILifecycleComponent parent,
-			List<ITenantEngineComponent> results) {
+	protected void getComponentHierarchyState(ILifecycleComponent parent, List<ITenantEngineComponent> results) {
 		List<ILifecycleComponent> children = parent.getLifecycleComponents();
 		for (ILifecycleComponent child : children) {
 			TenantEngineComponent component = new TenantEngineComponent();
@@ -318,13 +317,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#issueCommand(java.lang.String,
-	 * int)
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#issueCommand(java.lang.
+	 * String, int)
 	 */
 	@Override
 	public ICommandResponse issueCommand(String command, int maxWaitSeconds) throws SiteWhereException {
-		Class<? extends TenantEngineCommand> commandClass =
-				SiteWhereTenantEngineCommands.Command.getCommandClass(command);
+		Class<? extends TenantEngineCommand> commandClass = SiteWhereTenantEngineCommands.Command
+				.getCommandClass(command);
 		if (commandClass == null) {
 			throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineCommand, ErrorLevel.ERROR);
 		}
@@ -368,15 +368,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			// Initialize event processing subsystem.
 			setEventProcessing(initializeEventProcessingSubsystem());
 			if (getEventProcessing() instanceof ITenantHazelcastAware) {
-				((ITenantHazelcastAware) getEventProcessing()).setHazelcastConfiguration(
-						getHazelcastConfiguration());
+				((ITenantHazelcastAware) getEventProcessing()).setHazelcastConfiguration(getHazelcastConfiguration());
 			}
 
 			// Initialize device communication subsystem.
 			setDeviceCommunication(initializeDeviceCommunicationSubsystem());
 			if (getDeviceCommunication() instanceof ITenantHazelcastAware) {
-				((ITenantHazelcastAware) getDeviceCommunication()).setHazelcastConfiguration(
-						getHazelcastConfiguration());
+				((ITenantHazelcastAware) getDeviceCommunication())
+						.setHazelcastConfiguration(getHazelcastConfiguration());
 			}
 
 			// Initialize device management.
@@ -401,8 +400,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			setLifecycleStatus(LifecycleStatus.Error);
 			return false;
 		} catch (Throwable e) {
-			setLifecycleError(
-					new SiteWhereException("Unhandled exception in tenant engine initialization.", e));
+			setLifecycleError(new SiteWhereException("Unhandled exception in tenant engine initialization.", e));
 			setLifecycleStatus(LifecycleStatus.Error);
 			LOGGER.error("Unhandled exception in tenant engine initialization.", e);
 			return false;
@@ -420,8 +418,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Verifies that a configuration exists for the tenant. If not, one is created based
-	 * on the default template.
+	 * Verifies that a configuration exists for the tenant. If not, one is
+	 * created based on the default template.
 	 * 
 	 * @throws SiteWhereException
 	 */
@@ -432,18 +430,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Loads the tenant configuration file. If a new configuration is staged, it is
-	 * transitioned into the active configuration.
+	 * Loads the tenant configuration file. If a new configuration is staged, it
+	 * is transitioned into the active configuration. If no configuration is
+	 * found for a tenant, a new one is created from the tenant template.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
 		// Handle staged configuration if available.
 		LOGGER.info("Checking for staged tenant configuration.");
-		byte[] config = getTenantConfigurationResolver().getStagedTenantConfiguration();
+		IResource config = getTenantConfigurationResolver().getStagedTenantConfiguration();
 		if (config != null) {
-			LOGGER.info("Staged tenant configuration found for '" + getTenant().getName()
-					+ "'. Transitioning to active.");
+			LOGGER.info(
+					"Staged tenant configuration found for '" + getTenant().getName() + "'. Transitioning to active.");
 			getTenantConfigurationResolver().transitionStagedToActiveTenantConfiguration();
 		} else {
 			LOGGER.info("No staged tenant configuration found.");
@@ -456,9 +455,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 			LOGGER.info("No active configuration found. Copying default configuration.");
 			config = getTenantConfigurationResolver().createDefaultTenantConfiguration();
 		}
-		this.tenantContext =
-				ConfigurationUtils.buildTenantContext(config, getTenant(), SiteWhere.getServer().getVersion(),
-						globalContext);
+		this.tenantContext = ConfigurationUtils.buildTenantContext(config, getTenant(),
+				SiteWhere.getServer().getVersion(), globalContext);
 	}
 
 	/**
@@ -483,22 +481,23 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 * @throws SiteWhereException
 	 */
 	protected ITenantHazelcastConfiguration createHazelcastConfiguration() throws SiteWhereException {
-		File root = new File(getGlobalConfigurationResolver().getConfigurationRoot());
-		File config = new File(root, TenantHazelcastConfiguration.CONFIG_FILE_NAME);
-		return new TenantHazelcastConfiguration(config);
+		IResource hzConfig = getGlobalConfigurationResolver()
+				.getResourceForPath(TenantHazelcastConfiguration.CONFIG_FILE_NAME);
+		if (hzConfig == null) {
+			throw new SiteWhereException("Base Hazelcast configuration resource not found.");
+		}
+		return new TenantHazelcastConfiguration(hzConfig);
 	}
 
 	/**
-	 * Finds beans that implement the {@link ITenantHazelcastAware} interface and injects
-	 * the tenant Hazelcast configuration.
+	 * Finds beans that implement the {@link ITenantHazelcastAware} interface
+	 * and injects the tenant Hazelcast configuration.
 	 * 
 	 * @param hazelcast
 	 * @throws SiteWhereException
 	 */
-	protected void injectHazelcastConfiguration(ITenantHazelcastConfiguration hazelcast)
-			throws SiteWhereException {
-		Map<String, ITenantHazelcastAware> beans =
-				getSpringContext().getBeansOfType(ITenantHazelcastAware.class);
+	protected void injectHazelcastConfiguration(ITenantHazelcastConfiguration hazelcast) throws SiteWhereException {
+		Map<String, ITenantHazelcastAware> beans = getSpringContext().getBeansOfType(ITenantHazelcastAware.class);
 		for (String key : beans.keySet()) {
 			ITenantHazelcastAware aware = beans.get(key);
 			aware.setHazelcastConfiguration(hazelcast);
@@ -506,14 +505,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Initialize beans marked with {@link IDiscoverableTenantLifecycleComponent}
-	 * interface and add them as registered components.
+	 * Initialize beans marked with
+	 * {@link IDiscoverableTenantLifecycleComponent} interface and add them as
+	 * registered components.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void initializeDiscoverableBeans() throws SiteWhereException {
-		Map<String, IDiscoverableTenantLifecycleComponent> components =
-				tenantContext.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		Map<String, IDiscoverableTenantLifecycleComponent> components = tenantContext
+				.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 		getRegisteredLifecycleComponents().clear();
 
 		LOGGER.info("Registering " + components.size() + " discoverable components.");
@@ -532,21 +532,19 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	protected IDeviceManagement initializeDeviceManagement() throws SiteWhereException {
 		// Load device management cache provider if configured.
 		try {
-			this.deviceManagementCacheProvider =
-					(IDeviceManagementCacheProvider) tenantContext.getBean(
-							SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER);
-			LOGGER.info("Device management cache provider using: "
-					+ deviceManagementCacheProvider.getClass().getName());
+			this.deviceManagementCacheProvider = (IDeviceManagementCacheProvider) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT_CACHE_PROVIDER);
+			LOGGER.info(
+					"Device management cache provider using: " + deviceManagementCacheProvider.getClass().getName());
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No device management cache provider configured. Caching disabled.");
 		}
 
 		// Verify that a device management implementation exists.
 		try {
-			IDeviceManagement deviceManagementImpl =
-					(IDeviceManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
-			LOGGER.info(
-					"Device management implementation using: " + deviceManagementImpl.getClass().getName());
+			IDeviceManagement deviceManagementImpl = (IDeviceManagement) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_DEVICE_MANAGEMENT);
+			LOGGER.info("Device management implementation using: " + deviceManagementImpl.getClass().getName());
 
 			return configureDeviceManagement(deviceManagementImpl);
 		} catch (NoSuchBeanDefinitionException e) {
@@ -555,15 +553,14 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Configure device management implementation by injecting configured options or
-	 * wrapping to add functionality.
+	 * Configure device management implementation by injecting configured
+	 * options or wrapping to add functionality.
 	 * 
 	 * @param management
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected IDeviceManagement configureDeviceManagement(IDeviceManagement management)
-			throws SiteWhereException {
+	protected IDeviceManagement configureDeviceManagement(IDeviceManagement management) throws SiteWhereException {
 		// Inject cache provider if available.
 		if (getDeviceManagementCacheProvider() != null) {
 			if (management instanceof ICachingDeviceManagement) {
@@ -586,9 +583,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	protected IDeviceEventManagement initializeDeviceEventManagement() throws SiteWhereException {
 		// Verify that a device event management implementation exists.
 		try {
-			IDeviceEventManagement management =
-					(IDeviceEventManagement) tenantContext.getBean(
-							SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT);
+			IDeviceEventManagement management = (IDeviceEventManagement) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_DEVICE_EVENT_MANAGEMENT);
 			IDeviceEventManagement configured = configureDeviceEventManagement(management);
 			LOGGER.info("Device event management implementation using: " + configured.getClass().getName());
 			return configured;
@@ -599,8 +595,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Configure device event management implementation by injecting configured options or
-	 * wrapping to add functionality.
+	 * Configure device event management implementation by injecting configured
+	 * options or wrapping to add functionality.
 	 * 
 	 * @param management
 	 * @return
@@ -622,8 +618,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected IDeviceCommunication initializeDeviceCommunicationSubsystem() throws SiteWhereException {
 		try {
-			return (IDeviceCommunication) tenantContext.getBean(
-					SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION);
+			return (IDeviceCommunication) tenantContext.getBean(SiteWhereServerBeans.BEAN_DEVICE_COMMUNICATION);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No device communication subsystem implementation configured.");
 		}
@@ -650,12 +645,11 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected IAssetManagement initializeAssetManagement() throws SiteWhereException {
 		try {
-			IAssetManagement implementation =
-					(IAssetManagement) tenantContext.getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
+			IAssetManagement implementation = (IAssetManagement) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_ASSET_MANAGEMENT);
 			IAssetManagement withTriggers = new AssetManagementTriggers(implementation);
-			assetModuleManager =
-					(IAssetModuleManager) tenantContext.getBean(
-							SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
+			assetModuleManager = (IAssetModuleManager) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_ASSET_MODULE_MANAGER);
 			return withTriggers;
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No asset module manager implementation configured.");
@@ -670,9 +664,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected IScheduleManagement initializeScheduleManagement() throws SiteWhereException {
 		try {
-			IScheduleManagement implementation =
-					(IScheduleManagement) tenantContext.getBean(
-							SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT);
+			IScheduleManagement implementation = (IScheduleManagement) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_SCHEDULE_MANAGEMENT);
 			IScheduleManagement withTriggers = new ScheduleManagementTriggers(implementation);
 			scheduleManager = (IScheduleManager) new QuartzScheduleManager(withTriggers);
 			return withTriggers;
@@ -689,8 +682,7 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	 */
 	protected ISearchProviderManager initializeSearchProviderManagement() throws SiteWhereException {
 		try {
-			return (ISearchProviderManager) tenantContext.getBean(
-					SiteWhereServerBeans.BEAN_SEARCH_PROVIDER_MANAGER);
+			return (ISearchProviderManager) tenantContext.getBean(SiteWhereServerBeans.BEAN_SEARCH_PROVIDER_MANAGER);
 		} catch (NoSuchBeanDefinitionException e) {
 			return new SearchProviderManager();
 		}
@@ -712,15 +704,15 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Check whether device model is populated and offer to bootstrap system if not.
+	 * Check whether device model is populated and offer to bootstrap system if
+	 * not.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void verifyDeviceModel() throws SiteWhereException {
 		try {
-			IDeviceModelInitializer init =
-					(IDeviceModelInitializer) tenantContext.getBean(
-							SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER);
+			IDeviceModelInitializer init = (IDeviceModelInitializer) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_DEVICE_MODEL_INITIALIZER);
 			ISearchResults<ISite> sites = getDeviceManagement().listSites(new SearchCriteria(1, 1));
 			if (sites.getNumResults() == 0) {
 				init.initialize(getDeviceManagement(), getDeviceEventManagement(), getAssetModuleManager());
@@ -732,17 +724,17 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Check whether asset model is populated and offer to bootstrap system if not.
+	 * Check whether asset model is populated and offer to bootstrap system if
+	 * not.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void verifyAssetModel() throws SiteWhereException {
 		try {
-			IAssetModelInitializer init =
-					(IAssetModelInitializer) tenantContext.getBean(
-							SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER);
-			ISearchResults<IAssetCategory> categories =
-					getAssetManagement().listAssetCategories(new SearchCriteria(1, 1));
+			IAssetModelInitializer init = (IAssetModelInitializer) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_ASSET_MODEL_INITIALIZER);
+			ISearchResults<IAssetCategory> categories = getAssetManagement()
+					.listAssetCategories(new SearchCriteria(1, 1));
 			if (categories.getNumResults() == 0) {
 				init.initialize(getTenantConfigurationResolver(), getAssetManagement());
 			}
@@ -753,17 +745,16 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	}
 
 	/**
-	 * Check whether schedule model is populated and offer to bootstrap system if not.
+	 * Check whether schedule model is populated and offer to bootstrap system
+	 * if not.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void verifyScheduleModel() throws SiteWhereException {
 		try {
-			IScheduleModelInitializer init =
-					(IScheduleModelInitializer) tenantContext.getBean(
-							SiteWhereServerBeans.BEAN_SCHEDULE_MODEL_INITIALIZER);
-			ISearchResults<ISchedule> schedules =
-					getScheduleManagement().listSchedules(new SearchCriteria(1, 1));
+			IScheduleModelInitializer init = (IScheduleModelInitializer) tenantContext
+					.getBean(SiteWhereServerBeans.BEAN_SCHEDULE_MODEL_INITIALIZER);
+			ISearchResults<ISchedule> schedules = getScheduleManagement().listSchedules(new SearchCriteria(1, 1));
 			if (schedules.getNumResults() == 0) {
 				init.initialize(getScheduleManagement());
 			}
@@ -796,8 +787,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getGlobalConfigurationResolver()
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#
+	 * getGlobalConfigurationResolver()
 	 */
 	public IGlobalConfigurationResolver getGlobalConfigurationResolver() {
 		return globalConfigurationResolver;
@@ -810,8 +801,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getTenantConfigurationResolver()
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#
+	 * getTenantConfigurationResolver()
 	 */
 	public ITenantConfigurationResolver getTenantConfigurationResolver() {
 		return tenantConfigurationResolver;
@@ -824,8 +815,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#getHazelcastConfiguration()
+	 * @see com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine#
+	 * getHazelcastConfiguration()
 	 */
 	public ITenantHazelcastConfiguration getHazelcastConfiguration() {
 		return hazelcastConfiguration;
@@ -838,22 +829,22 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceManagementCacheProvider()
+	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#
+	 * getDeviceManagementCacheProvider()
 	 */
 	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider() {
 		return deviceManagementCacheProvider;
 	}
 
-	public void setDeviceManagementCacheProvider(
-			IDeviceManagementCacheProvider deviceManagementCacheProvider) {
+	public void setDeviceManagementCacheProvider(IDeviceManagementCacheProvider deviceManagementCacheProvider) {
 		this.deviceManagementCacheProvider = deviceManagementCacheProvider;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceManagement()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceManagement()
 	 */
 	public IDeviceManagement getDeviceManagement() {
 		return deviceManagement;
@@ -866,7 +857,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceEventManagement()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceEventManagement(
+	 * )
 	 */
 	public IDeviceEventManagement getDeviceEventManagement() {
 		return deviceEventManagement;
@@ -892,7 +885,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getScheduleManagement()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getScheduleManagement()
 	 */
 	public IScheduleManagement getScheduleManagement() {
 		return scheduleManagement;
@@ -905,7 +899,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceCommunication()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getDeviceCommunication()
 	 */
 	public IDeviceCommunication getDeviceCommunication() {
 		return deviceCommunication;
@@ -931,7 +926,8 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getAssetModuleManager()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getAssetModuleManager()
 	 */
 	public IAssetModuleManager getAssetModuleManager() {
 		return assetModuleManager;
@@ -944,7 +940,9 @@ public class SiteWhereTenantEngine extends TenantLifecycleComponent implements I
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereTenantEngine#getSearchProviderManager()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereTenantEngine#getSearchProviderManager(
+	 * )
 	 */
 	public ISearchProviderManager getSearchProviderManager() {
 		return searchProviderManager;

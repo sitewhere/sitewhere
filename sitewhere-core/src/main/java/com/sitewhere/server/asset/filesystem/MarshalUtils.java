@@ -7,7 +7,7 @@
  */
 package com.sitewhere.server.asset.filesystem;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,14 +35,12 @@ public class MarshalUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<HardwareAsset> loadHardwareAssets(File config, AssetType type)
-			throws SiteWhereException {
+	public static List<HardwareAsset> loadHardwareAssets(InputStream config, AssetType type) throws SiteWhereException {
 		try {
 			List<HardwareAsset> assets = new ArrayList<HardwareAsset>();
 			JAXBContext jaxbContext = JAXBContext.newInstance(FileSystemHardwareAssets.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			FileSystemHardwareAssets xmlAssets =
-					(FileSystemHardwareAssets) jaxbUnmarshaller.unmarshal(config);
+			FileSystemHardwareAssets xmlAssets = (FileSystemHardwareAssets) jaxbUnmarshaller.unmarshal(config);
 			for (FileSystemHardwareAsset xmlAsset : xmlAssets.getHardwareAssets()) {
 				HardwareAsset asset = new HardwareAsset();
 				asset.setId(xmlAsset.getId());
@@ -73,7 +71,7 @@ public class MarshalUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<PersonAsset> loadPersonAssets(File config) throws SiteWhereException {
+	public static List<PersonAsset> loadPersonAssets(InputStream config) throws SiteWhereException {
 		List<PersonAsset> assets = new ArrayList<PersonAsset>();
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(FileSystemPersonAssets.class);
@@ -110,13 +108,12 @@ public class MarshalUtils {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public static List<LocationAsset> loadLocationAssets(File config) throws SiteWhereException {
+	public static List<LocationAsset> loadLocationAssets(InputStream config) throws SiteWhereException {
 		List<LocationAsset> assets = new ArrayList<LocationAsset>();
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(FileSystemLocationAssets.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			FileSystemLocationAssets xmlAssets =
-					(FileSystemLocationAssets) jaxbUnmarshaller.unmarshal(config);
+			FileSystemLocationAssets xmlAssets = (FileSystemLocationAssets) jaxbUnmarshaller.unmarshal(config);
 			for (FileSystemLocationAsset xmlAsset : xmlAssets.getLocationAssets()) {
 				LocationAsset asset = new LocationAsset();
 				asset.setId(xmlAsset.getId());

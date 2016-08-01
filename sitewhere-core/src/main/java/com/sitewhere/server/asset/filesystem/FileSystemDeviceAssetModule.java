@@ -7,7 +7,7 @@
  */
 package com.sitewhere.server.asset.filesystem;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,14 +16,15 @@ import com.sitewhere.rest.model.asset.HardwareAsset;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
+import com.sitewhere.spi.resource.IResource;
 
 /**
  * Module that loads a list of device assets from an XML file on the filesystem.
  * 
  * @author Derek
  */
-public class FileSystemDeviceAssetModule extends FileSystemAssetModule<HardwareAsset> implements
-		IAssetModule<HardwareAsset> {
+public class FileSystemDeviceAssetModule extends FileSystemAssetModule<HardwareAsset>
+		implements IAssetModule<HardwareAsset> {
 
 	/** Serial version UID */
 	private static final long serialVersionUID = -4973584728643353788L;
@@ -58,8 +59,8 @@ public class FileSystemDeviceAssetModule extends FileSystemAssetModule<HardwareA
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.asset.IAssetModule#isAssetTypeSupported(com.sitewhere.spi.asset
-	 * .AssetType)
+	 * com.sitewhere.spi.asset.IAssetModule#isAssetTypeSupported(com.sitewhere.
+	 * spi.asset .AssetType)
 	 */
 	public AssetType getAssetType() {
 		return AssetType.Device;
@@ -69,10 +70,11 @@ public class FileSystemDeviceAssetModule extends FileSystemAssetModule<HardwareA
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(java.io.File)
+	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(com
+	 * .sitewhere.spi.resource.IResource)
 	 */
 	@Override
-	protected List<HardwareAsset> unmarshal(File file) throws SiteWhereException {
-		return MarshalUtils.loadHardwareAssets(file, getAssetType());
+	protected List<HardwareAsset> unmarshal(IResource resource) throws SiteWhereException {
+		return MarshalUtils.loadHardwareAssets(new ByteArrayInputStream(resource.getContent()), getAssetType());
 	}
 }

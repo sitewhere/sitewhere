@@ -10,6 +10,8 @@ package com.sitewhere.spi.configuration;
 import java.net.URI;
 
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.resource.IResource;
+import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.system.IVersion;
 
 /**
@@ -20,30 +22,60 @@ import com.sitewhere.spi.system.IVersion;
 public interface IGlobalConfigurationResolver {
 
 	/**
-	 * Get the base configuration URL.
+	 * Gets the URI for the root folder on the filesystem where configuration
+	 * elements can be stored. This is being phased out by use of the
+	 * {@link IResourceManager} implementation and will be removed.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public URI getConfigurationRoot() throws SiteWhereException;
+	@Deprecated
+	public URI getFilesystemConfigurationRoot() throws SiteWhereException;
 
 	/**
-	 * Get the global configuration.
+	 * Gets a resource for the given global path.
+	 * 
+	 * @param path
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IResource getResourceForPath(String path) throws SiteWhereException;
+
+	/**
+	 * Get an asset resource based on relative path.
+	 * 
+	 * @param path
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IResource getAssetResource(String path) throws SiteWhereException;
+
+	/**
+	 * Get a script resource based on relative path.
+	 * 
+	 * @param path
+	 * @return
+	 * @throws SiteWhereException
+	 */
+	public IResource getScriptResource(String path) throws SiteWhereException;
+
+	/**
+	 * Get the global configuration resource.
 	 * 
 	 * @param version
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] getGlobalConfiguration(IVersion version) throws SiteWhereException;
+	public IResource getGlobalConfiguration(IVersion version) throws SiteWhereException;
 
 	/**
-	 * Get binary form of server state information.
+	 * Get server state information as a resource.
 	 * 
 	 * @param version
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public byte[] resolveServerState(IVersion version) throws SiteWhereException;
+	public IResource resolveServerState(IVersion version) throws SiteWhereException;
 
 	/**
 	 * Store information about server state.

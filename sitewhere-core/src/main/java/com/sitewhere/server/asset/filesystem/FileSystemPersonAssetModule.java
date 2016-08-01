@@ -7,7 +7,7 @@
  */
 package com.sitewhere.server.asset.filesystem;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,14 +16,15 @@ import com.sitewhere.rest.model.asset.PersonAsset;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
+import com.sitewhere.spi.resource.IResource;
 
 /**
  * Module that loads a list of person assets from an XML file on the filesystem.
  * 
  * @author Derek Adams
  */
-public class FileSystemPersonAssetModule extends FileSystemAssetModule<PersonAsset> implements
-		IAssetModule<PersonAsset> {
+public class FileSystemPersonAssetModule extends FileSystemAssetModule<PersonAsset>
+		implements IAssetModule<PersonAsset> {
 
 	/** Serial version UID */
 	private static final long serialVersionUID = -8518071972348096650L;
@@ -67,10 +68,11 @@ public class FileSystemPersonAssetModule extends FileSystemAssetModule<PersonAss
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(java.io.File)
+	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(com
+	 * .sitewhere.spi.resource.IResource)
 	 */
 	@Override
-	protected List<PersonAsset> unmarshal(File file) throws SiteWhereException {
-		return MarshalUtils.loadPersonAssets(file);
+	protected List<PersonAsset> unmarshal(IResource resource) throws SiteWhereException {
+		return MarshalUtils.loadPersonAssets(new ByteArrayInputStream(resource.getContent()));
 	}
 }

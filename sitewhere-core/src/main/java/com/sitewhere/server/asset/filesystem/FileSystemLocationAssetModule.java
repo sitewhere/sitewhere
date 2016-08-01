@@ -7,7 +7,7 @@
  */
 package com.sitewhere.server.asset.filesystem;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,14 +16,16 @@ import com.sitewhere.rest.model.asset.LocationAsset;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetModule;
+import com.sitewhere.spi.resource.IResource;
 
 /**
- * Module that loads a list of location assets from an XML file on the filesystem.
+ * Module that loads a list of location assets from an XML file on the
+ * filesystem.
  * 
  * @author Derek Adams
  */
-public class FileSystemLocationAssetModule extends FileSystemAssetModule<LocationAsset> implements
-		IAssetModule<LocationAsset> {
+public class FileSystemLocationAssetModule extends FileSystemAssetModule<LocationAsset>
+		implements IAssetModule<LocationAsset> {
 
 	/** Serial version UID */
 	private static final long serialVersionUID = 2385514171301244967L;
@@ -67,10 +69,11 @@ public class FileSystemLocationAssetModule extends FileSystemAssetModule<Locatio
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(java.io.File)
+	 * com.sitewhere.server.asset.filesystem.FileSystemAssetModule#unmarshal(com
+	 * .sitewhere.spi.resource.IResource)
 	 */
 	@Override
-	protected List<LocationAsset> unmarshal(File file) throws SiteWhereException {
-		return MarshalUtils.loadLocationAssets(file);
+	protected List<LocationAsset> unmarshal(IResource resource) throws SiteWhereException {
+		return MarshalUtils.loadLocationAssets(new ByteArrayInputStream(resource.getContent()));
 	}
 }

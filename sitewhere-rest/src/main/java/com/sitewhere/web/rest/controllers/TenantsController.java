@@ -41,6 +41,7 @@ import com.sitewhere.spi.SiteWhereSystemException;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.search.ISearchResults;
 import com.sitewhere.spi.server.debug.TracerCategory;
 import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
@@ -194,7 +195,7 @@ public class TenantsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfiguration", LOGGER);
 		try {
 			assureAuthorizedTenantId(tenantId);
-			return new String(TenantUtils.getActiveTenantConfiguration(tenantId));
+			return new String(TenantUtils.getActiveTenantConfiguration(tenantId).getContent());
 		} finally {
 			Tracer.stop(LOGGER);
 		}
@@ -217,8 +218,8 @@ public class TenantsController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "getTenantEngineConfigurationAsJson", LOGGER);
 		try {
 			assureAuthorizedTenantId(tenantId);
-			byte[] config = TenantUtils.getActiveTenantConfiguration(tenantId);
-			return ConfigurationContentParser.parse(config);
+			IResource config = TenantUtils.getActiveTenantConfiguration(tenantId);
+			return ConfigurationContentParser.parse(config.getContent());
 		} finally {
 			Tracer.stop(LOGGER);
 		}

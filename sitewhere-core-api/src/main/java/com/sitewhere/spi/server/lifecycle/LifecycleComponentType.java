@@ -113,6 +113,9 @@ public enum LifecycleComponentType {
 	/** Event receiver */
 	InboundEventReceiver,
 
+	/** Resource manager */
+	ResourceManager,
+
 	/** Unclassified component */
 	Other,
 }

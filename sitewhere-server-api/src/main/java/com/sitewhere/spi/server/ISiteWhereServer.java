@@ -21,6 +21,7 @@ import com.sitewhere.spi.device.IDeviceManagementCacheProvider;
 import com.sitewhere.spi.device.communication.IDeviceCommunication;
 import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
+import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.external.ISearchProviderManager;
@@ -74,8 +75,7 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical)
-			throws SiteWhereException;
+	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical) throws SiteWhereException;
 
 	/**
 	 * Initialize the server.
@@ -106,6 +106,13 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public ITracer getTracer();
 
 	/**
+	 * Get resource manager for resolving resource references.
+	 * 
+	 * @return
+	 */
+	public IResourceManager getResourceManager();
+
+	/**
 	 * Get class that can be used to location the Spring configuration context.
 	 * 
 	 * @return
@@ -129,12 +136,11 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted)
-			throws SiteWhereException;
+	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted) throws SiteWhereException;
 
 	/**
-	 * Get a tenant engine by tenant id. If a tenant exists but the engine has not been
-	 * initialized, the tenant engine will be initialized and started.
+	 * Get a tenant engine by tenant id. If a tenant exists but the engine has
+	 * not been initialized, the tenant engine will be initialized and started.
 	 * 
 	 * @param tenantId
 	 * @return
@@ -143,8 +149,8 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException;
 
 	/**
-	 * Called when tenant information has been updated so that cached data is kept
-	 * current.
+	 * Called when tenant information has been updated so that cached data is
+	 * kept current.
 	 * 
 	 * @param tenant
 	 * @throws SiteWhereException
@@ -190,8 +196,7 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant)
-			throws SiteWhereException;
+	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant) throws SiteWhereException;
 
 	/**
 	 * Get asset management implementation for the given tenant.
@@ -257,8 +262,8 @@ public interface ISiteWhereServer extends ILifecycleComponent {
 	public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException;
 
 	/**
-	 * Get list of components that have registered to participate in the server component
-	 * lifecycle.
+	 * Get list of components that have registered to participate in the server
+	 * component lifecycle.
 	 * 
 	 * @return
 	 */

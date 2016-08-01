@@ -38,8 +38,8 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.device.communication.IInboundEventReceiver;
 
 /**
- * Implementation of {@link IInboundEventReceiver} that uses an ActiveMQ broker to listen
- * on a transport for messages.
+ * Implementation of {@link IInboundEventReceiver} that uses an ActiveMQ broker
+ * to listen on a transport for messages.
  * 
  * @author Derek
  */
@@ -96,7 +96,7 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 			throw new SiteWhereException("Queue name is required.");
 		}
 		if (getDataDirectory() == null) {
-			File root = new File(SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot());
+			File root = new File(SiteWhere.getServer().getConfigurationResolver().getFilesystemConfigurationRoot());
 			File data = new File(root, "data");
 			if (!data.exists()) {
 				data.mkdir();
@@ -131,7 +131,8 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#getDisplayName()
+	 * @see com.sitewhere.spi.device.communication.IInboundEventReceiver#
+	 * getDisplayName()
 	 */
 	@Override
 	public String getDisplayName() {
@@ -191,14 +192,13 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 		private AtomicInteger counter = new AtomicInteger();
 
 		public Thread newThread(Runnable r) {
-			return new Thread(r,
-					"SiteWhere ActiveMQ(" + getBrokerName() + ") Consumer " + counter.incrementAndGet());
+			return new Thread(r, "SiteWhere ActiveMQ(" + getBrokerName() + ") Consumer " + counter.incrementAndGet());
 		}
 	}
 
 	/**
-	 * Reads messages from the ActiveMQ queue and puts the binary content on a queue for
-	 * SiteWhere to use.
+	 * Reads messages from the ActiveMQ queue and puts the binary content on a
+	 * queue for SiteWhere to use.
 	 * 
 	 * @author Derek
 	 */
@@ -216,8 +216,7 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 		public void start() throws SiteWhereException {
 			try {
 				// Create a VM connection to the broker.
-				ActiveMQConnectionFactory connectionFactory =
-						new ActiveMQConnectionFactory("vm://" + getBrokerName());
+				ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://" + getBrokerName());
 				this.connection = connectionFactory.createConnection();
 				connection.setExceptionListener(this);
 				connection.start();
@@ -263,8 +262,7 @@ public class ActiveMQInboundEventReceiver extends InboundEventReceiver<byte[]> {
 						BytesMessage bytesMessage = (BytesMessage) message;
 						byte[] buffer = new byte[(int) bytesMessage.getBodyLength()];
 						bytesMessage.readBytes(buffer);
-						EventProcessingLogic.processRawPayload(ActiveMQInboundEventReceiver.this, buffer,
-								null);
+						EventProcessingLogic.processRawPayload(ActiveMQInboundEventReceiver.this, buffer, null);
 					} else {
 						LOGGER.warn("Ignoring unknown JMS message type: " + message.getClass().getName());
 					}

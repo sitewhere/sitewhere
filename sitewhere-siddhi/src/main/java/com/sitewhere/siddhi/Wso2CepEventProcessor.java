@@ -89,7 +89,7 @@ public class Wso2CepEventProcessor extends FilteredOutboundEventProcessor {
 		super.start();
 
 		try {
-			URI rootUri = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
+			URI rootUri = SiteWhere.getServer().getConfigurationResolver().getFilesystemConfigurationRoot();
 			File rootFolder = new File(rootUri.getPath());
 			if (!rootFolder.exists()) {
 				throw new SiteWhereException("Configuration root does not exist.");

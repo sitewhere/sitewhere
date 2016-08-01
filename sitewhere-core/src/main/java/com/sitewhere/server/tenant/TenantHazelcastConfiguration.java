@@ -7,8 +7,7 @@
  */
 package com.sitewhere.server.tenant;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 
 import org.apache.log4j.Logger;
 
@@ -23,11 +22,13 @@ import com.hazelcast.core.LifecycleListener;
 import com.hazelcast.util.ServiceLoader;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
+import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 import com.sitewhere.spi.server.tenant.ITenantHazelcastConfiguration;
 
 /**
- * Bean that configures the hazelcast instance associated with a SiteWhere server.
+ * Bean that configures the hazelcast instance associated with a SiteWhere
+ * server.
  * 
  * @author Derek
  */
@@ -41,7 +42,7 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	public static final String CONFIG_FILE_NAME = "hazelcast.xml";
 
 	/** Configuration file handle */
-	private File baseConfiguration;
+	private IResource baseConfiguration;
 
 	/** Overrides group password from configuration file */
 	private String groupPassword = "sitewhere";
@@ -49,7 +50,7 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	/** Singleton hazelcast instance */
 	private HazelcastInstance instance;
 
-	public TenantHazelcastConfiguration(File baseConfiguration) {
+	public TenantHazelcastConfiguration(IResource baseConfiguration) {
 		super(LifecycleComponentType.Other);
 		this.baseConfiguration = baseConfiguration;
 	}
@@ -61,12 +62,8 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	 */
 	@Override
 	public void start() throws SiteWhereException {
-		if (!baseConfiguration.exists()) {
-			throw new SiteWhereException("Hazelcast configuration file not found. Looking in: "
-					+ baseConfiguration.getAbsolutePath());
-		}
 		try {
-			Config config = new XmlConfigBuilder(new FileInputStream(baseConfiguration)).build();
+			Config config = new XmlConfigBuilder(new ByteArrayInputStream(baseConfiguration.getContent())).build();
 			config.setInstanceName(getTenant().getId());
 			performGroupOverrides(config);
 			performSerializationOverrides(config);
@@ -110,8 +107,8 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	}
 
 	/**
-	 * If group name or password is specified, override settings from the configuration
-	 * file.
+	 * If group name or password is specified, override settings from the
+	 * configuration file.
 	 * 
 	 * @param config
 	 */
@@ -140,8 +137,8 @@ public class TenantHazelcastConfiguration extends TenantLifecycleComponent
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.hazelcast.core.LifecycleListener#stateChanged(com.hazelcast.core.LifecycleEvent
-	 * )
+	 * com.hazelcast.core.LifecycleListener#stateChanged(com.hazelcast.core.
+	 * LifecycleEvent )
 	 */
 	@Override
 	public void stateChanged(LifecycleEvent event) {

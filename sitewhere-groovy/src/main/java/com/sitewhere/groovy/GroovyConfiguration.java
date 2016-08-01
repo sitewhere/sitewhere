@@ -7,29 +7,23 @@
  */
 package com.sitewhere.groovy;
 
-import groovy.util.GroovyScriptEngine;
-
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 import org.apache.log4j.Logger;
 
-import com.sitewhere.SiteWhere;
-import com.sitewhere.configuration.FileSystemGlobalConfigurationResolver;
 import com.sitewhere.server.lifecycle.TenantLifecycleComponent;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.server.lifecycle.IDiscoverableTenantLifecycleComponent;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
-import com.sitewhere.spi.server.tenant.ISiteWhereTenantEngine;
+
+import groovy.util.GroovyScriptEngine;
 
 /**
  * Global configuration for Groovy scripting support.
  * 
  * @author Derek
  */
-public class GroovyConfiguration extends TenantLifecycleComponent implements
-		IDiscoverableTenantLifecycleComponent {
+public class GroovyConfiguration extends TenantLifecycleComponent implements IDiscoverableTenantLifecycleComponent {
 
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(GroovyConfiguration.class);
@@ -37,8 +31,8 @@ public class GroovyConfiguration extends TenantLifecycleComponent implements
 	/** Bean name where global Groovy configuration is expected */
 	public static final String GROOVY_CONFIGURATION_BEAN = "swGroovyConfiguration";
 
-	/** Path relative to scripts root where Groovy scripts are stored */
-	private static final String GROOVY_REL_SCRIPT_PATH = "groovy";
+	/** Used to connect Groovy engine to SiteWhere resource manager */
+	private SiteWhereResourceConnector resourceConnector;
 
 	/** Groovy script engine */
 	private GroovyScriptEngine groovyScriptEngine;
@@ -69,44 +63,23 @@ public class GroovyConfiguration extends TenantLifecycleComponent implements
 				LOGGER.info("Groovy will load scripts relative to external URL: " + getExternalScriptRoot());
 			} else {
 				// Handle global scripts.
-				URI scriptsUri = null;
 				if (getTenant() == null) {
-					URI root = SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot();
-					File global =
-							new File(new File(root), FileSystemGlobalConfigurationResolver.GLOBAL_FOLDER_NAME);
-					if (!global.exists()) {
-						global.mkdir();
-					}
-					scriptsUri =
-							new File(global, FileSystemGlobalConfigurationResolver.SCRIPTS_FOLDER_NAME).toURI();
-					LOGGER.info("Starting global Groovy configuration with scripts loading from: "
-							+ scriptsUri);
+					resourceConnector = new SiteWhereResourceConnector();
+					LOGGER.info("Starting Groovy script engine with global resouce scope.");
 				}
 
 				// Handle tenant scripts.
 				else {
-					ISiteWhereTenantEngine engine =
-							SiteWhere.getServer().getTenantEngine(getTenant().getId());
-					scriptsUri = engine.getTenantConfigurationResolver().getScriptResourcesRoot();
-					LOGGER.info("Starting Groovy configuration for '" + getTenant().getName()
-							+ "' with scripts loading from: " + scriptsUri
-							+ ". Global scripts will be overridden.");
+					resourceConnector = new SiteWhereResourceConnector(getTenant().getId());
+					LOGGER.info("Starting Groovy script engine with tenant resouce scope.");
 				}
-				File scripts = new File(scriptsUri);
-				if (!scripts.exists()) {
-					scripts.mkdir();
-				}
-				File groovy = new File(scripts, GROOVY_REL_SCRIPT_PATH);
-				if (!groovy.exists()) {
-					groovy.mkdir();
-				}
-				groovyScriptEngine = new GroovyScriptEngine(groovy.getAbsolutePath());
+				groovyScriptEngine = new GroovyScriptEngine(resourceConnector);
 			}
 
 			groovyScriptEngine.getConfig().setVerbose(isVerbose());
 			groovyScriptEngine.getConfig().setDebug(isDebug());
-			LOGGER.info("Groovy script engine configured with (verbose:" + isVerbose() + ") (debug:"
-					+ isDebug() + ").");
+			LOGGER.info(
+					"Groovy script engine configured with (verbose:" + isVerbose() + ") (debug:" + isDebug() + ").");
 		} catch (IOException e) {
 			throw new SiteWhereException("Unable to configure Groovy script engine.", e);
 		}

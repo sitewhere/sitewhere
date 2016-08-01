@@ -23,9 +23,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.common.MarshalUtils;
-import com.sitewhere.configuration.ConfigurationMigrationSupport;
 import com.sitewhere.configuration.ConfigurationUtils;
-import com.sitewhere.configuration.DefaultGlobalConfigurationResolver;
+import com.sitewhere.configuration.ResourceManagerGlobalConfigurationResolver;
 import com.sitewhere.core.Boilerplate;
 import com.sitewhere.rest.model.search.tenant.TenantSearchCriteria;
 import com.sitewhere.rest.model.server.SiteWhereServerRuntime;
@@ -38,6 +37,7 @@ import com.sitewhere.security.SitewhereUserDetails;
 import com.sitewhere.server.debug.NullTracer;
 import com.sitewhere.server.jvm.JvmHistoryMonitor;
 import com.sitewhere.server.lifecycle.LifecycleComponent;
+import com.sitewhere.server.resource.SiteWhereHomeResourceManager;
 import com.sitewhere.server.tenant.TenantManagementTriggers;
 import com.sitewhere.spi.ServerStartupException;
 import com.sitewhere.spi.SiteWhereException;
@@ -52,6 +52,8 @@ import com.sitewhere.spi.device.event.IDeviceEventManagement;
 import com.sitewhere.spi.device.event.IEventProcessing;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
+import com.sitewhere.spi.resource.IResource;
+import com.sitewhere.spi.resource.IResourceManager;
 import com.sitewhere.spi.scheduling.IScheduleManagement;
 import com.sitewhere.spi.scheduling.IScheduleManager;
 import com.sitewhere.spi.search.ISearchResults;
@@ -106,8 +108,12 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/** Provides hierarchical tracing for debugging */
 	private ITracer tracer = new NullTracer();
 
+	/** Resource manager implementation */
+	private IResourceManager resourceManager = new SiteWhereHomeResourceManager();
+
 	/** Allows Spring configuration to be resolved */
-	private IGlobalConfigurationResolver configurationResolver = new DefaultGlobalConfigurationResolver();
+	private IGlobalConfigurationResolver configurationResolver = new ResourceManagerGlobalConfigurationResolver(
+			resourceManager);
 
 	/** Interface to user management implementation */
 	private IUserManagement userManagement;
@@ -115,19 +121,20 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/** Interface to tenant management implementation */
 	private ITenantManagement tenantManagement;
 
-	/** List of components registered to participate in SiteWhere server lifecycle */
+	/**
+	 * List of components registered to participate in SiteWhere server
+	 * lifecycle
+	 */
 	private List<ILifecycleComponent> registeredLifecycleComponents = new ArrayList<ILifecycleComponent>();
 
 	/** Map of component ids to lifecycle components */
-	private Map<String, ILifecycleComponent> lifecycleComponentsById =
-			new HashMap<String, ILifecycleComponent>();
+	private Map<String, ILifecycleComponent> lifecycleComponentsById = new HashMap<String, ILifecycleComponent>();
 
 	/** Map of tenants by authentication token */
 	private Map<String, ITenant> tenantsByAuthToken = new HashMap<String, ITenant>();
 
 	/** Map of tenant engines by tenant id */
-	private Map<String, ISiteWhereTenantEngine> tenantEnginesById =
-			new HashMap<String, ISiteWhereTenantEngine>();
+	private Map<String, ISiteWhereTenantEngine> tenantEnginesById = new HashMap<String, ISiteWhereTenantEngine>();
 
 	/** Metric regsitry */
 	private MetricRegistry metricRegistry = new MetricRegistry();
@@ -169,7 +176,9 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationParserClassname()
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getConfigurationParserClassname
+	 * ()
 	 */
 	@Override
 	public String getConfigurationParserClassname() {
@@ -179,8 +188,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getTenantConfigurationParserClassname()
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#
+	 * getTenantConfigurationParserClassname()
 	 */
 	@Override
 	public String getTenantConfigurationParserClassname() {
@@ -202,8 +211,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getServerState(boolean)
 	 */
-	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical)
-			throws SiteWhereException {
+	public ISiteWhereServerRuntime getServerRuntimeInformation(boolean includeHistorical) throws SiteWhereException {
 		this.serverRuntime = computeServerRuntime(includeHistorical);
 		return serverRuntime;
 	}
@@ -220,9 +228,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#setServerStartupError(com.sitewhere.spi
-	 * .ServerStartupException)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#setServerStartupError(com.
+	 * sitewhere.spi .ServerStartupException)
 	 */
 	public void setServerStartupError(ServerStartupException e) {
 		this.serverStartupError = e;
@@ -240,6 +247,16 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getResourceManager()
+	 */
+	@Override
+	public IResourceManager getResourceManager() {
+		return resourceManager;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.sitewhere.spi.server.ISiteWhereServer#getConfigurationResolver()
 	 */
 	public IGlobalConfigurationResolver getConfigurationResolver() {
@@ -250,14 +267,13 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getAuthorizedTenants(java.lang.String,
-	 * boolean)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getAuthorizedTenants(java.lang.
+	 * String, boolean)
 	 */
 	@Override
-	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted)
-			throws SiteWhereException {
-		ISearchResults<ITenant> tenants =
-				SiteWhere.getServer().getTenantManagement().listTenants(new TenantSearchCriteria(1, 0));
+	public List<ITenant> getAuthorizedTenants(String userId, boolean requireStarted) throws SiteWhereException {
+		ISearchResults<ITenant> tenants = SiteWhere.getServer().getTenantManagement()
+				.listTenants(new TenantSearchCriteria(1, 0));
 		List<ITenant> matches = new ArrayList<ITenant>();
 		for (ITenant tenant : tenants.getResults()) {
 			if (tenant.getAuthorizedUserIds().contains(userId)) {
@@ -276,7 +292,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantEngine(java.lang.String)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getTenantEngine(java.lang.
+	 * String)
 	 */
 	@Override
 	public ISiteWhereTenantEngine getTenantEngine(String tenantId) throws SiteWhereException {
@@ -295,8 +312,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#onTenantInformationUpdated(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.spi.server.ISiteWhereServer#onTenantInformationUpdated(com.
+	 * sitewhere .spi.user.ITenant)
 	 */
 	@Override
 	public void onTenantInformationUpdated(ITenant tenant) throws SiteWhereException {
@@ -337,9 +354,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceManagement(com.sitewhere.spi
-	 * .user.ITenant)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getDeviceManagement(com.
+	 * sitewhere.spi .user.ITenant)
 	 */
 	@Override
 	public IDeviceManagement getDeviceManagement(ITenant tenant) throws SiteWhereException {
@@ -351,8 +367,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceEventManagement(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceEventManagement(com.
+	 * sitewhere .spi.user.ITenant)
 	 */
 	@Override
 	public IDeviceEventManagement getDeviceEventManagement(ITenant tenant) throws SiteWhereException {
@@ -363,13 +379,11 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceManagementCacheProvider(com.
-	 * sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#
+	 * getDeviceManagementCacheProvider(com. sitewhere.spi.user.ITenant)
 	 */
 	@Override
-	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant)
-			throws SiteWhereException {
+	public IDeviceManagementCacheProvider getDeviceManagementCacheProvider(ITenant tenant) throws SiteWhereException {
 		ISiteWhereTenantEngine engine = assureTenantEngine(tenant);
 		return engine.getDeviceManagementCacheProvider();
 	}
@@ -377,9 +391,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getAssetManagement(com.sitewhere.spi.
-	 * user.ITenant)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetManagement(com.
+	 * sitewhere.spi. user.ITenant)
 	 */
 	@Override
 	public IAssetManagement getAssetManagement(ITenant tenant) throws SiteWhereException {
@@ -390,9 +403,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getScheduleManagement(com.sitewhere.spi
-	 * .user.ITenant)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getScheduleManagement(com.
+	 * sitewhere.spi .user.ITenant)
 	 */
 	@Override
 	public IScheduleManagement getScheduleManagement(ITenant tenant) throws SiteWhereException {
@@ -404,8 +416,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceCommunication(com.sitewhere.
-	 * spi.user.ITenant)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getDeviceCommunication(com.
+	 * sitewhere. spi.user.ITenant)
 	 */
 	@Override
 	public IDeviceCommunication getDeviceCommunication(ITenant tenant) throws SiteWhereException {
@@ -416,9 +428,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getEventProcessing(com.sitewhere.spi.
-	 * user.ITenant)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getEventProcessing(com.
+	 * sitewhere.spi. user.ITenant)
 	 */
 	@Override
 	public IEventProcessing getEventProcessing(ITenant tenant) throws SiteWhereException {
@@ -429,9 +440,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getAssetModuleManager(com.sitewhere.spi
-	 * .user.ITenant)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getAssetModuleManager(com.
+	 * sitewhere.spi .user.ITenant)
 	 */
 	@Override
 	public IAssetModuleManager getAssetModuleManager(ITenant tenant) throws SiteWhereException {
@@ -443,8 +453,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getSearchProviderManager(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getSearchProviderManager(com.
+	 * sitewhere .spi.user.ITenant)
 	 */
 	@Override
 	public ISearchProviderManager getSearchProviderManager(ITenant tenant) throws SiteWhereException {
@@ -455,9 +465,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getScheduleManager(com.sitewhere.spi.
-	 * user.ITenant)
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#getScheduleManager(com.
+	 * sitewhere.spi. user.ITenant)
 	 */
 	@Override
 	public IScheduleManager getScheduleManager(ITenant tenant) throws SiteWhereException {
@@ -481,7 +490,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	}
 
 	/**
-	 * Get a tenant engine by authentication token. Throw and exception if not found.
+	 * Get a tenant engine by authentication token. Throw and exception if not
+	 * found.
 	 * 
 	 * @param tenantAuthToken
 	 * @return
@@ -503,7 +513,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.ISiteWhereServer#getTenantByAuthToken(java.lang.String)
+	 * com.sitewhere.spi.server.ISiteWhereServer#getTenantByAuthToken(java.lang.
+	 * String)
 	 */
 	public ITenant getTenantByAuthToken(String authToken) throws SiteWhereException {
 		return tenantsByAuthToken.get(authToken);
@@ -512,7 +523,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getRegisteredLifecycleComponents()
+	 * @see com.sitewhere.spi.server.ISiteWhereServer#
+	 * getRegisteredLifecycleComponents()
 	 */
 	public List<ILifecycleComponent> getRegisteredLifecycleComponents() {
 		return registeredLifecycleComponents;
@@ -537,7 +549,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	}
 
 	/**
-	 * Returns a fake account used for operations on the data model done by the system.
+	 * Returns a fake account used for operations on the data model done by the
+	 * system.
 	 * 
 	 * @return
 	 * @throws SiteWhereException
@@ -635,15 +648,15 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	@Override
 	public String getComponentName() {
-		return "SiteWhere Server " + getVersion().getEditionIdentifier() + " "
-				+ getVersion().getVersionIdentifier();
+		return "SiteWhere Server " + getVersion().getEditionIdentifier() + " " + getVersion().getVersionIdentifier();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.lang.
-	 * String )
+	 * @see
+	 * com.sitewhere.spi.server.ISiteWhereServer#getLifecycleComponentById(java.
+	 * lang. String )
 	 */
 	@Override
 	public ILifecycleComponent getLifecycleComponentById(String id) {
@@ -651,13 +664,13 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	}
 
 	/**
-	 * Recursively navigates component structure and creates a map of components by id.
+	 * Recursively navigates component structure and creates a map of components
+	 * by id.
 	 * 
 	 * @param current
 	 * @param map
 	 */
-	protected void refreshLifecycleComponentMap(ILifecycleComponent current,
-			Map<String, ILifecycleComponent> map) {
+	protected void refreshLifecycleComponentMap(ILifecycleComponent current, Map<String, ILifecycleComponent> map) {
 		map.put(current.getComponentId(), current);
 		for (ILifecycleComponent sub : current.getLifecycleComponents()) {
 			refreshLifecycleComponentMap(sub, map);
@@ -703,8 +716,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected ISiteWhereServerRuntime computeServerRuntime(boolean includeHistorical)
-			throws SiteWhereException {
+	protected ISiteWhereServerRuntime computeServerRuntime(boolean includeHistorical) throws SiteWhereException {
 		SiteWhereServerRuntime state = new SiteWhereServerRuntime();
 
 		String osName = System.getProperty("os.name");
@@ -747,9 +759,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	public void initialize() throws SiteWhereException {
 		this.version = VersionHelper.getVersion();
-
-		// Migrate old configuration structure if necessary.
-		ConfigurationMigrationSupport.migrateProjectStructureIfNecessary(getConfigurationResolver());
+		getResourceManager().start();
 
 		// Initialize persistent state.
 		initializeServerState();
@@ -812,14 +822,14 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected void initializeServerState() throws SiteWhereException {
-		byte[] stateData = getConfigurationResolver().resolveServerState(getVersion());
+		IResource stateResource = getConfigurationResolver().resolveServerState(getVersion());
 		SiteWhereServerState state = null;
-		if (stateData == null) {
+		if (stateResource == null) {
 			state = new SiteWhereServerState();
 			state.setNodeId(UUID.randomUUID().toString());
 			getConfigurationResolver().storeServerState(version, MarshalUtils.marshalJson(state));
 		} else {
-			state = MarshalUtils.unmarshalJson(stateData, SiteWhereServerState.class);
+			state = MarshalUtils.unmarshalJson(stateResource.getContent(), SiteWhereServerState.class);
 		}
 		this.serverState = state;
 	}
@@ -830,19 +840,20 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected void initializeSpringContext() throws SiteWhereException {
-		byte[] global = getConfigurationResolver().getGlobalConfiguration(getVersion());
+		IResource global = getConfigurationResolver().getGlobalConfiguration(getVersion());
 		SERVER_SPRING_CONTEXT = ConfigurationUtils.buildGlobalContext(global, getVersion());
 	}
 
 	/**
-	 * Initialize beans marked with {@link IDiscoverableTenantLifecycleComponent}
-	 * interface and add them as registered components.
+	 * Initialize beans marked with
+	 * {@link IDiscoverableTenantLifecycleComponent} interface and add them as
+	 * registered components.
 	 * 
 	 * @throws SiteWhereException
 	 */
 	protected void initializeDiscoverableBeans() throws SiteWhereException {
-		Map<String, IDiscoverableTenantLifecycleComponent> components =
-				SERVER_SPRING_CONTEXT.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
+		Map<String, IDiscoverableTenantLifecycleComponent> components = SERVER_SPRING_CONTEXT
+				.getBeansOfType(IDiscoverableTenantLifecycleComponent.class);
 		getRegisteredLifecycleComponents().clear();
 
 		LOGGER.info("Registering " + components.size() + " discoverable components.");
@@ -859,8 +870,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void initializeVersionChecker() throws SiteWhereException {
 		try {
-			this.versionChecker =
-					(IVersionChecker) SERVER_SPRING_CONTEXT.getBean(SiteWhereServerBeans.BEAN_VERSION_CHECK);
+			this.versionChecker = (IVersionChecker) SERVER_SPRING_CONTEXT
+					.getBean(SiteWhereServerBeans.BEAN_VERSION_CHECK);
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("Version checking not enabled.");
 		}
@@ -888,9 +899,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void initializeUserManagement() throws SiteWhereException {
 		try {
-			this.userManagement =
-					(IUserManagement) SERVER_SPRING_CONTEXT.getBean(
-							SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
+			this.userManagement = (IUserManagement) SERVER_SPRING_CONTEXT
+					.getBean(SiteWhereServerBeans.BEAN_USER_MANAGEMENT);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No user management implementation configured.");
 		}
@@ -903,9 +913,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void initializeTenantManagement() throws SiteWhereException {
 		try {
-			ITenantManagement implementation =
-					(ITenantManagement) SERVER_SPRING_CONTEXT.getBean(
-							SiteWhereServerBeans.BEAN_TENANT_MANAGEMENT);
+			ITenantManagement implementation = (ITenantManagement) SERVER_SPRING_CONTEXT
+					.getBean(SiteWhereServerBeans.BEAN_TENANT_MANAGEMENT);
 			this.tenantManagement = new TenantManagementTriggers(implementation);
 		} catch (NoSuchBeanDefinitionException e) {
 			throw new SiteWhereException("No user management implementation configured.");
@@ -933,8 +942,7 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 * @throws SiteWhereException
 	 */
 	protected ISiteWhereTenantEngine initializeTenantEngine(ITenant tenant) throws SiteWhereException {
-		ISiteWhereTenantEngine engine =
-				createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
+		ISiteWhereTenantEngine engine = createTenantEngine(tenant, SERVER_SPRING_CONTEXT, getConfigurationResolver());
 		if (!engine.initialize()) {
 			LOGGER.error("Tenant engine initialization for '" + tenant.getName() + "' failed.",
 					engine.getLifecycleError());
@@ -974,9 +982,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void verifyUserModel() {
 		try {
-			IUserModelInitializer init =
-					(IUserModelInitializer) SERVER_SPRING_CONTEXT.getBean(
-							SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER);
+			IUserModelInitializer init = (IUserModelInitializer) SERVER_SPRING_CONTEXT
+					.getBean(SiteWhereServerBeans.BEAN_USER_MODEL_INITIALIZER);
 			init.initialize(getUserManagement());
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No user model initializer found in Spring bean configuration. Skipping.");
@@ -991,9 +998,8 @@ public class SiteWhereServer extends LifecycleComponent implements ISiteWhereSer
 	 */
 	protected void verifyTenantModel() {
 		try {
-			ITenantModelInitializer init =
-					(ITenantModelInitializer) SERVER_SPRING_CONTEXT.getBean(
-							SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER);
+			ITenantModelInitializer init = (ITenantModelInitializer) SERVER_SPRING_CONTEXT
+					.getBean(SiteWhereServerBeans.BEAN_TENANT_MODEL_INITIALIZER);
 			init.initialize(getTenantManagement());
 		} catch (NoSuchBeanDefinitionException e) {
 			LOGGER.info("No tenant model initializer found in Spring bean configuration. Skipping.");

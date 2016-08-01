@@ -7,7 +7,7 @@
  */
 package com.sitewhere.server.asset;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,11 +24,13 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.AssetType;
 import com.sitewhere.spi.asset.IAssetManagement;
 import com.sitewhere.spi.configuration.ITenantConfigurationResolver;
+import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.server.asset.IAssetModelInitializer;
 
 /**
- * Used to load the default asset categories and assets used by the default device data.
- * The server only offers this functionality if no asset categories exist.
+ * Used to load the default asset categories and assets used by the default
+ * device data. The server only offers this functionality if no asset categories
+ * exist.
  * 
  * @author Derek
  */
@@ -37,7 +39,10 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	/** Static logger instance */
 	private static Logger LOGGER = Logger.getLogger(DefaultAssetModuleInitializer.class);
 
-	/** Indiates whether model should be initialized if no console is available for input */
+	/**
+	 * Indiates whether model should be initialized if no console is available
+	 * for input
+	 */
 	private boolean initializeIfNoConsole = false;
 
 	/** Asset management implementation */
@@ -47,8 +52,7 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	private AssetCategoryCreationInfo[] ASSET_CATEGORY_DATA = {
 			buildAssetCategoryRequest("fs-persons", "Default Identity Management", AssetType.Person,
 					"person-assets.xml"),
-			buildAssetCategoryRequest("fs-devices", "Default Device Management", AssetType.Device,
-					"device-assets.xml"),
+			buildAssetCategoryRequest("fs-devices", "Default Device Management", AssetType.Device, "device-assets.xml"),
 			buildAssetCategoryRequest("fs-hardware", "Default Hardware Management", AssetType.Hardware,
 					"hardware-assets.xml"),
 			buildAssetCategoryRequest("fs-locations", "Default Location Management", AssetType.Location,
@@ -58,8 +62,8 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spi.server.asset.IAssetModelInitializer#initialize(com.sitewhere.
-	 * spi.configuration.ITenantConfigurationResolver,
+	 * com.sitewhere.spi.server.asset.IAssetModelInitializer#initialize(com.
+	 * sitewhere. spi.configuration.ITenantConfigurationResolver,
 	 * com.sitewhere.spi.asset.IAssetManagement)
 	 */
 	@Override
@@ -67,15 +71,8 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 			throws SiteWhereException {
 		this.assetManagement = assetManagement;
 
-		// Locate the folder that contains asset data files.
-		File assetsFolder = new File(configuration.getAssetResourcesRoot());
-		if (!assetsFolder.exists()) {
-			throw new SiteWhereException("Assets subfolder not found. Looking for: "
-					+ assetsFolder.getAbsolutePath());
-		}
-
 		// Create asset categories.
-		createCategories(assetsFolder);
+		createCategories(configuration);
 	}
 
 	/**
@@ -107,7 +104,7 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	 * @param assetsFolder
 	 * @throws SiteWhereException
 	 */
-	protected void createCategories(File assetsFolder) throws SiteWhereException {
+	protected void createCategories(ITenantConfigurationResolver resolver) throws SiteWhereException {
 		for (AssetCategoryCreationInfo info : ASSET_CATEGORY_DATA) {
 			getAssetManagement().createAssetCategory(info.getRequest());
 			AssetType type = info.getRequest().getAssetType();
@@ -115,18 +112,15 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 			switch (type) {
 			case Device:
 			case Hardware: {
-				createHardwareAssets(info.getRequest().getId(), type,
-						getAssetDataFile(assetsFolder, info.getFileName()));
+				createHardwareAssets(info.getRequest().getId(), type, getAssetResource(resolver, info.getFileName()));
 				break;
 			}
 			case Person: {
-				createPersonAssets(info.getRequest().getId(),
-						getAssetDataFile(assetsFolder, info.getFileName()));
+				createPersonAssets(info.getRequest().getId(), getAssetResource(resolver, info.getFileName()));
 				break;
 			}
 			case Location: {
-				createLocationAssets(info.getRequest().getId(),
-						getAssetDataFile(assetsFolder, info.getFileName()));
+				createLocationAssets(info.getRequest().getId(), getAssetResource(resolver, info.getFileName()));
 				break;
 			}
 			}
@@ -139,12 +133,13 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	 * 
 	 * @param categoryId
 	 * @param type
-	 * @param file
+	 * @param resource
 	 * @throws SiteWhereException
 	 */
-	protected void createHardwareAssets(String categoryId, AssetType type, File file)
+	protected void createHardwareAssets(String categoryId, AssetType type, IResource resource)
 			throws SiteWhereException {
-		List<HardwareAsset> assets = MarshalUtils.loadHardwareAssets(file, type);
+		List<HardwareAsset> assets = MarshalUtils.loadHardwareAssets(new ByteArrayInputStream(resource.getContent()),
+				type);
 		for (HardwareAsset asset : assets) {
 			HardwareAssetCreateRequest hw = new HardwareAssetCreateRequest();
 			hw.setId(asset.getId());
@@ -161,11 +156,11 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	 * Create all person assets for a given category.
 	 * 
 	 * @param categoryId
-	 * @param file
+	 * @param resource
 	 * @throws SiteWhereException
 	 */
-	protected void createPersonAssets(String categoryId, File file) throws SiteWhereException {
-		List<PersonAsset> assets = MarshalUtils.loadPersonAssets(file);
+	protected void createPersonAssets(String categoryId, IResource resource) throws SiteWhereException {
+		List<PersonAsset> assets = MarshalUtils.loadPersonAssets(new ByteArrayInputStream(resource.getContent()));
 		for (PersonAsset asset : assets) {
 			PersonAssetCreateRequest person = new PersonAssetCreateRequest();
 			person.setId(asset.getId());
@@ -183,11 +178,11 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	 * Create all locatino assets for a given category.
 	 * 
 	 * @param categoryId
-	 * @param file
+	 * @param resource
 	 * @throws SiteWhereException
 	 */
-	protected void createLocationAssets(String categoryId, File file) throws SiteWhereException {
-		List<LocationAsset> assets = MarshalUtils.loadLocationAssets(file);
+	protected void createLocationAssets(String categoryId, IResource resource) throws SiteWhereException {
+		List<LocationAsset> assets = MarshalUtils.loadLocationAssets(new ByteArrayInputStream(resource.getContent()));
 		for (LocationAsset asset : assets) {
 			LocationAssetCreateRequest loc = new LocationAssetCreateRequest();
 			loc.setId(asset.getId());
@@ -202,20 +197,20 @@ public class DefaultAssetModuleInitializer implements IAssetModelInitializer {
 	}
 
 	/**
-	 * Get the configuration file based on filename.
+	 * Get the asset configuration resource based on filename.
 	 * 
-	 * @param assetsFolder
+	 * @param resolver
 	 * @param filename
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected File getAssetDataFile(File assetsFolder, String filename) throws SiteWhereException {
-		File configFile = new File(assetsFolder, filename);
-		if (!configFile.exists()) {
-			throw new SiteWhereException("Asset module file missing. Looking for: "
-					+ configFile.getAbsolutePath());
+	protected IResource getAssetResource(ITenantConfigurationResolver resolver, String filename)
+			throws SiteWhereException {
+		IResource resource = resolver.getAssetResource(filename);
+		if (resource == null) {
+			throw new SiteWhereException("Asset module resource missing. Looking for: " + filename);
 		}
-		return configFile;
+		return resource;
 	}
 
 	/*

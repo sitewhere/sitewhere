@@ -7,7 +7,6 @@
  */
 package com.sitewhere.server.asset.filesystem;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +23,7 @@ import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.asset.IAssetModule;
 import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
+import com.sitewhere.spi.resource.IResource;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
@@ -33,8 +33,7 @@ import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
  *
  * @param <T>
  */
-public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleComponent
-		implements IAssetModule<T> {
+public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleComponent implements IAssetModule<T> {
 
 	/** Serial version UID */
 	private static final long serialVersionUID = 8266923437767568336L;
@@ -85,21 +84,11 @@ public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleCo
 	 * Reloads list of person assets from the filesystem.
 	 */
 	protected void reload() throws SiteWhereException {
-		File config = new File(SiteWhere.getServer().getConfigurationResolver().getConfigurationRoot());
-		File assetsFolder = new File(config, IFileSystemAssetModuleConstants.ASSETS_FOLDER);
-		if (!assetsFolder.exists()) {
-			throw new SiteWhereException(
-					"Assets subfolder not found. Looking for: " + assetsFolder.getAbsolutePath());
-		}
-		File configFile = new File(assetsFolder, getFilename());
-		if (!configFile.exists()) {
-			throw new SiteWhereException(
-					"Asset module file missing. Looking for: " + configFile.getAbsolutePath());
-		}
-		LOGGER.info("Loading assets from: " + configFile.getAbsolutePath());
+		IResource configResource = SiteWhere.getServer().getConfigurationResolver().getAssetResource(getFilename());
+		LOGGER.info("Loading assets from: " + getFilename());
 
 		// Unmarshal assets from XML file and store in data object.
-		List<T> assets = unmarshal(configFile);
+		List<T> assets = unmarshal(configResource);
 		this.assetsById = new HashMap<String, T>();
 		for (T asset : assets) {
 			assetsById.put(asset.getId(), asset);
@@ -122,7 +111,7 @@ public abstract class FileSystemAssetModule<T extends Asset> extends LifecycleCo
 	 * @return
 	 * @throws SiteWhereException
 	 */
-	protected abstract List<T> unmarshal(File file) throws SiteWhereException;
+	protected abstract List<T> unmarshal(IResource resource) throws SiteWhereException;
 
 	/*
 	 * (non-Javadoc)
