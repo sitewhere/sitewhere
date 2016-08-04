@@ -82,7 +82,7 @@ SiteWhere Complete Install for Ubuntu
     mv sitewhere-server-1.7.0 /opt/sitewhere
     export SITEWHERE_HOME=/opt/sitewhere
     cd /opt/sitewhere/bin
-    sh startup.sh
+    ./startup.sh
 
 > To build and install latest code from GitHub
 
