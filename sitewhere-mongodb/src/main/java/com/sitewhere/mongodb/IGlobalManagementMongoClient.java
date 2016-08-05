@@ -14,7 +14,7 @@ import com.mongodb.DBCollection;
  * 
  * @author Derek
  */
-public interface IUserManagementMongoClient {
+public interface IGlobalManagementMongoClient {
 
 	/** Default collection name for SiteWhere users */
 	public static final String DEFAULT_USERS_COLLECTION_NAME = "users";

@@ -21,7 +21,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
 import com.sitewhere.core.SiteWherePersistence;
-import com.sitewhere.mongodb.IUserManagementMongoClient;
+import com.sitewhere.mongodb.IGlobalManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.user.GrantedAuthority;
@@ -52,7 +52,7 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 	private static Logger LOGGER = Logger.getLogger(MongoUserManagement.class);
 
 	/** Injected with global SiteWhere Mongo client */
-	private IUserManagementMongoClient mongoClient;
+	private IGlobalManagementMongoClient mongoClient;
 
 	public MongoUserManagement() {
 		super(LifecycleComponentType.DataStore);
@@ -452,11 +452,11 @@ public class MongoUserManagement extends LifecycleComponent implements IUserMana
 		}
 	}
 
-	public IUserManagementMongoClient getMongoClient() {
+	public IGlobalManagementMongoClient getMongoClient() {
 		return mongoClient;
 	}
 
-	public void setMongoClient(IUserManagementMongoClient mongoClient) {
+	public void setMongoClient(IGlobalManagementMongoClient mongoClient) {
 		this.mongoClient = mongoClient;
 	}
 }

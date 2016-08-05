@@ -25,7 +25,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.WriteResult;
 import com.sitewhere.core.SiteWherePersistence;
-import com.sitewhere.mongodb.IUserManagementMongoClient;
+import com.sitewhere.mongodb.IGlobalManagementMongoClient;
 import com.sitewhere.mongodb.MongoPersistence;
 import com.sitewhere.mongodb.common.MongoSiteWhereEntity;
 import com.sitewhere.rest.model.tenant.Tenant;
@@ -59,7 +59,7 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 	private static Logger LOGGER = Logger.getLogger(MongoTenantManagement.class);
 
 	/** Injected with global SiteWhere Mongo client */
-	private IUserManagementMongoClient mongoClient;
+	private IGlobalManagementMongoClient mongoClient;
 
 	public MongoTenantManagement() {
 		super(LifecycleComponentType.DataStore);
@@ -481,11 +481,11 @@ public class MongoTenantManagement extends LifecycleComponent implements ITenant
 		}
 	}
 
-	public IUserManagementMongoClient getMongoClient() {
+	public IGlobalManagementMongoClient getMongoClient() {
 		return mongoClient;
 	}
 
-	public void setMongoClient(IUserManagementMongoClient mongoClient) {
+	public void setMongoClient(IGlobalManagementMongoClient mongoClient) {
 		this.mongoClient = mongoClient;
 	}
 }

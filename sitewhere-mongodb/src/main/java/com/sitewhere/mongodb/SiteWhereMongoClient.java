@@ -34,8 +34,8 @@ import com.sitewhere.spi.tenant.ITenant;
  * 
  * @author dadams
  */
-public class SiteWhereMongoClient extends TenantLifecycleComponent implements
-		IDiscoverableTenantLifecycleComponent, IUserManagementMongoClient, IDeviceManagementMongoClient,
+public class SiteWhereMongoClient extends TenantLifecycleComponent
+		implements IDiscoverableTenantLifecycleComponent, IGlobalManagementMongoClient, IDeviceManagementMongoClient,
 		IAssetManagementMongoClient, IScheduleManagementMongoClient, IInternetConnected {
 
 	/** Static logger instance */
@@ -69,19 +69,16 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	private String databaseName = DEFAULT_DATABASE_NAME;
 
 	/** Injected name used for device specifications collection */
-	private String deviceSpecificationsCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
+	private String deviceSpecificationsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_SPECIFICATIONS_COLLECTION_NAME;
 
 	/** Injected name used for device commands collection */
-	private String deviceCommandsCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME;
+	private String deviceCommandsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_COMMANDS_COLLECTION_NAME;
 
 	/** Injected name used for devices collection */
 	private String devicesCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICES_COLLECTION_NAME;
 
 	/** Injected name used for device assignments collection */
-	private String deviceAssignmentsCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
+	private String deviceAssignmentsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_ASSIGNMENTS_COLLECTION_NAME;
 
 	/** Injected name used for sites collection */
 	private String sitesCollectionName = IDeviceManagementMongoClient.DEFAULT_SITES_COLLECTION_NAME;
@@ -90,52 +87,43 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	private String zonesCollectionName = IDeviceManagementMongoClient.DEFAULT_ZONES_COLLECTION_NAME;
 
 	/** Injected name used for device groups collection */
-	private String deviceGroupsCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_DEVICE_GROUPS_COLLECTION_NAME;
+	private String deviceGroupsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_GROUPS_COLLECTION_NAME;
 
 	/** Injected name used for group elements collection */
-	private String groupElementsCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_DEVICE_GROUP_ELEMENTS_COLLECTION_NAME;
+	private String groupElementsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_GROUP_ELEMENTS_COLLECTION_NAME;
 
 	/** Injected name used for events collection */
 	private String eventsCollectionName = IDeviceManagementMongoClient.DEFAULT_EVENTS_COLLECTION_NAME;
 
 	/** Injected name used for device streams collection */
-	private String streamsCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_DEVICE_STREAMS_COLLECTION_NAME;
+	private String streamsCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_STREAMS_COLLECTION_NAME;
 
 	/** Injected name used for device stream data collection */
-	private String streamDataCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_DEVICE_STREAM_DATA_COLLECTION_NAME;
+	private String streamDataCollectionName = IDeviceManagementMongoClient.DEFAULT_DEVICE_STREAM_DATA_COLLECTION_NAME;
 
 	/** Injected name used for batch operations collection */
-	private String batchOperationsCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME;
+	private String batchOperationsCollectionName = IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATIONS_COLLECTION_NAME;
 
 	/** Injected name used for batch operation elements collection */
-	private String batchOperationElementsCollectionName =
-			IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME;
+	private String batchOperationElementsCollectionName = IDeviceManagementMongoClient.DEFAULT_BATCH_OPERATION_ELEMENTS_COLLECTION_NAME;
 
 	/** Injected name used for users collection */
-	private String usersCollectionName = IUserManagementMongoClient.DEFAULT_USERS_COLLECTION_NAME;
+	private String usersCollectionName = IGlobalManagementMongoClient.DEFAULT_USERS_COLLECTION_NAME;
 
 	/** Injected name used for authorities collection */
-	private String authoritiesCollectionName = IUserManagementMongoClient.DEFAULT_AUTHORITIES_COLLECTION_NAME;
+	private String authoritiesCollectionName = IGlobalManagementMongoClient.DEFAULT_AUTHORITIES_COLLECTION_NAME;
 
 	/** Injected name used for tenants collection */
-	private String tenantsCollectionName = IUserManagementMongoClient.DEFAULT_TENANTS_COLLECTION_NAME;
+	private String tenantsCollectionName = IGlobalManagementMongoClient.DEFAULT_TENANTS_COLLECTION_NAME;
 
 	/** Injected name used for tenant groups collection */
-	private String tenantGroupsCollectionName =
-			IUserManagementMongoClient.DEFAULT_TENANT_GROUPS_COLLECTION_NAME;
+	private String tenantGroupsCollectionName = IGlobalManagementMongoClient.DEFAULT_TENANT_GROUPS_COLLECTION_NAME;
 
 	/** Injected name used for tenant group elements collection */
-	private String tenantGroupElementsCollectionName =
-			IUserManagementMongoClient.DEFAULT_TENANT_GROUP_ELEMENTS_COLLECTION_NAME;
+	private String tenantGroupElementsCollectionName = IGlobalManagementMongoClient.DEFAULT_TENANT_GROUP_ELEMENTS_COLLECTION_NAME;
 
 	/** Injected name used for asset categories collection */
-	private String assetCategoriesCollectionName =
-			IAssetManagementMongoClient.DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME;
+	private String assetCategoriesCollectionName = IAssetManagementMongoClient.DEFAULT_ASSET_CATEGORIES_COLLECTION_NAME;
 
 	/** Injected name used for assets collection */
 	private String assetsCollectionName = IAssetManagementMongoClient.DEFAULT_ASSETS_COLLECTION_NAME;
@@ -144,8 +132,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	private String schedulesCollectionName = IScheduleManagementMongoClient.DEFAULT_SCHEDULES_COLLECTION_NAME;
 
 	/** Injected name used for scheduled jobs collection */
-	private String scheduledJobsCollectionName =
-			IScheduleManagementMongoClient.DEFAULT_SCHEDULED_JOBS_COLLECTION_NAME;
+	private String scheduledJobsCollectionName = IScheduleManagementMongoClient.DEFAULT_SCHEDULED_JOBS_COLLECTION_NAME;
 
 	public SiteWhereMongoClient() {
 		super(LifecycleComponentType.DataStore);
@@ -164,12 +151,10 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 
 			// Handle authenticated access.
 			if ((getUsername() != null) && (getPassword() != null)) {
-				MongoCredential credential =
-						MongoCredential.createCredential(getUsername(), getDatabaseName(),
-								getPassword().toCharArray());
-				this.client =
-						new MongoClient(new ServerAddress(getHostname(), getPort()),
-								Arrays.asList(credential), builder.build());
+				MongoCredential credential = MongoCredential.createCredential(getUsername(), getDatabaseName(),
+						getPassword().toCharArray());
+				this.client = new MongoClient(new ServerAddress(getHostname(), getPort()), Arrays.asList(credential),
+						builder.build());
 			}
 
 			// Handle unauthenticated access.
@@ -202,8 +187,7 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 			messages.add("Events collection name: " + getEventsCollectionName());
 			messages.add("Streams collection name: " + getStreamsCollectionName());
 			messages.add("Batch operations collection name: " + getBatchOperationsCollectionName());
-			messages.add(
-					"Batch operation elements collection name: " + getBatchOperationElementsCollectionName());
+			messages.add("Batch operation elements collection name: " + getBatchOperationElementsCollectionName());
 			messages.add("");
 			messages.add("---------------------");
 			messages.add("-- User Management --");
@@ -233,12 +217,10 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 			LOGGER.info("\n" + message + "\n");
 		} catch (UnknownHostException e) {
 			throw new SiteWhereException("Unable to contact host for MongoDB instance. "
-					+ "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.",
-					e);
+					+ "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
 		} catch (MongoTimeoutException e) {
 			throw new SiteWhereException("Could not connect to MongoDB instance. "
-					+ "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.",
-					e);
+					+ "Verify that MongoDB is running on " + hostname + ":" + port + " and restart server.", e);
 		}
 	}
 
@@ -293,9 +275,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceCommandsCollection(
-	 * com.sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+	 * getDeviceCommandsCollection( com.sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getDeviceCommandsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getDeviceCommandsCollectionName());
@@ -304,8 +285,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection(com.
-	 * sitewhere .spi.user.ITenant)
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDevicesCollection(
+	 * com. sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getDevicesCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getDevicesCollectionName());
@@ -314,9 +296,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceAssignmentsCollection
-	 * (com.sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+	 * getDeviceAssignmentsCollection (com.sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getDeviceAssignmentsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getDeviceAssignmentsCollectionName());
@@ -326,8 +307,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getSitesCollection(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getSitesCollection(com
+	 * .sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getSitesCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getSitesCollectionName());
@@ -337,8 +318,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getZonesCollection(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getZonesCollection(com
+	 * .sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getZonesCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getZonesCollectionName());
@@ -347,9 +328,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getDeviceGroupsCollection(com
-	 * .sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+	 * getDeviceGroupsCollection(com .sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getDeviceGroupsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getDeviceGroupsCollectionName());
@@ -358,9 +338,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getGroupElementsCollection(com
-	 * .sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+	 * getGroupElementsCollection(com .sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getGroupElementsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getGroupElementsCollectionName());
@@ -369,8 +348,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getEventsCollection(com.
-	 * sitewhere .spi.user.ITenant)
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getEventsCollection(
+	 * com. sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getEventsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getEventsCollectionName());
@@ -379,8 +359,9 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamsCollection(com.
-	 * sitewhere .spi.user.ITenant)
+	 * @see
+	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamsCollection(
+	 * com. sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getStreamsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getStreamsCollectionName());
@@ -389,9 +370,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getStreamDataCollection(com.
-	 * sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+	 * getStreamDataCollection(com. sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getStreamDataCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getStreamDataCollectionName());
@@ -400,9 +380,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IDeviceManagementMongoClient#getBatchOperationsCollection
-	 * (com.sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IDeviceManagementMongoClient#
+	 * getBatchOperationsCollection (com.sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getBatchOperationsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getBatchOperationsCollectionName());
@@ -421,8 +400,10 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IUserManagementMongoClient#getUsersCollection()
+	 * @see
+	 * com.sitewhere.mongodb.IGlobalManagementMongoClient#getUsersCollection()
 	 */
+	@Override
 	public DBCollection getUsersCollection() {
 		return getGlobalDatabase().getCollection(getUsersCollectionName());
 	}
@@ -430,8 +411,10 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IUserManagementMongoClient#getAuthoritiesCollection()
+	 * @see com.sitewhere.mongodb.IGlobalManagementMongoClient#
+	 * getAuthoritiesCollection()
 	 */
+	@Override
 	public DBCollection getAuthoritiesCollection() {
 		return getGlobalDatabase().getCollection(getAuthoritiesCollectionName());
 	}
@@ -439,7 +422,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IUserManagementMongoClient#getTenantsCollection()
+	 * @see
+	 * com.sitewhere.mongodb.IGlobalManagementMongoClient#getTenantsCollection()
 	 */
 	@Override
 	public DBCollection getTenantsCollection() {
@@ -449,7 +433,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.mongodb.IUserManagementMongoClient#getTenantGroupsCollection()
+	 * @see com.sitewhere.mongodb.IGlobalManagementMongoClient#
+	 * getTenantGroupsCollection()
 	 */
 	@Override
 	public DBCollection getTenantGroupsCollection() {
@@ -459,8 +444,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IUserManagementMongoClient#getTenantGroupElementsCollection()
+	 * @see com.sitewhere.mongodb.IGlobalManagementMongoClient#
+	 * getTenantGroupElementsCollection()
 	 */
 	@Override
 	public DBCollection getTenantGroupElementsCollection() {
@@ -470,9 +455,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetCategoriesCollection(
-	 * com.sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IAssetManagementMongoClient#
+	 * getAssetCategoriesCollection( com.sitewhere.spi.user.ITenant)
 	 */
 	public DBCollection getAssetCategoriesCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getAssetCategoriesCollectionName());
@@ -482,8 +466,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetsCollection(com.sitewhere
-	 * .spi.user.ITenant)
+	 * com.sitewhere.mongodb.IAssetManagementMongoClient#getAssetsCollection(com
+	 * .sitewhere .spi.user.ITenant)
 	 */
 	public DBCollection getAssetsCollection(ITenant tenant) {
 		return getTenantDatabase(tenant).getCollection(getAssetsCollectionName());
@@ -492,9 +476,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IScheduleManagementMongoClient#getSchedulesCollection(com
-	 * .sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IScheduleManagementMongoClient#
+	 * getSchedulesCollection(com .sitewhere.spi.user.ITenant)
 	 */
 	@Override
 	public DBCollection getSchedulesCollection(ITenant tenant) {
@@ -504,9 +487,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.sitewhere.mongodb.IScheduleManagementMongoClient#getScheduledJobsCollection
-	 * (com.sitewhere.spi.user.ITenant)
+	 * @see com.sitewhere.mongodb.IScheduleManagementMongoClient#
+	 * getScheduledJobsCollection (com.sitewhere.spi.user.ITenant)
 	 */
 	@Override
 	public DBCollection getScheduledJobsCollection(ITenant tenant) {
@@ -525,7 +507,8 @@ public class SiteWhereMongoClient extends TenantLifecycleComponent implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
+	 * @see
+	 * com.sitewhere.spi.common.IInternetConnected#setHostname(java.lang.String)
 	 */
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
