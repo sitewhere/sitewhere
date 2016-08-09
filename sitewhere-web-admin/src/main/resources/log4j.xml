@@ -51,15 +51,7 @@
 	</category>
 
 	<category name="org.apache.jasper">
-		<priority value="INFO"/>
-	</category>
-
-	<category name="org.apache.tomcat">
-		<priority value="INFO"/>
-	</category>
-
-	<category name="org.apache.catalina">
-		<priority value="INFO"/>
+		<priority value="DEBUG"/>
 	</category>
 
 	<category name="org.apache.activemq">
