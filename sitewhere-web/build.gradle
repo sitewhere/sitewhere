@@ -1,16 +1,4 @@
-
-apply plugin: 'war'
-
-apply plugin: 'spring-boot'
-springBoot {
-    mainClass = 'com.sitewhere.web.SiteWhereWebApplication'
-}
-
 description = 'SiteWhere Web Components'
-
-configurations {
-    compile.exclude module: 'spring-boot-starter-logging'
-}
 
 dependencies {
     compile project(':sitewhere-activemq')

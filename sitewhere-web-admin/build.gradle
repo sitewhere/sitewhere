@@ -1,0 +1,55 @@
+description = 'SiteWhere Web Admin Application'
+
+apply plugin: 'war'
+
+apply plugin: 'spring-boot'
+springBoot {
+    mainClass = 'com.sitewhere.web.SiteWhereWebApplication'
+}
+
+configurations {
+    compile.exclude module: 'spring-boot-starter-logging'
+}
+
+dependencies {
+    compile project(':sitewhere-activemq')
+    compile project(':sitewhere-azure')
+    compile project(':sitewhere-core')
+    compile project(':sitewhere-ehcache')
+    compile project(':sitewhere-hbase')
+    compile project(':sitewhere-groovy')
+    compile project(':sitewhere-influx')
+    compile project(':sitewhere-mongodb')
+    compile project(':sitewhere-protobuf')
+    compile project(':sitewhere-rabbit-mq')
+    compile project(':sitewhere-rest')
+    compile project(':sitewhere-siddhi')
+    compile project(':sitewhere-solr')
+    compile project(':sitewhere-spark')
+    compile project(':sitewhere-spring')
+    compile project(':sitewhere-twilio')
+    compile project(':sitewhere-web')
+    compile project(':sitewhere-wso2')
+    
+	compile ('org.springframework.boot:spring-boot-starter-web')
+	compile ('org.springframework.boot:spring-boot-starter-log4j')
+ 	compile ('org.apache.tomcat.embed:tomcat-embed-jasper')
+ 	
+    compile group: 'org.springframework.security', name: 'spring-security-web'
+  
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+    compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version:'2.7.0'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-scala_2.10', version:'2.6.3'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-jsonSchema', version:'2.7.0'
+    compile group: 'com.wordnik', name: 'swagger-core_2.10', version:'1.3.5'
+    compile group: 'com.wordnik', name: 'swagger-annotations', version:'1.3.5'
+    compile group: 'com.mangofactory', name: 'swagger-springmvc', version:'1.0.2'
+    compile group: 'com.google.guava', name: 'guava'
+    compile group: 'commons-lang', name: 'commons-lang'
+    compile group: 'javax.mail', name: 'mail', version: '1.4'
+    
+	compile group: 'javax.servlet', name: 'javax.servlet-api'
+	compile group: 'javax.servlet', name: 'jstl'
+}
