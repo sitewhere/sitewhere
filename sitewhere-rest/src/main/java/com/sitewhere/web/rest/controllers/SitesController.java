@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sitewhere.SiteWhere;
 import com.sitewhere.Tracer;
 import com.sitewhere.device.marshaling.DeviceAssignmentMarshalHelper;
+import com.sitewhere.device.marshaling.SiteMarshalHelper;
 import com.sitewhere.rest.model.device.DeviceAssignment;
 import com.sitewhere.rest.model.device.Site;
 import com.sitewhere.rest.model.device.Zone;
@@ -210,6 +211,7 @@ public class SitesController extends RestController {
 	@Documented(examples = {
 			@Example(stage = Stage.Response, json = Sites.ListSitesResponse.class, description = "listSitesResponse.md") })
 	public ISearchResults<ISite> listSites(
+			@ApiParam(value = "Include zones", required = false) @RequestParam(defaultValue = "false") boolean includeZones,
 			@ApiParam(value = "Page number", required = false) @RequestParam(required = false, defaultValue = "1") @Concerns(values = {
 					ConcernType.Paging }) int page,
 			@ApiParam(value = "Page size", required = false) @RequestParam(required = false, defaultValue = "100") @Concerns(values = {
@@ -218,7 +220,16 @@ public class SitesController extends RestController {
 		Tracer.start(TracerCategory.RestApiCall, "listSites", LOGGER);
 		try {
 			SearchCriteria criteria = new SearchCriteria(page, pageSize);
-			return SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest)).listSites(criteria);
+			ISearchResults<ISite> matches = SiteWhere.getServer().getDeviceManagement(getTenant(servletRequest))
+					.listSites(criteria);
+			SiteMarshalHelper helper = new SiteMarshalHelper(getTenant(servletRequest));
+			helper.setIncludeZones(includeZones);
+
+			List<ISite> results = new ArrayList<ISite>();
+			for (ISite site : matches.getResults()) {
+				results.add(helper.convert(site));
+			}
+			return new SearchResults<ISite>(results, matches.getNumResults());
 		} finally {
 			Tracer.stop(LOGGER);
 		}

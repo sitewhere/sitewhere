@@ -8,6 +8,7 @@
 package com.sitewhere.rest.model.device;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -41,6 +42,16 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
 	/** Map data */
 	private SiteMapData map = new SiteMapData();
 
+	/** FIELDS BELOW DEPEND ON MARSHALING PARAMETERS */
+
+	/** List of zones for site */
+	private List<Zone> zones;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.ISite#getToken()
+	 */
 	public String getToken() {
 		return token;
 	}
@@ -49,6 +60,11 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
 		this.token = token;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.ISite#getName()
+	 */
 	public String getName() {
 		return name;
 	}
@@ -57,6 +73,11 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
 		this.name = name;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.ISite#getDescription()
+	 */
 	public String getDescription() {
 		return description;
 	}
@@ -65,6 +86,11 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
 		this.description = description;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sitewhere.spi.device.ISite#getImageUrl()
+	 */
 	public String getImageUrl() {
 		return imageUrl;
 	}
@@ -84,6 +110,14 @@ public class Site extends MetadataProviderEntity implements ISite, Serializable 
 
 	public void setMap(SiteMapData map) {
 		this.map = map;
+	}
+
+	public List<Zone> getZones() {
+		return zones;
+	}
+
+	public void setZones(List<Zone> zones) {
+		this.zones = zones;
 	}
 
 	/**
