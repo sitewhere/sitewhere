@@ -21,8 +21,8 @@ import com.sitewhere.spi.device.communication.ICommandDeliveryProvider;
 import com.sitewhere.spi.server.lifecycle.LifecycleComponentType;
 
 /**
- * Delivers commands via CoAP by creating a client request to send command data to the
- * remote device.
+ * Delivers commands via CoAP by creating a client request to send command data
+ * to the remote device.
  * 
  * @author Derek
  */
@@ -67,19 +67,26 @@ public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(com.
-	 * sitewhere.spi.device.IDeviceNestingContext,
+	 * @see
+	 * com.sitewhere.spi.device.communication.ICommandDeliveryProvider#deliver(
+	 * com. sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment,
-	 * com.sitewhere.spi.device.command.IDeviceCommandExecution, java.lang.Object,
-	 * java.lang.Object)
+	 * com.sitewhere.spi.device.command.IDeviceCommandExecution,
+	 * java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			IDeviceCommandExecution execution, byte[] encoded, CoapParameters parameters)
-			throws SiteWhereException {
+	public void deliver(IDeviceNestingContext nested, IDeviceAssignment assignment, IDeviceCommandExecution execution,
+			byte[] encoded, CoapParameters parameters) throws SiteWhereException {
 		CoapClient client = createCoapClient(parameters);
-		CoapResponse response = client.post(encoded, MediaTypeRegistry.APPLICATION_JSON);
-		LOGGER.info("Response from delivering command: " + response.getResponseText());
+		CoapResponse response = null;
+		if ("put".equalsIgnoreCase(parameters.getMethod())) {
+			response = client.put(encoded, MediaTypeRegistry.APPLICATION_JSON);
+		} else {
+			response = client.post(encoded, MediaTypeRegistry.APPLICATION_JSON);
+		}
+		if (response != null) {
+			LOGGER.info("Response from delivering command: " + response.getResponseText());
+		}
 	}
 
 	/*
@@ -87,14 +94,22 @@ public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
 	 * 
 	 * @see com.sitewhere.spi.device.communication.ICommandDeliveryProvider#
 	 * deliverSystemCommand(com.sitewhere.spi.device.IDeviceNestingContext,
-	 * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object, java.lang.Object)
+	 * com.sitewhere.spi.device.IDeviceAssignment, java.lang.Object,
+	 * java.lang.Object)
 	 */
 	@Override
-	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment,
-			byte[] encoded, CoapParameters parameters) throws SiteWhereException {
+	public void deliverSystemCommand(IDeviceNestingContext nested, IDeviceAssignment assignment, byte[] encoded,
+			CoapParameters parameters) throws SiteWhereException {
 		CoapClient client = createCoapClient(parameters);
-		CoapResponse response = client.post(encoded, MediaTypeRegistry.APPLICATION_JSON);
-		LOGGER.info("Response from delivering command: " + response.getResponseText());
+		CoapResponse response = null;
+		if ("put".equalsIgnoreCase(parameters.getMethod())) {
+			response = client.put(encoded, MediaTypeRegistry.APPLICATION_JSON);
+		} else {
+			response = client.post(encoded, MediaTypeRegistry.APPLICATION_JSON);
+		}
+		if (response != null) {
+			LOGGER.info("Response from delivering system command: " + response.getResponseText());
+		}
 	}
 
 	/**
@@ -104,8 +119,8 @@ public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
 	 * @return
 	 */
 	protected CoapClient createCoapClient(CoapParameters parameters) {
-		return new CoapClient("coap://" + parameters.getHostname() + ":" + parameters.getPort() + "/"
-				+ parameters.getUrl());
+		return new CoapClient(
+				"coap://" + parameters.getHostname() + ":" + parameters.getPort() + "/" + parameters.getUrl());
 
 	}
 }

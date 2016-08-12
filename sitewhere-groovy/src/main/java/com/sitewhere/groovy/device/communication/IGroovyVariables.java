@@ -25,4 +25,16 @@ public interface IGroovyVariables {
 
 	/** Groovy variable used for passing logger */
 	public static final String VAR_LOGGER = "logger";
+
+	/** Groovy variable used for passing command execution */
+	public static final String VAR_COMMAND_EXCUTION = "command";
+
+	/** Groovy variable used for passing system command */
+	public static final String VAR_SYSTEM_COMMAND = "system";
+
+	/** Groovy variable used for passing command (or command execution) */
+	public static final String VAR_NESTING_CONTEXT = "nesting";
+
+	/** Groovy variable used for passing assignment */
+	public static final String VAR_ASSIGNMENT = "assignment";
 }

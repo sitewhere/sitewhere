@@ -65,6 +65,8 @@ public class JsonpFilter implements Filter {
 			if (!SAFE_PATTERN.matcher(callback).matches()) {
 				callback = DEFAULT_CALLBACK;
 			}
+			httpResponse.setContentType("text/javascript;charset=UTF-8");
+			
 			OutputStream out = httpResponse.getOutputStream();
 			GenericResponseWrapper wrapper = new GenericResponseWrapper(httpResponse);
 			chain.doFilter(request, wrapper);

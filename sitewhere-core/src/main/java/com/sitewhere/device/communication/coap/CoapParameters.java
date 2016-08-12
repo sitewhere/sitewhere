@@ -23,6 +23,9 @@ public class CoapParameters {
 	/** URL where command is posted */
 	private String url = "";
 
+	/** HTTP method used */
+	private String method = "get";
+
 	public String getHostname() {
 		return hostname;
 	}
@@ -45,5 +48,13 @@ public class CoapParameters {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
 	}
 }

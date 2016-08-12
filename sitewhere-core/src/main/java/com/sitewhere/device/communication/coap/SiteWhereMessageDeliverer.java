@@ -54,8 +54,8 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.eclipse.californium.core.server.MessageDeliverer#deliverRequest(org.eclipse.
-	 * californium.core.network.Exchange)
+	 * org.eclipse.californium.core.server.MessageDeliverer#deliverRequest(org.
+	 * eclipse. californium.core.network.Exchange)
 	 */
 	@Override
 	public void deliverRequest(Exchange exchange) {
@@ -76,7 +76,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 		if ("devices".equals(resourceType)) {
 			handleGlobalDeviceRequest(tenant, paths, exchange);
 		} else {
-			createAndSendResponse(ResponseCode.BAD_REQUEST, "Unknown tenant resource type.", exchange);
+			createAndSendResponse(ResponseCode.BAD_REQUEST, "Unknown tenant resource type: " + resourceType, exchange);
 		}
 	}
 
@@ -110,8 +110,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 		} else {
 			String hardwareId = paths.remove(0);
 			try {
-				IDevice device =
-						SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId);
+				IDevice device = SiteWhere.getServer().getDeviceManagement(tenant).getDeviceByHardwareId(hardwareId);
 				handlePerDeviceRequest(tenant, device, paths, exchange);
 			} catch (SiteWhereException e) {
 				createAndSendResponse(ResponseCode.BAD_REQUEST, "Device hardware id is invalid.", exchange);
@@ -127,8 +126,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	 * @param paths
 	 * @param exchange
 	 */
-	protected void handlePerDeviceRequest(ITenant tenant, IDevice device, List<String> paths,
-			Exchange exchange) {
+	protected void handlePerDeviceRequest(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
 		if (paths.size() > 0) {
 			String operation = paths.remove(0);
 			if ("measurements".equals(operation)) {
@@ -151,8 +149,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	 * @param paths
 	 * @param exchange
 	 */
-	protected void handleDeviceMeasurements(ITenant tenant, IDevice device, List<String> paths,
-			Exchange exchange) {
+	protected void handleDeviceMeasurements(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
 		Map<String, String> metadata = new HashMap<String, String>();
 		metadata.put(META_EVENT_TYPE, Type.DeviceMeasurements.name());
 		metadata.put(META_HARDWARE_ID, device.getHardwareId());
@@ -161,8 +158,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 			try {
 				EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
 						exchange.getRequest().getPayload(), metadata);
-				createAndSendResponse(ResponseCode.CONTENT, "Device measurements created successfully.",
-						exchange);
+				createAndSendResponse(ResponseCode.CONTENT, "Device measurements created successfully.", exchange);
 			} catch (EventDecodeException e) {
 				LOGGER.error("Unable to decode CoAP measurements payload.", e);
 				createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
@@ -170,8 +166,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 			break;
 		}
 		default: {
-			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device measurements operation not available.",
-					exchange);
+			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device measurements operation not available.", exchange);
 		}
 		}
 	}
@@ -201,8 +196,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 			break;
 		}
 		default: {
-			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device alert operation not available.",
-					exchange);
+			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device alert operation not available.", exchange);
 		}
 		}
 	}
@@ -215,8 +209,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	 * @param paths
 	 * @param exchange
 	 */
-	protected void handleDeviceLocations(ITenant tenant, IDevice device, List<String> paths,
-			Exchange exchange) {
+	protected void handleDeviceLocations(ITenant tenant, IDevice device, List<String> paths, Exchange exchange) {
 		Map<String, String> metadata = new HashMap<String, String>();
 		metadata.put(META_EVENT_TYPE, Type.DeviceLocation.name());
 		metadata.put(META_HARDWARE_ID, device.getHardwareId());
@@ -225,8 +218,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 			try {
 				EventProcessingLogic.processRawPayloadWithExceptionHandling(getEventReceiver(),
 						exchange.getRequest().getPayload(), metadata);
-				createAndSendResponse(ResponseCode.CONTENT, "Device location created successfully.",
-						exchange);
+				createAndSendResponse(ResponseCode.CONTENT, "Device location created successfully.", exchange);
 			} catch (EventDecodeException e) {
 				LOGGER.error("Unable to decode CoAP location payload.", e);
 				createAndSendResponse(ResponseCode.BAD_REQUEST, "Unable to parse payload.", exchange);
@@ -234,8 +226,7 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 			break;
 		}
 		default: {
-			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device location operation not available.",
-					exchange);
+			createAndSendResponse(ResponseCode.BAD_REQUEST, "Device location operation not available.", exchange);
 		}
 		}
 	}
@@ -257,8 +248,9 @@ public class SiteWhereMessageDeliverer implements MessageDeliverer {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.eclipse.californium.core.server.MessageDeliverer#deliverResponse(org.eclipse.
-	 * californium.core.network.Exchange, org.eclipse.californium.core.coap.Response)
+	 * org.eclipse.californium.core.server.MessageDeliverer#deliverResponse(org.
+	 * eclipse. californium.core.network.Exchange,
+	 * org.eclipse.californium.core.coap.Response)
 	 */
 	@Override
 	public void deliverResponse(Exchange exchange, Response response) {

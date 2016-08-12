@@ -15,6 +15,11 @@ import com.sitewhere.spi.device.IDeviceNestingContext;
 import com.sitewhere.spi.device.command.IDeviceCommandExecution;
 import com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor;
 
+/**
+ * Pulls CoAP parameters from device metadata.
+ * 
+ * @author Derek
+ */
 public class MetadataCoapParameterExtractor implements ICommandDeliveryParameterExtractor<CoapParameters> {
 
 	/** Default metadata field for remote hostname */
@@ -26,6 +31,9 @@ public class MetadataCoapParameterExtractor implements ICommandDeliveryParameter
 	/** Default metadata field for CoAP URL */
 	public static final String DEFAULT_URL_METADATA = "url";
 
+	/** Default metadata field for CoAP invocation method */
+	public static final String DEFAULT_METHOD_METADATA = "method";
+
 	/** Hostname metadata field name */
 	private String hostnameMetadataField = DEFAULT_HOSTNAME_METADATA;
 
@@ -34,6 +42,9 @@ public class MetadataCoapParameterExtractor implements ICommandDeliveryParameter
 
 	/** CoAP URL metadata field name */
 	private String urlMetadataField = DEFAULT_URL_METADATA;
+
+	/** CoAP invocation method metadata field name */
+	private String methodMetadataField = DEFAULT_METHOD_METADATA;
 
 	/** Overrides port metadata */
 	private Integer portOverride;
@@ -48,18 +59,20 @@ public class MetadataCoapParameterExtractor implements ICommandDeliveryParameter
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sitewhere.spi.device.communication.ICommandDeliveryParameterExtractor#
+	 * @see com.sitewhere.spi.device.communication.
+	 * ICommandDeliveryParameterExtractor#
 	 * extractDeliveryParameters(com.sitewhere.spi.device.IDeviceNestingContext,
 	 * com.sitewhere.spi.device.IDeviceAssignment,
 	 * com.sitewhere.spi.device.command.IDeviceCommandExecution)
 	 */
 	@Override
-	public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting,
-			IDeviceAssignment assignment, IDeviceCommandExecution execution) throws SiteWhereException {
+	public CoapParameters extractDeliveryParameters(IDeviceNestingContext nesting, IDeviceAssignment assignment,
+			IDeviceCommandExecution execution) throws SiteWhereException {
 		Map<String, String> metadata = nesting.getGateway().getMetadata();
 		String hostname = metadata.get(getHostnameMetadataField());
 		String port = metadata.get(getPortMetadataField());
 		String url = metadata.get(getUrlMetadataField());
+		String method = metadata.get(getMethodMetadataField());
 		CoapParameters coap = new CoapParameters();
 		coap.setHostname(hostname);
 		if (port != null) {
@@ -67,6 +80,9 @@ public class MetadataCoapParameterExtractor implements ICommandDeliveryParameter
 		}
 		if (url != null) {
 			coap.setUrl(url);
+		}
+		if (method != null) {
+			coap.setMethod(method);
 		}
 		return coap;
 	}
@@ -93,6 +109,14 @@ public class MetadataCoapParameterExtractor implements ICommandDeliveryParameter
 
 	public void setUrlMetadataField(String urlMetadataField) {
 		this.urlMetadataField = urlMetadataField;
+	}
+
+	public String getMethodMetadataField() {
+		return methodMetadataField;
+	}
+
+	public void setMethodMetadataField(String methodMetadataField) {
+		this.methodMetadataField = methodMetadataField;
 	}
 
 	public Integer getPortOverride() {

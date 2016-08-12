@@ -35,12 +35,14 @@ import com.sitewhere.device.communication.protobuf.JavaHybridProtobufExecutionEn
 import com.sitewhere.device.communication.protobuf.ProtobufExecutionEncoder;
 import com.sitewhere.device.communication.sms.SmsCommandDestination;
 import com.sitewhere.device.communication.sms.SmsParameters;
+import com.sitewhere.groovy.GroovyConfiguration;
+import com.sitewhere.groovy.device.communication.GroovyCommandExecutionEncoder;
 import com.sitewhere.spi.device.communication.ICommandDestination;
 import com.sitewhere.twilio.TwilioCommandDeliveryProvider;
 
 /**
- * Parses the list of {@link ICommandDestination} elements used in the communication
- * subsystem.
+ * Parses the list of {@link ICommandDestination} elements used in the
+ * communication subsystem.
  * 
  * @author Derek
  */
@@ -57,8 +59,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.Element,
-	 * org.springframework.beans.factory.xml.ParserContext)
+	 * com.sitewhere.spring.handler.SiteWhereBeanListParser#parse(org.w3c.dom.
+	 * Element, org.springframework.beans.factory.xml.ParserContext)
 	 */
 	public ManagedList<?> parse(Element element, ParserContext context) {
 		ManagedList<Object> result = new ManagedList<Object>();
@@ -106,8 +108,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Parse the MQTT command destination configuration and create beans necessary for
-	 * implementation.
+	 * Parse the MQTT command destination configuration and create beans
+	 * necessary for implementation.
 	 * 
 	 * @param element
 	 * @param context
@@ -119,8 +121,7 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 
 		// Add encoder reference.
 		if (!parseBinaryCommandEncoder(element, context, mqtt)) {
-			throw new RuntimeException(
-					"Command encoder required for MQTT command destination but was not specified.");
+			throw new RuntimeException("Command encoder required for MQTT command destination but was not specified.");
 		}
 
 		// Add MQTT command delivery provider bean.
@@ -187,8 +188,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Parse the CoAP command destination configuration and create beans necessary for
-	 * implementation.
+	 * Parse the CoAP command destination configuration and create beans
+	 * necessary for implementation.
 	 * 
 	 * @param element
 	 * @param context
@@ -200,8 +201,7 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 
 		// Add encoder reference.
 		if (!parseBinaryCommandEncoder(element, context, mqtt)) {
-			throw new RuntimeException(
-					"Command encoder required for CoAP command destination but was not specified.");
+			throw new RuntimeException("Command encoder required for CoAP command destination but was not specified.");
 		}
 
 		// Add CoAP command delivery provider bean.
@@ -230,8 +230,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Parse the Twilio command destination configuration and create beans necessary for
-	 * implementation.
+	 * Parse the Twilio command destination configuration and create beans
+	 * necessary for implementation.
 	 * 
 	 * @param element
 	 * @param context
@@ -268,8 +268,7 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createTwilioDeliveryProvider(Element element) {
-		BeanDefinitionBuilder twilio =
-				BeanDefinitionBuilder.rootBeanDefinition(TwilioCommandDeliveryProvider.class);
+		BeanDefinitionBuilder twilio = BeanDefinitionBuilder.rootBeanDefinition(TwilioCommandDeliveryProvider.class);
 
 		Attr accountSid = element.getAttributeNode("accountSid");
 		if (accountSid == null) {
@@ -299,8 +298,7 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 * @param element
 	 * @param context
 	 */
-	protected void addCommonAttributes(BeanDefinitionBuilder builder, Element element,
-			ParserContext context) {
+	protected void addCommonAttributes(BeanDefinitionBuilder builder, Element element, ParserContext context) {
 		Attr destinationId = element.getAttributeNode("destinationId");
 		if (destinationId == null) {
 			throw new RuntimeException("Command destination does not contain destinationId attribute.");
@@ -309,7 +307,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	}
 
 	/**
-	 * Locate a command encoder element and register it with the command destination.
+	 * Locate a command encoder element and register it with the command
+	 * destination.
 	 * 
 	 * @param decoder
 	 * @param context
@@ -321,9 +320,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 		List<Element> children = DomUtils.getChildElements(parent);
 		for (Element child : children) {
 			if (!IConfigurationElements.SITEWHERE_CE_TENANT_NS.equals(child.getNamespaceURI())) {
-				NamespaceHandler nested =
-						context.getReaderContext().getNamespaceHandlerResolver().resolve(
-								child.getNamespaceURI());
+				NamespaceHandler nested = context.getReaderContext().getNamespaceHandlerResolver()
+						.resolve(child.getNamespaceURI());
 				if (nested != null) {
 					BeanDefinition decoderBean = nested.parse(child, context);
 					String decoderName = nameGenerator.generateBeanName(decoderBean, context.getRegistry());
@@ -351,6 +349,10 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 				parseJsonCommandEncoder(child, context, destination);
 				return true;
 			}
+			case GroovyCommandEncoder: {
+				parseGroovyCommandEncoder(child, context, destination);
+				return true;
+			}
 			case CommandEncoder: {
 				parseEncoderRef(child, context, destination);
 				return true;
@@ -369,8 +371,7 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 */
 	protected void parseProtobufCommandEncoder(Element encoder, ParserContext context,
 			BeanDefinitionBuilder destination) {
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(ProtobufExecutionEncoder.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ProtobufExecutionEncoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -386,8 +387,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 */
 	protected void parseJavaHybridProtobufEncoder(Element encoder, ParserContext context,
 			BeanDefinitionBuilder destination) {
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(JavaHybridProtobufExecutionEncoder.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder
+				.rootBeanDefinition(JavaHybridProtobufExecutionEncoder.class);
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -401,10 +402,32 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 * @param context
 	 * @param destination
 	 */
-	protected void parseJsonCommandEncoder(Element encoder, ParserContext context,
+	protected void parseJsonCommandEncoder(Element encoder, ParserContext context, BeanDefinitionBuilder destination) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(JsonCommandExecutionEncoder.class);
+		AbstractBeanDefinition bean = builder.getBeanDefinition();
+		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
+		context.getRegistry().registerBeanDefinition(name, bean);
+		destination.addPropertyReference("commandExecutionEncoder", name);
+	}
+
+	/**
+	 * Parse definition of Groovy command encoder.
+	 * 
+	 * @param encoder
+	 * @param context
+	 * @param destination
+	 */
+	protected void parseGroovyCommandEncoder(Element encoder, ParserContext context,
 			BeanDefinitionBuilder destination) {
-		BeanDefinitionBuilder builder =
-				BeanDefinitionBuilder.rootBeanDefinition(JsonCommandExecutionEncoder.class);
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(GroovyCommandExecutionEncoder.class);
+		builder.addPropertyReference("configuration", GroovyConfiguration.GROOVY_CONFIGURATION_BEAN);
+
+		Attr scriptPath = encoder.getAttributeNode("scriptPath");
+		if (scriptPath == null) {
+			throw new RuntimeException("Script path required but not specified.");
+		}
+		builder.addPropertyValue("scriptPath", scriptPath.getValue());
+
 		AbstractBeanDefinition bean = builder.getBeanDefinition();
 		String name = nameGenerator.generateBeanName(bean, context.getRegistry());
 		context.getRegistry().registerBeanDefinition(name, bean);
@@ -418,8 +441,7 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 * @param context
 	 * @param destination
 	 */
-	protected void parseEncoderRef(Element encoder, ParserContext context,
-			BeanDefinitionBuilder destination) {
+	protected void parseEncoderRef(Element encoder, ParserContext context, BeanDefinitionBuilder destination) {
 		Attr encoderRef = encoder.getAttributeNode("ref");
 		if (encoderRef == null) {
 			throw new RuntimeException("Command encoder 'ref' attribute is required.");
@@ -436,8 +458,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 * @param paramType
 	 * @return
 	 */
-	protected boolean addParameterExtractor(BeanDefinitionBuilder builder, Element element,
-			ParserContext context, Class<?> paramType) {
+	protected boolean addParameterExtractor(BeanDefinitionBuilder builder, Element element, ParserContext context,
+			Class<?> paramType) {
 		// Locate parameter extractor reference.
 		Element extractor = DomUtils.getChildElementByTagName(element, "parameter-extractor");
 		if (extractor != null) {
@@ -477,8 +499,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createHardwareIdMqttParameterExtractor(Element element) {
-		BeanDefinitionBuilder extractor =
-				BeanDefinitionBuilder.rootBeanDefinition(HardwareIdMqttParameterExtractor.class);
+		BeanDefinitionBuilder extractor = BeanDefinitionBuilder
+				.rootBeanDefinition(HardwareIdMqttParameterExtractor.class);
 
 		Attr commandTopicExpr = element.getAttributeNode("commandTopicExpr");
 		if (commandTopicExpr != null) {
@@ -499,8 +521,8 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 	 * @return
 	 */
 	protected AbstractBeanDefinition createCoapMetadataParameterExtractor(Element element) {
-		BeanDefinitionBuilder extractor =
-				BeanDefinitionBuilder.rootBeanDefinition(MetadataCoapParameterExtractor.class);
+		BeanDefinitionBuilder extractor = BeanDefinitionBuilder
+				.rootBeanDefinition(MetadataCoapParameterExtractor.class);
 
 		Attr hostnameMetadataField = element.getAttributeNode("hostnameMetadataField");
 		if (hostnameMetadataField != null) {
@@ -574,11 +596,16 @@ public class CommandDestinationsParser extends SiteWhereBeanListParser {
 		/** Encodes commands with standard SiteWhere GPB naming convention */
 		ProtobufEncoder("protobuf-command-encoder"),
 
-		/** Encodes commands with hybrid protobuf / Java serialization approach */
+		/**
+		 * Encodes commands with hybrid protobuf / Java serialization approach
+		 */
 		JavaHybridProtobufEncoder("java-protobuf-hybrid-encoder"),
 
-		/** Encodes commands with hybrid protobuf / JSON serialization approach */
+		/** Encodes commands using a JSON representation */
 		JsonCommandEncoder("json-command-encoder"),
+
+		/** Uses a Groovy script to encode commands */
+		GroovyCommandEncoder("groovy-command-encoder"),
 
 		/** Reference to externally defined event decoder */
 		CommandEncoder("command-encoder");
