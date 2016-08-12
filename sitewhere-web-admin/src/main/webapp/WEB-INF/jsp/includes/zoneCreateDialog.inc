@@ -7,7 +7,7 @@
 
 .sw-name-label {
 	display: inline-block;
-	padding-right: 5px;
+	padding-right: 4px;
 }
 </style>
 
