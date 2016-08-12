@@ -16,6 +16,7 @@ import com.sitewhere.spi.device.IDeviceManagement;
 import com.sitewhere.spi.device.batch.IBatchOperation;
 import com.sitewhere.spi.device.event.state.StateChangeCategory;
 import com.sitewhere.spi.device.event.state.StateChangeType;
+import com.sitewhere.spi.device.request.IBatchCommandInvocationRequest;
 import com.sitewhere.spi.device.request.IBatchOperationCreateRequest;
 import com.sitewhere.spi.device.request.IDeviceAssignmentCreateRequest;
 
@@ -96,6 +97,21 @@ public class DeviceManagementTriggers extends DeviceManagementDecorator {
 	public IBatchOperation createBatchOperation(IBatchOperationCreateRequest request)
 			throws SiteWhereException {
 		IBatchOperation operation = super.createBatchOperation(request);
+		SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(
+				operation);
+		return operation;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * com.sitewhere.device.DeviceManagementDecorator#createBatchCommandInvocation(com.sitewhere.
+	 * spi.device.request.IBatchCommandInvocationRequest)
+	 */
+	@Override
+	public IBatchOperation createBatchCommandInvocation(IBatchCommandInvocationRequest request) throws SiteWhereException {
+		IBatchOperation operation = super.createBatchCommandInvocation(request);
 		SiteWhere.getServer().getDeviceCommunication(getTenant()).getBatchOperationManager().process(
 				operation);
 		return operation;
