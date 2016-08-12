@@ -223,7 +223,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 	protected void cacheGlobalFile(String relativePath, File file) throws SiteWhereException {
 		IResource resource = createResourceFromFile(relativePath, file);
 		getGlobalResourceMap().put(relativePath, resource);
-		LOGGER.debug("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+		LOGGER.info("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
 				+ resource.getContent().length + " bytes");
 	}
 
@@ -243,7 +243,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		}
 		IResource resource = createResourceFromFile(relativePath, file);
 		tenant.put(relativePath, resource);
-		LOGGER.debug("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
+		LOGGER.info("Cached resource: " + resource.getPath() + " (" + resource.getResourceType().name() + ") "
 				+ resource.getContent().length + " bytes");
 	}
 
@@ -259,6 +259,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 		Resource resource = new Resource();
 		resource.setPath(relativePath);
 		resource.setResourceType(findResourceType(file));
+		resource.setLastModified(System.currentTimeMillis());
 		FileInputStream input = null;
 		try {
 			input = new FileInputStream(file);
@@ -613,7 +614,8 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 					WatchKey key;
 					try {
 						key = watcher.take();
-					} catch (InterruptedException x) {
+					} catch (InterruptedException e) {
+						watcher.close();
 						return;
 					}
 
@@ -633,10 +635,10 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 							if ((kind == StandardWatchEventKinds.ENTRY_CREATE)
 									|| (kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
 								cacheFile(file);
-								LOGGER.debug("Created/updated resource: " + file.getAbsolutePath());
+								LOGGER.info("Created/updated resource: " + file.getAbsolutePath());
 							} else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
 								uncacheFile(file);
-								LOGGER.debug("Deleted resource: " + file.getAbsolutePath());
+								LOGGER.info("Deleted resource: " + file.getAbsolutePath());
 							}
 						}
 					}

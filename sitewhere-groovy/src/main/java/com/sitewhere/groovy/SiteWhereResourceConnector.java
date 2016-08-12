@@ -52,7 +52,9 @@ public class SiteWhereResourceConnector implements ResourceConnector {
 		LOGGER.debug("Calling getResourceConnection() with " + name);
 		try {
 			URLConnection result = null;
-			if (getTenantId() != null) {
+			if (name.startsWith(ResourceUrlConnection.PROTO_SITEWHERE)) {
+				result = new ResourceUrlConnection(new URL(null, name, handler));
+			} else if (getTenantId() != null) {
 				result = new ResourceUrlConnection(
 						new URL(ResourceUrlConnection.PROTO_SITEWHERE, ResourceUrlConnection.SUBJECT_RESOURCE, -1,
 								"/" + ResourceUrlConnection.TYPE_TENANT_RESOURCE + "/" + getTenantId() + "/"
