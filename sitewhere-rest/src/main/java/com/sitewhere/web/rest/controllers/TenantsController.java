@@ -38,6 +38,7 @@ import com.sitewhere.security.LoginManager;
 import com.sitewhere.server.tenant.TenantUtils;
 import com.sitewhere.spi.SiteWhereException;
 import com.sitewhere.spi.SiteWhereSystemException;
+import com.sitewhere.spi.command.CommandResult;
 import com.sitewhere.spi.command.ICommandResponse;
 import com.sitewhere.spi.error.ErrorCode;
 import com.sitewhere.spi.error.ErrorLevel;
@@ -172,7 +173,11 @@ public class TenantsController extends RestController {
 			if (engine == null) {
 				throw new SiteWhereSystemException(ErrorCode.InvalidTenantEngineId, ErrorLevel.ERROR);
 			}
-			return engine.issueCommand(command, 10);
+			ICommandResponse response = engine.issueCommand(command, 10);
+			if (response.getResult() == CommandResult.Failed) {
+				LOGGER.error("Tenant engine command failed: " + response.getMessage());
+			}
+			return response;
 		} finally {
 			Tracer.stop(LOGGER);
 		}

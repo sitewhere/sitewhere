@@ -327,8 +327,10 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 			MultiResourceCreateResponse response) {
 		String middle = (qualifier != null) ? (File.separator + qualifier + File.separator) : "";
 		File rfile = new File(getRootFolder().getAbsolutePath() + middle + request.getPath());
+		FileOutputStream fileOut = null;
 		try {
-			IOUtils.write(request.getContent(), new FileOutputStream(rfile));
+			fileOut = new FileOutputStream(rfile);
+			IOUtils.write(request.getContent(), fileOut);
 			Resource created = new Resource();
 			created.setPath(request.getPath());
 			created.setResourceType(request.getResourceType());
@@ -344,6 +346,8 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 			error.setPath(request.getPath());
 			error.setReason(ResourceCreateFailReason.StorageFailure);
 			response.getErrors().add(error);
+		} finally {
+			IOUtils.closeQuietly(fileOut);
 		}
 	}
 
@@ -445,6 +449,7 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 			throw new SiteWhereException("Unable to delete resource.");
 		}
 		uncacheFile(rfile);
+		LOGGER.info("Deleted and uncached resource: " + rfile.getAbsolutePath());
 		return resource;
 	}
 
@@ -634,8 +639,12 @@ public class FileSystemResourceManager extends LifecycleComponent implements IRe
 						if ((!file.isDirectory())) {
 							if ((kind == StandardWatchEventKinds.ENTRY_CREATE)
 									|| (kind == StandardWatchEventKinds.ENTRY_MODIFY)) {
-								cacheFile(file);
-								LOGGER.info("Created/updated resource: " + file.getAbsolutePath());
+								try {
+									cacheFile(file);
+									LOGGER.info("Created/updated resource: " + file.getAbsolutePath());
+								} catch (Throwable t) {
+									LOGGER.error("Unable to cache resource: " + file.getAbsolutePath(), t);
+								}
 							} else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
 								uncacheFile(file);
 								LOGGER.info("Deleted resource: " + file.getAbsolutePath());
