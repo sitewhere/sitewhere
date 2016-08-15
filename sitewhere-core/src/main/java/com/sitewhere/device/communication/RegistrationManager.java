@@ -107,9 +107,17 @@ public class RegistrationManager extends TenantLifecycleComponent implements IRe
 			deviceCreate.setMetadata(request.getMetadata());
 			device = SiteWhere.getServer().getDeviceManagement(getTenant()).createDevice(deviceCreate);
 		} else if (!device.getSpecificationToken().equals(request.getSpecificationToken())) {
+			LOGGER.info("Found existing device registration, but specification does not match.");
 			sendInvalidSpecification(request.getHardwareId());
 			return;
+		} else {
+			LOGGER.info("Found existing device registration. Updating metadata.");
+			DeviceCreateRequest deviceUpdate = new DeviceCreateRequest();
+			deviceUpdate.setMetadata(request.getMetadata());
+			device = SiteWhere.getServer().getDeviceManagement(getTenant()).updateDevice(request.getHardwareId(),
+					deviceUpdate);
 		}
+
 		// Make sure device is assigned.
 		if (device.getAssignmentToken() == null) {
 			LOGGER.debug("Handling unassigned device for registration.");
