@@ -55,7 +55,8 @@ subprojects {
 	}
   
     dependencies {
-        compile(group: 'log4j', name: 'log4j')
+        compile(group: 'org.apache.logging.log4j', name: 'log4j-api')
+        compile(group: 'org.apache.logging.log4j', name: 'log4j-core')
         testCompile group: 'junit', name: 'junit'
     }
     test {
