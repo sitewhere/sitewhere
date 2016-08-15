@@ -79,6 +79,8 @@ public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
 			byte[] encoded, CoapParameters parameters) throws SiteWhereException {
 		CoapClient client = createCoapClient(parameters);
 		CoapResponse response = null;
+		LOGGER.info(parameters.toString());
+		LOGGER.info("Delivering command as " + parameters.getMethod().toUpperCase() + " to " + client.getURI());
 		if ("put".equalsIgnoreCase(parameters.getMethod())) {
 			response = client.put(encoded, MediaTypeRegistry.APPLICATION_JSON);
 		} else {
@@ -86,6 +88,8 @@ public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
 		}
 		if (response != null) {
 			LOGGER.info("Response from delivering command: " + response.getResponseText());
+		} else {
+			LOGGER.info("No response from delivering command.");
 		}
 	}
 
@@ -102,6 +106,8 @@ public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
 			CoapParameters parameters) throws SiteWhereException {
 		CoapClient client = createCoapClient(parameters);
 		CoapResponse response = null;
+		LOGGER.info(parameters.toString());
+		LOGGER.info("Delivering system command as " + parameters.getMethod().toUpperCase() + " to " + client.getURI());
 		if ("put".equalsIgnoreCase(parameters.getMethod())) {
 			response = client.put(encoded, MediaTypeRegistry.APPLICATION_JSON);
 		} else {
@@ -109,6 +115,8 @@ public class CoapCommandDeliveryProvider extends TenantLifecycleComponent
 		}
 		if (response != null) {
 			LOGGER.info("Response from delivering system command: " + response.getResponseText());
+		} else {
+			LOGGER.info("No response from delivering system command.");
 		}
 	}
 

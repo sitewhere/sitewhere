@@ -24,7 +24,7 @@ public class CoapParameters {
 	private String url = "";
 
 	/** HTTP method used */
-	private String method = "get";
+	private String method = "POST";
 
 	public String getHostname() {
 		return hostname;
@@ -56,5 +56,15 @@ public class CoapParameters {
 
 	public void setMethod(String method) {
 		this.method = method;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "CoAP request: " + getMethod().toUpperCase() + " Host: " + getHostname() + " Port: " + getPort()
+				+ " URL: " + getUrl();
 	}
 }
